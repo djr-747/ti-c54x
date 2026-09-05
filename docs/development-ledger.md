@@ -461,3 +461,19 @@ rewritten after publication.
 - Follow-up: verify the pushed commits in CI, then define the private architectural
   register-state and sequencer-application seam needed to apply address effects and
   prove register preservation without exposing CPU storage.
+
+## 2026-09-06 — P2-W2 verification — Remote indirect-address gates
+
+- Evidence: GitHub Actions run `33986551986` passed the pushed P2-W2 implementation
+  and ledger commits.
+- Coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled CMake
+  library configurations, CMake/CTest, installation, checked-in downstream consumer
+  linkage, and the Clang ASan/UBSan job all passed in the standalone repository.
+- Plan state: address generation remains `Active`; the effect description exists,
+  but architectural state ownership and sequencer application must be established
+  before opcode decode can consume it safely.
+- Knobs and integration: unchanged. No emulator checkout, firmware image, hosted
+  environment gate, or non-architectural control participated in the build or tests.
+- Follow-up: begin the requirement-backed register-state/effect-application slice,
+  preserving reset-unspecified fields explicitly and keeping bus transfer and opcode
+  execution outside that work piece.
