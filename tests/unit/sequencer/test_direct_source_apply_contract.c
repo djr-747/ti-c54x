@@ -95,7 +95,9 @@ test_malformed_direct_payloads_precede_mode_and_source_reads(void)
                      TI_C54X_ADDRESS_APPLY_INVALID_EFFECT);
 
     result = valid_dp(UINT16_C(3), UINT8_C(5));
-    result.effect.source.kind = (ti_c54x_address_source_kind)5;
+    /* Use a durable high sentinel rather than the next assignable enum value. */
+    result.effect.source.kind =
+        (ti_c54x_address_source_kind)UINT8_MAX;
     expect_unchanged(&state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
                      TI_C54X_ADDRESS_APPLY_INVALID_EFFECT);
 

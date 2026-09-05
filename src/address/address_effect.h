@@ -65,7 +65,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_AR = 1,
     TI_C54X_ADDRESS_SOURCE_DIRECT_DP = 2,
     TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3,
-    TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4
+    TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4,
+    TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -81,6 +82,16 @@ typedef struct ti_c54x_address_source_ar_indexed {
     uint16_t value_before;
     uint16_t ar0_value_before;
 } ti_c54x_address_source_ar_indexed;
+
+/* Snapshot for CMPT=0 signed long-offset MOD13 forms.  `modification` is
+ * retained as the raw architectural modifier field (13 for MOD13), while
+ * `long_offset_word` is the copied 16-bit instruction extension. */
+typedef struct ti_c54x_address_source_ar_long_offset {
+    uint8_t index;
+    uint8_t modification;
+    uint16_t value_before;
+    uint16_t long_offset_word;
+} ti_c54x_address_source_ar_long_offset;
 
 typedef struct ti_c54x_address_source_direct_dp {
     uint16_t dp9;
@@ -99,6 +110,7 @@ typedef struct ti_c54x_address_source {
     union {
         ti_c54x_address_source_ar ar;
         ti_c54x_address_source_ar_indexed ar_indexed;
+        ti_c54x_address_source_ar_long_offset ar_long_offset;
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
     } value;

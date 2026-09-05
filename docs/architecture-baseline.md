@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 39 immutable evidence
-records, 44 requirements, and 35 tests (31 `PASSING`, 4 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 45 immutable evidence
+records, 50 requirements, and 39 tests (35 `PASSING`, 4 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -180,6 +180,42 @@ Cartesian claim over both 16-bit source dimensions. The sequencer tests
 separately prove the tagged two-source shape, intrinsic validation and
 precedence, generic unknown/stale status for either dependency, bytewise
 transactional rejection, one selected-AR commit, and AR0 nonmutation.
+
+### Signed long-offset MOD13 slice
+
+The signed long-offset slice models CMPT=0 `*+ARx(lk)` MOD13 effects for both
+WORD16 and LONG32 operands. `SPRU131G` §5.5.3/Table 5-4 (printed p. 5-14)
+explicitly identifies `lk` as a signed 16-bit offset, adds it to ARx before
+access, and uses the resulting value both as the operand address and the
+replacement ARx value. Section 5.5.3.2 (printed pp. 5-14–5-15) supplies the
+raw extension/update context; it is recorded without selecting instruction
+fetch, repeat, or machine-cycle behavior. `SPRU172C` classes 9B and 13B
+(printed pp. 3-21 and 3-29) cross-check long-offset indirect long-word read/write
+operand forms. Existing CMPT=0/ARP=0 and LONG32 pairing evidence remains the
+authority for those independent shape constraints.
+
+The planner copies the raw offset word, performs explicit two's-complement
+sign extension, and accepts only mathematical sums in the 16-bit data-word
+domain. A successful effect carries a canonical WORD16 or LONG32 descriptor,
+the copied selected-AR source, and exactly one PRE_ACCESS update to the
+computed value. The project contract rejects invalid fields and unsafe
+unsigned endpoints with explicit statuses and an all-zero result; hardware
+wrap is not chosen. The sequencer validates this intrinsic shape before the
+CMPT=0/ARP=0 and selected-AR state checks, then commits at most the described
+selected-AR write without recomputing arithmetic. MOD12 remains an explicit
+`UNRESOLVED` signedness requirement because its source text does not classify
+the 16-bit carrier as signed or unsigned. MOD4/MOD7 reverse carry, circular
+and bit-reversed modes, MOD15, extension fetch, opcode decode, buses, timing,
+and emulator integration remain outside this slice.
+
+The MOD13 address test sweeps both access kinds and widths across every
+selected AR index and complete single-source dimensions, with independent
+cross-source and exact signed-boundary vectors. The effect-application test
+separately exercises the tagged source shape, LONG32 parity, mode/source
+validation and precedence, unknown/stale selected-AR state, transactional
+rejection, and one PRE_ACCESS commit. These are independent source-dimension
+sweeps and representative combinations, not a full Cartesian claim over AR
+and offset.
 
 ## Private architectural register-state seed
 

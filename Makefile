@@ -35,6 +35,7 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/address/direct_sp.o \
 	$(BUILD_DIR)/obj/address/indirect_single.o \
 	$(BUILD_DIR)/obj/address/indirect_indexed.o \
+	$(BUILD_DIR)/obj/address/indirect_long_offset.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
@@ -52,6 +53,8 @@ DATA_OPERAND_CONTRACT_TEST := $(BUILD_DIR)/test_data_operand_contract
 INDIRECT_SINGLE_LONG32_TEST := $(BUILD_DIR)/test_indirect_single_long32
 INDIRECT_INDEXED_WORD_TEST := $(BUILD_DIR)/test_indirect_indexed_word
 INDIRECT_INDEXED_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_indexed_contract
+INDIRECT_LONG_OFFSET_MOD13_TEST := $(BUILD_DIR)/test_indirect_long_offset_mod13
+INDIRECT_LONG_OFFSET_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_long_offset_contract
 ADDRESS_EFFECT_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_contract
 ARCH_STATE_RESET_TEST := $(BUILD_DIR)/test_arch_state_reset
 ARCH_STATE_KNOWNNESS_TEST := $(BUILD_DIR)/test_arch_state_knownness
@@ -64,6 +67,8 @@ ADDRESS_STATE_POLICY_CONTRACT_TEST := $(BUILD_DIR)/test_address_state_policy_con
 INDIRECT_LONG32_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_long32_effect_apply
 INDIRECT_INDEXED_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_indexed_effect_apply
 INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_indexed_effect_apply_contract
+INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_long_offset_effect_apply
+INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_long_offset_effect_apply_contract
 ADDRESS_EFFECT_STATE_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_state_contract
 ADDRESS_OPERAND_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_operand_apply_contract
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
@@ -75,6 +80,7 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/direct_sp.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_single.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_indexed.o \
+	$(OBSERVER_OFF_DIR)/obj/address/indirect_long_offset.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_apply.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
 	$(OBSERVER_OFF_DIR)/obj/state/arch_state.o \
@@ -90,12 +96,15 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
 	$(DATA_OPERAND_TEST) $(DATA_OPERAND_CONTRACT_TEST) \
 	$(INDIRECT_SINGLE_LONG32_TEST) \
 	$(INDIRECT_INDEXED_WORD_TEST) $(INDIRECT_INDEXED_CONTRACT_TEST) \
+	$(INDIRECT_LONG_OFFSET_MOD13_TEST) $(INDIRECT_LONG_OFFSET_CONTRACT_TEST) \
 	$(ARCH_STATE_RESET_TEST) $(ARCH_STATE_KNOWNNESS_TEST) \
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST) $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_APPLY_TEST) $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_CMPT0_STATE_TEST) $(ADDRESS_STATE_POLICY_CONTRACT_TEST) \
 	$(INDIRECT_LONG32_EFFECT_APPLY_TEST) \
 	$(INDIRECT_INDEXED_EFFECT_APPLY_TEST) $(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST) \
+	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST) \
+	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST) \
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST) \
 	$(OBSERVER_TEST) \
@@ -116,6 +125,8 @@ test: build quality-test
 	$(INDIRECT_SINGLE_LONG32_TEST)
 	$(INDIRECT_INDEXED_WORD_TEST)
 	$(INDIRECT_INDEXED_CONTRACT_TEST)
+	$(INDIRECT_LONG_OFFSET_MOD13_TEST)
+	$(INDIRECT_LONG_OFFSET_CONTRACT_TEST)
 	$(ARCH_STATE_RESET_TEST)
 	$(ARCH_STATE_KNOWNNESS_TEST)
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST)
@@ -127,6 +138,8 @@ test: build quality-test
 	$(INDIRECT_LONG32_EFFECT_APPLY_TEST)
 	$(INDIRECT_INDEXED_EFFECT_APPLY_TEST)
 	$(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST)
+	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST)
+	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST)
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST)
 	$(OBSERVER_TEST)
@@ -241,6 +254,20 @@ $(INDIRECT_INDEXED_CONTRACT_TEST): tests/unit/address/test_indirect_indexed_cont
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
 		$(LDFLAGS) $(LDLIBS) -o $@
 
+$(INDIRECT_LONG_OFFSET_MOD13_TEST): tests/unit/address/test_indirect_long_offset_mod13.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_long_offset.h \
+	src/address/address_effect.h src/address/data_operand.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
+		$(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_LONG_OFFSET_CONTRACT_TEST): tests/unit/address/test_indirect_long_offset_contract.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_long_offset.h \
+	src/address/address_effect.h src/address/data_operand.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
+		$(LDFLAGS) $(LDLIBS) -o $@
+
 $(ADDRESS_EFFECT_CONTRACT_TEST): tests/unit/address/test_address_effect_contract.c \
 	tests/support/test_harness.h $(LIB) src/address/indirect_single.h \
 	src/address/address_effect.h include/ti_c54x/address.h
@@ -316,6 +343,20 @@ $(INDIRECT_INDEXED_EFFECT_APPLY_TEST): tests/unit/sequencer/test_indirect_indexe
 $(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_indirect_indexed_effect_apply_contract.c \
 	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
 	src/address/indirect_indexed.h src/address/address_effect.h \
+	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST): tests/unit/sequencer/test_indirect_long_offset_effect_apply.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_long_offset.h src/address/address_effect.h \
+	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_long_offset.h src/address/address_effect.h \
 	src/state/arch_state.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@

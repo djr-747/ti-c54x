@@ -770,6 +770,98 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The sequencer validates the indexed source arm, canonical WORD16 and POST_ACCESS shape, and CMPT0/ARP0 policy before reading selected ARx then AR0; either dependency produces the generic unknown-source or stale-source status as applicable, and rejection preserves caller-owned state byte-for-byte while success commits at most the selected-AR write. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-14",
+        "printed_page_end": "5-14"
+      },
+      "assertion": "Table 5-4 describes MOD12 as ARx plus a 16-bit long offset with ARx unchanged but does not explicitly classify that offset as signed or unsigned; it explicitly defines MOD13 as a signed 16-bit offset added before access, with the sum replacing ARx and supplying the operand address."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.2",
+        "printed_page_start": "5-14",
+        "printed_page_end": "5-15"
+      },
+      "assertion": "The long-offset indirect form carries a 16-bit long offset as part of the instruction and distinguishes addressing with and without an auxiliary-register update; this record does not assert signedness, instruction-fetch sequencing, repeat behavior, or timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "class 9B",
+        "printed_page_start": "3-21",
+        "printed_page_end": "3-21"
+      },
+      "assertion": "Instruction class 9B defines a long-word read operand using long-offset indirect addressing; this record establishes operand access shape only and does not assert bus, cycle, or repeat behavior."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "class 13B",
+        "printed_page_start": "3-29",
+        "printed_page_end": "3-29"
+      },
+      "assertion": "Instruction class 13B defines a long-word write operand using long-offset indirect addressing; this record establishes operand access shape only and does not assert bus, cycle, or repeat behavior."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/indirect_long_offset.h",
+        "anchor": "ti_c54x_indirect_long_offset_effect_is_valid"
+      },
+      "assertion": "The long-offset planner copies the raw 16-bit extension, sign-extends it explicitly, constructs canonical WORD16 or LONG32 effects with one selected-AR PRE_ACCESS update, rejects invalid fields and unsafe unsigned endpoints, and returns an all-zero effect for every non-OK result. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The sequencer validates the long-offset source arm and intrinsic MOD13 PRE_ACCESS shape before CMPT=0/ARP=0 and selected-AR state checks, preserves caller-owned state on rejection, and commits at most one selected-AR write without redoing offset arithmetic. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -1282,6 +1374,87 @@
       "claim": "Every rejected direct-source application preserves the complete caller-owned architectural state byte-for-byte, while accepted direct effects perform no address-register write.",
       "evidence_ids": ["E-PROJECT-DIRECT-SOURCE-APPLICATION"],
       "test_ids": ["T-PROJECT-DIRECT-SOURCE-CONTRACT"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 MOD13 *+ARx(lk) WORD16 operands, interpret the copied raw lk word as a signed 16-bit offset, add it to selected ARx before access, use the resulting in-range data-word address, and replace ARx with that value.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13",
+        "E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-LONG-OFFSET-MOD13"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-LONG32",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 MOD13 *+ARx(lk) LONG32 operands, apply the signed 16-bit offset before access to form the first in-range data-word address and represent the canonical MSW/LSW pair without scaling the offset by operand width.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13",
+        "E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT",
+        "E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ",
+        "E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE",
+        "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-LONG-OFFSET-MOD13"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "Planner-produced CMPT=0 MOD13 effects carry the copied raw offset, a canonical WORD16 or LONG32 operand, and one PRE_ACCESS selected-AR update whose resulting address is used by the operand.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13",
+        "E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT",
+        "E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ",
+        "E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE",
+        "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG-OFFSET-MOD12-SIGNEDNESS",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The signedness of the MOD12 long-offset carrier remains unresolved: the CPU description identifies a 16-bit long offset but does not explicitly classify it as signed or unsigned, so no MOD12 arithmetic is selected.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13",
+        "E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The long-offset planner copies its raw extension, performs explicit signed evaluation, validates MOD13 source and operand relations, rejects unsafe unsigned endpoints as unresolved, and returns an all-zero effect for every non-OK result.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Long-offset application validates intrinsic source, operand, and PRE_ACCESS shape before CMPT=0/ARP=0 and selected-AR state reads, reports unknown or stale selected-AR state deterministically, preserves complete state on rejection, and commits at most one selected-AR write.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"],
+      "test_ids": ["T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"]
     }
   ],
   "tests": [
@@ -1577,6 +1750,41 @@
       "path": "tests/unit/sequencer/test_indirect_indexed_effect_apply_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_indexed_effect_apply_contract"},
       "requirement_ids": ["REQ-PROJECT-INDIRECT-INDEXED-APPLICATION"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-LONG-OFFSET-MOD13",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_long_offset_mod13.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long_offset_mod13"},
+      "requirement_ids": [
+        "REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-WORD",
+        "REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-LONG32"
+      ]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_indirect_long_offset_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long_offset_effect_apply"},
+      "requirement_ids": ["REQ-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_indirect_long_offset_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long_offset_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long_offset_effect_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"]
     }
   ]
 }

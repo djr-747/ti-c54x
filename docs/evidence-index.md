@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 39 immutable evidence records,
-44 requirements, and 35 tests (31 `PASSING`, 4 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 45 immutable evidence records,
+50 requirements, and 39 tests (35 `PASSING`, 4 `PLANNED`).
 
 ## Targets
 
@@ -82,6 +82,12 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-DIRECT-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/direct_sp.c` anchor `ti_c54x_direct_sp_result_with_status` |
 | `E-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/indirect_indexed.h` anchor `ti_c54x_indirect_indexed_word` |
 | `E-PROJECT-INDIRECT-INDEXED-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
+| `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-14` |
+| `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.2, `5-14`–`5-15` |
+| `E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §class 9B, `3-21` |
+| `E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §class 13B, `3-29` |
+| `E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/indirect_long_offset.h` anchor `ti_c54x_indirect_long_offset_effect_is_valid` |
+| `E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -127,6 +133,20 @@ AR0 alias ordering, long32, wrap, circular, bit-reversed, offset, and other
 unregistered modes remain unresolved or unsupported. The value-owned effect
 copies both ARx and AR0 source snapshots, while the sequencer applies at most one
 post-access write to selected ARx and never mutates AR0.
+
+The signed long-offset MOD13 slice is similarly narrow. The new TI records pin
+the signed 16-bit `lk` premodify semantics in §5.5.3/Table 5-4 (printed p.
+5-14), the raw extension/update context in §5.5.3.2 (printed pp. 5-14–5-15),
+and long-offset indirect long-word read/write forms in `SPRU172C` classes 9B
+and 13B (printed pp. 3-21 and 3-29). They intentionally do not claim extension
+fetch, repeat, bus, cycle, or timing behavior. WORD16 and LONG32 planners copy
+the offset, sign-extend it explicitly, use one PRE_ACCESS selected-AR update,
+and reject out-of-range unsigned endpoints under the project contract. The
+application seam validates intrinsic shape and CMPT0/ARP0 plus selected-AR
+state before a single write. MOD12 signedness is recorded as `UNRESOLVED` with
+no test link. The MOD13 tests sweep each independent source dimension and add
+representative cross-source vectors; they do not claim a full AR-by-offset
+Cartesian product.
 
 The private state seed is narrower than the full sequencer reset requirement:
 `REQ-COMMON-ARCH-STATE-RESET-SEED` proves the fixed-width PC/IFR/RC and raw
@@ -193,6 +213,12 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-DIRECT-REJECTION-PRECEDENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-DIRECT-SOURCE-APPLICATION` | `T-PROJECT-DIRECT-SOURCE-CONTRACT` |
 | `REQ-PROJECT-DIRECT-SOURCE-STATUSES` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-DIRECT-SOURCE-APPLICATION` | `T-PROJECT-DIRECT-SOURCE-CONTRACT` |
 | `REQ-PROJECT-DIRECT-TRANSACTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-DIRECT-SOURCE-APPLICATION` | `T-PROJECT-DIRECT-SOURCE-CONTRACT` |
+| `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-WORD` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13`, `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT` | `T-COMMON-INDIRECT-LONG-OFFSET-MOD13` |
+| `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-LONG32` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13`, `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT`, `E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ`, `E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE`, `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-INDIRECT-LONG-OFFSET-MOD13` |
+| `REQ-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13`, `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT`, `E-TI-C54X-SPRU172C-S3-9B-P3-21-LONG-OFFSET-READ`, `E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE`, `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` |
+| `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD12-SIGNEDNESS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13`, `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT` | — |
+| `REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT` | `T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` |
+| `REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | `T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` |
 
 ## Tests
 
@@ -237,6 +263,10 @@ exist in the repository.
 | `T-PROJECT-DP-CPL-FIELD-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_arch_state_address_field_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_address_field_contract"}` | `REQ-PROJECT-DP-CPL-FIELD-ACCESS` |
 | `T-PROJECT-DIRECT-SOURCE-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_direct_source_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.direct_source_apply_contract"}` | `REQ-PROJECT-DIRECT-SOURCE-VALIDATION`, `REQ-PROJECT-DIRECT-REJECTION-PRECEDENCE`, `REQ-PROJECT-DIRECT-SOURCE-STATUSES`, `REQ-PROJECT-DIRECT-TRANSACTION` |
 | `T-PROJECT-INDIRECT-INDEXED-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_indexed_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_indexed_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-INDEXED-APPLICATION` |
+| `T-COMMON-INDIRECT-LONG-OFFSET-MOD13` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_long_offset_mod13.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_mod13"}` | `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-WORD`, `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD13-LONG32` |
+| `T-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_long_offset_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_effect_apply"}` | `REQ-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` |
+| `T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_indirect_long_offset_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_contract"}` | `REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` |
+| `T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` |
 
 ## Correction and tombstone policy
 
