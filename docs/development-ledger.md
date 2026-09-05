@@ -325,3 +325,41 @@ rewritten after publication.
 - Follow-up: independently review the implementation and generated machine code,
   then commit only if the primitive is pure, branchless, ownership-mirrored, and
   fully evidence-linked.
+
+## 2026-09-06 — P2-W1 completion — Direct-DP formation proof
+
+- Implementation commit: `b2fc22f` (`P2-W1: prove direct DP address formation`).
+- Plan result: the first address-owner slice is implemented and passing; address
+  generation remains `Active` because register effects, CPL=1, indirect modes,
+  circular addressing, and ordered parallel effects are not complete.
+- Ownership: new public `include/ti_c54x/address.h` owns only scalar program/data/I/O
+  word-address carriers. Bus, state, and trace consume that neutral type contract;
+  `src/address/direct_dp.h` privately owns the CPL=0 DP9:`dma7` formation primitive;
+  its executable proof mirrors ownership under `tests/unit/address/`.
+- API decision: the hot primitive is a branchless `static inline` function over two
+  distinct by-value carriers. Valid 9-bit DP and 7-bit `dma` values are an explicit
+  internal precondition. The helper does not validate, mask, normalize, or promise
+  results for wider C values; decoder/state boundaries must establish those field
+  invariants once rather than adding a branch to every address calculation.
+- Evidence correction: superseded
+  `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` was removed from active records and retained as
+  an ABI-0 tombstone pointing to immutable replacement `...-R1`. The corrected
+  assertion covers only TI's documented field widths, data-word address formation,
+  and DP/SP non-change statement; it explicitly does not claim AR effects or CPL=1
+  overflow/wrap behavior.
+- TDD boundary: `REQ-COMMON-DIRECT-DP-ADDRESS` now claims only the executable-proven
+  valid-domain formation. DP/SP preservation was split into planned
+  `REQ-COMMON-DIRECT-REGISTER-NONMUTATION` with its own future state-level test.
+  CPL=1 SP-boundary behavior remains `UNRESOLVED`.
+- Local validation: all 512 × 128 valid DP/`dma` pairs passed an independent
+  multiply/add reference plus explicit corners and repeatability checks; strict
+  `make test` and ASan/UBSan `make test` passed; all 96 Python quality tests passed;
+  live evidence passed with 2 targets, 7 sources, 12 requirements, and 10 tests;
+  source-boundary, knob, and observer-off artifact checks passed; and
+  `make PYTHON=/definitely/missing build` remained compiler-only. Independent review
+  confirmed shift/or branchless code at optimization.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Deviation: CMake/CTest are unavailable locally; package, install, consumer, and
+  compiler-matrix validation remain assigned to the pushed standalone CI run.
+- Follow-up: verify CI, then design the address-effect/state seam needed to prove
+  DP/SP nonmutation before choosing another direct or indirect addressing behavior.
