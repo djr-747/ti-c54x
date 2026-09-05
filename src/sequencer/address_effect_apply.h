@@ -5,7 +5,9 @@
  * Module contract
  *
  * Owns: checked, transactional application of one value-owned indirect
- * address effect to caller-owned private architectural AR state.
+ * address effect to caller-owned private architectural AR state. Canonical
+ * data-operand shape is an intrinsic producer contract validated before any
+ * phase relation, mode-state, or AR access.
  * Does not own: address planning, opcode decoding, CPU lifecycle, buses,
  * memory, timing, or diagnostics. It owns validation of the private state
  * precondition carried by an address effect, but not the storage or layout of
@@ -47,8 +49,10 @@ typedef enum ti_c54x_address_apply_status {
  * with all required mode fields known before requiring CMPT=0 and ARP=0; this
  * occurs before selected-AR knownness or staleness checks. No arithmetic is
  * inferred: value_before/value_after are checked against the effective
- * address and the current AR, but are not required to differ by one or to
- * follow a particular address mode.
+ * address descriptor's first word and the current AR, but are not required to
+ * differ by one or to follow a particular address mode. The second word is
+ * validated as part of the canonical operand shape and is not used to infer
+ * deltas or sequencing.
  */
 ti_c54x_address_apply_status ti_c54x_sequencer_apply_address_result(
     ti_c54x_arch_state *state,

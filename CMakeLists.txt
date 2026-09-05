@@ -60,6 +60,7 @@ endfunction()
 
 set(ti_c54x_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/arithmetic40.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/data_operand.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_single.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_apply.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/state/arch_state.c

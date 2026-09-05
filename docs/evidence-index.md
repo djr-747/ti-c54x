@@ -6,6 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
+Current registry counts are 2 targets, 7 sources, 31 immutable evidence records,
+31 requirements, and 26 tests (21 `PASSING`, 5 `PLANNED`).
+
 ## Targets
 
 | Target ID | Kind | State | Parent | Allowed claim kinds | Boundary |
@@ -57,6 +60,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S5.5.2-P5-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.2, `5-11` |
 | `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13` |
 | `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.1, `5-14` |
+| `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13`–`5-14` |
+| `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.8, `5-28`–`5-29` |
 | `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.5, `5-24` |
 | `E-PROJECT-ADDRESS-EFFECT-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/address_effect.h` anchor `TI_C54X_ADDRESS_STATUS_UNRESOLVED_BOUNDARY` |
 | `E-PROJECT-CPU-SHELL-API` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `include/ti_c54x/cpu.h` anchor `ti_c54x_cpu_init` |
@@ -67,6 +72,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-ADDRESS-EFFECT-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 | `E-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/state/arch_state.h` anchor `ti_c54x_arch_state_read_arp` |
 | `E-PROJECT-ADDRESS-STATE-POLICY` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/address_effect.h` anchor `TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0` |
+| `E-PROJECT-DATA-OPERAND-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/data_operand.h` anchor `ti_c54x_data_operand_is_valid` |
+| `E-PROJECT-ADDRESS-OPERAND-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -79,6 +86,17 @@ source's statement that direct addressing leaves DP and SP unchanged; this
 register-effect behavior is not folded into the implemented formation claim.
 The source does not specify AR effects. SP-boundary overflow/wrap remains
 unresolved.
+
+The long32 extension is intentionally narrow. `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA`
+records only the Table 5-4 magnitude: one data word for 16-bit access and two
+for 32-bit access; the existing §5.5.3/§5.5.3.1 records remain the authority for
+MOD ordering and the MOD3 write restriction. `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING`
+records only long32 word order and parity pairing: first/MSW, second/LSW, even
+first with the next higher word, and odd first with the previous lower word.
+Neither record asserts bus selection, cycles, timing, or address wrap. The
+implemented long-delta requirement therefore rejects unsupported overflow
+endpoints under the project contract without claiming architectural wrap; the
+separate `REQ-COMMON-INDIRECT-BOUNDARY` requirement remains `UNRESOLVED`.
 
 The sequencer application slice consumes value-owned planner effects. It checks
 the intrinsic NONE/PRE/POST shape and effective-address relation, then requires
@@ -127,7 +145,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-INDIRECT-CMPT0-ARF-SELECTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-SINGLE-WORD` |
 | `REQ-COMMON-INDIRECT-CMPT0-ARP-STATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-ARP-STATE` |
 | `REQ-COMMON-INDIRECT-BOUNDARY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11` | — |
-| `REQ-COMMON-INDIRECT-LONG-DELTA` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-INDIRECT-SINGLE-LONG` |
+| `REQ-COMMON-INDIRECT-LONG-DELTA` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA` | `T-COMMON-INDIRECT-SINGLE-LONG` |
+| `REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` |
+| `REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA`, `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` |
 | `REQ-COMMON-INDIRECT-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14` | `T-COMMON-INDIRECT-EFFECT-APPLICATION` |
 | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-ADDRESS-EFFECT-CONTRACT` | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` |
 | `REQ-PROJECT-CPU-SHELL` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `include/ti_c54x/` | `E-PROJECT-CPU-SHELL-API` | `T-PROJECT-CPU-SHELL` |
@@ -137,7 +157,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-ARCH-STATE-KNOWNNESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-STATE-KNOWNNESS` | `T-PROJECT-ARCH-STATE-KNOWNNESS` |
 | `REQ-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` | `T-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` |
 | `REQ-PROJECT-ADDRESS-STATE-POLICY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-STATE-POLICY` | `T-PROJECT-ADDRESS-STATE-POLICY` |
-| `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-APPLICATION` | `T-PROJECT-ADDRESS-EFFECT-APPLICATION` |
+| `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-APPLICATION` | `T-PROJECT-ADDRESS-EFFECT-APPLICATION`, `T-PROJECT-ADDRESS-EFFECT-STATE-CONTRACT` |
+| `REQ-PROJECT-DATA-OPERAND-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-DATA-OPERAND-CONTRACT` | `T-PROJECT-DATA-OPERAND-CONTRACT` |
+| `REQ-PROJECT-ADDRESS-OPERAND-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-DATA-OPERAND-CONTRACT`, `E-PROJECT-ADDRESS-OPERAND-APPLICATION` | `T-PROJECT-ADDRESS-OPERAND-APPLICATION` |
 
 ## Tests
 
@@ -158,7 +180,9 @@ exist in the repository.
 | `T-COMMON-INDIRECT-SINGLE-WORD` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_single_word.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_single_word"}` | `REQ-COMMON-INDIRECT-MOD0-WORD`, `REQ-COMMON-INDIRECT-MOD1-MOD2-WORD-POSTUPDATE`, `REQ-COMMON-INDIRECT-MOD3-WORD-PREINCREMENT`, `REQ-COMMON-INDIRECT-CMPT0-ARF-SELECTION` |
 | `T-COMMON-INDIRECT-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_address_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_apply"}` | `REQ-COMMON-INDIRECT-EFFECT-APPLICATION` |
 | `T-COMMON-INDIRECT-ARP-STATE` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_cmpt0_state.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_cmpt0_state"}` | `REQ-COMMON-INDIRECT-CMPT0-ARP-STATE` |
-| `T-COMMON-INDIRECT-SINGLE-LONG` | PLANNED | COMMON_TI | `tests/unit/address/test_indirect_single_long.c` | `null` | `REQ-COMMON-INDIRECT-LONG-DELTA` |
+| `T-COMMON-INDIRECT-SINGLE-LONG` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_single_long32.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_single_long32"}` | `REQ-COMMON-INDIRECT-LONG-DELTA` |
+| `T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` | PASSING | COMMON_TI | `tests/unit/address/test_data_operand.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.data_operand"}` | `REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` |
+| `T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_long32_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long32_effect_apply"}` | `REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` |
 | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_address_effect_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` |
 | `T-PROJECT-CPU-SHELL` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_api.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_api"}` | `REQ-PROJECT-CPU-SHELL` |
 | `T-PROJECT-U40-FOUNDATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_arithmetic40.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40"}` | `REQ-PROJECT-U40-FOUNDATION` |
@@ -168,6 +192,9 @@ exist in the repository.
 | `T-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_arch_state_address_field_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_address_field_contract"}` | `REQ-PROJECT-ARCH-ADDRESS-FIELD-ACCESS` |
 | `T-PROJECT-ADDRESS-STATE-POLICY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_state_policy_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_state_policy_contract"}` | `REQ-PROJECT-ADDRESS-STATE-POLICY` |
 | `T-PROJECT-ADDRESS-EFFECT-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_apply_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` |
+| `T-PROJECT-ADDRESS-EFFECT-STATE-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_state_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_state_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` |
+| `T-PROJECT-DATA-OPERAND-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_data_operand_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.data_operand_contract"}` | `REQ-PROJECT-DATA-OPERAND-CONTRACT` |
+| `T-PROJECT-ADDRESS-OPERAND-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_operand_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_operand_apply_contract"}` | `REQ-PROJECT-ADDRESS-OPERAND-APPLICATION` |
 
 ## Correction and tombstone policy
 

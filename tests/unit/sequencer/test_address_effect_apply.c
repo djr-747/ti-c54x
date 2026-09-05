@@ -64,7 +64,7 @@ test_planner_effects_apply_across_supported_word_domain(void)
                 switch (mode) {
                 case TI_C54X_INDIRECT_SINGLE_MOD0:
                     TI_C54X_TEST_CHECK_U64(
-                        result.effect.effective_address_word, current);
+                        result.effect.operand.first_word, current);
                     TI_C54X_TEST_CHECK(
                         result.effect.update.target ==
                         TI_C54X_ADDRESS_UPDATE_NONE);
@@ -85,7 +85,7 @@ test_planner_effects_apply_across_supported_word_domain(void)
                     break;
                 case TI_C54X_INDIRECT_SINGLE_MOD1:
                     TI_C54X_TEST_CHECK_U64(
-                        result.effect.effective_address_word, current);
+                        result.effect.operand.first_word, current);
                     TI_C54X_TEST_CHECK(
                         result.effect.update.target ==
                         TI_C54X_ADDRESS_UPDATE_AR);
@@ -112,7 +112,7 @@ test_planner_effects_apply_across_supported_word_domain(void)
                     break;
                 case TI_C54X_INDIRECT_SINGLE_MOD2:
                     TI_C54X_TEST_CHECK_U64(
-                        result.effect.effective_address_word, current);
+                        result.effect.operand.first_word, current);
                     TI_C54X_TEST_CHECK(
                         result.effect.update.target ==
                         TI_C54X_ADDRESS_UPDATE_AR);
@@ -139,7 +139,7 @@ test_planner_effects_apply_across_supported_word_domain(void)
                     break;
                 case TI_C54X_INDIRECT_SINGLE_MOD3:
                     TI_C54X_TEST_CHECK_U64(
-                        result.effect.effective_address_word,
+                        result.effect.operand.first_word,
                         (uint16_t)(current + UINT16_C(1)));
                     TI_C54X_TEST_CHECK(
                         result.effect.update.target ==

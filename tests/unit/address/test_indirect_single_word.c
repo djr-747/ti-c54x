@@ -51,14 +51,17 @@ check_valid(uint8_t ar_index,
     TI_C54X_TEST_CHECK(
         result.effect.state_policy ==
         TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0);
+    TI_C54X_TEST_CHECK(result.effect.operand.width ==
+                       TI_C54X_DATA_OPERAND_WIDTH_WORD16);
+    TI_C54X_TEST_CHECK_U64(result.effect.operand.second_word, UINT16_C(0));
 
     switch (mode) {
     case TI_C54X_INDIRECT_SINGLE_MOD0:
-        TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word, ar_value);
+        TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word, ar_value);
         check_no_update(&result.effect.update);
         break;
     case TI_C54X_INDIRECT_SINGLE_MOD1:
-        TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word, ar_value);
+        TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word, ar_value);
         check_ar_update(&result.effect.update,
                         TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
                         ar_index,
@@ -66,7 +69,7 @@ check_valid(uint8_t ar_index,
                         (uint16_t)(ar_value - UINT16_C(1)));
         break;
     case TI_C54X_INDIRECT_SINGLE_MOD2:
-        TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word, ar_value);
+        TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word, ar_value);
         check_ar_update(&result.effect.update,
                         TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
                         ar_index,
@@ -75,7 +78,7 @@ check_valid(uint8_t ar_index,
         break;
     case TI_C54X_INDIRECT_SINGLE_MOD3:
         TI_C54X_TEST_CHECK(access == TI_C54X_ADDRESS_ACCESS_WRITE);
-        TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word,
+        TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word,
                                (uint16_t)(ar_value + UINT16_C(1)));
         check_ar_update(&result.effect.update,
                         TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
@@ -141,7 +144,10 @@ test_mod3_is_write_only(void)
         TI_C54X_ADDRESS_ACCESS_READ);
 
     TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
-    TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word, UINT16_C(0));
+    TI_C54X_TEST_CHECK_U64(result.effect.operand.width,
+                           TI_C54X_DATA_OPERAND_WIDTH_INVALID);
+    TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word, UINT16_C(0));
+    TI_C54X_TEST_CHECK_U64(result.effect.operand.second_word, UINT16_C(0));
     TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, UINT8_C(0));
     check_no_update(&result.effect.update);
 }

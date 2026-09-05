@@ -78,7 +78,7 @@ test_planner_effects_accept_known_cmpt0_arp0(void)
                 result.effect.state_policy ==
                 TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0);
             TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, index);
-            TI_C54X_TEST_CHECK_U64(result.effect.effective_address_word,
+            TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word,
                                    expected_address);
             TI_C54X_TEST_CHECK(result.effect.update.target == expected_target);
             TI_C54X_TEST_CHECK(result.effect.update.phase == expected_phase);

@@ -5,6 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
+The current registry contains 2 targets, 7 sources, 31 immutable evidence
+records, 31 requirements, and 26 tests (21 `PASSING`, 5 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -92,12 +94,12 @@ behavior at the SP boundary (`UNRESOLVED`).
 
 The first indirect-addressing slice is deliberately a private, checked planner
 under `src/address/`. It accepts a copied ARF-selected index, a 16-bit current
-auxiliary-register value, one of `MOD0` through `MOD3`, and a read/write access
-kind. It returns a value-owned data-word effective address plus at most one
-explicit AR update with a `NONE`, `PRE_ACCESS`, or `POST_ACCESS` phase. It does
-not own CPU state, ARP or CMPT validation, bus transfers, opcode decoding, long
-operands, circular or bit-reversed addressing, dual-indirect forms, or execution
-scheduling.
+auxiliary-register value, one of `MOD0` through `MOD3`, a canonical word16 or
+long32 data-operand descriptor, and a read/write access kind. It returns a
+value-owned operand shape plus at most one explicit AR update with a `NONE`,
+`PRE_ACCESS`, or `POST_ACCESS` phase. It does not own CPU state, ARP or CMPT
+validation, bus transfers, opcode decoding, circular or bit-reversed
+addressing, dual-indirect forms, or execution scheduling.
 
 The evidenced word effects are: MOD0 uses the old AR value with no update; MOD1
 uses the old value and reports a one-word post-access decrement; MOD2 uses the
@@ -108,14 +110,29 @@ without pretending that this planner owns architectural register storage. The
 CMPT=0 ARP=0 invariant and absence of ARP writeback are now enforced at the
 sequencer application seam: effects tagged `CMPT0_ARP0` require known CMPT=0 and
 ARP=0 before the selected-AR update is applied, and ARP is never written back by
-that seam. Long-operand deltas, address-domain edge behavior, and the
-circular, bit-reversed, and dual-indirect forms remain explicitly planned or
-unresolved; this slice does not infer them.
+that seam. For the implemented long32 slice, MOD0 uses the first data-word
+address with no update; MOD1 and MOD2 use that address with post-access
+decrement/increment by two data words; and MOD3 is write-only, pre-increments by
+two, and uses the updated first address. The long32 operand stores first/MSW and second/LSW
+addresses explicitly: even first addresses pair with the next higher word and
+odd first addresses with the previous lower word. The data-operand validator
+owns canonical width and pair-shape checks; it does not select address wrap.
+Circular, bit-reversed, and dual-indirect forms remain planned or unresolved.
+The constructor/parity proof is owned by `src/address/data_operand.*`; the
+sequencer validation proof is separate under `src/sequencer/` and anchored at
+`ti_c54x_sequencer_apply_address_result`.
 
-The project contract is separate from TI claims: checked invalid inputs,
+The project contract is separate from TI claims: checked invalid planner inputs,
 unsupported MOD3 reads, and unresolved boundaries return explicit statuses and
-an all-zero effect. The project contract does not elevate those API details into
-architectural evidence.
+all-zero effects. Data-operand constructors return value-owned descriptors, and
+the validator returns false for zero or unknown widths and noncanonical
+first/second-word relationships. Constructors retain no borrow; the validator
+temporarily borrows a read-only descriptor for the call and neither path mutates
+caller storage.
+Endpoint cases that would overflow an unsigned 16-bit auxiliary address are
+rejected under the project contract; this is not a claim that hardware wraps.
+The project contract does not elevate those API details into architectural
+evidence.
 
 The sequencer application seam in `src/sequencer/` consumes that planner result
 without redoing its arithmetic. It validates the result status, selected AR and
@@ -127,7 +144,7 @@ AR update performs one checked write, while a valid NONE effect does not mutate
 state. Every rejection preserves the complete private state byte-for-byte. This
 is a project sequencing contract: it does not add ARP, bus, memory, timing,
 opcode, or address-boundary behavior, and it deliberately does not require
-`value_after` to differ from `value_before` by one.
+`value_after` to differ from `value_before` by one or two.
 
 ## Private architectural register-state seed
 

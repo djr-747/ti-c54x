@@ -23,7 +23,11 @@ effect_with_policy(ti_c54x_address_state_policy policy,
     const ti_c54x_address_result result = {
         .status = TI_C54X_ADDRESS_STATUS_OK,
         .effect = {
-            .effective_address_word = address,
+            .operand = {
+                .width = TI_C54X_DATA_OPERAND_WIDTH_WORD16,
+                .first_word = address,
+                .second_word = UINT16_C(0)
+            },
             .selected_ar_index = index,
             .state_policy = policy,
             .update = {

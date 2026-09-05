@@ -454,6 +454,38 @@
       "assertion": "The single-indirect description cross-checks postmodify versus premodify order and identifies MOD3 as a write-only form."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-13",
+        "printed_page_end": "5-14"
+      },
+      "assertion": "Table 5-4 specifies an increment or decrement magnitude of one data word for 16-bit word access and two data words for 32-bit word access. This record intentionally does not restate MOD ordering or the MOD3 write restriction, which remain covered by the existing §5.5.3 and §5.5.3.1 records; it makes no claim about bus selection, cycles, or timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.8",
+        "printed_page_start": "5-28",
+        "printed_page_end": "5-29"
+      },
+      "assertion": "The 32-bit data operand is ordered with the first accessed data word as the most-significant word and the second as the least-significant word; an even first address pairs with the next higher word, while an odd first address pairs with the previous lower word. This record makes no claim about bus selection, cycles, or timing."
+    },
+    {
       "id": "E-TI-C54X-SPRU131G-S5.5.5-P5-24",
       "immutable": true,
       "state": "PINNED",
@@ -594,6 +626,34 @@
         "anchor": "TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0"
       },
       "assertion": "The private address-effect policy tag is validated explicitly by the sequencer: unknown tags are intrinsic invalid effects, CMPT0/ARP0 preconditions distinguish unknown mode state from mode-state violations, and the generic NONE policy bypasses mode-state checks while retaining transactional rejection. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-DATA-OPERAND-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/data_operand.h",
+        "anchor": "ti_c54x_data_operand_is_valid"
+      },
+      "assertion": "The private data-operand contract owns value-owned canonical WORD16 and LONG32 constructors; zero or unknown widths and noncanonical first/second-word relationships make ti_c54x_data_operand_is_valid return false. The contract does not choose address wrap, bus, or timing behavior. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-ADDRESS-OPERAND-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The private sequencer operand-application contract validates a canonical data-operand shape before mode and auxiliary-register state, preserves caller-owned state on rejection, and applies accepted long32 effects transactionally without inferring address wrap, bus, timing, or diagnostic behavior. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -792,16 +852,46 @@
     },
     {
       "id": "REQ-COMMON-INDIRECT-LONG-DELTA",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
-      "claim": "Extend single-indirect planning to long operands with the evidenced two-word auxiliary-register delta after the word-only contract is stable.",
+      "claim": "For CMPT=0 single-indirect 32-bit data operands, MOD1, MOD2, and MOD3 use an auxiliary-register delta magnitude of two data words; the direction and pre/post ordering remain the mode-specific behavior already covered by the existing records. Address-domain edge behavior remains unresolved.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
-        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA"
       ],
       "test_ids": ["T-COMMON-INDIRECT-SINGLE-LONG"]
+    },
+    {
+      "id": "REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Represent a valid 32-bit single-indirect data operand with the first data word as MSW and the second as LSW; an even first data-word address pairs with the next higher address and an odd first address pairs with the previous lower address.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"
+      ],
+      "test_ids": ["T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "For planner-produced CMPT=0 single-indirect long32 effects, MOD0 uses the first data-word address with no auxiliary-register update; MOD1 and MOD2 use that first address and schedule post-access decrement or increment by two data words; MOD3 is write-only, schedules a pre-access increment by two, and uses the updated first address. Each effect preserves explicit first/MSW and second/LSW operand addresses.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA",
+        "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION"]
     },
     {
       "id": "REQ-COMMON-INDIRECT-EFFECT-APPLICATION",
@@ -906,7 +996,33 @@
       "owner_path": "src/sequencer/",
       "claim": "The private address-effect application seam rejects null or malformed inputs in deterministic order, never interprets a non-OK planner payload, requires the requested phase and effective-address relation to match the intrinsic effect, distinguishes unknown and stale selected AR state, and leaves the complete state unchanged on every rejection; successful AR effects perform one checked write and NONE effects do not mutate state.",
       "evidence_ids": ["E-PROJECT-ADDRESS-EFFECT-APPLICATION"],
-      "test_ids": ["T-PROJECT-ADDRESS-EFFECT-APPLICATION"]
+      "test_ids": [
+        "T-PROJECT-ADDRESS-EFFECT-APPLICATION",
+        "T-PROJECT-ADDRESS-EFFECT-STATE-CONTRACT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-DATA-OPERAND-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The private data-operand API exposes value-owned canonical WORD16 and LONG32 descriptors with no retained or embedded borrow; its validator temporarily borrows a read-only descriptor, accepts only the defined width and first/second-word relationships, mutates neither caller storage nor the descriptor, and leaves address wrap behavior unselected.",
+      "evidence_ids": ["E-PROJECT-DATA-OPERAND-CONTRACT"],
+      "test_ids": ["T-PROJECT-DATA-OPERAND-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-ADDRESS-OPERAND-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private sequencer operand-application seam validates canonical operand shape before mode and auxiliary-register state, preserves the complete caller-owned state on every rejection, and applies accepted 32-bit effects transactionally without inferring wrap, bus, timing, or diagnostic behavior.",
+      "evidence_ids": [
+        "E-PROJECT-DATA-OPERAND-CONTRACT",
+        "E-PROJECT-ADDRESS-OPERAND-APPLICATION"
+      ],
+      "test_ids": ["T-PROJECT-ADDRESS-OPERAND-APPLICATION"]
     }
   ],
   "tests": [
@@ -1005,11 +1121,27 @@
     },
     {
       "id": "T-COMMON-INDIRECT-SINGLE-LONG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
-      "path": "tests/unit/address/test_indirect_single_long.c",
-      "runner": null,
+      "path": "tests/unit/address/test_indirect_single_long32.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_single_long32"},
       "requirement_ids": ["REQ-COMMON-INDIRECT-LONG-DELTA"]
+    },
+    {
+      "id": "T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_data_operand.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.data_operand"},
+      "requirement_ids": ["REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_indirect_long32_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long32_effect_apply"},
+      "requirement_ids": ["REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION"]
     },
     {
       "id": "T-PROJECT-ADDRESS-EFFECT-CONTRACT",
@@ -1082,6 +1214,30 @@
       "path": "tests/unit/sequencer/test_address_effect_apply_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_apply_contract"},
       "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-EFFECT-STATE-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_effect_state_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_state_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-DATA-OPERAND-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_data_operand_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.data_operand_contract"},
+      "requirement_ids": ["REQ-PROJECT-DATA-OPERAND-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-OPERAND-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_operand_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_operand_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-OPERAND-APPLICATION"]
     }
   ]
 }

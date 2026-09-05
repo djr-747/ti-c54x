@@ -49,6 +49,50 @@ add_test(NAME ti_c54x.indirect_single_word
     COMMAND ti_c54x_test_indirect_single_word
 )
 
+add_executable(ti_c54x_test_data_operand unit/address/test_data_operand.c)
+target_compile_features(ti_c54x_test_data_operand PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_data_operand PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_data_operand PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_data_operand)
+ti_c54x_enable_sanitizers(ti_c54x_test_data_operand)
+add_test(NAME ti_c54x.data_operand COMMAND ti_c54x_test_data_operand)
+
+add_executable(ti_c54x_test_data_operand_contract
+    unit/address/test_data_operand_contract.c
+)
+target_compile_features(ti_c54x_test_data_operand_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_data_operand_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_data_operand_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_data_operand_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_data_operand_contract)
+add_test(NAME ti_c54x.data_operand_contract
+    COMMAND ti_c54x_test_data_operand_contract
+)
+
+add_executable(ti_c54x_test_indirect_single_long32
+    unit/address/test_indirect_single_long32.c
+)
+target_compile_features(ti_c54x_test_indirect_single_long32 PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_single_long32 PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_single_long32 PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_single_long32)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_single_long32)
+add_test(NAME ti_c54x.indirect_single_long32
+    COMMAND ti_c54x_test_indirect_single_long32
+)
+
 add_executable(ti_c54x_test_address_effect_contract
     unit/address/test_address_effect_contract.c
 )
@@ -161,6 +205,22 @@ add_test(NAME ti_c54x.address_effect_apply_contract
     COMMAND ti_c54x_test_address_effect_apply_contract
 )
 
+add_executable(ti_c54x_test_address_effect_state_contract
+    unit/sequencer/test_address_effect_state_contract.c
+)
+target_compile_features(ti_c54x_test_address_effect_state_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_effect_state_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_effect_state_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_effect_state_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_state_contract)
+add_test(NAME ti_c54x.address_effect_state_contract
+    COMMAND ti_c54x_test_address_effect_state_contract
+)
+
 add_executable(ti_c54x_test_indirect_cmpt0_state
     unit/sequencer/test_indirect_cmpt0_state.c
 )
@@ -191,6 +251,38 @@ ti_c54x_enable_warnings(ti_c54x_test_address_state_policy_contract)
 ti_c54x_enable_sanitizers(ti_c54x_test_address_state_policy_contract)
 add_test(NAME ti_c54x.address_state_policy_contract
     COMMAND ti_c54x_test_address_state_policy_contract
+)
+
+add_executable(ti_c54x_test_indirect_long32_effect_apply
+    unit/sequencer/test_indirect_long32_effect_apply.c
+)
+target_compile_features(ti_c54x_test_indirect_long32_effect_apply PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_long32_effect_apply PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_long32_effect_apply PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_long32_effect_apply)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_long32_effect_apply)
+add_test(NAME ti_c54x.indirect_long32_effect_apply
+    COMMAND ti_c54x_test_indirect_long32_effect_apply
+)
+
+add_executable(ti_c54x_test_address_operand_apply_contract
+    unit/sequencer/test_address_operand_apply_contract.c
+)
+target_compile_features(ti_c54x_test_address_operand_apply_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_operand_apply_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_operand_apply_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_operand_apply_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_operand_apply_contract)
+add_test(NAME ti_c54x.address_operand_apply_contract
+    COMMAND ti_c54x_test_address_operand_apply_contract
 )
 
 add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})

@@ -2,8 +2,8 @@
  * Module contract
  *
  * Owns: executable PROJECT_CONTRACT_ONLY coverage for validation ordering,
- * phase/effective-address relationships, knownness, stale-state rejection,
- * and whole-state transactional nonmutation of address-effect application.
+ * intrinsic effect shape, phase/effective-address relationships, and
+ * whole-state nonmutation on rejected address-effect application.
  * Does not own: TI instruction semantics, address planning, CPU lifecycle,
  * bus transfers, timing, diagnostics, or public ABI compatibility.
  */
@@ -34,7 +34,11 @@ static ti_c54x_address_result valid_none(uint8_t index, uint16_t address)
     const ti_c54x_address_result result = {
         .status = TI_C54X_ADDRESS_STATUS_OK,
         .effect = {
-            .effective_address_word = address,
+            .operand = {
+                .width = TI_C54X_DATA_OPERAND_WIDTH_WORD16,
+                .first_word = address,
+                .second_word = UINT16_C(0)
+            },
             .selected_ar_index = index,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_NONE,
@@ -57,7 +61,11 @@ static ti_c54x_address_result valid_update(uint8_t index,
     const ti_c54x_address_result result = {
         .status = TI_C54X_ADDRESS_STATUS_OK,
         .effect = {
-            .effective_address_word = effective_address,
+            .operand = {
+                .width = TI_C54X_DATA_OPERAND_WIDTH_WORD16,
+                .first_word = effective_address,
+                .second_word = UINT16_C(0)
+            },
             .selected_ar_index = index,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_AR,
@@ -367,103 +375,6 @@ static void test_index_phase_and_address_relationships(void)
         TI_C54X_ADDRESS_APPLY_PHASE_MISMATCH);
 }
 
-static void test_unknown_and_stale_are_transactional(void)
-{
-    ti_c54x_arch_state state;
-    ti_c54x_arch_state before;
-    ti_c54x_address_result result;
-
-    TI_C54X_TEST_CHECK(ti_c54x_arch_state_reset_common(&state) ==
-                       TI_C54X_ARCH_STATE_OK);
-    result = valid_none(UINT8_C(2), UINT16_C(0x2200));
-    before = state;
-    expect_rejection_unchanged(
-        &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
-        TI_C54X_ADDRESS_APPLY_UNKNOWN_AR);
-
-    result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-                          UINT16_C(0x2200), UINT16_C(0x2201),
-                          UINT16_C(0x2201));
-    before = state;
-    expect_rejection_unchanged(
-        &before, &state, &result,
-        TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-        TI_C54X_ADDRESS_APPLY_UNKNOWN_AR);
-
-    state = known_state(UINT8_C(2), UINT16_C(0x2201));
-    result = valid_none(UINT8_C(2), UINT16_C(0x2200));
-    before = state;
-    expect_rejection_unchanged(
-        &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
-
-    state = known_state(UINT8_C(2), UINT16_C(0x2201));
-    result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-                          UINT16_C(0x2200), UINT16_C(0x2201),
-                          UINT16_C(0x2201));
-    before = state;
-    expect_rejection_unchanged(
-        &before, &state, &result,
-        TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
-
-    state = known_state(UINT8_C(2), UINT16_C(0x2200));
-    result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
-                          UINT16_C(0x2200), UINT16_C(0x2201),
-                          UINT16_C(0x2200));
-    TI_C54X_TEST_CHECK(
-        ti_c54x_sequencer_apply_address_result(
-            &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS) ==
-        TI_C54X_ADDRESS_APPLY_OK);
-    before = state;
-    expect_rejection_unchanged(
-        &before, &state, &result,
-        TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
-}
-
-static void test_equal_before_after_is_valid_when_relation_holds(void)
-{
-    ti_c54x_arch_state state = known_state(UINT8_C(2), UINT16_C(0x2200));
-    ti_c54x_arch_state expected_state;
-    uint16_t observed = UINT16_C(0);
-    ti_c54x_address_result result = valid_update(
-        UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-        UINT16_C(0x2200), UINT16_C(0x2200), UINT16_C(0x2200));
-    expected_state = state;
-    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_ar(
-                           &expected_state, UINT8_C(2), UINT16_C(0x2200)) ==
-                       TI_C54X_ARCH_STATE_OK);
-
-    TI_C54X_TEST_CHECK(
-        ti_c54x_sequencer_apply_address_result(
-            &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS) ==
-        TI_C54X_ADDRESS_APPLY_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_ar(
-                           &state, UINT8_C(2), &observed) ==
-                       TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK_U64(observed, UINT16_C(0x2200));
-    TI_C54X_TEST_CHECK(memcmp(&state, &expected_state, sizeof(state)) == 0);
-
-    state = known_state(UINT8_C(2), UINT16_C(0x2200));
-    expected_state = state;
-    result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
-                          UINT16_C(0x2200), UINT16_C(0x2200),
-                          UINT16_C(0x2200));
-    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_ar(
-                           &expected_state, UINT8_C(2), UINT16_C(0x2200)) ==
-                       TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK(
-        ti_c54x_sequencer_apply_address_result(
-            &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS) ==
-        TI_C54X_ADDRESS_APPLY_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_ar(
-                           &state, UINT8_C(2), &observed) ==
-                       TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK_U64(observed, UINT16_C(0x2200));
-    TI_C54X_TEST_CHECK(memcmp(&state, &expected_state, sizeof(state)) == 0);
-}
-
 int main(void)
 {
     test_null_and_requested_phase_arguments();
@@ -472,8 +383,6 @@ int main(void)
     test_validation_precedence();
     test_invalid_intrinsic_effect_shape();
     test_index_phase_and_address_relationships();
-    test_unknown_and_stale_are_transactional();
-    test_equal_before_after_is_valid_when_relation_holds();
     puts("address_effect_apply_contract: ok");
     return 0;
 }

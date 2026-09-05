@@ -4,8 +4,9 @@
 /*
  * Module contract
  *
- * Owns: the value types used to describe a checked effective-address result
- * and at most one auxiliary-register update.
+ * Owns: the value types used to describe a checked data-operand effective
+ * address (including its width and explicit word pair) and at most one
+ * auxiliary-register update.
  * Does not own: CPU/register storage, status-register validation, bus transfers,
  * opcode decoding, instruction sequencing, memory mapping, or diagnostics.
  * Results are returned by value. Callers own every result object and may keep
@@ -16,6 +17,8 @@
 #include <stdint.h>
 
 #include <ti_c54x/address.h>
+
+#include "data_operand.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +67,7 @@ typedef struct ti_c54x_address_update {
 } ti_c54x_address_update;
 
 typedef struct ti_c54x_address_effect {
-    ti_c54x_data_word_address effective_address_word;
+    ti_c54x_data_operand operand;
     uint8_t selected_ar_index;
     ti_c54x_address_state_policy state_policy;
     ti_c54x_address_update update;

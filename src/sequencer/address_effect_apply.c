@@ -2,7 +2,8 @@
  * Module contract
  *
  * Owns: ordered validation and transactional application of one indirect
- * address effect to caller-owned known auxiliary-register state.
+ * address effect to caller-owned known auxiliary-register state. Intrinsic
+ * operand shape is validated before phase, mode-state, or AR reads.
  * Does not own: address planning arithmetic, opcode decoding, CPU lifecycle,
  * bus transfers, memory, timing, diagnostics, or public ABI. It validates the
  * narrow state precondition carried by an effect without repairing state.
@@ -51,6 +52,10 @@ ti_c54x_sequencer_apply_address_result(
         return TI_C54X_ADDRESS_APPLY_REJECTED_RESULT;
     }
 
+    if (!ti_c54x_data_operand_is_valid(&effect->operand)) {
+        return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+    }
+
     if (!valid_ar_index(effect->selected_ar_index)) {
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
@@ -82,9 +87,9 @@ ti_c54x_sequencer_apply_address_result(
 
     if (update->target == TI_C54X_ADDRESS_UPDATE_AR) {
         if ((update->phase == TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
-             effect->effective_address_word != update->value_after) ||
+             effect->operand.first_word != update->value_after) ||
             (update->phase == TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
-             effect->effective_address_word != update->value_before)) {
+             effect->operand.first_word != update->value_before)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     }
@@ -120,7 +125,7 @@ ti_c54x_sequencer_apply_address_result(
     }
 
     if (update->target == TI_C54X_ADDRESS_UPDATE_NONE) {
-        if (current_ar != effect->effective_address_word) {
+        if (current_ar != effect->operand.first_word) {
             return TI_C54X_ADDRESS_APPLY_STALE_AR;
         }
         return TI_C54X_ADDRESS_APPLY_OK;

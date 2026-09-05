@@ -4,11 +4,11 @@
 /*
  * Module contract
  *
- * Owns: checked CMPT=0 single-indirect word effective-address planning for
- * MOD0 through MOD3.
+ * Owns: checked CMPT=0 single-indirect word and long32 effective-address
+ * planning for MOD0 through MOD3.
  * Does not own: CPU state or ARP/CMPT state validation, bus transfers, opcode
- * decoding, long operands, circular or bit-reversed addressing, dual-indirect
- * forms, instruction scheduling, or diagnostics.
+ * decoding, circular or bit-reversed addressing, dual-indirect forms,
+ * instruction scheduling, or diagnostics.
  * Inputs are copied scalar values. The returned status/effect owns no borrowed
  * storage and remains valid after the call returns. Every successful result
  * carries `TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0`; the planner does not
@@ -38,6 +38,17 @@ typedef enum ti_c54x_indirect_single_mode {
  * recorded by its update member.
  */
 ti_c54x_address_result ti_c54x_indirect_single_word(
+    uint8_t ar_index,
+    uint16_t ar_value,
+    ti_c54x_indirect_single_mode mode,
+    ti_c54x_address_access access);
+
+/*
+ * Plan one CMPT=0 single-indirect 32-bit data operand. The first address is
+ * the accessed MSW address; the descriptor supplies the paired LSW address.
+ * MOD1/MOD2/MOD3 apply a two-word AR delta, while MOD3 remains write-only.
+ */
+ti_c54x_address_result ti_c54x_indirect_single_long32(
     uint8_t ar_index,
     uint16_t ar_value,
     ti_c54x_indirect_single_mode mode,
