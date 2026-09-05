@@ -2,6 +2,10 @@
 
 Status: foundations in progress.
 
+Execution history is recorded in `docs/development-ledger.md`. This plan describes
+current intent; the ledger records completed work and decisions without rewriting
+history.
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -35,6 +39,17 @@ function-pointer dispatch tables.
 7. Implement opcode families as requirement-backed vertical slices.
 8. Add timing and silicon devices only from pinned evidence.
 9. Vendor a release into emulators through separate adapters.
+
+## Work-piece identifiers and ledger
+
+Every implementation work piece receives a stable identifier formed from its phase
+and sequence, for example `P1-W1`. The identifier appears in the implementation
+commit message and its subsequent entry in `docs/development-ledger.md`.
+
+The plan status table is updated when the intended state changes. The ledger is
+append-only evidence: it records the actual commit, affected ownership modules,
+tests, decisions, registered-knob changes, and remaining work. If an old entry is
+wrong, add a correction that names it rather than editing history.
 
 ## Isolation gate
 

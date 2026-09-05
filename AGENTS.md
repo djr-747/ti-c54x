@@ -13,6 +13,10 @@
   bounded file ownership, must not revert other agents, and must not create commits.
 - Keep commits atomic. Run the local fast test suite once when a coherent work piece
   is ready to commit.
+- Maintain `docs/development-ledger.md` against `docs/implementation-plan.md`.
+  Implementation commits are followed by a ledger-only commit that records the
+  completed commit hash, validation evidence, decisions, knob changes, and follow-up
+  work. Never rewrite an old ledger entry; append a correction.
 - Keep all mutable runtime state instance-owned. No environment reads, file I/O,
   mutable process globals, hidden allocators, or logging in the core execution path.
 - The library must never call `getenv`. Hosted tools may read environment once before
