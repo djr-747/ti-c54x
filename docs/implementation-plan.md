@@ -22,7 +22,7 @@ function-pointer dispatch tables.
 | Distribution license decision | Blocked on owner/legal review | New repository license and permitted evidence inputs selected |
 | CPU and bus API shell | Complete | Two isolated instances fetch through caller buses and trap unimplemented words |
 | 40-bit arithmetic foundation | Complete | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
-| Standalone build and CI | Active | CMake/CTest, warnings, sanitizers, and consumer smoke test pass locally |
+| Standalone build and CI | Complete | CMake/CTest, warnings, sanitizers, installation, and consumer smoke tests pass in standalone CI |
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
 | Source-boundary audit | Queued | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Active | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |

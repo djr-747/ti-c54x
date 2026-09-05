@@ -152,3 +152,14 @@ rewritten after publication.
 - Knobs and architecture: unchanged.
 - Follow-up: require the replacement GitHub Actions run to pass before marking the
   standalone build/CI plan row complete.
+
+## 2026-09-06 — P1-W1 verification — Standalone CI complete
+
+- Plan: closes the standalone build/CI row for `P1-W1`.
+- Evidence: GitHub Actions run `33977216829` passed all jobs: strict GCC and Clang
+  configure/build/CTest, package installation, downstream `find_package` consumer
+  builds, and the Clang ASan/UBSan build/test job.
+- Plan state: standalone build and CI moved from `Active` to `Complete`.
+- Knobs and architecture: unchanged.
+- Follow-up: implement the machine-readable knob registry and structural source
+  boundary audit before address-generation work.
