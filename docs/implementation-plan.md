@@ -29,6 +29,7 @@ function-pointer dispatch tables.
 | Common-core target and evidence registry | Complete | Device-neutral scope, official sources, requirements, owners, and test links are machine checked |
 | Architectural register-state foundation | Complete | Private fixed-layout state seeds the documented common reset subset while every unspecified value remains explicitly unknown |
 | Address generation | Active | All address effects can be tested without opcode execution |
+| Transactional address-effect application | Active | A private sequencer seam validates a complete result and applies at most one phase-matched AR update with no partial mutation |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 

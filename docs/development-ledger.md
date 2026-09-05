@@ -585,3 +585,44 @@ rewritten after publication.
 - Follow-up: begin P2-W4 with rejection-first tests for whole-effect validation,
   pre/post phase matching, known source ARs, stale-before detection, and bytewise
   state preservation on every rejected application.
+
+## 2026-09-06 — P2-W4 — Transactional address-effect application
+
+- Plan: add the first private `src/sequencer/` seam, limited to validating a
+  complete address result against architectural state and applying at most one
+  auxiliary-register update in its declared phase.
+- State: active; implementation commit pending.
+- Ownership: `src/sequencer/address_effect_apply.[ch]` will own validation order,
+  application status, phase matching, and the single commit point;
+  `tests/unit/sequencer/` will separate COMMON_TI successful-effect application
+  from PROJECT_CONTRACT_ONLY malformed/rejected-call behavior. Address arithmetic
+  remains owned by `src/address/`, and register storage remains owned by
+  `src/state/`.
+- API decision: accept caller-owned state, a result borrowed for the duration of
+  the call, and one exact requested phase. `NONE` validates a no-update effect;
+  `PRE_ACCESS` and `POST_ACCESS` must match the effect exactly. The seam owns no
+  CPU, bus, opcode, memory-transfer, diagnostic, or timing behavior.
+- Transaction decision: validate pointers and phase, upstream result status,
+  complete effect shape, phase agreement, effective-address relation, selected-AR
+  knownness, and stale-before state before mutation. Successful AR effects perform
+  one checked write; every rejection leaves the full state byte-for-byte unchanged.
+- Extensibility decision: do not enforce increment/decrement magnitude in the
+  sequencer. The address planner owns arithmetic, while future circular and
+  bit-reversed modes may legitimately propose non-linear or unchanged values.
+- Evidence plan: reuse the existing immutable SPRU131G indirect-address records for
+  successful MOD0–MOD3 state effects. Add a narrow sequencer-owned COMMON_TI
+  requirement/test and a separate project-contract evidence/requirement/test for
+  validation statuses, deterministic precedence, and transactional rejection.
+  Keep CMPT=0 ARP state planned because this slice neither represents nor mutates
+  ARP.
+- Required validation: all eight AR indices and every supported interior word
+  value through planner-produced MOD0–MOD3 results; exact pre/post/no-update
+  behavior; malformed enum/index/phase/payload/address relations; upstream
+  failures with forged payloads; unknown and stale ARs; repeated application; and
+  bytewise state preservation on every rejection. Run strict Make, ASan/UBSan,
+  compiler-only isolation, evidence/knob/source-boundary/artifact gates,
+  independent review, and post-push standalone CI.
+- Knobs: none planned.
+- Follow-up: delegate implementation and independent API/evidence review, then
+  integrate only if application remains a narrow private state transition rather
+  than growing into premature CPU or bus orchestration.
