@@ -25,7 +25,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTI_C54X_BUILD_TESTS=ON -DTI_C54X_BUILD_EXAMPLES=ON
       - name: Build
@@ -63,7 +63,7 @@ jobs:
       CC: clang
       CXX: clang++
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTI_C54X_BUILD_EXAMPLES=ON -DTI_C54X_ENABLE_SANITIZERS=ON
       - name: Build

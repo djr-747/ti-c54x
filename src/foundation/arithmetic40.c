@@ -7,7 +7,7 @@
  * behavior.
  */
 
-#include "foundation/arithmetic40.h"
+#include "arithmetic40.h"
 
 ti_c54x_u40_t
 ti_c54x_u40_mask(uint64_t value)
