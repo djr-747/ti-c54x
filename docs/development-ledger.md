@@ -1147,3 +1147,50 @@ rewritten after publication.
 - Follow-up: delegate planner/tests, sequencer/tests, and evidence/build work to
   Luna agents with disjoint ownership; integrate under the main orchestrator and
   run one independent closure review before validation and commit.
+- Completion commit: `e85a96c` (`P2-W8: add AR0-indexed address effects`).
+- Plan result: AR0-indexed single-indirect effects moved from `Active` to
+  `Complete`. Address generation remains `Active` for the deliberately deferred
+  modes and boundary behavior listed above.
+- Delivered behavior: the value-owned effect shape now carries distinct selected
+  ARx and AR0 snapshots. MOD5 and MOD6 use the old selected AR as the WORD16
+  operand and schedule exactly one POST_ACCESS selected-AR subtraction or
+  addition. The sequencer checks CMPT=0/ARP=0, then selected AR, then AR0, and
+  preserves the complete state object on every rejection. Selected AR0 and
+  unsigned boundary crossings remain explicitly unsupported or unresolved; no
+  wrap behavior was inferred.
+- TDD proof: COMMON_TI tests cover both access kinds, every selected AR1–AR7,
+  each mode's complete 16-bit selected-AR and AR0 dimensions against safe
+  opposite operands, representative cross-source vectors, and exact admitted
+  boundaries. Project-contract tests own invalid discriminants, selected-AR0,
+  unsafe-boundary rejection, all-zero failed effects, copied-source lifetime,
+  malformed effect shape and policy, precedence, both dependencies' unknown and
+  stale paths, AR0 nonmutation, one selected-AR commit, and bytewise transactional
+  rejection. This does not claim the full two-source Cartesian product.
+- Evidence: the live registry contains 2 targets, 7 sources, 39 immutable
+  evidence records, 44 requirements, and 35 tests (31 `PASSING`, 4 `PLANNED`).
+  P2-W8 adds exactly four evidence records: two narrowly pinned TI primary
+  records and two project contracts.
+- Correction to the P2-W7 completion entry: its recorded evidence count of 34
+  was one low. Repository history shows 31 records at `fc56b5a` and 35 from the
+  P2-W7 implementation commit `c6eeb07` onward. P2-W8 adds four to that actual
+  base, producing the current count of 39. The old entry remains unchanged under
+  the append-only ledger policy.
+- Review corrections: orchestration review separated COMMON_TI safe-domain
+  claims from project-owned rejection policy, removed inactive-union reads from
+  zero-effect tests, made source-kind validation explicit, strengthened
+  dependency and precedence vectors, and made each mode's single-source sweeps
+  genuinely complete. The independent Luna closure review caught an older
+  invalid-enum sentinel that became the new indexed-source value; the regression
+  test now uses the next unassigned value and passes for the intended reason.
+- Local validation: final-tree strict `make test` and ASan/UBSan `make test`
+  passed every C executable and all 96 Python quality tests. Source boundaries
+  passed for 58 files; evidence, knob, and observer-disabled artifact checks
+  passed. `make PYTHON=/definitely/missing build` proved the compiler-only
+  standalone path. CMake is unavailable on this host, so its configure, CTest,
+  install, and consumer paths remain assigned to remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` control,
+  environment lookup, diagnostic hook, firmware input, emulator dependency,
+  process-global mutable state, or public private-header exposure was added.
+- Follow-up: push the implementation and ledger commits, verify the remote
+  GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
+  ledger-only verification commit.
