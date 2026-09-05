@@ -812,3 +812,19 @@ rewritten after publication.
 - Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
   select P2-W6 from evidence and dependency shape without growing the AR-specific
   effect seam into a generic monolith.
+
+## 2026-09-06 — P2-W5 verification — Remote standard-indirect policy gates
+
+- Verified evidence: GitHub Actions run `33991324850` passed for implementation
+  commit `3e46617` and completion-ledger commit `f5e06e0`.
+- Remote coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled
+  CMake library builds, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: standard-indirect mode-state policy remains `Complete`; address
+  generation remains `Active` only for the explicitly deferred effect families,
+  modes, widths, and boundaries.
+- Scope confirmation: the verified build did not add an emulator dependency,
+  firmware image, environment lookup, diagnostic path, public private-header
+  exposure, or new knob.
+- Follow-up: choose and start P2-W6 from the evidence ledger and ownership graph.
