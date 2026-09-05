@@ -411,3 +411,53 @@ rewritten after publication.
 - Follow-up: delegate implementation and an independent evidence/API review, then
   integrate and commit only if the effect seam is narrow enough for a later
   sequencer to apply without exposing CPU storage or bus policy.
+
+## 2026-09-06 — P2-W2 completion — Single-indirect word effect proof
+
+- Implementation commit: `3e1aefb` (`P2-W2: prove CMPT0 indirect word
+  addressing`).
+- Plan result: CMPT=0 single-indirect MOD0–MOD3 word-address planning is
+  implemented and passing behind a private effect seam. Address generation
+  remains `Active`: architectural state application, direct-address register
+  preservation, long operands, remaining indirect modes, boundary behavior, and
+  ordered parallel effects are not complete.
+- Ownership: `src/address/address_effect.h` owns the by-value result and one-AR-
+  update contract; `src/address/indirect_single.[ch]` owns checked word planning;
+  `tests/unit/address/` separately owns the COMMON_TI semantic proof and the
+  PROJECT_CONTRACT_ONLY rejection/status proof. The normal and observer-disabled
+  libraries both compile the same address implementation.
+- Architectural behavior: MOD0 uses the old AR with no update; MOD1 and MOD2 use
+  the old AR and report one-word post-access decrement/increment; MOD3 write uses
+  the incremented AR and reports a pre-access update. The already-decoded ARF
+  index is carried consistently in the effective address and update. MOD3 read is
+  rejected. No CPU storage, bus access, opcode decode, or scheduling behavior was
+  introduced.
+- Evidence boundary: five new immutable SPRU131G records pin §§5.5.1, 5.5.2,
+  5.5.3/Table 5-4, 5.5.3.1, and 5.5.5 at printed pages 5-10 through 5-24. ARP state
+  enforcement and non-writeback remain planned, edge wrap is unresolved, and long,
+  circular, bit-reversed, dual-indirect, pipeline, and timing behavior remain
+  unimplemented. A separate project evidence record owns checked status values and
+  deterministic zero-valued effects on rejection.
+- TDD proof: the COMMON_TI test covers 3,669,976 valid mode/access/index/AR
+  combinations across every supported interior value, plus the MOD3 write-only
+  restriction. The project-contract test covers high and negative invalid enum
+  values, invalid AR indices, all deliberately unresolved word edges, status
+  classification, and zero-valued error effects.
+- Review correction: independent review found that the initial Make graph omitted
+  the new address object from the observer-disabled archive. The archive list was
+  corrected before commit; a forced rebuild and symbol inspection then proved that
+  both library variants contain `ti_c54x_indirect_single_word`, while the observer-
+  off artifact check remained green. No other review finding remained.
+- Local validation: strict `make test` passed all C executables and 96 Python
+  quality tests; live evidence passed with 2 targets, 7 sources, 20 requirements,
+  and 14 tests; source-boundary, knob, and observer-off artifact checks passed;
+  ASan/UBSan `make test` passed; a strict compiler analyzer review of the new
+  implementation passed; and `make PYTHON=/definitely/missing build` proved that
+  the standalone library/test build remains compiler-only.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Deviation: the local CMake executable remains unavailable. CMake/CTest, install,
+  consumer, GCC/Clang, and sanitizer package surfaces remain assigned to the
+  post-push standalone CI run.
+- Follow-up: verify the pushed commits in CI, then define the private architectural
+  register-state and sequencer-application seam needed to apply address effects and
+  prove register preservation without exposing CPU storage.
