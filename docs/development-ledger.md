@@ -679,3 +679,27 @@ rewritten after publication.
 - Follow-up: verify remote gates, then choose the next evidence-backed addressing
   foundation between direct no-update effects and the private status-field access
   needed to enforce CMPT=0/ARP=0 without exposing raw register layout.
+
+## 2026-09-06 — P2-W4 verification — Remote transactional-application gates
+
+- Initial evidence: GitHub Actions run `33989551444` passed direct Make but failed
+  all normal CMake library builds because the new cross-owner private header could
+  not resolve `address/address_effect.h` from the core target. The observer test
+  archives already had the private source include root, exposing a real build-graph
+  parity defect rather than a semantic failure.
+- Correction commit: `4dab92c` (`build: add private source includes to core`) adds
+  `${CMAKE_CURRENT_SOURCE_DIR}/src` as a `PRIVATE` include directory of the normal
+  library target. It does not enter the public or install interface, so downstream
+  consumers remain restricted to installed public headers.
+- Verified evidence: GitHub Actions run `33989649434` passed after the correction.
+  GCC and Clang strict direct-Make builds/tests, tests-disabled CMake library builds,
+  CMake/CTest, package installation, checked-in downstream consumer linkage, and
+  the Clang ASan/UBSan job all passed in the standalone repository.
+- Plan state: transactional address-effect application remains `Complete`; address
+  generation remains `Active` for the explicitly deferred modes and state policy.
+- Knobs and integration: unchanged. No emulator checkout, firmware image, hosted
+  environment gate, diagnostic control, or public private-header exposure was
+  introduced by the correction.
+- Follow-up: select P2-W5 from evidence and dependency shape, preferring the smallest
+  foundation that closes a real architectural gap without coupling sequencing to
+  the public CPU shell.
