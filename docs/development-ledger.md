@@ -886,3 +886,62 @@ rewritten after publication.
 - Follow-up: delegate address, sequencer, and evidence/build ownership to separate
   Luna workers; integrate and independently review before the one implementation
   commit and ledger-only completion entry.
+
+## 2026-09-06 — P2-W6 completion — 32-bit single-indirect operand shape
+
+- Implementation: commit `c4dfbbc` completes the standalone long32 operand and
+  indirect-effect slice. The implementation-plan row is `Complete`; the broader
+  address-generation phase remains `Active` for the explicitly deferred families.
+- Ownership: `src/address/data_operand.[ch]` owns canonical word16/long32 operand
+  descriptors and parity pairing; `src/address/indirect_single.[ch]` owns pure
+  MOD0–MOD3 plans; and `src/sequencer/address_effect_apply.[ch]` owns validation,
+  state-policy enforcement, stale-snapshot rejection, and transactional commit.
+  COMMON_TI behavior and PROJECT contracts remain split under matching
+  `tests/unit/address/` and `tests/unit/sequencer/` hierarchies. The largest
+  touched test owner is 388 lines after splitting state-transition contracts out
+  of the application-contract file.
+- Operand contract: a word16 operand has one canonical address. A long32 operand
+  records the first/MSW and second/LSW addresses explicitly: even first addresses
+  pair upward and odd first addresses pair downward. Validators borrow their
+  input read-only only for the duration of the call, retain no pointer, and do not
+  mutate the descriptor.
+- Planner contract: long32 MOD0 is valid across the complete 16-bit AR domain and
+  has no update; MOD1 uses post-decrement by two; MOD2 uses post-increment by two;
+  and write-only MOD3 uses pre-increment by two. With wrap still unresolved, MOD1
+  rejects AR values below two and MOD2/MOD3 reject values above `0xFFFD`. All
+  successful effects carry the existing CMPT0/ARP0 state policy; all failures
+  retain the exact all-zero effect.
+- Application contract: canonical operand shape is checked before architectural
+  mode or selected-AR state. PRE, POST, and NONE effects prove their first-address
+  relationship independently, while the operand owner alone defines the
+  parity-dependent second address. Invalid shape, unknown policy, unknown mode,
+  policy violation, unknown selected AR, stale snapshot, and malformed phase or
+  transition each preserve the complete state byte-for-byte.
+- TDD proof: exhaustive tests cover all 65,536 long32 parity pairs, every selected
+  AR, MOD0 over the complete address domain, MOD1–MOD3 over every admitted address,
+  supported access kinds, exact delta/phase/policy/word addresses, and whole-state
+  application. PROJECT tests cover invalid widths and pairings, validator
+  nonmutation via snapshots and `memcmp`, status precedence, boundary refusals,
+  canonical NONE effects, and canonical long32 PRE/POST transitions.
+- Evidence: the live registry contains 2 targets, 7 sources, 31 requirements, and
+  26 tests. TI-backed claims are limited to the documented two-word delta and
+  first/MSW–second/LSW parity pairing. Project evidence owns descriptor validity,
+  rejection precedence, and transaction mechanics; bus ordering, timing, and
+  address wrap remain unclaimed.
+- Review corrections: orchestration review rejected a false no-dependency direct
+  design, removed PROJECT validation claims from COMMON tests, narrowed evidence
+  language, fixed a non-stale stale-state vector, removed raw state-field
+  reach-through, made long-effect assertions explicit, and split a near-monolithic
+  contract test. Independent closure review then required and verified canonical
+  PRE/POST successes, bytewise validator nonmutation, and precise borrowed-input
+  lifetime documentation.
+- Local validation: strict `make test` and ASan/UBSan `make test` passed every C
+  executable and all 96 Python quality tests; source boundaries passed for 45
+  files; evidence, knob, and observer-disabled artifact checks passed; and
+  `make PYTHON=/definitely/missing build` proved the compiler-only standalone
+  path. Local CMake and Clang remain assigned to post-push standalone CI.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control, environment read,
+  diagnostic hook, or emulator dependency was added.
+- Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
+  design direct-address effects around truthful DP/SP source snapshots rather
+  than reusing the selected-AR dependency shape.
