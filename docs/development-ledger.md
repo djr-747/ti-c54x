@@ -179,3 +179,41 @@ rewritten after publication.
   both checks part of the default standalone test gate.
 - Follow-up: architecture review the checker precision and failure fixtures, commit
   the coherent gate, then append its completed evidence record.
+
+## 2026-09-06 — P1-W2 completion — Structural quality gates
+
+- Corrects the active-state entry for `P1-W2` above; that entry remains unchanged as
+  the record of the work piece when it began.
+- Plan: machine-readable knob registry, source-boundary audit, and observer-disabled
+  artifact proof.
+- Implementation commit: `16719c0` (`P1-W2: enforce structural quality gates`).
+- Ledger commit: this entry's commit.
+- Ownership: `config/knobs.json` is the versioned policy source; `tools/quality/`
+  owns separate schema, C lexical, source-policy, observer-policy, repository, and
+  artifact checks; `tests/contract/quality/` owns negative-path fixtures; the
+  checked-in package consumer lives under `tests/contract/consumer/`; Make, CMake,
+  CTest, CI, and README changes own integration only.
+- Validation: 62 Python quality fixtures passed; the live knob registry and source
+  boundary checks passed; the observer-disabled static archive contained no defined
+  or undefined observer symbols; `make test` passed under strict C11 warnings;
+  `make TI_C54X_ENABLE_SANITIZERS=1 test` passed under ASan/UBSan; and `make
+  PYTHON=/definitely/missing build` proved the compiler-only path does not invoke
+  Python. Staged whitespace validation passed.
+- Decisions: active observer event kinds and mask literals are bidirectionally tied
+  to stable registry bits; planned knobs may not have call sites; retired knob and
+  observer-bit identities retain ABI-major tombstones; A/B knobs require two named
+  implementations, corpus, decision owner, and selection criterion; test C/H files
+  obey the same ownership-contract and size policy as production C/H.
+- File-shape review: the initial checkers exceeded or approached 500 lines, so C
+  lexing, static boundary data, observer-specific proof, and knob schema validation
+  were split into named owners. Every handwritten quality file is now below 500
+  lines; the remaining shallow C declaration analysis is intentionally conservative
+  and compiler/architecture review remains authoritative for exotic syntax.
+- Knobs: no behavior switch was added. The machine registry now governs the seven
+  existing active/planned knobs, three active observer bits, and empty knob/bit
+  tombstone sets.
+- Deviation: CMake is unavailable locally. GCC/Clang CMake, tests-disabled library
+  configuration, CTest, installation, and checked-in consumer validation remain
+  assigned to the post-push GitHub Actions run.
+- Follow-up: require remote CI to pass, then pin the common-core architecture and TI
+  evidence index before implementing address generation or opcode semantics.

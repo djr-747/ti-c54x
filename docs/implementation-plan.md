@@ -24,8 +24,8 @@ function-pointer dispatch tables.
 | 40-bit arithmetic foundation | Complete | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
 | Standalone build and CI | Complete | CMake/CTest, warnings, sanitizers, installation, and consumer smoke tests pass in standalone CI |
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
-| Source-boundary audit | Active | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
-| Knob ownership registry | Active | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
+| Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
+| Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
 | Address generation | Blocked on foundations | All address effects can be tested without opcode execution |
 | Opcode builder and decode | Blocked on foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
