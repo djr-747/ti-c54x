@@ -13,8 +13,9 @@
  * precondition carried by an address effect, but not the storage or layout of
  * ARP/CMPT fields and not the public CPU ABI. For a tagged effect, all
  * required mode fields are read through state accessors and must be known
- * before their value constraints or the selected AR is consulted; policy
- * failures never repair or partially mutate state.
+ * before their value constraints or a tagged source is consulted; indexed
+ * AR0 effects read the selected AR and then AR0 in that order. Policy failures
+ * never repair or partially mutate state.
  * The state pointer is caller-owned and must remain valid for the duration of
  * the call. The address result pointer is borrowed for the duration of the
  * call and is never retained or modified. A rejected call leaves the complete
@@ -52,7 +53,9 @@ typedef enum ti_c54x_address_apply_status {
  * mode fields are known before their value constraints; only then is the
  * tagged source read for unknown/stale comparison. No arithmetic is inferred
  * for AR updates: value_before/value_after are checked against the effective
- * address descriptor's first word and the source snapshot. Direct DP/SP have
+ * address descriptor's first word and the source snapshot. Indexed AR0 effects
+ * require a WORD16 old-target operand and POST_ACCESS update of the selected AR
+ * only; their copied AR0 snapshot is read but never written. Direct DP/SP have
  * no update and never touch an AR.
  */
 ti_c54x_address_apply_status ti_c54x_sequencer_apply_address_result(

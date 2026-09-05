@@ -28,8 +28,15 @@ static bool valid_ar_index(uint8_t index)
 
 static bool valid_source_kind(ti_c54x_address_source_kind kind)
 {
-    return kind >= TI_C54X_ADDRESS_SOURCE_AR &&
-           kind <= TI_C54X_ADDRESS_SOURCE_DIRECT_SP;
+    switch (kind) {
+    case TI_C54X_ADDRESS_SOURCE_AR:
+    case TI_C54X_ADDRESS_SOURCE_DIRECT_DP:
+    case TI_C54X_ADDRESS_SOURCE_DIRECT_SP:
+    case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
+        return true;
+    default:
+        return false;
+    }
 }
 
 static bool valid_state_policy_for_source(
@@ -39,6 +46,8 @@ static bool valid_state_policy_for_source(
     return (source_kind == TI_C54X_ADDRESS_SOURCE_AR &&
             (policy == TI_C54X_ADDRESS_STATE_POLICY_NONE ||
              policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0)) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_AR_INDEXED &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_SP &&
@@ -75,6 +84,24 @@ ti_c54x_sequencer_apply_address_result(
     switch (effect->source.kind) {
     case TI_C54X_ADDRESS_SOURCE_AR:
         if (!valid_ar_index(effect->source.value.ar.index)) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
+        /* AR0-indexed forms select one of the other auxiliary registers and
+         * always carry a canonical old-target WORD16/post-access effect. */
+        if (effect->source.value.ar_indexed.index == UINT8_C(0) ||
+            effect->source.value.ar_indexed.index > UINT8_C(7) ||
+            effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
+            effect->operand.first_word !=
+                effect->source.value.ar_indexed.value_before ||
+            effect->update.target != TI_C54X_ADDRESS_UPDATE_AR ||
+            effect->update.phase !=
+                TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS ||
+            effect->update.ar_index !=
+                effect->source.value.ar_indexed.index ||
+            effect->update.value_before !=
+                effect->source.value.ar_indexed.value_before) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
         break;
@@ -119,9 +146,16 @@ ti_c54x_sequencer_apply_address_result(
         if ((update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
              update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS) ||
             !valid_ar_index(update->ar_index) ||
-            effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR ||
-            update->ar_index != effect->source.value.ar.index ||
-            update->value_before != effect->source.value.ar.value_before) {
+            (effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR &&
+             effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR_INDEXED) ||
+            update->ar_index !=
+                (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR
+                     ? effect->source.value.ar.index
+                     : effect->source.value.ar_indexed.index) ||
+            update->value_before !=
+                (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR
+                     ? effect->source.value.ar.value_before
+                     : effect->source.value.ar_indexed.value_before)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     } else {
@@ -178,6 +212,33 @@ ti_c54x_sequencer_apply_address_result(
             return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
         }
         if (current_ar != effect->source.value.ar.value_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
+        /* Target dependency precedes the independent AR0 dependency so an
+         * unknown or stale selected register has deterministic precedence. */
+        read_status = ti_c54x_arch_state_read_ar(
+            state, effect->source.value.ar_indexed.index, &current_ar);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (current_ar != effect->source.value.ar_indexed.value_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+
+        read_status = ti_c54x_arch_state_read_ar(state, UINT8_C(0),
+                                                 &current_ar);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (current_ar != effect->source.value.ar_indexed.ar0_value_before) {
             return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
         }
         break;
@@ -240,7 +301,7 @@ ti_c54x_sequencer_apply_address_result(
     }
 
     if (ti_c54x_arch_state_write_ar(
-            state, effect->source.value.ar.index, update->value_after) !=
+            state, update->ar_index, update->value_after) !=
         TI_C54X_ARCH_STATE_OK) {
         return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
     }

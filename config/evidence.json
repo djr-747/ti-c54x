@@ -438,6 +438,38 @@
       "assertion": "Table 5-4 defines MOD0 as no modification, MOD1 as decrement after use, MOD2 as increment after use, and MOD3 as increment before use; one-word operands change an auxiliary register by one, and MOD3 is a write-only form."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-13",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Table 5-4 defines MOD5 as using the old ARx value for the operand followed by ARx minus AR0, and MOD6 as using the old ARx value followed by ARx plus AR0; this record makes no claim about alias ordering, boundary wrap, or timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.3",
+        "printed_page_start": "5-15",
+        "printed_page_end": "5-15"
+      },
+      "assertion": "The indexed-address discussion describes AR0 as an index applied to any other auxiliary register; it does not define selected-AR0 alias ordering, address wrap, circular or bit-reversed behavior, long32 indexed operands, or timing."
+    },
+    {
       "id": "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14",
       "immutable": true,
       "state": "PINNED",
@@ -710,6 +742,34 @@
         "anchor": "ti_c54x_direct_sp_result_with_status"
       },
       "assertion": "The private direct DP/SP planners return explicit invalid-argument or unresolved-boundary statuses and an all-zero effect for rejected field or endpoint inputs while retaining no caller storage. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/indirect_indexed.h",
+        "anchor": "ti_c54x_indirect_indexed_word"
+      },
+      "assertion": "The indexed planner returns value-owned effects, rejects malformed fields and selected-AR0 aliasing with explicit statuses, rejects unselected unsigned boundary crossings as unresolved, and returns an all-zero effect for every non-OK result. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-INDEXED-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The sequencer validates the indexed source arm, canonical WORD16 and POST_ACCESS shape, and CMPT0/ARP0 policy before reading selected ARx then AR0; either dependency produces the generic unknown-source or stale-source status as applicable, and rejection preserves caller-owned state byte-for-byte while success commits at most the selected-AR write. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -985,6 +1045,49 @@
       "test_ids": ["T-COMMON-INDIRECT-EFFECT-APPLICATION"]
     },
     {
+      "id": "REQ-COMMON-INDIRECT-INDEXED-MOD5-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect WORD16 MOD5 with selected ARx other than AR0, the admitted safe domain uses the old ARx as the data-word effective address and schedules the selected ARx to become ARx minus AR0 after access; subtraction boundary behavior outside that domain remains unresolved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6",
+        "E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-INDEXED-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-INDEXED-MOD6-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect WORD16 MOD6 with selected ARx other than AR0, the admitted safe domain uses the old ARx as the data-word effective address and schedules the selected ARx to become ARx plus AR0 after access; addition boundary behavior outside that domain remains unresolved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6",
+        "E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-INDEXED-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "For planner-produced CMPT=0 indexed WORD16 effects, the old selected ARx is the operand address, the copied AR0 source is used only for the selected-AR post-access update, and AR0 is not mutated; selected-AR0 aliasing, wrap, and other indexed forms remain outside this slice.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6",
+        "E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX",
+        "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION"]
+    },
+    {
       "id": "REQ-PROJECT-ADDRESS-EFFECT-CONTRACT",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -1003,6 +1106,26 @@
       "claim": "The direct DP/SP planners reject malformed fields and unresolved SP endpoints with explicit statuses and return an all-zero effect on every rejection, while copying source fields into value-owned successful effects.",
       "evidence_ids": ["E-PROJECT-DIRECT-PLANNER-CONTRACT"],
       "test_ids": ["T-PROJECT-DIRECT-ADDRESS-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The indexed planner rejects invalid mode, access, and index inputs before alias checks, reports selected-AR0 and unsafe unsigned boundaries explicitly, returns an all-zero effect on every rejection, and copies both source values into successful effects without retaining caller storage.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-INDEXED-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Indexed application validates the tagged two-source shape and phase before architectural reads, gives mode and intrinsic-shape rejection deterministic precedence, reports the generic unknown-source or stale-source status for either selected-AR or AR0 dependency as applicable, preserves complete state on rejection, and commits at most one selected-AR write without mutating AR0.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-INDEXED-APPLICATION"],
+      "test_ids": ["T-PROJECT-INDIRECT-INDEXED-APPLICATION"]
     },
     {
       "id": "REQ-PROJECT-CPU-SHELL",
@@ -1419,6 +1542,41 @@
         "REQ-PROJECT-DIRECT-SOURCE-STATUSES",
         "REQ-PROJECT-DIRECT-TRANSACTION"
       ]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-INDEXED-WORD",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_indexed_word.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_indexed_word"},
+      "requirement_ids": [
+        "REQ-COMMON-INDIRECT-INDEXED-MOD5-WORD",
+        "REQ-COMMON-INDIRECT-INDEXED-MOD6-WORD"
+      ]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_indirect_indexed_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_indexed_effect_apply"},
+      "requirement_ids": ["REQ-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_indirect_indexed_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_indexed_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-INDEXED-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_indirect_indexed_effect_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_indexed_effect_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-INDEXED-APPLICATION"]
     }
   ]
 }

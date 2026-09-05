@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 34 immutable evidence records,
-39 requirements, and 31 tests (27 `PASSING`, 4 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 39 immutable evidence records,
+44 requirements, and 35 tests (31 `PASSING`, 4 `PLANNED`).
 
 ## Targets
 
@@ -59,6 +59,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.1, `5-10`–`5-11` |
 | `E-TI-C54X-SPRU131G-S5.5.2-P5-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.2, `5-11` |
 | `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13` |
+| `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13` |
+| `E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.3, `5-15` |
 | `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.1, `5-14` |
 | `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13`–`5-14` |
 | `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.8, `5-28`–`5-29` |
@@ -78,6 +80,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-DIRECT-SOURCE-VALIDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `source-arm domains` |
 | `E-PROJECT-DIRECT-SOURCE-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `A rejected call leaves the complete` |
 | `E-PROJECT-DIRECT-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/direct_sp.c` anchor `ti_c54x_direct_sp_result_with_status` |
+| `E-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/indirect_indexed.h` anchor `ti_c54x_indirect_indexed_word` |
+| `E-PROJECT-INDIRECT-INDEXED-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -111,6 +115,18 @@ contract and now validates the `CMPT0_ARP0` policy tag, requiring known CMPT=0
 and ARP=0 without writing ARP back. Generic `NONE` effects do not consult mode
 state. It deliberately adds no bus, memory, timing, arithmetic, or
 address-boundary behavior.
+
+The AR0-indexed slice is intentionally narrow. The new immutable TI records use
+§5.5.3/Table 5-4 (printed p. 5-13) for MOD5's old-ARx then ARx−AR0 and MOD6's
+old-ARx then ARx+AR0 sequence, and §5.5.3.3 (printed p. 5-15) for AR0 indexing
+another auxiliary register. The common requirements and tests cover WORD16 only
+over admitted safe domains (selected AR1–AR7, subtraction with ARx ≥ AR0, and
+addition whose sum is ≤ 0xFFFF), using representative vectors plus complete
+single-source dimensions; they do not claim a full Cartesian product. Selected
+AR0 alias ordering, long32, wrap, circular, bit-reversed, offset, and other
+unregistered modes remain unresolved or unsupported. The value-owned effect
+copies both ARx and AR0 source snapshots, while the sequencer applies at most one
+post-access write to selected ARx and never mutates AR0.
 
 The private state seed is narrower than the full sequencer reset requirement:
 `REQ-COMMON-ARCH-STATE-RESET-SEED` proves the fixed-width PC/IFR/RC and raw
@@ -155,8 +171,13 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` |
 | `REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-5-14-LONG32-DELTA`, `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | `T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` |
 | `REQ-COMMON-INDIRECT-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14` | `T-COMMON-INDIRECT-EFFECT-APPLICATION` |
+| `REQ-COMMON-INDIRECT-INDEXED-MOD5-WORD` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6`, `E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX` | `T-COMMON-INDIRECT-INDEXED-WORD` |
+| `REQ-COMMON-INDIRECT-INDEXED-MOD6-WORD` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6`, `E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX` | `T-COMMON-INDIRECT-INDEXED-WORD` |
+| `REQ-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD5-MOD6`, `E-TI-C54X-SPRU131G-S5.5.3.3-P5-15-AR0-INDEX`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION` |
 | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-ADDRESS-EFFECT-CONTRACT` | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` |
 | `REQ-PROJECT-DIRECT-PLANNER-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-DIRECT-PLANNER-CONTRACT` | `T-PROJECT-DIRECT-ADDRESS-CONTRACT` |
+| `REQ-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` | `T-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` |
+| `REQ-PROJECT-INDIRECT-INDEXED-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-INDIRECT-INDEXED-APPLICATION` | `T-PROJECT-INDIRECT-INDEXED-APPLICATION` |
 | `REQ-PROJECT-CPU-SHELL` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `include/ti_c54x/` | `E-PROJECT-CPU-SHELL-API` | `T-PROJECT-CPU-SHELL` |
 | `REQ-PROJECT-U40-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-U40-FOUNDATION` | `T-PROJECT-U40-FOUNDATION` |
 | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/debug/` | `E-PROJECT-OBSERVER-NONINTERFERENCE` | `T-PROJECT-OBSERVER-NONINTERFERENCE` |
@@ -197,8 +218,11 @@ exist in the repository.
 | `T-COMMON-INDIRECT-SINGLE-LONG` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_single_long32.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_single_long32"}` | `REQ-COMMON-INDIRECT-LONG-DELTA` |
 | `T-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` | PASSING | COMMON_TI | `tests/unit/address/test_data_operand.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.data_operand"}` | `REQ-COMMON-DATA-OPERAND-LONG32-WORD-ORDER` |
 | `T-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_long32_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long32_effect_apply"}` | `REQ-COMMON-INDIRECT-LONG32-EFFECT-APPLICATION` |
+| `T-COMMON-INDIRECT-INDEXED-WORD` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_indexed_word.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_indexed_word"}` | `REQ-COMMON-INDIRECT-INDEXED-MOD5-WORD`, `REQ-COMMON-INDIRECT-INDEXED-MOD6-WORD` |
+| `T-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_indexed_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_indexed_effect_apply"}` | `REQ-COMMON-INDIRECT-INDEXED-EFFECT-APPLICATION` |
 | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_address_effect_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` |
 | `T-PROJECT-DIRECT-ADDRESS-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_direct_address_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.direct_address_contract"}` | `REQ-PROJECT-DIRECT-PLANNER-CONTRACT` |
+| `T-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_indirect_indexed_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_indexed_contract"}` | `REQ-PROJECT-INDIRECT-INDEXED-PLANNER-CONTRACT` |
 | `T-PROJECT-CPU-SHELL` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_api.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_api"}` | `REQ-PROJECT-CPU-SHELL` |
 | `T-PROJECT-U40-FOUNDATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_arithmetic40.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40"}` | `REQ-PROJECT-U40-FOUNDATION` |
 | `T-PROJECT-OBSERVER-NONINTERFERENCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/debug/test_observer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.observer"}` | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` |
@@ -212,6 +236,7 @@ exist in the repository.
 | `T-PROJECT-ADDRESS-OPERAND-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_operand_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_operand_apply_contract"}` | `REQ-PROJECT-ADDRESS-OPERAND-APPLICATION` |
 | `T-PROJECT-DP-CPL-FIELD-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_arch_state_address_field_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_address_field_contract"}` | `REQ-PROJECT-DP-CPL-FIELD-ACCESS` |
 | `T-PROJECT-DIRECT-SOURCE-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_direct_source_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.direct_source_apply_contract"}` | `REQ-PROJECT-DIRECT-SOURCE-VALIDATION`, `REQ-PROJECT-DIRECT-REJECTION-PRECEDENCE`, `REQ-PROJECT-DIRECT-SOURCE-STATUSES`, `REQ-PROJECT-DIRECT-TRANSACTION` |
+| `T-PROJECT-INDIRECT-INDEXED-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_indexed_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_indexed_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-INDEXED-APPLICATION` |
 
 ## Correction and tombstone policy
 

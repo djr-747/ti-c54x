@@ -64,13 +64,23 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_NONE = 0,
     TI_C54X_ADDRESS_SOURCE_AR = 1,
     TI_C54X_ADDRESS_SOURCE_DIRECT_DP = 2,
-    TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3
+    TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3,
+    TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
     uint8_t index;
     uint16_t value_before;
 } ti_c54x_address_source_ar;
+
+/* Snapshot for AR0-indexed forms.  `index` is the selected ARx (AR1..AR7);
+ * `value_before` is that register's old value and `ar0_value_before` is the
+ * copied AR0 index value used for the one post-access update. */
+typedef struct ti_c54x_address_source_ar_indexed {
+    uint8_t index;
+    uint16_t value_before;
+    uint16_t ar0_value_before;
+} ti_c54x_address_source_ar_indexed;
 
 typedef struct ti_c54x_address_source_direct_dp {
     uint16_t dp9;
@@ -88,6 +98,7 @@ typedef struct ti_c54x_address_source {
     ti_c54x_address_source_kind kind;
     union {
         ti_c54x_address_source_ar ar;
+        ti_c54x_address_source_ar_indexed ar_indexed;
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
     } value;

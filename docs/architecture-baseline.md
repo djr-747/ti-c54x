@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 34 immutable evidence
-records, 39 requirements, and 31 tests (27 `PASSING`, 4 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 39 immutable evidence
+records, 44 requirements, and 35 tests (31 `PASSING`, 4 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -151,6 +151,35 @@ state. Every rejection preserves the complete private state byte-for-byte. This
 is a project sequencing contract: it does not add ARP, bus, memory, timing,
 opcode, or address-boundary behavior, and it deliberately does not require
 `value_after` to differ from `value_before` by one or two.
+
+### AR0-indexed WORD16 slice
+
+The next narrow address slice models CMPT=0 single-indirect MOD5 and MOD6
+effects. TI `SPRU131G` §5.5.3/Table 5-4 (printed p. 5-13) records the ordering:
+MOD5 uses the old ARx for the operand and then forms ARx−AR0, while MOD6 uses
+the old ARx and then forms ARx+AR0. Section 5.5.3.3 (printed p. 5-15) describes
+AR0 as indexing another auxiliary register. Existing §5.5.1 and §5.5.5 records
+continue to supply the CMPT=0 ARF selection and ARP=0 policy.
+
+The planner admits selected AR1–AR7 only. It uses the old selected-AR value as
+the WORD16 operand and schedules one POST_ACCESS update to that same selected
+AR, copying the AR0 value as a second source without making AR0 writable by the
+effect. MOD5 is admitted only where ARx≥AR0; MOD6 only where ARx+AR0≤FFFFh.
+These are safe unsigned domains chosen by the project contract, not a claim of
+hardware wrap or circular arithmetic. Selected-AR0 alias ordering is explicitly
+unsupported pending stronger evidence. LONG32 indexed operands, MOD4/MOD7 and
+other modes, offset/circular/bit-reversed forms, buses, timing, and opcode
+integration remain outside this slice.
+
+Together, the COMMON_TI and project-contract address tests cover both access
+kinds, all selected AR1–AR7 values, complete single-source dimensions,
+representative opposite-source vectors, and exact admitted/rejected boundary
+classes. The COMMON_TI test stays inside the admitted safe domain; the project
+contract owns checked rejection outside it. This is intentionally not a full
+Cartesian claim over both 16-bit source dimensions. The sequencer tests
+separately prove the tagged two-source shape, intrinsic validation and
+precedence, generic unknown/stale status for either dependency, bytewise
+transactional rejection, one selected-AR commit, and AR0 nonmutation.
 
 ## Private architectural register-state seed
 
