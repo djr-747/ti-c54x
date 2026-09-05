@@ -58,10 +58,14 @@ function(ti_c54x_enable_sanitizers target)
     endif()
 endfunction()
 
+set(ti_c54x_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/arithmetic40.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/cpu.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/debug/observer.c
+)
+
 add_library(ti_c54x STATIC
-    src/foundation/arithmetic40.c
-    src/cpu/cpu.c
-    src/debug/observer.c
+    ${ti_c54x_core_sources}
 )
 add_library(ti_c54x::core ALIAS ti_c54x)
 

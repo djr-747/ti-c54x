@@ -1,10 +1,12 @@
-.PHONY: all build test cmake-build install clean format
+.PHONY: all build test quality-test cmake-build install clean format
 
 # The default path is deliberately independent of CMake and the emulator. It
 # gives the foundations a quick compile/link/run loop while CMake remains the
 # packaging and IDE/CI project generator.
 CC ?= cc
 AR ?= ar
+PYTHON ?= python3
+NM ?= nm
 override BUILD_DIR := build-fast
 ARFLAGS := rcs
 
@@ -24,6 +26,8 @@ CPPFLAGS += -DTI_C54X_ENABLE_OBSERVERS=0
 endif
 
 LIB := $(BUILD_DIR)/libti_c54x.a
+OBSERVER_OFF_DIR := $(BUILD_DIR)/observer-off
+OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/foundation/arithmetic40.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
@@ -33,18 +37,29 @@ ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
 OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
+OBSERVER_OFF_OBJECTS := \
+	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
+	$(OBSERVER_OFF_DIR)/obj/cpu/cpu.o \
+	$(OBSERVER_OFF_DIR)/obj/debug/observer.o
 
 all: test
 
 build: $(CPU_TEST) $(ARITHMETIC_TEST) $(OBSERVER_TEST) \
-	$(OBSERVER_OFF_TEST) $(MINIMAL)
+	$(OBSERVER_OFF_TEST) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
-test: build
+test: build quality-test
 	$(CPU_TEST)
 	$(ARITHMETIC_TEST)
 	$(OBSERVER_TEST)
 	$(OBSERVER_OFF_TEST)
 	$(MINIMAL)
+
+quality-test: $(OBSERVER_OFF_LIB)
+	$(PYTHON) -m unittest discover -s tests/contract/quality -t .
+	$(PYTHON) tools/quality/check_knobs.py --root .
+	$(PYTHON) tools/quality/check_source_boundaries.py --root .
+	$(PYTHON) tools/quality/check_observer_artifact.py \
+		--artifact $(OBSERVER_OFF_LIB) --nm $(NM)
 
 $(LIB): $(LIB_OBJECTS)
 	@mkdir -p $(@D)
@@ -53,6 +68,15 @@ $(LIB): $(LIB_OBJECTS)
 $(BUILD_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
+
+$(OBSERVER_OFF_DIR)/obj/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -UTI_C54X_ENABLE_OBSERVERS \
+		-DTI_C54X_ENABLE_OBSERVERS=0 -MMD -MP -c $< -o $@
+
+$(OBSERVER_OFF_LIB): $(OBSERVER_OFF_OBJECTS)
+	@mkdir -p $(@D)
+	$(AR) $(ARFLAGS) $@ $^
 
 $(CPU_TEST): tests/unit/cpu/test_cpu_api.c $(LIB)
 	@mkdir -p $(@D)
@@ -69,12 +93,11 @@ $(OBSERVER_TEST): tests/unit/debug/test_observer.c src/cpu/cpu.c \
 		-DTI_C54X_ENABLE_OBSERVERS=1 \
 		-Iinclude -Isrc $^ $(LDFLAGS) $(LDLIBS) -o $@
 
-$(OBSERVER_OFF_TEST): tests/unit/debug/test_observer_off.c src/cpu/cpu.c \
-	src/debug/observer.c
+$(OBSERVER_OFF_TEST): tests/unit/debug/test_observer_off.c $(OBSERVER_OFF_LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -UTI_C54X_ENABLE_OBSERVERS \
-		-DTI_C54X_ENABLE_OBSERVERS=0 \
-		-Iinclude -Isrc $^ $(LDFLAGS) $(LDLIBS) -o $@
+		-DTI_C54X_ENABLE_OBSERVERS=0 -Iinclude -Isrc $< \
+		$(OBSERVER_OFF_LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
 $(MINIMAL): examples/minimal.c $(LIB)
 	@mkdir -p $(@D)
@@ -97,4 +120,4 @@ format:
 clean:
 	@rm -rf -- build-fast build-cmake
 
--include $(LIB_OBJECTS:.o=.d)
+-include $(LIB_OBJECTS:.o=.d) $(OBSERVER_OFF_OBJECTS:.o=.d)

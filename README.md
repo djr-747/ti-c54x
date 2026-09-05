@@ -19,9 +19,13 @@ make a license-selection or compatibility claim. See [`docs/provenance.md`](docs
 
 ## Build and test
 
-The fast unit-test path requires only a C11 compiler and `make`. CMake 3.21 or
-newer and CTest are used for packaging and IDE/CI project validation. There are
-no network, emulator, firmware, or DSP-image dependencies.
+The C-only compile/link path requires only a C11 compiler and `make`:
+`make build` does not invoke CMake, Python, the emulator, firmware, or a DSP
+image. The default `make test` gate additionally runs the repository's Python
+3 standard-library quality checkers and therefore requires a `python3`-compatible
+interpreter (override it with `PYTHON=/path/to/python`). CMake 3.21 or newer and
+CTest are used for packaging, IDE/CI validation, and the same Python quality
+checks when tests are enabled.
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
@@ -35,6 +39,12 @@ The equivalent fast path is:
 make test
 ```
 
+For the compiler-only path, use:
+
+```sh
+make build
+```
+
 Useful options are:
 
 ```text
@@ -43,6 +53,7 @@ TI_C54X_BUILD_EXAMPLES=OFF        minimal consumer example (default while API se
 TI_C54X_ENABLE_SANITIZERS=OFF     AddressSanitizer + UBSan where supported
 TI_C54X_ENABLE_OBSERVERS=OFF      structured lifecycle observers (test/diagnostic builds)
 TI_C54X_WARNINGS_AS_ERRORS=ON     strict warnings (default)
+PYTHON=python3                     quality-check interpreter used by `make test`
 ```
 
 For example:

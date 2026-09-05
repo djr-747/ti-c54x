@@ -1,3 +1,5 @@
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
 add_executable(ti_c54x_test_cpu_api unit/cpu/test_cpu_api.c)
 target_link_libraries(ti_c54x_test_cpu_api PRIVATE ti_c54x::core)
 target_compile_features(ti_c54x_test_cpu_api PRIVATE c_std_11)
@@ -20,10 +22,20 @@ ti_c54x_enable_warnings(ti_c54x_test_arithmetic40)
 ti_c54x_enable_sanitizers(ti_c54x_test_arithmetic40)
 add_test(NAME ti_c54x.arithmetic40 COMMAND ti_c54x_test_arithmetic40)
 
-add_library(ti_c54x_observer_enabled STATIC
-    ${PROJECT_SOURCE_DIR}/src/cpu/cpu.c
-    ${PROJECT_SOURCE_DIR}/src/debug/observer.c
+add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})
+target_compile_features(ti_c54x_observer_off_artifact PRIVATE c_std_11)
+target_compile_definitions(ti_c54x_observer_off_artifact PRIVATE
+    TI_C54X_ENABLE_OBSERVERS=0
 )
+target_include_directories(ti_c54x_observer_off_artifact
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+)
+ti_c54x_enable_warnings(ti_c54x_observer_off_artifact)
+ti_c54x_enable_sanitizers(ti_c54x_observer_off_artifact)
+
+add_library(ti_c54x_observer_enabled STATIC ${ti_c54x_core_sources})
 target_compile_features(ti_c54x_observer_enabled PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_observer_enabled PRIVATE
     TI_C54X_ENABLE_OBSERVERS=1
@@ -50,8 +62,9 @@ add_test(NAME ti_c54x.observer COMMAND ti_c54x_test_observer)
 
 add_executable(ti_c54x_test_observer_off
     unit/debug/test_observer_off.c
-    ${PROJECT_SOURCE_DIR}/src/cpu/cpu.c
-    ${PROJECT_SOURCE_DIR}/src/debug/observer.c
+)
+target_link_libraries(ti_c54x_test_observer_off PRIVATE
+    ti_c54x_observer_off_artifact
 )
 target_compile_features(ti_c54x_test_observer_off PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_test_observer_off PRIVATE
@@ -65,3 +78,44 @@ target_include_directories(ti_c54x_test_observer_off PRIVATE
 ti_c54x_enable_warnings(ti_c54x_test_observer_off)
 ti_c54x_enable_sanitizers(ti_c54x_test_observer_off)
 add_test(NAME ti_c54x.observer_off COMMAND ti_c54x_test_observer_off)
+
+add_test(
+    NAME ti_c54x.quality.python
+    COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${PROJECT_SOURCE_DIR}/tests/contract/quality"
+        -t "${PROJECT_SOURCE_DIR}"
+)
+set_tests_properties(ti_c54x.quality.python PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME ti_c54x.quality.knobs
+    COMMAND "${Python3_EXECUTABLE}" tools/quality/check_knobs.py
+        --root "${PROJECT_SOURCE_DIR}"
+)
+set_tests_properties(ti_c54x.quality.knobs PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME ti_c54x.quality.source_boundaries
+    COMMAND "${Python3_EXECUTABLE}" tools/quality/check_source_boundaries.py
+        --root "${PROJECT_SOURCE_DIR}"
+)
+set_tests_properties(ti_c54x.quality.source_boundaries PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+if(NOT CMAKE_NM)
+    set(CMAKE_NM nm)
+endif()
+add_test(
+    NAME ti_c54x.quality.observer_off_artifact
+    COMMAND "${Python3_EXECUTABLE}" tools/quality/check_observer_artifact.py
+        --artifact "$<TARGET_FILE:ti_c54x_observer_off_artifact>"
+        --nm "${CMAKE_NM}"
+)
+set_tests_properties(ti_c54x.quality.observer_off_artifact PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)

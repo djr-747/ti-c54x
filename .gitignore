@@ -17,6 +17,8 @@ coverage/
 *.gcno
 *.profraw
 *.profdata
+__pycache__/
+*.py[cod]
 
 # Local editor and OS state
 .cache/

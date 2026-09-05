@@ -1,0 +1,155 @@
+{
+  "schema": {
+    "name": "ti-c54x-knob-registry",
+    "version": 1,
+    "abi_major": 0
+  },
+  "knobs": [
+    {
+      "id": "TI_C54X_BUILD_TESTS",
+      "state": "ACTIVE",
+      "class": "TEST",
+      "disposition": "KEEP",
+      "owner": "tests/",
+      "default": true,
+      "scope": "build",
+      "surface": "compile",
+      "architectural_effect": "none; selects standalone test targets",
+      "tests": [
+        "CMake configure with tests enabled and disabled",
+        "CTest discovery in CI"
+      ],
+      "exit_criterion": "Retain while CTest is supported"
+    },
+    {
+      "id": "TI_C54X_BUILD_EXAMPLES",
+      "state": "ACTIVE",
+      "class": "TEST",
+      "disposition": "KEEP",
+      "owner": "examples/",
+      "default": false,
+      "scope": "build",
+      "surface": "compile",
+      "architectural_effect": "none; selects the minimal consumer target",
+      "tests": [
+        "Minimal consumer builds and runs",
+        "Installed-package consumer build"
+      ],
+      "exit_criterion": "Retain while examples ship"
+    },
+    {
+      "id": "TI_C54X_ENABLE_SANITIZERS",
+      "state": "ACTIVE",
+      "class": "TEST",
+      "disposition": "KEEP",
+      "owner": "cmake/",
+      "default": false,
+      "scope": "build",
+      "surface": "compile",
+      "architectural_effect": "none; instruments validation targets only",
+      "tests": [
+        "Clang AddressSanitizer and UndefinedBehaviorSanitizer CI job",
+        "Installed target does not inherit sanitizer flags"
+      ],
+      "exit_criterion": "Retain while supported toolchains provide sanitizers"
+    },
+    {
+      "id": "TI_C54X_WARNINGS_AS_ERRORS",
+      "state": "ACTIVE",
+      "class": "TEST",
+      "disposition": "KEEP",
+      "owner": "cmake/",
+      "default": true,
+      "scope": "build",
+      "surface": "compile",
+      "architectural_effect": "none; changes diagnostic severity only",
+      "tests": [
+        "Strict GCC build",
+        "Strict Clang build"
+      ],
+      "exit_criterion": "Retain; downstream warning opt-out remains supported"
+    },
+    {
+      "id": "TI_C54X_ENABLE_OBSERVERS",
+      "state": "ACTIVE",
+      "class": "OBSERVE",
+      "disposition": "KEEP",
+      "owner": "src/debug/",
+      "default": false,
+      "scope": "build",
+      "surface": "compile",
+      "architectural_effect": "none; compiles structured observer hooks into the core",
+      "tests": [
+        "Observer-off symbol and hot-path compile-out audit",
+        "Observer-on event and callback tests"
+      ],
+      "exit_criterion": "Retain while the structured observer API is supported"
+    },
+    {
+      "id": "trace.event_mask",
+      "state": "ACTIVE",
+      "class": "OBSERVE",
+      "disposition": "KEEP",
+      "owner": "src/debug/",
+      "default": "UINT64_C(0)",
+      "scope": "per CPU instance; copied at initialization",
+      "surface": "runtime",
+      "architectural_effect": "none; selects structured events without changing execution",
+      "tests": [
+        "Mask isolation across CPU instances",
+        "Observation-on/off architectural equivalence"
+      ],
+      "exit_criterion": "Retain while the structured observer API is supported"
+    },
+    {
+      "id": "TI_C54X_ENABLE_TEST_HOOKS",
+      "state": "PLANNED",
+      "class": "TEST",
+      "disposition": "TEMP",
+      "owner": "tests/support/",
+      "default": false,
+      "scope": "test build only",
+      "surface": "compile",
+      "architectural_effect": "none in production builds",
+      "tests": [
+        "Installed-header absence test",
+        "Production-symbol absence test"
+      ],
+      "exit_criterion": "Remove when all required injection is expressible through public buses and events"
+    }
+  ],
+  "observer_bits": [
+    {
+      "id": "trace.event.reset",
+      "bit": 0,
+      "mask": "0x0000000000000001",
+      "kind_c_identifier": "TI_C54X_TRACE_RESET",
+      "mask_c_identifier": "TI_C54X_TRACE_MASK_RESET",
+      "knob_id": "trace.event_mask",
+      "state": "ACTIVE",
+      "meaning": "CPU reset lifecycle event"
+    },
+    {
+      "id": "trace.event.fetch",
+      "bit": 1,
+      "mask": "0x0000000000000002",
+      "kind_c_identifier": "TI_C54X_TRACE_FETCH",
+      "mask_c_identifier": "TI_C54X_TRACE_MASK_FETCH",
+      "knob_id": "trace.event_mask",
+      "state": "ACTIVE",
+      "meaning": "Instruction fetch event"
+    },
+    {
+      "id": "trace.event.stop",
+      "bit": 2,
+      "mask": "0x0000000000000004",
+      "kind_c_identifier": "TI_C54X_TRACE_STOP",
+      "mask_c_identifier": "TI_C54X_TRACE_MASK_STOP",
+      "knob_id": "trace.event_mask",
+      "state": "ACTIVE",
+      "meaning": "Instruction-budget or fault stop event"
+    }
+  ],
+  "observer_bit_tombstones": [],
+  "knob_tombstones": []
+}

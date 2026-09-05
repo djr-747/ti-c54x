@@ -24,6 +24,22 @@ identifier is reserved by an approved work piece but not implemented.
 | `trace.event_mask` | ACTIVE | OBSERVE | KEEP | `src/debug/` | `UINT64_C(0)` | Per CPU instance, copied at init | None | Mask isolation and event non-interference tests | Retain while the structured observer API is supported |
 | `TI_C54X_ENABLE_TEST_HOOKS` | PLANNED | TEST | TEMP | `tests/support/` | Off | Test build only | None in production builds | Installed-header and production-symbol absence tests | Remove if all required injection can be expressed through public buses/events |
 
+## Observer-bit allocations
+
+Observer bits are stable within schema ABI major `0`. The machine-readable registry
+at [`config/knobs.json`](../config/knobs.json) is authoritative; this table is the
+human review surface and keeps the logical identifier, C identifier, and mask visible.
+
+| Logical identifier | Kind C identifier | Mask C identifier | State | Bit | Mask | Meaning |
+|---|---|---|---|---:|---|---|
+| `trace.event.reset` | `TI_C54X_TRACE_RESET` | `TI_C54X_TRACE_MASK_RESET` | ACTIVE | 0 | `0x0000000000000001` | CPU reset lifecycle event |
+| `trace.event.fetch` | `TI_C54X_TRACE_FETCH` | `TI_C54X_TRACE_MASK_FETCH` | ACTIVE | 1 | `0x0000000000000002` | Instruction fetch event |
+| `trace.event.stop` | `TI_C54X_TRACE_STOP` | `TI_C54X_TRACE_MASK_STOP` | ACTIVE | 2 | `0x0000000000000004` | Instruction-budget or fault stop event |
+
+There are currently no observer-bit tombstones. A retired bit remains reserved in
+this ABI major and must be recorded in `observer_bit_tombstones` before removal;
+its mask and C identifier may not be reused.
+
 ## Registration rules
 
 - Environment variable names are never library knobs. A hosted tool may map its own
