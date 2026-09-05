@@ -217,3 +217,16 @@ rewritten after publication.
   assigned to the post-push GitHub Actions run.
 - Follow-up: require remote CI to pass, then pin the common-core architecture and TI
   evidence index before implementing address generation or opcode semantics.
+
+## 2026-09-06 — P1-W2 verification — Remote structural gates
+
+- Plan: verifies the completed source-boundary and knob-registry gates on the
+  standalone CMake/CTest/package surfaces.
+- Evidence: GitHub Actions run `33979302909` passed strict GCC and Clang direct-Make
+  tests, tests-disabled CMake library builds, tests-enabled CMake/CTest (including
+  all quality and artifact checks), installation, the checked-in downstream
+  consumer, and the Clang ASan/UBSan job.
+- Plan state: source-boundary audit and knob ownership registry remain `Complete`.
+- Knobs and architecture: unchanged.
+- Follow-up: establish the common-core target and evidence registry before adding
+  architectural state, address generation, decode, or opcode semantics.
