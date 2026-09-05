@@ -1359,3 +1359,77 @@ rewritten after publication.
 - Follow-up: push the implementation and ledger commits, verify the remote
   GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
   ledger-only verification commit.
+
+## 2026-09-06 — P2-W10 — Reverse-carry arithmetic and WORD16 effects
+
+- Plan: implement a constrained CMPT=0 MOD4/MOD7 reverse-carry foundation and
+  WORD16 address-effect slice. This deliberately prioritizes a DSP-specific
+  addressing primitive over the simpler MOD15 absolute-offset form.
+- State: active; implementation commit pending.
+- Selection decision: independent Luna audits compared reverse carry, circular
+  addressing, and MOD15. Reverse carry is next because it exercises nonlinear
+  ARAU behavior with no new architectural register prerequisite. Circular
+  MOD8–MOD11/MOD14 remains the next larger family but first needs a separately
+  owned BK state/accessor work piece and circular-mapping proof. MOD15 is
+  evidence-ready but offers less foundation leverage.
+- Primary evidence: TI `SPRU131G` Rev G section 5.5.2 (printed p. 5-11)
+  defines ARAU arithmetic as unsigned 16-bit. Section 5.5.3/Table 5-4 (printed
+  p. 5-13) defines MOD4 `*ARx-0B` and MOD7 `*ARx+0B`: the old ARx addresses the
+  operand and ARx is updated after access by reverse-carry subtraction/addition
+  of AR0. Section 5.5.3.5 (printed pp. 5-18–5-19) requires AR0=`2^(N-1)` for an
+  FFT size `2^N`, states that carry propagates left-to-right rather than the
+  normal direction, and supplies the `0x60,0x68,0x64,0x6c,0x62,0x6a,0x66,0x6e`
+  worked sequence plus the four-bit table. Section 5.5.1/Table 5-3 (printed pp.
+  5-10–5-11) supplies CMPT=0/ARP=0 selection. Section 5.5.5/Table 5-9 (printed
+  p. 5-23) proves `*AR0+0B` and `*AR0-0B` syntax is legal but does not define
+  the read/update ordering when the selected pointer and index alias.
+- Arithmetic boundary: `src/foundation/reverse_carry.[ch]` will own a portable
+  unsigned 16-bit MSB-to-LSB add/subtract primitive. It returns a value only
+  when no carry or borrow propagates past bit 0; an escaping propagation is an
+  explicit non-OK result with no usable wrapped candidate. Production and test
+  code must not use signed shifts, implementation-defined narrowing, host
+  bit-field layout, or a modulo shortcut that silently chooses wrap behavior.
+- Planner boundary: `src/address/indirect_reverse_carry.[ch]` will accept only
+  WORD16 READ/WRITE, MOD4/MOD7, a selected AR1–AR7 snapshot, and a nonzero
+  one-hot AR0 snapshot. The old selected AR is the operand address; a successful
+  plan carries one selected-AR POST_ACCESS update and the existing CMPT0/ARP0
+  policy. Invalid discriminants and non-one-hot AR0 are project-contract
+  rejections; final propagation returns `UNRESOLVED_BOUNDARY` with an all-zero
+  effect.
+- Alias and width decision: selected AR0 is not declared illegal—official syntax
+  explicitly permits it—but its same-register source/update ordering is
+  unresolved, so this slice returns an explicit unsupported result and records
+  a no-test architectural requirement. LONG32 is also deferred because no
+  primary source was found that directly binds MOD4/MOD7 to its width behavior;
+  no update scaling is inferred from the MOD1–MOD3-only footnote.
+- Effect and sequencer shape: `src/address/address_effect.h` will own a distinct
+  reverse-carry source arm containing the selected index/value, copied AR0, and
+  MOD field. The address-owned intrinsic validator will prove the operand and
+  update relation. `src/sequencer/address_effect_apply.[ch]` will enforce that
+  shape before mode/source reads, then read selected AR followed by AR0 and
+  commit at most one POST_ACCESS selected-AR write without recomputing
+  arithmetic.
+- File-shape decision: keep reverse-carry arithmetic and planning in separate
+  modules with mirrored foundation/address tests. The sequencer source is 366
+  lines before this work and may remain whole only while it stays below the
+  500-line review threshold. Before circular-effect integration, split intrinsic
+  validation/dependency work into a named sequencer-owned module rather than
+  allowing `address_effect_apply.c` to become a monolith.
+- TDD plan: COMMON_TI tests reproduce the exact TI worked sequence and inverse
+  safe MOD4 transitions, prove old-address/POST_ACCESS behavior for READ and
+  WRITE across AR1–AR7, and preserve CMPT0/ARP0. Project-contract tests use an
+  independent bit-by-bit oracle over every 16-bit left operand and every
+  representable one-hot AR0 for both operations, including explicit escaping
+  results; separately prove invalid/rejection precedence, exact-zero failed
+  values/effects, copied-source lifetime, malformed shape, ordered unknown/stale
+  dependencies, and bytewise transactional rejection. This does not claim the
+  full two-input Cartesian product or unresolved wrap/alias semantics.
+- Exclusions: carry/borrow discard and reverse-counter wrap, selected-AR0 alias
+  ordering, LONG32, dual operands, CMPT=1/ARP update, circular/BK state, MMR
+  routing, buses, opcode decode, timing/hazards, repeat behavior, devices,
+  diagnostics, firmware, and emulator integration.
+- Knobs: none planned.
+- Follow-up: commit this kickoff decision, delegate foundation/address,
+  sequencer, and evidence/build work to Luna agents with disjoint file ownership,
+  integrate under the main orchestrator, run an independent closure review,
+  validate once, commit, push, and verify remotely.
