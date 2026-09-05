@@ -163,3 +163,19 @@ rewritten after publication.
 - Knobs and architecture: unchanged.
 - Follow-up: implement the machine-readable knob registry and structural source
   boundary audit before address-generation work.
+
+## 2026-09-06 — P1-W2 — Structural quality gates
+
+- Plan: machine-readable knob registry and source-boundary audit.
+- State: active; implementation commit pending.
+- Intended ownership: `config/` policy data, `tools/quality/` deterministic checks,
+  focused checker tests under `tests/contract/quality/`, the human knob registry,
+  and standalone build/CI wiring.
+- Required validation: checker unit tests; repository-wide knob and source-boundary
+  checks; strict core-local tests; sanitizer tests; and remote GCC/Clang CMake/CTest,
+  installation, and consumer validation. No emulator target is involved.
+- Decisions: use a versioned JSON registry and Python 3 standard-library checkers;
+  keep knob-policy and source-boundary logic independently owned and testable; make
+  both checks part of the default standalone test gate.
+- Follow-up: architecture review the checker precision and failure fixtures, commit
+  the coherent gate, then append its completed evidence record.
