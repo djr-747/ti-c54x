@@ -115,6 +115,18 @@ unsupported MOD3 reads, and unresolved boundaries return explicit statuses and
 an all-zero effect. The project contract does not elevate those API details into
 architectural evidence.
 
+The sequencer application seam in `src/sequencer/` consumes that planner result
+without redoing its arithmetic. It validates the result status, selected AR and
+update shape, requested phase, and PRE/POST effective-address relation before
+reading architectural state. A known selected AR must still equal the effect's
+expected before value (or the no-update effective address); otherwise the call
+returns a stale-state status. Unknown AR state is reported separately. A valid
+AR update performs one checked write, while a valid NONE effect does not mutate
+state. Every rejection preserves the complete private state byte-for-byte. This
+is a project sequencing contract: it does not add ARP, bus, memory, timing,
+opcode, or address-boundary behavior, and it deliberately does not require
+`value_after` to differ from `value_before` by one.
+
 ## Private architectural register-state seed
 
 `src/state/` owns a private fixed-width register representation used by later

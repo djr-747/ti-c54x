@@ -536,6 +536,20 @@
         "anchor": "TI_C54X_ARCH_STATE_UNKNOWN"
       },
       "assertion": "The private architectural-state API distinguishes OK, UNKNOWN, and INVALID_ARGUMENT, preserves caller outputs on rejected reads, deterministically clears stale storage and knownness on reset, and treats physically zeroed AR/SP storage as non-architectural until an explicit write establishes knownness. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-ADDRESS-EFFECT-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The private sequencer application seam borrows a planner result, validates its intrinsic effect shape and requested phase before mutation, distinguishes rejected planner results, unknown and stale auxiliary-register state, and applies at most one checked AR write transactionally. Rejected calls preserve the complete caller-owned state; no arithmetic, bus, memory, timing, or diagnostic behavior is implied. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -733,6 +747,21 @@
       "test_ids": ["T-COMMON-INDIRECT-SINGLE-LONG"]
     },
     {
+      "id": "REQ-COMMON-INDIRECT-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "For planner-produced CMPT=0 single-indirect word effects, sequence MOD0 without an auxiliary-register update, MOD1 and MOD2 at post-access, and MOD3 at pre-access while applying the selected AR value documented by the effect.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-EFFECT-APPLICATION"]
+    },
+    {
       "id": "REQ-PROJECT-ADDRESS-EFFECT-CONTRACT",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -791,6 +820,16 @@
       "claim": "Private state reset deterministically clears stale storage and knownness; checked accessors distinguish known and unknown AR/SP values, preserve caller outputs and state on rejected calls, and mark values known only after checked writes.",
       "evidence_ids": ["E-PROJECT-ARCH-STATE-KNOWNNESS"],
       "test_ids": ["T-PROJECT-ARCH-STATE-KNOWNNESS"]
+    },
+    {
+      "id": "REQ-PROJECT-ADDRESS-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private address-effect application seam rejects null or malformed inputs in deterministic order, never interprets a non-OK planner payload, requires the requested phase and effective-address relation to match the intrinsic effect, distinguishes unknown and stale selected AR state, and leaves the complete state unchanged on every rejection; successful AR effects perform one checked write and NONE effects do not mutate state.",
+      "evidence_ids": ["E-PROJECT-ADDRESS-EFFECT-APPLICATION"],
+      "test_ids": ["T-PROJECT-ADDRESS-EFFECT-APPLICATION"]
     }
   ],
   "tests": [
@@ -864,6 +903,14 @@
       ]
     },
     {
+      "id": "T-COMMON-INDIRECT-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_address_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_apply"},
+      "requirement_ids": ["REQ-COMMON-INDIRECT-EFFECT-APPLICATION"]
+    },
+    {
       "id": "T-COMMON-INDIRECT-ARP-STATE",
       "state": "PLANNED",
       "scope": "COMMON_TI",
@@ -926,6 +973,14 @@
       "path": "tests/unit/state/test_arch_state_knownness.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_knownness"},
       "requirement_ids": ["REQ-PROJECT-ARCH-STATE-KNOWNNESS"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_effect_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-APPLICATION"]
     }
   ]
 }

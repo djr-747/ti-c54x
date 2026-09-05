@@ -63,6 +63,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-OBSERVER-NONINTERFERENCE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `tests/unit/debug/test_observer.c` anchor `test_observation_does_not_change_architectural_result` |
 | `E-PROJECT-EVIDENCE-REGISTRY` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `config/evidence.json` anchor `ti-c54x-evidence-registry` |
 | `E-PROJECT-ARCH-STATE-KNOWNNESS` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/state/arch_state.h` anchor `TI_C54X_ARCH_STATE_UNKNOWN` |
+| `E-PROJECT-ADDRESS-EFFECT-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -75,6 +76,14 @@ source's statement that direct addressing leaves DP and SP unchanged; this
 register-effect behavior is not folded into the implemented formation claim.
 The source does not specify AR effects. SP-boundary overflow/wrap remains
 unresolved.
+
+The sequencer application slice consumes value-owned planner effects. It checks
+the intrinsic NONE/PRE/POST shape and effective-address relation, then requires
+the selected known AR to match the effect's expected value before performing at
+most one checked write. Unknown and stale AR state have distinct statuses;
+rejected calls preserve the whole private state. This is a project sequencing
+contract and deliberately adds no ARP, bus, memory, timing, arithmetic, or
+address-boundary behavior.
 
 The private state seed is narrower than the full sequencer reset requirement:
 `REQ-COMMON-ARCH-STATE-RESET-SEED` proves the fixed-width PC/IFR/RC and raw
@@ -111,12 +120,14 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-INDIRECT-CMPT0-ARP-STATE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-ARP-STATE` |
 | `REQ-COMMON-INDIRECT-BOUNDARY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11` | — |
 | `REQ-COMMON-INDIRECT-LONG-DELTA` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-INDIRECT-SINGLE-LONG` |
+| `REQ-COMMON-INDIRECT-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU131G-S5.5.3.1-P5-14` | `T-COMMON-INDIRECT-EFFECT-APPLICATION` |
 | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-ADDRESS-EFFECT-CONTRACT` | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` |
 | `REQ-PROJECT-CPU-SHELL` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `include/ti_c54x/` | `E-PROJECT-CPU-SHELL-API` | `T-PROJECT-CPU-SHELL` |
 | `REQ-PROJECT-U40-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-U40-FOUNDATION` | `T-PROJECT-U40-FOUNDATION` |
 | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/debug/` | `E-PROJECT-OBSERVER-NONINTERFERENCE` | `T-PROJECT-OBSERVER-NONINTERFERENCE` |
 | `REQ-PROJECT-EVIDENCE-REGISTRY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-EVIDENCE-REGISTRY` | `T-PROJECT-EVIDENCE-REGISTRY` |
 | `REQ-PROJECT-ARCH-STATE-KNOWNNESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-STATE-KNOWNNESS` | `T-PROJECT-ARCH-STATE-KNOWNNESS` |
+| `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-APPLICATION` | `T-PROJECT-ADDRESS-EFFECT-APPLICATION` |
 
 ## Tests
 
@@ -134,6 +145,7 @@ exist in the repository.
 | `T-COMMON-DIRECT-REGISTER-NONMUTATION` | PLANNED | COMMON_TI | `tests/unit/address/test_direct_register_effects.c` | `null` | `REQ-COMMON-DIRECT-REGISTER-NONMUTATION` |
 | `T-COMMON-DIRECT-DP` | PASSING | COMMON_TI | `tests/unit/address/test_direct_dp.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.direct_dp"}` | `REQ-COMMON-DIRECT-DP-ADDRESS` |
 | `T-COMMON-INDIRECT-SINGLE-WORD` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_single_word.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_single_word"}` | `REQ-COMMON-INDIRECT-MOD0-WORD`, `REQ-COMMON-INDIRECT-MOD1-MOD2-WORD-POSTUPDATE`, `REQ-COMMON-INDIRECT-MOD3-WORD-PREINCREMENT`, `REQ-COMMON-INDIRECT-CMPT0-ARF-SELECTION` |
+| `T-COMMON-INDIRECT-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_address_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_apply"}` | `REQ-COMMON-INDIRECT-EFFECT-APPLICATION` |
 | `T-COMMON-INDIRECT-ARP-STATE` | PLANNED | COMMON_TI | `tests/unit/state/test_indirect_arp_state.c` | `null` | `REQ-COMMON-INDIRECT-CMPT0-ARP-STATE` |
 | `T-COMMON-INDIRECT-SINGLE-LONG` | PLANNED | COMMON_TI | `tests/unit/address/test_indirect_single_long.c` | `null` | `REQ-COMMON-INDIRECT-LONG-DELTA` |
 | `T-PROJECT-ADDRESS-EFFECT-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_address_effect_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-CONTRACT` |
@@ -142,6 +154,7 @@ exist in the repository.
 | `T-PROJECT-OBSERVER-NONINTERFERENCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/debug/test_observer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.observer"}` | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` |
 | `T-PROJECT-EVIDENCE-REGISTRY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/test_evidence_registry.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-EVIDENCE-REGISTRY` |
 | `T-PROJECT-ARCH-STATE-KNOWNNESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_arch_state_knownness.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_knownness"}` | `REQ-PROJECT-ARCH-STATE-KNOWNNESS` |
+| `T-PROJECT-ADDRESS-EFFECT-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_apply_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-APPLICATION` |
 
 ## Correction and tombstone policy
 
