@@ -1194,3 +1194,22 @@ rewritten after publication.
 - Follow-up: push the implementation and ledger commits, verify the remote
   GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
   ledger-only verification commit.
+
+## 2026-09-06 — P2-W8 verification — Remote AR0-indexed gates
+
+- Verified evidence: GitHub Actions run `33996579756` passed for implementation
+  commit `e85a96c` and completion-ledger commit `5ce1003`.
+- Remote coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled
+  CMake library builds, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: AR0-indexed single-indirect effects remain `Complete`; address
+  generation remains `Active` only for explicitly deferred modes and unresolved
+  boundary behavior.
+- Scope confirmation: the verified build added no emulator dependency, firmware
+  image, environment lookup, diagnostic path, public private-header exposure, or
+  non-architectural knob. The P2-W7 evidence-count correction recorded above is
+  also present in the verified ledger.
+- Follow-up: select the next requirement-and-evidence-backed address-foundation
+  slice. Opcode decode and emulator integration remain blocked or deferred until
+  the address/evidence foundation is sufficiently complete.
