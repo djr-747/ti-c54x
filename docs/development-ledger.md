@@ -1075,3 +1075,20 @@ rewritten after publication.
 - Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
   select the next evidence-led address-foundation slice. Emulator integration
   remains deferred until provenance and standalone contracts are stable.
+
+## 2026-09-06 — P2-W7 verification — Remote direct-source gates
+
+- Verified evidence: GitHub Actions run `33995287457` passed for implementation
+  commit `c6eeb07` and completion-ledger commit `71f1b15`.
+- Remote coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled
+  CMake library builds, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: direct-address source snapshots remain `Complete`; address generation
+  remains `Active` only for explicitly deferred effect families, modes, and
+  unresolved boundary behavior.
+- Scope confirmation: the verified build added no emulator dependency, firmware
+  image, environment lookup, diagnostic path, public private-header exposure, or
+  non-architectural knob.
+- Follow-up: choose the next requirement-and-evidence-backed address slice before
+  opening opcode decode or emulator integration.
