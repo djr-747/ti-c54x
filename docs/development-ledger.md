@@ -477,3 +477,47 @@ rewritten after publication.
 - Follow-up: begin the requirement-backed register-state/effect-application slice,
   preserving reset-unspecified fields explicitly and keeping bus transfer and opcode
   execution outside that work piece.
+
+## 2026-09-06 — P2-W3 — Private architectural register-state foundation
+
+- Plan: introduce the private fixed-layout architectural state that later CPU and
+  sequencer owners will compose, and prove an evidence-backed common reset seed
+  without changing the current public CPU or observation ABI.
+- State: active; implementation commit pending.
+- Work-piece split: P2-W3 owns state representation, reset seeding, and knownness
+  only. P2-W4 will own transactional address-effect application and pre/post phase
+  use. CPU embedding, opcode execution, and bus transfers remain later vertical
+  slices.
+- Representation decision: store PC, IFR, RC, SP, and AR0–AR7 as fixed-width
+  scalars; store ST0, ST1, and PMST as raw 16-bit values with independent 16-bit
+  known masks; use compact scalar/AR known masks for registers not packed into
+  those status words. Use no C bitfields, heap allocation, mutable globals, CPU
+  pointer, or diagnostic state.
+- Reset decision: the TI common reset seed sets only values proven by SPRU131G,
+  including PC=FF80h, IFR=0, RC=0, the complete documented ST0/ST1 fields, and
+  the documented PMST fields. MP/MC remains pin-sampled and unknown; profile-
+  conditional PMST bits remain unknown; SP and AR0–AR7 remain unknown. Physical
+  zero storage is never sufficient to make a value architectural.
+- Shell separation: `ti_c54x_config.reset_pc_word` remains an unchanged project
+  bootstrap contract in `src/cpu/`; it is not relabeled as TI reset behavior and
+  is not routed through the new state seed in this work piece. The private common
+  PC remains 16-bit, while the public 32-bit program-word type remains a carrier-
+  only integration boundary.
+- Ownership: `src/state/register_layout.h` owns evidenced raw register bit masks;
+  `src/state/arch_state.[ch]` owns private storage, knownness, reset, and narrow
+  checked state access; `tests/unit/state/` separates COMMON_TI reset-value proof
+  from PROJECT_CONTRACT_ONLY unknown/read/write behavior. Build files own only
+  standalone registration; evidence registry/docs own traceability.
+- Evidence plan: retain §6.9 as the reset-action authority and add exact immutable
+  records for ST0/ST1 and PMST layouts, AR/SP widths, PC width/XPC exclusion, RC,
+  and raw IFR scope. Do not promote the existing full sequencer reset requirement;
+  the new state-seed requirement proves construction only.
+- Required validation: exact reset values and known masks, repeated deterministic
+  reset that clears stale state, explicit UNKNOWN reads that never return physical
+  zero as known, checked AR/SP access, strict Make tests, ASan/UBSan, evidence/
+  knob/source-boundary gates, compiler-only isolation, independent review, and
+  post-push CMake/CTest/install/consumer/compiler CI.
+- Knobs: none planned.
+- Follow-up: delegate implementation and independent evidence/layout review, then
+  commit only if the state remains private, compact, fully initialized, and usable
+  by a later sequencer without cross-owner field mutation.
