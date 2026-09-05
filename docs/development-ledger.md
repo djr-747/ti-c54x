@@ -248,3 +248,41 @@ rewritten after publication.
   without copying manual prose, figures, or opcode tables.
 - Follow-up: review the evidence schema and baseline boundaries, commit and verify
   the gate, then begin requirement-backed register/address foundations.
+
+## 2026-09-06 — P2-W0 completion — Evidence-backed common target
+
+- Implementation commit: `5485e43` (`P2-W0: establish evidence-backed common target`).
+- Plan result: the common-core target and evidence registry are `Complete`; address
+  generation is now `Active`, while opcode decode remains blocked on the address
+  foundation.
+- Ownership: `config/evidence.json` owns stable target, source, evidence,
+  requirement, test, runner, applicability, and tombstone records;
+  `docs/architecture-baseline.md` and `docs/evidence-index.md` own the human review
+  surfaces; the split `tools/quality/evidence_*.py` modules own schema, policy,
+  documentation parity, and build-runner proofs; the mirrored contract tests live
+  under `tests/contract/quality/`.
+- Evidence boundary: the active target is the device-neutral
+  `C54X_CORE_COMMON_V1`; the VC5402 remains a separate planned profile. Project
+  contracts bind to the real common execution target but require project-only
+  evidence and tests, so they cannot masquerade as TI-conformance claims. Profile
+  sources and evidence bind to exactly one profile.
+- Initial pinned behavior: documented reset fields, one-word NOP decode/semantics/
+  sequential flow, and the CPL=0 direct-DP address formula are sourced from official
+  TI references. SP-boundary direct-address wrap, XPC, device maps, vectors,
+  peripherals, and machine-cycle timing remain explicitly unresolved or excluded.
+- Gate hardening: a `PASSING` test must exist under the ownership-mirrored test tree
+  and be reachable through the actual Make and CTest graphs. Adversarial fixtures
+  reject arbitrary files, removed Make prerequisites/recipes, wrong CTest names or
+  discovery roots, scope leakage, sibling-profile evidence, duplicate documentation
+  rows, and identifier/tombstone reuse.
+- Local validation: strict `make test` passed all C executables and 96 Python quality
+  tests; the live evidence check passed with 2 targets, 7 sources, 11 requirements,
+  and 9 tests; ASan/UBSan `make test` passed; observer-disabled artifact, knob, and
+  source-boundary checks passed; and `make PYTHON=/definitely/missing build` proved
+  the library build remains compiler-only.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Deviation: CMake is unavailable locally. CMake/CTest, install, consumer, GCC/Clang,
+  and sanitizer package surfaces remain assigned to the post-push GitHub Actions
+  run.
+- Follow-up: verify the pushed commit in standalone CI, then implement the first
+  evidence-backed address-owner slice without selecting unresolved CPL=1 behavior.
