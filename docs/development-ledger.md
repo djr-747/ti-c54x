@@ -298,3 +298,30 @@ rewritten after publication.
 - Knobs and architecture: unchanged.
 - Follow-up: begin the requirement-backed CPL=0 direct-DP address slice while
   preserving CPL=1 SP-boundary behavior as unresolved.
+
+## 2026-09-06 — P2-W1 — CPL=0 direct-DP address primitive
+
+- Plan: implement the first address-owner primitive independently of opcode
+  execution, CPU storage, and emulator integration.
+- State: active; implementation commit pending.
+- Evidence correction: the original §5.4 assertion overstates AR noninterference.
+  Replace it with a new immutable evidence ID covering the documented 9-bit DP,
+  7-bit `dma`, 16-bit data-word address, and unchanged DP/SP facts; tombstone the
+  superseded ID rather than editing it in place. Keep CPL=1 boundary behavior
+  unresolved.
+- API decision: use a private header-only, branchless `static inline` primitive in
+  `src/address/` with distinct DP9 and DMA7 value carriers. Inputs must already be
+  valid decoded architectural fields; the module will neither normalize nor define
+  behavior for wider C values. Return the existing 16-bit data-word address type.
+- Ownership: `src/address/direct_dp.h` owns only CPL=0 direct-DP formation;
+  `tests/unit/address/test_direct_dp.c` owns its exhaustive valid-domain proof;
+  build files own standalone registration; evidence registry/docs own requirement,
+  runner, correction, and tombstone parity.
+- Required validation: all 512 × 128 valid DP/`dma` combinations against an
+  independent arithmetic reference, explicit boundary vectors, unchanged by-value
+  inputs, strict warnings, ASan/UBSan, live evidence/source/knob gates, and remote
+  CMake/CTest/install/consumer CI.
+- Knobs: none planned.
+- Follow-up: independently review the implementation and generated machine code,
+  then commit only if the primitive is pure, branchless, ownership-mirrored, and
+  fully evidence-linked.
