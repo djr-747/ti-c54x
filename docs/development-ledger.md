@@ -1276,3 +1276,67 @@ rewritten after publication.
 - Follow-up: delegate address/tests, sequencer/tests, and evidence/build work to
   Luna agents with disjoint ownership; integrate under the main orchestrator,
   run an independent closure review, validate once, commit, and verify remotely.
+
+## 2026-09-06 — P2-W9 completion — Signed long-offset premodify
+
+- Plan state: signed long-offset premodify is `Complete`; address generation
+  remains `Active` for the explicitly deferred modes and unresolved boundary
+  behavior. Opcode decode remains blocked on address/evidence foundations, and
+  emulator integration remains deferred.
+- Implementation commit: `4d75222` (`P2-W9: add signed long-offset address
+  effects`).
+- Delivered behavior: CMPT=0 MOD13 `*+ARx(lk)` planners now copy the raw 16-bit
+  extension, sign-extend it explicitly into `int32_t`, and construct WORD16 or
+  LONG32 effects for READ and WRITE access. The checked in-domain sum is both
+  the first operand address and one selected-AR PRE_ACCESS replacement; LONG32
+  uses the existing canonical MSW/LSW pairing without scaling `lk`.
+- Boundary decision: mathematical sums outside `0..0xFFFF` return
+  `UNRESOLVED_BOUNDARY` with an all-zero effect. No wrap behavior is inferred.
+  MOD12 remains an explicit `UNRESOLVED` signedness requirement because the
+  pinned CPU-reference text does not classify that carrier as signed or
+  unsigned.
+- Ownership: `src/address/address_effect.h` owns the tagged copied source;
+  `src/address/indirect_long_offset.[ch]` owns MOD13 arithmetic, planning, and
+  intrinsic validation; `src/sequencer/address_effect_apply.[ch]` owns ordered
+  state checks and the transactional commit. The four new tests mirror their
+  address and sequencer owners. Build registration and evidence documentation
+  remain in their existing owning files; no monolith was introduced.
+- TDD proof: COMMON_TI coverage exercises every AR0–AR7 index, both operand
+  widths, both access kinds, the complete selected-AR dimension at zero offset,
+  the complete raw-offset dimension at AR=`0x8000`, representative combinations,
+  LONG32 parity, and exact signed boundaries. Project-contract coverage proves
+  invalid-argument precedence, exact unresolved crossings, copied-source
+  lifetime, all-zero failed effects, malformed intrinsic shapes, phase and
+  mode/source precedence, unknown and stale selected AR state, one PRE_ACCESS
+  write, and bytewise transactional rejection. It does not claim the full
+  AR-by-offset Cartesian product.
+- Evidence: the live registry contains 2 targets, 7 sources, 45 immutable
+  evidence records, 50 requirements, and 39 tests (35 `PASSING`, 4 `PLANNED`).
+  The new records separate architectural assertions from project rejection and
+  transaction contracts.
+- Correction to the committed P2-W9 kickoff entry: its `SPRU172C` locator
+  incorrectly grouped classes 9B and 13B as printed pages 3-28–3-29. The precise
+  locations are class 9B on printed page 3-21 for long-offset long-word reads and
+  class 13B on printed page 3-29 for writes. The registry and current evidence
+  documents use separate records for those locators; the old entry remains
+  unchanged under the append-only ledger policy.
+- Review corrections: orchestration review kept safe-domain architectural proof
+  separate from project-owned boundary rejection, removed implementation-defined
+  signed narrowing from production and test oracles, strengthened exact-boundary
+  vectors, compared the complete architectural state after successful apply,
+  and made invalid-enum sentinels durable. Independent Luna closure review found
+  and verified the corrected split `SPRU172C` locators and reported no remaining
+  blockers; targeted GCC analyzer and sanitizer checks were clean.
+- Local validation: final-tree strict `make test` passed every C executable and
+  all 96 Python quality tests. ASan/UBSan `make test` also passed. Evidence,
+  source-boundary (64 files), knob-registry, observer-disabled artifact, and
+  whitespace checks passed. `make PYTHON=/definitely/missing build` proved the
+  compiler-only standalone path. CMake is unavailable on this host, so its
+  configure, CTest, install, consumer, and sanitizer paths remain assigned to
+  remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` control,
+  environment lookup, diagnostic hook, firmware input, emulator dependency,
+  process-global mutable state, or public private-header exposure was added.
+- Follow-up: push the implementation and ledger commits, verify the remote
+  GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
+  ledger-only verification commit.
