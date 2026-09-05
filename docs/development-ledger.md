@@ -521,3 +521,49 @@ rewritten after publication.
 - Follow-up: delegate implementation and independent evidence/layout review, then
   commit only if the state remains private, compact, fully initialized, and usable
   by a later sequencer without cross-owner field mutation.
+
+## 2026-09-06 — P2-W3 completion — Architectural register state
+
+- Implementation commit: `2bb6d25` (`P2-W3: establish architectural register
+  state`).
+- Plan result: the architectural register-state foundation is `Complete`. The
+  implementation provides private fixed-layout storage, explicit knownness, an
+  evidence-backed common reset seed, and checked AR/SP access. CPU embedding,
+  sequencer application, bus transfer, and opcode execution remain outside this
+  work piece.
+- Ownership: `src/state/register_layout.h` owns named ST0/ST1/PMST field masks;
+  `src/state/arch_state.[ch]` owns storage, lifecycle, reset, and narrow checked
+  access; `tests/unit/state/test_arch_state_reset.c` owns COMMON_TI reset proof;
+  `tests/unit/state/test_arch_state_knownness.c` owns PROJECT_CONTRACT_ONLY state
+  API behavior. Both normal and observer-disabled libraries compile the same state
+  implementation.
+- Reset behavior: common construction seeds PC=FF80h, IFR=0, RC=0, ST0=1800h,
+  ST1=2900h, and PMST=FF80h. ST0 is fully known; ST1 deliberately leaves reserved
+  bit 10 unknown; PMST marks only IPTR, OVLY, AVIS, DROM, and CLKOFF known. MP/MC,
+  profile-dependent PMST bits, SP, and AR0–AR7 remain architecturally unknown even
+  though their backing storage is deterministically cleared.
+- State contract: unknown and invalid reads preserve the caller's output; invalid
+  writes preserve the complete state byte-for-byte; successful AR/SP writes
+  establish knownness; reset clears stale values and knownness deterministically.
+  Null and out-of-range behavior is explicit and tested.
+- Evidence boundary: seven focused SPRU131G records now pin register layouts and
+  widths at their exact printed-page locators, and one project record owns the
+  checked-state contract. Review corrected the PC-width locator so it claims only
+  Table 6-2 on printed page 6-4; XPC begins on page 6-5 and is intentionally not
+  claimed. SP/RC/IFR assertions were narrowed to their local evidence, while reset
+  values continue to rely on the existing section 6.9 authority.
+- Review correction: independent review also removed redundant composite reset
+  constants that could drift from the named field masks. The final review was
+  clean, with no public ABI, diagnostic, CPU, bus, opcode, or emulator coupling.
+- Local validation: strict `make test` and ASan/UBSan `make test` passed all C
+  executables and 96 Python quality tests; live evidence passed with 2 targets, 7
+  sources, 22 requirements, and 16 tests; source-boundary passed for 29 files;
+  knob and observer-disabled artifact checks passed; and
+  `make PYTHON=/definitely/missing build` proved compiler-only standalone builds.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Deviation: the local CMake executable remains unavailable. CMake/CTest, install,
+  downstream consumer, GCC/Clang, and sanitizer package surfaces are assigned to
+  the post-push standalone CI run.
+- Follow-up: P2-W4 should add a private transactional sequencer seam that validates
+  an entire address effect before applying its pre- or post-access AR update, with
+  rejection paths proven to leave architectural state unchanged.
