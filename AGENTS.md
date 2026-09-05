@@ -15,6 +15,17 @@
   is ready to commit.
 - Keep all mutable runtime state instance-owned. No environment reads, file I/O,
   mutable process globals, hidden allocators, or logging in the core execution path.
+- The library must never call `getenv`. Hosted tools may read environment once before
+  CPU initialization and pass explicit immutable configuration. Optional observation
+  state is a copied per-instance `uint64_t` mask containing `OBSERVE` bits only;
+  `TEST` and `A/B` controls use separate typed cold configuration.
+- All hot-path observation checks go through one compile-time-aware macro using
+  short-circuit `&&`. An observer-disabled build must compile those sites out.
+  Opcode handlers never format, print, or directly fan out diagnostic callbacks.
+- Every non-architectural knob must be registered in `docs/knobs.md` with exactly one
+  class (`TEST`, `OBSERVE`, or `A/B`), one disposition (`KEEP`, `TEMP`, or `RETIRE`),
+  an owning module, default, scope, tests, and an exit/removal criterion. Unregistered
+  string, environment, compile-time, or runtime knobs are forbidden.
 - Every handwritten source and header must begin with a concise module contract that
   states what it owns and what it must not own. Public APIs must document copied,
   borrowed, and caller-owned objects and their required lifetimes.
