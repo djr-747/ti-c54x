@@ -1213,3 +1213,66 @@ rewritten after publication.
 - Follow-up: select the next requirement-and-evidence-backed address-foundation
   slice. Opcode decode and emulator integration remain blocked or deferred until
   the address/evidence foundation is sufficiently complete.
+
+## 2026-09-06 — P2-W9 — Signed long-offset premodify
+
+- Plan: implement the CMPT=0 MOD13 `*+ARx(lk)` address effect for both WORD16
+  and LONG32 data operands, proving signed pre-index arithmetic and a copied
+  instruction-extension source before decode or program fetch is introduced.
+- State: active; implementation commit pending.
+- Selection decision: complete both operand widths in one cohesive MOD13 slice.
+  TI `SPRU131G` Rev G section 5.5.3/Table 5-4 (printed page 5-14) explicitly
+  defines a signed 16-bit `lk`, addition before use, replacement of ARx by the
+  sum, and use of that sum as the operand address. Section 5.8 (printed pages
+  5-28–5-29) supplies the existing long32 MSW/LSW pairing rule. TI `SPRU172C`
+  Rev C classes 9B and 13B (printed pages 3-28–3-29) independently establish
+  long-word read and write operands using long-offset indirect addressing.
+- MOD12 decision: defer `*ARx(lk)`. The CPU reference calls its carrier a
+  16-bit long offset but, unlike MOD13/MOD14, does not explicitly call it signed
+  and, unlike MOD15, does not call it unsigned. Official negative-literal
+  assembler/compiler examples corroborate signed intent but do not normatively
+  define CPU arithmetic. Record the signedness gap as unresolved rather than
+  applying MOD13 semantics by symmetry.
+- Arithmetic decision: accept a raw copied `uint16_t long_offset_word` and
+  sign-extend it explicitly into `int32_t`; never rely on implementation-defined
+  unsigned-to-signed narrowing. Admit only mathematical sums in `0..0xFFFF` and
+  return `UNRESOLVED_BOUNDARY` with an all-zero effect outside that range. The
+  offset remains one data-word address displacement for both widths; it is not
+  scaled by the MOD0–MOD3 one/two-word update rule.
+- Effect-shape decision: add a dedicated value-owned AR-long-offset source arm
+  containing the selected AR index/value, raw offset word, and MOD field. A
+  successful effect carries CMPT0/ARP0, a canonical WORD16 or LONG32 operand at
+  the computed sum, and exactly one selected-AR PRE_ACCESS update to that sum.
+  The raw offset is immutable instruction input rather than architectural state,
+  so it is shape-validated but never stale-checked.
+- Validation decision: `src/address/indirect_long_offset.[ch]` owns signed
+  evaluation, result construction, and intrinsic MOD13 effect validation. The
+  sequencer calls that narrow address-owned validator before mode/source reads,
+  then enforces CMPT=0/ARP=0, stale-checks the selected AR through state
+  accessors, and commits at most the one described write. This avoids duplicating
+  address arithmetic in the sequencer and keeps nonlinear future modes out of a
+  generic arithmetic assumption.
+- Ownership: `src/address/address_effect.h` owns the new tagged source value;
+  `src/address/indirect_long_offset.[ch]` owns MOD13 planning and intrinsic
+  validation; `src/sequencer/address_effect_apply.[ch]` owns validation order,
+  architectural dependency checks, and transactional commit. Tests mirror the
+  address and sequencer owners. Evidence/build synchronization is a separate
+  bounded work stream.
+- TDD plan: for both widths, both access kinds, and all selected AR0–AR7, exhaust
+  the complete 16-bit AR dimension with zero offset and the complete raw offset
+  dimension with AR=`0x8000`; add representative cross-source/parity vectors and
+  exact zero, +1, -1, +32767, and -32768 safe/rejected boundaries. This is not a
+  claim over the full AR-by-offset Cartesian product. Separately prove copied
+  sources, canonical long32 pairing, exact-zero failed effects, malformed
+  discriminants and source/update/operand relations, mode-before-source
+  precedence, unknown/stale selected AR, one PRE_ACCESS commit, and bytewise
+  transactional rejection.
+- Exclusions: MOD12 until signedness is resolved; MOD4/MOD7 reverse carry;
+  MOD8–MOD11/MOD14 circular behavior and BK/base state; MOD15 absolute long
+  offset; CMPT=1/ARP update; address wrap; memory-mapped-register restrictions;
+  repeat-single rejection; instruction extension fetch/PC accounting; buses,
+  opcode decode, timing, devices, diagnostics, firmware, and emulator integration.
+- Knobs: none planned.
+- Follow-up: delegate address/tests, sequencer/tests, and evidence/build work to
+  Luna agents with disjoint ownership; integrate under the main orchestrator,
+  run an independent closure review, validate once, commit, and verify remotely.
