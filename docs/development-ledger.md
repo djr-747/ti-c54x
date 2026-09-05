@@ -945,3 +945,21 @@ rewritten after publication.
 - Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
   design direct-address effects around truthful DP/SP source snapshots rather
   than reusing the selected-AR dependency shape.
+
+## 2026-09-06 — P2-W6 verification — Remote long32 indirect gates
+
+- Verified evidence: GitHub Actions run `33993459022` passed for implementation
+  commit `c4dfbbc` and completion-ledger commit `08aacf0`.
+- Remote coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled
+  CMake library builds, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: the 32-bit single-indirect operand shape remains `Complete`; address
+  generation remains `Active` only for explicitly deferred effect families,
+  modes, and unresolved boundary behavior.
+- Scope confirmation: the verified build added no emulator dependency, firmware
+  image, environment lookup, diagnostic path, public private-header exposure, or
+  new knob.
+- Follow-up: begin the next evidence-led address slice with explicit ownership and
+  source-snapshot semantics; do not encode a direct DP/SP dependency as an
+  indirect AR dependency.
