@@ -22,6 +22,17 @@ ti_c54x_enable_warnings(ti_c54x_test_arithmetic40)
 ti_c54x_enable_sanitizers(ti_c54x_test_arithmetic40)
 add_test(NAME ti_c54x.arithmetic40 COMMAND ti_c54x_test_arithmetic40)
 
+add_executable(ti_c54x_test_direct_dp unit/address/test_direct_dp.c)
+target_compile_features(ti_c54x_test_direct_dp PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_direct_dp PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+ti_c54x_enable_warnings(ti_c54x_test_direct_dp)
+ti_c54x_enable_sanitizers(ti_c54x_test_direct_dp)
+add_test(NAME ti_c54x.direct_dp COMMAND ti_c54x_test_direct_dp)
+
 add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})
 target_compile_features(ti_c54x_observer_off_artifact PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_observer_off_artifact PRIVATE

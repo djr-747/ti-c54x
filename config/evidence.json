@@ -34,7 +34,7 @@
         "bits": 32,
         "unit": "program words",
         "semantic_scope": "CARRIER_ONLY",
-        "owner_path": "include/ti_c54x/cpu.h",
+        "owner_path": "include/ti_c54x/address.h",
         "claim": "The current public API uses a 32-bit program-word carrier so the common interface does not impose a 16-bit storage limit. The carrier is an implementation boundary only; it does not implement or promise XPC, extended pages, or a device address map."
       }
     },
@@ -55,7 +55,14 @@
   "tombstones": {
     "targets": [],
     "sources": [],
-    "evidence": [],
+    "evidence": [
+      {
+        "id": "E-TI-C54X-SPRU131G-S5.4-P5-7-5-9",
+        "retired_abi_major": 0,
+        "reason": "The original assertion overclaimed AR effects; the corrected record narrows the source to its printed field and address-construction statements.",
+        "replacement_id": "E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"
+      }
+    ],
     "requirements": [],
     "tests": []
   },
@@ -239,7 +246,7 @@
       "assertion": "The NOP entry identifies word 0xF495, consumes one program word, has no status-bit effects, and only increments the PC in the common model. Its cycle information is intentionally not adopted as a common-core timing promise."
     },
     {
-      "id": "E-TI-C54X-SPRU131G-S5.4-P5-7-5-9",
+      "id": "E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1",
       "immutable": true,
       "state": "PINNED",
       "scope": "COMMON_TI",
@@ -252,7 +259,7 @@
         "printed_page_start": "5-7",
         "printed_page_end": "5-9"
       },
-      "assertion": "The direct-addressing discussion defines dma as a 7-bit field; with CPL=0 the direct result is (DP << 7) | dma, while CPL=1 forms it from SP plus zero-extended dma. The direct form has no AR side effects. The exact SP-boundary overflow or wrap result is not selected by this registry."
+      "assertion": "The direct-addressing discussion defines dma as a 7-bit field; with CPL=0 it concatenates the 9-bit DP field and dma into a 16-bit data-memory word address, while CPL=1 adds positive dma to SP. Direct addressing does not change DP or SP. The source does not specify AR effects or CPL=1 overflow or wrap behavior."
     },
     {
       "id": "E-PROJECT-CPU-SHELL-API",
@@ -368,13 +375,23 @@
     },
     {
       "id": "REQ-COMMON-DIRECT-DP-ADDRESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For valid 9-bit DP and 7-bit dma fields with CPL=0, compute the 16-bit data-memory word address formed by concatenating DP:dma.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
+      "test_ids": ["T-COMMON-DIRECT-DP"]
+    },
+    {
+      "id": "REQ-COMMON-DIRECT-REGISTER-NONMUTATION",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
-      "claim": "For CPL=0, compute the full direct-data result over the complete domain as (DP << 7) | dma, where dma is the 7-bit direct field; the operation has no AR side effects.",
-      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9"],
-      "test_ids": ["T-COMMON-DIRECT-DP"]
+      "claim": "Direct addressing leaves the DP and SP registers unchanged.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
+      "test_ids": ["T-COMMON-DIRECT-REGISTER-NONMUTATION"]
     },
     {
       "id": "REQ-COMMON-DIRECT-SP-WRAP",
@@ -383,7 +400,7 @@
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
       "claim": "Do not choose overflow or wrap behavior at the SP boundary for CPL=1 direct addressing without stronger primary evidence.",
-      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9"],
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
       "test_ids": []
     },
     {
@@ -462,11 +479,19 @@
     },
     {
       "id": "T-COMMON-DIRECT-DP",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_direct_dp.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_dp"},
+      "requirement_ids": ["REQ-COMMON-DIRECT-DP-ADDRESS"]
+    },
+    {
+      "id": "T-COMMON-DIRECT-REGISTER-NONMUTATION",
       "state": "PLANNED",
       "scope": "COMMON_TI",
-      "path": "tests/unit/address/test_direct.c",
+      "path": "tests/unit/address/test_direct_register_effects.c",
       "runner": null,
-      "requirement_ids": ["REQ-COMMON-DIRECT-DP-ADDRESS"]
+      "requirement_ids": ["REQ-COMMON-DIRECT-REGISTER-NONMUTATION"]
     },
     {
       "id": "T-PROJECT-CPU-SHELL",

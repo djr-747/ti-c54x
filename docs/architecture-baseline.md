@@ -23,7 +23,9 @@ The public API currently carries a program address in a 32-bit
 `ti_c54x_program_word_address`. This avoids imposing a 16-bit storage limit while
 the common address model is being established. It is only a carrier and ownership
 decision: it does not implement or promise XPC, extended program pages, or a
-device memory map.
+device memory map. The scalar program/data/I/O word-address typedefs are owned by
+`include/ti_c54x/address.h`; this module owns carriers only, not mapping, memory,
+XPC semantics, timing, or CPU state.
 
 ## Common target scope
 
@@ -76,11 +78,15 @@ common-core timing promise. The test tree mirrors that ownership split with
 separate planned tests for decode, opcode semantics, and sequential flow; no
 cross-owner unit test is used as a substitute for those seams.
 
-The direct-addressing precursor in `SPRU131G` §5.4 records a 7-bit `dma`. For
-`CPL=0`, the common requirement is the complete-domain result `(DP << 7) | dma`
-with no AR side effects. For `CPL=1`, the source describes `SP` plus zero-extended
-`dma`, but this baseline does not choose overflow or wrap behavior at the SP
-boundary (`UNRESOLVED`).
+The corrected direct-addressing evidence in `SPRU131G` §5.4 records a 7-bit
+`dma`. For `CPL=0`, the implemented common requirement is the complete
+valid-domain result formed by concatenating the 9-bit `DP` field and `dma` into a
+16-bit data-memory word address. A separate planned requirement and test own the
+source statement that direct addressing leaves `DP` and `SP` unchanged; that
+register-effect proof is deliberately not part of the implemented formation
+claim. The source does not specify AR effects. For `CPL=1`, the source describes
+`SP` plus zero-extended `dma`, but this baseline does not choose overflow or wrap
+behavior at the SP boundary (`UNRESOLVED`).
 
 ## Evidence and conformance rules
 
@@ -100,6 +106,6 @@ An implemented requirement must link to at least one existing passing test. The
 current CPU shell, 40-bit helpers, observer noninterference, and registry
 governance rows are `PROJECT_CONTRACT` records, not TI-conformance claims.
 
-Retired identifiers are never silently reused. The registry's tombstone arrays are
-currently empty; when an ID is retired, its old identifier remains there for the
-ABI-major lifetime.
+Retired identifiers are never silently reused. The corrected direct-addressing
+evidence supersedes `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9`; its tombstone records the
+ABI-major lifetime and replacement ID.

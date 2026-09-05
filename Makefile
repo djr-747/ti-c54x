@@ -34,6 +34,7 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/debug/observer.o
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
 ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
+DIRECT_DP_TEST := $(BUILD_DIR)/test_direct_dp
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
 OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
@@ -44,12 +45,13 @@ OBSERVER_OFF_OBJECTS := \
 
 all: test
 
-build: $(CPU_TEST) $(ARITHMETIC_TEST) $(OBSERVER_TEST) \
+build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(OBSERVER_TEST) \
 	$(OBSERVER_OFF_TEST) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
 test: build quality-test
 	$(CPU_TEST)
 	$(ARITHMETIC_TEST)
+	$(DIRECT_DP_TEST)
 	$(OBSERVER_TEST)
 	$(OBSERVER_OFF_TEST)
 	$(MINIMAL)
@@ -87,6 +89,12 @@ $(ARITHMETIC_TEST): tests/unit/foundation/test_arithmetic40.c $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
+$(DIRECT_DP_TEST): tests/unit/address/test_direct_dp.c \
+	tests/support/test_harness.h src/address/direct_dp.h \
+	include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
+
 $(OBSERVER_TEST): tests/unit/debug/test_observer.c src/cpu/cpu.c \
 	src/debug/observer.c
 	@mkdir -p $(@D)
@@ -115,8 +123,9 @@ install: cmake-build
 
 format:
 	clang-format -i src/cpu/*.c src/debug/*.c src/foundation/*.c \
+		src/address/*.h \
 		include/ti_c54x/*.h tests/unit/cpu/*.c tests/unit/debug/*.c \
-		tests/unit/foundation/*.c examples/*.c
+		tests/unit/foundation/*.c tests/unit/address/*.c examples/*.c
 
 clean:
 	@rm -rf -- build-fast build-cmake

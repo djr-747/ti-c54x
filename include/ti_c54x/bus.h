@@ -3,7 +3,8 @@
 
 /* Module contract
  * Owns: the callback type and the value-type bus description.
- * Does not own: callback context, mapped memory, or any platform bus object.
+ * Does not own: scalar address carriers (owned by address.h), callback
+ * context, mapped memory, or any platform bus object.
  */
 
 /*
@@ -16,13 +17,11 @@
 
 #include <stdint.h>
 
+#include <ti_c54x/address.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef uint32_t ti_c54x_program_word_address;
-typedef uint16_t ti_c54x_data_word_address;
-typedef uint16_t ti_c54x_io_word_address;
 
 typedef enum ti_c54x_bus_status {
     TI_C54X_BUS_OK = 0,

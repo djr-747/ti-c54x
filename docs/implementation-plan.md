@@ -100,6 +100,7 @@ The source and test trees mirror each other:
 
 ```text
 include/ti_c54x/             stable public contracts
+  address.h                  scalar program/data/I/O word-address carriers
   cpu.h
   bus.h
   state.h

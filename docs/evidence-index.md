@@ -15,7 +15,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 
 XPC, extended pages, device maps, vectors, peripherals, and machine-cycle timing
 are exclusions of the common target, not hidden project targets. The common
-program-address carrier is 32-bit with semantic scope `CARRIER_ONLY`.
+program-address carrier is 32-bit with semantic scope `CARRIER_ONLY`; its
+scalar typedef is owned by `include/ti_c54x/address.h`.
 
 ## Sources
 
@@ -43,7 +44,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6.2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
 | `E-TI-C54X-SPRU131G-S6.9-P6-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.9, `6-25` |
 | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 NOP, `4-121` |
-| `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.4, `5-7`–`5-9` |
+| `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.4, `5-7`–`5-9` |
 | `E-PROJECT-CPU-SHELL-API` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `include/ti_c54x/cpu.h` anchor `ti_c54x_cpu_init` |
 | `E-PROJECT-U40-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/foundation/arithmetic40.h` anchor `ti_c54x_u40_t` |
 | `E-PROJECT-OBSERVER-NONINTERFERENCE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `tests/unit/debug/test_observer.c` anchor `test_observation_does_not_change_architectural_result` |
@@ -52,9 +53,14 @@ locator, scope, classification, and a short independently phrased assertion.
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
 XF. SP and remaining status bits are unresolved. NOP is `0xF495`, one word, with
-no status-bit effects and only a PC increment. Direct addressing records
-`(DP << 7) | dma` for CPL=0, a 7-bit dma, and no AR side effects; SP-boundary
-overflow/wrap remains unresolved.
+no status-bit effects and only a PC increment. Corrected direct-addressing
+evidence records a 7-bit dma; the implemented formation requirement covers the
+valid CPL=0 concatenation of the 9-bit DP field and dma into a 16-bit
+data-memory word address. A separate planned requirement and test cover the
+source's statement that direct addressing leaves DP and SP unchanged; this
+register-effect behavior is not folded into the implemented formation claim.
+The source does not specify AR effects. SP-boundary overflow/wrap remains
+unresolved.
 
 ## Requirements
 
@@ -71,8 +77,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-NOP-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-DECODE` |
 | `REQ-COMMON-NOP-SEMANTICS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-SEMANTICS` |
 | `REQ-COMMON-NOP-PC-SEQUENTIAL` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.1-P6-3`, `E-TI-C54X-SPRU131G-S6.2-P6-4`, `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-PC-SEQUENTIAL` |
-| `REQ-COMMON-DIRECT-DP-ADDRESS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | `T-COMMON-DIRECT-DP` |
-| `REQ-COMMON-DIRECT-SP-WRAP` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | — |
+| `REQ-COMMON-DIRECT-DP-ADDRESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` | `T-COMMON-DIRECT-DP` |
+| `REQ-COMMON-DIRECT-REGISTER-NONMUTATION` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` | `T-COMMON-DIRECT-REGISTER-NONMUTATION` |
+| `REQ-COMMON-DIRECT-SP-WRAP` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` | — |
 | `REQ-PROJECT-CPU-SHELL` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `include/ti_c54x/` | `E-PROJECT-CPU-SHELL-API` | `T-PROJECT-CPU-SHELL` |
 | `REQ-PROJECT-U40-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-U40-FOUNDATION` | `T-PROJECT-U40-FOUNDATION` |
 | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/debug/` | `E-PROJECT-OBSERVER-NONINTERFERENCE` | `T-PROJECT-OBSERVER-NONINTERFERENCE` |
@@ -90,7 +97,8 @@ exist in the repository.
 | `T-COMMON-NOP-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_nop_decode.c` | `null` | `REQ-COMMON-NOP-DECODE` |
 | `T-COMMON-NOP-SEMANTICS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/test_nop.c` | `null` | `REQ-COMMON-NOP-SEMANTICS` |
 | `T-COMMON-NOP-PC-SEQUENTIAL` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_nop_flow.c` | `null` | `REQ-COMMON-NOP-PC-SEQUENTIAL` |
-| `T-COMMON-DIRECT-DP` | PLANNED | COMMON_TI | `tests/unit/address/test_direct.c` | `null` | `REQ-COMMON-DIRECT-DP-ADDRESS` |
+| `T-COMMON-DIRECT-REGISTER-NONMUTATION` | PLANNED | COMMON_TI | `tests/unit/address/test_direct_register_effects.c` | `null` | `REQ-COMMON-DIRECT-REGISTER-NONMUTATION` |
+| `T-COMMON-DIRECT-DP` | PASSING | COMMON_TI | `tests/unit/address/test_direct_dp.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.direct_dp"}` | `REQ-COMMON-DIRECT-DP-ADDRESS` |
 | `T-PROJECT-CPU-SHELL` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_api.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_api"}` | `REQ-PROJECT-CPU-SHELL` |
 | `T-PROJECT-U40-FOUNDATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_arithmetic40.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40"}` | `REQ-PROJECT-U40-FOUNDATION` |
 | `T-PROJECT-OBSERVER-NONINTERFERENCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/debug/test_observer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.observer"}` | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` |
@@ -100,15 +108,15 @@ exist in the repository.
 
 Source and evidence corrections receive new IDs; Git review enforces history, but
 the registry does not overclaim that a checker can detect historical edits.
-Requirement and test IDs are also stable. The schema's tombstone arrays for
-targets, sources, evidence, requirements, and tests are currently empty. A
-retired ID is recorded there for the ABI-major lifetime and is never silently
-reused.
+Requirement and test IDs are also stable. The evidence tombstone array records
+the correction below; the target, source, requirement, and test tombstone arrays
+remain empty. A retired ID is retained for the ABI-major lifetime and is never
+silently reused.
 
 | Category | ID | Retired ABI | Reason | Replacement |
 |---|---|---|---|---|
 | targets | — | — | No tombstones currently recorded | — |
 | sources | — | — | No tombstones currently recorded | — |
-| evidence | — | — | No tombstones currently recorded | — |
+| evidence | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | 0 | The original assertion overclaimed AR effects; the corrected record narrows the source to its printed field and address-construction statements. | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` |
 | requirements | — | — | No tombstones currently recorded | — |
 | tests | — | — | No tombstones currently recorded | — |

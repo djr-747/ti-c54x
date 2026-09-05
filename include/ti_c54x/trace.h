@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <ti_c54x/bus.h>
+#include <ti_c54x/address.h>
 
 #ifdef __cplusplus
 extern "C" {
