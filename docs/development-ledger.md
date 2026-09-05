@@ -567,3 +567,21 @@ rewritten after publication.
 - Follow-up: P2-W4 should add a private transactional sequencer seam that validates
   an entire address effect before applying its pre- or post-access AR update, with
   rejection paths proven to leave architectural state unchanged.
+
+## 2026-09-06 — P2-W3 verification — Remote architectural-state gates
+
+- Evidence: GitHub Actions run `33988181708` passed the pushed P2-W3 implementation
+  and completion-ledger commits.
+- Coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled CMake
+  library configurations, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: the architectural register-state foundation is `Complete`. Address
+  generation remains `Active` until a transactional sequencer can validate and
+  apply the existing address effects without partial state mutation.
+- Knobs and integration: unchanged. No emulator checkout, firmware image, hosted
+  environment gate, diagnostic control, or project-specific integration was needed
+  to build or prove this slice.
+- Follow-up: begin P2-W4 with rejection-first tests for whole-effect validation,
+  pre/post phase matching, known source ARs, stale-before detection, and bytewise
+  state preservation on every rejected application.
