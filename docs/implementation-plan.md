@@ -18,7 +18,8 @@ function-pointer dispatch tables.
 | Work piece | State | Exit condition |
 |---|---|---|
 | Repository charter and isolation | Complete | Standalone rules and dependency boundary documented |
-| Provenance and licensing ledger | Active | Source lineage, evidence rules, and unresolved license decision recorded |
+| Legacy lineage audit | Complete | Exact imported interpreter base and Osmocom relationship recorded |
+| Distribution license decision | Blocked on owner/legal review | New repository license and permitted evidence inputs selected |
 | CPU and bus API shell | Active | Two isolated instances fetch through caller buses and trap unimplemented words |
 | 40-bit arithmetic foundation | Active | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
 | Standalone build and CI | Active | CMake/CTest, warnings, sanitizers, and consumer smoke test pass locally |
