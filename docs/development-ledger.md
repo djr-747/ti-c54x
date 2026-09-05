@@ -1013,3 +1013,65 @@ rewritten after publication.
 - Follow-up: delegate state, address, sequencer, and evidence/build ownership to
   Luna workers; integrate and independently review before the one implementation
   commit and ledger-only completion entry.
+
+## 2026-09-06 — P2-W7 completion — Direct-address source snapshots
+
+- Implementation commit: `c6eeb07` (`P2-W7: add direct address source snapshots`).
+- Plan result: direct-address source snapshots moved from `Active` to `Complete`.
+  The broader address-generation phase remains `Active` for explicitly deferred
+  addressing families, modes, and unresolved boundary behavior.
+- Ownership: `src/address/address_effect.h` now owns one tagged, value-owned source
+  snapshot shared by indirect AR and direct DP/SP effects;
+  `src/address/direct_dp.[ch]` owns checked CPL=0 DP9:dma7 WORD16 planning;
+  `src/address/direct_sp.[ch]` owns checked non-overflow CPL=1 SP16+dma7 WORD16
+  planning; `src/state/` owns knownness-aware DP/CPL access; and
+  `src/sequencer/address_effect_apply.[ch]` owns source/policy validation, stale
+  snapshot rejection, and transactional application. Tests remain under matching
+  address, state, and sequencer owners.
+- Effect contract: every successful direct result carries a canonical WORD16
+  operand, its true copied DP9/dma7 or SP16/dma7 source, the exact CPL policy, and
+  an all-zero no-update descriptor. Every rejected planner result retains an
+  all-zero effect. Existing indirect effects migrated from an AR index to an AR
+  index/value snapshot without changing their admitted arithmetic or mode policy.
+- Boundary decision: CPL=0 exhausts all 512×128 valid field combinations. CPL=1
+  exhausts every SP16×dma7 pair whose mathematical sum is at most `0xFFFF` and
+  returns `UNRESOLVED_BOUNDARY` above it. No direct long32 word pairing or SP wrap
+  behavior was inferred.
+- State and application contract: DP and CPL have checked field-width,
+  knownness, rejected-call nonmutation, and cross-field-isolation accessors. The
+  sequencer validates intrinsic operand/source/update/policy shape before phase,
+  mode, and source state; reports unknown mode, unknown source, and stale source
+  separately; and preserves complete state on every rejection. Accepted direct
+  effects read only CPL plus their tagged DP or SP and perform no address-register
+  write.
+- TDD proof: common tests exhaust the DP and admitted SP domains independently,
+  then exhaust planner-produced application while leaving AR state unknown so an
+  accidental AR dependency fails. Project tests cover malformed tags, fields,
+  operand/source relations, policies, forbidden updates and direct long32 shape,
+  non-OK-result precedence, unknown/stale states, exact-zero planner failures, and
+  bytewise transactional state preservation.
+- Evidence: the live registry now contains 2 targets, 7 sources, 34 immutable
+  evidence records, 39 requirements, and 31 tests (27 `PASSING`, 4 `PLANNED`).
+  COMMON_TI claims remain limited to TI `SPRU131G` Rev G section 5.4's direct
+  selection, safe address formation, and DP/SP nonmutation. Project evidence owns
+  checked rejection, source snapshots, status precedence, and transaction
+  mechanics. SP wrap remains `UNRESOLVED`.
+- Review corrections: orchestration review restored generic AR/NONE policy
+  compatibility, removed a truncating SP-sum helper outside the admitted domain,
+  made successful direct results fully zero-initialized, strengthened malformed
+  source and precedence vectors, narrowed common claims to admitted WORD16 forms,
+  and aligned module/evidence language with the shared application seam. An
+  independent Luna closure review found no blockers. It recorded the neutral
+  `dma7` carrier reuse from `direct_dp.h` as a possible future extraction only if
+  the direct-address family grows; the dependency contains no state or logic.
+- Local validation: strict `make test` and ASan/UBSan `make test` passed every C
+  executable and all 96 Python quality tests; source boundaries passed for 52
+  files; evidence, knob, and observer-disabled artifact checks passed; and
+  `make PYTHON=/definitely/missing build` proved the compiler-only standalone
+  path.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` control,
+  environment read, diagnostic hook, firmware input, emulator dependency, global
+  mutable state, or public private-header exposure was added.
+- Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
+  select the next evidence-led address-foundation slice. Emulator integration
+  remains deferred until provenance and standalone contracts are stable.
