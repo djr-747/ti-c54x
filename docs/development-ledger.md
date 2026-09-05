@@ -230,3 +230,21 @@ rewritten after publication.
 - Knobs and architecture: unchanged.
 - Follow-up: establish the common-core target and evidence registry before adding
   architectural state, address generation, decode, or opcode semantics.
+
+## 2026-09-06 — P2-W0 — Common-core evidence baseline
+
+- Plan: pin the first architecture target and make requirement/evidence/test links
+  machine-checkable before adding ISA behavior.
+- State: active; implementation commit pending.
+- Intended ownership: a versioned evidence registry under `config/`, human scope and
+  evidence documentation under `docs/`, independent schema/repository checks under
+  `tools/quality/`, focused negative fixtures under `tests/contract/quality/`, and
+  standalone Make/CMake/CTest/CI integration.
+- Required validation: schema and repository fixtures; live evidence check; existing
+  structural, strict C11, sanitizer, CMake/CTest, install, and consumer gates.
+- Decisions: target a device-neutral common C54x CPU first; keep XPC, device memory
+  maps, exact interrupt sources/vectors, peripherals, and machine-cycle claims in
+  later profiles; cite official TI document metadata and narrow derived assertions
+  without copying manual prose, figures, or opcode tables.
+- Follow-up: review the evidence schema and baseline boundaries, commit and verify
+  the gate, then begin requirement-backed register/address foundations.

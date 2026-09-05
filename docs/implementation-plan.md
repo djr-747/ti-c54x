@@ -26,8 +26,9 @@ function-pointer dispatch tables.
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
 | Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
-| Address generation | Blocked on foundations | All address effects can be tested without opcode execution |
-| Opcode builder and decode | Blocked on foundations | Every first word classifies uniquely; semantics may trap |
+| Common-core target and evidence registry | Active | Device-neutral scope, official sources, requirements, owners, and test links are machine checked |
+| Address generation | Blocked on evidence baseline | All address effects can be tested without opcode execution |
+| Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
 ## Delivery order
@@ -41,6 +42,11 @@ function-pointer dispatch tables.
 7. Implement opcode families as requirement-backed vertical slices.
 8. Add timing and silicon devices only from pinned evidence.
 9. Vendor a release into emulators through separate adapters.
+
+The first architecture target is a device-neutral common C54x core. A concrete
+silicon profile is added separately after common CPU semantics are stable; no
+device memory map, peripheral, vector table, XPC extension, or timing promise may
+leak into the common target without profile-specific evidence and tests.
 
 ## Work-piece identifiers and ledger
 
