@@ -135,3 +135,20 @@ rewritten after publication.
 - Knobs and architecture: unchanged.
 - Follow-up: require the replacement GitHub Actions run to pass before marking the
   standalone build/CI plan row complete.
+
+## 2026-09-06 — P1-W1 correction — Observer test include ownership
+
+- Further corrects the remote validation state of `P1-W1`.
+- Implementation commit: `3eef0c1` (`fix: propagate observer test API headers`).
+- Ledger commit: this entry's commit.
+- Evidence: replacement GitHub Actions run `33977097573` built the core and the
+  observer-enabled test library, then failed because that test library marked the
+  public include tree `PRIVATE`; its linked observer test therefore could not include
+  `ti_c54x/cpu.h`.
+- Fix: the observer-enabled test variant now publishes only the public `include/`
+  usage requirement and keeps `src/` private.
+- Validation: `make test` and staged whitespace validation passed locally. Remote
+  CMake/CTest/package validation remains pending the next push.
+- Knobs and architecture: unchanged.
+- Follow-up: require the replacement GitHub Actions run to pass before marking the
+  standalone build/CI plan row complete.
