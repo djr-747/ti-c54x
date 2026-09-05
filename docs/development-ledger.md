@@ -117,3 +117,21 @@ rewritten after publication.
 - Follow-up: confirm GCC/Clang CMake, CTest, installation, and downstream-consumer
   jobs in GitHub Actions; then implement the structural boundary/registry gate
   before address-generation work.
+
+## 2026-09-06 — P1-W1 correction — CMake private-header include
+
+- Corrects the validation state recorded by the `P1-W1` completion entry.
+- Implementation commit: `7c997bb` (`fix: make CMake foundation build self-contained`).
+- Ledger commit: this entry's commit.
+- Evidence: GitHub Actions run `33977004640` configured successfully but all three
+  jobs failed while compiling `src/foundation/arithmetic40.c`; its include spelling
+  depended on the direct Makefile's `-Isrc` path, which the library CMake target did
+  not expose.
+- Fix: the implementation now includes its private header from the same owning
+  directory. CI also uses `actions/checkout@v5` to match the runner's Node.js 24
+  runtime.
+- Validation: `make test` and staged whitespace validation passed locally after the
+  correction. Remote CMake/CTest/package validation is pending the corrective push.
+- Knobs and architecture: unchanged.
+- Follow-up: require the replacement GitHub Actions run to pass before marking the
+  standalone build/CI plan row complete.
