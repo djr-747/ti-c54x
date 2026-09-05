@@ -82,3 +82,38 @@ rewritten after publication.
 - Follow-up: owner/legal selection of the distribution license and permitted use of
   TI manuals, DSP images, GNU metadata, and generated vectors before integration or
   public distribution.
+
+## 2026-09-06 — P1-W1 completion — Standalone CPU foundations
+
+- Corrects the active-state entry for `P1-W1` above; that entry remains unchanged as
+  the record of the work piece when it began.
+- Plan: CPU/bus API shell, 40-bit arithmetic foundation, standalone build, and
+  diagnostic isolation.
+- Implementation commit: `4e26e19` (`P1-W1: establish standalone CPU foundations`).
+- Ledger commit: this entry's commit.
+- Ownership: public lifecycle/bus/state/trace contracts; `src/cpu/` orchestration;
+  `src/foundation/` width-defined arithmetic; `src/debug/` copied observer state and
+  gating; mirrored unit tests; dependency-free test support; package/build metadata;
+  and the minimal standalone consumer.
+- Validation: `make test` passed under strict C11 warnings; `make
+  TI_C54X_ENABLE_SANITIZERS=1 test` passed under ASan/UBSan; the observer-disabled
+  archive/object symbol inspection contained no observer callback or gate symbols;
+  staged whitespace validation passed. CMake was unavailable in the local tool
+  environment, so package/CTest verification remains assigned to remote CI.
+- Decisions: program addresses use a 32-bit word-address carrier; data and I/O use
+  distinct 16-bit word-address types; CPU storage is opaque and caller-owned;
+  execution budgets count instructions; an unimplemented opcode traps without
+  retiring or advancing PC; and arithmetic uses canonical unsigned 40-bit carriers
+  to avoid undefined or implementation-defined signed behavior.
+- Knobs: activated `TI_C54X_BUILD_TESTS`, `TI_C54X_BUILD_EXAMPLES`,
+  `TI_C54X_ENABLE_SANITIZERS`, `TI_C54X_WARNINGS_AS_ERRORS`,
+  `TI_C54X_ENABLE_OBSERVERS`, and the copied per-instance `trace.event_mask`. Their
+  classes, owners, defaults, tests, dispositions, and exit criteria are registered
+  in `docs/knobs.md`.
+- Deviation: the observer compile-out seam joined this foundation commit because the
+  initialization/configuration contract already exposed tracing. The planned
+  machine-readable knob registry and source-boundary audit remain a separate work
+  piece.
+- Follow-up: confirm GCC/Clang CMake, CTest, installation, and downstream-consumer
+  jobs in GitHub Actions; then implement the structural boundary/registry gate
+  before address-generation work.
