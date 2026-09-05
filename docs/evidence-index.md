@@ -43,6 +43,13 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6.1-P6-3` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.1, `6-3` |
 | `E-TI-C54X-SPRU131G-S6.2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
 | `E-TI-C54X-SPRU131G-S6.9-P6-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.9, `6-25` |
+| `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-2`–`4-5` |
+| `E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.2, `4-6`–`4-8` |
+| `E-TI-C54X-SPRU131G-S3.3.4.6-P3-28` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §3.3.4.6, `3-28` |
+| `E-TI-C54X-SPRU131G-S3.3.4.7-P3-28` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §3.3.4.7, `3-28` |
+| `E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
+| `E-TI-C54X-SPRU131G-S6.7-P6-20` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.7, `6-20` |
+| `E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.1, `6-27`–`6-28` |
 | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 NOP, `4-121` |
 | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.4, `5-7`–`5-9` |
 | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.1, `5-10`–`5-11` |
@@ -55,6 +62,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-U40-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/foundation/arithmetic40.h` anchor `ti_c54x_u40_t` |
 | `E-PROJECT-OBSERVER-NONINTERFERENCE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `tests/unit/debug/test_observer.c` anchor `test_observation_does_not_change_architectural_result` |
 | `E-PROJECT-EVIDENCE-REGISTRY` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `config/evidence.json` anchor `ti-c54x-evidence-registry` |
+| `E-PROJECT-ARCH-STATE-KNOWNNESS` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/state/arch_state.h` anchor `TI_C54X_ARCH_STATE_UNKNOWN` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -68,6 +76,15 @@ register-effect behavior is not folded into the implemented formation claim.
 The source does not specify AR effects. SP-boundary overflow/wrap remains
 unresolved.
 
+The private state seed is narrower than the full sequencer reset requirement:
+`REQ-COMMON-ARCH-STATE-RESET-SEED` proves the fixed-width PC/IFR/RC and raw
+ST0/ST1/PMST reset values and known masks using
+`T-COMMON-ARCH-STATE-RESET-SEED`. AR0–AR7 and SP remain physically stored but
+unknown after reset. `REQ-PROJECT-ARCH-STATE-KNOWNNESS` proves that checked
+accessors preserve outputs on invalid or unknown reads, reset stale storage and
+knownness deterministically, and establish known values only through writes;
+this is a project contract and does not claim CPU-shell reset integration.
+
 ## Requirements
 
 Requirement state and test state are separate. Requirements use exactly
@@ -79,6 +96,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | Requirement ID | State | Target | Claim kind | Owner | Evidence IDs | Test IDs |
 |---|---|---|---|---|---|---|
 | `REQ-COMMON-RESET-DOCUMENTED-SUBSET` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | `T-COMMON-RESET-SUBSET` |
+| `REQ-COMMON-ARCH-STATE-RESET-SEED` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/` | `E-TI-C54X-SPRU131G-S6.9-P6-25`, `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5`, `E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8`, `E-TI-C54X-SPRU131G-S3.3.4.6-P3-28`, `E-TI-C54X-SPRU131G-S3.3.4.7-P3-28`, `E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4`, `E-TI-C54X-SPRU131G-S6.7-P6-20`, `E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28` | `T-COMMON-ARCH-STATE-RESET-SEED` |
 | `REQ-COMMON-RESET-UNSPECIFIED-FIELDS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | — |
 | `REQ-COMMON-NOP-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-DECODE` |
 | `REQ-COMMON-NOP-SEMANTICS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-SEMANTICS` |
@@ -98,6 +116,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-U40-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-U40-FOUNDATION` | `T-PROJECT-U40-FOUNDATION` |
 | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/debug/` | `E-PROJECT-OBSERVER-NONINTERFERENCE` | `T-PROJECT-OBSERVER-NONINTERFERENCE` |
 | `REQ-PROJECT-EVIDENCE-REGISTRY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-EVIDENCE-REGISTRY` | `T-PROJECT-EVIDENCE-REGISTRY` |
+| `REQ-PROJECT-ARCH-STATE-KNOWNNESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-STATE-KNOWNNESS` | `T-PROJECT-ARCH-STATE-KNOWNNESS` |
 
 ## Tests
 
@@ -108,6 +127,7 @@ exist in the repository.
 | Test ID | State | Scope | Path | Runner | Requirement IDs |
 |---|---|---|---|---|---|
 | `T-COMMON-RESET-SUBSET` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_reset.c` | `null` | `REQ-COMMON-RESET-DOCUMENTED-SUBSET` |
+| `T-COMMON-ARCH-STATE-RESET-SEED` | PASSING | COMMON_TI | `tests/unit/state/test_arch_state_reset.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_reset"}` | `REQ-COMMON-ARCH-STATE-RESET-SEED` |
 | `T-COMMON-NOP-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_nop_decode.c` | `null` | `REQ-COMMON-NOP-DECODE` |
 | `T-COMMON-NOP-SEMANTICS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/test_nop.c` | `null` | `REQ-COMMON-NOP-SEMANTICS` |
 | `T-COMMON-NOP-PC-SEQUENTIAL` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_nop_flow.c` | `null` | `REQ-COMMON-NOP-PC-SEQUENTIAL` |
@@ -121,6 +141,7 @@ exist in the repository.
 | `T-PROJECT-U40-FOUNDATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_arithmetic40.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40"}` | `REQ-PROJECT-U40-FOUNDATION` |
 | `T-PROJECT-OBSERVER-NONINTERFERENCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/debug/test_observer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.observer"}` | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` |
 | `T-PROJECT-EVIDENCE-REGISTRY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/test_evidence_registry.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-EVIDENCE-REGISTRY` |
+| `T-PROJECT-ARCH-STATE-KNOWNNESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_arch_state_knownness.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_knownness"}` | `REQ-PROJECT-ARCH-STATE-KNOWNNESS` |
 
 ## Correction and tombstone policy
 

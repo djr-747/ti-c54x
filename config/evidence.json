@@ -230,6 +230,118 @@
       "assertion": "The reset description gives PC=FF80h, IPTR=1FFh, IFR=0, RC=0, ARP=0, ASM=0, AVIS=0, BRAF=0, C16=0, C=1, CLKOFF=0, CMPT=0, CPL=0, DP=0, DROM=0, FRCT=0, HM=0, INTM=1, OVA=0, OVB=0, OVM=0, OVLY=0, SXM=1, TC=1, and XF=1. It discusses XPC only where applicable and that field is excluded from this common target. SP and remaining status bits are not initialized by this reset source, so no value is asserted for them."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.1.1",
+        "printed_page_start": "4-2",
+        "printed_page_end": "4-5"
+      },
+      "assertion": "ST0 and ST1 are 16-bit status registers. ST0 assigns ARP to bits 15-13, TC to bit 12, C to bit 11, OVA to bit 10, OVB to bit 9, and DP to bits 8-0. ST1 assigns BRAF to bit 15, CPL to bit 14, XF to bit 13, HM to bit 12, INTM to bit 11, reserves bit 10 as read-zero, OVM to bit 9, SXM to bit 8, C16 to bit 7, FRCT to bit 6, CMPT to bit 5, and ASM to bits 4-0; Table 4-1 and Table 4-2 provide the listed reset values."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.1.2",
+        "printed_page_start": "4-6",
+        "printed_page_end": "4-8"
+      },
+      "assertion": "PMST is a 16-bit processor-mode status register with IPTR in bits 15-7, MP/MC in bit 6, OVLY in bit 5, AVIS in bit 4, DROM in bit 3, CLKOFF in bit 2, SMUL in bit 1, and SST in bit 0. IPTR resets to 1FFh, OVLY, AVIS, DROM, and CLKOFF reset to zero, MP/MC is sampled from the reset pin, and SMUL/SST are not assigned a common reset value on devices where they are unsupported."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4.6-P3-28",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4.6",
+        "printed_page_start": "3-28",
+        "printed_page_end": "3-28"
+      },
+      "assertion": "The auxiliary-register bank consists of eight 16-bit registers AR0 through AR7 used to generate data-space addresses and as general-purpose registers; this definition does not assign a reset value."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4.7-P3-28",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4.7",
+        "printed_page_start": "3-28",
+        "printed_page_end": "3-28"
+      },
+      "assertion": "The stack-pointer register SP is a 16-bit register containing the top system-stack address. This register-definition record assigns no reset value."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.2",
+        "printed_page_start": "6-4",
+        "printed_page_end": "6-4"
+      },
+      "assertion": "The common program counter PC is a 16-bit register and Table 6-2 loads FF80h on reset. This record does not establish XPC semantics or any extended program-address behavior."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.7-P6-20",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.7",
+        "printed_page_start": "6-20",
+        "printed_page_end": "6-20"
+      },
+      "assertion": "The single-repeat counter RC is a 16-bit register loaded by repeat instructions. This register-definition record assigns no reset value."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.10.1",
+        "printed_page_start": "6-27",
+        "printed_page_end": "6-28"
+      },
+      "assertion": "IFR is a memory-mapped interrupt-flag register whose individual interrupt-source meanings vary by device. The common target therefore stores a raw register value without assigning device-specific flag names."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4.NOP-P4-121",
       "immutable": true,
       "state": "PINNED",
@@ -410,6 +522,20 @@
         "anchor": "ti-c54x-evidence-registry"
       },
       "assertion": "The versioned registry is the project contract for target, source, evidence, requirement, test, and tombstone identifiers; this is a repository governance claim, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-ARCH-STATE-KNOWNNESS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/state/arch_state.h",
+        "anchor": "TI_C54X_ARCH_STATE_UNKNOWN"
+      },
+      "assertion": "The private architectural-state API distinguishes OK, UNKNOWN, and INVALID_ARGUMENT, preserves caller outputs on rejected reads, deterministically clears stale storage and knownness on reset, and treats physically zeroed AR/SP storage as non-architectural until an explicit write establishes knownness. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -422,6 +548,25 @@
       "claim": "Implement the reset values explicitly documented for the common architecture: PC=FF80h, IPTR=1FFh, IFR=0, RC=0, ARP=0, ASM=0, AVIS=0, BRAF=0, C16=0, C=1, CLKOFF=0, CMPT=0, CPL=0, DP=0, DROM=0, FRCT=0, HM=0, INTM=1, OVA=0, OVB=0, OVM=0, OVLY=0, SXM=1, TC=1, and XF=1.",
       "evidence_ids": ["E-TI-C54X-SPRU131G-S6.9-P6-25"],
       "test_ids": ["T-COMMON-RESET-SUBSET"]
+    },
+    {
+      "id": "REQ-COMMON-ARCH-STATE-RESET-SEED",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/state/",
+      "claim": "Construct private common architectural state with the documented reset seed: 16-bit PC=FF80h, raw IFR=0, RC=0, and the registered ST0, ST1, and PMST reset fields at their documented widths and values; AR0-AR7 and SP carry no reset knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6.9-P6-25",
+        "E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5",
+        "E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8",
+        "E-TI-C54X-SPRU131G-S3.3.4.6-P3-28",
+        "E-TI-C54X-SPRU131G-S3.3.4.7-P3-28",
+        "E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4",
+        "E-TI-C54X-SPRU131G-S6.7-P6-20",
+        "E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28"
+      ],
+      "test_ids": ["T-COMMON-ARCH-STATE-RESET-SEED"]
     },
     {
       "id": "REQ-COMMON-RESET-UNSPECIFIED-FIELDS",
@@ -636,6 +781,16 @@
       "claim": "Validate the versioned evidence registry's schema, target/source/evidence/requirement/test cross-references, path states, and exact reverse links in repository quality checks.",
       "evidence_ids": ["E-PROJECT-EVIDENCE-REGISTRY"],
       "test_ids": ["T-PROJECT-EVIDENCE-REGISTRY"]
+    },
+    {
+      "id": "REQ-PROJECT-ARCH-STATE-KNOWNNESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Private state reset deterministically clears stale storage and knownness; checked accessors distinguish known and unknown AR/SP values, preserve caller outputs and state on rejected calls, and mark values known only after checked writes.",
+      "evidence_ids": ["E-PROJECT-ARCH-STATE-KNOWNNESS"],
+      "test_ids": ["T-PROJECT-ARCH-STATE-KNOWNNESS"]
     }
   ],
   "tests": [
@@ -646,6 +801,14 @@
       "path": "tests/unit/sequencer/test_reset.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-RESET-DOCUMENTED-SUBSET"]
+    },
+    {
+      "id": "T-COMMON-ARCH-STATE-RESET-SEED",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/state/test_arch_state_reset.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_reset"},
+      "requirement_ids": ["REQ-COMMON-ARCH-STATE-RESET-SEED"]
     },
     {
       "id": "T-COMMON-NOP-DECODE",
@@ -755,6 +918,14 @@
       "path": "tests/contract/quality/test_evidence_registry.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-EVIDENCE-REGISTRY"]
+    },
+    {
+      "id": "T-PROJECT-ARCH-STATE-KNOWNNESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_arch_state_knownness.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_knownness"},
+      "requirement_ids": ["REQ-PROJECT-ARCH-STATE-KNOWNNESS"]
     }
   ]
 }

@@ -115,6 +115,36 @@ unsupported MOD3 reads, and unresolved boundaries return explicit statuses and
 an all-zero effect. The project contract does not elevate those API details into
 architectural evidence.
 
+## Private architectural register-state seed
+
+`src/state/` owns a private fixed-width register representation used by later
+address and sequencer seams. `src/state/register_layout.h` owns the raw ST0,
+ST1, and PMST masks; it deliberately uses no C bitfields. ST0 is represented as
+ARP[15:13], TC[12], C[11], OVA[10], OVB[9], and DP[8:0]. ST1 is represented as
+BRAF[15], CPL[14], XF[13], HM[12], INTM[11], reserved bit 10, OVM[9], SXM[8],
+C16[7], FRCT[6], CMPT[5], and ASM[4:0]. PMST is represented as IPTR[15:7],
+MP/MC[6], OVLY[5], AVIS[4], DROM[3], CLKOFF[2], SMUL[1], and SST[0]. The
+corresponding layout evidence is pinned as
+`E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5` and
+`E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8`.
+
+`ti_c54x_arch_state_reset_common()` seeds only the documented common reset
+values: 16-bit PC `FF80h`, raw 16-bit IFR `0`, 16-bit RC `0`, ST0 `1800h`, ST1
+`2900h`, and PMST `FF80h` with known masks `FFFFh`, `FBFFh`, and `FFBCh`.
+`E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4`,
+`E-TI-C54X-SPRU131G-S6.7-P6-20`, and
+`E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28` pin the register widths and reset
+actions; the §6.9 record remains the authority for the complete listed reset
+subset. The private state keeps separate knownness masks, so zero-filled
+AR0–AR7 and SP storage is not treated as an architectural value. Their reset
+values are not asserted; callers establish them through checked writes.
+
+The public `ti_c54x_config.reset_pc_word` remains a project bootstrap setting
+owned by the CPU shell. It is not the TI hardware-reset value and is intentionally
+not migrated or embedded by this work piece. A future integration must preserve
+these two policies as separate contracts rather than making one field represent
+both a caller-selected start address and the documented `FF80h` reset vector.
+
 ## Evidence and conformance rules
 
 TI sources are identified by literature number, revision, ISO publication/revision

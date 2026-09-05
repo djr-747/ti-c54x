@@ -31,6 +31,7 @@ OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/foundation/arithmetic40.o \
 	$(BUILD_DIR)/obj/address/indirect_single.o \
+	$(BUILD_DIR)/obj/state/arch_state.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
 	$(BUILD_DIR)/obj/debug/observer.o
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
@@ -38,12 +39,15 @@ ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
 DIRECT_DP_TEST := $(BUILD_DIR)/test_direct_dp
 INDIRECT_SINGLE_WORD_TEST := $(BUILD_DIR)/test_indirect_single_word
 ADDRESS_EFFECT_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_contract
+ARCH_STATE_RESET_TEST := $(BUILD_DIR)/test_arch_state_reset
+ARCH_STATE_KNOWNNESS_TEST := $(BUILD_DIR)/test_arch_state_knownness
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
 OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
 OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_single.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
+	$(OBSERVER_OFF_DIR)/obj/state/arch_state.o \
 	$(OBSERVER_OFF_DIR)/obj/cpu/cpu.o \
 	$(OBSERVER_OFF_DIR)/obj/debug/observer.o
 
@@ -51,6 +55,7 @@ all: test
 
 build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) \
 	$(INDIRECT_SINGLE_WORD_TEST) $(ADDRESS_EFFECT_CONTRACT_TEST) \
+	$(ARCH_STATE_RESET_TEST) $(ARCH_STATE_KNOWNNESS_TEST) \
 	$(OBSERVER_TEST) \
 	$(OBSERVER_OFF_TEST) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
@@ -60,6 +65,8 @@ test: build quality-test
 	$(DIRECT_DP_TEST)
 	$(INDIRECT_SINGLE_WORD_TEST)
 	$(ADDRESS_EFFECT_CONTRACT_TEST)
+	$(ARCH_STATE_RESET_TEST)
+	$(ARCH_STATE_KNOWNNESS_TEST)
 	$(OBSERVER_TEST)
 	$(OBSERVER_OFF_TEST)
 	$(MINIMAL)
@@ -117,6 +124,18 @@ $(ADDRESS_EFFECT_CONTRACT_TEST): tests/unit/address/test_address_effect_contract
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
+$(ARCH_STATE_RESET_TEST): tests/unit/state/test_arch_state_reset.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/register_layout.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(ARCH_STATE_KNOWNNESS_TEST): tests/unit/state/test_arch_state_knownness.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/register_layout.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
 $(OBSERVER_TEST): tests/unit/debug/test_observer.c src/cpu/cpu.c \
 	src/debug/observer.c
 	@mkdir -p $(@D)
@@ -146,8 +165,10 @@ install: cmake-build
 format:
 	clang-format -i src/cpu/*.c src/debug/*.c src/foundation/*.c \
 		src/address/*.c src/address/*.h \
+		src/state/*.c src/state/*.h \
 		include/ti_c54x/*.h tests/unit/cpu/*.c tests/unit/debug/*.c \
-		tests/unit/foundation/*.c tests/unit/address/*.c examples/*.c
+		tests/unit/foundation/*.c tests/unit/address/*.c \
+		tests/unit/state/*.c examples/*.c
 
 clean:
 	@rm -rf -- build-fast build-cmake

@@ -1,0 +1,116 @@
+/* Module contract
+ * Owns: deterministic construction of the private common reset state and
+ * checked knownness-aware AR/SP mutation.
+ * Does not own: CPU lifecycle or configured bootstrap reset, address planning,
+ * effect sequencing, bus transfers, opcode semantics, diagnostics, or public
+ * ABI declarations.
+ */
+
+#include "arch_state.h"
+
+#include <stddef.h>
+#include <string.h>
+
+static uint8_t ar_known_bit(uint8_t index)
+{
+    return (uint8_t)(UINT8_C(1) << index);
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state)
+{
+    if (state == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+
+    memset(state, 0, sizeof(*state));
+    state->pc_word = UINT16_C(0xFF80);
+    state->ifr = UINT16_C(0);
+    state->rc = UINT16_C(0);
+    state->st0 = (uint16_t)(TI_C54X_ST0_TC_MASK | TI_C54X_ST0_C_MASK);
+    state->st1 = (uint16_t)(TI_C54X_ST1_XF_MASK | TI_C54X_ST1_INTM_MASK |
+                            TI_C54X_ST1_SXM_MASK);
+    state->pmst = TI_C54X_PMST_IPTR_MASK;
+    state->st0_known_mask = (uint16_t)(TI_C54X_ST0_ARP_MASK |
+                                       TI_C54X_ST0_TC_MASK |
+                                       TI_C54X_ST0_C_MASK |
+                                       TI_C54X_ST0_OVA_MASK |
+                                       TI_C54X_ST0_OVB_MASK |
+                                       TI_C54X_ST0_DP_MASK);
+    state->st1_known_mask = (uint16_t)(TI_C54X_ST1_BRAF_MASK |
+                                       TI_C54X_ST1_CPL_MASK |
+                                       TI_C54X_ST1_XF_MASK |
+                                       TI_C54X_ST1_HM_MASK |
+                                       TI_C54X_ST1_INTM_MASK |
+                                       TI_C54X_ST1_OVM_MASK |
+                                       TI_C54X_ST1_SXM_MASK |
+                                       TI_C54X_ST1_C16_MASK |
+                                       TI_C54X_ST1_FRCT_MASK |
+                                       TI_C54X_ST1_CMPT_MASK |
+                                       TI_C54X_ST1_ASM_MASK);
+    state->pmst_known_mask = (uint16_t)(TI_C54X_PMST_IPTR_MASK |
+                                        TI_C54X_PMST_OVLY_MASK |
+                                        TI_C54X_PMST_AVIS_MASK |
+                                        TI_C54X_PMST_DROM_MASK |
+                                        TI_C54X_PMST_CLKOFF_MASK);
+    state->scalar_known_mask = (uint8_t)(TI_C54X_ARCH_STATE_KNOWN_PC |
+                                         TI_C54X_ARCH_STATE_KNOWN_IFR |
+                                         TI_C54X_ARCH_STATE_KNOWN_RC);
+    state->ar_known_mask = UINT8_C(0);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_ar(const ti_c54x_arch_state *state,
+                           uint8_t index,
+                           uint16_t *value)
+{
+    if (state == NULL || value == NULL || index >= 8U) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    if ((state->ar_known_mask & ar_known_bit(index)) == 0U) {
+        return TI_C54X_ARCH_STATE_UNKNOWN;
+    }
+    *value = state->ar[index];
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_ar(ti_c54x_arch_state *state,
+                            uint8_t index,
+                            uint16_t value)
+{
+    if (state == NULL || index >= 8U) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    state->ar[index] = value;
+    state->ar_known_mask = (uint8_t)(state->ar_known_mask | ar_known_bit(index));
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_sp(const ti_c54x_arch_state *state,
+                           uint16_t *value)
+{
+    if (state == NULL || value == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    if ((state->scalar_known_mask & TI_C54X_ARCH_STATE_KNOWN_SP) == 0U) {
+        return TI_C54X_ARCH_STATE_UNKNOWN;
+    }
+    *value = state->sp;
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_sp(ti_c54x_arch_state *state,
+                            uint16_t value)
+{
+    if (state == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    state->sp = value;
+    state->scalar_known_mask =
+        (uint8_t)(state->scalar_known_mask | TI_C54X_ARCH_STATE_KNOWN_SP);
+    return TI_C54X_ARCH_STATE_OK;
+}

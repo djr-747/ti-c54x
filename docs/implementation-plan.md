@@ -27,7 +27,7 @@ function-pointer dispatch tables.
 | Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
 | Common-core target and evidence registry | Complete | Device-neutral scope, official sources, requirements, owners, and test links are machine checked |
-| Architectural register-state foundation | Active | Private fixed-layout state seeds the documented common reset subset while every unspecified value remains explicitly unknown |
+| Architectural register-state foundation | Complete | Private fixed-layout state seeds the documented common reset subset while every unspecified value remains explicitly unknown |
 | Address generation | Active | All address effects can be tested without opcode execution |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |

@@ -65,6 +65,38 @@ add_test(NAME ti_c54x.address_effect_contract
     COMMAND ti_c54x_test_address_effect_contract
 )
 
+add_executable(ti_c54x_test_arch_state_reset
+    unit/state/test_arch_state_reset.c
+)
+target_compile_features(ti_c54x_test_arch_state_reset PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_arch_state_reset PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_arch_state_reset PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_arch_state_reset)
+ti_c54x_enable_sanitizers(ti_c54x_test_arch_state_reset)
+add_test(NAME ti_c54x.arch_state_reset
+    COMMAND ti_c54x_test_arch_state_reset
+)
+
+add_executable(ti_c54x_test_arch_state_knownness
+    unit/state/test_arch_state_knownness.c
+)
+target_compile_features(ti_c54x_test_arch_state_knownness PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_arch_state_knownness PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_arch_state_knownness PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_arch_state_knownness)
+ti_c54x_enable_sanitizers(ti_c54x_test_arch_state_knownness)
+add_test(NAME ti_c54x.arch_state_knownness
+    COMMAND ti_c54x_test_arch_state_knownness
+)
+
 add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})
 target_compile_features(ti_c54x_observer_off_artifact PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_observer_off_artifact PRIVATE
