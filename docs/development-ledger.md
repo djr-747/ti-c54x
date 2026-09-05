@@ -703,3 +703,56 @@ rewritten after publication.
 - Follow-up: select P2-W5 from evidence and dependency shape, preferring the smallest
   foundation that closes a real architectural gap without coupling sequencing to
   the public CPU shell.
+
+## 2026-09-06 — P2-W5 — CMPT=0/ARP=0 state policy
+
+- Plan: close the existing standard single-indirect mode-state requirement by
+  adding narrow knownness-aware ARP/CMPT field access, carrying the required state
+  policy in the value-owned address effect, and enforcing it transactionally before
+  any selected-AR read or write.
+- State: active; implementation commit pending.
+- Selection decision: choose mode-state policy before direct no-update effects or
+  32-bit single-indirect addressing. Direct effects cannot yet use the AR-specific
+  no-update carrier without redesign; 32-bit effects need a focused Table 5-4
+  evidence record, width/span representation, and explicit two-word boundary
+  policy. ARP/CMPT access is the immediate prerequisite already represented in the
+  private register state.
+- Ownership: `src/state/register_layout.h` will own ARP/CMPT field positions;
+  `src/state/arch_state.[ch]` will own narrow checked reads/writes and knownness;
+  `src/address/address_effect.h` will own the state-policy tag;
+  `src/address/indirect_single.c` will attach the CMPT=0/ARP=0 policy; and
+  `src/sequencer/address_effect_apply.[ch]` will validate the tagged policy before
+  AR state. Mirrored state and sequencer tests own their respective proofs.
+- Policy decision: use one private effect-carried enum with `NONE` and
+  `CMPT0_ARP0`, not a CMPT0-specific application wrapper. Unknown enum values are
+  malformed effects. `NONE` leaves unrelated future address families ungated;
+  planner-produced CMPT=0 single-indirect effects always carry `CMPT0_ARP0`.
+- State decision: expose only field-specific ARP (three-bit) and CMPT (one-bit)
+  accessors. Reads distinguish unknown state without changing caller output; writes
+  validate range, preserve unrelated raw bits and known masks, and establish only
+  the written field's knownness. Do not add raw ST0/ST1 access, infer reserved-bit
+  policy, or claim arbitrary data-memory status writes.
+- Sequencer decision: after intrinsic effect/phase/address validation, establish
+  that every required mode field is known, then require CMPT=0 and ARP=0. Report
+  unknown mode state separately from a known constraint violation; never silently
+  clear ARP or alter CMPT. Both precede selected-AR knownness/staleness and the one
+  commit point.
+- Evidence plan: reuse the exact ST0/ST1 layout/reset record and standard-indirect
+  §§5.5.1/5.5.5 records; add a focused §4.1.1 record only for independently claimed
+  field write surfaces, plus separate project records for checked field access and
+  effect-policy/status behavior. Promote the existing
+  `REQ-COMMON-INDIRECT-CMPT0-ARP-STATE` only when its sequencer test is green.
+- Required validation: exhaustive ARP values 0..7 and CMPT values 0..1; reset-known
+  reads; invalid/null/unknown calls and bytewise rejected-write preservation;
+  unrelated raw value/known-mask preservation; policy-tag production and zero error
+  effects; CMPT0/ARP0 MOD0–MOD3 success with ARP unchanged; nonzero and unknown mode
+  state rejection before AR handling; generic-policy noninterference; deterministic
+  status precedence; strict/sanitizer/compiler-only gates; independent review; and
+  post-push GCC/Clang/CMake/install/consumer CI.
+- Exclusions: CMPT=1 selection/writeback, direct DP/SP effects, 32-bit operands,
+  boundary wrap, bus ordering, opcode decode, CPU integration, timing, diagnostics,
+  raw status serialization, and device-specific behavior.
+- Knobs: none planned.
+- Follow-up: delegate TDD implementation and an independent field/policy evidence
+  review, then integrate only if raw register layout remains state-owned and all
+  failed policy checks are transactionally inert.

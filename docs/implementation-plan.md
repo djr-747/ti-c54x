@@ -30,6 +30,7 @@ function-pointer dispatch tables.
 | Architectural register-state foundation | Complete | Private fixed-layout state seeds the documented common reset subset while every unspecified value remains explicitly unknown |
 | Address generation | Active | All address effects can be tested without opcode execution |
 | Transactional address-effect application | Complete | A private sequencer seam validates a complete result and applies at most one phase-matched AR update with no partial mutation |
+| Standard-indirect mode-state policy | Active | CMPT=0 effects carry and enforce the ARP=0 invariant through owned state access without implicit repair or generic-mode coupling |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
