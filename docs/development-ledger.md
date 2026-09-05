@@ -963,3 +963,53 @@ rewritten after publication.
 - Follow-up: begin the next evidence-led address slice with explicit ownership and
   source-snapshot semantics; do not encode a direct DP/SP dependency as an
   indirect AR dependency.
+
+## 2026-09-06 — P2-W7 — Direct-address source snapshots
+
+- Plan: turn the existing pure CPL=0 direct-address formation helper into a
+  truthful WORD16 address-effect family, add only the evidenced non-overflow
+  CPL=1 SP form, and prove application without DP/SP mutation or AR coupling.
+- State: active; implementation commit pending.
+- Selection decision: include both direct bases in one source-snapshot migration.
+  The same TI section defines CPL selection, DP concatenation, positive SP offset,
+  and DP/SP nonmutation. Implementing DP alone would leave a temporary tagged seam
+  and force the same private effect migration again for SP.
+- Width decision: direct effects are WORD16 only. Figure 5-4 names a 32-bit-read
+  bus surface but §5.4 does not define direct long32 word pairing or ordering;
+  the existing generic long32 descriptor is not evidence to infer that behavior.
+- Boundary decision: CPL=0 concatenation covers the complete DP9×dma7 domain.
+  CPL=1 accepts only sums representable without crossing `0xFFFF` and returns the
+  existing unresolved-boundary status otherwise. No modulo wrap is inferred.
+- Effect-shape decision: replace the private indirect-only selected-AR field with
+  one tagged, value-owned source snapshot. AR sources retain index and before
+  value; DP and SP sources retain their true base plus the copied seven-bit
+  offset. Direct effects carry explicit CPL0/CPL1 policy, a canonical WORD16
+  operand, and no update. Failed planners retain an exact all-zero effect.
+- Application decision: the sequencer validates canonical operand, source, policy,
+  update, phase, and address relationships before reading state. It then checks
+  known CPL before policy value, reads only the tagged source through its owning
+  state accessor, rejects stale snapshots distinctly, and returns success without
+  mutation for direct effects. Existing indirect behavior remains unchanged.
+- Ownership: `src/address/direct_dp.[ch]` owns DP9:dma7 effects;
+  `src/address/direct_sp.[ch]` owns non-overflow SP+dma7 effects;
+  `src/address/address_effect.h` owns the shared value types; `src/state/` owns
+  checked DP/CPL access; and `src/sequencer/` owns transactional validation and
+  application. COMMON_TI and PROJECT tests mirror those owner directories.
+- TDD plan: exhaust the complete DP9×dma7 domain and every non-overflow SP×dma7
+  pair; prove exact operands, source snapshots, CPL policies, and no updates;
+  prove DP/CPL accessor widths, knownness, isolation, and rejected-call
+  nonmutation; migrate all indirect fixtures to the tagged source; and cover
+  malformed tags/fields/relations, unknown and stale source precedence, exact-zero
+  failures, and bytewise state preservation.
+- Evidence: reuse pinned TI `SPRU131G` Rev G §5.4, printed pages 5-7–5-9. Its
+  assertion already covers dma width, CPL selection, DP concatenation, positive SP
+  addition, and DP/SP nonmutation while explicitly excluding SP overflow/wrap.
+  Project evidence will own snapshot validation, status precedence, and the C
+  transaction seam.
+- Exclusions: direct long32 pairing, SP overflow/wrap, AR effects, memory-mapped
+  registers, bus selection/order, opcode decode, CPU lifecycle, timing,
+  diagnostics, device profiles, and emulator integration.
+- Knobs: none planned.
+- Follow-up: delegate state, address, sequencer, and evidence/build ownership to
+  Luna workers; integrate and independently review before the one implementation
+  commit and ledger-only completion entry.
