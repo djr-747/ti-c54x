@@ -756,3 +756,59 @@ rewritten after publication.
 - Follow-up: delegate TDD implementation and an independent field/policy evidence
   review, then integrate only if raw register layout remains state-owned and all
   failed policy checks are transactionally inert.
+
+## 2026-09-06 — P2-W5 completion — Standard-indirect state policy
+
+- Implementation commit: `3e46617` (`P2-W5: enforce standard indirect state
+  policy`).
+- Plan result: standard-indirect mode-state policy is `Complete`. Address
+  generation remains `Active` because direct-register effects, long operands,
+  remaining indirect modes, and boundary behavior remain deliberately deferred.
+- Ownership: `src/state/register_layout.h` owns the ARP/CMPT positions;
+  `src/state/arch_state.[ch]` owns checked field access and knownness;
+  `src/address/address_effect.h` owns the declarative state-policy tag;
+  `src/address/indirect_single.[ch]` owns policy production; and
+  `src/sequencer/address_effect_apply.[ch]` owns policy enforcement and status
+  precedence. COMMON_TI behavior tests and PROJECT contract tests mirror those
+  owner boundaries under `tests/unit/`.
+- State contract: ARP reads require all three field bits to be known and CMPT reads
+  require its single field bit to be known. Checked writes accept only ARP 0..7 or
+  CMPT 0..1, preserve unrelated raw bits and knownness, and mark only the owned
+  field known. Null, unknown, and out-of-range operations preserve caller output
+  and complete state as applicable; no raw status-register API was introduced.
+- Effect contract: every successful CMPT=0 single-indirect plan carries
+  `CMPT0_ARP0`; every failed result remains the all-zero `NONE` effect. The
+  sequencer treats unknown policy tags as malformed, checks that all required mode
+  fields are known before testing either value, distinguishes unknown mode state
+  from known policy violation, and performs those checks before selected-AR reads.
+  It never repairs CMPT or ARP, never writes ARP as an addressing side effect, and
+  leaves generic `NONE` policy effects unaffected.
+- TDD proof: the COMMON state test independently proves documented reset values,
+  field positions, and every ARP/CMPT field value. The PROJECT state test proves
+  checked-access null, unknown, range, output-preservation, unrelated-bit, and
+  unrelated-knownness contracts. COMMON sequencer coverage checks MOD0–MOD3 over
+  AR0..AR7 with independent expected addresses and exact whole-state outcomes;
+  PROJECT coverage checks malformed policies, both mixed unknown/violating field
+  orders, all-known violations, policy-before-stale precedence, generic-policy
+  noninterference, and bytewise rejection non-mutation.
+- Evidence: the registry now contains 2 targets, 7 sources, 27 requirements, and
+  21 tests. The new TI record is narrowly scoped to documented ST0/ST1 field write
+  surfaces; project records own checked-access knownness and sequencer-policy
+  behavior. ARP auto-clear, CMPT=1 behavior, reserved bits, arbitrary data-memory
+  status writes, direct effects, 32-bit addressing, and boundary behavior remain
+  unclaimed.
+- Review corrections: independent review replaced planner-derived COMMON
+  expectations with per-mode literals, added both mixed unknown/nonzero
+  precedence cases, synchronized module contracts, separated project-knownness
+  claims from COMMON evidence, and narrowed reset wording to documented ARP/CMPT
+  values. Final review found the production semantics clean.
+- Local validation: strict `make test` and ASan/UBSan `make test` passed all C
+  executables and 96 Python quality tests; source-boundary passed for 37 files;
+  evidence, knob, and observer-disabled artifact checks passed; and
+  `make PYTHON=/definitely/missing build` proved the compiler-only standalone
+  path. Local CMake and Clang executables remain unavailable and are assigned to
+  post-push standalone CI.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Follow-up: verify remote GCC/Clang/CMake/install/consumer/sanitizer gates, then
+  select P2-W6 from evidence and dependency shape without growing the AR-specific
+  effect seam into a generic monolith.
