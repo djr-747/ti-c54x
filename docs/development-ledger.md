@@ -67,3 +67,18 @@ rewritten after publication.
 - Decisions: CTest plus an always-on dependency-free test harness; instruction-budget
   execution only; unimplemented opcodes trap without retiring.
 - Follow-up: architecture review and commit once the complete local suite is green.
+
+## 2026-09-05 — P0-W4 — Legacy interpreter provenance audit
+
+- Plan: legacy lineage audit and distribution-license gate.
+- Implementation commit: `ccd5de4` (`docs: pin legacy C54x provenance`).
+- Ledger commit: this entry's commit.
+- Ownership: provenance/evidence documentation only; no legacy source copied.
+- Validation: local Git commit/blob verification plus full imported-base comparison
+  against the pinned upstream source.
+- Decisions: the interpreter base is `bbaranoff/qemu` commit `94c7def...`; the first
+  local import is `404ee94...`; Osmocom is a firmware/mailbox input and is not the
+  interpreter's author.
+- Follow-up: owner/legal selection of the distribution license and permitted use of
+  TI manuals, DSP images, GNU metadata, and generated vectors before integration or
+  public distribution.
