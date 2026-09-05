@@ -363,3 +363,15 @@ rewritten after publication.
   compiler-matrix validation remain assigned to the pushed standalone CI run.
 - Follow-up: verify CI, then design the address-effect/state seam needed to prove
   DP/SP nonmutation before choosing another direct or indirect addressing behavior.
+
+## 2026-09-06 — P2-W1 verification — Remote direct-DP gates
+
+- Evidence: GitHub Actions run `33984658231` passed the pushed P2-W1 commits.
+- Coverage: strict GCC and Clang direct-Make tests, tests-disabled CMake library
+  builds, CMake/CTest, installation, the downstream package consumer, and Clang
+  ASan/UBSan all passed in the standalone repository.
+- Plan state: address generation remains `Active`; opcode decode remains blocked on
+  the remaining address/effect foundations.
+- Knobs and emulator integration: unchanged.
+- Follow-up: specify the smallest explicit address-effect/state seam that can prove
+  DP/SP preservation without introducing unresolved CPL=1 or indirect semantics.
