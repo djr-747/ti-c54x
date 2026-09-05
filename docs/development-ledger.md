@@ -828,3 +828,61 @@ rewritten after publication.
   firmware image, environment lookup, diagnostic path, public private-header
   exposure, or new knob.
 - Follow-up: choose and start P2-W6 from the evidence ledger and ownership graph.
+
+## 2026-09-06 — P2-W6 — 32-bit single-indirect operand shape
+
+- Plan: extend the proven CMPT=0 MOD0–MOD3 indirect slice to 32-bit data
+  operands, representing both accessed word addresses and the evidenced two-word
+  auxiliary-register delta before any opcode, bus, or CPU integration.
+- State: active; implementation commit pending.
+- Selection decision: choose 32-bit single-indirect effects before direct
+  no-update effects. Long32 operands preserve the existing AR snapshot,
+  CMPT0/ARP0 policy, and transactional writeback seam. A truthful direct effect
+  still needs a separate DP/SP source-snapshot design; treating it as having no
+  register dependency or borrowing indirect MOD0 would allow stale addresses or
+  false AR reads.
+- Terminology: use `long32` or `32-bit data operand`, never bare `long`, because
+  the TI ISA also uses “long offset” for a distinct 16-bit `lk` operand.
+- Operand-shape decision: replace the private effect's single scalar effective
+  address with an owned descriptor containing width plus explicit first and
+  second data-word addresses. Word16 has one canonical first address and no
+  second address. Long32 records the first/MSW and second/LSW address explicitly:
+  an even first address pairs with the next higher word and an odd first address
+  pairs with the previous lower word. Pairing is data-address behavior, not a
+  bus-order or timing claim.
+- Planner decision: keep `ti_c54x_indirect_single_word` and add an unambiguous
+  `ti_c54x_indirect_single_long32` entry in the same cohesive single-indirect
+  owner. Share private mode logic rather than duplicate MOD0–MOD3 behavior. Long32
+  uses delta two for MOD1–MOD3, retains NONE/POST/POST/PRE ordering, and retains
+  the MOD3 write-only restriction.
+- Boundary decision: preserve the unresolved unsigned-AR edge policy. MOD0 is
+  valid for every first address because parity pairing stays in the 16-bit data
+  domain; MOD1 rejects AR values below two; MOD2 and MOD3 reject values above
+  `0xFFFD`. Do not infer architectural wrap from C integer conversion.
+- Validation decision: the address owner defines canonical word16/long32 operand
+  shapes. The sequencer validates that shape before mode state or AR state, then
+  reuses the existing policy, stale-snapshot, phase, and one-commit rules. Every
+  rejected descriptor or result remains bytewise nonmutating.
+- Evidence plan: add an immutable §5.5.3/Table 5-4 record for the explicit
+  16-bit-delta-one/32-bit-delta-two footnote and an immutable §5.8 record for
+  first/MSW, second/LSW, and even-higher/odd-lower pairing. Keep timing, bus use,
+  and write-cycle text outside the assertions. Add separate project evidence for
+  canonical operand-shape validation.
+- TDD plan: independently prove all 65,536 long32 parity pairs; MOD0 over every AR
+  value and MOD1–MOD3 over their complete non-boundary domains for AR0–AR7 and
+  supported access kinds; exact delta, phase, before/after, policy, and all-zero
+  failure effects; malformed width/pair/update relations and status precedence;
+  successful whole-state transitions; and bytewise nonmutation on every rejection.
+  Existing word16 behavior must remain exhaustive and unchanged.
+- Ownership: `src/address/` owns operand descriptors, parity pairing, long32
+  planning, and intrinsic shape; `src/sequencer/` owns transactional application;
+  mirrored tests own COMMON_TI behavior and separate PROJECT rejection contracts.
+  Build/evidence documents own only registration and proof links.
+- Exclusions: MOD4–MOD15, circular/bit-reversed/indexed/offset forms, CMPT=1,
+  dual operands, memory-mapped registers, bus selection/order, two-cycle stores,
+  opcode decode, CPU lifecycle, timing, device profiles, diagnostics, emulator
+  integration, and any address-domain wrap claim.
+- Knobs: none planned.
+- Follow-up: delegate address, sequencer, and evidence/build ownership to separate
+  Luna workers; integrate and independently review before the one implementation
+  commit and ledger-only completion entry.
