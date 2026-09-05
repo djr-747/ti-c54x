@@ -1,0 +1,30 @@
+# Local build trees and generated CMake files
+/build/
+/build-*/
+/cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+cmake_install.cmake
+Makefile
+!/Makefile
+*.cmake.user
+
+# Test and coverage output
+Testing/
+coverage/
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+
+# Local editor and OS state
+.cache/
+.clangd/
+.DS_Store
+compile_commands.json
+
+# Optional externally supplied DSP images and captures
+*.dspimg
+*.rom
+*.bin

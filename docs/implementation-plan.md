@@ -20,10 +20,11 @@ function-pointer dispatch tables.
 | Repository charter and isolation | Complete | Standalone rules and dependency boundary documented |
 | Legacy lineage audit | Complete | Exact imported interpreter base and Osmocom relationship recorded |
 | Distribution license decision | Blocked on owner/legal review | New repository license and permitted evidence inputs selected |
-| CPU and bus API shell | Active | Two isolated instances fetch through caller buses and trap unimplemented words |
-| 40-bit arithmetic foundation | Active | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
+| CPU and bus API shell | Complete | Two isolated instances fetch through caller buses and trap unimplemented words |
+| 40-bit arithmetic foundation | Complete | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
 | Standalone build and CI | Active | CMake/CTest, warnings, sanitizers, and consumer smoke test pass locally |
-| Diagnostic isolation and source audit | Queued | Optional structured diagnostics compile out; forbidden hot-path dependencies are structurally rejected |
+| Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
+| Source-boundary audit | Queued | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Active | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
 | Address generation | Blocked on foundations | All address effects can be tested without opcode execution |
 | Opcode builder and decode | Blocked on foundations | Every first word classifies uniquely; semantics may trap |
@@ -181,9 +182,9 @@ configuration field.
 
 Each knob has two independent labels:
 
-- **Class `TEST`:** enables controlled fault/input injection or additional checking
-  for tests. It is unavailable in normal production builds and cannot falsify an
-  architectural result.
+- **Class `TEST`:** builds or enables tests, examples, sanitizers, validation, or
+  controlled fault/input injection. Behavioral test hooks are unavailable in normal
+  production builds and cannot falsify an architectural result.
 - **Class `OBSERVE`:** records structured facts without changing architectural
   state, memory effects, timing, interrupts, or scheduling.
 - **Class `A/B`:** selects two explicit implementations or models for comparison.

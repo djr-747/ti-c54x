@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: gcc
+            cc: gcc
+            cxx: g++
+          - compiler: clang
+            cc: clang
+            cxx: clang++
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTI_C54X_BUILD_TESTS=ON -DTI_C54X_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build --parallel
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Install package
+        run: cmake --install build --prefix "$RUNNER_TEMP/ti-c54x-install"
+      - name: Consumer package smoke test
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/ti-c54x-consumer"
+          cat > "$RUNNER_TEMP/ti-c54x-consumer/CMakeLists.txt" <<'EOF'
+          cmake_minimum_required(VERSION 3.21)
+          project(ti_c54x_consumer LANGUAGES C)
+          find_package(ti_c54x CONFIG REQUIRED)
+          add_executable(consumer_smoke smoke.c)
+          target_compile_features(consumer_smoke PRIVATE c_std_11)
+          target_link_libraries(consumer_smoke PRIVATE ti_c54x::core)
+          EOF
+          cat > "$RUNNER_TEMP/ti-c54x-consumer/smoke.c" <<'EOF'
+          #include <ti_c54x/cpu.h>
+          int main(void) { return ti_c54x_cpu_size() == 0U; }
+          EOF
+          cmake -S "$RUNNER_TEMP/ti-c54x-consumer" \
+            -B "$RUNNER_TEMP/ti-c54x-consumer/build" \
+            -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/ti-c54x-install"
+          cmake --build "$RUNNER_TEMP/ti-c54x-consumer/build" --parallel
+          "$RUNNER_TEMP/ti-c54x-consumer/build/consumer_smoke"
+
+  sanitizers:
+    name: clang sanitizers
+    runs-on: ubuntu-latest
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTI_C54X_BUILD_EXAMPLES=ON -DTI_C54X_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build build --parallel
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

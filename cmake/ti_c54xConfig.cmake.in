@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/ti_c54xTargets.cmake")
+
+check_required_components(ti_c54x)

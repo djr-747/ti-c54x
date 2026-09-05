@@ -11,11 +11,18 @@ they belong in the architecture requirements ledger.
 
 ## Registry
 
-| Identifier | Class | Disposition | Owner | Default | Scope | Architectural effect | Tests | Exit/removal criterion |
-|---|---|---|---|---|---|---|---|---|
-| `TI_C54X_ENABLE_OBSERVERS` | OBSERVE | KEEP | `src/debug/` | Off | Build | None | Observer-off symbol/hot-path audit; observer-on event tests | Retain while the structured observer API is supported |
-| `trace.event_mask` | OBSERVE | KEEP | `src/debug/` | `UINT64_C(0)` | Per CPU instance, copied at init | None | Mask isolation and event non-interference tests | Retain while the structured observer API is supported |
-| `TI_C54X_ENABLE_TEST_HOOKS` | TEST | TEMP | `tests/support/` | Off | Test build only | None in production builds | Installed-header and production-symbol absence tests | Remove if all required injection can be expressed through public buses/events |
+State is `ACTIVE` when call sites/build behavior exist and `PLANNED` when the
+identifier is reserved by an approved work piece but not implemented.
+
+| Identifier | State | Class | Disposition | Owner | Default | Scope | Architectural effect | Tests | Exit/removal criterion |
+|---|---|---|---|---|---|---|---|---|---|
+| `TI_C54X_BUILD_TESTS` | ACTIVE | TEST | KEEP | `tests/` | On | Build | None; selects test targets | Configure-on/off and CI test discovery | Retain while CTest is supported |
+| `TI_C54X_BUILD_EXAMPLES` | ACTIVE | TEST | KEEP | `examples/` | Off | Build | None; selects example targets | Minimal consumer build/run | Retain while examples ship |
+| `TI_C54X_ENABLE_SANITIZERS` | ACTIVE | TEST | KEEP | `cmake/` | Off | Build | None; instruments local targets | ASan/UBSan CI job and non-leakage from installed target | Retain while supported toolchains provide sanitizers |
+| `TI_C54X_WARNINGS_AS_ERRORS` | ACTIVE | TEST | KEEP | `cmake/` | On | Build | None; changes diagnostic severity | GCC/Clang strict build | Retain; downstream opt-out remains supported |
+| `TI_C54X_ENABLE_OBSERVERS` | ACTIVE | OBSERVE | KEEP | `src/debug/` | Off | Build | None | Observer-off symbol/hot-path audit; observer-on event tests | Retain while the structured observer API is supported |
+| `trace.event_mask` | ACTIVE | OBSERVE | KEEP | `src/debug/` | `UINT64_C(0)` | Per CPU instance, copied at init | None | Mask isolation and event non-interference tests | Retain while the structured observer API is supported |
+| `TI_C54X_ENABLE_TEST_HOOKS` | PLANNED | TEST | TEMP | `tests/support/` | Off | Test build only | None in production builds | Installed-header and production-symbol absence tests | Remove if all required injection can be expressed through public buses/events |
 
 ## Registration rules
 
