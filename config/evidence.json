@@ -262,6 +262,100 @@
       "assertion": "The direct-addressing discussion defines dma as a 7-bit field; with CPL=0 it concatenates the 9-bit DP field and dma into a 16-bit data-memory word address, while CPL=1 adds positive dma to SP. Direct addressing does not change DP or SP. The source does not specify AR effects or CPL=1 overflow or wrap behavior."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.1",
+        "printed_page_start": "5-10",
+        "printed_page_end": "5-11"
+      },
+      "assertion": "The single-indirect format uses I, MOD, and ARF fields. For CMPT=0, ARF selects the addressed auxiliary register and ARP is not updated by that selection."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.2",
+        "printed_page_start": "5-11",
+        "printed_page_end": "5-11"
+      },
+      "assertion": "The auxiliary-address unit is described as an unsigned 16-bit value and supports premodify ordering where a mode requires it; this record makes no inference about address-domain edges or instruction scheduling."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-13",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Table 5-4 defines MOD0 as no modification, MOD1 as decrement after use, MOD2 as increment after use, and MOD3 as increment before use; one-word operands change an auxiliary register by one, and MOD3 is a write-only form."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.1",
+        "printed_page_start": "5-14",
+        "printed_page_end": "5-14"
+      },
+      "assertion": "The single-indirect description cross-checks postmodify versus premodify order and identifies MOD3 as a write-only form."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.5-P5-24",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.5",
+        "printed_page_start": "5-24",
+        "printed_page_end": "5-24"
+      },
+      "assertion": "For CMPT=0, the ARF field selects the auxiliary register, ARP is not updated, and ARP must be zero."
+    },
+    {
+      "id": "E-PROJECT-ADDRESS-EFFECT-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/address_effect.h",
+        "anchor": "TI_C54X_ADDRESS_STATUS_UNRESOLVED_BOUNDARY"
+      },
+      "assertion": "The checked address planner exposes explicit status values and a by-value effect whose rejected-input contract is an all-zero effect. This is a project API contract, not TI conformance evidence."
+    },
+    {
       "id": "E-PROJECT-CPU-SHELL-API",
       "immutable": true,
       "state": "PINNED",
@@ -404,6 +498,106 @@
       "test_ids": []
     },
     {
+      "id": "REQ-COMMON-INDIRECT-MOD0-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect word access, MOD0 (*ARx) uses the current ARx value as the data-word effective address and emits no auxiliary-register update.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-SINGLE-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-MOD1-MOD2-WORD-POSTUPDATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect word access, MOD1 and MOD2 use the old ARx value as the data-word effective address and report a one-word post-access decrement or increment respectively.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-SINGLE-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-MOD3-WORD-PREINCREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect word access, MOD3 increments ARx by one before access, uses the new value as the data-word effective address, and accepts writes only.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU131G-S5.5.3.1-P5-14"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-SINGLE-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CMPT0-ARF-SELECTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 single-indirect planning, an already-decoded ARF index selects AR0-AR7 and is used consistently for the effective address and any update; the planner does not consult ARP.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-SINGLE-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CMPT0-ARP-STATE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/state/",
+      "claim": "Integrate the CMPT=0 ARP=0 precondition and the documented absence of ARP writeback into architectural state and sequencing after those owners exist.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-ARP-STATE"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-BOUNDARY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Unsigned ARAU behavior at the address-domain edges is not selected until primary evidence resolves decrement and increment boundary behavior.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.2-P5-11"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-LONG-DELTA",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Extend single-indirect planning to long operands with the evidenced two-word auxiliary-register delta after the word-only contract is stable.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-SINGLE-LONG"]
+    },
+    {
+      "id": "REQ-PROJECT-ADDRESS-EFFECT-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The checked address planner maps invalid enum or index inputs to INVALID_ARGUMENT, MOD3 reads to UNSUPPORTED_ACCESS, deliberately unchosen address edges to UNRESOLVED_BOUNDARY, and returns an all-zero effect for every non-OK result.",
+      "evidence_ids": ["E-PROJECT-ADDRESS-EFFECT-CONTRACT"],
+      "test_ids": ["T-PROJECT-ADDRESS-EFFECT-CONTRACT"]
+    },
+    {
       "id": "REQ-PROJECT-CPU-SHELL",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -492,6 +686,43 @@
       "path": "tests/unit/address/test_direct_register_effects.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-DIRECT-REGISTER-NONMUTATION"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-SINGLE-WORD",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_single_word.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_single_word"},
+      "requirement_ids": [
+        "REQ-COMMON-INDIRECT-MOD0-WORD",
+        "REQ-COMMON-INDIRECT-MOD1-MOD2-WORD-POSTUPDATE",
+        "REQ-COMMON-INDIRECT-MOD3-WORD-PREINCREMENT",
+        "REQ-COMMON-INDIRECT-CMPT0-ARF-SELECTION"
+      ]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-ARP-STATE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/state/test_indirect_arp_state.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-INDIRECT-CMPT0-ARP-STATE"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-SINGLE-LONG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_single_long.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-INDIRECT-LONG-DELTA"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-EFFECT-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_address_effect_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-CONTRACT"]
     },
     {
       "id": "T-PROJECT-CPU-SHELL",

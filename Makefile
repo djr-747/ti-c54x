@@ -30,28 +30,36 @@ OBSERVER_OFF_DIR := $(BUILD_DIR)/observer-off
 OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/foundation/arithmetic40.o \
+	$(BUILD_DIR)/obj/address/indirect_single.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
 	$(BUILD_DIR)/obj/debug/observer.o
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
 ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
 DIRECT_DP_TEST := $(BUILD_DIR)/test_direct_dp
+INDIRECT_SINGLE_WORD_TEST := $(BUILD_DIR)/test_indirect_single_word
+ADDRESS_EFFECT_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_contract
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
 OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
 OBSERVER_OFF_OBJECTS := \
+	$(OBSERVER_OFF_DIR)/obj/address/indirect_single.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
 	$(OBSERVER_OFF_DIR)/obj/cpu/cpu.o \
 	$(OBSERVER_OFF_DIR)/obj/debug/observer.o
 
 all: test
 
-build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(OBSERVER_TEST) \
+build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) \
+	$(INDIRECT_SINGLE_WORD_TEST) $(ADDRESS_EFFECT_CONTRACT_TEST) \
+	$(OBSERVER_TEST) \
 	$(OBSERVER_OFF_TEST) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
 test: build quality-test
 	$(CPU_TEST)
 	$(ARITHMETIC_TEST)
 	$(DIRECT_DP_TEST)
+	$(INDIRECT_SINGLE_WORD_TEST)
+	$(ADDRESS_EFFECT_CONTRACT_TEST)
 	$(OBSERVER_TEST)
 	$(OBSERVER_OFF_TEST)
 	$(MINIMAL)
@@ -95,6 +103,20 @@ $(DIRECT_DP_TEST): tests/unit/address/test_direct_dp.c \
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
 
+$(INDIRECT_SINGLE_WORD_TEST): tests/unit/address/test_indirect_single_word.c \
+	tests/support/test_harness.h $(LIB) \
+	src/address/indirect_single.h src/address/address_effect.h \
+	include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
+		$(LDFLAGS) $(LDLIBS) -o $@
+
+$(ADDRESS_EFFECT_CONTRACT_TEST): tests/unit/address/test_address_effect_contract.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_single.h \
+	src/address/address_effect.h include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
 $(OBSERVER_TEST): tests/unit/debug/test_observer.c src/cpu/cpu.c \
 	src/debug/observer.c
 	@mkdir -p $(@D)
@@ -123,7 +145,7 @@ install: cmake-build
 
 format:
 	clang-format -i src/cpu/*.c src/debug/*.c src/foundation/*.c \
-		src/address/*.h \
+		src/address/*.c src/address/*.h \
 		include/ti_c54x/*.h tests/unit/cpu/*.c tests/unit/debug/*.c \
 		tests/unit/foundation/*.c tests/unit/address/*.c examples/*.c
 

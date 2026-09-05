@@ -33,6 +33,38 @@ ti_c54x_enable_warnings(ti_c54x_test_direct_dp)
 ti_c54x_enable_sanitizers(ti_c54x_test_direct_dp)
 add_test(NAME ti_c54x.direct_dp COMMAND ti_c54x_test_direct_dp)
 
+add_executable(ti_c54x_test_indirect_single_word
+    unit/address/test_indirect_single_word.c
+)
+target_compile_features(ti_c54x_test_indirect_single_word PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_single_word PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_single_word PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_single_word)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_single_word)
+add_test(NAME ti_c54x.indirect_single_word
+    COMMAND ti_c54x_test_indirect_single_word
+)
+
+add_executable(ti_c54x_test_address_effect_contract
+    unit/address/test_address_effect_contract.c
+)
+target_compile_features(ti_c54x_test_address_effect_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_effect_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_effect_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_effect_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_contract)
+add_test(NAME ti_c54x.address_effect_contract
+    COMMAND ti_c54x_test_address_effect_contract
+)
+
 add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})
 target_compile_features(ti_c54x_observer_off_artifact PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_observer_off_artifact PRIVATE

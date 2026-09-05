@@ -88,6 +88,33 @@ claim. The source does not specify AR effects. For `CPL=1`, the source describes
 `SP` plus zero-extended `dma`, but this baseline does not choose overflow or wrap
 behavior at the SP boundary (`UNRESOLVED`).
 
+## Single-indirect address-effect slice
+
+The first indirect-addressing slice is deliberately a private, checked planner
+under `src/address/`. It accepts a copied ARF-selected index, a 16-bit current
+auxiliary-register value, one of `MOD0` through `MOD3`, and a read/write access
+kind. It returns a value-owned data-word effective address plus at most one
+explicit AR update with a `NONE`, `PRE_ACCESS`, or `POST_ACCESS` phase. It does
+not own CPU state, ARP or CMPT validation, bus transfers, opcode decoding, long
+operands, circular or bit-reversed addressing, dual-indirect forms, or execution
+scheduling.
+
+The evidenced word effects are: MOD0 uses the old AR value with no update; MOD1
+uses the old value and reports a one-word post-access decrement; MOD2 uses the
+old value and reports a one-word post-access increment; and MOD3 reports a
+one-word pre-access increment, uses the new value, and accepts writes only. The
+returned effect carries the selected AR index so the ARF selection is testable
+without pretending that this planner owns architectural register storage. The
+CMPT=0 ARP=0 invariant and absence of ARP writeback remain planned state and
+sequencer work. Long-operand deltas, address-domain edge behavior, and the
+circular, bit-reversed, and dual-indirect forms remain explicitly planned or
+unresolved; this slice does not infer them.
+
+The project contract is separate from TI claims: checked invalid inputs,
+unsupported MOD3 reads, and unresolved boundaries return explicit statuses and
+an all-zero effect. The project contract does not elevate those API details into
+architectural evidence.
+
 ## Evidence and conformance rules
 
 TI sources are identified by literature number, revision, ISO publication/revision
