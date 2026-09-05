@@ -1092,3 +1092,58 @@ rewritten after publication.
   non-architectural knob.
 - Follow-up: choose the next requirement-and-evidence-backed address slice before
   opening opcode decode or emulator integration.
+
+## 2026-09-06 — P2-W8 — AR0-indexed single-indirect effects
+
+- Plan: implement only the CMPT=0 single-operand WORD16 MOD5/MOD6 forms so an
+  address effect can truthfully snapshot two architectural register sources before
+  circular, bit-reversed, or dual-operand work expands the model further.
+- State: active; implementation commit pending.
+- Selection decision: prefer AR0-indexed linear addressing over the smaller MOD13
+  long-offset slice because MOD5/MOD6 establish the multi-source effect shape also
+  needed by later DSP-specific bit-reversed and indexed-circular modes. MOD13
+  remains a separate future slice with no invented coupling.
+- Evidence: pin new narrow records from TI `SPRU131G` Rev G section 5.5.3/Table 5-4,
+  printed page 5-13, and section 5.5.3.3, printed page 5-15. They define MOD5 as
+  old `ARx` for the operand followed by `ARx - AR0`, MOD6 as old `ARx` followed by
+  `ARx + AR0`, and describe AR0 as indexing any other auxiliary register. Existing
+  section 5.5.1 and 5.5.5 records retain CMPT=0 ARF selection and ARP=0 policy.
+- Alias decision: admit selected AR1–AR7 only. The primary text says AR0 operates on
+  an “other” auxiliary register and does not define ARF=0 self-alias ordering;
+  selected AR0 therefore returns a checked unsupported result until stronger
+  evidence exists.
+- Boundary decision: admit subtraction only when `ARx >= AR0` and addition only
+  when the mathematical sum is at most `0xFFFF`. Rejected crossings use the
+  existing unresolved-boundary status and an all-zero effect. Unsigned 16-bit ARAU
+  storage does not by itself prove modulo wrap.
+- Effect-shape decision: add one dedicated indexed-AR0 source arm containing a
+  selected-AR index/value snapshot and a copied AR0 value snapshot. Keep the
+  existing CMPT0/ARP0 state policy, canonical WORD16 operand at old ARx, POST_ACCESS
+  update of only the selected AR, and one-update transaction boundary. Do not turn
+  source dependencies into an untyped array.
+- Application decision: validate the active indexed source arm and selected
+  AR1–AR7 domain before state access; then enforce mode state, read and stale-check
+  selected AR followed by AR0 through existing state accessors, and commit at most
+  the one described ARx update. Any unknown/stale dependency or malformed effect
+  preserves complete caller-owned state.
+- Ownership: `src/address/indirect_indexed.[ch]` owns MOD5/MOD6 arithmetic and
+  checked result construction; `src/address/address_effect.h` owns the new tagged
+  source value; `src/sequencer/address_effect_apply.[ch]` owns dependency
+  validation and transactional commit. Existing `src/state/` accessors remain the
+  sole register-storage boundary. Matching tests stay under address and sequencer
+  owners; evidence/build synchronization remains separate delegated ownership.
+- TDD plan: cover both modes, both access kinds, all selected AR1–AR7 values,
+  complete 16-bit ARx and AR0 dimensions against representative opposite operands,
+  and every exact safe/unsafe boundary class without falsely claiming the roughly
+  120-billion-case full Cartesian product. Prove old-AR effective addresses, exact
+  POST updates, copied sources, all-zero failures, mode-before-source precedence,
+  both dependency knownness/staleness paths, AR0 nonmutation, and bytewise
+  transactional rejection.
+- Exclusions: selected-AR0 alias behavior, address wrap, LONG32 indexed operands,
+  MOD4/MOD7 reverse carry, MOD8–MOD11/MOD14 circular behavior, BK, long offsets,
+  memory-mapped-register restrictions, dual operands, buses, opcode decode, timing,
+  diagnostics, device profiles, and emulator integration.
+- Knobs: none planned.
+- Follow-up: delegate planner/tests, sequencer/tests, and evidence/build work to
+  Luna agents with disjoint ownership; integrate under the main orchestrator and
+  run one independent closure review before validation and commit.
