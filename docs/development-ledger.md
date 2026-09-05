@@ -1195,6 +1195,25 @@ rewritten after publication.
   GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
   ledger-only verification commit.
 
+## 2026-09-06 — P2-W9 verification — Remote signed long-offset gates
+
+- Verified evidence: GitHub Actions run `33998478157` passed for implementation
+  commit `4d75222` and completion-ledger commit `31f364e`.
+- Remote coverage: GCC and Clang strict direct-Make builds/tests, tests-disabled
+  CMake library builds, CMake/CTest, package installation, checked-in downstream
+  consumer linkage, and the Clang ASan/UBSan job all passed in the standalone
+  repository.
+- Plan state: signed long-offset premodify remains `Complete`; address generation
+  remains `Active` only for explicitly deferred modes and unresolved boundary
+  behavior.
+- Scope confirmation: the verified build added no emulator dependency, firmware
+  image, environment lookup, diagnostic path, public private-header exposure, or
+  non-architectural knob. The corrected split `SPRU172C` class 9B/page 3-21 and
+  class 13B/page 3-29 evidence records are present in the verified tree.
+- Follow-up: select the next requirement-and-evidence-backed address-foundation
+  slice. Opcode decode and emulator integration remain blocked or deferred until
+  the address/evidence foundation is sufficiently complete.
+
 ## 2026-09-06 — P2-W8 verification — Remote AR0-indexed gates
 
 - Verified evidence: GitHub Actions run `33996579756` passed for implementation
