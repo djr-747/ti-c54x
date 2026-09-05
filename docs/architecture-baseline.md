@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 31 immutable evidence
-records, 31 requirements, and 26 tests (21 `PASSING`, 5 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 34 immutable evidence
+records, 39 requirements, and 31 tests (27 `PASSING`, 4 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -83,12 +83,17 @@ cross-owner unit test is used as a substitute for those seams.
 The corrected direct-addressing evidence in `SPRU131G` §5.4 records a 7-bit
 `dma`. For `CPL=0`, the implemented common requirement is the complete
 valid-domain result formed by concatenating the 9-bit `DP` field and `dma` into a
-16-bit data-memory word address. A separate planned requirement and test own the
-source statement that direct addressing leaves `DP` and `SP` unchanged; that
-register-effect proof is deliberately not part of the implemented formation
-claim. The source does not specify AR effects. For `CPL=1`, the source describes
-`SP` plus zero-extended `dma`, but this baseline does not choose overflow or wrap
-behavior at the SP boundary (`UNRESOLVED`).
+16-bit data-memory word address. For `CPL=1`, the implemented common requirement
+covers the complete safe domain where `SP` plus zero-extended `dma` remains in
+the 16-bit data-word range. Overflow and wrap behavior remain explicitly
+unresolved at the SP boundary. A separate implemented requirement and test own
+the source statement that direct addressing leaves `DP` and `SP` unchanged;
+that register-effect proof is deliberately not part of either address-formation
+claim. The source does not specify AR effects. The sequencer test also proves
+that a direct effect selects the tagged DP source only under `CPL=0`, or the
+tagged SP source only under `CPL=1`, while preserving the planned data-word
+address; that source-selection contract is kept narrow and does not claim
+direct long32 behavior.
 
 ## Single-indirect address-effect slice
 
@@ -105,8 +110,9 @@ The evidenced word effects are: MOD0 uses the old AR value with no update; MOD1
 uses the old value and reports a one-word post-access decrement; MOD2 uses the
 old value and reports a one-word post-access increment; and MOD3 reports a
 one-word pre-access increment, uses the new value, and accepts writes only. The
-returned effect carries the selected AR index so the ARF selection is testable
-without pretending that this planner owns architectural register storage. The
+returned effect carries a tagged, value-owned AR source snapshot (selected AR
+index plus value-before) so ARF selection is testable without pretending that
+this planner owns architectural register storage. The
 CMPT=0 ARP=0 invariant and absence of ARP writeback are now enforced at the
 sequencer application seam: effects tagged `CMPT0_ARP0` require known CMPT=0 and
 ARP=0 before the selected-AR update is applied, and ARP is never written back by
@@ -170,12 +176,25 @@ subset. The private state keeps separate knownness masks, so zero-filled
 AR0–AR7 and SP storage is not treated as an architectural value. Their reset
 values are not asserted; callers establish them through checked writes.
 
-The same private state owns checked field access for ARP and CMPT. ARP is the
-three-bit ST0 field at bits 15–13 and CMPT is the one-bit ST1 field at bit 5;
-valid writes replace only their field bits and establish field knownness, while
-unknown or invalid reads preserve caller outputs and rejected writes preserve
-the complete state. These accessors do not widen the common reset claim or add
-raw status-write, timing, bus, or memory behavior.
+The same private state owns checked field access for ARP, DP, CPL, and CMPT.
+ARP is the three-bit ST0 field at bits 15–13, DP is ST0 bits 8–0, CPL is the
+one-bit ST1 field at bit 14, and CMPT is ST1 bit 5. Valid writes replace only
+their field bits and establish field knownness, while unknown or invalid reads
+preserve caller outputs and rejected writes preserve the complete state. The
+DP/CPL accessors are used by direct-source application but remain private state
+contracts; they do not widen the common reset claim or add raw status-write,
+timing, bus, or memory behavior.
+
+The direct DP/SP branches of the shared project-owned address-effect application
+seam consume those planner results. A planner result carries a value-owned
+DP9/dma7 or SP16/dma7 source snapshot and the shared seam checks the tagged
+source arm, canonical field ranges, recomputed WORD16 operand, and matching CPL
+policy before reading state. Malformed payloads and non-OK planner results are
+rejected first. Unreadable CPL, unreadable DP/SP, and mismatching known DP/SP
+snapshots retain distinct statuses, and every rejection is bytewise
+transactional. These checks prove interface ordering and state ownership only;
+they do not claim direct long32, address wrap, buses, timing, or diagnostic
+behavior.
 
 The public `ti_c54x_config.reset_pc_word` remains a project bootstrap setting
 owned by the CPU shell. It is not the TI hardware-reset value and is intentionally

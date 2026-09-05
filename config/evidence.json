@@ -654,6 +654,62 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The private sequencer operand-application contract validates a canonical data-operand shape before mode and auxiliary-register state, preserves caller-owned state on rejection, and applies accepted long32 effects transactionally without inferring address wrap, bus, timing, or diagnostic behavior. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-DP-CPL-FIELD-ACCESS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/state/arch_state.h",
+        "anchor": "ti_c54x_arch_state_read_dp"
+      },
+      "assertion": "The private state contract exposes checked DP and CPL field accessors with explicit knownness, width, output-preserving rejection, and field-limited mutation behavior. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-DIRECT-SOURCE-VALIDATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "source-arm domains"
+      },
+      "assertion": "The private sequencer contract validates tagged direct DP/SP source arms, their canonical field domains, their value-owned operand/source relationship, and their exact CPL policy before reading architectural state. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-DIRECT-SOURCE-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "A rejected call leaves the complete"
+      },
+      "assertion": "The private direct-source branches of the shared application seam define deterministic rejection precedence, distinguish unknown mode, unknown source, and stale source statuses, preserve caller-owned state byte-for-byte on rejection, and accept direct effects without an address-register write. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-DIRECT-PLANNER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/direct_sp.c",
+        "anchor": "ti_c54x_direct_sp_result_with_status"
+      },
+      "assertion": "The private direct DP/SP planners return explicit invalid-argument or unresolved-boundary statuses and an all-zero effect for rejected field or endpoint inputs while retaining no caller storage. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -692,7 +748,7 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/state/",
-      "claim": "Implement the common status-field layout with ARP=0 in ST0 bits 15-13 and CMPT=0 in ST1 bit 5, plus field-specific writes that change only the targeted architectural field.",
+      "claim": "Implement the common status-field layout with ARP in ST0 bits 15-13, DP in ST0 bits 8-0, CPL in ST1 bit 14, and CMPT in ST1 bit 5, plus field-specific writes that change only the targeted architectural field.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5",
         "E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES"
@@ -755,13 +811,33 @@
     },
     {
       "id": "REQ-COMMON-DIRECT-REGISTER-NONMUTATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "For valid CPL=0 DP WORD16 and non-overflow CPL=1 SP WORD16 direct forms, direct addressing leaves the DP and SP registers unchanged.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
+      "test_ids": ["T-COMMON-DIRECT-REGISTER-NONMUTATION"]
+    },
+    {
+      "id": "REQ-COMMON-DIRECT-SP-ADDRESS",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
-      "claim": "Direct addressing leaves the DP and SP registers unchanged.",
+      "claim": "For valid CPL=1 SP16 and 7-bit dma fields whose sum remains within the 16-bit data-word address domain, compute the direct data-memory word address as SP plus zero-extended dma without selecting overflow or wrap behavior.",
       "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
-      "test_ids": ["T-COMMON-DIRECT-REGISTER-NONMUTATION"]
+      "test_ids": ["T-COMMON-DIRECT-SP"]
+    },
+    {
+      "id": "REQ-COMMON-DIRECT-CPL-SOURCE-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "For valid direct WORD16 addressing, CPL=0 selects the DP:dma source form and CPL=1 selects the SP+dma source form, preserving the corresponding data-word operand address.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1"],
+      "test_ids": ["T-COMMON-DIRECT-CPL-SOURCE-APPLICATION"]
     },
     {
       "id": "REQ-COMMON-DIRECT-SP-WRAP",
@@ -919,6 +995,16 @@
       "test_ids": ["T-PROJECT-ADDRESS-EFFECT-CONTRACT"]
     },
     {
+      "id": "REQ-PROJECT-DIRECT-PLANNER-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The direct DP/SP planners reject malformed fields and unresolved SP endpoints with explicit statuses and return an all-zero effect on every rejection, while copying source fields into value-owned successful effects.",
+      "evidence_ids": ["E-PROJECT-DIRECT-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-DIRECT-ADDRESS-CONTRACT"]
+    },
+    {
       "id": "REQ-PROJECT-CPU-SHELL",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -1023,6 +1109,56 @@
         "E-PROJECT-ADDRESS-OPERAND-APPLICATION"
       ],
       "test_ids": ["T-PROJECT-ADDRESS-OPERAND-APPLICATION"]
+    },
+    {
+      "id": "REQ-PROJECT-DP-CPL-FIELD-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Checked DP and CPL accessors reject null, unknown, and out-of-range inputs without mutating state or caller outputs, preserve unrelated field bits and knownness on valid writes, and expose only their documented field ranges.",
+      "evidence_ids": ["E-PROJECT-DP-CPL-FIELD-ACCESS"],
+      "test_ids": ["T-PROJECT-DP-CPL-FIELD-ACCESS"]
+    },
+    {
+      "id": "REQ-PROJECT-DIRECT-SOURCE-VALIDATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Tagged direct DP/SP source snapshots are value-owned and checked against their canonical field domains, recomputed WORD16 operand, and exact direct CPL policy before architectural state is read.",
+      "evidence_ids": ["E-PROJECT-DIRECT-SOURCE-VALIDATION"],
+      "test_ids": ["T-PROJECT-DIRECT-SOURCE-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-DIRECT-REJECTION-PRECEDENCE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Direct-source application rejects malformed intrinsic payloads before phase, mode, or source-state checks and rejects non-OK planner results without interpreting their payloads.",
+      "evidence_ids": ["E-PROJECT-DIRECT-SOURCE-APPLICATION"],
+      "test_ids": ["T-PROJECT-DIRECT-SOURCE-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-DIRECT-SOURCE-STATUSES",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Direct-source application distinguishes UNKNOWN_MODE_STATE for unreadable CPL from UNKNOWN_SOURCE for unreadable DP or SP and STALE_SOURCE for a mismatching known DP or SP snapshot.",
+      "evidence_ids": ["E-PROJECT-DIRECT-SOURCE-APPLICATION"],
+      "test_ids": ["T-PROJECT-DIRECT-SOURCE-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-DIRECT-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Every rejected direct-source application preserves the complete caller-owned architectural state byte-for-byte, while accepted direct effects perform no address-register write.",
+      "evidence_ids": ["E-PROJECT-DIRECT-SOURCE-APPLICATION"],
+      "test_ids": ["T-PROJECT-DIRECT-SOURCE-CONTRACT"]
     }
   ],
   "tests": [
@@ -1083,12 +1219,28 @@
       "requirement_ids": ["REQ-COMMON-DIRECT-DP-ADDRESS"]
     },
     {
-      "id": "T-COMMON-DIRECT-REGISTER-NONMUTATION",
-      "state": "PLANNED",
+      "id": "T-COMMON-DIRECT-SP",
+      "state": "PASSING",
       "scope": "COMMON_TI",
-      "path": "tests/unit/address/test_direct_register_effects.c",
-      "runner": null,
+      "path": "tests/unit/address/test_direct_sp.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_sp"},
+      "requirement_ids": ["REQ-COMMON-DIRECT-SP-ADDRESS"]
+    },
+    {
+      "id": "T-COMMON-DIRECT-REGISTER-NONMUTATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_direct_source_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_source_apply"},
       "requirement_ids": ["REQ-COMMON-DIRECT-REGISTER-NONMUTATION"]
+    },
+    {
+      "id": "T-COMMON-DIRECT-CPL-SOURCE-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_direct_source_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_source_apply"},
+      "requirement_ids": ["REQ-COMMON-DIRECT-CPL-SOURCE-APPLICATION"]
     },
     {
       "id": "T-COMMON-INDIRECT-SINGLE-WORD",
@@ -1150,6 +1302,14 @@
       "path": "tests/unit/address/test_address_effect_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_contract"},
       "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-DIRECT-ADDRESS-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_direct_address_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_address_contract"},
+      "requirement_ids": ["REQ-PROJECT-DIRECT-PLANNER-CONTRACT"]
     },
     {
       "id": "T-PROJECT-CPU-SHELL",
@@ -1238,6 +1398,27 @@
       "path": "tests/unit/sequencer/test_address_operand_apply_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_operand_apply_contract"},
       "requirement_ids": ["REQ-PROJECT-ADDRESS-OPERAND-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-DP-CPL-FIELD-ACCESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_arch_state_address_field_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_address_field_contract"},
+      "requirement_ids": ["REQ-PROJECT-DP-CPL-FIELD-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-DIRECT-SOURCE-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_direct_source_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.direct_source_apply_contract"},
+      "requirement_ids": [
+        "REQ-PROJECT-DIRECT-SOURCE-VALIDATION",
+        "REQ-PROJECT-DIRECT-REJECTION-PRECEDENCE",
+        "REQ-PROJECT-DIRECT-SOURCE-STATUSES",
+        "REQ-PROJECT-DIRECT-TRANSACTION"
+      ]
     }
   ]
 }

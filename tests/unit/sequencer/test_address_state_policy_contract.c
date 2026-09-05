@@ -28,7 +28,10 @@ effect_with_policy(ti_c54x_address_state_policy policy,
                 .first_word = address,
                 .second_word = UINT16_C(0)
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = address}
+            },
             .state_policy = policy,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_NONE,

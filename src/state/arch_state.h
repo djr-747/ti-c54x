@@ -4,7 +4,7 @@
 /* Module contract
  * Owns: private, fixed-size architectural register storage, common TI reset
  * seeding, and checked knownness-aware AR/SP and ARP/CMPT status-field access,
- * knownness, and field-limited mutation.
+ * knownness, and field-limited mutation for ARP, DP, CPL, and CMPT.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -79,6 +79,32 @@ ti_c54x_arch_state_read_arp(const ti_c54x_arch_state *state,
 
 ti_c54x_arch_state_status
 ti_c54x_arch_state_write_arp(ti_c54x_arch_state *state,
+                             uint8_t value);
+
+/* Checked accessors for the nine-bit ST0 DP field.  Reads require every DP
+ * knownness bit and preserve *value on UNKNOWN or INVALID_ARGUMENT.  Writes
+ * accept only 0..0x1ff, replace DP bits in ST0, preserve all other ST0 bits
+ * and knownness, and mark DP known.  NULL inputs and rejected writes leave
+ * the state unchanged. */
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_dp(const ti_c54x_arch_state *state,
+                           uint16_t *value);
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_dp(ti_c54x_arch_state *state,
+                            uint16_t value);
+
+/* Checked accessors for the one-bit ST1 CPL field.  Reads require the CPL
+ * knownness bit and preserve *value on UNKNOWN or INVALID_ARGUMENT.  Writes
+ * accept only 0 or 1, replace CPL in ST1, preserve all other ST1 bits and
+ * knownness, and mark CPL known.  NULL inputs and rejected writes leave the
+ * state unchanged. */
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_cpl(const ti_c54x_arch_state *state,
+                            uint8_t *value);
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_cpl(ti_c54x_arch_state *state,
                              uint8_t value);
 
 /* Checked accessors for the one-bit ST1 CMPT field.  Reads require the CMPT

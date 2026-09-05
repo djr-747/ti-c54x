@@ -39,7 +39,11 @@ static ti_c54x_address_result valid_none(uint8_t index, uint16_t address)
                 .first_word = address,
                 .second_word = UINT16_C(0)
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = address}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_NONE,
                 .phase = TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
@@ -66,7 +70,11 @@ static ti_c54x_address_result valid_update(uint8_t index,
                 .first_word = effective_address,
                 .second_word = UINT16_C(0)
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = before}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_AR,
                 .phase = phase,
@@ -125,7 +133,7 @@ static void test_non_ok_result_is_rejected_before_payload(void)
         UINT16_C(0x2200), UINT16_C(0x2201), UINT16_C(0x2201));
 
     result.status = TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS;
-    result.effect.selected_ar_index = UINT8_C(255);
+    result.effect.source.value.ar.index = UINT8_C(255);
     result.effect.update.target = (ti_c54x_address_update_target)-1;
     result.effect.update.phase = (ti_c54x_address_update_phase)99;
     expect_rejection_unchanged(
@@ -153,7 +161,7 @@ static void test_every_non_ok_status_is_rejected_before_payload(void)
             UINT8_C(2), UINT16_C(0x2200));
 
         result.status = statuses[status_index];
-        result.effect.selected_ar_index = UINT8_C(255);
+        result.effect.source.value.ar.index = UINT8_C(255);
         result.effect.update.target =
             (ti_c54x_address_update_target)99;
         result.effect.update.phase =
@@ -177,7 +185,7 @@ static void test_validation_precedence(void)
     state = known_state(UINT8_C(2), UINT16_C(0x2200));
     result = valid_none(UINT8_C(2), UINT16_C(0x2200));
     result.status = TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS;
-    result.effect.selected_ar_index = UINT8_C(255);
+    result.effect.source.value.ar.index = UINT8_C(255);
     before = state;
     expect_rejection_unchanged(
         &before, &state, &result,
@@ -223,12 +231,12 @@ static void test_invalid_intrinsic_effect_shape(void)
     ti_c54x_address_result result;
 
     result = valid_none(UINT8_C(2), UINT16_C(0x2200));
-    result.effect.selected_ar_index = UINT8_C(8);
+    result.effect.source.value.ar.index = UINT8_C(8);
     before = state;
     expect_rejection_unchanged(
         &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
         TI_C54X_ADDRESS_APPLY_INVALID_EFFECT);
-    result.effect.selected_ar_index = UINT8_C(255);
+    result.effect.source.value.ar.index = UINT8_C(255);
     before = state;
     expect_rejection_unchanged(
         &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,

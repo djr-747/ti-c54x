@@ -21,6 +21,7 @@
 
 /* ST1: bit 10 is reserved and is not a reset-state assertion. */
 #define TI_C54X_ST1_BRAF_MASK UINT16_C(0x8000)
+#define TI_C54X_ST1_CPL_SHIFT 14U
 #define TI_C54X_ST1_CPL_MASK UINT16_C(0x4000)
 #define TI_C54X_ST1_XF_MASK UINT16_C(0x2000)
 #define TI_C54X_ST1_HM_MASK UINT16_C(0x1000)

@@ -61,7 +61,11 @@ check_valid(uint8_t ar_index,
         expected_first = (uint16_t)(ar_value + UINT16_C(2));
     }
     TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_OK);
-    TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, ar_index);
+    TI_C54X_TEST_CHECK(result.effect.source.kind ==
+                       TI_C54X_ADDRESS_SOURCE_AR);
+    TI_C54X_TEST_CHECK_U64(result.effect.source.value.ar.index, ar_index);
+    TI_C54X_TEST_CHECK_U64(result.effect.source.value.ar.value_before,
+                           ar_value);
     TI_C54X_TEST_CHECK(result.effect.state_policy ==
                        TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0);
     TI_C54X_TEST_CHECK(result.effect.operand.width ==

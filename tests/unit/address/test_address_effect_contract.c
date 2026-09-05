@@ -20,7 +20,7 @@ check_zero_effect(const ti_c54x_address_effect *effect)
                            TI_C54X_DATA_OPERAND_WIDTH_INVALID);
     TI_C54X_TEST_CHECK_U64(effect->operand.first_word, UINT16_C(0));
     TI_C54X_TEST_CHECK_U64(effect->operand.second_word, UINT16_C(0));
-    TI_C54X_TEST_CHECK_U64(effect->selected_ar_index, UINT8_C(0));
+    TI_C54X_TEST_CHECK(effect->source.kind == TI_C54X_ADDRESS_SOURCE_NONE);
     TI_C54X_TEST_CHECK(
         effect->state_policy == TI_C54X_ADDRESS_STATE_POLICY_NONE);
     TI_C54X_TEST_CHECK(effect->update.target == TI_C54X_ADDRESS_UPDATE_NONE);

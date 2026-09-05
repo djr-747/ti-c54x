@@ -59,7 +59,9 @@ test_planner_effects_apply_across_supported_word_domain(void)
                                    TI_C54X_ARCH_STATE_OK);
                 expected_state = state;
 
-                TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index,
+                TI_C54X_TEST_CHECK(result.effect.source.kind ==
+                                   TI_C54X_ADDRESS_SOURCE_AR);
+                TI_C54X_TEST_CHECK_U64(result.effect.source.value.ar.index,
                                        ar_index);
                 switch (mode) {
                 case TI_C54X_INDIRECT_SINGLE_MOD0:

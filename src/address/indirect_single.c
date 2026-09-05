@@ -104,7 +104,9 @@ ti_c54x_indirect_single_plan(uint8_t ar_index,
     result.effect.operand = width == TI_C54X_DATA_OPERAND_WIDTH_WORD16
                                 ? ti_c54x_data_operand_word16(ar_value)
                                 : ti_c54x_data_operand_long32(ar_value);
-    result.effect.selected_ar_index = ar_index;
+    result.effect.source.kind = TI_C54X_ADDRESS_SOURCE_AR;
+    result.effect.source.value.ar.index = ar_index;
+    result.effect.source.value.ar.value_before = ar_value;
 
     switch (mode) {
     case TI_C54X_INDIRECT_SINGLE_MOD0:

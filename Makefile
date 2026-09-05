@@ -31,6 +31,8 @@ OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/foundation/arithmetic40.o \
 	$(BUILD_DIR)/obj/address/data_operand.o \
+	$(BUILD_DIR)/obj/address/direct_dp.o \
+	$(BUILD_DIR)/obj/address/direct_sp.o \
 	$(BUILD_DIR)/obj/address/indirect_single.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
@@ -39,6 +41,10 @@ LIB_OBJECTS := \
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
 ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
 DIRECT_DP_TEST := $(BUILD_DIR)/test_direct_dp
+DIRECT_SP_TEST := $(BUILD_DIR)/test_direct_sp
+DIRECT_ADDRESS_CONTRACT_TEST := $(BUILD_DIR)/test_direct_address_contract
+DIRECT_SOURCE_APPLY_TEST := $(BUILD_DIR)/test_direct_source_apply
+DIRECT_SOURCE_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_direct_source_apply_contract
 INDIRECT_SINGLE_WORD_TEST := $(BUILD_DIR)/test_indirect_single_word
 DATA_OPERAND_TEST := $(BUILD_DIR)/test_data_operand
 DATA_OPERAND_CONTRACT_TEST := $(BUILD_DIR)/test_data_operand_contract
@@ -60,6 +66,8 @@ OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
 OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/data_operand.o \
+	$(OBSERVER_OFF_DIR)/obj/address/direct_dp.o \
+	$(OBSERVER_OFF_DIR)/obj/address/direct_sp.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_single.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_apply.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
@@ -69,7 +77,9 @@ OBSERVER_OFF_OBJECTS := \
 
 all: test
 
-build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) \
+build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
+	$(DIRECT_ADDRESS_CONTRACT_TEST) $(DIRECT_SOURCE_APPLY_TEST) \
+	$(DIRECT_SOURCE_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_SINGLE_WORD_TEST) $(ADDRESS_EFFECT_CONTRACT_TEST) \
 	$(DATA_OPERAND_TEST) $(DATA_OPERAND_CONTRACT_TEST) \
 	$(INDIRECT_SINGLE_LONG32_TEST) \
@@ -87,6 +97,10 @@ test: build quality-test
 	$(CPU_TEST)
 	$(ARITHMETIC_TEST)
 	$(DIRECT_DP_TEST)
+	$(DIRECT_SP_TEST)
+	$(DIRECT_ADDRESS_CONTRACT_TEST)
+	$(DIRECT_SOURCE_APPLY_TEST)
+	$(DIRECT_SOURCE_APPLY_CONTRACT_TEST)
 	$(INDIRECT_SINGLE_WORD_TEST)
 	$(ADDRESS_EFFECT_CONTRACT_TEST)
 	$(DATA_OPERAND_TEST)
@@ -141,10 +155,35 @@ $(ARITHMETIC_TEST): tests/unit/foundation/test_arithmetic40.c $(LIB)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
 $(DIRECT_DP_TEST): tests/unit/address/test_direct_dp.c \
-	tests/support/test_harness.h src/address/direct_dp.h \
+	tests/support/test_harness.h $(LIB) src/address/direct_dp.h \
 	include/ti_c54x/address.h
 	@mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(DIRECT_SP_TEST): tests/unit/address/test_direct_sp.c \
+	tests/support/test_harness.h $(LIB) src/address/direct_sp.h \
+	src/address/direct_dp.h src/address/address_effect.h include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(DIRECT_ADDRESS_CONTRACT_TEST): tests/unit/address/test_direct_address_contract.c \
+	tests/support/test_harness.h $(LIB) src/address/direct_dp.h \
+	src/address/direct_sp.h src/address/address_effect.h include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(DIRECT_SOURCE_APPLY_TEST): tests/unit/sequencer/test_direct_source_apply.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/direct_dp.h src/address/direct_sp.h src/address/address_effect.h \
+	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(DIRECT_SOURCE_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_direct_source_apply_contract.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/address_effect.h src/address/data_operand.h src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
 $(INDIRECT_SINGLE_WORD_TEST): tests/unit/address/test_indirect_single_word.c \
 	tests/support/test_harness.h $(LIB) \

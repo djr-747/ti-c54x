@@ -36,7 +36,11 @@ valid_none(ti_c54x_data_operand operand, uint8_t index)
         .status = TI_C54X_ADDRESS_STATUS_OK,
         .effect = {
             .operand = operand,
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = operand.first_word}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_NONE,
                 .phase = TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
@@ -67,7 +71,10 @@ valid_long_update(uint16_t first,
                         ? (uint16_t)(first + UINT16_C(1))
                         : (uint16_t)(first - UINT16_C(1))
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = before}
+            },
             .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_AR,
@@ -91,7 +98,11 @@ valid_pre(ti_c54x_data_operand operand,
         .status = TI_C54X_ADDRESS_STATUS_OK,
         .effect = {
             .operand = operand,
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = before}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_AR,
                 .phase = TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,

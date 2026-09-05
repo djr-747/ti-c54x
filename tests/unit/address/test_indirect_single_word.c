@@ -47,7 +47,11 @@ check_valid(uint8_t ar_index,
         ar_index, ar_value, mode, access);
 
     TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_OK);
-    TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, ar_index);
+    TI_C54X_TEST_CHECK(result.effect.source.kind ==
+                       TI_C54X_ADDRESS_SOURCE_AR);
+    TI_C54X_TEST_CHECK_U64(result.effect.source.value.ar.index, ar_index);
+    TI_C54X_TEST_CHECK_U64(result.effect.source.value.ar.value_before,
+                           ar_value);
     TI_C54X_TEST_CHECK(
         result.effect.state_policy ==
         TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0);
@@ -148,7 +152,8 @@ test_mod3_is_write_only(void)
                            TI_C54X_DATA_OPERAND_WIDTH_INVALID);
     TI_C54X_TEST_CHECK_U64(result.effect.operand.first_word, UINT16_C(0));
     TI_C54X_TEST_CHECK_U64(result.effect.operand.second_word, UINT16_C(0));
-    TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, UINT8_C(0));
+    TI_C54X_TEST_CHECK(result.effect.source.kind ==
+                       TI_C54X_ADDRESS_SOURCE_NONE);
     check_no_update(&result.effect.update);
 }
 

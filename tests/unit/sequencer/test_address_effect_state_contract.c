@@ -40,7 +40,11 @@ valid_none(uint8_t index, uint16_t address)
                 .first_word = address,
                 .second_word = UINT16_C(0)
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = address}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_NONE,
                 .phase = TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
@@ -68,7 +72,11 @@ valid_update(uint8_t index,
                 .first_word = effective_address,
                 .second_word = UINT16_C(0)
             },
-            .selected_ar_index = index,
+            .source = {
+                .kind = TI_C54X_ADDRESS_SOURCE_AR,
+                .value.ar = {.index = index, .value_before = before}
+            },
+            .state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0,
             .update = {
                 .target = TI_C54X_ADDRESS_UPDATE_AR,
                 .phase = phase,
@@ -106,7 +114,7 @@ test_unknown_and_stale_are_transactional(void)
     before = state;
     expect_rejection_unchanged(
         &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
-        TI_C54X_ADDRESS_APPLY_UNKNOWN_AR);
+        TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE);
 
     result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
                           UINT16_C(0x2200), UINT16_C(0x2201),
@@ -115,14 +123,14 @@ test_unknown_and_stale_are_transactional(void)
     expect_rejection_unchanged(
         &before, &state, &result,
         TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-        TI_C54X_ADDRESS_APPLY_UNKNOWN_AR);
+        TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE);
 
     state = known_state(UINT8_C(2), UINT16_C(0x2201));
     result = valid_none(UINT8_C(2), UINT16_C(0x2200));
     before = state;
     expect_rejection_unchanged(
         &before, &state, &result, TI_C54X_ADDRESS_UPDATE_PHASE_NONE,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
+        TI_C54X_ADDRESS_APPLY_STALE_SOURCE);
 
     state = known_state(UINT8_C(2), UINT16_C(0x2201));
     result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
@@ -132,7 +140,7 @@ test_unknown_and_stale_are_transactional(void)
     expect_rejection_unchanged(
         &before, &state, &result,
         TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
+        TI_C54X_ADDRESS_APPLY_STALE_SOURCE);
 
     state = known_state(UINT8_C(2), UINT16_C(0x2200));
     result = valid_update(UINT8_C(2), TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
@@ -146,7 +154,7 @@ test_unknown_and_stale_are_transactional(void)
     expect_rejection_unchanged(
         &before, &state, &result,
         TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
-        TI_C54X_ADDRESS_APPLY_STALE_AR);
+        TI_C54X_ADDRESS_APPLY_STALE_SOURCE);
 }
 
 static void

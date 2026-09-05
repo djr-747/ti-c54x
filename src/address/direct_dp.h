@@ -4,21 +4,28 @@
 /*
  * Module contract
  *
- * Owns: the pure CPL=0 direct-data address concatenation from the common
- * C54x address model.
- * Does not own: input validation or normalization, CPU/register mutation,
- * bus mapping, CPL=1 addressing, opcode decoding, status effects, or timing.
+ * Owns: CPL=0 direct-data field carriers, their pure concatenation helper,
+ * and the checked WORD16 address-effect planner.
+ * Does not own: CPU/register mutation, bus mapping, CPL=1 addressing, opcode
+ * decoding, status effects beyond the returned CPL policy, or timing.
  *
- * Callers must provide a canonical 9-bit DP field (0..511) and a canonical
- * 7-bit dma field (0..127).  The result is a 16-bit data-memory word address;
- * C54x data addresses are words, not byte offsets.  Values outside those
- * domains have no contract.  This header-only primitive is intentionally
- * private to the core and has no public ABI.
+ * Callers of the inline helper must provide a canonical 9-bit DP field
+ * (0..511) and canonical 7-bit dma field (0..127); values outside those
+ * domains have no helper contract. The checked planner validates the same
+ * carriers. Its result is a 16-bit data-memory word address; C54x data
+ * addresses are words, not byte offsets. Both interfaces are private to the
+ * core, and the planner returns a value-owned effect with no retained input.
  */
 
 #include <stdint.h>
 
 #include <ti_c54x/address.h>
+
+#include "address_effect.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Canonical direct-address fields.  The caller owns the precondition that
  * `bits` contains only the named width; this primitive intentionally does not
@@ -40,5 +47,13 @@ ti_c54x_direct_dp_address_word(ti_c54x_direct_dp9 dp,
         ((uint32_t)dp.bits << UINT32_C(7)) | (uint32_t)dma.bits;
     return (ti_c54x_data_word_address)concatenated;
 }
+
+/* Plan one checked CPL=0 direct WORD16 operand. */
+ti_c54x_address_result ti_c54x_direct_dp_word(ti_c54x_direct_dp9 dp,
+                                              ti_c54x_direct_dma7 dma);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TI_C54X_ADDRESS_DIRECT_DP_H */

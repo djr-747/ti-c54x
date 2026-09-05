@@ -5,8 +5,8 @@
  * Module contract
  *
  * Owns: the value types used to describe a checked data-operand effective
- * address (including its width and explicit word pair) and at most one
- * auxiliary-register update.
+ * address (including its width and explicit word pair), its value-owned
+ * address-source snapshot, and at most one auxiliary-register update.
  * Does not own: CPU/register storage, status-register validation, bus transfers,
  * opcode decoding, instruction sequencing, memory mapping, or diagnostics.
  * Results are returned by value. Callers own every result object and may keep
@@ -51,12 +51,47 @@ typedef enum ti_c54x_address_update_phase {
  * State preconditions carried by an effect.  This is intentionally a private
  * execution seam rather than a public CPU policy: a producer tags the exact
  * architectural mode state its effect requires, and the sequencer validates
- * that tag before touching any selected auxiliary register.
+ * that tag before consulting the captured address source.
  */
 typedef enum ti_c54x_address_state_policy {
     TI_C54X_ADDRESS_STATE_POLICY_NONE = 0,
-    TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0 = 1
+    TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0 = 1,
+    TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0 = 2,
+    TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL1 = 3
 } ti_c54x_address_state_policy;
+
+typedef enum ti_c54x_address_source_kind {
+    TI_C54X_ADDRESS_SOURCE_NONE = 0,
+    TI_C54X_ADDRESS_SOURCE_AR = 1,
+    TI_C54X_ADDRESS_SOURCE_DIRECT_DP = 2,
+    TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3
+} ti_c54x_address_source_kind;
+
+typedef struct ti_c54x_address_source_ar {
+    uint8_t index;
+    uint16_t value_before;
+} ti_c54x_address_source_ar;
+
+typedef struct ti_c54x_address_source_direct_dp {
+    uint16_t dp9;
+    uint8_t dma7;
+} ti_c54x_address_source_direct_dp;
+
+typedef struct ti_c54x_address_source_direct_sp {
+    uint16_t sp16;
+    uint8_t dma7;
+} ti_c54x_address_source_direct_sp;
+
+/* The active union arm is selected by kind.  All fields are copied into the
+ * effect; no source pointer or caller-owned storage is retained. */
+typedef struct ti_c54x_address_source {
+    ti_c54x_address_source_kind kind;
+    union {
+        ti_c54x_address_source_ar ar;
+        ti_c54x_address_source_direct_dp direct_dp;
+        ti_c54x_address_source_direct_sp direct_sp;
+    } value;
+} ti_c54x_address_source;
 
 typedef struct ti_c54x_address_update {
     ti_c54x_address_update_target target;
@@ -68,7 +103,7 @@ typedef struct ti_c54x_address_update {
 
 typedef struct ti_c54x_address_effect {
     ti_c54x_data_operand operand;
-    uint8_t selected_ar_index;
+    ti_c54x_address_source source;
     ti_c54x_address_state_policy state_policy;
     ti_c54x_address_update update;
 } ti_c54x_address_effect;
