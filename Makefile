@@ -58,6 +58,7 @@ quality-test: $(OBSERVER_OFF_LIB)
 	$(PYTHON) -m unittest discover -s tests/contract/quality -t .
 	$(PYTHON) tools/quality/check_knobs.py --root .
 	$(PYTHON) tools/quality/check_source_boundaries.py --root .
+	$(PYTHON) tools/quality/check_evidence.py --root .
 	$(PYTHON) tools/quality/check_observer_artifact.py \
 		--artifact $(OBSERVER_OFF_LIB) --nm $(NM)
 

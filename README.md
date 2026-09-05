@@ -15,7 +15,10 @@ deferred until the standalone contracts and provenance review are complete.
 Foundations are under active development. The public API, supported C54x variant,
 opcode inventory, and distribution license are not final. In particular, the
 provenance and licensing review is still open; this repository does not currently
-make a license-selection or compatibility claim. See [`docs/provenance.md`](docs/provenance.md).
+make a license-selection or compatibility claim. See the [provenance review](docs/provenance.md),
+[architecture baseline](docs/architecture-baseline.md), and [evidence index](docs/evidence-index.md).
+The machine-readable [`config/evidence.json`](config/evidence.json) registry is checked by
+the standalone Python quality gate.
 
 ## Build and test
 
@@ -93,7 +96,10 @@ families; decode coverage, sequencing, interrupt behavior, and timing are added 
 their specifications become pinned. The dispatcher follows the mGBA pattern of a
 declarative instruction definition expanded into generated wrappers and dispatch
 tables, while keeping semantic implementations readable and independently
-testable.
+testable. The [architecture baseline](docs/architecture-baseline.md) describes
+the current ownership contracts, while the [evidence index](docs/evidence-index.md)
+maps requirements to their sources and tests. `config/evidence.json` is the
+machine-checked counterpart; it is validated without emulator or firmware gates.
 
 ## External inputs
 

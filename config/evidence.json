@@ -1,0 +1,504 @@
+{
+  "schema": {
+    "name": "ti-c54x-evidence-registry",
+    "version": 1,
+    "abi_major": 0,
+    "status": "baseline",
+    "access_date": "2026-09-06"
+  },
+  "primary_target_id": "C54X_CORE_COMMON_V1",
+  "targets": [
+    {
+      "id": "C54X_CORE_COMMON_V1",
+      "kind": "COMMON",
+      "state": "ACTIVE",
+      "parent_target_id": null,
+      "allowed_claim_kinds": ["ARCHITECTURAL", "PROJECT_CONTRACT"],
+      "name": "C54x common core",
+      "description": "A device-neutral 16-bit C54x CPU target. This is a semantic and interface boundary, not a claim that every C54x device has identical memory, interrupt, timing, or peripheral behavior.",
+      "inclusions": [
+        "CPU instruction and register foundations that are common across the C54x family and supported by pinned TI evidence",
+        "Program-word and data-word architectural concepts needed by the common execution contract",
+        "Documented reset effects that can be stated without selecting a silicon profile",
+        "Instruction sequencing and status effects only when a requirement has an evidence record"
+      ],
+      "exclusions": [
+        "XPC and any extended program-page or extended-address semantics",
+        "Device-specific ROM, RAM, memory maps, wait states, and boot maps",
+        "Exact IFR/IMR interrupt sources, vector tables, and device interrupt wiring",
+        "Peripherals, PLL and clock setup, electrical behavior, and silicon errata",
+        "Machine-cycle or pipeline timing guarantees until timing evidence and tests are added",
+        "VC5402-specific behavior, which belongs to the separate profile target"
+      ],
+      "program_address_carrier": {
+        "bits": 32,
+        "unit": "program words",
+        "semantic_scope": "CARRIER_ONLY",
+        "owner_path": "include/ti_c54x/cpu.h",
+        "claim": "The current public API uses a 32-bit program-word carrier so the common interface does not impose a 16-bit storage limit. The carrier is an implementation boundary only; it does not implement or promise XPC, extended pages, or a device address map."
+      }
+    },
+    {
+      "id": "C54X_VC5402_PROFILE_V1",
+      "kind": "PROFILE",
+      "state": "PLANNED",
+      "parent_target_id": "C54X_CORE_COMMON_V1",
+      "allowed_claim_kinds": ["PROFILE"],
+      "name": "VC5402 profile",
+      "description": "A later executable profile for VC5402-specific maps, vectors, peripherals, and address extensions, introduced only after the common target is stable and separately evidenced.",
+      "inclusions": [],
+      "exclusions": [
+        "No VC5402 behavior is implied by the common target before this profile is implemented and tested"
+      ]
+    }
+  ],
+  "tombstones": {
+    "targets": [],
+    "sources": [],
+    "evidence": [],
+    "requirements": [],
+    "tests": []
+  },
+  "sources": [
+    {
+      "id": "SRC-TI-SPRU131G",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "COMMON_ALLOWED",
+      "state": "ACTIVE",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRU131G",
+      "title": "TMS320C54x DSP Reference Set, Volume 1: CPU and Peripherals",
+      "revision": "G",
+      "publication_date": "2001-03",
+      "revision_date": null,
+      "official_url": "https://www.ti.com/lit/ug/spru131g/spru131g.pdf",
+      "scope": "CPU organization, buses and memory, registers and status, addressing, program control, reset and interrupts, and pipeline/timing context; device-specific peripherals remain profile work.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-TI-SPRU172C",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "COMMON_ALLOWED",
+      "state": "ACTIVE",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRU172C",
+      "title": "TMS320C54x DSP Reference Set, Volume 2: Mnemonic Instruction Set",
+      "revision": "C",
+      "publication_date": "2001-03",
+      "revision_date": null,
+      "official_url": "https://www.ti.com/lit/ug/spru172c/spru172c.pdf",
+      "scope": "Mnemonic instruction encoding and semantic descriptions, instruction summary, conditions, and register effects for the common instruction set; cycle data is not adopted as an early timing contract.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-TI-SPRU179C",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "COMMON_ALLOWED",
+      "state": "ACTIVE",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRU179C",
+      "title": "TMS320C54x DSP Reference Set, Volume 3: Algebraic Instruction Set",
+      "revision": "C",
+      "publication_date": "2001-03",
+      "revision_date": null,
+      "official_url": "https://www.ti.com/lit/ug/spru179/spru179.pdf",
+      "scope": "Algebraic instruction notation and cross-check material; it is not an authority for a device memory map or silicon-specific behavior.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-TI-SPRU307A",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "COMMON_ALLOWED",
+      "state": "ACTIVE",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRU307A",
+      "title": "TMS320C54x DSP Functional Overview",
+      "revision": "A",
+      "publication_date": "1998-09",
+      "revision_date": "2000-05",
+      "official_url": "https://www.ti.com/lit/ug/spru307/spru307.pdf",
+      "scope": "Family-level functional scope and terminology only; it does not establish instruction encodings or a concrete device profile.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-TI-SPRS079G",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "PROFILE_ONLY",
+      "state": "PLANNED",
+      "applicable_target_ids": ["C54X_VC5402_PROFILE_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRS079G",
+      "title": "TMS320VC5402 Fixed-Point Digital Signal Processor",
+      "revision": "G",
+      "publication_date": "1998-10",
+      "revision_date": "2008-10",
+      "official_url": "https://www.ti.com/lit/ds/symlink/tms320vc5402.pdf",
+      "scope": "VC5402 datasheet reserved for the later VC5402 profile; no VC5402 fact is part of the common target.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-TI-SPRU302B",
+      "kind": "TI_PRIMARY",
+      "normative_scope": "PROFILE_ONLY",
+      "state": "PLANNED",
+      "applicable_target_ids": ["C54X_VC5402_PROFILE_V1"],
+      "authority": "Texas Instruments",
+      "literature_number": "SPRU302B",
+      "title": "TMS320C54x DSP Reference Set, Volume 5: Enhanced Peripherals",
+      "revision": "B",
+      "publication_date": "2007-03",
+      "revision_date": null,
+      "official_url": "https://www.ti.com/lit/ug/spru302/spru302.pdf",
+      "scope": "Enhanced-peripheral reference material reserved for later device/profile work; it is excluded from the common CPU target.",
+      "access_date": "2026-09-06"
+    },
+    {
+      "id": "SRC-PROJECT-CONTRACT",
+      "kind": "PROJECT_CONTRACT_ONLY",
+      "normative_scope": "PROJECT_CONTRACT_ONLY",
+      "state": "ACTIVE",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "authority": "ti-c54x project",
+      "literature_number": null,
+      "title": "Standalone API and architecture contracts",
+      "revision": "repository state",
+      "publication_date": null,
+      "revision_date": null,
+      "official_url": null,
+      "scope": "Local project contracts and executable tests. These records are never TI-conformance evidence.",
+      "access_date": "2026-09-06"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.1-P6-3",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.1",
+        "printed_page_start": "6-3",
+        "printed_page_end": "6-3"
+      },
+      "assertion": "The program-control discussion places the current PC value on the program address bus and increments the PC for the next sequential fetch; this establishes the common one-word flow effect without selecting a device memory map."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.2-P6-4",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.2",
+        "printed_page_start": "6-4",
+        "printed_page_end": "6-4"
+      },
+      "assertion": "The program-control register discussion describes the state used to continue sequential program execution; it supports the common sequential PC effect without asserting XPC or an extended-page implementation."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.9-P6-25",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.9",
+        "printed_page_start": "6-25",
+        "printed_page_end": "6-25"
+      },
+      "assertion": "The reset description gives PC=FF80h, IPTR=1FFh, IFR=0, RC=0, ARP=0, ASM=0, AVIS=0, BRAF=0, C16=0, C=1, CLKOFF=0, CMPT=0, CPL=0, DP=0, DROM=0, FRCT=0, HM=0, INTM=1, OVA=0, OVB=0, OVM=0, OVLY=0, SXM=1, TC=1, and XF=1. It discusses XPC only where applicable and that field is excluded from this common target. SP and remaining status bits are not initialized by this reset source, so no value is asserted for them."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4.NOP-P4-121",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "NOP",
+        "printed_page_start": "4-121",
+        "printed_page_end": "4-121"
+      },
+      "assertion": "The NOP entry identifies word 0xF495, consumes one program word, has no status-bit effects, and only increments the PC in the common model. Its cycle information is intentionally not adopted as a common-core timing promise."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.4-P5-7-5-9",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.4",
+        "printed_page_start": "5-7",
+        "printed_page_end": "5-9"
+      },
+      "assertion": "The direct-addressing discussion defines dma as a 7-bit field; with CPL=0 the direct result is (DP << 7) | dma, while CPL=1 forms it from SP plus zero-extended dma. The direct form has no AR side effects. The exact SP-boundary overflow or wrap result is not selected by this registry."
+    },
+    {
+      "id": "E-PROJECT-CPU-SHELL-API",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "include/ti_c54x/cpu.h",
+        "anchor": "ti_c54x_cpu_init"
+      },
+      "assertion": "The ti_c54x_cpu_init boundary exposes caller-owned opaque storage, copied bus/config inputs, and a 32-bit program-word address carrier. This is a project API contract, not a claim that TI documents this exact C interface."
+    },
+    {
+      "id": "E-PROJECT-U40-FOUNDATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/foundation/arithmetic40.h",
+        "anchor": "ti_c54x_u40_t"
+      },
+      "assertion": "The foundation represents unsigned 40-bit values in a defined unsigned carrier and provides bounded mask, sign, and shift helpers without relying on signed overflow or implementation-defined shifts. This is a local implementation contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-OBSERVER-NONINTERFERENCE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "tests/unit/debug/test_observer.c",
+        "anchor": "test_observation_does_not_change_architectural_result"
+      },
+      "assertion": "The current observer tests require per-instance observation masks and compare observer-enabled execution with observer-disabled architectural results. This validates the project diagnostic boundary only; it is not a TI architectural claim."
+    },
+    {
+      "id": "E-PROJECT-EVIDENCE-REGISTRY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "config/evidence.json",
+        "anchor": "ti-c54x-evidence-registry"
+      },
+      "assertion": "The versioned registry is the project contract for target, source, evidence, requirement, test, and tombstone identifiers; this is a repository governance claim, not TI conformance evidence."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-COMMON-RESET-DOCUMENTED-SUBSET",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "Implement the reset values explicitly documented for the common architecture: PC=FF80h, IPTR=1FFh, IFR=0, RC=0, ARP=0, ASM=0, AVIS=0, BRAF=0, C16=0, C=1, CLKOFF=0, CMPT=0, CPL=0, DP=0, DROM=0, FRCT=0, HM=0, INTM=1, OVA=0, OVB=0, OVM=0, OVLY=0, SXM=1, TC=1, and XF=1.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S6.9-P6-25"],
+      "test_ids": ["T-COMMON-RESET-SUBSET"]
+    },
+    {
+      "id": "REQ-COMMON-RESET-UNSPECIFIED-FIELDS",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "SP and remaining status bits are not initialized by the reset source and no value is asserted for them.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S6.9-P6-25"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-NOP-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Recognize NOP as word 0xF495 with a width of one program word.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4.NOP-P4-121"],
+      "test_ids": ["T-COMMON-NOP-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-NOP-SEMANTICS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/",
+      "claim": "NOP produces no opcode-owned architectural or status effects.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4.NOP-P4-121"],
+      "test_ids": ["T-COMMON-NOP-SEMANTICS"]
+    },
+    {
+      "id": "REQ-COMMON-NOP-PC-SEQUENTIAL",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "A one-word NOP advances the common program counter sequentially by one program word, subject to the common target's explicit address model.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6.1-P6-3",
+        "E-TI-C54X-SPRU131G-S6.2-P6-4",
+        "E-TI-C54X-SPRU172C-S4.NOP-P4-121"
+      ],
+      "test_ids": ["T-COMMON-NOP-PC-SEQUENTIAL"]
+    },
+    {
+      "id": "REQ-COMMON-DIRECT-DP-ADDRESS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CPL=0, compute the full direct-data result over the complete domain as (DP << 7) | dma, where dma is the 7-bit direct field; the operation has no AR side effects.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9"],
+      "test_ids": ["T-COMMON-DIRECT-DP"]
+    },
+    {
+      "id": "REQ-COMMON-DIRECT-SP-WRAP",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Do not choose overflow or wrap behavior at the SP boundary for CPL=1 direct addressing without stronger primary evidence.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.4-P5-7-5-9"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-CPU-SHELL",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "include/ti_c54x/",
+      "claim": "The current opaque CPU shell and bus contract remain isolated, caller-owned, and independently testable.",
+      "evidence_ids": ["E-PROJECT-CPU-SHELL-API"],
+      "test_ids": ["T-PROJECT-CPU-SHELL"]
+    },
+    {
+      "id": "REQ-PROJECT-U40-FOUNDATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/foundation/",
+      "claim": "The current 40-bit arithmetic helpers have defined carrier, masking, sign, and shift behavior under strict C11 validation.",
+      "evidence_ids": ["E-PROJECT-U40-FOUNDATION"],
+      "test_ids": ["T-PROJECT-U40-FOUNDATION"]
+    },
+    {
+      "id": "REQ-PROJECT-OBSERVER-NONINTERFERENCE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/debug/",
+      "claim": "The observer seam is optional, instance-owned, and architecturally non-interfering; observation is not an opcode semantic source.",
+      "evidence_ids": ["E-PROJECT-OBSERVER-NONINTERFERENCE"],
+      "test_ids": ["T-PROJECT-OBSERVER-NONINTERFERENCE"]
+    },
+    {
+      "id": "REQ-PROJECT-EVIDENCE-REGISTRY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Validate the versioned evidence registry's schema, target/source/evidence/requirement/test cross-references, path states, and exact reverse links in repository quality checks.",
+      "evidence_ids": ["E-PROJECT-EVIDENCE-REGISTRY"],
+      "test_ids": ["T-PROJECT-EVIDENCE-REGISTRY"]
+    }
+  ],
+  "tests": [
+    {
+      "id": "T-COMMON-RESET-SUBSET",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_reset.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-RESET-DOCUMENTED-SUBSET"]
+    },
+    {
+      "id": "T-COMMON-NOP-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_nop_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-NOP-DECODE"]
+    },
+    {
+      "id": "T-COMMON-NOP-SEMANTICS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/test_nop.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-NOP-SEMANTICS"]
+    },
+    {
+      "id": "T-COMMON-NOP-PC-SEQUENTIAL",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_nop_flow.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-NOP-PC-SEQUENTIAL"]
+    },
+    {
+      "id": "T-COMMON-DIRECT-DP",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_direct.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-DIRECT-DP-ADDRESS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-SHELL",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_api.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_api"},
+      "requirement_ids": ["REQ-PROJECT-CPU-SHELL"]
+    },
+    {
+      "id": "T-PROJECT-U40-FOUNDATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/foundation/test_arithmetic40.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arithmetic40"},
+      "requirement_ids": ["REQ-PROJECT-U40-FOUNDATION"]
+    },
+    {
+      "id": "T-PROJECT-OBSERVER-NONINTERFERENCE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/debug/test_observer.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.observer"},
+      "requirement_ids": ["REQ-PROJECT-OBSERVER-NONINTERFERENCE"]
+    },
+    {
+      "id": "T-PROJECT-EVIDENCE-REGISTRY",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/test_evidence_registry.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-EVIDENCE-REGISTRY"]
+    }
+  ]
+}

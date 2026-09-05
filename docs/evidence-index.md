@@ -1,0 +1,114 @@
+# Evidence index
+
+The canonical machine-readable registry is
+[`config/evidence.json`](../config/evidence.json). This index mirrors every
+source, evidence, requirement, and test ID in that file for review. The primary
+target is `C54X_CORE_COMMON_V1`; the only other target is the planned
+`C54X_VC5402_PROFILE_V1`.
+
+## Targets
+
+| Target ID | Kind | State | Parent | Allowed claim kinds | Boundary |
+|---|---|---|---|---|---|
+| `C54X_CORE_COMMON_V1` | COMMON | ACTIVE | — | ARCHITECTURAL, PROJECT_CONTRACT | Device-neutral common CPU foundations |
+| `C54X_VC5402_PROFILE_V1` | PROFILE | PLANNED | `C54X_CORE_COMMON_V1` | PROFILE | VC5402 maps, vectors, peripherals, and extensions later |
+
+XPC, extended pages, device maps, vectors, peripherals, and machine-cycle timing
+are exclusions of the common target, not hidden project targets. The common
+program-address carrier is 32-bit with semantic scope `CARRIER_ONLY`.
+
+## Sources
+
+All TI links below are official Texas Instruments documents. ISO dates, revision
+dates, normative scope, and access date are authoritative in the JSON registry.
+
+| Source ID | State | Kind | Normative scope | Applicable target IDs | Literature / revision | Official source |
+|---|---|---|---|---|---|---|
+| `SRC-TI-SPRU131G` | ACTIVE | TI_PRIMARY | COMMON_ALLOWED | `C54X_CORE_COMMON_V1` | SPRU131G / G, 2001-03 | [Volume 1: CPU and Peripherals](https://www.ti.com/lit/ug/spru131g/spru131g.pdf) |
+| `SRC-TI-SPRU172C` | ACTIVE | TI_PRIMARY | COMMON_ALLOWED | `C54X_CORE_COMMON_V1` | SPRU172C / C, 2001-03 | [Volume 2: Mnemonic Instruction Set](https://www.ti.com/lit/ug/spru172c/spru172c.pdf) |
+| `SRC-TI-SPRU179C` | ACTIVE | TI_PRIMARY | COMMON_ALLOWED | `C54X_CORE_COMMON_V1` | SPRU179C / C, 2001-03 | [Volume 3: Algebraic Instruction Set](https://www.ti.com/lit/ug/spru179/spru179.pdf) |
+| `SRC-TI-SPRU307A` | ACTIVE | TI_PRIMARY | COMMON_ALLOWED | `C54X_CORE_COMMON_V1` | SPRU307A / A, 1998-09; revised 2000-05 | [Functional Overview](https://www.ti.com/lit/ug/spru307/spru307.pdf) |
+| `SRC-TI-SPRS079G` | PLANNED | TI_PRIMARY | PROFILE_ONLY | `C54X_VC5402_PROFILE_V1` | SPRS079G / G, 1998-10; revised 2008-10 | [TMS320VC5402 datasheet](https://www.ti.com/lit/ds/symlink/tms320vc5402.pdf) |
+| `SRC-TI-SPRU302B` | PLANNED | TI_PRIMARY | PROFILE_ONLY | `C54X_VC5402_PROFILE_V1` | SPRU302B / B, 2007-03 | [Volume 5: Enhanced Peripherals](https://www.ti.com/lit/ug/spru302/spru302.pdf) |
+| `SRC-PROJECT-CONTRACT` | ACTIVE | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `C54X_CORE_COMMON_V1` | repository state | Local contracts only; no external URL |
+
+## Immutable evidence
+
+`PINNED` evidence is immutable: each record has a source, exact section/page
+locator, scope, classification, and a short independently phrased assertion.
+
+| Evidence ID | State | Scope | Classification | Source | Applicable target IDs | Locator |
+|---|---|---|---|---|---|---|
+| `E-TI-C54X-SPRU131G-S6.1-P6-3` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.1, `6-3` |
+| `E-TI-C54X-SPRU131G-S6.2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
+| `E-TI-C54X-SPRU131G-S6.9-P6-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.9, `6-25` |
+| `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 NOP, `4-121` |
+| `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.4, `5-7`–`5-9` |
+| `E-PROJECT-CPU-SHELL-API` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `include/ti_c54x/cpu.h` anchor `ti_c54x_cpu_init` |
+| `E-PROJECT-U40-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/foundation/arithmetic40.h` anchor `ti_c54x_u40_t` |
+| `E-PROJECT-OBSERVER-NONINTERFERENCE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `tests/unit/debug/test_observer.c` anchor `test_observation_does_not_change_architectural_result` |
+| `E-PROJECT-EVIDENCE-REGISTRY` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `config/evidence.json` anchor `ti-c54x-evidence-registry` |
+
+The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
+CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
+XF. SP and remaining status bits are unresolved. NOP is `0xF495`, one word, with
+no status-bit effects and only a PC increment. Direct addressing records
+`(DP << 7) | dma` for CPL=0, a 7-bit dma, and no AR side effects; SP-boundary
+overflow/wrap remains unresolved.
+
+## Requirements
+
+Requirement state and test state are separate. Requirements use exactly
+`PLANNED`, `IMPLEMENTED`, or `UNRESOLVED`; `claim_kind` is `ARCHITECTURAL`,
+`PROJECT_CONTRACT`, or `PROFILE`. Every implemented requirement links to an
+existing `PASSING` test. The project rows below target the common architecture
+but are explicitly `PROJECT_CONTRACT`, not TI conformance.
+
+| Requirement ID | State | Target | Claim kind | Owner | Evidence IDs | Test IDs |
+|---|---|---|---|---|---|---|
+| `REQ-COMMON-RESET-DOCUMENTED-SUBSET` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | `T-COMMON-RESET-SUBSET` |
+| `REQ-COMMON-RESET-UNSPECIFIED-FIELDS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | — |
+| `REQ-COMMON-NOP-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-DECODE` |
+| `REQ-COMMON-NOP-SEMANTICS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/` | `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-SEMANTICS` |
+| `REQ-COMMON-NOP-PC-SEQUENTIAL` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.1-P6-3`, `E-TI-C54X-SPRU131G-S6.2-P6-4`, `E-TI-C54X-SPRU172C-S4.NOP-P4-121` | `T-COMMON-NOP-PC-SEQUENTIAL` |
+| `REQ-COMMON-DIRECT-DP-ADDRESS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | `T-COMMON-DIRECT-DP` |
+| `REQ-COMMON-DIRECT-SP-WRAP` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | — |
+| `REQ-PROJECT-CPU-SHELL` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `include/ti_c54x/` | `E-PROJECT-CPU-SHELL-API` | `T-PROJECT-CPU-SHELL` |
+| `REQ-PROJECT-U40-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-U40-FOUNDATION` | `T-PROJECT-U40-FOUNDATION` |
+| `REQ-PROJECT-OBSERVER-NONINTERFERENCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/debug/` | `E-PROJECT-OBSERVER-NONINTERFERENCE` | `T-PROJECT-OBSERVER-NONINTERFERENCE` |
+| `REQ-PROJECT-EVIDENCE-REGISTRY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-EVIDENCE-REGISTRY` | `T-PROJECT-EVIDENCE-REGISTRY` |
+
+## Tests
+
+Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
+links to its requirements. Planned paths may not exist yet; passing paths must
+exist in the repository.
+
+| Test ID | State | Scope | Path | Runner | Requirement IDs |
+|---|---|---|---|---|---|
+| `T-COMMON-RESET-SUBSET` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_reset.c` | `null` | `REQ-COMMON-RESET-DOCUMENTED-SUBSET` |
+| `T-COMMON-NOP-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_nop_decode.c` | `null` | `REQ-COMMON-NOP-DECODE` |
+| `T-COMMON-NOP-SEMANTICS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/test_nop.c` | `null` | `REQ-COMMON-NOP-SEMANTICS` |
+| `T-COMMON-NOP-PC-SEQUENTIAL` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_nop_flow.c` | `null` | `REQ-COMMON-NOP-PC-SEQUENTIAL` |
+| `T-COMMON-DIRECT-DP` | PLANNED | COMMON_TI | `tests/unit/address/test_direct.c` | `null` | `REQ-COMMON-DIRECT-DP-ADDRESS` |
+| `T-PROJECT-CPU-SHELL` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_api.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_api"}` | `REQ-PROJECT-CPU-SHELL` |
+| `T-PROJECT-U40-FOUNDATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_arithmetic40.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40"}` | `REQ-PROJECT-U40-FOUNDATION` |
+| `T-PROJECT-OBSERVER-NONINTERFERENCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/debug/test_observer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.observer"}` | `REQ-PROJECT-OBSERVER-NONINTERFERENCE` |
+| `T-PROJECT-EVIDENCE-REGISTRY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/test_evidence_registry.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-EVIDENCE-REGISTRY` |
+
+## Correction and tombstone policy
+
+Source and evidence corrections receive new IDs; Git review enforces history, but
+the registry does not overclaim that a checker can detect historical edits.
+Requirement and test IDs are also stable. The schema's tombstone arrays for
+targets, sources, evidence, requirements, and tests are currently empty. A
+retired ID is recorded there for the ABI-major lifetime and is never silently
+reused.
+
+| Category | ID | Retired ABI | Reason | Replacement |
+|---|---|---|---|---|
+| targets | — | — | No tombstones currently recorded | — |
+| sources | — | — | No tombstones currently recorded | — |
+| evidence | — | — | No tombstones currently recorded | — |
+| requirements | — | — | No tombstones currently recorded | — |
+| tests | — | — | No tombstones currently recorded | — |

@@ -26,8 +26,8 @@ function-pointer dispatch tables.
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
 | Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
-| Common-core target and evidence registry | Active | Device-neutral scope, official sources, requirements, owners, and test links are machine checked |
-| Address generation | Blocked on evidence baseline | All address effects can be tested without opcode execution |
+| Common-core target and evidence registry | Complete | Device-neutral scope, official sources, requirements, owners, and test links are machine checked |
+| Address generation | Active | All address effects can be tested without opcode execution |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
