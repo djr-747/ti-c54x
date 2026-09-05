@@ -375,3 +375,39 @@ rewritten after publication.
 - Knobs and emulator integration: unchanged.
 - Follow-up: specify the smallest explicit address-effect/state seam that can prove
   DP/SP preservation without introducing unresolved CPL=1 or indirect semantics.
+
+## 2026-09-06 — P2-W2 — CMPT=0 single-indirect word addressing
+
+- Plan: establish the first reusable address-effect seam with the documented
+  CMPT=0 single-indirect MOD0–MOD3 word-address behaviors, independently of CPU
+  state, opcode decoding, bus access, and emulator integration.
+- State: active; implementation commit pending.
+- Evidence boundary: pin SPRU131G §5.5.1, §5.5.2, Table 5-4/§5.5.3, §5.5.3.1,
+  and §5.5.5 as separate immutable records. Claim only ARF-selected AR0–AR7,
+  old-versus-updated effective-address order, one-word `+1`/`-1` updates, the
+  MOD3 write-only restriction, and CMPT=0's documented ARP non-update. Do not
+  claim pipeline timing, circular or bit-reversed modes, dual addressing, long
+  operands, or boundary wrap behavior.
+- API decision: a checked private planner returns a result by value containing a
+  status, one data-word effective address, the selected AR index, and zero or one
+  explicit AR update with pre/post phase and before/after values. A non-success
+  result has a deterministic zero effect. The planner accepts only word access;
+  long-width delta and span rules remain future evidence-backed work.
+- Boundary decision: valid interior arithmetic is implemented without C overflow.
+  `AR=0` for post-decrement and `AR=0xFFFF` for incrementing modes return an
+  unresolved-boundary status because the pinned source does not yet prove the
+  architectural edge result. MOD0 remains valid across the full 16-bit AR domain.
+- Ownership: `src/address/address_effect.h` owns the private producer/consumer
+  effect contract; `src/address/indirect_single.[ch]` owns checked MOD0–MOD3 word
+  planning; `tests/unit/address/` mirrors those contracts; build files own only
+  standalone registration; the evidence registry and its human mirrors own all
+  claims and traceability.
+- Required validation: exhaustive valid interior AR values for every supported
+  mode/access combination; explicit endpoint, ordering, source-index, update,
+  write-only, invalid-input, and deterministic-error-effect checks; strict Make
+  tests, ASan/UBSan, evidence/knob/source-boundary gates, and post-push CMake,
+  CTest, install, consumer, GCC/Clang, and sanitizer CI.
+- Knobs: none planned.
+- Follow-up: delegate implementation and an independent evidence/API review, then
+  integrate and commit only if the effect seam is narrow enough for a later
+  sequencer to apply without exposing CPU storage or bus policy.
