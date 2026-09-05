@@ -286,3 +286,15 @@ rewritten after publication.
   run.
 - Follow-up: verify the pushed commit in standalone CI, then implement the first
   evidence-backed address-owner slice without selecting unresolved CPL=1 behavior.
+
+## 2026-09-06 — P2-W0 verification — Remote evidence gates
+
+- Evidence: GitHub Actions run `33983312950` passed the pushed P2-W0 commits.
+- Coverage: strict GCC and Clang direct-Make builds/tests, tests-disabled CMake
+  library configuration, CMake/CTest, installation, the checked-in downstream
+  consumer, and the Clang ASan/UBSan job all passed in the standalone repository.
+- Plan state: the common-core target and evidence registry remain `Complete`;
+  address generation remains `Active`.
+- Knobs and architecture: unchanged.
+- Follow-up: begin the requirement-backed CPL=0 direct-DP address slice while
+  preserving CPL=1 SP-boundary behavior as unresolved.
