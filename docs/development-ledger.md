@@ -626,3 +626,56 @@ rewritten after publication.
 - Follow-up: delegate implementation and independent API/evidence review, then
   integrate only if application remains a narrow private state transition rather
   than growing into premature CPU or bus orchestration.
+
+## 2026-09-06 — P2-W4 completion — Transactional address-effect application
+
+- Implementation commit: `26011c8` (`P2-W4: apply address effects
+  transactionally`).
+- Plan result: transactional address-effect application is `Complete`. Address
+  generation remains `Active` because direct-register effects, ARP/CMPT state,
+  long operands, remaining indirect modes, and boundary behavior are not complete.
+- Ownership: `src/sequencer/address_effect_apply.[ch]` owns validation precedence,
+  exact phase matching, stale-state detection, and the single AR commit point;
+  `tests/unit/sequencer/test_address_effect_apply.c` owns COMMON_TI successful
+  transitions; its contract sibling owns project-only validation and rejection
+  behavior. The module is compiled into both normal and observer-disabled archives.
+- Transition contract: a `NONE` effect is validated only at phase `NONE` and leaves
+  state unchanged. AR effects require a matching selected/update index, PRE or POST
+  phase, phase-consistent effective address, a known selected AR, and an unchanged
+  `value_before`; a successful call then performs one checked write. Upstream
+  failure, malformed shape, phase mismatch, unknown AR, and stale AR are distinct.
+- Transaction boundary: pointer/requested-phase validation precedes upstream result
+  status; result status precedes intrinsic shape; shape precedes phase agreement;
+  phase agreement precedes effective-address relation; and all precede state read
+  and mutation. A non-OK result payload is never interpreted, and every rejection
+  preserves the complete state byte-for-byte.
+- Extensibility: the seam deliberately does not infer an address mode or enforce a
+  `+1`/`-1` delta. Equal before/after updates are accepted when phase/address/state
+  relations hold, preserving a route for future circular and bit-reversed modes.
+  Bus access, opcode execution, timing, CPU lifecycle, diagnostics, and ARP/CMPT
+  policy remain absent.
+- TDD proof: the COMMON test independently asserts MOD0–MOD3 TI phase, address,
+  before/after, and final-state expectations over 2,097,128 planner-produced valid
+  index/value combinations and compares the entire resulting state. The project
+  test covers nulls, negative/high enums, all non-OK and unknown result statuses
+  with forged payloads, malformed NONE/AR shapes, index/address mismatches, exact
+  status precedence, unknown/stale state, repeated application, equal before/after
+  updates, and bytewise rejection non-mutation.
+- Review correction: the initial COMMON test derived its expected phase/value from
+  the planner payload and the initial project test covered unknown state only for a
+  no-update result. Independent review and main audit converted the COMMON proof to
+  independent per-mode expectations and whole-state comparison, added unknown
+  update coverage, removed direct state-field inspection, and expanded non-OK and
+  precedence coverage. No production defect remained.
+- Local validation: strict `make test` and ASan/UBSan `make test` passed all C
+  executables and 96 Python quality tests; live evidence passed with 2 targets, 7
+  sources, 24 requirements, and 18 tests; source-boundary passed for 33 files;
+  knob and observer-disabled artifact checks passed; and
+  `make PYTHON=/definitely/missing build` proved compiler-only standalone builds.
+- Knobs: unchanged. No `TEST`, `OBSERVE`, or `A/B` control was added.
+- Deviation: local CMake and Clang executables remain unavailable. CMake/CTest,
+  install, downstream consumer, GCC/Clang, and Clang sanitizer package surfaces are
+  assigned to post-push standalone CI.
+- Follow-up: verify remote gates, then choose the next evidence-backed addressing
+  foundation between direct no-update effects and the private status-field access
+  needed to enforce CMPT=0/ARP=0 without exposing raw register layout.
