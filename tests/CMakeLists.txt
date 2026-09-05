@@ -28,9 +28,11 @@ target_compile_features(ti_c54x_observer_enabled PRIVATE c_std_11)
 target_compile_definitions(ti_c54x_observer_enabled PRIVATE
     TI_C54X_ENABLE_OBSERVERS=1
 )
-target_include_directories(ti_c54x_observer_enabled PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
+target_include_directories(ti_c54x_observer_enabled
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/src
 )
 ti_c54x_enable_warnings(ti_c54x_observer_enabled)
 ti_c54x_enable_sanitizers(ti_c54x_observer_enabled)
