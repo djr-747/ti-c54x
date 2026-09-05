@@ -6,7 +6,7 @@
  *
  * Owns: the value types used to describe a checked effective-address result
  * and at most one auxiliary-register update.
- * Does not own: CPU/register storage, status-register policy, bus transfers,
+ * Does not own: CPU/register storage, status-register validation, bus transfers,
  * opcode decoding, instruction sequencing, memory mapping, or diagnostics.
  * Results are returned by value. Callers own every result object and may keep
  * it after the planning call returns; no field borrows storage from the input.
@@ -44,6 +44,17 @@ typedef enum ti_c54x_address_update_phase {
     TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS = 2
 } ti_c54x_address_update_phase;
 
+/*
+ * State preconditions carried by an effect.  This is intentionally a private
+ * execution seam rather than a public CPU policy: a producer tags the exact
+ * architectural mode state its effect requires, and the sequencer validates
+ * that tag before touching any selected auxiliary register.
+ */
+typedef enum ti_c54x_address_state_policy {
+    TI_C54X_ADDRESS_STATE_POLICY_NONE = 0,
+    TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0 = 1
+} ti_c54x_address_state_policy;
+
 typedef struct ti_c54x_address_update {
     ti_c54x_address_update_target target;
     ti_c54x_address_update_phase phase;
@@ -55,6 +66,7 @@ typedef struct ti_c54x_address_update {
 typedef struct ti_c54x_address_effect {
     ti_c54x_data_word_address effective_address_word;
     uint8_t selected_ar_index;
+    ti_c54x_address_state_policy state_policy;
     ti_c54x_address_update update;
 } ti_c54x_address_effect;
 

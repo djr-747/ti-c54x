@@ -1,9 +1,9 @@
 /* Module contract
  * Owns: deterministic construction of the private common reset state and
- * checked knownness-aware AR/SP mutation.
- * Does not own: CPU lifecycle or configured bootstrap reset, address planning,
- * effect sequencing, bus transfers, opcode semantics, diagnostics, or public
- * ABI declarations.
+ * checked knownness-aware AR/SP and ARP/CMPT status-field access and mutation.
+ * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
+ * status-register APIs, address planning or sequencer policy, effect sequencing,
+ * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
  */
 
 #include "arch_state.h"
@@ -112,5 +112,65 @@ ti_c54x_arch_state_write_sp(ti_c54x_arch_state *state,
     state->sp = value;
     state->scalar_known_mask =
         (uint8_t)(state->scalar_known_mask | TI_C54X_ARCH_STATE_KNOWN_SP);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_arp(const ti_c54x_arch_state *state,
+                            uint8_t *value)
+{
+    if (state == NULL || value == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    if ((state->st0_known_mask & TI_C54X_ST0_ARP_MASK) !=
+        TI_C54X_ST0_ARP_MASK) {
+        return TI_C54X_ARCH_STATE_UNKNOWN;
+    }
+    *value = (uint8_t)((state->st0 & TI_C54X_ST0_ARP_MASK) >>
+                       TI_C54X_ST0_ARP_SHIFT);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_arp(ti_c54x_arch_state *state,
+                             uint8_t value)
+{
+    if (state == NULL || value > UINT8_C(7)) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    state->st0 = (uint16_t)((state->st0 & (uint16_t)~TI_C54X_ST0_ARP_MASK) |
+                            ((uint16_t)value << TI_C54X_ST0_ARP_SHIFT));
+    state->st0_known_mask =
+        (uint16_t)(state->st0_known_mask | TI_C54X_ST0_ARP_MASK);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_cmpt(const ti_c54x_arch_state *state,
+                             uint8_t *value)
+{
+    if (state == NULL || value == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    if ((state->st1_known_mask & TI_C54X_ST1_CMPT_MASK) !=
+        TI_C54X_ST1_CMPT_MASK) {
+        return TI_C54X_ARCH_STATE_UNKNOWN;
+    }
+    *value = (uint8_t)((state->st1 & TI_C54X_ST1_CMPT_MASK) >>
+                       TI_C54X_ST1_CMPT_SHIFT);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_cmpt(ti_c54x_arch_state *state,
+                              uint8_t value)
+{
+    if (state == NULL || value > UINT8_C(1)) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    state->st1 = (uint16_t)((state->st1 & (uint16_t)~TI_C54X_ST1_CMPT_MASK) |
+                            ((uint16_t)value << TI_C54X_ST1_CMPT_SHIFT));
+    state->st1_known_mask =
+        (uint16_t)(state->st1_known_mask | TI_C54X_ST1_CMPT_MASK);
     return TI_C54X_ARCH_STATE_OK;
 }

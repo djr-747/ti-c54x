@@ -18,6 +18,8 @@ check_zero_effect(const ti_c54x_address_effect *effect)
 {
     TI_C54X_TEST_CHECK_U64(effect->effective_address_word, UINT16_C(0));
     TI_C54X_TEST_CHECK_U64(effect->selected_ar_index, UINT8_C(0));
+    TI_C54X_TEST_CHECK(
+        effect->state_policy == TI_C54X_ADDRESS_STATE_POLICY_NONE);
     TI_C54X_TEST_CHECK(effect->update.target == TI_C54X_ADDRESS_UPDATE_NONE);
     TI_C54X_TEST_CHECK(effect->update.phase == TI_C54X_ADDRESS_UPDATE_PHASE_NONE);
     TI_C54X_TEST_CHECK_U64(effect->update.ar_index, UINT8_C(0));

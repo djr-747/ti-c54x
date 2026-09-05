@@ -42,8 +42,12 @@ INDIRECT_SINGLE_WORD_TEST := $(BUILD_DIR)/test_indirect_single_word
 ADDRESS_EFFECT_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_contract
 ARCH_STATE_RESET_TEST := $(BUILD_DIR)/test_arch_state_reset
 ARCH_STATE_KNOWNNESS_TEST := $(BUILD_DIR)/test_arch_state_knownness
+ARCH_STATE_ADDRESS_FIELDS_TEST := $(BUILD_DIR)/test_arch_state_address_fields
+ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST := $(BUILD_DIR)/test_arch_state_address_field_contract
 ADDRESS_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_address_effect_apply
 ADDRESS_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_apply_contract
+INDIRECT_CMPT0_STATE_TEST := $(BUILD_DIR)/test_indirect_cmpt0_state
+ADDRESS_STATE_POLICY_CONTRACT_TEST := $(BUILD_DIR)/test_address_state_policy_contract
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
 OBSERVER_OFF_TEST := $(BUILD_DIR)/test_observer_off
 MINIMAL := $(BUILD_DIR)/minimal
@@ -60,7 +64,9 @@ all: test
 build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) \
 	$(INDIRECT_SINGLE_WORD_TEST) $(ADDRESS_EFFECT_CONTRACT_TEST) \
 	$(ARCH_STATE_RESET_TEST) $(ARCH_STATE_KNOWNNESS_TEST) \
+	$(ARCH_STATE_ADDRESS_FIELDS_TEST) $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_APPLY_TEST) $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST) \
+	$(INDIRECT_CMPT0_STATE_TEST) $(ADDRESS_STATE_POLICY_CONTRACT_TEST) \
 	$(OBSERVER_TEST) \
 	$(OBSERVER_OFF_TEST) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
@@ -72,8 +78,12 @@ test: build quality-test
 	$(ADDRESS_EFFECT_CONTRACT_TEST)
 	$(ARCH_STATE_RESET_TEST)
 	$(ARCH_STATE_KNOWNNESS_TEST)
+	$(ARCH_STATE_ADDRESS_FIELDS_TEST)
+	$(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_APPLY_TEST)
 	$(ADDRESS_EFFECT_APPLY_CONTRACT_TEST)
+	$(INDIRECT_CMPT0_STATE_TEST)
+	$(ADDRESS_STATE_POLICY_CONTRACT_TEST)
 	$(OBSERVER_TEST)
 	$(OBSERVER_OFF_TEST)
 	$(MINIMAL)
@@ -143,6 +153,18 @@ $(ARCH_STATE_KNOWNNESS_TEST): tests/unit/state/test_arch_state_knownness.c \
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
+$(ARCH_STATE_ADDRESS_FIELDS_TEST): tests/unit/state/test_arch_state_address_fields.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/register_layout.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST): tests/unit/state/test_arch_state_address_field_contract.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/register_layout.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
 $(ADDRESS_EFFECT_APPLY_TEST): tests/unit/sequencer/test_address_effect_apply.c \
 	tests/support/test_harness.h src/sequencer/address_effect_apply.h \
 	src/address/address_effect.h src/address/indirect_single.h \
@@ -154,6 +176,19 @@ $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_address_effect_
 	tests/support/test_harness.h src/sequencer/address_effect_apply.h \
 	src/address/address_effect.h src/address/indirect_single.h \
 	src/state/arch_state.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_CMPT0_STATE_TEST): tests/unit/sequencer/test_indirect_cmpt0_state.c \
+	tests/support/test_harness.h src/sequencer/address_effect_apply.h \
+	src/address/address_effect.h src/address/indirect_single.h \
+	src/state/arch_state.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(ADDRESS_STATE_POLICY_CONTRACT_TEST): tests/unit/sequencer/test_address_state_policy_contract.c \
+	tests/support/test_harness.h src/sequencer/address_effect_apply.h \
+	src/address/address_effect.h src/state/arch_state.h $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 

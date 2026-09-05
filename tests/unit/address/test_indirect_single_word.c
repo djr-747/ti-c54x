@@ -48,6 +48,9 @@ check_valid(uint8_t ar_index,
 
     TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_OK);
     TI_C54X_TEST_CHECK_U64(result.effect.selected_ar_index, ar_index);
+    TI_C54X_TEST_CHECK(
+        result.effect.state_policy ==
+        TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0);
 
     switch (mode) {
     case TI_C54X_INDIRECT_SINGLE_MOD0:

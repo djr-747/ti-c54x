@@ -3,7 +3,7 @@
  *
  * Owns: checked CMPT=0 single-indirect word effective-address planning for
  * MOD0 through MOD3, including ordered auxiliary-register effects.
- * Does not own: CPU state, ARP/CMPT state validation, bus transfers, opcode
+ * Does not own: CPU state or ARP/CMPT state validation, bus transfers, opcode
  * decoding, long operands, circular or bit-reversed addressing, dual-indirect
  * forms, instruction scheduling, or diagnostics.
  */
@@ -116,6 +116,8 @@ ti_c54x_indirect_single_word(uint8_t ar_index,
         return ti_c54x_address_result_with_status(
             TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
+
+    result.effect.state_policy = TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0;
 
     return result;
 }

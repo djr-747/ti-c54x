@@ -3,10 +3,11 @@
 
 /* Module contract
  * Owns: private, fixed-size architectural register storage, common TI reset
- * seeding, and checked knownness-aware auxiliary-register/stack accessors.
- * Does not own: CPU lifecycle or configured bootstrap reset, address planning,
- * effect sequencing, bus transfers, opcode semantics, diagnostics, or public
- * ABI declarations.
+ * seeding, and checked knownness-aware AR/SP and ARP/CMPT status-field access,
+ * knownness, and field-limited mutation.
+ * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
+ * status-register APIs, address planning or sequencer policy, effect sequencing,
+ * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
  *
  * All inputs are copied into the supplied state.  No pointer or callback is
  * retained after a call; the caller owns the state object for its lifetime.
@@ -66,5 +67,31 @@ ti_c54x_arch_state_read_sp(const ti_c54x_arch_state *state,
 ti_c54x_arch_state_status
 ti_c54x_arch_state_write_sp(ti_c54x_arch_state *state,
                             uint16_t value);
+
+/* Checked accessors for the three-bit ST0 ARP field.  Reads require every
+ * ARP knownness bit and preserve *value on UNKNOWN or INVALID_ARGUMENT.
+ * Writes accept only 0..7, replace ARP bits in ST0, preserve all other ST0
+ * bits and knownness, and mark ARP known.  NULL inputs and rejected writes
+ * leave the state unchanged. */
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_arp(const ti_c54x_arch_state *state,
+                            uint8_t *value);
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_arp(ti_c54x_arch_state *state,
+                             uint8_t value);
+
+/* Checked accessors for the one-bit ST1 CMPT field.  Reads require the CMPT
+ * knownness bit and preserve *value on UNKNOWN or INVALID_ARGUMENT.  Writes
+ * accept only 0 or 1, replace CMPT in ST1, preserve all other ST1 bits and
+ * knownness, and mark CMPT known.  NULL inputs and rejected writes leave the
+ * state unchanged. */
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_cmpt(const ti_c54x_arch_state *state,
+                             uint8_t *value);
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_cmpt(ti_c54x_arch_state *state,
+                              uint8_t value);
 
 #endif /* TI_C54X_STATE_ARCH_STATE_H */

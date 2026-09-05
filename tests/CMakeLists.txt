@@ -97,6 +97,38 @@ add_test(NAME ti_c54x.arch_state_knownness
     COMMAND ti_c54x_test_arch_state_knownness
 )
 
+add_executable(ti_c54x_test_arch_state_address_fields
+    unit/state/test_arch_state_address_fields.c
+)
+target_compile_features(ti_c54x_test_arch_state_address_fields PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_arch_state_address_fields PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_arch_state_address_fields PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_arch_state_address_fields)
+ti_c54x_enable_sanitizers(ti_c54x_test_arch_state_address_fields)
+add_test(NAME ti_c54x.arch_state_address_fields
+    COMMAND ti_c54x_test_arch_state_address_fields
+)
+
+add_executable(ti_c54x_test_arch_state_address_field_contract
+    unit/state/test_arch_state_address_field_contract.c
+)
+target_compile_features(ti_c54x_test_arch_state_address_field_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_arch_state_address_field_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_arch_state_address_field_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_arch_state_address_field_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_arch_state_address_field_contract)
+add_test(NAME ti_c54x.arch_state_address_field_contract
+    COMMAND ti_c54x_test_arch_state_address_field_contract
+)
+
 add_executable(ti_c54x_test_address_effect_apply
     unit/sequencer/test_address_effect_apply.c
 )
@@ -127,6 +159,38 @@ ti_c54x_enable_warnings(ti_c54x_test_address_effect_apply_contract)
 ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_apply_contract)
 add_test(NAME ti_c54x.address_effect_apply_contract
     COMMAND ti_c54x_test_address_effect_apply_contract
+)
+
+add_executable(ti_c54x_test_indirect_cmpt0_state
+    unit/sequencer/test_indirect_cmpt0_state.c
+)
+target_compile_features(ti_c54x_test_indirect_cmpt0_state PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_cmpt0_state PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_cmpt0_state PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_cmpt0_state)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_cmpt0_state)
+add_test(NAME ti_c54x.indirect_cmpt0_state
+    COMMAND ti_c54x_test_indirect_cmpt0_state
+)
+
+add_executable(ti_c54x_test_address_state_policy_contract
+    unit/sequencer/test_address_state_policy_contract.c
+)
+target_compile_features(ti_c54x_test_address_state_policy_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_state_policy_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_state_policy_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_state_policy_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_state_policy_contract)
+add_test(NAME ti_c54x.address_state_policy_contract
+    COMMAND ti_c54x_test_address_state_policy_contract
 )
 
 add_library(ti_c54x_observer_off_artifact STATIC ${ti_c54x_core_sources})

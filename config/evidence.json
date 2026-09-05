@@ -246,6 +246,22 @@
       "assertion": "ST0 and ST1 are 16-bit status registers. ST0 assigns ARP to bits 15-13, TC to bit 12, C to bit 11, OVA to bit 10, OVB to bit 9, and DP to bits 8-0. ST1 assigns BRAF to bit 15, CPL to bit 14, XF to bit 13, HM to bit 12, INTM to bit 11, reserves bit 10 as read-zero, OVM to bit 9, SXM to bit 8, C16 to bit 7, FRCT to bit 6, CMPT to bit 5, and ASM to bits 4-0; Table 4-1 and Table 4-2 provide the listed reset values."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.1.1",
+        "printed_page_start": "4-2",
+        "printed_page_end": "4-2"
+      },
+      "assertion": "The status-register description permits ST0 and ST1 to be stored and loaded, permits individual status bits to be set or reset, and describes loading ARP through its documented short-immediate field path. This record does not assert arbitrary data-memory ARP writes, raw status write masks, timing, or reserved-bit semantics."
+    },
+    {
       "id": "E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8",
       "immutable": true,
       "state": "PINNED",
@@ -550,6 +566,34 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The private sequencer application seam borrows a planner result, validates its intrinsic effect shape and requested phase before mutation, distinguishes rejected planner results, unknown and stale auxiliary-register state, and applies at most one checked AR write transactionally. Rejected calls preserve the complete caller-owned state; no arithmetic, bus, memory, timing, or diagnostic behavior is implied. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-ARCH-ADDRESS-FIELD-ACCESS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/state/arch_state.h",
+        "anchor": "ti_c54x_arch_state_read_arp"
+      },
+      "assertion": "The private architectural-state API exposes checked ARP and CMPT field accessors with explicit valid ranges, knownness-aware reads, output preservation on rejected reads, and cross-field-preserving writes. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-ADDRESS-STATE-POLICY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/address_effect.h",
+        "anchor": "TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0"
+      },
+      "assertion": "The private address-effect policy tag is validated explicitly by the sequencer: unknown tags are intrinsic invalid effects, CMPT0/ARP0 preconditions distinguish unknown mode state from mode-state violations, and the generic NONE policy bypasses mode-state checks while retaining transactional rejection. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -581,6 +625,19 @@
         "E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28"
       ],
       "test_ids": ["T-COMMON-ARCH-STATE-RESET-SEED"]
+    },
+    {
+      "id": "REQ-COMMON-ARCH-STATE-ADDRESS-FIELDS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/state/",
+      "claim": "Implement the common status-field layout with ARP=0 in ST0 bits 15-13 and CMPT=0 in ST1 bit 5, plus field-specific writes that change only the targeted architectural field.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5",
+        "E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES"
+      ],
+      "test_ids": ["T-COMMON-ARCH-STATE-ADDRESS-FIELDS"]
     },
     {
       "id": "REQ-COMMON-RESET-UNSPECIFIED-FIELDS",
@@ -712,11 +769,11 @@
     },
     {
       "id": "REQ-COMMON-INDIRECT-CMPT0-ARP-STATE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
-      "owner_path": "src/state/",
-      "claim": "Integrate the CMPT=0 ARP=0 precondition and the documented absence of ARP writeback into architectural state and sequencing after those owners exist.",
+      "owner_path": "src/sequencer/",
+      "claim": "For planner-produced CMPT=0 single-indirect word effects, require known CMPT=0 and ARP=0 before applying the selected-AR effect; the sequencing seam does not write back ARP.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
         "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
@@ -822,6 +879,26 @@
       "test_ids": ["T-PROJECT-ARCH-STATE-KNOWNNESS"]
     },
     {
+      "id": "REQ-PROJECT-ARCH-ADDRESS-FIELD-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Checked ARP and CMPT accessors reject null, unknown, and out-of-range inputs without mutating state or caller outputs, preserve unrelated field bits and knownness on valid writes, and expose only their documented field ranges.",
+      "evidence_ids": ["E-PROJECT-ARCH-ADDRESS-FIELD-ACCESS"],
+      "test_ids": ["T-PROJECT-ARCH-ADDRESS-FIELD-ACCESS"]
+    },
+    {
+      "id": "REQ-PROJECT-ADDRESS-STATE-POLICY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Address-effect application validates state-policy tags explicitly, distinguishes UNKNOWN_MODE_STATE from MODE_STATE_VIOLATION, permits generic NONE without mode-state consultation, and rejects every policy failure transactionally without mutation.",
+      "evidence_ids": ["E-PROJECT-ADDRESS-STATE-POLICY"],
+      "test_ids": ["T-PROJECT-ADDRESS-STATE-POLICY"]
+    },
+    {
       "id": "REQ-PROJECT-ADDRESS-EFFECT-APPLICATION",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -848,6 +925,14 @@
       "path": "tests/unit/state/test_arch_state_reset.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_reset"},
       "requirement_ids": ["REQ-COMMON-ARCH-STATE-RESET-SEED"]
+    },
+    {
+      "id": "T-COMMON-ARCH-STATE-ADDRESS-FIELDS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/state/test_arch_state_address_fields.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_address_fields"},
+      "requirement_ids": ["REQ-COMMON-ARCH-STATE-ADDRESS-FIELDS"]
     },
     {
       "id": "T-COMMON-NOP-DECODE",
@@ -912,10 +997,10 @@
     },
     {
       "id": "T-COMMON-INDIRECT-ARP-STATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
-      "path": "tests/unit/state/test_indirect_arp_state.c",
-      "runner": null,
+      "path": "tests/unit/sequencer/test_indirect_cmpt0_state.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_cmpt0_state"},
       "requirement_ids": ["REQ-COMMON-INDIRECT-CMPT0-ARP-STATE"]
     },
     {
@@ -973,6 +1058,22 @@
       "path": "tests/unit/state/test_arch_state_knownness.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_knownness"},
       "requirement_ids": ["REQ-PROJECT-ARCH-STATE-KNOWNNESS"]
+    },
+    {
+      "id": "T-PROJECT-ARCH-ADDRESS-FIELD-ACCESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_arch_state_address_field_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arch_state_address_field_contract"},
+      "requirement_ids": ["REQ-PROJECT-ARCH-ADDRESS-FIELD-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-STATE-POLICY",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_state_policy_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_state_policy_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-STATE-POLICY"]
     },
     {
       "id": "T-PROJECT-ADDRESS-EFFECT-APPLICATION",

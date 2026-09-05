@@ -6,12 +6,13 @@
  *
  * Owns: checked CMPT=0 single-indirect word effective-address planning for
  * MOD0 through MOD3.
- * Does not own: CPU state, ARP/CMPT state validation, bus transfers, opcode
+ * Does not own: CPU state or ARP/CMPT state validation, bus transfers, opcode
  * decoding, long operands, circular or bit-reversed addressing, dual-indirect
  * forms, instruction scheduling, or diagnostics.
  * Inputs are copied scalar values. The returned status/effect owns no borrowed
- * storage and remains valid after the call returns. Every non-OK result has an
- * all-zero effect.
+ * storage and remains valid after the call returns. Every successful result
+ * carries `TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0`; the planner does not
+ * inspect or validate CPU state. Every non-OK result has an all-zero effect.
  */
 
 #include <stdint.h>
@@ -32,8 +33,9 @@ typedef enum ti_c54x_indirect_single_mode {
 /*
  * Plan one CMPT=0 single-indirect word operand. The caller supplies the ARF
  * selected auxiliary-register index and its current 16-bit word address. The
- * planner does not mutate caller state or consult ARP; a sequencer may later
- * apply `effect` in the phase recorded by its update member.
+ * planner does not mutate caller state or consult ARP/CMPT; a sequencer must
+ * validate the carried CMPT0/ARP0 policy before applying `effect` in the phase
+ * recorded by its update member.
  */
 ti_c54x_address_result ti_c54x_indirect_single_word(
     uint8_t ar_index,

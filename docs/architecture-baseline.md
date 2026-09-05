@@ -105,8 +105,10 @@ old value and reports a one-word post-access increment; and MOD3 reports a
 one-word pre-access increment, uses the new value, and accepts writes only. The
 returned effect carries the selected AR index so the ARF selection is testable
 without pretending that this planner owns architectural register storage. The
-CMPT=0 ARP=0 invariant and absence of ARP writeback remain planned state and
-sequencer work. Long-operand deltas, address-domain edge behavior, and the
+CMPT=0 ARP=0 invariant and absence of ARP writeback are now enforced at the
+sequencer application seam: effects tagged `CMPT0_ARP0` require known CMPT=0 and
+ARP=0 before the selected-AR update is applied, and ARP is never written back by
+that seam. Long-operand deltas, address-domain edge behavior, and the
 circular, bit-reversed, and dual-indirect forms remain explicitly planned or
 unresolved; this slice does not infer them.
 
@@ -150,6 +152,13 @@ actions; the §6.9 record remains the authority for the complete listed reset
 subset. The private state keeps separate knownness masks, so zero-filled
 AR0–AR7 and SP storage is not treated as an architectural value. Their reset
 values are not asserted; callers establish them through checked writes.
+
+The same private state owns checked field access for ARP and CMPT. ARP is the
+three-bit ST0 field at bits 15–13 and CMPT is the one-bit ST1 field at bit 5;
+valid writes replace only their field bits and establish field knownness, while
+unknown or invalid reads preserve caller outputs and rejected writes preserve
+the complete state. These accessors do not widen the common reset claim or add
+raw status-write, timing, bus, or memory behavior.
 
 The public `ti_c54x_config.reset_pc_word` remains a project bootstrap setting
 owned by the CPU shell. It is not the TI hardware-reset value and is intentionally

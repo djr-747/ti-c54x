@@ -4,7 +4,8 @@
  * Owns: ordered validation and transactional application of one indirect
  * address effect to caller-owned known auxiliary-register state.
  * Does not own: address planning arithmetic, opcode decoding, CPU lifecycle,
- * bus transfers, memory, timing, ARP/CMPT policy, diagnostics, or public ABI.
+ * bus transfers, memory, timing, diagnostics, or public ABI. It validates the
+ * narrow state precondition carried by an effect without repairing state.
  */
 
 #include "address_effect_apply.h"
@@ -22,6 +23,12 @@ static bool valid_phase(ti_c54x_address_update_phase phase)
 static bool valid_ar_index(uint8_t index)
 {
     return index <= UINT8_C(7);
+}
+
+static bool valid_state_policy(ti_c54x_address_state_policy policy)
+{
+    return policy == TI_C54X_ADDRESS_STATE_POLICY_NONE ||
+           policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0;
 }
 
 ti_c54x_address_apply_status
@@ -65,6 +72,10 @@ ti_c54x_sequencer_apply_address_result(
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
 
+    if (!valid_state_policy(effect->state_policy)) {
+        return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+    }
+
     if (requested_phase != update->phase) {
         return TI_C54X_ADDRESS_APPLY_PHASE_MISMATCH;
     }
@@ -75,6 +86,27 @@ ti_c54x_sequencer_apply_address_result(
             (update->phase == TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
              effect->effective_address_word != update->value_before)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+    }
+
+    if (effect->state_policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) {
+        uint8_t cmpt = UINT8_C(0);
+        uint8_t arp = UINT8_C(0);
+        const ti_c54x_arch_state_status cmpt_status =
+            ti_c54x_arch_state_read_cmpt(state, &cmpt);
+        const ti_c54x_arch_state_status arp_status =
+            ti_c54x_arch_state_read_arp(state, &arp);
+
+        if (cmpt_status == TI_C54X_ARCH_STATE_UNKNOWN ||
+            arp_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_MODE_STATE;
+        }
+        if (cmpt_status != TI_C54X_ARCH_STATE_OK ||
+            arp_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (cmpt != UINT8_C(0) || arp != UINT8_C(0)) {
+            return TI_C54X_ADDRESS_APPLY_MODE_STATE_VIOLATION;
         }
     }
 
