@@ -15,10 +15,19 @@
   is ready to commit.
 - Keep all mutable runtime state instance-owned. No environment reads, file I/O,
   mutable process globals, hidden allocators, or logging in the core execution path.
+- Every handwritten source and header must begin with a concise module contract that
+  states what it owns and what it must not own. Public APIs must document copied,
+  borrowed, and caller-owned objects and their required lifetimes.
+- Avoid monoliths. Keep orchestration, arithmetic, addressing, decode, sequencing,
+  devices, serialization, tracing, and opcode families in separate modules. Review
+  any handwritten file approaching 500 lines and require an explicit split decision
+  before it exceeds 800 lines. Generated tables are exempt and remain isolated.
+- The directory tree must mirror the ownership hierarchy documented in
+  `docs/implementation-plan.md`. Do not place new implementation or test files in a
+  flat catch-all directory when an owning module directory exists.
 - Use explicit units in names and interfaces: program words, data words,
   instructions, and machine cycles are not interchangeable.
 - Machine-cycle APIs remain unavailable until timing is supported by evidence and
   tests. Early execution APIs use instruction budgets.
 - Integration with an emulator is deferred until provenance and licensing are
   resolved and the standalone contracts are stable.
-
