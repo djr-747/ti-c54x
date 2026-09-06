@@ -23,6 +23,7 @@ function-pointer dispatch tables.
 | CPU and bus API shell | Complete | Two isolated instances fetch through caller buses and trap unimplemented words |
 | 40-bit arithmetic foundation | Complete | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
 | Standalone build and CI | Complete | CMake/CTest, warnings, sanitizers, installation, and consumer smoke tests pass in standalone CI |
+| Ownership-mirrored build manifests | Active | Root Make/CMake files retain policy and orchestration only; source and unit-test registrations live with their owning module without changing produced targets |
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
 | Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |
@@ -41,7 +42,7 @@ function-pointer dispatch tables.
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
 | Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
-| Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
+| Opcode builder and decode | Planned after build-manifest split; NOP seed evidenced | Every registered first word classifies uniquely, unknown words trap explicitly, and semantics may remain unsupported |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -278,6 +279,16 @@ Rules:
   both producer and consumer ownership.
 - Generated declarations and dispatch tables are never hand-edited or mixed into an
   opcode semantic source file.
+- Root build files own toolchain policy, global options, aggregate targets,
+  packaging, and inclusion order only. Source lists and unit-test registrations
+  live in small fragments or `CMakeLists.txt` files under the same `src/<owner>/`
+  and `tests/unit/<owner>/` directories as the code they register. Shared test-
+  target construction may live in one `tests/cmake/` helper, but it must not
+  become a second flat target inventory.
+- Both direct Make and CMake consume that ownership hierarchy and must continue
+  producing the same library, observer-disabled artifact, test executables, CTest
+  names, install package, and consumer surface. A manifest split is structural;
+  it does not justify changing compile options, target behavior, or test scope.
 
 ## Diagnostic isolation gate
 

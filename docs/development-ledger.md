@@ -2102,3 +2102,34 @@ rewritten after publication.
 - Result: P2-W14 is remotely proven on the repository's independent build
   surfaces. No emulator checkout, firmware image, environment gate, or external
   project build participated.
+
+## 2026-09-06 — P2-W15 kickoff — Ownership-mirrored build manifests
+
+- State: active; behavior-preserving structural prerequisite to the opcode tree.
+- Trigger: `tests/CMakeLists.txt` has reached 800 handwritten lines and the root
+  `Makefile` has reached 560. Adding the first ISA/decode owners to those flat
+  inventories would work against the repository's explicit ownership hierarchy
+  and monolith gate.
+- Scope: keep root Make/CMake files responsible for global policy, orchestration,
+  aggregate targets, packaging, and inclusion order. Move source registration to
+  the matching `src/<owner>/` directories and unit-test registration to matching
+  `tests/unit/<owner>/` directories. One small `tests/cmake/` helper may own
+  repeated target setup without owning the target inventory.
+- Compatibility: preserve every current source object, normal and observer-off
+  archive, direct-Make test executable, CTest name, compiler option, sanitizer
+  application, install/package surface, quality test, and minimal-consumer path.
+  The work piece adds no runtime behavior and no architectural claim.
+- Proof: compare pre/post target and CTest inventories, run the complete direct
+  Make suite, and use remote GCC/Clang/CMake/sanitizer/install/consumer CI for the
+  CMake path unavailable locally. Structural checks must continue to run from a
+  clean standalone checkout.
+- Ownership and delegation: one Luna worker owns the build-manifest refactor and
+  no production C or public header. The main agent owns design decisions, review,
+  validation, commits, and any correction. The worker must not commit or revert
+  concurrent work.
+- Knobs and isolation: no knob or default may change. No environment read,
+  emulator input, firmware dependency, diagnostic behavior, generated opcode,
+  semantic implementation, or timing claim belongs in this slice.
+- Follow-up: P2-W16 starts the evidence-backed one-row NOP inventory/decoder,
+  semantic no-effect, and sequential-PC seam. Unresolved address modes remain
+  explicit semantic traps and no longer block decoder scaffolding.
