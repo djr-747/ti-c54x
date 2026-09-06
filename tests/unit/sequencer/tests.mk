@@ -20,3 +20,4 @@ $(eval $(call ti_c54x_add_test,address_effect_state_contract,sequencer,test_addr
 $(eval $(call ti_c54x_add_test,address_operand_apply_contract,sequencer,test_address_operand_apply_contract.c))
 $(eval $(call ti_c54x_add_test,nop_flow,sequencer,test_nop_flow.c))
 $(eval $(call ti_c54x_add_test,program_pc_bridge,sequencer,test_program_pc_bridge.c))
+$(eval $(call ti_c54x_add_test,program_pc_bridge_multiword,sequencer,test_program_pc_bridge_multiword.c))

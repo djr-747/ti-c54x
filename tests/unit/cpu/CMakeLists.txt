@@ -1,5 +1,6 @@
-# Test ownership: tests/unit/cpu owns CPU lifecycle API coverage.
+# Test ownership: tests/unit/cpu owns lifecycle, fetch, and execution coverage.
 ti_c54x_add_unit_test(cpu_api test_cpu_api.c)
 ti_c54x_add_unit_test(cpu_nop_execution test_cpu_nop_execution.c)
 ti_c54x_add_unit_test(cpu_nop_execution_contract test_cpu_nop_execution_contract.c)
 ti_c54x_add_unit_test(cpu_execution_budget test_cpu_execution_budget.c)
+ti_c54x_add_unit_test(cpu_instruction_extension_fetch test_instruction_extension_fetch.c)

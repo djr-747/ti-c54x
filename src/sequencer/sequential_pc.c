@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: checked planning and transactional commit of the private 16-bit
- * sequential program-counter +1 effect.
+ * sequential program-counter width-sized effect.
  * Does not own: opcode decode or semantics, public CPU state, timing, buses,
  * memory, observers, or diagnostics.
  */
@@ -17,33 +17,45 @@ static bool
 ti_c54x_sequential_pc_effect_is_valid(
     const ti_c54x_sequential_pc_effect *effect)
 {
-    if (effect == NULL || effect->program_word_count != UINT8_C(1) ||
-        effect->pc_word_before == UINT16_MAX) {
+    uint32_t expected_after;
+
+    if (effect == NULL || effect->program_word_count == UINT8_C(0)) {
         return false;
     }
-    return effect->pc_word_after ==
-           (uint16_t)(effect->pc_word_before + UINT16_C(1));
+    expected_after = (uint32_t)effect->pc_word_before +
+                     (uint32_t)effect->program_word_count;
+    if (expected_after > (uint32_t)UINT16_MAX) {
+        return false;
+    }
+    return effect->pc_word_after == (uint16_t)expected_after;
 }
 
 ti_c54x_sequential_pc_status
 ti_c54x_sequencer_plan_sequential_pc(
     uint16_t pc_word_before,
+    uint8_t program_word_count,
     ti_c54x_sequential_pc_effect *effect)
 {
     ti_c54x_sequential_pc_effect planned;
+    uint32_t pc_word_after;
 
     (void)memset(&planned, 0, sizeof(planned));
 
     if (effect == NULL) {
         return TI_C54X_SEQUENTIAL_PC_INVALID_ARGUMENT;
     }
-    if (pc_word_before == UINT16_MAX) {
+    if (program_word_count == UINT8_C(0)) {
+        return TI_C54X_SEQUENTIAL_PC_UNSUPPORTED_PROGRAM_WORD_COUNT;
+    }
+    pc_word_after = (uint32_t)pc_word_before +
+                    (uint32_t)program_word_count;
+    if (pc_word_after > (uint32_t)UINT16_MAX) {
         return TI_C54X_SEQUENTIAL_PC_UNRESOLVED_BOUNDARY;
     }
 
     planned.pc_word_before = pc_word_before;
-    planned.pc_word_after = (uint16_t)(pc_word_before + UINT16_C(1));
-    planned.program_word_count = UINT8_C(1);
+    planned.pc_word_after = (uint16_t)pc_word_after;
+    planned.program_word_count = program_word_count;
     *effect = planned;
     return TI_C54X_SEQUENTIAL_PC_OK;
 }

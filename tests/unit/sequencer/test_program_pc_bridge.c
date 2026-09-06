@@ -2,9 +2,10 @@
  * Module contract
  *
  * Owns: executable PROJECT_CONTRACT_ONLY coverage for the private program-PC
- * bridge. It proves public-carrier validation, one-word width policy,
- * boundary handling, value-owned effect shape, stale-source rejection, and
- * bytewise transactional behavior across the complete 16-bit domain.
+ * bridge. It preserves the count-one regression while proving explicit
+ * count-two boundaries, public-carrier validation, value-owned effect shape,
+ * stale-source rejection, and bytewise transactional behavior across the
+ * complete 16-bit domain.
  * Does not own: CPU orchestration, bus fetch, opcode decode or dispatch,
  * timing, XPC/page policy, architectural state, observers, or diagnostics.
  */
@@ -52,7 +53,7 @@ test_boundary_width_carrier_and_null_precedence(void)
     };
     ti_c54x_program_pc_bridge_effect staged = sentinel;
     const ti_c54x_program_pc_bridge_effect before = staged;
-    const uint8_t invalid_widths[] = {UINT8_C(0), UINT8_C(2), UINT8_MAX};
+    const uint8_t invalid_widths[] = {UINT8_C(0)};
     const size_t invalid_width_count =
         sizeof(invalid_widths) / sizeof(invalid_widths[0]);
     size_t index;
@@ -68,6 +69,18 @@ test_boundary_width_carrier_and_null_precedence(void)
                        TI_C54X_PROGRAM_PC_BRIDGE_OK);
     TI_C54X_TEST_CHECK_U64(staged.common_pc_word_after, UINT16_C(0xffff));
     TI_C54X_TEST_CHECK_U64(staged.public_pc_word_after, UINT32_C(0xffff));
+
+    staged = sentinel;
+    TI_C54X_TEST_CHECK(ti_c54x_program_pc_bridge_plan(
+                           UINT32_C(0xfffd), UINT8_C(2), &staged) ==
+                       TI_C54X_PROGRAM_PC_BRIDGE_OK);
+    TI_C54X_TEST_CHECK_U64(staged.common_pc_word_after, UINT16_C(0xffff));
+    TI_C54X_TEST_CHECK_U64(staged.public_pc_word_after, UINT32_C(0xffff));
+    staged = sentinel;
+    TI_C54X_TEST_CHECK(ti_c54x_program_pc_bridge_plan(
+                           UINT32_C(0xfffe), UINT8_C(2), &staged) ==
+                       TI_C54X_PROGRAM_PC_BRIDGE_UNRESOLVED_BOUNDARY);
+    TI_C54X_TEST_CHECK(memcmp(&staged, &sentinel, sizeof(staged)) == 0);
 
     for (index = 0; index < invalid_width_count; ++index) {
         staged = sentinel;
@@ -111,11 +124,6 @@ test_invalid_effect_precedes_stale_and_is_transactional(void)
          .common_pc_word_after = UINT16_C(0x1235),
          .public_pc_word_after = UINT32_C(0x1235),
          .program_word_count = UINT8_C(0)},
-        {.public_pc_word_before = UINT32_C(0x1234),
-         .common_pc_word_before = UINT16_C(0x1234),
-         .common_pc_word_after = UINT16_C(0x1235),
-         .public_pc_word_after = UINT32_C(0x1235),
-         .program_word_count = UINT8_C(2)},
         {.public_pc_word_before = UINT32_C(0x10000),
          .common_pc_word_before = UINT16_C(0),
          .common_pc_word_after = UINT16_C(1),

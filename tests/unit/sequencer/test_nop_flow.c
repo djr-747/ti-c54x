@@ -28,7 +28,7 @@ test_every_non_boundary_source_plans_and_commits(void)
         uint16_t pc_word = source_word;
 
         TI_C54X_TEST_CHECK(ti_c54x_sequencer_plan_sequential_pc(
-                               source_word, &staged) ==
+                               source_word, UINT8_C(1), &staged) ==
                            TI_C54X_SEQUENTIAL_PC_OK);
         TI_C54X_TEST_CHECK_U64(staged.pc_word_before, source_word);
         TI_C54X_TEST_CHECK_U64(staged.pc_word_after, expected_next);
@@ -52,12 +52,12 @@ test_boundary_and_invalid_arguments_preserve_outputs(void)
     uint16_t pc_word = UINT16_C(0xffff);
 
     TI_C54X_TEST_CHECK(ti_c54x_sequencer_plan_sequential_pc(
-                           UINT16_C(0xffff), &staged) ==
+                           UINT16_C(0xffff), UINT8_C(1), &staged) ==
                        TI_C54X_SEQUENTIAL_PC_UNRESOLVED_BOUNDARY);
     TI_C54X_TEST_CHECK(memcmp(&staged, &before, sizeof(staged)) == 0);
     TI_C54X_TEST_CHECK_U64(pc_word, UINT16_C(0xffff));
     TI_C54X_TEST_CHECK(ti_c54x_sequencer_plan_sequential_pc(
-                           UINT16_C(0), NULL) ==
+                           UINT16_C(0), UINT8_C(1), NULL) ==
                        TI_C54X_SEQUENTIAL_PC_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(ti_c54x_sequencer_apply_sequential_pc(
                            NULL, &staged) ==

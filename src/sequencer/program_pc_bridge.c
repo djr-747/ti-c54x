@@ -2,9 +2,8 @@
  * Module contract
  *
  * Owns: checked conversion and transactional commit for the private
- * public-carrier/common-PC bridge. The current implementation admits only
- * one-word successors and delegates their +1 arithmetic and boundary policy
- * to sequential_pc.c.
+ * public-carrier/common-PC bridge. It admits explicit widths from one through
+ * 255 and delegates checked arithmetic and boundary policy to sequential_pc.c.
  * Does not own: XPC or page interpretation, public CPU orchestration, opcode
  * decode or semantics, timing, buses, memory, architectural state, observers,
  * diagnostics, or allocation.
@@ -25,7 +24,7 @@ ti_c54x_program_pc_bridge_effect_is_valid(
     ti_c54x_sequential_pc_effect sequential;
 
     if (effect == NULL ||
-        effect->program_word_count != UINT8_C(1) ||
+        effect->program_word_count == UINT8_C(0) ||
         effect->public_pc_word_before > (uint32_t)UINT16_MAX ||
         effect->public_pc_word_after > (uint32_t)UINT16_MAX ||
         effect->public_pc_word_before !=
@@ -36,7 +35,8 @@ ti_c54x_program_pc_bridge_effect_is_valid(
     }
 
     if (ti_c54x_sequencer_plan_sequential_pc(
-            effect->common_pc_word_before, &sequential) !=
+            effect->common_pc_word_before, effect->program_word_count,
+            &sequential) !=
         TI_C54X_SEQUENTIAL_PC_OK) {
         return false;
     }
@@ -56,7 +56,7 @@ ti_c54x_program_pc_bridge_plan(
     if (effect == NULL) {
         return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT;
     }
-    if (program_word_count != UINT8_C(1)) {
+    if (program_word_count == UINT8_C(0)) {
         return TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_PROGRAM_WORD_COUNT;
     }
     if (public_pc_word_before > (uint32_t)UINT16_MAX) {
@@ -64,7 +64,7 @@ ti_c54x_program_pc_bridge_plan(
     }
 
     sequential_status = ti_c54x_sequencer_plan_sequential_pc(
-        (uint16_t)public_pc_word_before, &sequential);
+        (uint16_t)public_pc_word_before, program_word_count, &sequential);
     if (sequential_status == TI_C54X_SEQUENTIAL_PC_UNRESOLVED_BOUNDARY) {
         return TI_C54X_PROGRAM_PC_BRIDGE_UNRESOLVED_BOUNDARY;
     }

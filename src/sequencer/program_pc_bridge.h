@@ -6,8 +6,9 @@
  *
  * Owns: the private bridge between the exact public 32-bit program-word
  * carrier and the common 16-bit sequential program counter. It stages a
- * value-owned one-word successor and applies it transactionally only when
- * the caller-owned live carrier still matches the frozen source.
+ * value-owned width-sized successor (one through 255 program words) and
+ * applies it transactionally only when the caller-owned live carrier still
+ * matches the frozen source.
  * Does not own: XPC or page interpretation, truncation policy outside the
  * explicit carrier check, opcode identity or semantics, CPU orchestration,
  * instruction timing, buses, memory, architectural state, observers,
