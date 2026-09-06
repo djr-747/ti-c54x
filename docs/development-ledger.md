@@ -2188,3 +2188,40 @@ rewritten after publication.
 - Result: P2-W15 is proven on every independent repository build surface. The
   ownership-mirrored manifests are ready to accept nested ISA modules without an
   emulator checkout, firmware image, environment gate, or external project build.
+
+## 2026-09-06 — P2-W16 kickoff — NOP-seeded opcode architecture
+
+- State: active kickoff; this entry records the evidence and contract boundary
+  before production ISA behavior is implemented. The registry now contains 61
+  evidence records, 75 requirements (57 implemented, 6 planned, 12 unresolved),
+  and 55 tests (49 passing, 6 planned).
+- Scope: add `src/isa/catalog/` as the sole declarative X-macro opcode inventory.
+  Macro passes will derive opcode identity/metadata, a direct 16-bit first-word
+  lookup, and a function-pointer semantic dispatch table. The only registered
+  row is NOP `0xF495`, width one program word; unknown words classify explicitly.
+  NOP emits an explicit no-opcode-owned-effect result. The private sequencer owns
+  checked 16-bit PC `+1` planning and reports an unresolved boundary without
+  mutation at `0xffff`.
+- Evidence: `E-PROJECT-OPCODE-CATALOG-CONTRACT` is anchored to the P2-W16 section
+  in `docs/implementation-plan.md`; the existing TI NOP and sequential-flow
+  records remain the only architectural evidence and all three NOP requirements
+  remain planned until their executable tests pass.
+- Ownership and delegation: the main agent owns design decisions, integration,
+  validation, and the atomic commit. One delegated worker owns catalog/decode,
+  its quality contract, and mirrored tests; a second owns opcode effects,
+  dispatch, and the NOP semantic test; a third owns only the sequential-PC seam
+  and its mirrored test. The registry/documentation worker owns only the kickoff
+  records and parity surfaces assigned for P2-W16. No worker may revert another
+  worker's edits or create a commit outside the main-agent workflow.
+- TDD sequence: first prove the catalog contract and unknown/known direct decode,
+  then prove the NOP no-effect semantic result, then prove sequential-PC success
+  and the `0xffff` unresolved-boundary transaction. Keep each owner on its own
+  test path and link every passing test back to its requirement.
+- Exclusions: no public CPU-shell integration (the shell carrier is 32-bit and
+  high-carrier/XPC policy is unresolved), no machine-cycle or pipeline timing,
+  memory/bus/device effects, observer behavior in opcode operations, or copied
+  legacy/mGBA/external source, tables, comments, or tests.
+- Follow-up: implement the bounded private ISA/sequencer seams, register their
+  mirrored build/test manifests, then update the three NOP requirements and the
+  catalog project requirement only when passing executable tests and evidence
+  checks are present. Shared-memory and timing gates remain future work.

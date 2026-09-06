@@ -53,7 +53,7 @@ _COMMON_CLAIM_BANNED = (
     "pipeline",
     "machine-cycle",
 )
-_OWNER_PREFIXES = ("include/ti_c54x", "src/cpu", "src/foundation", "src/bus", "src/address", "src/isa/decode", "src/isa/ops", "src/sequencer", "src/devices", "src/state", "src/debug", "tools/quality", "config")
+_OWNER_PREFIXES = ("include/ti_c54x", "src/cpu", "src/foundation", "src/bus", "src/address", "src/isa/catalog", "src/isa/decode", "src/isa/ops", "src/sequencer", "src/devices", "src/state", "src/debug", "tools/quality", "config")
 _ID_PREFIXES = {
     "targets": "C54X_",
     "sources": "SRC-",

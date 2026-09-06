@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 60 immutable evidence records,
-74 requirements, and 54 tests (49 `PASSING`, 5 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 61 immutable evidence records,
+75 requirements, and 55 tests (49 `PASSING`, 6 `PLANNED`).
 
 ## Targets
 
@@ -66,6 +66,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.8, `5-28`–`5-29` |
 | `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.5, `5-24` |
 | `E-PROJECT-ADDRESS-EFFECT-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/address_effect.h` anchor `TI_C54X_ADDRESS_STATUS_UNRESOLVED_BOUNDARY` |
+| `E-PROJECT-OPCODE-CATALOG-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W16: NOP-seeded opcode architecture` |
 | `E-PROJECT-CPU-SHELL-API` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `include/ti_c54x/cpu.h` anchor `ti_c54x_cpu_init` |
 | `E-PROJECT-U40-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/foundation/arithmetic40.h` anchor `ti_c54x_u40_t` |
 | `E-PROJECT-OBSERVER-NONINTERFERENCE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `tests/unit/debug/test_observer.c` anchor `test_observation_does_not_change_architectural_result` |
@@ -280,6 +281,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-INDIRECT-CIRCULAR-MOD14-OFFSET` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | — |
 | `REQ-COMMON-INDIRECT-CIRCULAR-CMPT1-DUAL` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | — |
 | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM`, `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` |
+| `REQ-PROJECT-OPCODE-CATALOG-CONTRACT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-OPCODE-CATALOG-CONTRACT` |
 
 ## Tests
 
@@ -343,6 +345,7 @@ exist in the repository.
 | `T-PROJECT-INDIRECT-CIRCULAR-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_circular_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_circular_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-CIRCULAR-APPLICATION` |
 | `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_validate_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_validate_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
 | `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_dependency_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_dependency_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
+| `T-PROJECT-OPCODE-CATALOG-CONTRACT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/test_opcode_catalog.py` | `null` | `REQ-PROJECT-OPCODE-CATALOG-CONTRACT` |
 
 ## Correction and tombstone policy
 

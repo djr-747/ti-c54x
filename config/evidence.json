@@ -548,6 +548,20 @@
       "assertion": "The checked address planner exposes explicit status values and a by-value effect whose rejected-input contract is an all-zero effect. This is a project API contract, not TI conformance evidence."
     },
     {
+      "id": "E-PROJECT-OPCODE-CATALOG-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W16: NOP-seeded opcode architecture"
+      },
+      "assertion": "The P2-W16 project contract requires one declarative X-macro opcode catalog as the only instruction inventory, with macro passes generating opcode identity and metadata, a direct 16-bit first-word decoder, and a function-pointer semantic dispatch table. This is a project structure contract, not TI conformance evidence."
+    },
+    {
       "id": "E-PROJECT-CPU-SHELL-API",
       "immutable": true,
       "state": "PINNED",
@@ -1152,6 +1166,16 @@
       "claim": "Recognize NOP as word 0xF495 with a width of one program word.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S4.NOP-P4-121"],
       "test_ids": ["T-COMMON-NOP-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-OPCODE-CATALOG-CONTRACT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "The first ISA slice owns one declarative X-macro catalog as the sole instruction inventory; macro passes generate opcode identity and metadata, a direct 16-bit first-word lookup, and a function-pointer semantic dispatch table with explicit unknown-word classification.",
+      "evidence_ids": ["E-PROJECT-OPCODE-CATALOG-CONTRACT"],
+      "test_ids": ["T-PROJECT-OPCODE-CATALOG-CONTRACT"]
     },
     {
       "id": "REQ-COMMON-NOP-SEMANTICS",
@@ -1992,6 +2016,14 @@
       "path": "tests/unit/isa/decode/test_nop_decode.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-NOP-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-OPCODE-CATALOG-CONTRACT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/test_opcode_catalog.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OPCODE-CATALOG-CONTRACT"]
     },
     {
       "id": "T-COMMON-NOP-SEMANTICS",

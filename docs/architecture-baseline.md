@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 60 immutable evidence
-records, 74 requirements, and 54 tests (49 `PASSING`, 5 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 61 immutable evidence
+records, 75 requirements, and 55 tests (49 `PASSING`, 6 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -79,6 +79,23 @@ and incremented for the next fetch. Cycle information is deliberately not a
 common-core timing promise. The test tree mirrors that ownership split with
 separate planned tests for decode, opcode semantics, and sequential flow; no
 cross-owner unit test is used as a substitute for those seams.
+
+### NOP-seeded opcode architecture (P2-W16 kickoff)
+
+The first ISA architecture slice adds a project-owned `src/isa/catalog/` seam
+with one declarative X-macro catalog as the only instruction inventory. Macro
+passes derive opcode identity and metadata, a direct 16-bit first-word lookup,
+and a function-pointer semantic dispatch table; unknown words classify
+explicitly. The catalog contains only the evidenced NOP row (`0xF495`, one
+program word). NOP returns an explicit no-opcode-owned-effect result, while the
+private sequencer owns checked 16-bit PC `+1` planning and reports an unresolved
+boundary without mutation at `0xffff`.
+
+This slice is intentionally independent of the public CPU shell because that
+API carries a 32-bit program address and high-carrier/XPC policy is unresolved.
+It makes no machine-cycle or pipeline timing, memory/bus, device, or observer
+claim and does not copy legacy or external implementation material. The project
+catalog contract is recorded separately from TI conformance evidence.
 
 The corrected direct-addressing evidence in `SPRU131G` §5.4 records a 7-bit
 `dma`. For `CPL=0`, the implemented common requirement is the complete
