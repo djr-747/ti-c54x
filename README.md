@@ -40,8 +40,9 @@ Current progress:
   made.
 - The registry now records 91 evidence items, 133 requirements (107 implemented,
   9 planned, 17 unresolved), and 96 tests (87 passing, 9 planned). The full
-  standalone P2-W24 gate is green, and the clean P2-W23 performance record is
-  captured at `a14d331`.
+  local and remote P2-W24 gates are green. The latest clean catalog-seven hosted
+  performance record is captured at `7cad341` (NOP 14.481 MIPS; mixed-current
+  11.162 MIPS with reset-runnable coverage of 4/7).
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -61,9 +62,12 @@ Current progress:
   unrecorded warmup windows, and clean-commit append-only JSONL. The initial
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
-  fixed-scenario cost is 2.37–3.79% above the first cohort, within the same order
-  as hosted spread, while the changed mixed workload is not compared. See
-  [hosted performance history](docs/performance.md).
+  the latest catalog-seven `7cad341` record measures 14.481 MIPS for NOP and
+  11.162 MIPS for `mixed-current`. Fixed-scenario deltas versus catalog-six
+  range from -1.16% to +5.37%, while within-capture spreads range from 7.64%
+  to 63.19%, so this remains a hosted trend only, not a confirmed regression
+  or architectural/silicon timing claim. The changed mixed workload is not
+  compared. See [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

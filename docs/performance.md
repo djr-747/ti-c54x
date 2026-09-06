@@ -80,6 +80,26 @@ confirmed architectural or silicon regression. `mixed-current` records
 89.986 ns/11.113 MIPS with explicit `reset-runnable-subset` coverage of four of
 six catalog rows and is not compared to the catalog-four mixed result.
 
+The latest clean catalog-seven record at `7cad341` is the current hosted cohort:
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 69.057 ns | 14.481 MIPS |
+| `ld-dp` | 99.866 ns | 10.013 MIPS |
+| `ld-asm` | 100.477 ns | 9.953 MIPS |
+| `ld-arp` | 96.845 ns | 10.326 MIPS |
+| `mixed-current` | 89.591 ns | 11.162 MIPS |
+
+Relative to catalog-six, the fixed scenarios are -1.16% to +5.37% per the
+same-cohort comparison. The catalog-seven within-capture spreads are 7.64%
+(`nop`), 63.19% (`ld-dp`), 9.49% (`ld-asm`), and 11.52% (`ld-arp`), so these
+measurements do not establish a confirmed regression. `mixed-current` remains
+an evolving workload: it is reset-runnable for four of seven catalog rows, and
+its catalog count changed even though the reset-runnable stream remains four
+rows, so it is not compared as a like-for-like result. All figures are hosted
+implementation-throughput observations, not
+architectural or silicon timing evidence.
+
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
 knob is an ACTIVE TEST/KEEP control, default OFF, owned by `bench/`; it has no

@@ -58,8 +58,8 @@ function-pointer dispatch tables.
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
-| P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local gate green; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
-| Hosted performance history | Implemented — full local and remote gates green; catalog-four and catalog-six clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
+| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, and catalog-seven clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -867,8 +867,8 @@ is part of this slice; any status-bank split and generic effect commit exist onl
 because these opcodes require them. The local registry is 91 immutable evidence
 records, 133 requirements (107 `IMPLEMENTED`, 9 `PLANNED`, 17 `UNRESOLVED`), and
 96 tests (87 `PASSING`, 9 `PLANNED`); the full local repository gate is green and
-remote P2-W23 validation is green, with the clean hosted performance record
-captured at `a14d331`.
+remote P2-W24 validation is green, with the latest clean hosted performance
+record captured at `7cad341`.
 
 ### P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)
 
@@ -1027,12 +1027,19 @@ CI throughput threshold is introduced. The hosted surface is `make bench`,
 capture/compare helpers under
 `tools/perf/`. The `TI_C54X_BUILD_BENCHMARKS` ACTIVE TEST/KEEP knob is
 default-off, owned by `bench/`, and has no architectural effect; these controls
-remain outside core execution. The full local gate is green (172 Python checks,
-73 C unit executables plus the minimal consumer, knobs, source boundaries, and
-registry checks), and the remote GCC, Clang, CMake, install/consumer, sanitizer,
-and benchmark-smoke gates are green. The initial clean baseline at `aa0afc0`
-records 15.62 MIPS for NOP and 11.39 MIPS for `mixed-current`; each scenario's
-within-capture spread is retained with the historical record.
+remain outside core execution. The full local gate is green (Python, C unit,
+minimal-consumer, knob, source-boundary, and registry checks), and the remote
+GCC, Clang, CMake, install/consumer, sanitizer, and benchmark-smoke gates are
+green. The initial clean baseline at `aa0afc0` records 15.62 MIPS for NOP and
+11.39 MIPS for `mixed-current`. The catalog-seven record at `7cad341` measures
+69.057 ns/14.481 MIPS for NOP, 99.866 ns/10.013 MIPS for `ld-dp`, 100.477
+ns/9.953 MIPS for `ld-asm`, 96.845 ns/10.326 MIPS for `ld-arp`, and 89.591
+ns/11.162 MIPS for `mixed-current` with reset-runnable coverage of four of
+seven catalog rows. Its fixed-scenario deltas versus catalog-six range from
+-1.16% to +5.37%, while within-capture spreads range from 7.64% to 63.19%; each
+scenario's spread remains retained with the historical record. These are hosted
+trend measurements only, not architectural or silicon timing evidence, and the
+changed mixed workload is not compared as a regression.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and
