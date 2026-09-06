@@ -159,7 +159,7 @@ orchestration are unchanged, so the large deltas and spreads do not support a
 confirmed regression. This is a hosted implementation observation only, not
 DSP timing evidence.
 
-The latest clean catalog-fifteen record at `7164ace` is the current hosted cohort.
+The clean catalog-fifteen record at `7164ace` remains a prior hosted cohort.
 CI is green at <https://github.com/djr-747/ti-c54x/actions/runs/34059815766>.
 
 | Scenario | Median cost | Throughput |
@@ -183,6 +183,33 @@ tree was dirty only because history was appended) normalized to NOP 66.571 ns /
 15.022 MIPS, LD-DP 98.326 / 10.170, LD-ASM 98.038 / 10.200, LD-ARP 96.481 /
 10.365, and mixed 86.448 / 11.568. It corroborates host noise only and is not a
 history baseline or performance claim.
+
+The latest clean catalog-sixteen record at `fedbd6a` is the current hosted
+cohort. CI is green at
+<https://github.com/djr-747/ti-c54x/actions/runs/34062796872>.
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 124.251 ns | 8.048 MIPS |
+| `ld-dp` | 205.652 ns | 4.863 MIPS |
+| `ld-asm` | 209.142 ns | 4.781 MIPS |
+| `ld-arp` | 222.837 ns | 4.488 MIPS |
+| `mixed-current` | 206.376 ns | 4.846 MIPS |
+
+The reset-runnable subset is four of 16 catalog rows. Relative to
+catalog-fifteen, the comparable fixed-scenario deltas are +13.93% (`nop`),
++12.70% (`ld-dp`), +7.78% (`ld-asm`), and +99.23% (`ld-arp`); current
+within-capture spreads are 22.39%, 0.92%, 4.17%, and 8.71%, respectively.
+`mixed-current` is evolving and non-comparable because the catalog count
+changed.
+
+A second capture of the identical `def3fe...` binary, with the tree dirty only
+because the history append was present, measured NOP 68.561 ns/14.586 MIPS,
+LD-DP 101.587/9.844, LD-ASM 104.687/9.552, LD-ARP 106.211/9.415, and mixed
+96.438/10.369. These are -44.82% to -53.27% changes against the clean record
+without a code or binary change. The clean catalog-sixteen deltas therefore do
+not establish a confirmed regression; they remain hosted noise/trend
+observations and make no architectural or silicon timing claim.
 
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`

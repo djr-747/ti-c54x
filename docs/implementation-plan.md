@@ -64,8 +64,8 @@ function-pointer dispatch tables.
 | P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `ef87c94`; no confirmed regression | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
 | P2-W28A TC/status foundation | Implemented — full local `make test` and [remote CI](https://github.com/djr-747/ti-c54x/actions/runs/34058489923) green | Private typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta are proven; all prior accumulator handlers migrated transactionally with no CPU branch |
 | P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
-| P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, and full local `make test` green; clean performance record pending | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
-| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, and catalog-fifteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
+| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, and catalog-sixteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -136,10 +136,11 @@ timing remain unresolved until independently evidenced.
 
 ### P2-W29: T-register foundation and EXP accumulator vertical slice (planned)
 
-Implementation status: complete locally. All seven RED contracts, focused
-tests, two independent reviews, and the full `make test` gate are green. The
-clean performance record and remote CI confirmation follow the implementation
-commit.
+Implementation status: complete at `fedbd6a`. All seven RED contracts, focused
+tests, two independent reviews, the full `make test` gate, and remote CI run
+`34062796872` are green. The clean catalog-sixteen performance record is
+captured; an identical-binary diagnostic demonstrates substantial host noise,
+so it does not establish a confirmed regression.
 
 P2-W29 is a demand-driven two-stage slice. It is the next architecture seam only
 because EXP needs a private T destination and the existing effect path has no
@@ -1495,6 +1496,25 @@ because history was appended) normalized to NOP 66.571 ns/15.022 MIPS,
 `ld-dp` 98.326/10.170, `ld-asm` 98.038/10.200, `ld-arp` 96.481/10.365, and
 mixed 86.448/11.568. It corroborates host noise only, not a history baseline or
 performance claim.
+
+The latest clean catalog-sixteen record at `fedbd6a` measures 124.251 ns/8.048
+MIPS for NOP, 205.652 ns/4.863 MIPS for `ld-dp`, 209.142 ns/4.781 MIPS for
+`ld-asm`, 222.837 ns/4.488 MIPS for `ld-arp`, and 206.376 ns/4.846 MIPS for
+`mixed-current`, with reset-runnable coverage of four of 16 catalog rows. CI is
+green at <https://github.com/djr-747/ti-c54x/actions/runs/34062796872>.
+Relative to catalog-fifteen, the comparable fixed-scenario deltas are +13.93%,
++12.70%, +7.78%, and +99.23%; current within-capture spreads are 22.39%, 0.92%,
+4.17%, and 8.71%. `mixed-current` is evolving and non-comparable because the
+catalog count changed.
+
+A second capture of the identical `def3fe...` binary, with the tree dirty only
+because the clean history record had been appended, normalized to NOP 68.561
+ns/14.586 MIPS, `ld-dp` 101.587/9.844, `ld-asm` 104.687/9.552, `ld-arp`
+106.211/9.415, and mixed 96.438/10.369. Those same-binary changes of -44.82% to
+-53.27% versus the clean record are much larger than any code-level distinction
+between the captures. The clean catalog-sixteen deltas therefore remain hosted
+noise/trend observations and do not establish a confirmed implementation,
+architectural, or silicon regression.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and

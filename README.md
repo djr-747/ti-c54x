@@ -68,10 +68,11 @@ Current progress:
   change was added. The central generator schema was minimally extended for TC
   resource tokens. Repeatability remains unresolved; the distinct SFTC
   guard-only-plus-low32-zero behavior boundary is also unresolved.
-- P2-W29 is implemented locally: all RED contracts, focused tests, two
-  independent reviews, and the full `make test` gate are green. The slice adds
-  a private, explicitly unknown 16-bit T register and candidate-only tagged
-  effect transaction, then
+- P2-W29 is implemented at `fedbd6a`: all RED contracts, focused tests, two
+  independent reviews, the full `make test` gate, and [remote
+  CI](https://github.com/djr-747/ti-c54x/actions/runs/34062796872) are green. The
+  slice adds a private, explicitly unknown 16-bit T register and candidate-only
+  tagged effect transaction, then
   EXP_ACC/exp_acc through the existing accumulator-source path. State, T-effect,
   shared transaction, family, catalog/decode, CPU-proof, and orchestrator
   ownership is fixed; any architecture gap is reported rather than hidden in a
@@ -81,17 +82,14 @@ Current progress:
   1083 populated words, with reset-runnable coverage at 4/16; EXP repeatability
   remains unresolved.
 - The registry now records 116 evidence items, 170 requirements (138 implemented,
-  9 planned, 23 unresolved), and 127 tests (118 passing, 9 planned). The latest clean
-  catalog-fifteen hosted performance record is captured at `7164ace` (CI
-  [green](https://github.com/djr-747/ti-c54x/actions/runs/34059815766)): NOP
-  109.060 ns / 9.169 MIPS, LD-DP 182.474 ns / 5.480 MIPS, LD-ASM 194.054 ns /
-  5.153 MIPS, LD-ARP 111.847 ns / 8.941 MIPS, and mixed-current 88.796 ns /
-  11.262 MIPS with reset-runnable coverage of 4/15. Versus catalog-thirteen,
-  fixed deltas are -10.18%, -12.69%, -4.36%, and -1.73%; current spreads are
-  50.31%, 3.83%, 6.90%, and 112.44%. The mixed spread is 3.58% but is not
-  comparable because catalog coverage and semantic hash changed. These hosted
-  observations establish no confirmed improvement or regression and make no DSP
-  or silicon timing claim.
+  9 planned, 23 unresolved), and 127 tests (118 passing, 9 planned). The latest
+  clean catalog-sixteen performance record is captured at `fedbd6a`: NOP 124.251
+  ns / 8.048 MIPS, LD-DP 205.652 ns / 4.863 MIPS, LD-ASM 209.142 ns / 4.781
+  MIPS, LD-ARP 222.837 ns / 4.488 MIPS, and mixed-current 206.376 ns / 4.846
+  MIPS with reset-runnable coverage of 4/16. An identical-binary diagnostic
+  capture immediately normalized to 68.561 ns NOP and 101.587–106.211 ns for
+  the fixed LD cases, so the clean record establishes no confirmed regression.
+  These are hosted throughput observations, not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -111,13 +109,11 @@ Current progress:
   unrecorded warmup windows, and clean-commit append-only JSONL. The initial
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
-  the catalog-seven `7cad341`, catalog-nine `705ac7b`, and catalog-ten `cd88596`
-  records remain as prior cohorts. An identical-binary diagnostic rerun (hash
-  `144ffa...`, dirty only because history was appended) normalized to NOP 66.571
-  ns / 15.022 MIPS, LD-DP 98.326 / 10.170, LD-ASM 98.038 / 10.200, LD-ARP
-  96.481 / 10.365, and mixed 86.448 / 11.568. This corroborates host noise
-  only, not a history baseline or performance claim. See [hosted performance
-  history](docs/performance.md).
+  the catalog-seven `7cad341`, catalog-nine `705ac7b`, catalog-ten `cd88596`,
+  catalog-thirteen `ef87c94`, and catalog-fifteen `7164ace` records remain as
+  prior cohorts. The latest catalog-sixteen record and its identical-binary
+  diagnostic expose substantial host-frequency noise and therefore carry no
+  confirmed regression claim. See [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.
