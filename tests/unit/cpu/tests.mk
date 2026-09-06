@@ -9,4 +9,5 @@ $(eval $(call ti_c54x_add_test,cpu_max_min,cpu,test_cpu_max_min.c))
 $(eval $(call ti_c54x_add_test,cpu_cmpl,cpu,test_cpu_cmpl.c))
 $(eval $(call ti_c54x_add_test,cpu_rol_ror,cpu,test_cpu_rol_ror.c))
 $(eval $(call ti_c54x_add_test,cpu_sftl,cpu,test_cpu_sftl.c))
+$(eval $(call ti_c54x_add_test,cpu_logical_accumulator,cpu,test_cpu_logical_accumulator.c))
 include tests/unit/cpu/input/tests.mk

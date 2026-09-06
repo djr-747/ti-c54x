@@ -105,10 +105,10 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     parse_catalog(text)
 
-    def test_real_catalog_contains_nop_and_status_load_rows(self) -> None:
+    def test_real_catalog_contains_current_catalog_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 10)
+        self.assertEqual(len(rows), 13)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -163,6 +163,23 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5)
         self.assertEqual(rows[9].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[9].input_resources, RESOURCES_ACCUMULATORS)
+        for row, symbol, handler, value in (
+            (rows[10], "AND_ACC_SHIFT", "and_acc_shift", 0xF080),
+            (rows[11], "OR_ACC_SHIFT", "or_acc_shift", 0xF0A0),
+            (rows[12], "XOR_ACC_SHIFT", "xor_acc_shift", 0xF0C0),
+        ):
+            with self.subTest(symbol=symbol):
+                self.assertEqual(row.symbol, symbol)
+                self.assertEqual(row.handler, handler)
+                self.assertEqual(row.first_word_value, value)
+                self.assertEqual(row.first_word_mask, 0xFCE0)
+                self.assertEqual(row.program_word_count, 1)
+                self.assertEqual(
+                    row.operand_layout,
+                    LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5,
+                )
+                self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
+                self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

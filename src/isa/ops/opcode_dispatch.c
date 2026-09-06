@@ -19,6 +19,7 @@
 #include "op_nop.h"
 #include "rotate/op_rotate.h"
 #include "shift/op_shift.h"
+#include "logical/op_logical.h"
 
 /* The catalog handler token remains part of the X-macro consumer contract:
  * ti_c54x_op_##handler is the canonical semantic binding spelling. */

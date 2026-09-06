@@ -3385,7 +3385,7 @@
     },
     {
       "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3395,7 +3395,7 @@
     },
     {
       "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3405,7 +3405,7 @@
     },
     {
       "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/logical/",
@@ -3415,7 +3415,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-LOGICAL-ACCUMULATOR-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -4316,34 +4316,34 @@
     },
     {
       "id": "T-COMMON-LOGICAL-ACCUMULATOR-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_logical_accumulator_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.logical_accumulator_metadata"},
       "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-ENCODINGS"]
     },
     {
       "id": "T-COMMON-LOGICAL-ACCUMULATOR-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_logical_accumulator_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.logical_accumulator_decode"},
       "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-DECODE"]
     },
     {
       "id": "T-COMMON-LOGICAL-ACCUMULATOR-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/logical/test_logical_accumulator.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.logical_accumulator"},
       "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-LOGICAL-ACCUMULATOR",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_logical_accumulator.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_logical_accumulator"},
       "requirement_ids": ["REQ-PROJECT-CPU-LOGICAL-ACCUMULATOR-RETIREMENT"]
     }
   ]

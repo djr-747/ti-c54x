@@ -4,8 +4,8 @@
  * Owns: the sole declarative first-word opcode inventory for the standalone
  * TI C54x core. The source schema supports EXACT and MASKED rows; this
  * production inventory contains the exact NOP row plus masked status-load,
- * compare, complement, rotate, and shift accumulator rows. Every consumer
- * derives its own view from this same file.
+ * compare, complement, rotate, shift, and logical-accumulator rows. Every
+ * consumer derives its own view from this same file.
  * Does not own: opcode strings, timing, bus/state behavior, or a second
  * handwritten instruction table. The handler token is an operation binding
  * token owned by the ISA operations module.
@@ -21,3 +21,6 @@ TI_C54X_OPCODE_MASKED(CMPL_ACC, cmpl_acc, 0xF493, 0xFCFF, 1, TI_C54X_OPERAND_LAY
 TI_C54X_OPCODE_MASKED(ROL_ACC, rol_acc, 0xF491, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C)
 TI_C54X_OPCODE_MASKED(ROR_ACC, ror_acc, 0xF490, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C)
 TI_C54X_OPCODE_MASKED(SFTL_ACC, sftl_acc, 0xF0E0, 0xFCE0, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+TI_C54X_OPCODE_MASKED(AND_ACC_SHIFT, and_acc_shift, 0xF080, 0xFCE0, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+TI_C54X_OPCODE_MASKED(OR_ACC_SHIFT, or_acc_shift, 0xF0A0, 0xFCE0, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+TI_C54X_OPCODE_MASKED(XOR_ACC_SHIFT, xor_acc_shift, 0xF0C0, 0xFCE0, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)

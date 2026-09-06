@@ -101,12 +101,12 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         self.assertEqual(first.count("= (uint16_t)"), 257)
         self.assertNotIn(str(self.root), first)
 
-    def test_production_artifact_matches_generator_and_contains_status_loads(self) -> None:
+    def test_production_artifact_matches_generator_and_contains_current_rows(self) -> None:
         rows = parse_catalog(self.catalog.read_text(encoding="utf-8"))
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 693)
+        self.assertEqual(actual.count("= (uint16_t)"), 1077)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
@@ -125,6 +125,21 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
                     f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_SFTL_ACC,",
                     actual,
                 )
+        logical_representatives = {
+            "AND_ACC_SHIFT": ("F080", "F081", "F08F", "F090", "F09F",
+                               "F180", "F280", "F29F"),
+            "OR_ACC_SHIFT": ("F0A0", "F0A1", "F0AF", "F0B0", "F0BF",
+                              "F1A0", "F2A0", "F2BF"),
+            "XOR_ACC_SHIFT": ("F0C0", "F0C1", "F0CF", "F0D0", "F0DF",
+                               "F1C0", "F2C0", "F2DF"),
+        }
+        for symbol, words in logical_representatives.items():
+            for word in words:
+                with self.subTest(symbol=symbol, word=word):
+                    self.assertIn(
+                        f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_{symbol},",
+                        actual,
+                    )
 
     def test_cli_generate_and_check_with_explicit_paths(self) -> None:
         source = (

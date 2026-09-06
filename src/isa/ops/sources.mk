@@ -8,3 +8,4 @@ include src/isa/ops/compare/sources.mk
 include src/isa/ops/accumulator/sources.mk
 include src/isa/ops/rotate/sources.mk
 include src/isa/ops/shift/sources.mk
+include src/isa/ops/logical/sources.mk

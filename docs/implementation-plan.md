@@ -61,7 +61,7 @@ function-pointer dispatch tables.
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
 | P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — full local and remote gates green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
 | P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
-| P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Planned | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
+| P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local gate green; remote pending | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, and catalog-ten clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -1165,7 +1165,9 @@ RPT/IRQ, or timing claim was added.
 
 ### P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)
 
-State: planned; keep this immutable `(planned)` heading as the evidence anchor.
+State: implemented; targeted proof and the full local gate are green. Keep the
+immutable `(planned)` heading as the evidence anchor. Remote validation and the
+clean hosted performance record remain pending.
 P2-W27 adds three register-only one-word logical accumulator families without
 introducing architectural state, input resources, effect kinds, sequencing
 seams, public APIs, memory, RPT/IRQ, parallel execution, or timing claims.
@@ -1218,15 +1220,20 @@ after those contracts fail for the missing family rows/handlers; the
 orchestrator serializes catalog, decode, generated, and shared changes. Any
 architecture gap is a hard stop/report under the fanout policy above.
 
-The TDD proof must exhaust all 384 family encodings and all 65,536 first words,
-exercise q boundaries `-16,-1,0,1,15`, guard-bearing full-40 vectors, every
+Targeted proof is green across all 384 family encodings and all 65,536 first words,
+and exercises q boundaries `-16,-1,0,1,15`, guard-bearing full-40 vectors, every
 source/destination combination, fixed-bit collision rejection, the S==D
 unknownness rule, canonical/unknown transactional rejection, C and all-status
 preservation, exactly one attempt/retirement with PC+1, and PC `0xffff`
 rollback. Repeatability remains `UNRESOLVED`: Table 2-28 (printed pp. 2-19–
 2-21) does not positively authorize these register forms, and no summary cycle
 field is timing evidence. GNU binutils material, if consulted, is
-nonnormative corroboration only.
+nonnormative corroboration only. The concrete outcome is 13 catalog rows, 1077
+populated first words, 384 new logical encodings, and four of 13 rows in the
+reset-runnable workload. Existing layout, input, effect, and CPU seams only were
+used; `cpu.c`, public API, architectural state, memory, RPT/IRQ, and timing are
+unchanged. Canonical 40-bit carrier validation remains distinct from raw input
+knownness, and C plus all other status fields are preserved.
 
 ### Hosted performance history (implemented; local and remote gates green)
 
