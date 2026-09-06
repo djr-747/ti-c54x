@@ -3094,3 +3094,20 @@ rewritten after publication.
   operation that converts these proven copied operands into a discriminated,
   value-owned `REPEAT_START` effect without mutating state or creating an unsupported
   production CPU path.
+
+## 2026-09-06 — P2-W20C2 remote verification
+
+- Published implementation commit:
+  `4746a8c0a1074bdf3b9419721901a0f8f0808486`.
+- Published completion-record commit:
+  `7cf5c3a69c07a50558fbd3d42f73c32002f8dcc2`.
+- GitHub Actions run
+  [34024069691](https://github.com/djr-747/ti-c54x/actions/runs/34024069691)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: P2-W20C is published and green across every repository-owned build
+  surface. Catalog scalar metadata and decode-owned immutable layout sets are now
+  complete; production decode still contains only NOP, and P2-W20D's pure typed RPT
+  effect is next.
