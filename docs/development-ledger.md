@@ -2038,3 +2038,54 @@ rewritten after publication.
 - Knobs and isolation: unchanged. No knob, environment read, code, public ABI,
   emulator dependency, memory map, raw pointer, timing value, or device behavior
   was added.
+
+## 2026-09-06 — P2-W14 complete — Circular MOD8/MOD10 WORD16 effects
+
+- State: complete in implementation commit
+  `2c9dfb8d7c954438d6166542f03b3a93d1aba540`.
+- Delivered scope: common C54x, CMPT=0, one WORD16 data operand, AR0–AR7,
+  read/write access, known BK, and fixed-step circular MOD8/MOD10. The planner
+  emits the old AR as the operand address and a post-access decrement/increment
+  effect computed from the documented EFB/index algorithm.
+- Boundary behavior: BK=0 produces the canonical NONE update while retaining
+  copied AR and BK dependency snapshots. Positive BK requires the initial index
+  to be inside the documented buffer; an outside-buffer value returns the named
+  unresolved-boundary status. The maximum BK (`0xffff`) exercises the safe
+  `N=16` path without an overflowing shift.
+- Ownership: `src/address/indirect_circular.[ch]` owns pure planning, circular
+  arithmetic, and intrinsic validation. `src/address/address_effect.h` owns the
+  copied circular source shape. The sequencer intrinsic and dependency modules
+  recognize and validate that shape; the existing apply module remains the sole
+  selected-AR writer and never writes BK. No handwritten file approaches the
+  monolith review threshold.
+- TDD evidence: four separately owned tests were written before implementation;
+  the first compile failed because `address/indirect_circular.h` did not yet
+  exist. Final vectors cover BK zero, size one, power-of-two and non-power-of-two
+  sizes, interior movement, both wraps, aligned bases, max BK, read/write access,
+  every AR selector, malformed effects, unknown and stale dependencies, ordered
+  read failures, exact one-write success, and transactional nonmutation.
+- Review corrections: replaced duplicated algorithm-shaped test oracles with
+  explicit expected values, initialized unrelated AR state in positive
+  sequencer cases, removed a producer-provenance expectation that a value-only
+  generic effect cannot enforce, added the max-BK vector, and zeroed complete
+  result objects so padding is deterministic as well as named fields.
+- Registry: 2 targets, 7 sources, 60 evidence records, 74 requirements
+  (57 implemented, 5 planned, 12 unresolved), and 54 tests (49 passing,
+  5 planned). The five circular exclusions remain explicit: initial AR outside
+  the buffer, LONG32 scaling, MOD9/MOD11 AR0 steps, MOD14 offset, and CMPT=1 or
+  dual-operand behavior.
+- Validation: the complete direct Make suite passed, including all C tests and
+  96 Python quality tests; ASan/UBSan passed; a compiler-only build passed; GCC
+  `-fanalyzer`, observer-disabled artifact checks, evidence checks, source-
+  boundary checks, and `git diff --check` passed. Local CMake execution remains
+  unavailable on this host and is delegated to standalone remote CI.
+- Review: an independent Luna audit found no remaining blocker after the full-
+  object zero-initialization correction. The algorithm, overflow discipline,
+  dependency order (CMPT, ARP, selected AR, BK), transactional application,
+  build wiring, and isolation boundary were all checked.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob, environment
+  read, emulator dependency, firmware input, memory mutation, byte-order policy,
+  opcode decode, or timing claim was added.
+- Follow-up: verify both commits in standalone CI, then select the next bounded
+  foundation slice. Shared-memory and exact-cycle execution remain plan-only
+  gates and cannot be bypassed by a future memory-mutating opcode.
