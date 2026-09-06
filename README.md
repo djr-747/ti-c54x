@@ -30,10 +30,13 @@ multiword, non-contiguous, 64-bit, borrowed-input, and transactional cases.
 P2-W19B is implemented and green: the standalone transactional extension-word
 fetch helper and width-aware program-PC span/commit seams are covered by focused
 CPU and sequencer tests. It adds no production opcode, handler, catalog row, or
-CPU count-two retirement integration. Timing, shared-memory mutation, interrupts
-and repeat, the full ISA, device profiles, and emulator integration are not
-implemented yet or remain deferred; the next slice is evidence-first RPT/IRQ
-semantics. See the
+CPU count-two retirement integration. P2-W20A is active: TI evidence now pins the
+two immediate RPT forms, operand+1 execution cardinality, repeatability rules, and
+post-decode IRQ/NMI deferral with the reset exception. The implementation is split
+into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
+and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
+guessed. Timing, shared-memory mutation, the full ISA, device profiles, and
+emulator integration remain deferred. See the
 [implementation plan](docs/implementation-plan.md) and [development
 ledger](docs/development-ledger.md) for the current work state.
 

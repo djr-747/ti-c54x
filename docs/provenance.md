@@ -72,6 +72,26 @@ from the legacy core or GNU binutils into this repository.
 Every future opcode and architectural rule must carry an evidence identifier that
 maps to a document section, hardware-vector record, or explicitly unresolved issue.
 
+## GNU binutils toolchain-oracle boundary
+
+GNU binutils is a secondary compatibility oracle, never normative architecture
+evidence or a repository source. P2-W20 pins release 2.42 at source commit
+`c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e9` from the official
+[`binutils-gdb` repository](https://sourceware.org/git/binutils-gdb.git). The
+reviewed paths were `opcodes/tic54x-opc.c`, `include/opcode/tic54x.h`,
+`opcodes/tic54x-dis.c`, `gas/config/tc-tic54x.c`, and the
+`gas/testsuite/gas/tic54x/{opcodes,all-opcodes}.{s,d}` fixtures.
+
+Independently stated black-box cross-check vectors include `RPT #32` as program
+word `ec20` and `RPT #65535` as program words `f070 ffff`. Future oracle use must
+record the exact tool version, target flags, input, and assembler/disassembler
+transcript. The GPL implementation, tables, comments, names, and fixture corpus
+are not copied, linked, generated into, or vendored by this repository. Any
+disagreement is escalated to TI primary evidence rather than resolved in favor of
+the toolchain. The evidence-registry schema does not yet admit a
+`TOOLCHAIN_ORACLE_ONLY` classification, so this source is not registered as
+requirement evidence.
+
 ## Open decisions
 
 - Select the repository license with the owner after the lineage review.

@@ -1158,6 +1158,116 @@
         "anchor": "P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)"
       },
       "assertion": "The P2-W19B project contract freezes two standalone private seams before any multiword opcode integration. The instruction-fetch owner accepts a copied first program word and exact uint32_t first_program_word_address plus a bus descriptor and context borrowed for the call only, retains no pointer, and returns a fully initialized by-value result whose fixed program_words[2] bundle capacity is a helper limit rather than an ISA-wide maximum. Count zero and counts above two are rejected before I/O. Count one copies and publishes the supplied first word with zero callbacks. Count two admits high carriers, checks first_program_word_address+1 before exactly one callback at that exact carrier, and rejects UINT32_MAX overflow before I/O. Count one, invalid-bus, unsupported-count, and address-overflow results use TI_C54X_BUS_OK because no bus transaction was attempted; a missing count-two callback maps to a bus fault plus TI_C54X_BUS_NO_CALLBACK; callback failure maps to a bus fault while preserving its exact non-OK bus status. Every non-OK result zeroes the named bundle count and both words without retry. The helper owns no first-word fetch, counters, CPU/PC/state mutation, common 16-bit/XPC policy, timing, memory, observers, or diagnostics. Independently, the sequencer bridge and sequential-PC owners accept explicit widths 1..255, convert both operands to uint32_t before addition, reject count zero and sums above UINT16_MAX without wrap or narrowing, preserve one-word boundaries and transactional valid/stale/malformed effect behavior, reject public carriers above UINT16_MAX without XPC inference, and perform no bus I/O. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "Table 2‑16",
+        "printed_page_start": "2-12",
+        "printed_page_end": "2-12"
+      },
+      "assertion": "The instruction summary lists RPT #K as a one-program-word form with K in the 0..255 range and RPT #lk as a two-program-word form with a 16-bit lk operand in the 0..65535 range."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "RPT",
+        "printed_page_start": "4-146",
+        "printed_page_end": "4-147"
+      },
+      "assertion": "The RPT operation encodes immediate #K as 0xEC00 with K in bits 7:0, encodes immediate #lk as first word 0xF070 followed by one 16-bit extension word, loads RC with the operand value, repeats the following instruction operand+1 times, changes no status bits, and is itself nonrepeatable. The examples establish #2 as three body executions and #0xffff as 65536 body executions."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-P2-19-2-21-RPT-BODY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5 and Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeat restrictions define which instruction bodies and operand/addressing forms are nonrepeatable, including control-transfer and repeat-control instructions and long-offset or absolute single-data bodies. This record establishes eligibility as an explicit policy input and does not infer a broader eligible set."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.7",
+        "printed_page_start": "6-20",
+        "printed_page_end": "6-22"
+      },
+      "assertion": "After RPT is decoded, all interrupts including NMI are deferred until every execution of the repeated body completes, with the literal RS/reset exception remaining admissible. The repeat description does not settle the internal arbitration phase, RC decrement phase, or program-counter hold/reload details."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6-10-7-P6-34-RPT-IRQ-COMPLETION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.10.7",
+        "printed_page_start": "6-34",
+        "printed_page_end": "6-34"
+      },
+      "assertion": "The pipeline interrupt discussion confirms that all executions of the repeated instruction complete before an interrupt executes, protecting the unsavable pipeline-parallel context."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.10.3 and 6.10.8",
+        "printed_page_start": "6-31",
+        "printed_page_end": "6-36"
+      },
+      "assertion": "The interrupt request and recognition descriptions state that a request sets its IFR flag regardless of immediate acknowledgement and that the corresponding flag is cleared when the interrupt is taken. This record does not select device-specific sources, vectors, or priority wiring."
+    },
+    {
+      "id": "E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)"
+      },
+      "assertion": "The P2-W20A project contract requires a value-owned canonical instruction bundle, catalog-bound immutable operand-layout and repeatability metadata, discriminated opcode effects, a pure repeat owner with uint32_t body cardinality, and generic IRQ admission/reset-exception handoff. RPT handlers must not mutate architectural state, PC, interrupt state, memory, buses, observers, diagnostics, or timing directly; CPU integration may consume generic effects only after the explicitly unresolved RC, repeat-PC, and pending-request arbitration rules are resolved. This is a project structure contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -2244,6 +2354,134 @@
       "claim": "The private sequential-PC and public program-PC bridge seams accept explicit program_word_count values from 1 through 255, convert both operands to uint32_t before checked addition for 16-bit-int hosts, reject count zero and any sum above UINT16_MAX without wrapping or narrowing before validation, and preserve transactional valid/stale/malformed effect behavior. Count one preserves the admitted 0xfffe-to-0xffff transition and unresolved one-word source at 0xffff; count two admits 0xfffd-to-0xffff and rejects 0xfffe as unresolved. The public bridge rejects carriers above UINT16_MAX without XPC inference and delegates admitted width arithmetic; no bus I/O is performed.",
       "evidence_ids": ["E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT"],
       "test_ids": ["T-PROJECT-SEQUENCER-MULTIWORD-PC"]
+    },
+    {
+      "id": "REQ-PROJECT-CANONICAL-INSTRUCTION-BUNDLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Define one copied, value-owned instruction-word bundle under the decode owner and use it as the complete-instruction handoff among CPU fetch, decode, and semantic dispatch. The current fixed capacity remains an explicit helper limit rather than an ISA-wide maximum; no pointer is retained, failures publish no partial bundle, and CPU fetch owns population rather than the value type or interpretation.",
+      "evidence_ids": ["E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE"],
+      "test_ids": ["T-PROJECT-CANONICAL-INSTRUCTION-BUNDLE"]
+    },
+    {
+      "id": "REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Bind each operand-bearing catalog row to immutable generated-or-static operand-layout and repeatability metadata, validate that binding outside opcode semantics, and produce copied operands through the shared field extractor so handlers never hand-mask encoded words. The catalog remains the sole inventory and runtime metadata remains immutable and initialization-free.",
+      "evidence_ids": ["E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE"],
+      "test_ids": ["T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode RPT #K as one program word matching value 0xEC00 and mask 0xFF00 with the unsigned operand in bits 7:0, and decode RPT #lk as exact first word 0xF070 followed by one complete unsigned 16-bit extension-word operand.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS",
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": ["T-COMMON-RPT-IMMEDIATE-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-RPT-IMMEDIATE-OPERATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/",
+      "claim": "For either immediate RPT form, carry the exact decoded operand as the value loaded into RC and produce no status-bit effect; the operation itself is nonrepeatable.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"],
+      "test_ids": ["T-COMMON-RPT-IMMEDIATE-OPERATION"]
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-CARDINALITY",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Execute the instruction following immediate RPT exactly operand+1 times, including one execution for operand zero and 65536 executions for operand 0xffff, without counter wrap.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"],
+      "test_ids": ["T-COMMON-SINGLE-REPEAT-CARDINALITY"]
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-IRQ-GATE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "After RPT decode and until every repeated-body execution completes, defer maskable requests and NMI while still admitting literal RS/reset; no request may be serviced between body executions.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ",
+        "E-TI-C54X-SPRU131G-S6-10-7-P6-34-RPT-IRQ-COMPLETION"
+      ],
+      "test_ids": ["T-COMMON-SINGLE-REPEAT-IRQ-GATE"]
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/interrupt/",
+      "claim": "Latch an accepted request in IFR even when the active single-repeat gate prevents immediate acknowledgement, preserve it while deferred, and clear the corresponding flag only when that request is eventually taken; exact bit assignment and priority remain outside this requirement.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ",
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR"
+      ],
+      "test_ids": ["T-COMMON-SINGLE-REPEAT-PENDING-REQUEST"]
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Reject a single-repeat body when its instruction or operand/addressing form is classified nonrepeatable by the documented restrictions, including repeat-control and control-transfer bodies and long-offset or absolute single-data forms.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-P2-19-2-21-RPT-BODY"],
+      "test_ids": ["T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY"]
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Resolve the exact RC decrement phase during single-repeat execution and the architecturally visible final RC value before integrating repeat retirement into the CPU.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147",
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-PC-FLOW",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Resolve how the repeated-body program counter is held or reloaded and the exact final program counter after single-repeat completion before CPU integration.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6.1-P6-3",
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-PREDECODE-IRQ-ARBITRATION",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/interrupt/",
+      "claim": "Resolve whether and at which phase an already-pending request may be taken before the RPT post-decode gate becomes active.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ",
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR"
+      ],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -2797,6 +3035,70 @@
       "path": "tests/unit/sequencer/test_program_pc_bridge_multiword.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.program_pc_bridge_multiword"},
       "requirement_ids": ["REQ-PROJECT-SEQUENCER-MULTIWORD-PC"]
+    },
+    {
+      "id": "T-PROJECT-CANONICAL-INSTRUCTION-BUNDLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_instruction_bundle.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CANONICAL-INSTRUCTION-BUNDLE"]
+    },
+    {
+      "id": "T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_operand_layout_binding.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
+    },
+    {
+      "id": "T-COMMON-RPT-IMMEDIATE-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rpt_immediate_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-RPT-IMMEDIATE-DECODE"]
+    },
+    {
+      "id": "T-COMMON-RPT-IMMEDIATE-OPERATION",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/test_rpt_immediate.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-RPT-IMMEDIATE-OPERATION"]
+    },
+    {
+      "id": "T-COMMON-SINGLE-REPEAT-CARDINALITY",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/repeat/test_single_repeat_cardinality.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-CARDINALITY"]
+    },
+    {
+      "id": "T-COMMON-SINGLE-REPEAT-IRQ-GATE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/repeat/test_single_repeat_irq_gate.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-IRQ-GATE"]
+    },
+    {
+      "id": "T-COMMON-SINGLE-REPEAT-PENDING-REQUEST",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/interrupt/test_repeat_pending_request.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST"]
+    },
+    {
+      "id": "T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/repeat/test_single_repeat_body_eligibility.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY"]
     }
   ]
 }

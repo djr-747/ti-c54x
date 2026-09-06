@@ -273,6 +273,40 @@ CPU tests remain regression gates, and both new tests pass under their owner-loc
 runners. The boundary matrix explicitly admits `0xfffd + 2 = 0xffff` and rejects
 `0xfffe + 2` as unresolved, alongside count zero and all widths through 255.
 
+### RPT transaction architecture (P2-W20A active kickoff)
+
+P2-W20A pins the first difficult ISA slice before implementation. TI
+`SPRU172C` establishes the two immediate forms: one-word `RPT #K` matches
+`0xEC00/0xFF00` and carries unsigned K in bits 7:0; two-word `RPT #lk` begins
+with exact `0xF070` and carries the complete unsigned 16-bit operand in its
+extension word. RPT loads RC with that operand, changes no status bits, and
+causes the following instruction to execute operand+1 times, including 65536
+executions for `0xffff`. The RPT instruction itself is nonrepeatable.
+
+The execution shape stays owner-driven. `src/isa/decode/` will own one copied
+instruction-word bundle plus catalog-bound immutable operand-layout metadata;
+CPU fetch only populates the bundle. `src/isa/ops/` will turn the extracted
+operand into a discriminated, value-owned `REPEAT_START` effect without touching
+state or sequencing. `src/sequencer/repeat/` will own body cardinality,
+repeatability admission, and the device-neutral request-admission gate. CPU
+orchestration consumes those generic values and must not branch on an RPT opcode
+identity. This is intentionally phased as P2-W20B through P2-W20F so no owner is
+expanded into a monolith simply to land one instruction.
+
+TI `SPRU131G` establishes the critical gate: after RPT decode, maskable requests
+and NMI cannot be serviced until every body execution completes, while literal
+RS/reset remains admissible. Requests are still represented in IFR while
+acknowledgement is deferred and clear only when taken; exact source bits, vectors,
+and priorities remain outside the common target. Repeatability metadata is also
+first-class because the TI restrictions exclude documented instruction and
+operand/addressing forms from being a repeated body.
+
+The registry leaves three architectural questions unresolved: exact RC decrement
+phase and final RC, repeated-body PC hold/reload and final PC, and arbitration of
+a request already pending before RPT decode. CPU repeat retirement cannot land
+until these are resolved. Machine-cycle cost and detailed pipeline behavior stay
+outside this functional slice.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner

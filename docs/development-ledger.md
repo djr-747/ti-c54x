@@ -2757,3 +2757,47 @@ rewritten after publication.
   P2-W18 CPU transaction remain intact. The next slice is evidence-first RPT/IRQ
   semantics. This verification makes no claim about production multiword CPU
   retirement, timing, memory mutation, XPC, or emulator integration.
+
+## 2026-09-06 — P2-W20A kickoff — RPT evidence and instruction-transaction architecture
+
+- State: active documentation/evidence contract; no production source, public
+  header, test implementation, generated artifact, or build manifest changed.
+- Primary evidence: new narrow records pin `SPRU172C` Table 2-16, the RPT entry,
+  and the repeatability restrictions, plus `SPRU131G` single-repeat and request
+  handling sections. The immediate encodings are one-word `0xEC00/0xFF00` with
+  K in bits 7:0 and exact two-word `0xF070` plus a 16-bit extension. The operation
+  loads RC with the operand, changes no status bits, and executes the following
+  instruction operand+1 times, including 65536 bodies for `0xffff`.
+- Request contract: after RPT decode, maskable requests and NMI are deferred until
+  every body execution completes; literal RS/reset remains admissible. A request
+  can remain represented in IFR while acknowledgement is deferred and clears only
+  when taken. No source bit, vector, priority, or device wiring is selected.
+- Shape decision: P2-W20 is split into owner-local TDD slices. W20B owns the
+  canonical copied instruction bundle under `src/isa/decode/`; W20C owns immutable
+  catalog layout/repeatability binding; W20D owns RPT rows and a value-owned
+  `REPEAT_START` effect; W20E owns pure repeat cardinality/eligibility/admission
+  under `src/sequencer/repeat/`; W20F is later generic CPU integration. `cpu.c`
+  must never branch on the RPT identity, and handlers never mutate state or IRQ
+  policy directly.
+- Unresolved by design: exact RC decrement phase/final RC, repeated-body PC
+  hold/reload/final PC, and arbitration of a request already pending before RPT
+  decode. Those requirements have no tests and block CPU repeat retirement rather
+  than being filled by convenience behavior. Machine-cycle and detailed pipeline
+  behavior remain outside this work piece.
+- Secondary oracle: GNU binutils 2.42 is pinned in `docs/provenance.md` at source
+  commit `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e9`, with independent `ec20` and
+  `f070 ffff` cross-check vectors. It is `TOOLCHAIN_ORACLE_ONLY`, is not registered
+  as normative evidence, and no GPL code, table, comment, or fixture corpus is
+  copied or vendored.
+- Registry kickoff: 2 targets, 7 sources, 72 immutable evidence records, and 105
+  requirements (80 `IMPLEMENTED`, 10 `PLANNED`, 15 `UNRESOLVED`); 72 tests (62
+  `PASSING`, 10 `PLANNED`). Eight new planned tests mirror their decode, opcode,
+  repeat, and interrupt owners.
+- Knobs/isolation unchanged: no `TEST`, `OBSERVE`, or `A/B` knob, environment read,
+  diagnostic path, allocator, mutable global, emulator dependency, timing API, or
+  shared-memory mutation is added.
+- Validation for this docs-only kickoff is limited to the evidence/schema and
+  registry quality checks plus `git diff --check`; the next implementation work
+  piece owns the coherent full standalone test gate.
+- Follow-up: commit and remotely verify this kickoff, then begin P2-W20B with red
+  tests for the canonical complete-instruction bundle and unchanged NOP behavior.

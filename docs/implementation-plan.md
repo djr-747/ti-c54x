@@ -47,6 +47,7 @@ function-pointer dispatch tables.
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
+| RPT evidence and instruction-transaction architecture (P2-W20A) | Active | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -296,6 +297,64 @@ normal and ASan/UBSan tests passed for both new seams, and the full standalone
 `make -B test` gate passed. The next work is evidence-first RPT/IRQ semantics;
 this slice does not claim TI conformance, timing, repeat, IRQ, memory mutation,
 XPC, or emulator integration.
+
+### P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)
+
+State: active documentation and evidence contract. No production opcode, handler,
+CPU behavior, or build surface changes in this kickoff. The first implementation
+slice is P2-W20B, the canonical instruction-bundle seam; direct RPT handler or CPU
+integration work cannot precede it.
+
+The immediate forms are frozen from TI primary evidence:
+
+- `RPT #K` is one program word with first-word value `0xEC00`, mask `0xFF00`,
+  and unsigned `K` in bits 7:0 (`0..255`).
+- `RPT #lk` is two program words with exact first word `0xF070` and the complete
+  unsigned 16-bit operand in extension word one (`0..65535`).
+- The RPT operation loads `RC` with the operand. The following instruction executes
+  operand+1 times, giving a range of 1 through 65536 body executions. RPT changes
+  no status bits and is itself nonrepeatable.
+- Once RPT is decoded, all interrupts including NMI are deferred until every body
+  execution completes; literal RS/reset remains admissible. A request still sets
+  its IFR flag without immediate acknowledgement, and that flag clears when the
+  interrupt is eventually taken. No device source, vector, priority, or wiring is
+  selected by this common-core contract.
+- Repeat-body eligibility comes from the documented repeatability restrictions;
+  handlers and the CPU may not infer eligibility from opcode identity or width.
+
+Implementation is deliberately split along the ownership hierarchy:
+
+1. P2-W20B adds a canonical copied, value-owned instruction-word bundle under
+   `src/isa/decode/`. CPU fetch owns only population of that value; neither owner
+   retains caller storage.
+2. P2-W20C binds immutable operand-layout and repeatability tokens through the sole
+   catalog. Layout owners reuse the checked field extractor, and opcode handlers
+   never hand-mask instruction words.
+3. P2-W20D registers the two immediate catalog rows and adds a focused RPT
+   operation. It emits a discriminated, value-owned `REPEAT_START` effect carrying
+   the exact operand and never mutates state, PC, interrupt state, memory, buses,
+   observers, or diagnostics.
+4. P2-W20E adds `src/sequencer/repeat/` as the pure single-repeat owner. Its internal
+   cardinality is at least 17 bits (implemented with `uint32_t`) so `0xffff + 1`
+   represents 65536 without wrap. It owns body eligibility and the generic
+   interrupt-admission decision, including the reset exception, but not request
+   sampling or device wiring.
+5. P2-W20F may integrate the generic effect handoff into the CPU only after the
+   remaining architectural rules below are resolved. `cpu.c` must never branch on
+   the RPT opcode identity; it orchestrates decoded values and sequencer effects.
+
+The directory tree and tests mirror those owners. Each phase is a separate atomic
+TDD work piece, no handwritten file becomes a cross-owner monolith, and generated
+metadata stays immutable and initialization-free. Machine-cycle timing, shared
+memory, profiles, and emulator integration remain outside P2-W20.
+
+Three behaviors remain explicitly unresolved and must not be encoded as convenience
+policy: the phase and final value of RC decrement, the mechanism that holds or
+reloads the repeated-body PC and its final PC, and arbitration when an interrupt is
+already pending before RPT decode. Detailed pipeline and machine-cycle behavior
+also remains outside the active timing contract. These gaps do not weaken the
+proven cardinality or post-decode interrupt gate; they prevent premature CPU
+integration.
 
 ## Delivery order
 
