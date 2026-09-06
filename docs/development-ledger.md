@@ -1518,3 +1518,64 @@ rewritten after publication.
 - Follow-up: push the implementation and ledger commits, verify the remote
   GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
   ledger-only verification commit.
+
+## 2026-09-06 — P2-W11 — BK architectural state prerequisite
+
+- Plan: add the private 16-bit circular-buffer size register as explicitly
+  owned architectural state with checked knownness-aware accessors. This is a
+  prerequisite only; circular address arithmetic remains a later slice.
+- State: active; implementation commit pending.
+- Primary evidence: TI `SPRU131G` Rev G section 3.3.4.8 (printed p. 3-28)
+  defines BK as the 16-bit circular-buffer size register used by the ARAUs.
+  Section 3.3.4/Table 3-3 (printed p. 3-27) maps BK to CPU MMR data-memory
+  address `0x19`; that mapping will be recorded but not routed in this slice.
+  Section 5.5.3.4 (printed pp. 5-15–5-16) is reserved as future circular-math
+  authority. Section 6.9's reset list (printed p. 6-25) does not prescribe BK,
+  so no architectural reset value is inferred.
+- State boundary: `src/state/arch_state.h` continues to own the private aggregate
+  and gains copied `uint16_t` BK storage. `src/state/register_layout.h` owns its
+  scalar-knownness bit. New `src/state/block_size_register.[ch]` owns only BK
+  reads and writes; circular planners and sequencers must use that interface and
+  must not touch the field or knownness mask directly.
+- Reset decision: common reset clears physical storage to zero through the
+  existing deterministic aggregate reset, but BK remains architecturally
+  unknown. That zero-plus-unknown representation is a project contract, not a
+  TI reset claim. Unknown and invalid reads preserve caller output; writes copy
+  every `uint16_t` value exactly and mark BK known; rejected calls preserve the
+  complete state byte-for-byte.
+- TDD plan: a COMMON_TI state-owner test exhausts all 65,536 values through the
+  checked write/read seam to prove exact 16-bit storage. A separate
+  PROJECT_CONTRACT_ONLY test proves reset unknownness, output preservation,
+  zero/one/maximum round trips, sole-field/knownness mutation, NULL rejection,
+  reset clearing of stale storage and knownness, and bytewise nonmutation on
+  every rejected call.
+- Evidence plan: add one TI BK-width record, one TI MMR-location record, one TI
+  circular-definition record for the future boundary, and one project accessor
+  contract. Implement only the BK-width and project-access requirements. Keep
+  MMR routing and circular BK consumption as explicit planned requirements with
+  no passing-test claim.
+- Ownership and build plan: mirror `src/state/block_size_register.[ch]` with
+  `tests/unit/state/test_block_size_register.c` and
+  `test_block_size_register_contract.c`; register the source in normal and
+  observer-disabled artifacts and both tests in direct Make and CMake/CTest.
+  No public header or ABI changes.
+- Sequencer decision: the independent audit found
+  `src/sequencer/address_effect_apply.c` currently mixes pure shape validation,
+  mode checks, dependency reads, and commit orchestration at 411 lines. P2-W12
+  will extract a private zero-on-error validation/commit-description seam as a
+  separate atomic refactor after BK and before circular integration.
+- Exclusions: BK reset value, raw MMR instruction semantics, bus or data-page
+  routing, circular EFB/EOB/base/index arithmetic, BK=0 behavior, MOD8–MOD11 and
+  MOD14, dual operands, LONG32 circular scaling, pipeline conflicts, timing,
+  device profiles, opcode decode, diagnostics, firmware, and emulator
+  integration.
+- Knobs: none planned.
+- Ledger correction: the published `P2-W10 remote verification` entry was
+  inserted before the P2-W9/P2-W10 chronological block rather than at physical
+  end-of-file. Its recorded run `34000243852` is valid and green; the subsequent
+  ledger-only commit also passed final CI run `34000306631`. Under the append-only
+  rule, the old entry remains untouched and this note corrects only its ordering.
+- Follow-up: commit this kickoff decision, delegate state/tests and
+  evidence/build/docs to Luna agents with disjoint ownership, integrate under
+  the main orchestrator, run an independent closure review, validate once,
+  commit, push, and verify remotely.
