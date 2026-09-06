@@ -35,6 +35,7 @@ OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 ti_c54x_core_sources :=
 include src/foundation/sources.mk
 include src/address/sources.mk
+include src/bus/sources.mk
 include src/sequencer/sources.mk
 include src/state/sources.mk
 include src/cpu/sources.mk
@@ -69,6 +70,7 @@ endef
 include tests/unit/cpu/tests.mk
 include tests/unit/foundation/tests.mk
 include tests/unit/address/tests.mk
+include tests/unit/bus/tests.mk
 include tests/unit/state/tests.mk
 include tests/unit/sequencer/tests.mk
 include tests/unit/debug/tests.mk
