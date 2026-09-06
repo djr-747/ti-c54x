@@ -4286,3 +4286,43 @@ rewritten after publication.
 - Follow-up: select only the next two or three ISA families after strict FIT
   review. Any need for shared architecture must stop the lane and produce a
   GAP report before central integration.
+
+## 2026-09-07 — P2-W30 AND/OR/XOR two-word logical-immediate vertical slice closeout
+
+- State: complete. The plan/evidence freeze landed as `569742a`. The
+  implementation landed as `9c22a33`; its GitHub Actions run
+  [34067048536](https://github.com/djr-747/ti-c54x/actions/runs/34067048536)
+  is green. Performance/documentation landed as `86feb9f`; its run
+  [34067341093](https://github.com/djr-747/ti-c54x/actions/runs/34067341093)
+  is green. Both runs cover GCC, Clang, direct Make, CMake/CTest, installation,
+  downstream consumer, benchmark, and sanitizer jobs.
+- TDD evidence is RED/GREEN: eight focused strict tests passed, followed by
+  eight ASan/UBSan tests after the final family-alias correction and two
+  independent reviews. Full local `make test` is green with 176 Python quality
+  unittests, all silent C tests, generator/evidence/source-boundary/build-
+  manifest checks, and observer-off gates green. The registry closes at 122
+  evidence records, 178 requirements (146 implemented, 9 planned, 23
+  unresolved), and 135 tests (126 passing, 9 planned).
+- Six width-two AND/OR/XOR immediate rows add 204 populated lookup words,
+  bringing the catalog to 22 rows / 1287 populated words / 4 reset-runnable
+  rows. Two generic decode layouts cover shifted and fixed-16 forms. A shared
+  logical-immediate helper owns validation, extraction, zero-extension, and
+  shift semantics; family leaves own operation names and aliases. The generic
+  CPU path is unchanged: no `cpu.c` edits, public API, memory, timing,
+  diagnostic, environment, or knob changes.
+- Review correction: catalog-bound row aliases initially accepted a sibling
+  family form. Exact-ID guards and cross-form transactional tests now reject
+  that ambiguity without changing the generic dispatch path.
+- Performance closure is hosted POSIX observer-off throughput only (no DSP
+  timing claim). Clean `9c22a33` values are NOP 131.883 ns, LD-DP 233.294 ns,
+  LD-ASM 240.304 ns, LD-ARP 206.770 ns, and mixed 109.273 ns. The identical
+  binary normalized to 80.803, 114.568, 127.581, 118.947, and 108.974 ns;
+  there is no confirmed regression. The new rows are not exercised by the
+  reset-runnable benchmark subset, and the binary hash is identical across
+  the comparison captures. No knobs changed.
+- Follow-up: evidence-first fixed the next memory-bridge scope around MOD2
+  `LD *ARx+,dst` and `STL src,*ARx+`. Record the required canonical
+  architecture-state composition, SXM input, WAIT-capable transaction, and
+  atomic AR/PC/effect commit. Keep the nonblocking performance note that
+  generic operand extraction currently revalidates immutable layouts three to
+  four times; measure and address it only with representative memory paths.
