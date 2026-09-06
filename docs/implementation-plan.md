@@ -51,7 +51,7 @@ function-pointer dispatch tables.
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
-| Pure single-repeat policy foundation (P2-W20E) | Active | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
+| Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -495,7 +495,9 @@ those decisions.
 
 #### P2-W20E: pure single-repeat policy foundation (active kickoff)
 
-State: active as three project-contract TDD proofs. The common TI cardinality,
+State: implemented and green in commit
+`d876f94dfb6ddbd08257f477457ca20ae4f34e68` as three project-contract TDD
+proofs. The common TI cardinality,
 body-eligibility, and IRQ-gate requirements remain planned until production
 integration proves actual body retirement, concrete catalog classifications, and
 the active repeat window. This avoids treating a useful pure calculation as broader
@@ -539,6 +541,16 @@ unresolved repeatability never admits; request decisions cover inactive, first,
 interior, and 65536-remaining windows plus invalid inputs; source and test manifests
 mirror the new owner; production lookup remains unchanged; and the common TI rows
 remain planned without overclaim.
+
+The completed implementation keeps every policy value-only and allocation-free.
+Cardinality widens before addition and exhaustively maps the entire `uint16_t`
+domain to one through 65536. Body admission preserves `UNRESOLVED` as a distinct
+non-admitting result and rejects forged repeatability values transactionally.
+Request gating validates counts through 65536, reports only `NOT_BLOCKED` or
+`DEFER`, and names the literal RS/reset exception without owning a reset opcode or
+device path. Make and CMake aggregate matching repeat-owner manifests, while CPU,
+state, opcode effects, production lookup, and every unresolved integration policy
+remain unchanged.
 
 ## Delivery order
 

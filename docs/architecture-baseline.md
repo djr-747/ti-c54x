@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 73 immutable evidence
-records, 110 requirements, and 77 tests (66 `PASSING`, 11 `PLANNED`).
+records, 110 requirements, and 77 tests (69 `PASSING`, 8 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -349,7 +349,7 @@ cardinality belongs to the single-repeat sequencer. Existing production dispatch
 and CPU execution remain NOP-only, and the common TI RPT operation requirement
 remains planned until the effect has a proven generic consumer.
 
-P2-W20E is active as a similarly narrow project-contract foundation under the
+P2-W20E now implements a similarly narrow project-contract foundation under the
 new `src/sequencer/repeat/` owner. Three leaf policies remain separate: checked
 `uint16_t` operand to `uint32_t` body-cardinality derivation, admission from the
 catalog's existing tri-state repeatability scalar, and a repeat-only request gate
@@ -365,6 +365,14 @@ classification. Those common requirements stay planned for integration-level
 proof. IFR sampling and mutation stay under the later `src/sequencer/interrupt/`
 owner, while RC progression, PC flow, and predecode request arbitration remain
 unresolved.
+
+The cardinality proof exhausts all 65,536 input operands and preserves 65536 in
+the widened output. Body admission maps all three catalog classes and rejects
+forged values without changing caller output. The request gate covers inactive,
+first, interior, and maximum remaining counts for maskable, NMI, and literal
+RS/reset classes, with explicit range/kind failures. These tests execute through
+owner-local Make and CTest registrations; the parent sequencer manifests only
+aggregate the repeat subtree.
 
 ## Single-indirect address-effect slice
 

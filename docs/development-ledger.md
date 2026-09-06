@@ -3305,3 +3305,62 @@ rewritten after publication.
 - Result: the W20E evidence boundary, three project contracts, three-leaf ownership
   plan, TDD matrix, corrected registry counts, and deliberate no-common-conformance
   claim are published and green. The bounded Luna implementation is next.
+
+## 2026-09-06 — P2-W20E completion — pure single-repeat policies
+
+- State: implemented and green. Implementation commit:
+  `d876f94dfb6ddbd08257f477457ca20ae4f34e68`
+  (`P2-W20E: add pure repeat policies`). The three project policy requirements are
+  complete; all existing common TI RPT/repeat requirements retain their prior
+  planned or unresolved states.
+- TDD red: the mirrored repeat tests and nested manifests were registered first;
+  the focused Make build stopped because the required
+  `sequencer/repeat/repeat_cardinality.o` implementation did not exist. The same
+  three registered targets became green only after their leaf owners were added.
+- Cardinality result: `repeat_cardinality` widens the copied `uint16_t` operand to
+  `uint32_t` before adding one and publishes a caller-owned value only after
+  validation. Its test exhausts all 65,536 operands and proves the one and 65536
+  endpoints without exposing an execution loop, RC, or PC.
+- Body-admission result: `repeat_body_eligibility` consumes only the catalog's
+  scalar tri-state value. `ELIGIBLE` admits, `INELIGIBLE` rejects, and `UNRESOLVED`
+  remains a distinct zero-valued non-admitting result. `COUNT` and negative forged
+  values fail without changing the caller's decision; no opcode/table lookup or
+  operand/address inference occurs.
+- Request-gate result: `repeat_request_gate` accepts zero through 65536 remaining
+  body executions and explicit maskable, NMI, or literal RS/reset classes. Zero
+  reports that repeat does not block any valid class; active counts defer maskable
+  and NMI while never blocking literal reset. Larger counts, invalid/forged kinds,
+  and null output are explicit transactional failures. `NOT_BLOCKED` does not mean
+  globally admitted or serviced.
+- Ownership: source and tests live under mirrored `sequencer/repeat/` subtrees with
+  child Make/CMake manifests. The parent sequencer owners add only one include or
+  subdirectory aggregation line. Cardinality, eligibility, and request policy remain
+  separate leaf modules rather than forming a repeat-control monolith.
+- Review: independent Luna review reported no blocker, major, or minor finding for
+  behavior, C11/Clang shape, enum-zero safety, transactionality, units/naming,
+  ownership direction, build parity, source boundaries, or scope. After delegated
+  scaffolding did not complete, the main agent integrated and reviewed the bounded
+  implementation without expanding file ownership.
+- Size/shape: cardinality source/header are 33/41 lines, body-eligibility source/
+  header are 43/42, request-gate source/header are 53/53, and their focused tests are
+  67, 76, and 123 lines. No handwritten owner approaches the 500-line review
+  threshold.
+- Registry final: 2 targets, 7 sources, 73 evidence records, and 110 requirements
+  (87 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`); 77 tests (69 `PASSING`, 8
+  `PLANNED`). The three new project tests run as
+  `ti_c54x.repeat_cardinality_contract`,
+  `ti_c54x.repeat_body_admission_contract`, and
+  `ti_c54x.repeat_request_gate_contract` in both supported build systems.
+- Validation: focused Make builds and direct executions passed after the registered
+  RED. The frozen full `make -B test` gate passed 163 Python quality tests, 64 C
+  unit targets, and 65 direct executions including the minimal consumer. Evidence,
+  nested manifest reachability/parity, source boundaries (139 files), knobs,
+  observer-off artifact, generated lookup staleness, and `git diff --check` passed.
+- Isolation: no production RPT row, generated lookup change, opcode-effect
+  consumption, CPU/state/RC/PC mutation, body execution loop, IFR sampling/latching/
+  clearing, request acknowledgement, device wiring, timing, bus, memory, public API,
+  observer, diagnostic, knob, environment read, allocator, mutable global, emulator
+  dependency, or external implementation was introduced.
+- Follow-up: publish and remotely verify W20E. Do not begin W20F CPU integration
+  until evidence resolves RC progression, repeated-body PC flow, and predecode
+  interrupt arbitration; the common TI rows remain the integration proof gates.

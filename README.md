@@ -43,10 +43,11 @@ transactional copied extraction. The one- and two-word RPT immediate layouts are
 proven but remain inert; production decode still registers only NOP. P2-W20C is
 complete. P2-W20D is implemented and green as a narrow project-contract proof for
 a typed, value-owned `REPEAT_START` effect; it does not claim RC mutation or
-activate RPT in production decode. P2-W20E is active as three pure, owner-separated
-repeat-sequencer policy proofs for `uint32_t` cardinality derivation,
-preclassified-body admission, and repeat-only request gating. Actual body execution,
-production classification, and IRQ integration remain planned. The broader
+activate RPT in production decode. P2-W20E is implemented and green as three pure,
+owner-separated repeat-sequencer policy proofs for exhaustive `uint32_t`
+cardinality derivation, preclassified-body admission, and repeat-only request
+gating. Actual body execution, production classification, and IRQ integration
+remain planned. The broader
 implementation is split
 into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not

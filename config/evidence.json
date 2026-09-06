@@ -2411,7 +2411,7 @@
     },
     {
       "id": "REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/repeat/",
@@ -2421,7 +2421,7 @@
     },
     {
       "id": "REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/repeat/",
@@ -2431,7 +2431,7 @@
     },
     {
       "id": "REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/repeat/",
@@ -3134,26 +3134,26 @@
     },
     {
       "id": "T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/repeat/test_repeat_cardinality_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_cardinality_contract"},
       "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY"]
     },
     {
       "id": "T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/repeat/test_repeat_body_admission_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_body_admission_contract"},
       "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION"]
     },
     {
       "id": "T-PROJECT-SINGLE-REPEAT-REQUEST-GATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_request_gate_contract"},
       "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
     },
     {
