@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "instruction_fetch.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/opcode_dispatch.h"
@@ -227,7 +228,10 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
     while (instructions_retired < instruction_budget) {
         uint16_t opcode_word = 0U;
         ti_c54x_bus_status bus_status;
-        ti_c54x_decode_result decoded;
+        ti_c54x_decode_result first_word_result;
+        ti_c54x_instruction_extension_fetch_result fetched;
+        ti_c54x_decoded_instruction instruction;
+        ti_c54x_instruction_completion_status completion_status;
         ti_c54x_op_effect effect = {TI_C54X_OP_EFFECT_NONE};
         ti_c54x_program_pc_bridge_effect pc_effect;
         ti_c54x_program_pc_bridge_status bridge_status;
@@ -243,7 +247,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
-        /* The attempt is accounted for immediately before the sole bus read.
+        /* The attempt is accounted for immediately before the first bus read.
          * This keeps failed reads observable as attempts without ever making
          * them retirements. */
         cpu->instructions_attempted++;
@@ -266,14 +270,38 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         cpu->last_fetched_word = opcode_word;
         cpu->last_fetch_valid = true;
         emit_trace(cpu, TI_C54X_TRACE_FETCH);
-        decoded = ti_c54x_decode_first_word(opcode_word);
-        if (decoded.status != TI_C54X_DECODE_STATUS_OK) {
+        first_word_result = ti_c54x_decode_first_word(opcode_word);
+        if (first_word_result.status != TI_C54X_DECODE_STATUS_OK) {
             return stop_result(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
 
-        op_status = ti_c54x_dispatch_decoded(&decoded, &effect);
+        fetched = ti_c54x_instruction_extension_fetch(
+            &cpu->bus, cpu->pc_word, opcode_word,
+            first_word_result.program_word_count);
+        if (fetched.status ==
+            TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_BUS_FAULT) {
+            return stop_result(cpu, TI_C54X_STOP_BUS_FAULT,
+                               fetched.bus_status, instructions_attempted,
+                               instructions_retired);
+        }
+        if (fetched.status != TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        completion_status = ti_c54x_decode_complete_instruction(
+            &first_word_result, &fetched.bundle, &instruction);
+        if (completion_status !=
+            TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        op_status = ti_c54x_dispatch_decoded(&instruction, &effect);
         if (op_status != TI_C54X_OP_STATUS_OK ||
             effect.kind != TI_C54X_OP_EFFECT_NONE) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
@@ -282,7 +310,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         }
 
         bridge_status = ti_c54x_program_pc_bridge_plan(
-            cpu->pc_word, decoded.program_word_count, &pc_effect);
+            cpu->pc_word, instruction.bundle.program_word_count, &pc_effect);
         if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return stop_result(cpu, bridge_status_to_stop(bridge_status),
                                TI_C54X_BUS_OK, instructions_attempted,

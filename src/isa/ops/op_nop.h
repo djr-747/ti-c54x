@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 ti_c54x_op_status ti_c54x_op_nop(
-    const ti_c54x_decode_result *instruction,
+    const ti_c54x_decoded_instruction *instruction,
     ti_c54x_op_effect *effect);
 
 #ifdef __cplusplus

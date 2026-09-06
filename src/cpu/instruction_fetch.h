@@ -21,6 +21,8 @@
 
 #include <ti_c54x/bus.h>
 
+#include "isa/decode/instruction_bundle.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,11 +33,6 @@ typedef enum ti_c54x_instruction_extension_fetch_status {
     TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_ADDRESS_OVERFLOW = 2,
     TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_BUS_FAULT = 3
 } ti_c54x_instruction_extension_fetch_status;
-
-typedef struct ti_c54x_instruction_word_bundle {
-    uint16_t program_words[2];
-    uint8_t program_word_count;
-} ti_c54x_instruction_word_bundle;
 
 typedef struct ti_c54x_instruction_extension_fetch_result {
     ti_c54x_instruction_extension_fetch_status status;

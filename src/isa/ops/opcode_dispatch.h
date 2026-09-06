@@ -22,11 +22,11 @@ extern "C" {
 #endif
 
 typedef ti_c54x_op_status (*ti_c54x_op_handler)(
-    const ti_c54x_decode_result *instruction,
+    const ti_c54x_decoded_instruction *instruction,
     ti_c54x_op_effect *effect);
 
 ti_c54x_op_status ti_c54x_dispatch_decoded(
-    const ti_c54x_decode_result *instruction,
+    const ti_c54x_decoded_instruction *instruction,
     ti_c54x_op_effect *effect);
 
 #ifdef __cplusplus

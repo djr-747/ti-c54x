@@ -18,16 +18,16 @@
 #include <stdint.h>
 #include <string.h>
 
-static ti_c54x_decode_result
+static ti_c54x_decoded_instruction
 valid_nop(void)
 {
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_NOP);
-    const ti_c54x_decode_result instruction = {
-        .status = TI_C54X_DECODE_STATUS_OK,
+    const ti_c54x_decoded_instruction instruction = {
         .id = metadata->id,
-        .first_word = metadata->first_word_value,
-        .program_word_count = metadata->program_word_count
+        .bundle = {
+            .program_words = {metadata->first_word_value, UINT16_C(0)},
+            .program_word_count = metadata->program_word_count}
     };
     return instruction;
 }
@@ -45,7 +45,7 @@ check_failure_preserves_effect(ti_c54x_op_status status,
 static void
 test_direct_nop_success_and_no_effect(void)
 {
-    const ti_c54x_decode_result instruction = valid_nop();
+    const ti_c54x_decoded_instruction instruction = valid_nop();
     ti_c54x_op_effect effect;
 
     (void)memset(&effect, 0xa5, sizeof(effect));
@@ -55,23 +55,27 @@ test_direct_nop_success_and_no_effect(void)
 }
 
 static void
-test_direct_nop_rejects_malformed_descriptors_transactionally(void)
+test_direct_nop_rejects_forged_values_transactionally(void)
 {
-    ti_c54x_decode_result instruction = valid_nop();
+    ti_c54x_decoded_instruction instruction = valid_nop();
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_NOP);
     const uint16_t words[] = {
         (uint16_t)(metadata->first_word_value ^ UINT16_C(1)),
         (uint16_t)(metadata->first_word_value ^ UINT16_C(2))};
-    const uint8_t counts[] = {UINT8_C(0),
-                              (uint8_t)(metadata->program_word_count + 1U)};
+    const uint8_t counts[] = {UINT8_C(0), UINT8_C(2)};
+    const ti_c54x_opcode_id ids[] = {
+        TI_C54X_OPCODE_ID_UNKNOWN,
+        TI_C54X_OPCODE_ID_COUNT,
+        (ti_c54x_opcode_id)(TI_C54X_OPCODE_ID_COUNT + 1)};
     size_t index;
 
     for (index = 0U; index < sizeof(words) / sizeof(words[0]); ++index) {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];
 
-        instruction.first_word = words[index];
+        instruction = valid_nop();
+        instruction.bundle.program_words[0] = words[index];
         (void)memset(&effect, 0x3c, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
@@ -79,12 +83,12 @@ test_direct_nop_rejects_malformed_descriptors_transactionally(void)
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 
-    instruction = valid_nop();
     for (index = 0U; index < sizeof(counts) / sizeof(counts[0]); ++index) {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];
 
-        instruction.program_word_count = counts[index];
+        instruction = valid_nop();
+        instruction.bundle.program_word_count = counts[index];
         (void)memset(&effect, 0x4d, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
@@ -92,26 +96,13 @@ test_direct_nop_rejects_malformed_descriptors_transactionally(void)
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 
-    instruction = valid_nop();
-    instruction.status = TI_C54X_DECODE_STATUS_UNKNOWN_WORD;
-    {
+    for (index = 0U; index < sizeof(ids) / sizeof(ids[0]); ++index) {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];
 
+        instruction = valid_nop();
+        instruction.id = ids[index];
         (void)memset(&effect, 0x5e, sizeof(effect));
-        (void)memcpy(before, &effect, sizeof(before));
-        check_failure_preserves_effect(
-            ti_c54x_op_nop(&instruction, &effect),
-            TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
-    }
-
-    instruction = valid_nop();
-    instruction.id = TI_C54X_OPCODE_ID_UNKNOWN;
-    {
-        ti_c54x_op_effect effect;
-        unsigned char before[sizeof(effect)];
-
-        (void)memset(&effect, 0x6f, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
             ti_c54x_op_nop(&instruction, &effect),
@@ -122,7 +113,7 @@ test_direct_nop_rejects_malformed_descriptors_transactionally(void)
 static void
 test_direct_nop_rejects_null_arguments(void)
 {
-    ti_c54x_decode_result instruction = valid_nop();
+    ti_c54x_decoded_instruction instruction = valid_nop();
     ti_c54x_op_effect effect;
     unsigned char before[sizeof(effect)];
 
@@ -139,7 +130,7 @@ test_direct_nop_rejects_null_arguments(void)
 static void
 test_dispatch_success_and_no_effect(void)
 {
-    const ti_c54x_decode_result instruction = valid_nop();
+    const ti_c54x_decoded_instruction instruction = valid_nop();
     ti_c54x_op_effect effect;
 
     (void)memset(&effect, 0xa5, sizeof(effect));
@@ -149,23 +140,35 @@ test_dispatch_success_and_no_effect(void)
 }
 
 static void
-test_dispatch_rejects_decode_and_unsupported_ids_transactionally(void)
+test_dispatch_rejects_forged_values_transactionally(void)
 {
-    ti_c54x_decode_result instruction = valid_nop();
+    ti_c54x_decoded_instruction instruction = valid_nop();
     const ti_c54x_opcode_id ids[] = {
         TI_C54X_OPCODE_ID_UNKNOWN,
         TI_C54X_OPCODE_ID_COUNT,
-        (ti_c54x_opcode_id)(TI_C54X_OPCODE_ID_COUNT + 1)
-    };
+        (ti_c54x_opcode_id)(TI_C54X_OPCODE_ID_COUNT + 1)};
     size_t index;
 
-    instruction.status = TI_C54X_DECODE_STATUS_UNKNOWN_WORD;
     for (index = 0U; index < sizeof(ids) / sizeof(ids[0]); ++index) {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];
 
+        instruction = valid_nop();
         instruction.id = ids[index];
         (void)memset(&effect, 0x88, sizeof(effect));
+        (void)memcpy(before, &effect, sizeof(before));
+        check_failure_preserves_effect(
+            ti_c54x_dispatch_decoded(&instruction, &effect),
+            TI_C54X_OP_STATUS_UNSUPPORTED_OPCODE, &effect, before);
+    }
+
+    instruction = valid_nop();
+    instruction.bundle.program_word_count = UINT8_C(0);
+    {
+        ti_c54x_op_effect effect;
+        unsigned char before[sizeof(effect)];
+
+        (void)memset(&effect, 0x99, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
             ti_c54x_dispatch_decoded(&instruction, &effect),
@@ -173,23 +176,23 @@ test_dispatch_rejects_decode_and_unsupported_ids_transactionally(void)
     }
 
     instruction = valid_nop();
-    for (index = 0U; index < sizeof(ids) / sizeof(ids[0]); ++index) {
+    instruction.bundle.program_words[0] ^= UINT16_C(1);
+    {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];
 
-        instruction.id = ids[index];
-        (void)memset(&effect, 0x99, sizeof(effect));
+        (void)memset(&effect, 0x9a, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
             ti_c54x_dispatch_decoded(&instruction, &effect),
-            TI_C54X_OP_STATUS_UNSUPPORTED_OPCODE, &effect, before);
+            TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 }
 
 static void
 test_dispatch_rejects_null_arguments(void)
 {
-    ti_c54x_decode_result instruction = valid_nop();
+    ti_c54x_decoded_instruction instruction = valid_nop();
     ti_c54x_op_effect effect;
     unsigned char before[sizeof(effect)];
 
@@ -207,10 +210,10 @@ int
 main(void)
 {
     test_direct_nop_success_and_no_effect();
-    test_direct_nop_rejects_malformed_descriptors_transactionally();
+    test_direct_nop_rejects_forged_values_transactionally();
     test_direct_nop_rejects_null_arguments();
     test_dispatch_success_and_no_effect();
-    test_dispatch_rejects_decode_and_unsupported_ids_transactionally();
+    test_dispatch_rejects_forged_values_transactionally();
     test_dispatch_rejects_null_arguments();
     return 0;
 }

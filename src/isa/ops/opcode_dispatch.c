@@ -27,9 +27,10 @@ static const ti_c54x_op_handler ti_c54x_handlers[TI_C54X_OPCODE_ID_COUNT] = {
 #undef TI_C54X_OPCODE_MASKED
 
 ti_c54x_op_status
-ti_c54x_dispatch_decoded(const ti_c54x_decode_result *instruction,
+ti_c54x_dispatch_decoded(const ti_c54x_decoded_instruction *instruction,
                          ti_c54x_op_effect *effect)
 {
+    const ti_c54x_opcode_metadata *metadata;
     ti_c54x_op_effect staged;
     ti_c54x_op_handler handler;
     int id;
@@ -38,14 +39,25 @@ ti_c54x_dispatch_decoded(const ti_c54x_decode_result *instruction,
     if (instruction == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
-    if (instruction->status != TI_C54X_DECODE_STATUS_OK) {
-        return TI_C54X_OP_STATUS_INVALID_DECODE;
-    }
-
     id = (int)instruction->id;
     if (id <= (int)TI_C54X_OPCODE_ID_UNKNOWN ||
         id >= (int)TI_C54X_OPCODE_ID_COUNT) {
         return TI_C54X_OP_STATUS_UNSUPPORTED_OPCODE;
+    }
+
+    metadata = ti_c54x_opcode_metadata_for_id(instruction->id);
+    if (metadata == NULL || metadata->id != instruction->id ||
+        metadata->program_word_count == UINT8_C(0) ||
+        metadata->program_word_count >
+            (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY ||
+        instruction->bundle.program_word_count == UINT8_C(0) ||
+        instruction->bundle.program_word_count >
+            (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY ||
+        instruction->bundle.program_word_count !=
+            metadata->program_word_count ||
+        (uint16_t)(instruction->bundle.program_words[0] &
+                   metadata->first_word_mask) != metadata->first_word_value) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
     }
 
     handler = ti_c54x_handlers[(size_t)id];
