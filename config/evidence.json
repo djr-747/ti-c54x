@@ -862,6 +862,96 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The sequencer validates the long-offset source arm and intrinsic MOD13 PRE_ACCESS shape before CMPT=0/ARP=0 and selected-AR state checks, preserves caller-owned state on rejection, and commits at most one selected-AR write without redoing offset arithmetic. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-13",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Table 5-4 lists MOD4 *ARx-0B and MOD7 *ARx+0B: the old ARx value supplies the operand address and ARx is updated after access by reverse-carry subtraction or addition using AR0. This record makes no width-scaling or read/write-restriction claim beyond the table text."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.5",
+        "printed_page_start": "5-18",
+        "printed_page_end": "5-19"
+      },
+      "assertion": "The bit-reversed addressing discussion requires AR0=2^(N-1) for an FFT size 2^N, shows reverse-carry propagation from bit 15 (MSB) toward bit 0 (LSB), and provides the worked address sequence 0x60, 0x68, 0x64, 0x6c, 0x62, 0x6a, 0x66, 0x6e with its four-bit table."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.5-T5-9-P5-23-AR0-SYNTAX",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.5",
+        "printed_page_start": "5-23",
+        "printed_page_end": "5-23"
+      },
+      "assertion": "Table 5-9 lists the *AR0-0B and *AR0+0B operand syntax as legal forms. This syntax record does not determine update ordering when the selected auxiliary register aliases AR0."
+    },
+    {
+      "id": "E-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/foundation/reverse_carry.h",
+        "anchor": "ti_c54x_reverse_carry_apply16"
+      },
+      "assertion": "The project reverse-carry primitive has an explicit status and value contract, performs unsigned 16-bit bit-by-bit reverse propagation without signed shifts or implicit wrap selection, and exposes no usable candidate when propagation escapes the 16-bit domain. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/indirect_reverse_carry.h",
+        "anchor": "ti_c54x_indirect_reverse_carry_word16"
+      },
+      "assertion": "The project reverse-carry planner exposes only WORD16 MOD4/MOD7 operands with CMPT=0, selected AR1-AR7, and a nonzero one-hot AR0 value; its validator rejects malformed non-WORD16 effects, invalid fields, non-one-hot AR0, and unresolved boundaries with deterministic statuses and an all-zero effect. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.c",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The sequencer reverse-carry transaction validates the tagged source arm and POST_ACCESS relation before ordered selected-AR then AR0 dependency reads, preserves complete state on rejection, and commits at most one selected-AR write without recomputing reverse-carry arithmetic. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -1455,6 +1545,129 @@
       "claim": "Long-offset application validates intrinsic source, operand, and PRE_ACCESS shape before CMPT=0/ARP=0 and selected-AR state reads, reports unknown or stale selected-AR state deterministically, preserves complete state on rejection, and commits at most one selected-AR write.",
       "evidence_ids": ["E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"],
       "test_ids": ["T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-REVERSE-CARRY-PRIMITIVE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/foundation/",
+      "claim": "Implement the common safe-domain 16-bit reverse-carry primitive: nonescaping propagation follows the documented bit direction over the represented word.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY"
+      ],
+      "test_ids": ["T-COMMON-REVERSE-CARRY-PRIMITIVE"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-MOD4-REVERSE-CARRY-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For a valid safe-domain WORD16 CMPT=0 MOD4 operand, the old selected AR supplies the operand address and a reverse-carry subtraction using AR0 supplies the post-access selected-AR update.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-REVERSE-CARRY-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-MOD7-REVERSE-CARRY-WORD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For a valid safe-domain WORD16 CMPT=0 MOD7 operand, the old selected AR supplies the operand address and a reverse-carry addition using AR0 supplies the post-access selected-AR update.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-REVERSE-CARRY-WORD"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "A valid reverse-carry WORD16 effect preserves the old selected-AR operand address, carries one POST_ACCESS selected-AR update, and retains the CMPT=0/ARP=0 state policy without claiming timing or bus behavior.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7",
+        "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-REVERSE-CARRY-BOUNDARY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Final reverse-carry propagation, endpoint behavior, and 16-bit wrap semantics remain unresolved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.2-P5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-REVERSE-CARRY-AR0-ALIAS",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The ordering when selected AR0 aliases the reverse-carry index remains unresolved; legal *AR0±0B syntax does not establish whether the selected value or updated value is observed.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.5-T5-9-P5-23-AR0-SYNTAX"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-REVERSE-CARRY-LONG32",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The applicability and update scaling of MOD4/MOD7 for LONG32 operands remain unresolved; no width scaling is inferred from the MOD1–MOD3-only access-width text.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7"
+      ],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/foundation/",
+      "claim": "The reverse-carry primitive has deterministic status and output rules, rejects propagation escape without silently wrapping, and remains free of signed-shift or implementation-defined arithmetic.",
+      "evidence_ids": ["E-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT"],
+      "test_ids": ["T-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The reverse-carry planner owns validation and rejection precedence for MOD4/MOD7 WORD16 effects, requires selected AR1–AR7 and nonzero one-hot AR0, and returns an all-zero effect for every non-OK result.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The sequencer reverse-carry application contract validates source shape and ordered dependencies, preserves state byte-for-byte on rejection, and commits at most one selected-AR POST_ACCESS write without recomputing arithmetic.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"],
+      "test_ids": ["T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"]
     }
   ],
   "tests": [
@@ -1785,6 +1998,57 @@
       "path": "tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_long_offset_effect_apply_contract"},
       "requirement_ids": ["REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION"]
+    },
+    {
+      "id": "T-COMMON-REVERSE-CARRY-PRIMITIVE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/foundation/test_reverse_carry.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reverse_carry"},
+      "requirement_ids": ["REQ-COMMON-REVERSE-CARRY-PRIMITIVE"]
+    },
+    {
+      "id": "T-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/foundation/test_reverse_carry_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reverse_carry_contract"},
+      "requirement_ids": ["REQ-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-REVERSE-CARRY-WORD",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_reverse_carry_word.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_reverse_carry_word"},
+      "requirement_ids": [
+        "REQ-COMMON-INDIRECT-MOD4-REVERSE-CARRY-WORD",
+        "REQ-COMMON-INDIRECT-MOD7-REVERSE-CARRY-WORD"
+      ]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_indirect_reverse_carry_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_reverse_carry_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_indirect_reverse_carry_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_reverse_carry_effect_apply"},
+      "requirement_ids": ["REQ-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_reverse_carry_effect_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"]
     }
   ]
 }

@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 45 immutable evidence
-records, 50 requirements, and 39 tests (35 `PASSING`, 4 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 51 immutable evidence
+records, 60 requirements, and 45 tests (41 `PASSING`, 4 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -216,6 +216,28 @@ validation and precedence, unknown/stale selected-AR state, transactional
 rejection, and one PRE_ACCESS commit. These are independent source-dimension
 sweeps and representative combinations, not a full Cartesian claim over AR
 and offset.
+
+### Reverse-carry WORD16 slice
+
+The reverse-carry foundation is isolated in `src/foundation/` and implements
+the documented bit-propagation primitive without owning architectural state.
+The Table 5-4 record `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7` is used
+only for MOD4's old-AR then subtract-AR0 and MOD7's old-AR then add-AR0
+ordering; it does not establish width scaling or access restrictions.
+`E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY` records AR0 as
+2^(N-1), left-to-right (bit 15/MSB toward bit 0/LSB) carry propagation, and the
+worked sequence. The planner admits WORD16 safe domains and carries value-owned
+selected-AR and AR0 snapshots. The sequencer applies at most one post-access
+selected-AR update.
+
+The project-only records `E-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT`,
+`E-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT`, and
+`E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` own validation and transactional
+behavior. Zero/non-one-hot and unsafe results are rejected by those contracts,
+not presented as TI behavior. `E-TI-C54X-SPRU131G-S5.5.5-T5-9-P5-23-AR0-SYNTAX`
+records `*AR0-0B` and `*AR0+0B` as legal syntax only; selected-AR0 alias
+ordering, final propagation/wrap, and LONG32 applicability/update remain
+`UNRESOLVED` and are intentionally untested.
 
 ## Private architectural register-state seed
 

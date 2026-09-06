@@ -8,8 +8,8 @@
  * address effect to caller-owned private architectural state. Canonical
  * data-operand shape and the value-owned source snapshot are intrinsic
  * producer contracts validated before any phase relation or state access.
- * MOD13 long-offset effects invoke the address-owned intrinsic validator
- * before this phase/mode/source sequence.
+ * MOD13 long-offset and MOD4/MOD7 reverse-carry effects invoke their
+ * address-owned intrinsic validators before this phase/mode/source sequence.
  * Does not own: address planning, opcode decoding, CPU lifecycle, buses,
  * memory, timing, or diagnostics. It owns validation of the private state
  * precondition carried by an address effect, but not the storage or layout of
@@ -18,7 +18,9 @@
  * before their value constraints or a tagged source is consulted; indexed
  * AR0 effects read the selected AR and then AR0 in that order. MOD13 effects
  * read only the selected AR; their copied offset word is not architectural
- * state. Policy failures never repair or partially mutate state.
+ * state. Reverse-carry effects read the selected AR followed by copied AR0
+ * and never write AR0. Policy failures never repair or partially mutate
+ * state.
  * The state pointer is caller-owned and must remain valid for the duration of
  * the call. The address result pointer is borrowed for the duration of the
  * call and is never retained or modified. A rejected call leaves the complete
@@ -60,8 +62,11 @@ typedef enum ti_c54x_address_apply_status {
  * require a WORD16 old-target operand and POST_ACCESS update of the selected AR
  * only; their copied AR0 snapshot is read but never written. MOD13 effects
  * require a validator-approved WORD16/LONG32 operand and PRE_ACCESS selected-AR
- * update; the raw offset is immutable input and is never stale-checked. Direct
- * DP/SP have no update and never touch an AR.
+ * update; the raw offset is immutable input and is never stale-checked.
+ * Reverse-carry effects require a validator-approved WORD16 old-address
+ * operand and one POST_ACCESS selected-AR update; their copied AR0 value is
+ * read after the selected AR and is never written. Direct DP/SP have no
+ * update and never touch an AR.
  */
 ti_c54x_address_apply_status ti_c54x_sequencer_apply_address_result(
     ti_c54x_arch_state *state,

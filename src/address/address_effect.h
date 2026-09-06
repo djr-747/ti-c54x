@@ -66,7 +66,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_DIRECT_DP = 2,
     TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3,
     TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4,
-    TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5
+    TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5,
+    TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -93,6 +94,16 @@ typedef struct ti_c54x_address_source_ar_long_offset {
     uint16_t long_offset_word;
 } ti_c54x_address_source_ar_long_offset;
 
+/* Snapshot for CMPT=0 reverse-carry MOD4/MOD7 forms. `index` selects ARx;
+ * `value_before` is the old selected AR operand address and `ar0_value_before`
+ * is the copied one-hot reverse-carry step. */
+typedef struct ti_c54x_address_source_ar_reverse_carry {
+    uint8_t index;
+    uint8_t modification;
+    uint16_t value_before;
+    uint16_t ar0_value_before;
+} ti_c54x_address_source_ar_reverse_carry;
+
 typedef struct ti_c54x_address_source_direct_dp {
     uint16_t dp9;
     uint8_t dma7;
@@ -111,6 +122,7 @@ typedef struct ti_c54x_address_source {
         ti_c54x_address_source_ar ar;
         ti_c54x_address_source_ar_indexed ar_indexed;
         ti_c54x_address_source_ar_long_offset ar_long_offset;
+        ti_c54x_address_source_ar_reverse_carry ar_reverse_carry;
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
     } value;

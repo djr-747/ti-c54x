@@ -22,6 +22,32 @@ ti_c54x_enable_warnings(ti_c54x_test_arithmetic40)
 ti_c54x_enable_sanitizers(ti_c54x_test_arithmetic40)
 add_test(NAME ti_c54x.arithmetic40 COMMAND ti_c54x_test_arithmetic40)
 
+add_executable(ti_c54x_test_reverse_carry unit/foundation/test_reverse_carry.c)
+target_link_libraries(ti_c54x_test_reverse_carry PRIVATE ti_c54x::core)
+target_compile_features(ti_c54x_test_reverse_carry PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_reverse_carry PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/src
+)
+ti_c54x_enable_warnings(ti_c54x_test_reverse_carry)
+ti_c54x_enable_sanitizers(ti_c54x_test_reverse_carry)
+add_test(NAME ti_c54x.reverse_carry COMMAND ti_c54x_test_reverse_carry)
+
+add_executable(ti_c54x_test_reverse_carry_contract
+    unit/foundation/test_reverse_carry_contract.c
+)
+target_link_libraries(ti_c54x_test_reverse_carry_contract PRIVATE ti_c54x::core)
+target_compile_features(ti_c54x_test_reverse_carry_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_reverse_carry_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/src
+)
+ti_c54x_enable_warnings(ti_c54x_test_reverse_carry_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_reverse_carry_contract)
+add_test(NAME ti_c54x.reverse_carry_contract
+    COMMAND ti_c54x_test_reverse_carry_contract
+)
+
 add_executable(ti_c54x_test_direct_dp unit/address/test_direct_dp.c)
 target_link_libraries(ti_c54x_test_direct_dp PRIVATE ti_c54x::core)
 target_compile_features(ti_c54x_test_direct_dp PRIVATE c_std_11)
@@ -184,6 +210,38 @@ ti_c54x_enable_warnings(ti_c54x_test_indirect_long_offset_contract)
 ti_c54x_enable_sanitizers(ti_c54x_test_indirect_long_offset_contract)
 add_test(NAME ti_c54x.indirect_long_offset_contract
     COMMAND ti_c54x_test_indirect_long_offset_contract
+)
+
+add_executable(ti_c54x_test_indirect_reverse_carry_word
+    unit/address/test_indirect_reverse_carry_word.c
+)
+target_compile_features(ti_c54x_test_indirect_reverse_carry_word PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_reverse_carry_word PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_reverse_carry_word PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_reverse_carry_word)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_reverse_carry_word)
+add_test(NAME ti_c54x.indirect_reverse_carry_word
+    COMMAND ti_c54x_test_indirect_reverse_carry_word
+)
+
+add_executable(ti_c54x_test_indirect_reverse_carry_contract
+    unit/address/test_indirect_reverse_carry_contract.c
+)
+target_compile_features(ti_c54x_test_indirect_reverse_carry_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_reverse_carry_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_reverse_carry_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_reverse_carry_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_reverse_carry_contract)
+add_test(NAME ti_c54x.indirect_reverse_carry_contract
+    COMMAND ti_c54x_test_indirect_reverse_carry_contract
 )
 
 add_executable(ti_c54x_test_address_effect_contract
@@ -424,6 +482,38 @@ ti_c54x_enable_warnings(ti_c54x_test_indirect_long_offset_effect_apply_contract)
 ti_c54x_enable_sanitizers(ti_c54x_test_indirect_long_offset_effect_apply_contract)
 add_test(NAME ti_c54x.indirect_long_offset_effect_apply_contract
     COMMAND ti_c54x_test_indirect_long_offset_effect_apply_contract
+)
+
+add_executable(ti_c54x_test_indirect_reverse_carry_effect_apply
+    unit/sequencer/test_indirect_reverse_carry_effect_apply.c
+)
+target_compile_features(ti_c54x_test_indirect_reverse_carry_effect_apply PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_reverse_carry_effect_apply PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_reverse_carry_effect_apply PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_reverse_carry_effect_apply)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_reverse_carry_effect_apply)
+add_test(NAME ti_c54x.indirect_reverse_carry_effect_apply
+    COMMAND ti_c54x_test_indirect_reverse_carry_effect_apply
+)
+
+add_executable(ti_c54x_test_indirect_reverse_carry_effect_apply_contract
+    unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c
+)
+target_compile_features(ti_c54x_test_indirect_reverse_carry_effect_apply_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_reverse_carry_effect_apply_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_reverse_carry_effect_apply_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_reverse_carry_effect_apply_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_reverse_carry_effect_apply_contract)
+add_test(NAME ti_c54x.indirect_reverse_carry_effect_apply_contract
+    COMMAND ti_c54x_test_indirect_reverse_carry_effect_apply_contract
 )
 
 add_executable(ti_c54x_test_address_operand_apply_contract

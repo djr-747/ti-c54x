@@ -11,6 +11,7 @@
 
 #include "address_effect_apply.h"
 #include "address/indirect_long_offset.h"
+#include "address/indirect_reverse_carry.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -35,6 +36,7 @@ static bool valid_source_kind(ti_c54x_address_source_kind kind)
     case TI_C54X_ADDRESS_SOURCE_DIRECT_SP:
     case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
         return true;
     default:
         return false;
@@ -52,6 +54,8 @@ static bool valid_state_policy_for_source(
             policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_SP &&
@@ -63,7 +67,8 @@ static bool source_supports_ar_update(
 {
     return source_kind == TI_C54X_ADDRESS_SOURCE_AR ||
            source_kind == TI_C54X_ADDRESS_SOURCE_AR_INDEXED ||
-           source_kind == TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET;
+           source_kind == TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET ||
+           source_kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY;
 }
 
 static uint8_t source_ar_index(const ti_c54x_address_source *source)
@@ -75,6 +80,8 @@ static uint8_t source_ar_index(const ti_c54x_address_source *source)
         return source->value.ar_indexed.index;
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
         return source->value.ar_long_offset.index;
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+        return source->value.ar_reverse_carry.index;
     default:
         return UINT8_C(0);
     }
@@ -89,6 +96,8 @@ static uint16_t source_ar_value_before(const ti_c54x_address_source *source)
         return source->value.ar_indexed.value_before;
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
         return source->value.ar_long_offset.value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+        return source->value.ar_reverse_carry.value_before;
     default:
         return UINT16_C(0);
     }
@@ -118,6 +127,10 @@ ti_c54x_sequencer_apply_address_result(
      * Validate it before any phase, mode-state, or architectural-source read. */
     if (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET &&
         !ti_c54x_indirect_long_offset_effect_is_valid(effect)) {
+        return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+    }
+    if (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY &&
+        !ti_c54x_indirect_reverse_carry_effect_is_valid(effect)) {
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
 
@@ -155,6 +168,10 @@ ti_c54x_sequencer_apply_address_result(
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
         /* The address-owned validator above owns all MOD13 shape relations;
          * this branch intentionally performs no arithmetic. */
+        break;
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+        /* The address-owned validator above owns all reverse-carry shape
+         * relations; this branch intentionally performs no arithmetic. */
         break;
     case TI_C54X_ADDRESS_SOURCE_DIRECT_DP:
         if (effect->source.value.direct_dp.dp9 > UINT16_C(0x01ff) ||
@@ -296,6 +313,34 @@ ti_c54x_sequencer_apply_address_result(
             return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
         }
         if (current_ar != effect->source.value.ar_long_offset.value_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+        /* The selected AR is the operand source and must be checked before
+         * the copied AR0 dependency, even though AR0 is not written. */
+        read_status = ti_c54x_arch_state_read_ar(
+            state, effect->source.value.ar_reverse_carry.index, &current_ar);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (current_ar != effect->source.value.ar_reverse_carry.value_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+
+        read_status = ti_c54x_arch_state_read_ar(state, UINT8_C(0),
+                                                 &current_ar);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (current_ar !=
+            effect->source.value.ar_reverse_carry.ar0_value_before) {
             return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
         }
         break;

@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 45 immutable evidence records,
-50 requirements, and 39 tests (35 `PASSING`, 4 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 51 immutable evidence records,
+60 requirements, and 45 tests (41 `PASSING`, 4 `PLANNED`).
 
 ## Targets
 
@@ -88,6 +88,12 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S3-13B-P3-29-LONG-OFFSET-WRITE` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §class 13B, `3-29` |
 | `E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/indirect_long_offset.h` anchor `ti_c54x_indirect_long_offset_effect_is_valid` |
 | `E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
+| `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3, `5-13` |
+| `E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.5, `5-18`–`5-19` |
+| `E-TI-C54X-SPRU131G-S5.5.5-T5-9-P5-23-AR0-SYNTAX` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.5, `5-23` |
+| `E-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/foundation/reverse_carry.h` anchor `ti_c54x_reverse_carry_apply16` |
+| `E-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/address/indirect_reverse_carry.h` anchor `ti_c54x_indirect_reverse_carry_word16` |
+| `E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.c` anchor `ti_c54x_sequencer_apply_address_result` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -147,6 +153,18 @@ state before a single write. MOD12 signedness is recorded as `UNRESOLVED` with
 no test link. The MOD13 tests sweep each independent source dimension and add
 representative cross-source vectors; they do not claim a full AR-by-offset
 Cartesian product.
+
+The reverse-carry slice is limited to the documented WORD16 safe domain. The
+Table 5-4 record covers MOD4's old-AR then subtract-AR0 and MOD7's old-AR then
+add-AR0 ordering; it does not claim width scaling or read/write restrictions.
+Section 5.5.3.5 supplies the AR0 power-of-two and bit-15/MSB-toward-bit-0/LSB
+carry propagation used by the foundation primitive. Table 5-9
+records that `*AR0-0B` and `*AR0+0B` are legal syntax only; selected-AR0 alias
+ordering is intentionally unresolved. The project contracts own input
+validation, rejected non-one-hot/zero and unsafe results, and the sequencer's
+single transaction application. Final propagation/wrap, selected-AR0 alias
+ordering, and LONG32 applicability/update remain unresolved and have no
+passing test links.
 
 The private state seed is narrower than the full sequencer reset requirement:
 `REQ-COMMON-ARCH-STATE-RESET-SEED` proves the fixed-width PC/IFR/RC and raw
@@ -219,6 +237,16 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-INDIRECT-LONG-OFFSET-MOD12-SIGNEDNESS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13`, `E-TI-C54X-SPRU131G-S5.5.3.2-P5-14-5-15-LONG-OFFSET-CONTEXT` | — |
 | `REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-INDIRECT-LONG-OFFSET-PLANNER-CONTRACT` | `T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` |
 | `REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | `T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` |
+| `REQ-COMMON-REVERSE-CARRY-PRIMITIVE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/foundation/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY` | `T-COMMON-REVERSE-CARRY-PRIMITIVE` |
+| `REQ-COMMON-INDIRECT-MOD4-REVERSE-CARRY-WORD` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7` | `T-COMMON-INDIRECT-REVERSE-CARRY-WORD` |
+| `REQ-COMMON-INDIRECT-MOD7-REVERSE-CARRY-WORD` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7` | `T-COMMON-INDIRECT-REVERSE-CARRY-WORD` |
+| `REQ-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION` |
+| `REQ-COMMON-INDIRECT-REVERSE-CARRY-BOUNDARY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.2-P5-11`, `E-TI-C54X-SPRU131G-S5.5.3.5-P5-18-5-19-REVERSE-CARRY` | — |
+| `REQ-COMMON-INDIRECT-REVERSE-CARRY-AR0-ALIAS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.5-T5-9-P5-23-AR0-SYNTAX` | — |
+| `REQ-COMMON-INDIRECT-REVERSE-CARRY-LONG32` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD4-MOD7` | — |
+| `REQ-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/foundation/` | `E-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` | `T-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` |
+| `REQ-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` | `T-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` |
+| `REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | `T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` |
 
 ## Tests
 
@@ -267,6 +295,12 @@ exist in the repository.
 | `T-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_long_offset_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_effect_apply"}` | `REQ-COMMON-INDIRECT-LONG-OFFSET-EFFECT-APPLICATION` |
 | `T-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_indirect_long_offset_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_contract"}` | `REQ-PROJECT-INDIRECT-LONG-OFFSET-PLANNER` |
 | `T-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_long_offset_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-LONG-OFFSET-APPLICATION` |
+| `T-COMMON-REVERSE-CARRY-PRIMITIVE` | PASSING | COMMON_TI | `tests/unit/foundation/test_reverse_carry.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.reverse_carry"}` | `REQ-COMMON-REVERSE-CARRY-PRIMITIVE` |
+| `T-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/foundation/test_reverse_carry_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.reverse_carry_contract"}` | `REQ-PROJECT-REVERSE-CARRY-PRIMITIVE-CONTRACT` |
+| `T-COMMON-INDIRECT-REVERSE-CARRY-WORD` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_reverse_carry_word.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_reverse_carry_word"}` | `REQ-COMMON-INDIRECT-MOD4-REVERSE-CARRY-WORD`, `REQ-COMMON-INDIRECT-MOD7-REVERSE-CARRY-WORD` |
+| `T-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_indirect_reverse_carry_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_reverse_carry_contract"}` | `REQ-PROJECT-INDIRECT-REVERSE-CARRY-PLANNER-CONTRACT` |
+| `T-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_reverse_carry_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_reverse_carry_effect_apply"}` | `REQ-COMMON-INDIRECT-REVERSE-CARRY-EFFECT-APPLICATION` |
+| `T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_reverse_carry_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` |
 
 ## Correction and tombstone policy
 

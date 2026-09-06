@@ -30,18 +30,22 @@ OBSERVER_OFF_DIR := $(BUILD_DIR)/observer-off
 OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/foundation/arithmetic40.o \
+	$(BUILD_DIR)/obj/foundation/reverse_carry.o \
 	$(BUILD_DIR)/obj/address/data_operand.o \
 	$(BUILD_DIR)/obj/address/direct_dp.o \
 	$(BUILD_DIR)/obj/address/direct_sp.o \
 	$(BUILD_DIR)/obj/address/indirect_single.o \
 	$(BUILD_DIR)/obj/address/indirect_indexed.o \
 	$(BUILD_DIR)/obj/address/indirect_long_offset.o \
+	$(BUILD_DIR)/obj/address/indirect_reverse_carry.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
 	$(BUILD_DIR)/obj/debug/observer.o
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
 ARITHMETIC_TEST := $(BUILD_DIR)/test_arithmetic40
+REVERSE_CARRY_TEST := $(BUILD_DIR)/test_reverse_carry
+REVERSE_CARRY_CONTRACT_TEST := $(BUILD_DIR)/test_reverse_carry_contract
 DIRECT_DP_TEST := $(BUILD_DIR)/test_direct_dp
 DIRECT_SP_TEST := $(BUILD_DIR)/test_direct_sp
 DIRECT_ADDRESS_CONTRACT_TEST := $(BUILD_DIR)/test_direct_address_contract
@@ -55,6 +59,8 @@ INDIRECT_INDEXED_WORD_TEST := $(BUILD_DIR)/test_indirect_indexed_word
 INDIRECT_INDEXED_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_indexed_contract
 INDIRECT_LONG_OFFSET_MOD13_TEST := $(BUILD_DIR)/test_indirect_long_offset_mod13
 INDIRECT_LONG_OFFSET_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_long_offset_contract
+INDIRECT_REVERSE_CARRY_WORD_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_word
+INDIRECT_REVERSE_CARRY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_contract
 ADDRESS_EFFECT_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_contract
 ARCH_STATE_RESET_TEST := $(BUILD_DIR)/test_arch_state_reset
 ARCH_STATE_KNOWNNESS_TEST := $(BUILD_DIR)/test_arch_state_knownness
@@ -69,6 +75,8 @@ INDIRECT_INDEXED_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_indexed_effect_
 INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_indexed_effect_apply_contract
 INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_long_offset_effect_apply
 INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_long_offset_effect_apply_contract
+INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_effect_apply
+INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_effect_apply_contract
 ADDRESS_EFFECT_STATE_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_state_contract
 ADDRESS_OPERAND_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_operand_apply_contract
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
@@ -81,15 +89,18 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_single.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_indexed.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_long_offset.o \
+	$(OBSERVER_OFF_DIR)/obj/address/indirect_reverse_carry.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_apply.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
+	$(OBSERVER_OFF_DIR)/obj/foundation/reverse_carry.o \
 	$(OBSERVER_OFF_DIR)/obj/state/arch_state.o \
 	$(OBSERVER_OFF_DIR)/obj/cpu/cpu.o \
 	$(OBSERVER_OFF_DIR)/obj/debug/observer.o
 
 all: test
 
-build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
+build: $(CPU_TEST) $(ARITHMETIC_TEST) $(REVERSE_CARRY_TEST) \
+	$(REVERSE_CARRY_CONTRACT_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
 	$(DIRECT_ADDRESS_CONTRACT_TEST) $(DIRECT_SOURCE_APPLY_TEST) \
 	$(DIRECT_SOURCE_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_SINGLE_WORD_TEST) $(ADDRESS_EFFECT_CONTRACT_TEST) \
@@ -97,6 +108,7 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
 	$(INDIRECT_SINGLE_LONG32_TEST) \
 	$(INDIRECT_INDEXED_WORD_TEST) $(INDIRECT_INDEXED_CONTRACT_TEST) \
 	$(INDIRECT_LONG_OFFSET_MOD13_TEST) $(INDIRECT_LONG_OFFSET_CONTRACT_TEST) \
+	$(INDIRECT_REVERSE_CARRY_WORD_TEST) $(INDIRECT_REVERSE_CARRY_CONTRACT_TEST) \
 	$(ARCH_STATE_RESET_TEST) $(ARCH_STATE_KNOWNNESS_TEST) \
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST) $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_APPLY_TEST) $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST) \
@@ -105,6 +117,8 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
 	$(INDIRECT_INDEXED_EFFECT_APPLY_TEST) $(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST) \
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST) \
+	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST) \
+	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST) \
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST) \
 	$(OBSERVER_TEST) \
@@ -113,6 +127,8 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(DIRECT_DP_TEST) $(DIRECT_SP_TEST) \
 test: build quality-test
 	$(CPU_TEST)
 	$(ARITHMETIC_TEST)
+	$(REVERSE_CARRY_TEST)
+	$(REVERSE_CARRY_CONTRACT_TEST)
 	$(DIRECT_DP_TEST)
 	$(DIRECT_SP_TEST)
 	$(DIRECT_ADDRESS_CONTRACT_TEST)
@@ -127,6 +143,8 @@ test: build quality-test
 	$(INDIRECT_INDEXED_CONTRACT_TEST)
 	$(INDIRECT_LONG_OFFSET_MOD13_TEST)
 	$(INDIRECT_LONG_OFFSET_CONTRACT_TEST)
+	$(INDIRECT_REVERSE_CARRY_WORD_TEST)
+	$(INDIRECT_REVERSE_CARRY_CONTRACT_TEST)
 	$(ARCH_STATE_RESET_TEST)
 	$(ARCH_STATE_KNOWNNESS_TEST)
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST)
@@ -140,6 +158,8 @@ test: build quality-test
 	$(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST)
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST)
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST)
+	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST)
+	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST)
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST)
 	$(OBSERVER_TEST)
@@ -176,6 +196,16 @@ $(CPU_TEST): tests/unit/cpu/test_cpu_api.c $(LIB)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
 $(ARITHMETIC_TEST): tests/unit/foundation/test_arithmetic40.c $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(REVERSE_CARRY_TEST): tests/unit/foundation/test_reverse_carry.c \
+	tests/support/test_harness.h $(LIB) src/foundation/reverse_carry.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(REVERSE_CARRY_CONTRACT_TEST): tests/unit/foundation/test_reverse_carry_contract.c \
+	tests/support/test_harness.h $(LIB) src/foundation/reverse_carry.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 
@@ -264,6 +294,20 @@ $(INDIRECT_LONG_OFFSET_MOD13_TEST): tests/unit/address/test_indirect_long_offset
 $(INDIRECT_LONG_OFFSET_CONTRACT_TEST): tests/unit/address/test_indirect_long_offset_contract.c \
 	tests/support/test_harness.h $(LIB) src/address/indirect_long_offset.h \
 	src/address/address_effect.h src/address/data_operand.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
+		$(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_REVERSE_CARRY_WORD_TEST): tests/unit/address/test_indirect_reverse_carry_word.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_reverse_carry.h \
+	src/address/address_effect.h src/foundation/reverse_carry.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
+		$(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_REVERSE_CARRY_CONTRACT_TEST): tests/unit/address/test_indirect_reverse_carry_contract.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_reverse_carry.h \
+	src/address/address_effect.h src/foundation/reverse_carry.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) \
 		$(LDFLAGS) $(LDLIBS) -o $@
@@ -357,6 +401,20 @@ $(INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST): tests/unit/sequencer/test_indirect_lo
 $(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_indirect_long_offset_effect_apply_contract.c \
 	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
 	src/address/indirect_long_offset.h src/address/address_effect.h \
+	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST): tests/unit/sequencer/test_indirect_reverse_carry_effect_apply.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_reverse_carry.h src/address/address_effect.h \
+	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_reverse_carry.h src/address/address_effect.h \
 	src/state/arch_state.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
