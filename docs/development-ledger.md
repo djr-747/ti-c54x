@@ -3664,3 +3664,20 @@ rewritten after publication.
   emulator dependency, or TI/device byte-order claim was added.
 - Follow-up: publish and remotely verify the implementation and completion record,
   then begin P2-W21C under the separate exactly-once resumable transaction owner.
+
+## 2026-09-06 — P2-W21B remote verification
+
+- Published implementation commit:
+  `1ce1ba17aa67b2400c3cf59372737ac2127493a1`.
+- Published completion-record commit:
+  `407eb42a20bf33f2b859d09fa416820257323e65`.
+- GitHub Actions run
+  [34030415491](https://github.com/djr-747/ti-c54x/actions/runs/34030415491)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream
+  package-consumer smoke tests, and Clang sanitizer configure/build/test.
+- Result: P2-W21B is published and green on every repository-owned build surface.
+  The private codec remains outside the public ABI and CPU execution path, and no
+  physical byte order is implied. P2-W21C may now begin under the separate
+  resumable exactly-once transaction owner.
