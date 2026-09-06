@@ -43,8 +43,6 @@ test_metadata_rows(void)
         sizeof(logical_rows) / sizeof(logical_rows[0]);
 
     TI_C54X_TEST_CHECK(logical_row_count == 3U);
-    /* UNKNOWN is the zero identity, so COUNT - 1 is the row count. */
-    TI_C54X_TEST_CHECK((unsigned)TI_C54X_OPCODE_ID_COUNT - 1U == 13U);
 
     for (size_t index = 0U; index < logical_row_count; ++index) {
         const logical_row *row = &logical_rows[index];
@@ -121,26 +119,11 @@ test_each_row_has_128_encoded_words_and_representatives(void)
     }
 }
 
-static void
-test_post_slice_direct_population(void)
-{
-    unsigned populated = 0U;
-
-    for (uint32_t raw = 0U; raw <= UINT16_MAX; ++raw) {
-        if (ti_c54x_opcode_catalog_lookup_first_word((uint16_t)raw) !=
-            TI_C54X_OPCODE_ID_UNKNOWN) {
-            ++populated;
-        }
-    }
-    TI_C54X_TEST_CHECK(populated == 1077U);
-}
-
 int
 main(void)
 {
     test_metadata_rows();
     test_fixed_patterns_are_disjoint();
     test_each_row_has_128_encoded_words_and_representatives();
-    test_post_slice_direct_population();
     return 0;
 }

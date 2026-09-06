@@ -10,4 +10,6 @@ $(eval $(call ti_c54x_add_test,cpu_cmpl,cpu,test_cpu_cmpl.c))
 $(eval $(call ti_c54x_add_test,cpu_rol_ror,cpu,test_cpu_rol_ror.c))
 $(eval $(call ti_c54x_add_test,cpu_sftl,cpu,test_cpu_sftl.c))
 $(eval $(call ti_c54x_add_test,cpu_logical_accumulator,cpu,test_cpu_logical_accumulator.c))
+$(eval $(call ti_c54x_add_test,cpu_roltc,cpu,test_cpu_roltc.c))
+$(eval $(call ti_c54x_add_test,cpu_sftc,cpu,test_cpu_sftc.c))
 include tests/unit/cpu/input/tests.mk

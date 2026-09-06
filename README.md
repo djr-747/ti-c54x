@@ -22,19 +22,19 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover 13 declarative one-word
+- Production decode and CPU execution now cover 15 declarative one-word
   opcode rows: evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
-  `ROR`, `SFTL`, `AND`, `OR`, and `XOR`. The logical families add 384
+  `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, and `SFTC`. The logical families
+  add 384
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
-  preserve C and all other status. Those rows expand to 1077 populated
+  preserve C and all other status. Those rows expand to 1081 populated
   first-word encodings; that is a lookup-population count, not instruction
   count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
-  extraction, dispatch, PC staging, and retirement are green under the full
-  local and remote standalone gates. Repeatability and machine timing remain
-  unresolved; no `cpu.c`, public API, architectural state, memory, RPT/IRQ, or
-  timing change was needed.
+  extraction, dispatch, PC staging, and retirement are covered by the standalone
+  test surfaces. Repeatability and machine timing remain unresolved; no `cpu.c`,
+  public API, memory, RPT/IRQ, or timing change was needed for the two new rows.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -56,9 +56,20 @@ Current progress:
   local P2-W26 gate is green. No `cpu.c` change, public API, memory,
   RPT/IRQ, or timing claim was added; reset-runnable coverage is four of 13
   rows.
-- The registry now records 105 evidence items, 149 requirements (120 implemented,
-  9 planned, 20 unresolved), and 109 tests (100 passing, 9 planned). P2-W27's
-  full local and remote implementation validation is green. The latest clean
+- P2-W28A establishes typed TC status access, resource-driven TC collection, and
+  an atomic value-owned C+TC status delta; the full local gate is green and
+  [remote CI is green](https://github.com/djr-747/ti-c54x/actions/runs/34058489923).
+  P2-W28B adds the
+  ROLTC/SFTC handlers and CPU proofs through the existing generic path: targeted
+  local checks, independent review, and the full `make test` gate are green.
+  Catalog coverage is now
+  15 rows/1081 populated encodings with reset-runnable coverage at 4/15; no
+  `cpu.c`, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment
+  change was added. The central generator schema was minimally extended for TC
+  resource tokens. Repeatability remains unresolved; the distinct SFTC
+  guard-only-plus-low32-zero behavior boundary is also unresolved.
+- The registry now records 110 evidence items, 162 requirements (131 implemented,
+  9 planned, 22 unresolved), and 120 tests (111 passing, 9 planned). The latest clean
   catalog-thirteen hosted performance record is captured at `ef87c94` (CI
   [green](https://github.com/djr-747/ti-c54x/actions/runs/34055843312)): NOP
   121.420 ns / 8.236 MIPS, LD-DP 209.005 ns / 4.785 MIPS, LD-ASM 202.901 ns /

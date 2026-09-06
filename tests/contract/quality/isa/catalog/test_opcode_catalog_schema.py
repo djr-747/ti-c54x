@@ -35,8 +35,12 @@ REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 RESOURCES_STATUS_C = "TI_C54X_INPUT_RESOURCES_STATUS_C"
+RESOURCES_STATUS_TC = "TI_C54X_INPUT_RESOURCES_STATUS_TC"
 RESOURCES_ACCUMULATORS_STATUS_C = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
+)
+RESOURCES_ACCUMULATORS_STATUS_TC = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC"
 )
 
 
@@ -175,7 +179,9 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
 
     def test_input_resource_tokens_are_namespaced_and_known(self) -> None:
         for resource in (RESOURCES_ACCUMULATORS, RESOURCES_STATUS_C,
-                         RESOURCES_ACCUMULATORS_STATUS_C):
+                         RESOURCES_STATUS_TC,
+                         RESOURCES_ACCUMULATORS_STATUS_C,
+                         RESOURCES_ACCUMULATORS_STATUS_TC):
             with self.subTest(resource=resource):
                 rows = parse_catalog(
                     f"TI_C54X_OPCODE_EXACT(ACC, acc, 0x1234, 1, {LAYOUT_NONE}, "

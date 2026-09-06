@@ -18,7 +18,9 @@
 #include "load/op_ld_status_fields.h"
 #include "op_nop.h"
 #include "rotate/op_rotate.h"
+#include "rotate/op_roltc.h"
 #include "shift/op_shift.h"
+#include "shift/op_sftc.h"
 #include "logical/op_logical.h"
 
 /* The catalog handler token remains part of the X-macro consumer contract:

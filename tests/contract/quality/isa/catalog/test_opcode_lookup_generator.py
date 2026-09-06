@@ -106,7 +106,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 1077)
+        self.assertEqual(actual.count("= (uint16_t)"), 1081)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
@@ -118,6 +118,10 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         self.assertIn("[0xF591] = (uint16_t)TI_C54X_OPCODE_ID_ROL_ACC,", actual)
         self.assertIn("[0xF490] = (uint16_t)TI_C54X_OPCODE_ID_ROR_ACC,", actual)
         self.assertIn("[0xF590] = (uint16_t)TI_C54X_OPCODE_ID_ROR_ACC,", actual)
+        self.assertIn("[0xF492] = (uint16_t)TI_C54X_OPCODE_ID_ROLTC_ACC,", actual)
+        self.assertIn("[0xF592] = (uint16_t)TI_C54X_OPCODE_ID_ROLTC_ACC,", actual)
+        self.assertIn("[0xF494] = (uint16_t)TI_C54X_OPCODE_ID_SFTC_ACC,", actual)
+        self.assertIn("[0xF594] = (uint16_t)TI_C54X_OPCODE_ID_SFTC_ACC,", actual)
         for word in ("F0E0", "F0FF", "F1E0", "F1FF", "F2E0", "F2FF",
                      "F3E0", "F3FF"):
             with self.subTest(word=word):

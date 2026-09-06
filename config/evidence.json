@@ -3541,7 +3541,7 @@
     },
     {
       "id": "REQ-COMMON-ROLTC-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3551,7 +3551,7 @@
     },
     {
       "id": "REQ-COMMON-ROLTC-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3561,7 +3561,7 @@
     },
     {
       "id": "REQ-COMMON-ROLTC-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/rotate/",
@@ -3571,7 +3571,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-ROLTC-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3581,7 +3581,7 @@
     },
     {
       "id": "REQ-COMMON-SFTC-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3591,7 +3591,7 @@
     },
     {
       "id": "REQ-COMMON-SFTC-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3601,7 +3601,7 @@
     },
     {
       "id": "REQ-COMMON-SFTC-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/shift/",
@@ -3611,7 +3611,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-SFTC-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -4578,66 +4578,66 @@
     },
     {
       "id": "T-COMMON-ROLTC-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_roltc_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.roltc_metadata"},
       "requirement_ids": ["REQ-COMMON-ROLTC-ENCODINGS"]
     },
     {
       "id": "T-COMMON-ROLTC-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_roltc_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.roltc_decode"},
       "requirement_ids": ["REQ-COMMON-ROLTC-DECODE"]
     },
     {
       "id": "T-COMMON-ROLTC-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/rotate/test_roltc.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.roltc"},
       "requirement_ids": ["REQ-COMMON-ROLTC-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-ROLTC",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_roltc.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_roltc"},
       "requirement_ids": ["REQ-PROJECT-CPU-ROLTC-RETIREMENT"]
     },
     {
       "id": "T-COMMON-SFTC-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_sftc_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftc_metadata"},
       "requirement_ids": ["REQ-COMMON-SFTC-ENCODINGS"]
     },
     {
       "id": "T-COMMON-SFTC-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_sftc_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftc_decode"},
       "requirement_ids": ["REQ-COMMON-SFTC-DECODE"]
     },
     {
       "id": "T-COMMON-SFTC-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/shift/test_sftc.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftc"},
       "requirement_ids": ["REQ-COMMON-SFTC-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-SFTC",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_sftc.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_sftc"},
       "requirement_ids": ["REQ-PROJECT-CPU-SFTC-RETIREMENT"]
     }
   ]
