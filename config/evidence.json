@@ -1418,6 +1418,84 @@
         "anchor": "P2-W22: immediate status-field LD vertical slice (implemented; local verification green)"
       },
       "assertion": "P2-W22 is one atomic end-to-end vertical slice for three one-word immediate LD status-field forms. It introduces only the status-register subownership/effect transaction and CPU state-observation/atomic-retirement seams required by these forms. It adds no memory, bus transaction, timing, repeat/IRQ, accumulator, device, or emulator behavior and does not treat binutils corroboration as normative evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAX-MIN-FORMS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "MAX and MIN",
+        "printed_page_start": "4-99",
+        "printed_page_end": "4-100"
+      },
+      "assertion": "The MAX and MIN instruction descriptions define one-word Class 1 accumulator forms with destination bit D. Their opcode diagrams derive MAX value 0xF486/mask 0xFEFF and MIN value 0xF487/mask 0xFEFF; D=0 and D=1 select the two destination accumulators. No cycle or pipeline claim is adopted from the summary."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAX-MIN-EFFECTS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "MAX and MIN",
+        "printed_page_start": "4-99",
+        "printed_page_end": "4-100"
+      },
+      "assertion": "MAX selects A when A is greater than or equal to B and otherwise selects B; MIN selects A when A is less than or equal to B and otherwise selects B. In both forms the selected value is written only to dst, ties select A, and C is cleared for an A selection or set for a B selection. No other status-bit effect is specified by these entries."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.3",
+        "printed_page_start": "2-8",
+        "printed_page_end": "2-8"
+      },
+      "assertion": "SPRU131G §2.3 states that the C54x performs two's-complement arithmetic with a 40-bit ALU and two 40-bit accumulators, and identifies guard bits 39–32 plus high and low words. MAX/MIN vectors therefore retain the full signed 40-bit value, including guard bits, rather than narrowing to a 16- or 32-bit view."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-MAX-MIN-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeat section states that instructions listed in Table 2-28 cannot be repeated with RPT or RPTZ; MAX and MIN are not listed. The source does not provide a positive all-unlisted-forms rule, so this record is a repeatability boundary only and does not authorize an ELIGIBLE classification."
+    },
+    {
+      "id": "E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)"
+      },
+      "assertion": "P2-W23 freezes a planned, standalone MAX/MIN vertical slice with four one-word encodings, decode-owned destination extraction, pure compare/select handlers, state-owned full 40-bit accumulators, a transactional sequencer effect, and CPU-owned atomic retirement. It claims no production implementation, repeatability, machine timing, memory, bus, device, emulator, RPT, or IRQ behavior; GNU binutils corroboration remains nonnormative and is not copied or vendored."
     }
   ],
   "requirements": [
@@ -2804,6 +2882,66 @@
       "claim": "The CPU-owned vertical-slice seam observes a validated P2-W22 status-field effect and commits exactly one DP, ASM, or ARP update atomically at instruction retirement. ti_c54x_state may grow observation fields before stability; these fields do not define a raw snapshot or persistence ABI and no stable persistence guarantee is made. This is a project transaction contract, not a timing, memory, interrupt, or device claim.",
       "evidence_ids": ["E-PROJECT-P2-W22-LD-STATUS-VERTICAL-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-LD-STATUS-FIELDS"]
+    },
+    {
+      "id": "REQ-COMMON-MAX-MIN-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode MAX and MIN as four exact one-word encodings derived from the TI opcode diagrams: MAX 0xF486/0xFEFF and MIN 0xF487/0xFEFF, with D=0 selecting A and D=1 selecting B. Reject mask near-misses and preserve the canonical decoded instruction transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-MAX-MIN-FORMS"],
+      "test_ids": ["T-COMMON-MAX-MIN-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-MAX-MIN-SELECTION-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Produce a value-owned MAX/MIN compare-select effect over signed full 40-bit A/B values, including guard bits: MAX selects A on A>=B and MIN selects A on A<=B, ties included; the selected value targets D, C is 0 for A and 1 for B, and no other architectural field is changed.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-MAX-MIN-EFFECTS", "E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT"],
+      "test_ids": ["T-COMMON-MAX-MIN-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/accumulator/",
+      "claim": "Validate and apply one value-owned MAX/MIN accumulator effect only at retirement. The handler receives a copied, read-only A/B input snapshot and owns compare/select correctness; the effect carries no source snapshots. The sequencer validates only destination, a canonical 40-bit two's-complement selected value, and one-bit C before atomically committing the candidate accumulator plus C state; structurally invalid or rejected effects preserve both accumulators and C.",
+      "evidence_ids": ["E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-MAX-MIN-EFFECT-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/accumulator/",
+      "claim": "Own canonical full-40-bit A/B accumulator storage with checked internal read/write, explicit knownness, unknown-after-common-reset behavior, rejection nonmutation, and cross-accumulator isolation. This private state seam does not introduce a premature public set-state or bootstrap API.",
+      "evidence_ids": ["E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-MAX-MIN-ACCUMULATOR-STATE"]
+    },
+    {
+      "id": "REQ-PROJECT-MAX-MIN-CPU-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Before dispatch, obtain a checked immutable A/B input snapshot through the accumulator state owner. If either source is unknown, stop with INVALID_STATE without retirement or mutation; otherwise execute each MAX/MIN destination encoding through the public CPU path with one attempt and one retirement, sequential PC +1, destination-only accumulator mutation, exact C result, and unknown-word stop. CPU tests may seed through the state owner's checked internal API; no public set-state/bootstrap API is implied, and no timing or memory behavior is claimed.",
+      "evidence_ids": ["E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-MAX-MIN"]
+    },
+    {
+      "id": "REQ-COMMON-MAX-MIN-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "MAX and MIN repeatability is unresolved: TI Table 2-28 does not list them, but its preamble does not state that every unlisted instruction is repeatable. Do not classify either form as ELIGIBLE until positive evidence or an explicit project policy resolves this boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-MAX-MIN-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -3541,6 +3679,46 @@
       "path": "tests/unit/cpu/test_cpu_ld_status_fields.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_status_fields"},
       "requirement_ids": ["REQ-PROJECT-LD-CPU-STATE-OBSERVATION-RETIRE"]
+    },
+    {
+      "id": "T-COMMON-MAX-MIN-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_max_min_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-MAX-MIN-DECODE"]
+    },
+    {
+      "id": "T-COMMON-MAX-MIN-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_max_min.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-MAX-MIN-SELECTION-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-MAX-MIN-EFFECT-TRANSACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/accumulator/test_max_min_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-MAX-MIN-ACCUMULATOR-STATE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/accumulator/test_accumulator_state.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE"]
+    },
+    {
+      "id": "T-PROJECT-CPU-MAX-MIN",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_max_min.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MAX-MIN-CPU-RETIREMENT"]
     }
   ]
 }

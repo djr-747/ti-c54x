@@ -57,6 +57,7 @@ function-pointer dispatch tables.
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
+| P2-W23 MAX/MIN accumulator vertical slice | Planned — contract frozen; implementation not started | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | Hosted performance history | Implemented — full local and remote gates green; initial clean baseline recorded at `aa0afc0` | Observer-off end-to-end throughput capture with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -842,9 +843,62 @@ stable persistence guarantee is made. The mirrored tests are
 `ti_c54x.cpu_ld_status_fields`; the full local and remote gates are green.
 No memory/bus transaction, timing, RPT/IRQ, accumulator, device, or emulator work
 is part of this slice; any status-bank split and generic effect commit exist only
-because these opcodes require them. The local registry is 82 immutable evidence
-records, 122 requirements (98 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and
-87 tests (78 `PASSING`, 9 `PLANNED`); the full local and remote gates are green.
+because these opcodes require them. The local registry is 87 immutable evidence
+records, 128 requirements (98 `IMPLEMENTED`, 14 `PLANNED`, 16 `UNRESOLVED`), and
+92 tests (78 `PASSING`, 14 `PLANNED`); the full local and remote gates are green.
+
+### P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)
+
+P2-W23 is the next narrow accumulator-only ISA slice. It freezes the contract and
+test ownership before any production row or state/effect implementation lands:
+
+- `MAX dst` registers `MAX_ACC` as `0xF486/0xFEFF`; `MIN dst` registers
+  `MIN_ACC` as `0xF487/0xFEFF`. Each mask leaves only destination bit D variable,
+  yielding exactly four one-word encodings: D=0 targets A (`0xF486`/`0xF487`)
+  and D=1 targets B (`0xF586`/`0xF587`). TI's operation text selects A on
+  `A >= B` for MAX and `A <= B` for MIN, including ties; the selected value is
+  written to `dst`, C is 0 for an A selection and 1 for a B selection, and C is
+  the only status bit changed. The other accumulator is unchanged.
+- A and B are signed, full 40-bit accumulator values including guard bits. Tests
+  must cover zero, positive/negative ordering, ties, sign-bit and guard-bit
+  boundaries, both destinations, and preservation of the non-destination value.
+  The exact four encodings and all mask near-misses are decode-test vectors;
+  semantic vectors are exhaustive over destination/operation/tie relation and
+  representative full-width accumulator boundaries.
+- Ownership mirrors the tree: `src/isa/catalog/` owns the two declarative rows;
+  `src/isa/decode/` owns an accumulator destination layout and raw extraction;
+  `src/isa/ops/compare/` owns thin MAX/MIN handlers that receive a copied,
+  read-only A/B input snapshot, perform the signed compare/select, and return a
+  value-owned effect; `src/state/accumulator/` owns canonical full-40-bit A/B
+  storage, checked access, and knownness; `src/sequencer/accumulator/` validates
+  only the effect payload structure and atomically applies the candidate
+  accumulator plus C state once; `src/cpu/` owns checked snapshot acquisition,
+  fetch/dispatch/retire integration. Anticipated tests mirror those owners
+  under `tests/unit/isa/decode/`, `tests/unit/isa/ops/compare/`,
+  `tests/unit/state/accumulator/`, `tests/unit/sequencer/accumulator/`, and
+  `tests/unit/cpu/`.
+- The effect is transactional: handlers do not mutate state and do not place
+  source snapshots in the effect. The sequencer does not re-run MAX/MIN
+  comparison; it validates only destination, a canonical 40-bit two's-complement
+  selected value, and one-bit C before one retirement commit. Structurally
+  invalid or rejected effects leave every named field unchanged. Before dispatch,
+  the CPU obtains a checked, immutable A/B snapshot; unknown source state stops
+  with `INVALID_STATE` without
+  retirement or mutation. CPU tests may seed state through the accumulator
+  owner's checked internal API before invoking the public execution path;
+  no premature public set-state/bootstrap API is introduced. The CPU proof
+  checks one attempt/retire, sequential PC +1, destination-only mutation, C
+  result, and unknown-word stop.
+
+TI `SPRU172C` §4 MAX/MIN (printed pp. 4-99–4-100) is the normative form and
+effect evidence; TI `SPRU131G` §2.3 (printed p. 2-8) is the normative
+40-bit-accumulator/guard-bit evidence. GNU
+binutils 2.42 commit `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e`,
+`opcodes/tic54x-opc.c:358–359`, is nonnormative encoding corroboration only and
+must not be copied or vendored. Table 2-28's preamble/list does not positively
+authorize MAX/MIN repetition, so repeatability stays `UNRESOLVED`; no machine
+cycle or pipeline timing claim is admitted. No memory/bus/device/emulator/RPT/IRQ
+behavior is part of this work piece.
 
 ### Hosted performance history (implemented; local and remote gates green)
 
