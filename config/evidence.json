@@ -2387,7 +2387,7 @@
     },
     {
       "id": "REQ-PROJECT-RPT-IMMEDIATE-EFFECT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/repeat/",
@@ -3082,10 +3082,10 @@
     },
     {
       "id": "T-PROJECT-RPT-IMMEDIATE-EFFECT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/repeat/test_rpt_immediate_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rpt_immediate_effect"},
       "requirement_ids": ["REQ-PROJECT-RPT-IMMEDIATE-EFFECT"]
     },
     {

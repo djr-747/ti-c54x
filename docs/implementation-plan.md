@@ -50,7 +50,7 @@ function-pointer dispatch tables.
 | RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
-| Typed immediate-RPT effect (P2-W20D) | Active | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
+| Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -450,11 +450,12 @@ byte-for-byte unchanged. P2-W20D is next and may build the typed value-owned
 `REPEAT_START` operation against these layouts, but it may not activate a production
 RPT row until generic effect consumption is coherent.
 
-#### P2-W20D: typed immediate-RPT effect (active)
+#### P2-W20D: typed immediate-RPT effect (complete)
 
-State: active as one project-contract TDD proof. This work piece does not implement
-or close the common TI RPT operation requirement; it prepares the value boundary
-that later state/sequencer integration can consume.
+State: implemented and green in commit
+`f4a445ccd8d6bb54d791c86f12066409fc0c6cef`. This project-contract TDD proof does
+not implement or close the common TI RPT operation requirement; it prepares the
+value boundary that later state/sequencer integration can consume.
 
 `src/isa/ops/repeat/` owns a pure immediate-RPT effect builder and its mirrored
 test subtree. Its input is a borrowed, copied `ti_c54x_operand_field_value` already
@@ -481,6 +482,15 @@ dispatch path, or CPU behavior. The existing common RPT decode and operation
 requirements remain `PLANNED`; RC mutation/decrement, operand+1 cardinality,
 repeat-body eligibility, IRQ/NMI/IFR/reset admission, repeated-body PC flow, timing,
 memory, profiles, and emulator integration remain outside W20D.
+
+The completed module accepts only copied field values, appends an explicit
+`INVALID_OPERAND` status without renumbering existing statuses, and commits a named
+value-owned effect payload only after validating the 8- or 16-bit shape and raw
+range. The operation retains no pointer and imports no catalog, decoded-instruction,
+state, bus, observer, or host surface. Source and tests live in mirrored repeat-family
+subtrees with owner-local manifests. P2-W20E is next and owns pure single-repeat
+cardinality, body admission, and request-admission policy; W20D does not precompute
+those decisions.
 
 ## Delivery order
 

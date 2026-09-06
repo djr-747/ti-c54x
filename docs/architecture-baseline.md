@@ -339,6 +339,16 @@ identities are inert: `0xEC00` and `0xF070` still decode as unknown production w
 and the generated direct lookup is unchanged. The next owner is the pure RPT
 operation/effect slice, not CPU opcode-specific control flow.
 
+P2-W20D now implements that effect boundary as a project contract under the
+repeat-operation family. A pure builder accepts only an already extracted copied
+8-bit K or 16-bit lk field and emits a named, discriminated `REPEAT_START` payload
+containing the exact `uint16_t` operand. It does not accept an opcode identity,
+decoded-instruction carrier, encoded word, state pointer, or bus, so it cannot own
+decode masks or mutate architectural state. It also does not add operand+1;
+cardinality belongs to the single-repeat sequencer. Existing production dispatch
+and CPU execution remain NOP-only, and the common TI RPT operation requirement
+remains planned until the effect has a proven generic consumer.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner

@@ -3164,3 +3164,55 @@ rewritten after publication.
 - Result: the scope-safe W20D project effect contract, repeat-family ownership tree,
   TDD matrix, and no-production-activation gate are published and green. The bounded
   Luna implementation is next.
+
+## 2026-09-06 — P2-W20D completion — typed immediate-RPT effect
+
+- State: implemented and green. Implementation commit:
+  `f4a445ccd8d6bb54d791c86f12066409fc0c6cef`
+  (`P2-W20D: add typed RPT effect`). The project effect requirement is complete;
+  the common TI decode and operation requirements remain planned.
+- TDD red: the new nested repeat-family test and manifests landed first; its focused
+  build failed because the registered `op_rpt_immediate` object did not yet exist.
+  The same test became green only after the owned effect and operation modules were
+  implemented.
+- Effect result: the private discriminated carrier now supports `NONE` and a named
+  `REPEAT_START` payload with one copied `uint16_t` operand. No operand+1 cardinality,
+  RC/state pointer, PC, interrupt, timing, memory, or bus field enters the value.
+  NOP and generic dispatch stage the expanded effect from zeroed values.
+- Operation result: `ti_c54x_op_rpt_immediate_from_field()` accepts only a borrowed
+  copied operand-field value and caller-owned output. Nulls return
+  `INVALID_ARGUMENT`; nonnull unsupported widths or raw values outside their 8/16-bit
+  shape return the appended `INVALID_OPERAND` status. Every failure preserves output
+  bytes, success copies the exact operand, and no pointer is retained.
+- Ownership: the first opcode-family subowner lives under `src/isa/ops/repeat/` with
+  a mirrored `tests/unit/isa/ops/repeat/` subtree. Parent Make/CMake manifests only
+  aggregate the child manifests; the operation imports no catalog, decoded
+  instruction, CPU, state, bus, observer, diagnostic, or host dependency.
+- Proof: the project test composes W20C2 layout resolution/extraction for K and lk
+  minimum, interior, and maximum vectors, then proves exact effect kind/payload,
+  input nonmutation, copied lifetime, invalid widths/ranges, typed statuses, and
+  byte-transactional failures. Existing NOP, decode, layout, CPU, and observer tests
+  remain regressions.
+- Independent Luna review: clean, with no blocker, major, minor, C11 object-model,
+  ownership, manifest, transactionality, range, activation, or test-coverage
+  finding. The main review named the payload types and removed cross-owner and
+  bytewise-success-padding assertions from the repeat-family test.
+- Size/shape: effect/status headers are 45/29 lines, repeat operation source/header
+  are 42/33, and its focused proof is 162. No handwritten owner approaches the
+  500-line review threshold.
+- Registry final: 2 targets, 7 sources, 72 evidence records, and 107 requirements
+  (84 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`); 74 tests (66 `PASSING`, 8
+  `PLANNED`). `T-PROJECT-RPT-IMMEDIATE-EFFECT` runs as
+  `ti_c54x.rpt_immediate_effect` in both supported build systems.
+- Validation: focused normal and ASan/UBSan repeat-effect tests passed. The frozen
+  full `make -B test` gate passed 163 Python quality tests, 61 C unit targets, and
+  62 direct executions including the minimal consumer. Nested manifest parity,
+  source boundaries, evidence, knobs, observer-off artifact, generated lookup
+  staleness, and `git diff --check` passed.
+- Isolation: no production RPT row, lookup change, dispatch-table registration, CPU
+  behavior, RC/state mutation, repeat cardinality, repeat PC, body eligibility,
+  IRQ/NMI/IFR/reset policy, bus fetch, machine cycles, shared memory, profile, public
+  API, observer, diagnostic, knob, environment read, allocator, mutable global,
+  emulator dependency, or external implementation was introduced.
+- Follow-up: publish and remotely verify W20D, then begin P2-W20E as the pure
+  `src/sequencer/repeat/` owner without activating production RPT decode prematurely.
