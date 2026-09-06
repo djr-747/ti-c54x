@@ -32,9 +32,11 @@ fetch helper and width-aware program-PC span/commit seams are covered by focused
 CPU and sequencer tests. It adds no production opcode, handler, catalog row, or
 CPU count-two retirement integration. P2-W20A is complete: TI evidence now pins the
 two immediate RPT forms, operand+1 execution cardinality, repeatability rules, and
-post-decode IRQ/NMI deferral with the reset exception. P2-W20B is active, moving one
-canonical copied instruction bundle through fetch, complete decode, and dispatch
-while preserving NOP behavior. The broader implementation is split
+post-decode IRQ/NMI deferral with the reset exception. P2-W20B is implemented and
+green: one decode-owned copied instruction bundle now moves through fetch, checked
+completion, and generic dispatch while preserving one-callback NOP behavior. The
+CPU gained no opcode-specific branch. P2-W20C catalog-bound operand layout and
+repeatability metadata is next. The broader implementation is split
 into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
 guessed. Timing, shared-memory mutation, the full ISA, device profiles, and

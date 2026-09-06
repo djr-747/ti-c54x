@@ -273,7 +273,7 @@ CPU tests remain regression gates, and both new tests pass under their owner-loc
 runners. The boundary matrix explicitly admits `0xfffd + 2 = 0xffff` and rejects
 `0xfffe + 2` as unresolved, alongside count zero and all widths through 255.
 
-### RPT transaction architecture (P2-W20A active kickoff)
+### RPT transaction architecture (P2-W20A complete; P2-W20B implemented)
 
 P2-W20A pins the first difficult ISA slice before implementation. TI
 `SPRU172C` establishes the two immediate forms: one-word `RPT #K` matches
@@ -306,6 +306,14 @@ phase and final RC, repeated-body PC hold/reload and final PC, and arbitration o
 a request already pending before RPT decode. CPU repeat retirement cannot land
 until these are resolved. Machine-cycle cost and detailed pipeline behavior stay
 outside this functional slice.
+
+P2-W20B now implements the first seam as a decode-owned, copied instruction bundle
+with an explicit helper capacity rather than an ISA-wide size claim. CPU fetch
+populates it, completion validates it transactionally against the sole catalog, and
+generic dispatch consumes it. This preserves one-callback NOP execution and adds no
+opcode-identity branch to CPU orchestration. Catalog activation for RPT remains
+deferred until its typed effect has a generic consumption contract, avoiding an
+intermediate decode-success/CPU-`INVALID_STATE` architecture.
 
 ## Single-indirect address-effect slice
 

@@ -2836,3 +2836,43 @@ rewritten after publication.
   dependency is introduced.
 - Follow-up: implement through explicitly split decode, CPU, and opcode owners;
   main reviews and commits after the full standalone gate.
+
+## 2026-09-06 — P2-W20B completion — canonical complete-instruction bundle
+
+- State: implemented and green. Implementation commit:
+  `00700d5dd8bd72b711a5cb8ad1147efd5198a92c`
+  (`P2-W20B: add canonical instruction bundle`).
+- TDD result: the planned decode-owned bundle proof covers successful copied-value
+  completion, no retained caller storage, every public validation dimension, and
+  byte-preserving transactional failures. Existing extension-fetch, NOP dispatch,
+  CPU transaction/counter, PC, and observer tests remain green.
+- Ownership: `src/isa/decode/instruction_bundle.h` owns only the fixed-capacity
+  value carrier; `opcode_decode.[ch]` owns checked completion; `src/cpu/` owns bus
+  population and orchestration; `src/isa/ops/` consumes the complete value. The CPU
+  pipeline is first fetch, first-word decode, extension fetch, completion, generic
+  dispatch, width-aware PC commit, then retirement. It contains no opcode-ID branch.
+- Compatibility: NOP remains the only production opcode and performs exactly one
+  bus callback, one attempt, one retirement, and one-word PC advance. First-word
+  decode and the public API are unchanged; no RPT behavior is claimed.
+- Independent Luna review: no blocker, major, correctness, ownership, manifest,
+  undefined-behavior, or padding issue. Some validation is intentionally repeated
+  at completion, dispatch, and the NOP boundary; a generated trusted fast path may
+  remove this only after broader ISA proof makes the invariant measurable.
+- Size/shape: the new carrier is 38 lines; complete-decode source/header are 103/76
+  lines; CPU is 335 lines; fetch is 54; NOP/dispatch are 46/75. No handwritten owner
+  approaches the 500-line review threshold and the directory hierarchy mirrors
+  responsibility.
+- Registry final: 2 targets, 7 sources, 72 immutable evidence records, and 105
+  requirements (81 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`); 72 tests (63
+  `PASSING`, 9 `PLANNED`). `T-PROJECT-CANONICAL-INSTRUCTION-BUNDLE` runs as
+  `ti_c54x.instruction_bundle` under both supported build systems.
+- Validation: focused normal and ASan/UBSan owner tests passed; full main validation
+  `make -B test` passed with 161 Python quality tests, 58 C unit targets, and 59
+  direct executions including the minimal consumer. Evidence, source-boundary,
+  manifest, knob, observer-off artifact, and `git diff --check` gates passed.
+- Isolation: no environment read or `getenv`, allocator, logging, diagnostic, knob,
+  mutable global, timing API, memory mutation, emulator dependency, or external
+  source/table/comment/test was introduced.
+- Follow-up: publish and remotely verify P2-W20B, then begin P2-W20C. Operand-layout
+  and repeatability metadata must land without transiently registering an RPT row
+  that decodes successfully but can only terminate the CPU as `INVALID_STATE`.

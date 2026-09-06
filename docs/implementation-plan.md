@@ -48,7 +48,7 @@ function-pointer dispatch tables.
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
 | RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
-| Canonical complete-instruction bundle (P2-W20B) | Active | One decode-owned copied bundle becomes the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
+| Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -301,10 +301,9 @@ XPC, or emulator integration.
 
 ### P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)
 
-State: active documentation and evidence contract. No production opcode, handler,
-CPU behavior, or build surface changes in this kickoff. The first implementation
-slice is P2-W20B, the canonical instruction-bundle seam; direct RPT handler or CPU
-integration work cannot precede it.
+State: evidence and architecture contract complete. P2-W20B has implemented the
+canonical instruction-bundle seam without adding an RPT opcode. Direct RPT handler
+or CPU integration work remains gated by the later owner-specific proof slices.
 
 The immediate forms are frozen from TI primary evidence:
 
@@ -331,10 +330,13 @@ Implementation is deliberately split along the ownership hierarchy:
 2. P2-W20C binds immutable operand-layout and repeatability tokens through the sole
    catalog. Layout owners reuse the checked field extractor, and opcode handlers
    never hand-mask instruction words.
-3. P2-W20D registers the two immediate catalog rows and adds a focused RPT
-   operation. It emits a discriminated, value-owned `REPEAT_START` effect carrying
-   the exact operand and never mutates state, PC, interrupt state, memory, buses,
-   observers, or diagnostics.
+3. P2-W20D adds a focused RPT operation and proves both immediate layouts without
+   making a partially integrated RPT row executable by the production CPU. It emits
+   a discriminated, value-owned `REPEAT_START` effect carrying the exact operand and
+   never mutates state, PC, interrupt state, memory, buses, observers, or diagnostics.
+   Production catalog activation must be atomic with a generic effect-consumption
+   path or an explicit unsupported-effect contract; a transient decode-success then
+   `INVALID_STATE` CPU behavior is forbidden.
 4. P2-W20E adds `src/sequencer/repeat/` as the pure single-repeat owner. Its internal
    cardinality is at least 17 bits (implemented with `uint32_t`) so `0xffff + 1`
    represents 65536 without wrap. It owns body eligibility and the generic
@@ -357,7 +359,10 @@ also remains outside the active timing contract. These gaps do not weaken the
 proven cardinality or post-decode interrupt gate; they prevent premature CPU
 integration.
 
-#### P2-W20B: canonical complete-instruction bundle (active kickoff)
+#### P2-W20B: canonical complete-instruction bundle (complete)
+
+Implementation commit:
+`00700d5dd8bd72b711a5cb8ad1147efd5198a92c`.
 
 This work piece moves the current two-word helper bundle type from CPU ownership to
 `src/isa/decode/` and adds a checked complete-instruction binding without changing
@@ -379,6 +384,13 @@ owns the complete-instruction handler signature and NOP validation. Tests and bu
 manifests mirror each owner. The work piece adds no operand layout, RPT row/effect,
 repeat state, architectural state integration, IRQ behavior, machine cycles,
 memory mutation, observer event, knob, public API, or emulator dependency.
+
+The completed implementation preserves the first-word classifier, asks the CPU
+fetch owner to populate extension words, transactionally binds the copied bundle,
+and passes that value through generic dispatch. NOP still performs one callback and
+one-word retirement; `cpu.c` contains no opcode-identity branch. P2-W20C is next and
+must define catalog-bound operand-layout and repeatability metadata without
+prematurely activating an instruction whose effect the CPU cannot yet consume.
 
 ## Delivery order
 
