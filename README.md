@@ -22,9 +22,14 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution register one instruction: evidence-backed
-  `NOP`. Exact/masked catalog generation, complete instruction bundles, extension
-  fetch, operand extraction, dispatch, PC staging, and retirement are green.
+- Production decode and CPU execution register four instructions: evidence-backed
+  `NOP` plus the three immediate status-field forms `LD #k9,DP`, `LD #k5,ASM`,
+  and `LD #k3,ARP`. Exact/masked catalog generation, complete instruction bundles,
+  extension fetch, operand extraction, dispatch, PC staging, and retirement are
+  green under the full local W22 gate; remote verification remains pending.
+- W22 local registry closure records 82 evidence items, 122 requirements
+  (98 implemented, 9 planned, 15 unresolved), and 87 tests (78 passing, 9
+  planned). The full local gate is green; remote verification is pending.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -34,6 +39,9 @@ Current progress:
 - Speculative foundation expansion is frozen. The active track is end-to-end ISA
   vertical slices, adding infrastructure only when a concrete opcode family needs
   it. Emulator integration remains deferred.
+- `ti_c54x_state` may grow observation fields before API stability; these fields
+  are not a raw snapshot or persistence ABI, and no stable persistence guarantee
+  is made.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

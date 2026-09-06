@@ -96,16 +96,25 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     parse_catalog(text)
 
-    def test_real_catalog_contains_only_the_frozen_nop_row(self) -> None:
+    def test_real_catalog_contains_nop_and_status_load_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), 4)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
                       REPEAT_UNRESOLVED, "EXACT", 0),
         )
         self.assertGreater(rows[0].source_line, 0)
+        self.assertEqual(rows[1].symbol, "LD_IMMEDIATE_DP")
+        self.assertEqual(rows[1].first_word_value, 0xEA00)
+        self.assertEqual(rows[1].first_word_mask, 0xFE00)
+        self.assertEqual(rows[2].symbol, "LD_IMMEDIATE_ASM")
+        self.assertEqual(rows[2].first_word_value, 0xED00)
+        self.assertEqual(rows[2].first_word_mask, 0xFFE0)
+        self.assertEqual(rows[3].symbol, "LD_IMMEDIATE_ARP")
+        self.assertEqual(rows[3].first_word_value, 0xF4A0)
+        self.assertEqual(rows[3].first_word_mask, 0xFFF8)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

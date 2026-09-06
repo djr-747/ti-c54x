@@ -40,9 +40,12 @@ typedef enum ti_c54x_opcode_id {
 typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_UNKNOWN = 0,
     TI_C54X_OPERAND_LAYOUT_NONE,
-    /* Inert decoder identities; no production catalog row references them. */
+    /* Immediate repeat and status-field operand identities. */
     TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K,
     TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK,
+    TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP,
+    TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM,
+    TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

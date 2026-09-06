@@ -2,8 +2,9 @@
  * Module contract
  *
  * Owns: exhaustive decoder classification and catalog metadata checks for the
- * NOP-seeded ISA slice.  Does not own: opcode semantics, program-counter
- * sequencing, buses, memory, timing, observers, or the test harness.
+ * registered ISA slice, including NOP identity and uniqueness.  Does not own:
+ * opcode semantics, program-counter sequencing, buses, memory, timing,
+ * observers, or the test harness.
  * Decoder results are copied values; metadata pointers are borrowed only for
  * the duration of each assertion and are never retained by this test.
  */
@@ -28,24 +29,26 @@ test_nop_decodes_exactly(void)
 }
 
 static void
-test_every_other_word_is_explicitly_unknown(void)
+test_only_exact_word_decodes_as_nop(void)
 {
     uint32_t raw_word;
+    uint32_t nop_count = 0U;
 
     for (raw_word = 0U; raw_word <= UINT16_MAX; ++raw_word) {
         const uint16_t first_word = (uint16_t)raw_word;
         const ti_c54x_decode_result result =
             ti_c54x_decode_first_word(first_word);
 
-        if (first_word == UINT16_C(0xF495)) {
-            continue;
+        if (result.id == TI_C54X_OPCODE_ID_NOP) {
+            TI_C54X_TEST_CHECK(first_word == UINT16_C(0xF495));
+            TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+            TI_C54X_TEST_CHECK(result.first_word == first_word);
+            TI_C54X_TEST_CHECK(result.program_word_count == UINT8_C(1));
+            ++nop_count;
         }
-        TI_C54X_TEST_CHECK(result.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
-        TI_C54X_TEST_CHECK(result.first_word == first_word);
-        TI_C54X_TEST_CHECK(result.program_word_count == UINT8_C(0));
     }
+
+    TI_C54X_TEST_CHECK(nop_count == 1U);
 }
 
 static void
@@ -77,7 +80,7 @@ int
 main(void)
 {
     test_nop_decodes_exactly();
-    test_every_other_word_is_explicitly_unknown();
+    test_only_exact_word_decodes_as_nop();
     test_catalog_metadata_and_lookup_contract();
     puts("nop_decode: ok");
     return 0;

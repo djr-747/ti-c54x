@@ -3816,3 +3816,37 @@ rewritten after publication.
 - Result: P2-W21C is published and green on every repository-owned build surface.
   The standalone foundation baseline is now frozen against speculative expansion;
   the next active work is an end-to-end ISA vertical slice.
+
+## 2026-09-06 — P2-W22 active — immediate status-field LD vertical slice
+
+- State: active. P2-W22 is one atomic end-to-end ISA vertical slice, not a new
+  foundation phase. It batches three one-word immediate forms: `LD #k9,DP`
+  (`0xEA00/0xFE00`, unsigned 9-bit, `DP := k9`, repeatability `INELIGIBLE`),
+  `LD #k5,ASM` (`0xED00/0xFFE0`, raw 5-bit field representing `-16..15`,
+  `ASM := raw field`, repeatability `UNRESOLVED`), and `LD #k3,ARP`
+  (`0xF4A0/0xFFF8`, 3-bit, `ARP := k3`, repeatability `INELIGIBLE`). All have
+  one-word width and no other status-bit side effects.
+- Evidence: TI SPRU172C Table 2-19 printed pages 2-14–2-15 and LD §4.70
+  printed pages 4-70–4-71 pin forms/effects; §2.5/Table 2-28 printed pages
+  2-19–2-21 pins DP/ARP nonrepeatability while ASM remains unresolved. Summary
+  cycle columns are not adopted as timing evidence. GNU binutils tag
+  `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e`, `opcodes/tic54x-opc.c` lines
+  316–319, is nonnormative corroboration only; no code, table, comment, or
+  implementation is copied or vendored, and mismatches escalate to TI.
+- Ownership: `src/isa/decode/` owns rows/fields, `src/isa/ops/load/` owns the
+  semantic handlers, `src/state/status/` owns only the status-register subowner
+  required by these forms, `src/sequencer/status/` owns transactional effect
+  application, and `src/cpu/` owns state observation and atomic retirement.
+  Planned tests mirror these owners at
+  `tests/unit/isa/decode/test_ld_status_fields.c`,
+  `tests/unit/isa/ops/load/test_ld_status_fields.c`,
+  `tests/unit/state/status/test_status_registers.c`,
+  `tests/unit/sequencer/status/test_status_field_effect_apply.c`, and
+  `tests/unit/cpu/test_cpu_ld_status_fields.c`; all runners are null until code
+  exists.
+- Scope: no memory/bus transaction, timing, RPT/IRQ, accumulator, device, or
+  emulator behavior is added. Status-bank splitting and generic effect commit
+  exist only because these opcodes require them. No knobs are introduced.
+- Registry plan: 2 targets, 7 sources, 82 immutable evidence records, 120
+  requirements (91 `IMPLEMENTED`, 14 `PLANNED`, 15 `UNRESOLVED`), and 87 tests
+  (73 `PASSING`, 14 `PLANNED`).

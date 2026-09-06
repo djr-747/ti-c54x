@@ -6,10 +6,8 @@
  *
  * Owns: immutable decoder-owned operand-layout-set descriptors for catalog
  * identities, their width-checked process-lifetime resolution, and copied
- * extraction of one operand through operand_field. The RPT identities are
- * deliberately inert metadata; no production opcode row or semantic
- * effect is registered here. A resolved view borrows only static descriptor
- * storage and retains no caller pointer.
+ * extraction of one operand through operand_field. A resolved view borrows
+ * only static descriptor storage and retains no caller pointer.
  * Does not own: catalog row syntax, opcode lookup, instruction meaning,
  * repeat state, fetch/bus I/O, CPU or architectural state, timing, memory,
  * observers, diagnostics, environment, allocation, or mutable global state.

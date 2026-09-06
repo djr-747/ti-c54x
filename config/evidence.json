@@ -1356,6 +1356,68 @@
         "anchor": "P2-W21C: resumable WORD16 transaction protocol (implemented)"
       },
       "assertion": "The P2-W21C project contract defines a private, callback-free, allocation-free WORD16 reducer under src/bus/transaction/. Caller-declared canonical {0} storage carries lifecycle-only IDLE, ISSUE_READY, IN_FLIGHT, COMPLETION_READY, COMPLETE, and FAULT states plus a fresh nonzero caller-generated uint64_t transaction_id, copied valid W21A request, staged read word, and staged ti_c54x_bus_status. prepare copies a borrowed request only from IDLE; begin authorizes one issue and returns a copied request/id; repeated WAIT polling remains IN_FLIGHT without reissue; one READY or FAULT observation latches COMPLETION_READY; complete publishes canonical payload once; reset may clear only IDLE, COMPLETE, or FAULT and never cancels active work. Statuses are exactly OK, WAIT, FAULT, INVALID_ARGUMENT, INVALID_STATE, and STALE_TRANSACTION. Faults preserve known non-OK public bus statuses as payload, while WAIT and non-success read payloads are zero and writes never publish a read word. Rejected transitions preserve named fields. Exactly-once is a protocol claim only for one authoritative, non-copied active storage instance under caller ownership and unique-ID preconditions; external issue count, physical visibility, arbitration, host memory, device, timing, observer, diagnostic, environment, global, public ABI, CPU, request, and codec behavior are separate future work."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-LD-STATUS-FORMS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "Table 2‑19",
+        "printed_page_start": "2-14",
+        "printed_page_end": "2-15"
+      },
+      "assertion": "Table 2-19 lists the one-word immediate status-field LD forms: LD #k9,DP with value 0xEA00 and mask 0xFE00, an unsigned 9-bit field; LD #k5,ASM with value 0xED00 and mask 0xFFE0, a raw 5-bit field representing -16..15; and LD #k3,ARP with value 0xF4A0 and mask 0xFFF8, a 3-bit field. The table is used for form and field width only; its summary cycle columns are not adopted as timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-70-P4-70-4-71-LD-STATUS-EFFECTS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.70",
+        "printed_page_start": "4-70",
+        "printed_page_end": "4-71"
+      },
+      "assertion": "The LD instruction description defines immediate loads into DP, ASM, and ARP: k9 is written to DP, the raw k5 field is written to ASM, and k3 is written to ARP. These forms are one program word and have no status-bit side effects beyond the named destination field; no machine-cycle claim is adopted."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-LD-REPEATABILITY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeatability table classifies the DP and ARP immediate LD forms as ineligible for a single-repeat body. The ASM form's repeatability remains unresolved in this slice and is not inferred from neighboring status-field forms."
+    },
+    {
+      "id": "E-PROJECT-P2-W22-LD-STATUS-VERTICAL-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W22: immediate status-field LD vertical slice (implemented; local verification green)"
+      },
+      "assertion": "P2-W22 is one atomic end-to-end vertical slice for three one-word immediate LD status-field forms. It introduces only the status-register subownership/effect transaction and CPU state-observation/atomic-retirement seams required by these forms. It adds no memory, bus transaction, timing, repeat/IRQ, accumulator, device, or emulator behavior and does not treat binutils corroboration as normative evidence."
     }
   ],
   "requirements": [
@@ -2672,6 +2734,76 @@
       "claim": "A future external adapter must prove actual callback/MMIO/RAM issue and completion counts, physical visibility across wait-state suspension, and exactly-once read/write effects when it consumes the private WORD16 transaction protocol; the W21C reducer does not fabricate or claim those effects. Deterministic multi-master arbitration remains a separate later proof.",
       "evidence_ids": ["E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT"],
       "test_ids": ["T-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-K9-DP-IMMEDIATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the one-word LD #k9,DP form with value 0xEA00 and mask 0xFE00, extracting an unsigned 9-bit field and classifying it as single-repeat INELIGIBLE.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-LD-STATUS-FORMS", "E-TI-C54X-SPRU172C-S4-70-P4-70-4-71-LD-STATUS-EFFECTS", "E-TI-C54X-SPRU172C-LD-REPEATABILITY"],
+      "test_ids": ["T-COMMON-LD-STATUS-FIELD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-K5-ASM-IMMEDIATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the one-word LD #k5,ASM form with value 0xED00 and mask 0xFFE0, extracting a raw 5-bit field representing -16..15; repeatability remains unresolved and is not inferred.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-LD-STATUS-FORMS", "E-TI-C54X-SPRU172C-S4-70-P4-70-4-71-LD-STATUS-EFFECTS", "E-TI-C54X-SPRU172C-LD-REPEATABILITY"],
+      "test_ids": ["T-COMMON-LD-STATUS-FIELD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-K3-ARP-IMMEDIATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the one-word LD #k3,ARP form with value 0xF4A0 and mask 0xFFF8, extracting a 3-bit field and classifying it as single-repeat INELIGIBLE.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-LD-STATUS-FORMS", "E-TI-C54X-SPRU172C-S4-70-P4-70-4-71-LD-STATUS-EFFECTS", "E-TI-C54X-SPRU172C-LD-REPEATABILITY"],
+      "test_ids": ["T-COMMON-LD-STATUS-FIELD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-STATUS-FIELD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute the three evidenced one-word immediate LD status-field forms by producing value-owned DP, ASM, and ARP target effects from their raw fields, with no other status-bit side effects.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-70-P4-70-4-71-LD-STATUS-EFFECTS"],
+      "test_ids": ["T-COMMON-LD-STATUS-FIELD-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-LD-STATUS-REGISTER-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/status/",
+      "claim": "Provide the private status-register subownership required by the three P2-W22 LD forms: expose checked DP, ASM, and ARP field access and preserve unrelated status bits and knownness without introducing a raw snapshot or persistence ABI.",
+      "evidence_ids": ["E-PROJECT-P2-W22-LD-STATUS-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-STATUS-REGISTER-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-LD-STATUS-FIELD-EFFECT-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/status/",
+      "claim": "Apply one validated value-owned DP, ASM, or ARP effect transactionally, preserving unrelated status fields and leaving state unchanged on rejection. This private effect seam exists only for the P2-W22 forms and does not claim timing, memory, interrupt, or device behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W22-LD-STATUS-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-STATUS-FIELD-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "REQ-PROJECT-LD-CPU-STATE-OBSERVATION-RETIRE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "The CPU-owned vertical-slice seam observes a validated P2-W22 status-field effect and commits exactly one DP, ASM, or ARP update atomically at instruction retirement. ti_c54x_state may grow observation fields before stability; these fields do not define a raw snapshot or persistence ABI and no stable persistence guarantee is made. This is a project transaction contract, not a timing, memory, interrupt, or device claim.",
+      "evidence_ids": ["E-PROJECT-P2-W22-LD-STATUS-VERTICAL-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-LD-STATUS-FIELDS"]
     }
   ],
   "tests": [
@@ -3369,6 +3501,46 @@
       "path": "tests/unit/bus/adapter/test_word16_exactly_once.c",
       "runner": null,
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE"]
+    },
+    {
+      "id": "T-COMMON-LD-STATUS-FIELD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ld_status_fields.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_status_fields_decode"},
+      "requirement_ids": ["REQ-COMMON-LD-K9-DP-IMMEDIATE", "REQ-COMMON-LD-K5-ASM-IMMEDIATE", "REQ-COMMON-LD-K3-ARP-IMMEDIATE"]
+    },
+    {
+      "id": "T-COMMON-LD-STATUS-FIELD-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_status_fields.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_status_fields_ops"},
+      "requirement_ids": ["REQ-COMMON-LD-STATUS-FIELD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-STATUS-REGISTER-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/status/test_status_registers.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.status_registers"},
+      "requirement_ids": ["REQ-PROJECT-LD-STATUS-REGISTER-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-STATUS-FIELD-EFFECT-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/status/test_status_field_effect_apply.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.status_field_effect_apply"},
+      "requirement_ids": ["REQ-PROJECT-LD-STATUS-FIELD-EFFECT-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-CPU-LD-STATUS-FIELDS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_ld_status_fields.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_status_fields"},
+      "requirement_ids": ["REQ-PROJECT-LD-CPU-STATE-OBSERVATION-RETIRE"]
     }
   ]
 }

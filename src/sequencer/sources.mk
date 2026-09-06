@@ -7,3 +7,4 @@ ti_c54x_core_sources += \
 	src/sequencer/sequential_pc.c \
 	src/sequencer/program_pc_bridge.c
 include src/sequencer/repeat/sources.mk
+include src/sequencer/status/sources.mk

@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include "isa/catalog/opcode_catalog.h"
+#include "load/op_ld_status_fields.h"
 #include "op_nop.h"
 
 #define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words, \

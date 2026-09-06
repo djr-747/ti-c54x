@@ -30,6 +30,27 @@ static const ti_c54x_operand_field_layout ti_c54x_rpt_lk_operand = {
 static const ti_c54x_operand_layout_set ti_c54x_rpt_lk_set = {
     &ti_c54x_rpt_lk_operand, UINT8_C(1)};
 
+static const ti_c54x_operand_field_piece ti_c54x_ld_dp_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(9), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_ld_dp_operand = {
+    &ti_c54x_ld_dp_piece, UINT8_C(1), UINT8_C(9)};
+static const ti_c54x_operand_layout_set ti_c54x_ld_dp_set = {
+    &ti_c54x_ld_dp_operand, UINT8_C(1)};
+
+static const ti_c54x_operand_field_piece ti_c54x_ld_asm_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_ld_asm_operand = {
+    &ti_c54x_ld_asm_piece, UINT8_C(1), UINT8_C(5)};
+static const ti_c54x_operand_layout_set ti_c54x_ld_asm_set = {
+    &ti_c54x_ld_asm_operand, UINT8_C(1)};
+
+static const ti_c54x_operand_field_piece ti_c54x_ld_arp_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(3), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_ld_arp_operand = {
+    &ti_c54x_ld_arp_piece, UINT8_C(1), UINT8_C(3)};
+static const ti_c54x_operand_layout_set ti_c54x_ld_arp_set = {
+    &ti_c54x_ld_arp_operand, UINT8_C(1)};
+
 static ti_c54x_operand_layout_status
 ti_c54x_operand_layout_map_field_status(
     ti_c54x_operand_field_status status)
@@ -95,6 +116,15 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_rpt_lk_set;
+    case TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_ld_dp_set;
+    case TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_ld_asm_set;
+    case TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_ld_arp_set;
     default:
         return NULL;
     }

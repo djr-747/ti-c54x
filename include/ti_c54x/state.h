@@ -27,6 +27,12 @@ typedef struct ti_c54x_state {
      * ti_c54x_cpu_reset. */
     uint64_t instructions_attempted_total;
     uint64_t instructions_retired_total;
+    uint16_t dp;
+    bool dp_known;
+    uint16_t asm_raw;
+    bool asm_known;
+    uint8_t arp;
+    bool arp_known;
 } ti_c54x_state;
 
 #ifdef __cplusplus

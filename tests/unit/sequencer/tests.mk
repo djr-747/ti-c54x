@@ -22,3 +22,4 @@ $(eval $(call ti_c54x_add_test,nop_flow,sequencer,test_nop_flow.c))
 $(eval $(call ti_c54x_add_test,program_pc_bridge,sequencer,test_program_pc_bridge.c))
 $(eval $(call ti_c54x_add_test,program_pc_bridge_multiword,sequencer,test_program_pc_bridge_multiword.c))
 include tests/unit/sequencer/repeat/tests.mk
+include tests/unit/sequencer/status/tests.mk

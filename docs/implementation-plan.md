@@ -56,6 +56,7 @@ function-pointer dispatch tables.
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
+| P2-W22 immediate status-field LD vertical slice | Implemented — full local gate green; remote verification pending | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -799,6 +800,52 @@ visibility, arbitration, timing, memory effects, CPU/ISA integration, and public
 ABI behavior remain outside this leaf. Follow-up publish/remote verification is
 required before the next ISA slice; external adapter work stays deferred until a
 concrete memory opcode requires it.
+
+### P2-W22: immediate status-field LD vertical slice (implemented; local verification green)
+
+P2-W22 is one atomic end-to-end ISA vertical slice, not a new foundation phase.
+It batches three one-word immediate status-field forms:
+
+- `LD #k9,DP`: value `0xEA00`, mask `0xFE00`, unsigned 9-bit field, `DP := k9`,
+  no other status-bit side effects, and repeatability `INELIGIBLE`.
+- `LD #k5,ASM`: value `0xED00`, mask `0xFFE0`, raw 5-bit field representing
+  `-16..15`, `ASM := raw field`, no other status-bit side effects, and
+  repeatability `UNRESOLVED`.
+- `LD #k3,ARP`: value `0xF4A0`, mask `0xFFF8`, 3-bit field, `ARP := k3`, no
+  other status-bit side effects, and repeatability `INELIGIBLE`.
+
+TI SPRU172C Table 2-19 (printed pages 2-14–2-15) and LD §4.70 (printed pages
+4-70–4-71) are the primary form/effect evidence. Table 2-28 (printed pages
+2-19–2-21) supplies DP/ARP nonrepeatability; ASM repeatability remains
+unresolved. Summary cycle columns are deliberately not adopted as timing
+evidence. GNU binutils tag `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e`,
+`opcodes/tic54x-opc.c` lines 316–319, is a nonnormative corroboration only;
+no implementation, table, comment, or code is copied or vendored, and any
+mismatch escalates to TI evidence.
+
+Ownership is deliberately minimal. `src/isa/catalog/` owns exact masked rows,
+`src/isa/decode/` owns raw-field extraction, and `src/isa/ops/load/` owns the
+three readable semantic handlers and their aggregate target effects;
+`src/state/status/` owns only the status-register contract; `src/sequencer/status/`
+owns transactional effect application; and `src/cpu/` observes and atomically
+retires the effect. `ti_c54x_state` intentionally grows observation fields before
+API stability; those fields are not a raw snapshot or persistence ABI and no
+stable persistence guarantee is made. The mirrored tests are
+`tests/unit/isa/decode/test_ld_status_fields.c`,
+`tests/unit/isa/ops/load/test_ld_status_fields.c`,
+`tests/unit/state/status/test_status_registers.c`,
+`tests/unit/sequencer/status/test_status_field_effect_apply.c`, and
+`tests/unit/cpu/test_cpu_ld_status_fields.c`. Local C_EXECUTABLE runners are
+`ti_c54x.ld_status_fields_decode`, `ti_c54x.ld_status_fields_ops`,
+`ti_c54x.status_registers`, `ti_c54x.status_field_effect_apply`, and
+`ti_c54x.cpu_ld_status_fields`; the full local gate is green and remote
+verification remains pending.
+No memory/bus transaction, timing, RPT/IRQ, accumulator, device, or emulator work
+is part of this slice; any status-bank split and generic effect commit exist only
+because these opcodes require them. The local registry is 82 immutable evidence
+records, 122 requirements (98 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and
+87 tests (78 `PASSING`, 9 `PLANNED`); the full local gate is green and remote
+verification remains pending.
 
 ## Delivery order
 

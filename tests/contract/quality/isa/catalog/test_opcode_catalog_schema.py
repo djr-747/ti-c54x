@@ -22,6 +22,9 @@ from tools.isa.catalog.opcode_catalog_schema import (
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
 LAYOUT_RPT_K = "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K"
 LAYOUT_RPT_LK = "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK"
+LAYOUT_LD_DP = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP"
+LAYOUT_LD_ASM = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM"
+LAYOUT_LD_ARP = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_ELIGIBLE = "TI_C54X_REPEATABILITY_ELIGIBLE"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
@@ -152,7 +155,8 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
                 )
                 self.assertEqual(rows[0].repeatability, repeatability)
 
-        for layout in (LAYOUT_RPT_K, LAYOUT_RPT_LK):
+        for layout in (LAYOUT_RPT_K, LAYOUT_RPT_LK, LAYOUT_LD_DP,
+                       LAYOUT_LD_ASM, LAYOUT_LD_ARP):
             with self.subTest(layout=layout):
                 rows = parse_catalog(
                     f"{valid_prefix} {layout}, {REPEAT_UNRESOLVED})"

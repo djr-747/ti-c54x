@@ -31,22 +31,22 @@ static void test_unknown_reads_preserve_outputs(void)
     uint16_t dp_value = UINT16_C(0xA5A5);
 
     /* Leave two ARP bits known and withhold one: the whole field is required. */
-    state.st0_known_mask = UINT16_C(0xDFFF);
+    state.status.st0_known_mask = UINT16_C(0xDFFF);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_arp(&state, &value) ==
                        TI_C54X_ARCH_STATE_UNKNOWN);
     TI_C54X_TEST_CHECK_U64(value, UINT8_C(0xA5));
 
-    state.st1_known_mask = UINT16_C(0xFFDF);
+    state.status.st1_known_mask = UINT16_C(0xFFDF);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_cmpt(&state, &value) ==
                        TI_C54X_ARCH_STATE_UNKNOWN);
     TI_C54X_TEST_CHECK_U64(value, UINT8_C(0xA5));
 
-    state.st0_known_mask = UINT16_C(0xFE00);
+    state.status.st0_known_mask = UINT16_C(0xFE00);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_dp(&state, &dp_value) ==
                        TI_C54X_ARCH_STATE_UNKNOWN);
     TI_C54X_TEST_CHECK_U64(dp_value, UINT16_C(0xA5A5));
 
-    state.st1_known_mask = UINT16_C(0xBFFF);
+    state.status.st1_known_mask = UINT16_C(0xBFFF);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_cpl(&state, &value) ==
                        TI_C54X_ARCH_STATE_UNKNOWN);
     TI_C54X_TEST_CHECK_U64(value, UINT8_C(0xA5));
@@ -127,62 +127,62 @@ static void test_writes_preserve_unrelated_raw_and_known_bits(void)
     const uint16_t after_arp_st0_known =
         (uint16_t)((st0_known & UINT16_C(0x1FFF)) | UINT16_C(0xE000));
 
-    state.st0 = st0_raw;
-    state.st1 = st1_raw;
-    state.st0_known_mask = st0_known;
-    state.st1_known_mask = st1_known;
+    state.status.st0 = st0_raw;
+    state.status.st1 = st1_raw;
+    state.status.st0_known_mask = st0_known;
+    state.status.st1_known_mask = st1_known;
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&state, UINT8_C(5)) ==
                        TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK_U64(state.st0,
+    TI_C54X_TEST_CHECK_U64(state.status.st0,
                            (uint16_t)((st0_raw & UINT16_C(0x1FFF)) |
                                       UINT16_C(0xA000)));
-    TI_C54X_TEST_CHECK_U64(state.st1, st1_raw);
-    TI_C54X_TEST_CHECK_U64(state.st0_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st1, st1_raw);
+    TI_C54X_TEST_CHECK_U64(state.status.st0_known_mask,
                            (uint16_t)((st0_known & UINT16_C(0x1FFF)) |
                                       UINT16_C(0xE000)));
-    TI_C54X_TEST_CHECK_U64(state.st1_known_mask, st1_known);
+    TI_C54X_TEST_CHECK_U64(state.status.st1_known_mask, st1_known);
 
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_dp(&state, UINT16_C(0x01A5)) ==
                        TI_C54X_ARCH_STATE_OK);
     TI_C54X_TEST_CHECK_U64(
-        state.st0,
+        state.status.st0,
         (uint16_t)((after_arp_st0 & UINT16_C(0xFE00)) | UINT16_C(0x01A5)));
-    TI_C54X_TEST_CHECK_U64(state.st1, st1_raw);
+    TI_C54X_TEST_CHECK_U64(state.status.st1, st1_raw);
     TI_C54X_TEST_CHECK_U64(
-        state.st0_known_mask,
+        state.status.st0_known_mask,
         (uint16_t)((after_arp_st0_known & UINT16_C(0xFE00)) |
                    TI_C54X_ST0_DP_MASK));
-    TI_C54X_TEST_CHECK_U64(state.st1_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st1_known_mask,
                            (uint16_t)((st1_known & UINT16_C(0xFFDF)) |
                                       UINT16_C(0x0020)));
 
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cmpt(&state, UINT8_C(1)) ==
                        TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK_U64(state.st0,
+    TI_C54X_TEST_CHECK_U64(state.status.st0,
                            (uint16_t)((after_arp_st0 & UINT16_C(0xFE00)) |
                                       UINT16_C(0x01A5)));
-    TI_C54X_TEST_CHECK_U64(state.st1,
+    TI_C54X_TEST_CHECK_U64(state.status.st1,
                            (uint16_t)((st1_raw & UINT16_C(0xFFDF)) |
                                       UINT16_C(0x0020)));
-    TI_C54X_TEST_CHECK_U64(state.st0_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st0_known_mask,
                            (uint16_t)((after_arp_st0_known & UINT16_C(0xFE00)) |
                                       TI_C54X_ST0_DP_MASK));
-    TI_C54X_TEST_CHECK_U64(state.st1_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st1_known_mask,
                            (uint16_t)((st1_known & UINT16_C(0xFFDF)) |
                                       UINT16_C(0x0020)));
 
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cpl(&state, UINT8_C(1)) ==
                        TI_C54X_ARCH_STATE_OK);
-    TI_C54X_TEST_CHECK_U64(state.st0,
+    TI_C54X_TEST_CHECK_U64(state.status.st0,
                            (uint16_t)((after_arp_st0 & UINT16_C(0xFE00)) |
                                       UINT16_C(0x01A5)));
-    TI_C54X_TEST_CHECK_U64(state.st1,
+    TI_C54X_TEST_CHECK_U64(state.status.st1,
                            (uint16_t)((st1_raw & UINT16_C(0xBFFF)) |
                                       UINT16_C(0x4020)));
-    TI_C54X_TEST_CHECK_U64(state.st0_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st0_known_mask,
                            (uint16_t)((after_arp_st0_known & UINT16_C(0xFE00)) |
                                       TI_C54X_ST0_DP_MASK));
-    TI_C54X_TEST_CHECK_U64(state.st1_known_mask,
+    TI_C54X_TEST_CHECK_U64(state.status.st1_known_mask,
                            (uint16_t)((st1_known & UINT16_C(0xBFFF)) |
                                       UINT16_C(0x4020)));
 }
@@ -195,10 +195,10 @@ static void test_repeated_values_and_cross_field_reads(void)
     uint8_t cpl = UINT8_C(0);
     uint8_t cmpt = UINT8_C(0);
 
-    state.st0 = UINT16_C(0x0000);
-    state.st1 = UINT16_C(0x0000);
-    state.st0_known_mask = UINT16_C(0x0000);
-    state.st1_known_mask = UINT16_C(0x0000);
+    state.status.st0 = UINT16_C(0x0000);
+    state.status.st1 = UINT16_C(0x0000);
+    state.status.st0_known_mask = UINT16_C(0x0000);
+    state.status.st1_known_mask = UINT16_C(0x0000);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&state, UINT8_C(3)) ==
                        TI_C54X_ARCH_STATE_OK);
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&state, UINT8_C(3)) ==

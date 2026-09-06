@@ -19,12 +19,12 @@ static void check_common_reset(const ti_c54x_arch_state *state)
     TI_C54X_TEST_CHECK_U64(state->pc_word, UINT16_C(0xFF80));
     TI_C54X_TEST_CHECK_U64(state->ifr, UINT16_C(0));
     TI_C54X_TEST_CHECK_U64(state->rc, UINT16_C(0));
-    TI_C54X_TEST_CHECK_U64(state->st0, UINT16_C(0x1800));
-    TI_C54X_TEST_CHECK_U64(state->st1, UINT16_C(0x2900));
-    TI_C54X_TEST_CHECK_U64(state->pmst, UINT16_C(0xFF80));
-    TI_C54X_TEST_CHECK_U64(state->st0_known_mask, UINT16_C(0xFFFF));
-    TI_C54X_TEST_CHECK_U64(state->st1_known_mask, UINT16_C(0xFBFF));
-    TI_C54X_TEST_CHECK_U64(state->pmst_known_mask, UINT16_C(0xFFBC));
+    TI_C54X_TEST_CHECK_U64(state->status.st0, UINT16_C(0x1800));
+    TI_C54X_TEST_CHECK_U64(state->status.st1, UINT16_C(0x2900));
+    TI_C54X_TEST_CHECK_U64(state->status.pmst, UINT16_C(0xFF80));
+    TI_C54X_TEST_CHECK_U64(state->status.st0_known_mask, UINT16_C(0xFFFF));
+    TI_C54X_TEST_CHECK_U64(state->status.st1_known_mask, UINT16_C(0xFBFF));
+    TI_C54X_TEST_CHECK_U64(state->status.pmst_known_mask, UINT16_C(0xFFBC));
     TI_C54X_TEST_CHECK_U64(state->scalar_known_mask, UINT8_C(0x07));
     TI_C54X_TEST_CHECK_U64(state->ar_known_mask, UINT8_C(0x00));
 }

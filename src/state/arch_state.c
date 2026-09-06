@@ -1,8 +1,8 @@
 /* Module contract
  * Owns: deterministic construction of the private common reset state and
- * checked knownness-aware AR/SP and ARP/DP/CPL/CMPT status-field access and
- * mutation. BK storage is part of the aggregate but its accessors live in
- * block_size_register.c.
+ * checked knownness-aware AR/SP and delegated ARP/DP/CPL/CMPT status-field
+ * access and mutation. BK storage is part of the aggregate but its accessors
+ * live in block_size_register.c.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -29,32 +29,10 @@ ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state)
     state->pc_word = UINT16_C(0xFF80);
     state->ifr = UINT16_C(0);
     state->rc = UINT16_C(0);
-    state->st0 = (uint16_t)(TI_C54X_ST0_TC_MASK | TI_C54X_ST0_C_MASK);
-    state->st1 = (uint16_t)(TI_C54X_ST1_XF_MASK | TI_C54X_ST1_INTM_MASK |
-                            TI_C54X_ST1_SXM_MASK);
-    state->pmst = TI_C54X_PMST_IPTR_MASK;
-    state->st0_known_mask = (uint16_t)(TI_C54X_ST0_ARP_MASK |
-                                       TI_C54X_ST0_TC_MASK |
-                                       TI_C54X_ST0_C_MASK |
-                                       TI_C54X_ST0_OVA_MASK |
-                                       TI_C54X_ST0_OVB_MASK |
-                                       TI_C54X_ST0_DP_MASK);
-    state->st1_known_mask = (uint16_t)(TI_C54X_ST1_BRAF_MASK |
-                                       TI_C54X_ST1_CPL_MASK |
-                                       TI_C54X_ST1_XF_MASK |
-                                       TI_C54X_ST1_HM_MASK |
-                                       TI_C54X_ST1_INTM_MASK |
-                                       TI_C54X_ST1_OVM_MASK |
-                                       TI_C54X_ST1_SXM_MASK |
-                                       TI_C54X_ST1_C16_MASK |
-                                       TI_C54X_ST1_FRCT_MASK |
-                                       TI_C54X_ST1_CMPT_MASK |
-                                       TI_C54X_ST1_ASM_MASK);
-    state->pmst_known_mask = (uint16_t)(TI_C54X_PMST_IPTR_MASK |
-                                        TI_C54X_PMST_OVLY_MASK |
-                                        TI_C54X_PMST_AVIS_MASK |
-                                        TI_C54X_PMST_DROM_MASK |
-                                        TI_C54X_PMST_CLKOFF_MASK);
+    if (ti_c54x_status_register_reset_common(&state->status) !=
+        TI_C54X_STATUS_REGISTER_OK) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
     state->scalar_known_mask = (uint8_t)(TI_C54X_ARCH_STATE_KNOWN_PC |
                                          TI_C54X_ARCH_STATE_KNOWN_IFR |
                                          TI_C54X_ARCH_STATE_KNOWN_RC);
@@ -124,12 +102,12 @@ ti_c54x_arch_state_read_arp(const ti_c54x_arch_state *state,
     if (state == NULL || value == NULL) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    if ((state->st0_known_mask & TI_C54X_ST0_ARP_MASK) !=
-        TI_C54X_ST0_ARP_MASK) {
+    const ti_c54x_status_register_field_result result =
+        ti_c54x_status_register_read_arp(&state->status);
+    if (result.status != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_UNKNOWN;
     }
-    *value = (uint8_t)((state->st0 & TI_C54X_ST0_ARP_MASK) >>
-                       TI_C54X_ST0_ARP_SHIFT);
+    *value = (uint8_t)result.raw_value;
     return TI_C54X_ARCH_STATE_OK;
 }
 
@@ -140,11 +118,10 @@ ti_c54x_arch_state_write_arp(ti_c54x_arch_state *state,
     if (state == NULL || value > UINT8_C(7)) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    state->st0 = (uint16_t)((state->st0 & (uint16_t)~TI_C54X_ST0_ARP_MASK) |
-                            ((uint16_t)value << TI_C54X_ST0_ARP_SHIFT));
-    state->st0_known_mask =
-        (uint16_t)(state->st0_known_mask | TI_C54X_ST0_ARP_MASK);
-    return TI_C54X_ARCH_STATE_OK;
+    return ti_c54x_status_register_write_arp(&state->status, value) ==
+                   TI_C54X_STATUS_REGISTER_OK
+               ? TI_C54X_ARCH_STATE_OK
+               : TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
 }
 
 ti_c54x_arch_state_status
@@ -154,11 +131,12 @@ ti_c54x_arch_state_read_dp(const ti_c54x_arch_state *state,
     if (state == NULL || value == NULL) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    if ((state->st0_known_mask & TI_C54X_ST0_DP_MASK) !=
-        TI_C54X_ST0_DP_MASK) {
+    const ti_c54x_status_register_field_result result =
+        ti_c54x_status_register_read_dp(&state->status);
+    if (result.status != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_UNKNOWN;
     }
-    *value = (uint16_t)(state->st0 & TI_C54X_ST0_DP_MASK);
+    *value = result.raw_value;
     return TI_C54X_ARCH_STATE_OK;
 }
 
@@ -169,11 +147,10 @@ ti_c54x_arch_state_write_dp(ti_c54x_arch_state *state,
     if (state == NULL || value > TI_C54X_ST0_DP_MASK) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    state->st0 = (uint16_t)((state->st0 & (uint16_t)~TI_C54X_ST0_DP_MASK) |
-                            value);
-    state->st0_known_mask =
-        (uint16_t)(state->st0_known_mask | TI_C54X_ST0_DP_MASK);
-    return TI_C54X_ARCH_STATE_OK;
+    return ti_c54x_status_register_write_dp(&state->status, value) ==
+                   TI_C54X_STATUS_REGISTER_OK
+               ? TI_C54X_ARCH_STATE_OK
+               : TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
 }
 
 ti_c54x_arch_state_status
@@ -183,12 +160,12 @@ ti_c54x_arch_state_read_cpl(const ti_c54x_arch_state *state,
     if (state == NULL || value == NULL) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    if ((state->st1_known_mask & TI_C54X_ST1_CPL_MASK) !=
-        TI_C54X_ST1_CPL_MASK) {
+    const ti_c54x_status_register_field_result result =
+        ti_c54x_status_register_read_cpl(&state->status);
+    if (result.status != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_UNKNOWN;
     }
-    *value = (uint8_t)((state->st1 & TI_C54X_ST1_CPL_MASK) >>
-                       TI_C54X_ST1_CPL_SHIFT);
+    *value = (uint8_t)result.raw_value;
     return TI_C54X_ARCH_STATE_OK;
 }
 
@@ -199,11 +176,10 @@ ti_c54x_arch_state_write_cpl(ti_c54x_arch_state *state,
     if (state == NULL || value > UINT8_C(1)) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    state->st1 = (uint16_t)((state->st1 & (uint16_t)~TI_C54X_ST1_CPL_MASK) |
-                            ((uint16_t)value << TI_C54X_ST1_CPL_SHIFT));
-    state->st1_known_mask =
-        (uint16_t)(state->st1_known_mask | TI_C54X_ST1_CPL_MASK);
-    return TI_C54X_ARCH_STATE_OK;
+    return ti_c54x_status_register_write_cpl(&state->status, value) ==
+                   TI_C54X_STATUS_REGISTER_OK
+               ? TI_C54X_ARCH_STATE_OK
+               : TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
 }
 
 ti_c54x_arch_state_status
@@ -213,12 +189,12 @@ ti_c54x_arch_state_read_cmpt(const ti_c54x_arch_state *state,
     if (state == NULL || value == NULL) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    if ((state->st1_known_mask & TI_C54X_ST1_CMPT_MASK) !=
-        TI_C54X_ST1_CMPT_MASK) {
+    const ti_c54x_status_register_field_result result =
+        ti_c54x_status_register_read_cmpt(&state->status);
+    if (result.status != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_UNKNOWN;
     }
-    *value = (uint8_t)((state->st1 & TI_C54X_ST1_CMPT_MASK) >>
-                       TI_C54X_ST1_CMPT_SHIFT);
+    *value = (uint8_t)result.raw_value;
     return TI_C54X_ARCH_STATE_OK;
 }
 
@@ -229,9 +205,8 @@ ti_c54x_arch_state_write_cmpt(ti_c54x_arch_state *state,
     if (state == NULL || value > UINT8_C(1)) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
-    state->st1 = (uint16_t)((state->st1 & (uint16_t)~TI_C54X_ST1_CMPT_MASK) |
-                            ((uint16_t)value << TI_C54X_ST1_CMPT_SHIFT));
-    state->st1_known_mask =
-        (uint16_t)(state->st1_known_mask | TI_C54X_ST1_CMPT_MASK);
-    return TI_C54X_ARCH_STATE_OK;
+    return ti_c54x_status_register_write_cmpt(&state->status, value) ==
+                   TI_C54X_STATUS_REGISTER_OK
+               ? TI_C54X_ARCH_STATE_OK
+               : TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
 }

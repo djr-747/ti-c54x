@@ -58,11 +58,11 @@ static void test_arp_valid_values_encode_at_bits_15_to_13(void)
         ti_c54x_arch_state state = reset_state();
         uint8_t decoded = UINT8_C(0xA5);
 
-        state.st0 = surrounding_raw;
+        state.status.st0 = surrounding_raw;
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&state, arp) ==
                            TI_C54X_ARCH_STATE_OK);
         TI_C54X_TEST_CHECK_U64(
-            state.st0,
+            state.status.st0,
             (uint16_t)(surrounding_raw |
                        ((uint16_t)arp << 13)));
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_arp(&state, &decoded) ==
@@ -80,11 +80,11 @@ static void test_cmpt_valid_values_encode_at_bit_5(void)
         ti_c54x_arch_state state = reset_state();
         uint8_t decoded = UINT8_C(0xA5);
 
-        state.st1 = surrounding_raw;
+        state.status.st1 = surrounding_raw;
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cmpt(&state, cmpt) ==
                            TI_C54X_ARCH_STATE_OK);
         TI_C54X_TEST_CHECK_U64(
-            state.st1,
+            state.status.st1,
             (uint16_t)(surrounding_raw |
                        ((uint16_t)cmpt << 5)));
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_cmpt(&state, &decoded) ==
@@ -103,10 +103,10 @@ static void test_dp_valid_values_encode_at_bits_8_to_0(void)
         ti_c54x_arch_state state = reset_state();
         uint16_t decoded = UINT16_C(0xA5A5);
 
-        state.st0 = surrounding_raw;
+        state.status.st0 = surrounding_raw;
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_dp(&state, dp) ==
                            TI_C54X_ARCH_STATE_OK);
-        TI_C54X_TEST_CHECK_U64(state.st0,
+        TI_C54X_TEST_CHECK_U64(state.status.st0,
                                (uint16_t)(surrounding_raw | dp));
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_dp(&state, &decoded) ==
                            TI_C54X_ARCH_STATE_OK);
@@ -124,11 +124,11 @@ static void test_cpl_valid_values_encode_at_bit_14(void)
         ti_c54x_arch_state state = reset_state();
         uint8_t decoded = UINT8_C(0xA5);
 
-        state.st1 = surrounding_raw;
+        state.status.st1 = surrounding_raw;
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cpl(&state, cpl) ==
                            TI_C54X_ARCH_STATE_OK);
         TI_C54X_TEST_CHECK_U64(
-            state.st1,
+            state.status.st1,
             (uint16_t)(surrounding_raw |
                        ((uint16_t)cpl << TI_C54X_ST1_CPL_SHIFT)));
         TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_cpl(&state, &decoded) ==

@@ -18,6 +18,7 @@
 #include "isa/ops/op_effect.h"
 #include "isa/ops/opcode_dispatch.h"
 #include "sequencer/program_pc_bridge.h"
+#include "sequencer/status/field_effect_apply.h"
 
 #if TI_C54X_ENABLE_OBSERVERS
 static void emit_trace(ti_c54x_cpu *cpu, ti_c54x_trace_kind kind)
@@ -149,6 +150,10 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
      * before this memset.  Reinitializing an existing instance is permitted
      * and releases no resources because the shell owns none. */
     memset(cpu, 0, sizeof(*cpu));
+    if (ti_c54x_status_register_reset_common(&cpu->status) !=
+        TI_C54X_STATUS_REGISTER_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
     cpu->reset_pc_word = config != NULL ? config->reset_pc_word : 0U;
     cpu->bus = *bus;
     ti_c54x_observer_init(&cpu->observer,
@@ -180,6 +185,10 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     cpu->last_fetch_valid = false;
     cpu->instructions_attempted = 0U;
     cpu->instructions_retired = 0U;
+    if (ti_c54x_status_register_reset_common(&cpu->status) !=
+        TI_C54X_STATUS_REGISTER_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
     cpu->execution_active = true;
     emit_trace(cpu, TI_C54X_TRACE_RESET);
     cpu->execution_active = false;
@@ -201,6 +210,20 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
     state->last_fetch_valid = cpu->last_fetch_valid;
     state->instructions_attempted_total = cpu->instructions_attempted;
     state->instructions_retired_total = cpu->instructions_retired;
+    {
+        const ti_c54x_status_register_field_result dp =
+            ti_c54x_status_register_read_dp(&cpu->status);
+        const ti_c54x_status_register_field_result asm_field =
+            ti_c54x_status_register_read_asm(&cpu->status);
+        const ti_c54x_status_register_field_result arp =
+            ti_c54x_status_register_read_arp(&cpu->status);
+        state->dp = dp.raw_value;
+        state->dp_known = dp.status == TI_C54X_STATUS_REGISTER_OK;
+        state->asm_raw = asm_field.raw_value;
+        state->asm_known = asm_field.status == TI_C54X_STATUS_REGISTER_OK;
+        state->arp = (uint8_t)arp.raw_value;
+        state->arp_known = arp.status == TI_C54X_STATUS_REGISTER_OK;
+    }
     return TI_C54X_ERROR_OK;
 }
 
@@ -236,6 +259,9 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_program_pc_bridge_effect pc_effect;
         ti_c54x_program_pc_bridge_status bridge_status;
         ti_c54x_op_status op_status;
+        ti_c54x_status_register_state candidate_status;
+        ti_c54x_program_word_address candidate_pc;
+        ti_c54x_status_field_effect_status status_effect_status;
 
         /* Per-call deltas start at zero and never exceed their cumulative
          * counterparts, so this preflight also proves the local increments
@@ -302,8 +328,17 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         }
 
         op_status = ti_c54x_dispatch_decoded(&instruction, &effect);
-        if (op_status != TI_C54X_OP_STATUS_OK ||
-            effect.kind != TI_C54X_OP_EFFECT_NONE) {
+        if (op_status != TI_C54X_OP_STATUS_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        candidate_status = cpu->status;
+        candidate_pc = cpu->pc_word;
+        status_effect_status = ti_c54x_status_field_effect_apply(
+            &effect, &candidate_status);
+        if (status_effect_status != TI_C54X_STATUS_FIELD_EFFECT_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
@@ -316,13 +351,16 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
-        bridge_status = ti_c54x_program_pc_bridge_apply(&cpu->pc_word,
+        bridge_status = ti_c54x_program_pc_bridge_apply(&candidate_pc,
                                                         &pc_effect);
         if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
+
+        cpu->status = candidate_status;
+        cpu->pc_word = candidate_pc;
 
         cpu->instructions_retired++;
         instructions_retired++;
