@@ -2739,3 +2739,21 @@ rewritten after publication.
   begin evidence-first RPT/IRQ semantics. RPT will decide the later orchestration
   ordering among span validation, extension reads, operand extraction, and
   semantics.
+
+## 2026-09-06 — P2-W19B remote verification
+
+- Published implementation commit:
+  `3e57e316bdac5cbb469cba2cc5d5060cc45d1dea`.
+- Published completion-ledger commit:
+  `f81eb6eb4476d8350c638ecb985b66c28b3bb1d9`.
+- GitHub Actions run
+  [34018936988](https://github.com/djr-747/ti-c54x/actions/runs/34018936988)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: P2-W19B is published and proven across repository-owned build surfaces;
+  standalone isolation, private fetch/sequencer ownership, and the unchanged
+  P2-W18 CPU transaction remain intact. The next slice is evidence-first RPT/IRQ
+  semantics. This verification makes no claim about production multiword CPU
+  retirement, timing, memory mutation, XPC, or emulator integration.
