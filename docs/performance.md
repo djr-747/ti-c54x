@@ -139,8 +139,8 @@ noise/spreads and the absence of fixed-scenario semantic or CPU-orchestration
 changes do not establish a confirmed regression or improvement. These are hosted
 implementation-throughput observations, not DSP timing evidence.
 
-The latest clean catalog-thirteen record at `ef87c944ccf325617487df2946fafbfa0cfe17ba`
-is the current hosted cohort. CI is green at
+The clean catalog-thirteen record at `ef87c944ccf325617487df2946fafbfa0cfe17ba`
+remains a prior hosted cohort. CI is green at
 <https://github.com/djr-747/ti-c54x/actions/runs/34055843312>.
 
 | Scenario | Median cost | Throughput |
@@ -158,6 +158,25 @@ the fixed-scenario deltas are +25.00% (`nop`), +103.87% (`ld-dp`), +107.22%
 orchestration are unchanged, so the large deltas and spreads do not support a
 confirmed regression. This is a hosted implementation observation only, not
 DSP timing evidence.
+
+The latest clean catalog-fifteen record at `7164ace` is the current hosted cohort.
+CI is green at <https://github.com/djr-747/ti-c54x/actions/runs/34059815766>.
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 109.060 ns | 9.169 MIPS |
+| `ld-dp` | 182.474 ns | 5.480 MIPS |
+| `ld-asm` | 194.054 ns | 5.153 MIPS |
+| `ld-arp` | 111.847 ns | 8.941 MIPS |
+| `mixed-current` | 88.796 ns | 11.262 MIPS |
+
+The reset-runnable subset is four of 15 catalog rows. Relative to catalog-thirteen,
+the fixed-scenario deltas are -10.18% (`nop`), -12.69% (`ld-dp`), -4.36%
+(`ld-asm`), and -1.73% (`ld-arp`); current within-capture spreads are 50.31%,
+3.83%, 6.90%, and 112.44%, respectively. The mixed spread is 3.58%, but that
+workload is not comparable because catalog coverage and semantic hash changed.
+These hosted observations establish no confirmed improvement or regression and make
+no DSP or silicon timing claim.
 
 An immediate identical-binary diagnostic rerun (binary hash `144ffa...`; the
 tree was dirty only because history was appended) normalized to NOP 66.571 ns /

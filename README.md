@@ -70,15 +70,16 @@ Current progress:
   guard-only-plus-low32-zero behavior boundary is also unresolved.
 - The registry now records 110 evidence items, 162 requirements (131 implemented,
   9 planned, 22 unresolved), and 120 tests (111 passing, 9 planned). The latest clean
-  catalog-thirteen hosted performance record is captured at `ef87c94` (CI
-  [green](https://github.com/djr-747/ti-c54x/actions/runs/34055843312)): NOP
-  121.420 ns / 8.236 MIPS, LD-DP 209.005 ns / 4.785 MIPS, LD-ASM 202.901 ns /
-  4.929 MIPS, LD-ARP 113.815 ns / 8.786 MIPS, and mixed-current 96.359 ns /
-  10.378 MIPS with reset-runnable coverage of 4/13. Versus catalog-ten, fixed
-  deltas are +25.00%, +103.87%, +107.22%, and +14.62%; current spreads are
-  51.13%, 10.86%, 5.71%, and 117.11%. The large deltas and host spreads do not
-  support a confirmed regression; these are hosted implementation observations,
-  not DSP timing evidence.
+  catalog-fifteen hosted performance record is captured at `7164ace` (CI
+  [green](https://github.com/djr-747/ti-c54x/actions/runs/34059815766)): NOP
+  109.060 ns / 9.169 MIPS, LD-DP 182.474 ns / 5.480 MIPS, LD-ASM 194.054 ns /
+  5.153 MIPS, LD-ARP 111.847 ns / 8.941 MIPS, and mixed-current 88.796 ns /
+  11.262 MIPS with reset-runnable coverage of 4/15. Versus catalog-thirteen,
+  fixed deltas are -10.18%, -12.69%, -4.36%, and -1.73%; current spreads are
+  50.31%, 3.83%, 6.90%, and 112.44%. The mixed spread is 3.58% but is not
+  comparable because catalog coverage and semantic hash changed. These hosted
+  observations establish no confirmed improvement or regression and make no DSP
+  or silicon timing claim.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,

@@ -63,8 +63,8 @@ function-pointer dispatch tables.
 | P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
 | P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `ef87c94`; no confirmed regression | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
 | P2-W28A TC/status foundation | Implemented — full local `make test` and [remote CI](https://github.com/djr-747/ti-c54x/actions/runs/34058489923) green | Private typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta are proven; all prior accumulator handlers migrated transactionally with no CPU branch |
-| P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
-| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, and catalog-thirteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
+| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, and catalog-fifteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -1412,7 +1412,7 @@ semantic or CPU-orchestration changes do not establish a confirmed regression or
 improvement. The mixed workload remains evolving and non-comparable, and these
 hosted measurements are not DSP timing evidence.
 
-The clean catalog-thirteen record at `ef87c94` measures 121.420 ns/8.236 MIPS
+The prior clean catalog-thirteen record at `ef87c94` measures 121.420 ns/8.236 MIPS
 for NOP, 209.005 ns/4.785 MIPS for `ld-dp`, 202.901 ns/4.929 MIPS for
 `ld-asm`, 113.815 ns/8.786 MIPS for `ld-arp`, and 96.359 ns/10.378 MIPS for
 `mixed-current`, with reset-runnable coverage of four of 13 catalog rows. Its
@@ -1421,6 +1421,17 @@ fixed-scenario deltas versus catalog-ten are +25.00%, +103.87%, +107.22%, and
 paths and CPU orchestration are unchanged; the large deltas and spreads do not
 support a confirmed regression. CI is green at
 <https://github.com/djr-747/ti-c54x/actions/runs/34055843312>.
+
+The latest clean catalog-fifteen record at `7164ace` measures 109.060 ns/9.169
+MIPS for NOP, 182.474 ns/5.480 MIPS for `ld-dp`, 194.054 ns/5.153 MIPS for
+`ld-asm`, 111.847 ns/8.941 MIPS for `ld-arp`, and 88.796 ns/11.262 MIPS for
+`mixed-current`, with reset-runnable coverage of four of 15 catalog rows. CI is
+green at <https://github.com/djr-747/ti-c54x/actions/runs/34059815766>.
+Relative to catalog-thirteen, the fixed-scenario deltas are -10.18%, -12.69%,
+-4.36%, and -1.73%; current within-capture spreads are 50.31%, 3.83%, 6.90%,
+and 112.44%. The mixed spread is 3.58%, but its changed catalog coverage and
+semantic hash make it non-comparable. These hosted observations establish no
+confirmed improvement or regression and make no DSP or silicon timing claim.
 
 An immediate identical-binary diagnostic rerun (hash `144ffa...`; dirty only
 because history was appended) normalized to NOP 66.571 ns/15.022 MIPS,
