@@ -3364,3 +3364,20 @@ rewritten after publication.
 - Follow-up: publish and remotely verify W20E. Do not begin W20F CPU integration
   until evidence resolves RC progression, repeated-body PC flow, and predecode
   interrupt arbitration; the common TI rows remain the integration proof gates.
+
+## 2026-09-06 — P2-W20E remote verification
+
+- Published implementation commit:
+  `d876f94dfb6ddbd08257f477457ca20ae4f34e68`.
+- Published completion-record commit:
+  `348fe0761842d7af57a9a219162e3daedb8ab339`.
+- GitHub Actions run
+  [34027010846](https://github.com/djr-747/ti-c54x/actions/runs/34027010846)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: W20E's three pure repeat-policy leaves are published and green on every
+  repository-owned build surface. Production decode remains NOP-only, the common TI
+  repeat requirements remain planned, and unresolved RC/PC/predecode-interrupt
+  semantics continue to block W20F CPU integration.
