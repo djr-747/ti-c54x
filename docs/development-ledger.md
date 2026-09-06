@@ -4022,3 +4022,54 @@ rewritten after publication.
   the next small ISA fanout. Shared catalog, decode, state, sequencer, and CPU
   surfaces remain serialized; family-local lanes may proceed only where the
   contract is already proven.
+
+## 2026-09-07 — P2-W25 ROL/ROR rotate-through-C vertical slice closeout
+
+- State: complete. The P2-W25 plan/evidence freeze landed as
+  `c21038e4464820117e66c25c7e3ef1d037d432d9`; its GitHub Actions run
+  [34049479239](https://github.com/djr-747/ti-c54x/actions/runs/34049479239)
+  is green. The implementation landed as
+  `705ac7b625a4ab7e4033c3133efbbd8418b80bfa`; its GitHub Actions run
+  [34050726672](https://github.com/djr-747/ti-c54x/actions/runs/34050726672)
+  is green. The performance/documentation follow-up landed as
+  `f5a9d2b3a9e09de8772b43a67a4afe04de666273`; its GitHub Actions run
+  [34050999306](https://github.com/djr-747/ti-c54x/actions/runs/34050999306)
+  is green.
+- TDD evidence is RED/GREEN: collector, catalog metadata, decode, rotate-op,
+  and CPU tests first exercised absent collectors/resources, missing ROL/ROR
+  rows/layouts, and unintegrated retirement behavior; the final local
+  `make test` is green with 176 Python checks, all C and quality checks,
+  source-boundary checks over 188 files, and manifests, knobs, evidence,
+  generated, and observer-off checks green. The registry closes at 95 evidence
+  records, 139 requirements (112 implemented, 9 planned, 18 unresolved), and
+  101 tests (92 passing, 9 planned).
+- Architecture: the private `src/cpu/input/` collector owns one generic,
+  transactional resource-driven snapshot path. `STATUS_C` is a typed resource
+  with named `status_c`/`status_c_known` fields, A/B knownness is preserved as
+  data, unrequested inputs are canonical zero/false, and invalid masks or
+  backing pointers reject without output mutation. CPU makes one generic
+  collector call with no opcode branch; `cpu.c` shrank from 443 to 428 lines.
+  Ownership-mirrored child manifests are in place. `ACCUMULATOR_SOURCE` owns
+  S at word-0 bit 8, pure rotate semantics live under
+  `src/isa/ops/rotate/`, and ROL/ROR use the existing
+  `ACCUMULATOR_WRITE` + `C_WRITE` atomic effect path. Four encodings implement
+  low-32 rotate-through-C, clear guard bits, preserve unrelated state, and
+  enforce selected-source/pre-C unknown rollback, allowed unselected unknowns,
+  PC-boundary rollback, and one-attempt/one-retirement/PC+1 behavior.
+- No knobs changed: eight remain registered, including three observer bits.
+  No public API, emulator, memory, RPT/IRQ, or machine-timing claim was added.
+  ROL/ROR repeatability remains unresolved, stateful operations remain outside
+  the reset-runnable benchmark subset, and the strict FIT/GAP fanout rule is
+  retained: shared architecture gaps are reported back before family lanes
+  continue.
+- Performance closure is hosted POSIX observer-off throughput only (no silicon
+  timing claim). Clean `705ac7b` records NOP at 61.839 ns / 16.171 MIPS,
+  LD-DP at 91.592 ns / 10.918 MIPS, LD-ASM at 91.619 ns / 10.915 MIPS,
+  LD-ARP at 96.653 ns / 10.346 MIPS, and `mixed-current` at 87.562 ns /
+  11.420 MIPS over a 4/9 reset-runnable subset. Fixed deltas and spreads are
+  recorded in `docs/performance.md`; the measurements are hosted noise/trend
+  observations with no confirmed improvement, regression, or silicon claim.
+- Follow-up: resolve ROL/ROR repeatability and timing only with stronger
+  evidence; keep stateful operations out of the reset-runnable benchmark until
+  their bootstrap contract exists; and preserve the serialized shared-surface
+  review plus FIT/GAP reporting policy for the next ISA fanout.
