@@ -3850,3 +3850,38 @@ rewritten after publication.
 - Registry plan: 2 targets, 7 sources, 82 immutable evidence records, 120
   requirements (91 `IMPLEMENTED`, 14 `PLANNED`, 15 `UNRESOLVED`), and 87 tests
   (73 `PASSING`, 14 `PLANNED`).
+
+## 2026-09-06 — P2-W22 completion and remote verification
+
+- Published implementation commit: `e89207eaff944b410f5f9c6245dc497cfdc942ce`.
+  W22 is complete with four production ISA instructions: `NOP` plus `LD #k9,DP`,
+  `LD #k5,ASM`, and `LD #k3,ARP`. Exhaustive operand vectors cover 512, 32, and
+  8 values respectively.
+- The generated direct first-word lookup contains 553 populated initializers in
+  a fixed 65,536-entry `uint16_t` read-only table (128 KiB). It remains a
+  replaceable baseline pending real-trace benchmarking; no performance claim is
+  made from table size alone.
+- Corrected ownership is explicit: `src/isa/catalog/` owns rows,
+  `src/isa/decode/` owns extraction, `src/isa/ops/load/` owns semantic handlers,
+  `src/state/status/` owns the
+  status-register contract, `src/sequencer/status/` owns transactional effect
+  application, and `src/cpu/` owns observation and atomic retirement. The
+  earlier active-entry shorthand is superseded by this split. Independent review
+  corrected the public observation wording (`ti_c54x_state` grows before API
+  stability but is not a raw snapshot or persistence ABI), PC `0xffff` boundary
+  rollback, split registry ownership, catalog-derived handler metadata, and a
+  future-proof NOP uniqueness test.
+- Local final `rtk make -B test` was green after the first run legitimately caught
+  and fixed a stale NOP-only assumption: 163 Python quality tests, 73 C unit
+  executables plus the minimal consumer, source boundaries (162 files), and
+  manifests, knobs, generated artifacts, and observer-off checks all passed.
+  Registry state is 2 targets, 7 sources, 82 evidence records, 122 requirements
+  (98 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and 87 tests (78 `PASSING`,
+  9 `PLANNED`).
+- Remote CI run
+  [34036019012](https://github.com/djr-747/ti-c54x/actions/runs/34036019012)
+  passed GCC and Clang direct Make, CMake library-only/full builds, tests,
+  installation, consumer smoke tests, and Clang ASan/UBSan.
+- No knob, environment read, emulator, cycle/timing, memory, RPT/IRQ,
+  accumulator, or device behavior was added. Foundation freeze remains in force;
+  the next work is concrete ISA vertical batches.
