@@ -2388,3 +2388,21 @@ rewritten after publication.
   kickoff must register TI interrupt/repeat evidence and a versioned GNU
   binutils transcript only as a secondary `TOOLCHAIN_ORACLE_ONLY` cross-check;
   no external opcode table or implementation becomes repository source.
+
+## 2026-09-06 — P2-W17 remote verification
+
+- Published implementation commit:
+  `a11791745778edb4ac7619fc8681013a1c239e2d`.
+- Published completion-ledger commit:
+  `65160ea1d6af55b1ce9697cd7b203d00bf08fd27`.
+- GitHub Actions run
+  [34013236855](https://github.com/djr-747/ti-c54x/actions/runs/34013236855)
+  completed successfully for the published completion-ledger head.
+- The standalone matrix passed GCC and Clang direct-Make tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-
+  consumer smoke tests, and the Clang sanitizer build and tests.
+- Result: P2-W17 is published and independently proven across every repository-
+  owned build surface. Exact and masked catalog infrastructure is ready for the
+  separately owned CPU transaction and operand-field work without an emulator,
+  firmware image, Python runtime dependency, environment gate, or external
+  opcode table.
