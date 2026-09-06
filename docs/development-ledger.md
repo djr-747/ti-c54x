@@ -3595,3 +3595,26 @@ rewritten after publication.
 - Follow-up: validate and publish the kickoff, then delegate the bounded W21B TDD
   implementation under main-agent review and commit ownership. P2-W21C remains the
   separate exactly-once resumable transaction owner.
+
+## 2026-09-06 — P2-W21B kickoff remote verification
+
+- Published kickoff commit:
+  `e9c081482d35f176970d8089cbdc2cc0865ebc05`
+  (`P2-W21B: define WORD16 byte-order contract`).
+- Before publication, `make -B test` passed 163 Python quality tests, 65 C unit
+  targets, and 66 direct executions including the minimal consumer. Source
+  boundaries (142 files), manifests, evidence, knobs, the observer-disabled
+  artifact, generated lookup staleness, and `git diff --check` passed.
+- Independent Luna review found no blocker, major, or minor issue in registry
+  parity, classification, ownership, isolation, host-endian neutrality,
+  BIG/LITTLE semantics, validation precedence, exhaustive TDD scope, or the
+  W21A/W21C boundaries.
+- GitHub Actions run
+  [34029694201](https://github.com/djr-747/ti-c54x/actions/runs/34029694201)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream
+  package-consumer smoke tests, and Clang sanitizer configure/build/test.
+- Result: the W21B project contract is published and green on every
+  repository-owned build surface. Its bounded TDD implementation may begin under
+  the private `bus/byte_order/` owner.
