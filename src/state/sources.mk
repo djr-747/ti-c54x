@@ -4,3 +4,4 @@ ti_c54x_core_sources += \
 	src/state/block_size_register.c
 include src/state/status/sources.mk
 include src/state/accumulator/sources.mk
+include src/state/temporary/sources.mk

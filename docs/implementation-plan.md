@@ -64,7 +64,7 @@ function-pointer dispatch tables.
 | P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `ef87c94`; no confirmed regression | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
 | P2-W28A TC/status foundation | Implemented — full local `make test` and [remote CI](https://github.com/djr-747/ti-c54x/actions/runs/34058489923) green | Private typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta are proven; all prior accumulator handlers migrated transactionally with no CPU branch |
 | P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
-| P2-W29A/B T-register foundation and EXP accumulator vertical slice | Planned | First prove private 16-bit T ownership and a tagged, candidate-only effect transaction; then register EXP_ACC/exp_acc through the existing accumulator-source path. Architecture-needed changes are serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
+| P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, and full local `make test` green; clean performance record pending | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, and catalog-fifteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -136,6 +136,11 @@ timing remain unresolved until independently evidenced.
 
 ### P2-W29: T-register foundation and EXP accumulator vertical slice (planned)
 
+Implementation status: complete locally. All seven RED contracts, focused
+tests, two independent reviews, and the full `make test` gate are green. The
+clean performance record and remote CI confirmation follow the implementation
+commit.
+
 P2-W29 is a demand-driven two-stage slice. It is the next architecture seam only
 because EXP needs a private T destination and the existing effect path has no
 candidate-only root transaction. No unrelated register, status, memory, repeat,
@@ -179,11 +184,11 @@ missing contract, owner, tests, and hot-path consequence as a GAP.
 
 #### P2-W29B: EXP accumulator vertical slice (planned)
 
-This subheading is the FIT/ownership anchor for the EXP family. It is not a
+This subheading is the immutable FIT/ownership anchor for the EXP family. It is not a
 permission to broaden the T foundation: EXP consumes the generic T write effect
-and root transaction only after their tests pass. The expected post-slice catalog
-is 16 rows and 1083 populated first-word encodings, with reset-runnable coverage
-remaining 4/16; no timing or repeatability result is implied.
+and root transaction only after their tests pass. The completed slice has 16
+catalog rows and 1083 populated first-word encodings, with reset-runnable
+coverage remaining 4/16; no timing or repeatability result is implied.
 
 ### P2-W16: NOP-seeded opcode architecture
 

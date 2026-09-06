@@ -3733,7 +3733,7 @@
     },
     {
       "id": "REQ-PROJECT-T-REGISTER-STATE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/state/temporary/",
@@ -3743,17 +3743,17 @@
     },
     {
       "id": "REQ-PROJECT-T-WRITE-EFFECT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/temporary/",
-      "claim": "Own a value-owned TI_C54X_OP_EFFECT_T_REGISTER_WRITE and a transactional T-register application that validates the candidate before committing it, with no opcode-specific CPU branch or unconditional whole-state copy.",
+      "claim": "Apply the centrally owned value-only TI_C54X_OP_EFFECT_T_REGISTER_WRITE transactionally to a T-register candidate before commit, with no opcode-specific CPU branch or unconditional whole-state copy.",
       "evidence_ids": ["E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT"],
       "test_ids": ["T-PROJECT-T-WRITE-EFFECT"]
     },
     {
       "id": "REQ-PROJECT-EFFECT-TRANSACTION-ROUTING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
@@ -3763,7 +3763,7 @@
     },
     {
       "id": "REQ-COMMON-EXP-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3773,7 +3773,7 @@
     },
     {
       "id": "REQ-COMMON-EXP-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3783,7 +3783,7 @@
     },
     {
       "id": "REQ-COMMON-EXP-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/accumulator/",
@@ -3793,7 +3793,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-EXP-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -4814,58 +4814,58 @@
     },
     {
       "id": "T-PROJECT-T-REGISTER",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/state/temporary/test_t_register.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.t_register"},
       "requirement_ids": ["REQ-PROJECT-T-REGISTER-STATE"]
     },
     {
       "id": "T-PROJECT-T-WRITE-EFFECT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/temporary/test_t_write_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.t_write_effect"},
       "requirement_ids": ["REQ-PROJECT-T-WRITE-EFFECT"]
     },
     {
       "id": "T-PROJECT-EFFECT-TRANSACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/test_effect_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.effect_transaction"},
       "requirement_ids": ["REQ-PROJECT-EFFECT-TRANSACTION-ROUTING"]
     },
     {
       "id": "T-COMMON-EXP-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_exp_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.exp_metadata"},
       "requirement_ids": ["REQ-COMMON-EXP-ENCODINGS"]
     },
     {
       "id": "T-COMMON-EXP-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_exp_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.exp_decode"},
       "requirement_ids": ["REQ-COMMON-EXP-DECODE"]
     },
     {
       "id": "T-COMMON-EXP-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/accumulator/test_exp.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.exp"},
       "requirement_ids": ["REQ-COMMON-EXP-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-EXP",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_exp.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_exp"},
       "requirement_ids": ["REQ-PROJECT-CPU-EXP-RETIREMENT"]
     }
   ]

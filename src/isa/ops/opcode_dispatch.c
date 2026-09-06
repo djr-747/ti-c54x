@@ -14,6 +14,7 @@
 
 #include "isa/catalog/opcode_catalog.h"
 #include "accumulator/op_cmpl.h"
+#include "accumulator/op_exp.h"
 #include "compare/op_compare.h"
 #include "load/op_ld_status_fields.h"
 #include "op_nop.h"

@@ -14,6 +14,8 @@
  * carries a copied field target/value only; mutation belongs to the status
  * sequencer. ACCUMULATOR_WRITE carries only a canonical destination value
  * and explicit C/TC status disposition; mutation belongs to its sequencer.
+ * T_REGISTER_WRITE carries one copied 16-bit T value; mutation belongs to
+ * the temporary-register sequencer.
  * Callers own each effect object.
  */
 
@@ -29,7 +31,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_NONE = 0,
     TI_C54X_OP_EFFECT_REPEAT_START = 1,
     TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE = 2,
-    TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE = 3
+    TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE = 3,
+    TI_C54X_OP_EFFECT_T_REGISTER_WRITE = 4
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -66,10 +69,15 @@ typedef struct ti_c54x_op_accumulator_write_effect {
     ti_c54x_op_status_delta status_delta;
 } ti_c54x_op_accumulator_write_effect;
 
+typedef struct ti_c54x_op_t_register_write_effect {
+    uint16_t raw_value;
+} ti_c54x_op_t_register_write_effect;
+
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
     ti_c54x_op_status_field_write_effect status_field_write;
     ti_c54x_op_accumulator_write_effect accumulator_write;
+    ti_c54x_op_t_register_write_effect t_register_write;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {

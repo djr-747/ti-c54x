@@ -18,10 +18,8 @@
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/opcode_dispatch.h"
+#include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_bridge.h"
-#include "sequencer/status/field_effect_apply.h"
-#include "sequencer/accumulator/effect_apply.h"
-#include "state/accumulator/accumulator.h"
 
 #if TI_C54X_ENABLE_OBSERVERS
 static void emit_trace(ti_c54x_cpu *cpu, ti_c54x_trace_kind kind)
@@ -161,6 +159,10 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
         TI_C54X_ACCUMULATOR_OK) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;
     }
+    if (ti_c54x_t_register_reset(&cpu->t_register) !=
+        TI_C54X_T_REGISTER_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
     cpu->reset_pc_word = config != NULL ? config->reset_pc_word : 0U;
     cpu->bus = *bus;
     ti_c54x_observer_init(&cpu->observer,
@@ -198,6 +200,10 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     }
     if (ti_c54x_accumulator_reset(&cpu->accumulators) !=
         TI_C54X_ACCUMULATOR_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    if (ti_c54x_t_register_reset(&cpu->t_register) !=
+        TI_C54X_T_REGISTER_OK) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;
     }
     cpu->execution_active = true;
@@ -283,16 +289,12 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_decoded_instruction instruction;
         ti_c54x_instruction_completion_status completion_status;
         ti_c54x_op_effect effect = {0};
+        ti_c54x_effect_transaction transaction;
         ti_c54x_program_pc_bridge_effect pc_effect;
         ti_c54x_program_pc_bridge_status bridge_status;
         ti_c54x_op_status op_status;
-        ti_c54x_status_register_state candidate_status;
-        ti_c54x_accumulator_state candidate_accumulators;
         ti_c54x_program_word_address candidate_pc;
-        ti_c54x_status_field_effect_status status_effect_status;
-        ti_c54x_accumulator_effect_status accumulator_effect_status;
         ti_c54x_op_input_snapshot op_input = {0};
-        bool accumulator_candidate_valid = false;
 
         /* Per-call deltas start at zero and never exceed their cumulative
          * counterparts, so this preflight also proves the local increments
@@ -374,27 +376,15 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
-        candidate_status = cpu->status;
-        candidate_pc = cpu->pc_word;
-        if (effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE) {
-            candidate_accumulators = cpu->accumulators;
-            accumulator_candidate_valid = true;
-            accumulator_effect_status = ti_c54x_accumulator_effect_apply(
-                &effect, &candidate_accumulators, &candidate_status);
-            if (accumulator_effect_status != TI_C54X_ACCUMULATOR_EFFECT_OK) {
-                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-        } else {
-            status_effect_status = ti_c54x_status_field_effect_apply(
-                &effect, &candidate_status);
-            if (status_effect_status != TI_C54X_STATUS_FIELD_EFFECT_OK) {
-                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
+        if (ti_c54x_effect_transaction_stage(
+                &effect, &cpu->status, &cpu->accumulators,
+                &cpu->t_register, &transaction) !=
+            TI_C54X_EFFECT_TRANSACTION_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
         }
+        candidate_pc = cpu->pc_word;
 
         bridge_status = ti_c54x_program_pc_bridge_plan(
             cpu->pc_word, instruction.bundle.program_word_count, &pc_effect);
@@ -411,9 +401,12 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
-        cpu->status = candidate_status;
-        if (accumulator_candidate_valid) {
-            cpu->accumulators = candidate_accumulators;
+        if (ti_c54x_effect_transaction_commit(
+                &transaction, &cpu->status, &cpu->accumulators,
+                &cpu->t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
         }
         cpu->pc_word = candidate_pc;
 

@@ -5,7 +5,9 @@ ti_c54x_core_sources += \
 	src/sequencer/address_effect_validate.c \
 	src/sequencer/address_effect_apply.c \
 	src/sequencer/sequential_pc.c \
-	src/sequencer/program_pc_bridge.c
+	src/sequencer/program_pc_bridge.c \
+	src/sequencer/effect_transaction.c
 include src/sequencer/repeat/sources.mk
 include src/sequencer/status/sources.mk
 include src/sequencer/accumulator/sources.mk
+include src/sequencer/temporary/sources.mk

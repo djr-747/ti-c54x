@@ -111,7 +111,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_real_catalog_contains_current_catalog_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 15)
+        self.assertEqual(len(rows), 16)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -135,32 +135,40 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[5].first_word_value, 0xF487)
         self.assertEqual(rows[5].first_word_mask, 0xFEFF)
         self.assertEqual(rows[5].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[6].symbol, "CMPL_ACC")
-        self.assertEqual(rows[6].first_word_value, 0xF493)
-        self.assertEqual(rows[6].first_word_mask, 0xFCFF)
+        self.assertEqual(rows[6].symbol, "EXP_ACC")
+        self.assertEqual(rows[6].handler, "exp_acc")
+        self.assertEqual(rows[6].first_word_value, 0xF48E)
+        self.assertEqual(rows[6].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[6].program_word_count, 1)
+        self.assertEqual(rows[6].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[6].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[6].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[7].symbol, "ROL_ACC")
-        self.assertEqual(rows[7].handler, "rol_acc")
-        self.assertEqual(rows[7].first_word_value, 0xF491)
-        self.assertEqual(rows[7].first_word_mask, 0xFEFF)
-        self.assertEqual(rows[7].program_word_count, 1)
-        self.assertEqual(rows[7].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
-        self.assertEqual(rows[7].repeatability, REPEAT_UNRESOLVED)
-        self.assertEqual(rows[7].input_resources,
-                         RESOURCES_ACCUMULATORS_STATUS_C)
-        self.assertEqual(rows[8].symbol, "ROR_ACC")
-        self.assertEqual(rows[8].handler, "ror_acc")
-        self.assertEqual(rows[8].first_word_value, 0xF490)
+        self.assertEqual(rows[7].symbol, "CMPL_ACC")
+        self.assertEqual(rows[7].first_word_value, 0xF493)
+        self.assertEqual(rows[7].first_word_mask, 0xFCFF)
+        self.assertEqual(rows[7].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[8].symbol, "ROL_ACC")
+        self.assertEqual(rows[8].handler, "rol_acc")
+        self.assertEqual(rows[8].first_word_value, 0xF491)
         self.assertEqual(rows[8].first_word_mask, 0xFEFF)
         self.assertEqual(rows[8].program_word_count, 1)
         self.assertEqual(rows[8].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
         self.assertEqual(rows[8].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[8].input_resources,
                          RESOURCES_ACCUMULATORS_STATUS_C)
+        self.assertEqual(rows[9].symbol, "ROR_ACC")
+        self.assertEqual(rows[9].handler, "ror_acc")
+        self.assertEqual(rows[9].first_word_value, 0xF490)
+        self.assertEqual(rows[9].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[9].program_word_count, 1)
+        self.assertEqual(rows[9].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[9].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[9].input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_C)
         for row, symbol, handler, value, resources in (
-            (rows[9], "ROLTC_ACC", "roltc_acc", 0xF492,
+            (rows[10], "ROLTC_ACC", "roltc_acc", 0xF492,
              RESOURCES_ACCUMULATORS_STATUS_TC),
-            (rows[10], "SFTC_ACC", "sftc_acc", 0xF494,
+            (rows[11], "SFTC_ACC", "sftc_acc", 0xF494,
              RESOURCES_ACCUMULATORS),
         ):
             with self.subTest(symbol=symbol):
@@ -173,19 +181,19 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                                  LAYOUT_ACCUMULATOR_SOURCE)
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, resources)
-        self.assertEqual(rows[11].symbol, "SFTL_ACC")
-        self.assertEqual(rows[11].handler, "sftl_acc")
-        self.assertEqual(rows[11].first_word_value, 0xF0E0)
-        self.assertEqual(rows[11].first_word_mask, 0xFCE0)
-        self.assertEqual(rows[11].program_word_count, 1)
-        self.assertEqual(rows[11].operand_layout,
+        self.assertEqual(rows[12].symbol, "SFTL_ACC")
+        self.assertEqual(rows[12].handler, "sftl_acc")
+        self.assertEqual(rows[12].first_word_value, 0xF0E0)
+        self.assertEqual(rows[12].first_word_mask, 0xFCE0)
+        self.assertEqual(rows[12].program_word_count, 1)
+        self.assertEqual(rows[12].operand_layout,
                          LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5)
-        self.assertEqual(rows[11].repeatability, REPEAT_UNRESOLVED)
-        self.assertEqual(rows[11].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[12].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[12].input_resources, RESOURCES_ACCUMULATORS)
         for row, symbol, handler, value in (
-            (rows[12], "AND_ACC_SHIFT", "and_acc_shift", 0xF080),
-            (rows[13], "OR_ACC_SHIFT", "or_acc_shift", 0xF0A0),
-            (rows[14], "XOR_ACC_SHIFT", "xor_acc_shift", 0xF0C0),
+            (rows[13], "AND_ACC_SHIFT", "and_acc_shift", 0xF080),
+            (rows[14], "OR_ACC_SHIFT", "or_acc_shift", 0xF0A0),
+            (rows[15], "XOR_ACC_SHIFT", "xor_acc_shift", 0xF0C0),
         ):
             with self.subTest(symbol=symbol):
                 self.assertEqual(row.symbol, symbol)

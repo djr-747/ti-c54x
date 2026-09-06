@@ -68,17 +68,20 @@ Current progress:
   change was added. The central generator schema was minimally extended for TC
   resource tokens. Repeatability remains unresolved; the distinct SFTC
   guard-only-plus-low32-zero behavior boundary is also unresolved.
-- P2-W29 is the next planned demand-driven slice: first a private, explicitly
-  unknown 16-bit T register and candidate-only tagged effect transaction, then
+- P2-W29 is implemented locally: all RED contracts, focused tests, two
+  independent reviews, and the full `make test` gate are green. The slice adds
+  a private, explicitly unknown 16-bit T register and candidate-only tagged
+  effect transaction, then
   EXP_ACC/exp_acc through the existing accumulator-source path. State, T-effect,
   shared transaction, family, catalog/decode, CPU-proof, and orchestrator
   ownership is fixed; any architecture gap is reported rather than hidden in a
   family workaround. The plan excludes public T/MMR access, T input, OVA/OVB,
   OVM/SXM, memory, RPT/IRQ, parallel issue, timing, diagnostics, environment,
-  allocation, and emulator integration. Expected post-slice coverage is 16 rows
-  and 1083 populated words; EXP repeatability remains unresolved.
-- The registry now records 116 evidence items, 170 requirements (131 implemented,
-  16 planned, 23 unresolved), and 127 tests (111 passing, 16 planned). The latest clean
+  allocation, and emulator integration. Catalog coverage is now 16 rows and
+  1083 populated words, with reset-runnable coverage at 4/16; EXP repeatability
+  remains unresolved.
+- The registry now records 116 evidence items, 170 requirements (138 implemented,
+  9 planned, 23 unresolved), and 127 tests (118 passing, 9 planned). The latest clean
   catalog-fifteen hosted performance record is captured at `7164ace` (CI
   [green](https://github.com/djr-747/ti-c54x/actions/runs/34059815766)): NOP
   109.060 ns / 9.169 MIPS, LD-DP 182.474 ns / 5.480 MIPS, LD-ASM 194.054 ns /

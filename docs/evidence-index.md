@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 116 immutable evidence records,
-170 requirements (131 `IMPLEMENTED`, 16 `PLANNED`, 23 `UNRESOLVED`), and 127 tests
-(111 `PASSING`, 16 `PLANNED`).
+170 requirements (138 `IMPLEMENTED`, 9 `PLANNED`, 23 `UNRESOLVED`), and 127 tests
+(118 `PASSING`, 9 `PLANNED`).
 
 ## Targets
 
@@ -425,13 +425,13 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-SFTC-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W28-TC-STATUS-FOUNDATION-CONTRACT`, `E-PROJECT-P2-W28-ROLTC-SFTC-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-SFTC` |
 | `REQ-COMMON-ROLTC-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROLTC-SFTC-REPEATABILITY-BOUNDARY` |  |
 | `REQ-COMMON-SFTC-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROLTC-SFTC-REPEATABILITY-BOUNDARY` |  |
-| `REQ-PROJECT-T-REGISTER-STATE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/temporary/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-T-REGISTER` |
-| `REQ-PROJECT-T-WRITE-EFFECT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/temporary/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-T-WRITE-EFFECT` |
-| `REQ-PROJECT-EFFECT-TRANSACTION-ROUTING` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-EFFECT-TRANSACTION` |
-| `REQ-COMMON-EXP-ENCODINGS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-CATALOG` |
-| `REQ-COMMON-EXP-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-DECODE` |
-| `REQ-COMMON-EXP-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/accumulator/` | `E-TI-C54X-SPRU131G-S3.3.4.4-T-IDENTITY-P3-27-3-28`, `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-OPS` |
-| `REQ-PROJECT-CPU-EXP-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT`, `E-PROJECT-P2-W29-EXP-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-EXP` |
+| `REQ-PROJECT-T-REGISTER-STATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/temporary/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-T-REGISTER` |
+| `REQ-PROJECT-T-WRITE-EFFECT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/temporary/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-T-WRITE-EFFECT` |
+| `REQ-PROJECT-EFFECT-TRANSACTION-ROUTING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT` | `T-PROJECT-EFFECT-TRANSACTION` |
+| `REQ-COMMON-EXP-ENCODINGS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-CATALOG` |
+| `REQ-COMMON-EXP-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-DECODE` |
+| `REQ-COMMON-EXP-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/accumulator/` | `E-TI-C54X-SPRU131G-S3.3.4.4-T-IDENTITY-P3-27-3-28`, `E-TI-C54X-SPRU172C-S4-EXP-P4-52` | `T-COMMON-EXP-OPS` |
+| `REQ-PROJECT-CPU-EXP-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT`, `E-PROJECT-P2-W29-EXP-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-EXP` |
 | `REQ-COMMON-EXP-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-EXP-REPEATABILITY-BOUNDARY-P2-19-2-21` |  |
 
 ## Tests
@@ -562,13 +562,13 @@ exist in the repository.
 | `T-COMMON-SFTC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_sftc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sftc_decode"}` | `REQ-COMMON-SFTC-DECODE` |
 | `T-COMMON-SFTC-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/shift/test_sftc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sftc"}` | `REQ-COMMON-SFTC-EFFECTS` |
 | `T-PROJECT-CPU-SFTC` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_sftc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_sftc"}` | `REQ-PROJECT-CPU-SFTC-RETIREMENT` |
-| `T-PROJECT-T-REGISTER` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/state/temporary/test_t_register.c` | `null` | `REQ-PROJECT-T-REGISTER-STATE` |
-| `T-PROJECT-T-WRITE-EFFECT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/temporary/test_t_write_effect.c` | `null` | `REQ-PROJECT-T-WRITE-EFFECT` |
-| `T-PROJECT-EFFECT-TRANSACTION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_effect_transaction.c` | `null` | `REQ-PROJECT-EFFECT-TRANSACTION-ROUTING` |
-| `T-COMMON-EXP-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_exp_metadata.c` | `null` | `REQ-COMMON-EXP-ENCODINGS` |
-| `T-COMMON-EXP-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_exp_decode.c` | `null` | `REQ-COMMON-EXP-DECODE` |
-| `T-COMMON-EXP-OPS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/accumulator/test_exp.c` | `null` | `REQ-COMMON-EXP-EFFECTS` |
-| `T-PROJECT-CPU-EXP` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_exp.c` | `null` | `REQ-PROJECT-CPU-EXP-RETIREMENT` |
+| `T-PROJECT-T-REGISTER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/temporary/test_t_register.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.t_register"}` | `REQ-PROJECT-T-REGISTER-STATE` |
+| `T-PROJECT-T-WRITE-EFFECT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/temporary/test_t_write_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.t_write_effect"}` | `REQ-PROJECT-T-WRITE-EFFECT` |
+| `T-PROJECT-EFFECT-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_effect_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.effect_transaction"}` | `REQ-PROJECT-EFFECT-TRANSACTION-ROUTING` |
+| `T-COMMON-EXP-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_exp_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.exp_metadata"}` | `REQ-COMMON-EXP-ENCODINGS` |
+| `T-COMMON-EXP-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_exp_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.exp_decode"}` | `REQ-COMMON-EXP-DECODE` |
+| `T-COMMON-EXP-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/accumulator/test_exp.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.exp"}` | `REQ-COMMON-EXP-EFFECTS` |
+| `T-PROJECT-CPU-EXP` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_exp.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_exp"}` | `REQ-PROJECT-CPU-EXP-RETIREMENT` |
 
 ## Correction and tombstone policy
 
