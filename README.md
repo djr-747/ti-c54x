@@ -22,13 +22,13 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover 15 declarative one-word
-  opcode rows: evidence-backed `NOP`; the three immediate status-field forms
+- Production decode and CPU execution now cover 16 declarative one-word opcode
+  rows: evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
-  `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, and `SFTC`. The logical families
-  add 384
+  `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, `SFTC`, and `EXP`. The logical
+  families add 384
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
-  preserve C and all other status. Those rows expand to 1081 populated
+  preserve C and all other status. Those rows expand to 1083 populated
   first-word encodings; that is a lookup-population count, not instruction
   count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
@@ -68,8 +68,9 @@ Current progress:
   change was added. The central generator schema was minimally extended for TC
   resource tokens. Repeatability remains unresolved; the distinct SFTC
   guard-only-plus-low32-zero behavior boundary is also unresolved.
-- P2-W29 is implemented at `fedbd6a`: all RED contracts, focused tests, two
-  independent reviews, the full `make test` gate, and [remote
+- P2-W29 is implemented at `fedbd6a` and ledger-closed at `96d86ed`: all RED
+  contracts, focused tests, two independent reviews, the full `make test` gate,
+  and [remote
   CI](https://github.com/djr-747/ti-c54x/actions/runs/34062796872) are green. The
   slice adds a private, explicitly unknown 16-bit T register and candidate-only
   tagged effect transaction, then
@@ -81,8 +82,15 @@ Current progress:
   allocation, and emulator integration. Catalog coverage is now 16 rows and
   1083 populated words, with reset-runnable coverage at 4/16; EXP repeatability
   remains unresolved.
-- The registry now records 116 evidence items, 170 requirements (138 implemented,
-  9 planned, 23 unresolved), and 127 tests (118 passing, 9 planned). The latest
+- P2-W30 is frozen as a plan/evidence-only slice for six two-word immediate
+  AND/OR/XOR accumulator forms. The six rows would add 204 populated first words,
+  taking the catalog to 22 rows/1287 populated words while reset-runnable coverage
+  remains 4/22. Existing extension fetch, accumulator input/effect, tagged
+  transaction, and CPU retirement seams are reused; common computation and the
+  three family leaves have explicit mirrored ownership. Repeatability and timing
+  remain unresolved, and any new shared seam is a reported GAP.
+- The registry now records 122 evidence items, 178 requirements (138 implemented,
+  17 planned, 23 unresolved), and 135 tests (118 passing, 17 planned). The latest
   clean catalog-sixteen performance record is captured at `fedbd6a`: NOP 124.251
   ns / 8.048 MIPS, LD-DP 205.652 ns / 4.863 MIPS, LD-ASM 209.142 ns / 4.781
   MIPS, LD-ARP 222.837 ns / 4.488 MIPS, and mixed-current 206.376 ns / 4.846
