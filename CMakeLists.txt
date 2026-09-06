@@ -68,6 +68,7 @@ set(ti_c54x_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_indexed.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_long_offset.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_reverse_carry.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_circular.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_intrinsic.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_dependencies.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_validate.c

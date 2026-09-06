@@ -1060,6 +1060,34 @@
         "anchor": "ti_c54x_sequencer_validate_address_effect"
       },
       "assertion": "The private sequencer validation seam performs deterministic read-only address-effect validation in its documented dependency order, writes a zeroed commit description on every error, and leaves the sole architectural-state write to the apply boundary. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/address/indirect_circular.h",
+        "anchor": "ti_c54x_indirect_circular_word16"
+      },
+      "assertion": "The circular address planner and intrinsic validator own checked CMPT=0 WORD16 MOD8/MOD10 effects with copied AR/BK source snapshots, strict argument and initial-buffer validation, canonical BK=0 NONE updates, and all-zero effects on rejected planner results. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-INDIRECT-CIRCULAR-APPLICATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_apply.h",
+        "anchor": "ti_c54x_sequencer_apply_address_result"
+      },
+      "assertion": "The sequencer application contract validates circular effect shape and phase, reads CMPT/ARP before the selected AR and then BK, distinguishes unknown and stale dependencies, commits at most one selected-AR write for positive BK, and leaves canonical BK=0 NONE effects non-mutating. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -1809,11 +1837,11 @@
     },
     {
       "id": "REQ-COMMON-INDIRECT-CIRCULAR-BK",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
-      "claim": "CMPT=0 circular MOD8/MOD10 effects obtain a known 16-bit BK size through the state seam and apply the documented R/N/base/index/step algorithm; BK=0 leaves the address unmodified, while unsupported forms remain separate requirements.",
+      "claim": "CMPT=0 circular MOD8/MOD10 effects obtain a known 16-bit BK size through the state seam and apply the documented R/N/base/index/step algorithm; BK=0 carries the canonical NONE update and leaves the selected address register unmodified, while unsupported forms remain separate requirements.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK",
         "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"
@@ -1822,7 +1850,7 @@
     },
     {
       "id": "REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
@@ -1836,17 +1864,37 @@
     },
     {
       "id": "REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/",
-      "claim": "A valid CMPT=0 WORD16 MOD8/MOD10 effect carries the pre-access selected AR as its effective address and, for positive BK, one POST_ACCESS selected-AR circular update; BK=0 produces no AR update, while bus, memory, and timing behavior remain outside this slice.",
+      "claim": "A valid CMPT=0 WORD16 MOD8/MOD10 effect carries the pre-access selected AR as its effective address and, for positive BK, one POST_ACCESS selected-AR circular update; BK=0 carries the canonical NONE update and leaves architectural state unmodified, while bus, memory, and timing behavior remain outside this slice.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16",
         "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM",
         "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
       ],
       "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "The circular planner validates argument precedence, rejects an initial selected AR outside the documented buffer, copies AR/BK source snapshots, emits canonical BK=0 NONE updates, validates intrinsic effect shape, and returns an all-zero effect for every rejected planner result.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-INDIRECT-CIRCULAR-APPLICATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The circular sequencer application validates intrinsic effect shape and phase, orders CMPT/ARP then selected-AR then BK dependency reads, distinguishes unknown and stale sources, commits at most one selected-AR write for positive BK, and preserves the complete state on rejection or BK=0 NONE success.",
+      "evidence_ids": ["E-PROJECT-INDIRECT-CIRCULAR-APPLICATION"],
+      "test_ids": ["T-PROJECT-INDIRECT-CIRCULAR-APPLICATION"]
     },
     {
       "id": "REQ-COMMON-INDIRECT-CIRCULAR-INITIAL-AR-BOUNDARY",
@@ -2318,10 +2366,10 @@
     },
     {
       "id": "T-COMMON-INDIRECT-CIRCULAR-BK",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/address/test_indirect_circular_word.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_circular_word"},
       "requirement_ids": [
         "REQ-COMMON-INDIRECT-CIRCULAR-BK",
         "REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16"
@@ -2329,11 +2377,27 @@
     },
     {
       "id": "T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/test_indirect_circular_effect_apply.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_circular_effect_apply"},
       "requirement_ids": ["REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_indirect_circular_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_circular_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-INDIRECT-CIRCULAR-APPLICATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_indirect_circular_effect_apply_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_circular_effect_apply_contract"},
+      "requirement_ids": ["REQ-PROJECT-INDIRECT-CIRCULAR-APPLICATION"]
     },
     {
       "id": "T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",

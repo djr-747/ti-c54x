@@ -9,9 +9,13 @@
  * commit description construction, architectural writes, planning, decode,
  * CPU lifecycle, buses, memory, timing, diagnostics, or public ABI. State
  * and effect are borrowed for the duration of the call and are not retained.
+ * Circular effects read the selected AR and then BK, classify either unknown
+ * accessor as UNKNOWN_SOURCE, and never write either register.
  */
 
 #include "address_effect_dependencies.h"
+
+#include "state/block_size_register.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -124,6 +128,34 @@ ti_c54x_sequencer_validate_address_effect_dependencies(
         if (current_ar !=
             effect->source.value.ar_reverse_carry.ar0_value_before) {
             return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
+        read_status = ti_c54x_arch_state_read_ar(
+            state, effect->source.value.ar_circular.index, &current_ar);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (current_ar != effect->source.value.ar_circular.value_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+        {
+            uint16_t current_bk;
+
+            read_status = ti_c54x_arch_state_read_bk(state, &current_bk);
+            if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+                return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+            }
+            if (read_status != TI_C54X_ARCH_STATE_OK) {
+                return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+            }
+            if (current_bk !=
+                effect->source.value.ar_circular.bk_value_before) {
+                return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+            }
         }
         break;
     case TI_C54X_ADDRESS_SOURCE_DIRECT_DP: {

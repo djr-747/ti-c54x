@@ -14,6 +14,10 @@
  * producer contracts validated before any phase relation or state access.
  * MOD13 long-offset and MOD4/MOD7 reverse-carry effects invoke their
  * address-owned intrinsic validators before this phase/mode/source sequence.
+ * Circular MOD8/MOD10 WORD16 effects invoke their address-owned intrinsic
+ * validator before this phase/mode/source sequence; positive-BK effects read
+ * the selected AR followed by BK and never write BK, while BK=0 effects carry
+ * the canonical NONE update and remain non-mutating.
  * Does not own: address planning, opcode decoding, CPU lifecycle, buses,
  * memory, timing, or diagnostics. It owns validation of the private state
  * precondition carried by an address effect, but not the storage or layout of
@@ -69,7 +73,11 @@ typedef enum ti_c54x_address_apply_status {
  * update; the raw offset is immutable input and is never stale-checked.
  * Reverse-carry effects require a validator-approved WORD16 old-address
  * operand and one POST_ACCESS selected-AR update; their copied AR0 value is
- * read after the selected AR and is never written. Direct DP/SP have no
+ * read after the selected AR and is never written. Circular effects require
+ * a validator-approved WORD16 old-address operand; positive-BK effects carry
+ * one POST_ACCESS selected-AR update, while BK=0 effects carry no update.
+ * Their copied BK value is read after the selected AR and is never written.
+ * Direct DP/SP have no
  * update and never touch an AR.
  */
 ti_c54x_address_apply_status ti_c54x_sequencer_apply_address_result(

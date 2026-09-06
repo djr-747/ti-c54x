@@ -38,6 +38,7 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/address/indirect_indexed.o \
 	$(BUILD_DIR)/obj/address/indirect_long_offset.o \
 	$(BUILD_DIR)/obj/address/indirect_reverse_carry.o \
+	$(BUILD_DIR)/obj/address/indirect_circular.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_intrinsic.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_dependencies.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_validate.o \
@@ -85,6 +86,10 @@ INDIRECT_LONG_OFFSET_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_long_offset
 INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_long_offset_effect_apply_contract
 INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_effect_apply
 INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_reverse_carry_effect_apply_contract
+INDIRECT_CIRCULAR_WORD_TEST := $(BUILD_DIR)/test_indirect_circular_word
+INDIRECT_CIRCULAR_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_circular_contract
+INDIRECT_CIRCULAR_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_circular_effect_apply
+INDIRECT_CIRCULAR_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_indirect_circular_effect_apply_contract
 ADDRESS_EFFECT_STATE_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_state_contract
 ADDRESS_OPERAND_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_operand_apply_contract
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
@@ -98,6 +103,7 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_indexed.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_long_offset.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_reverse_carry.o \
+	$(OBSERVER_OFF_DIR)/obj/address/indirect_circular.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_intrinsic.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_dependencies.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_validate.o \
@@ -134,6 +140,10 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(REVERSE_CARRY_TEST) \
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST) \
 	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST) \
+	$(INDIRECT_CIRCULAR_WORD_TEST) \
+	$(INDIRECT_CIRCULAR_CONTRACT_TEST) \
+	$(INDIRECT_CIRCULAR_EFFECT_APPLY_TEST) \
+	$(INDIRECT_CIRCULAR_EFFECT_APPLY_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST) \
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST) \
 	$(OBSERVER_TEST) \
@@ -179,6 +189,10 @@ test: build quality-test
 	$(INDIRECT_LONG_OFFSET_EFFECT_APPLY_CONTRACT_TEST)
 	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_TEST)
 	$(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST)
+	$(INDIRECT_CIRCULAR_WORD_TEST)
+	$(INDIRECT_CIRCULAR_CONTRACT_TEST)
+	$(INDIRECT_CIRCULAR_EFFECT_APPLY_TEST)
+	$(INDIRECT_CIRCULAR_EFFECT_APPLY_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_STATE_CONTRACT_TEST)
 	$(ADDRESS_OPERAND_APPLY_CONTRACT_TEST)
 	$(OBSERVER_TEST)
@@ -461,6 +475,32 @@ $(INDIRECT_REVERSE_CARRY_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_
 	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
 	src/address/indirect_reverse_carry.h src/address/address_effect.h \
 	src/state/arch_state.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_CIRCULAR_WORD_TEST): tests/unit/address/test_indirect_circular_word.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_circular.h \
+	src/address/address_effect.h include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_CIRCULAR_CONTRACT_TEST): tests/unit/address/test_indirect_circular_contract.c \
+	tests/support/test_harness.h $(LIB) src/address/indirect_circular.h \
+	src/address/address_effect.h include/ti_c54x/address.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_CIRCULAR_EFFECT_APPLY_TEST): tests/unit/sequencer/test_indirect_circular_effect_apply.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_circular.h src/address/address_effect.h \
+	src/state/arch_state.h src/state/block_size_register.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(INDIRECT_CIRCULAR_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_indirect_circular_effect_apply_contract.c \
+	tests/support/test_harness.h $(LIB) src/sequencer/address_effect_apply.h \
+	src/address/indirect_circular.h src/address/address_effect.h \
+	src/state/arch_state.h src/state/block_size_register.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 

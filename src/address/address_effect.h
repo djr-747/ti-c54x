@@ -67,7 +67,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_DIRECT_SP = 3,
     TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4,
     TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5,
-    TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6
+    TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6,
+    TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR = 7
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -104,6 +105,17 @@ typedef struct ti_c54x_address_source_ar_reverse_carry {
     uint16_t ar0_value_before;
 } ti_c54x_address_source_ar_reverse_carry;
 
+/* Snapshot for CMPT=0 fixed-step circular MOD8/MOD10 forms.  `index` selects
+ * ARx; `modification` retains the raw architectural modifier (8 or 10);
+ * `value_before` is the old selected AR operand address; and `bk_value_before`
+ * is the copied 16-bit circular-buffer size used by the address arithmetic. */
+typedef struct ti_c54x_address_source_ar_circular {
+    uint8_t index;
+    uint8_t modification;
+    uint16_t value_before;
+    uint16_t bk_value_before;
+} ti_c54x_address_source_ar_circular;
+
 typedef struct ti_c54x_address_source_direct_dp {
     uint16_t dp9;
     uint8_t dma7;
@@ -123,6 +135,7 @@ typedef struct ti_c54x_address_source {
         ti_c54x_address_source_ar_indexed ar_indexed;
         ti_c54x_address_source_ar_long_offset ar_long_offset;
         ti_c54x_address_source_ar_reverse_carry ar_reverse_carry;
+        ti_c54x_address_source_ar_circular ar_circular;
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
     } value;

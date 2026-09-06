@@ -7,13 +7,16 @@
  * commit description consumed by the sequencer.
  * Does not own: architectural state reads or writes, address planning,
  * opcode decoding, CPU lifecycle, buses, memory, timing, diagnostics, or
- * public ABI. The effect is borrowed for the duration of the call and is
- * never retained or modified; the output is caller-owned and zeroed before
- * validation.
+ * public ABI. Circular MOD8/MOD10 WORD16 effects are delegated to the
+ * address-owned circular validator before generic shape checks; BK=0's
+ * canonical NONE update is accepted only through that validator. The effect
+ * is borrowed for the duration of the call and is never retained or modified;
+ * the output is caller-owned and zeroed before validation.
  */
 
 #include "address_effect_intrinsic.h"
 
+#include "address/indirect_circular.h"
 #include "address/indirect_long_offset.h"
 #include "address/indirect_reverse_carry.h"
 
@@ -42,6 +45,7 @@ static bool valid_source_kind(ti_c54x_address_source_kind kind)
     case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
         return true;
     default:
         return false;
@@ -61,6 +65,8 @@ static bool valid_state_policy_for_source(
             policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_SP &&
@@ -72,7 +78,8 @@ static bool source_supports_ar_update(ti_c54x_address_source_kind source_kind)
     return source_kind == TI_C54X_ADDRESS_SOURCE_AR ||
            source_kind == TI_C54X_ADDRESS_SOURCE_AR_INDEXED ||
            source_kind == TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET ||
-           source_kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY;
+           source_kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY ||
+           source_kind == TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR;
 }
 
 static uint8_t source_ar_index(const ti_c54x_address_source *source)
@@ -86,6 +93,8 @@ static uint8_t source_ar_index(const ti_c54x_address_source *source)
         return source->value.ar_long_offset.index;
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
         return source->value.ar_reverse_carry.index;
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
+        return source->value.ar_circular.index;
     default:
         return UINT8_C(0);
     }
@@ -102,6 +111,8 @@ static uint16_t source_ar_value_before(const ti_c54x_address_source *source)
         return source->value.ar_long_offset.value_before;
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
         return source->value.ar_reverse_carry.value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
+        return source->value.ar_circular.value_before;
     default:
         return UINT16_C(0);
     }
@@ -130,6 +141,10 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
     }
     if (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY &&
         !ti_c54x_indirect_reverse_carry_effect_is_valid(effect)) {
+        return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+    }
+    if (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR &&
+        !ti_c54x_indirect_circular_effect_is_valid(effect)) {
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
 
@@ -163,6 +178,7 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
         break;
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
         break;
     case TI_C54X_ADDRESS_SOURCE_DIRECT_DP:
         if (effect->source.value.direct_dp.dp9 > UINT16_C(0x01ff) ||
@@ -198,8 +214,12 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
             update->value_after != UINT16_C(0)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
-        if (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR &&
-            effect->operand.first_word != effect->source.value.ar.value_before) {
+        if ((effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR &&
+             effect->operand.first_word !=
+                 effect->source.value.ar.value_before) ||
+            (effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR &&
+             effect->source.value.ar_circular.bk_value_before !=
+                 UINT16_C(0))) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     } else if (update->target == TI_C54X_ADDRESS_UPDATE_AR) {

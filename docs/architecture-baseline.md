@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 56 immutable evidence
-records, 65 requirements, and 51 tests (45 `PASSING`, 6 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 60 immutable evidence
+records, 74 requirements, and 54 tests (49 `PASSING`, 5 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -298,15 +298,50 @@ The common state foundation now carries BK as a private 16-bit architectural
 value. TI `SPRU131G` §3.3.4.8 (printed p. 3-28) defines BK as the circular-buffer
 size register used by the ARAUs; §3.3.4/Table 3-3 (printed p. 3-27) maps the CPU
 memory-mapped register to data-memory address `0x19`, but MMR routing remains a
-planned `src/bus/` responsibility. The §5.5.3.4 record (printed pp. 5-15–5-16)
-is retained as future circular-addressing evidence only: no circular arithmetic,
-base alignment, boundary, step, width, or timing behavior is implemented here.
+planned `src/bus/` responsibility. The original BK foundation deliberately made
+no circular-arithmetic claim; the later fixed-step slice below consumes separate
+§5.5.3/Table 5-4 and §5.5.3.4 evidence without widening BK reset or MMR-routing
+behavior.
 
 `src/state/block_size_register.*` owns checked BK read/write accessors with
 explicit knownness and rejection statuses. Reset leaves the physical BK storage
 zeroed but unknown under the project contract; this work piece makes no TI reset
-claim. Circular address planners and memory-mapped register routing remain
-separate future ownership slices.
+claim. Memory-mapped register routing remains a separate future ownership slice.
+
+## Circular fixed-step WORD16 foundation
+
+`src/address/indirect_circular.*` owns pure CMPT=0 single-operand WORD16
+planning for MOD8 and MOD10. Table 5-4 supplies the old-AR operand followed by
+circular decrement or increment and the one-word fixed step; §5.5.3.4 supplies
+BK size, alignment, index, and signed-step rules. The planner accepts copied
+scalar values only, supports AR0–AR7 for read and write operands, and returns a
+value-owned circular source snapshot rather than reading architectural state.
+
+For positive BK, the planner chooses the least `N` for which `2^N > BK`, clears
+the low `N` selected-AR bits to obtain EFB, and requires the initial low-`N`
+index to be strictly less than BK. It adds `-1` for MOD8 or `+1` for MOD10,
+subtracts BK on an upper crossing, and adds BK on a negative crossing. Wider
+intermediates and an explicit 32-bit mask make the `N=16` case defined C. An
+initial AR outside the documented buffer returns the unresolved-boundary status;
+the implementation does not invent normalization or underlying hardware
+behavior outside the source's first-access precondition.
+
+BK zero is represented as the documented no-modification case: the old AR still
+addresses the WORD16 operand, the circular source retains both AR and BK
+snapshots, and the effect carries a canonical NONE update. This deliberately
+avoids a same-value register write while still requiring the sequencer to prove
+that CMPT, ARP, selected AR, and BK match the planned inputs.
+
+Intrinsic circular shape and arithmetic are revalidated by the address owner.
+The sequencer then preserves the shared order: CMPT, ARP, selected AR, and BK.
+Unknown and stale selected AR or BK remain distinct transactional failures;
+positive BK can produce exactly one selected-AR write and BK is never an update
+target. The generic apply owner remains the sole mutation boundary.
+
+This slice does not claim initial out-of-buffer behavior, LONG32 circular step
+scaling, MOD9/MOD11 AR0 steps, MOD14 offset behavior, CMPT=1, dual operands,
+MMR routing, opcode decode, memory access, buses, repeat/pipeline behavior, or
+machine-cycle timing. Those remain explicit unresolved or future requirements.
 
 ## Evidence and conformance rules
 

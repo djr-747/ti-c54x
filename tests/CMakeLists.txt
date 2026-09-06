@@ -244,6 +244,38 @@ add_test(NAME ti_c54x.indirect_reverse_carry_contract
     COMMAND ti_c54x_test_indirect_reverse_carry_contract
 )
 
+add_executable(ti_c54x_test_indirect_circular_word
+    unit/address/test_indirect_circular_word.c
+)
+target_compile_features(ti_c54x_test_indirect_circular_word PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_circular_word PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_circular_word PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_circular_word)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_circular_word)
+add_test(NAME ti_c54x.indirect_circular_word
+    COMMAND ti_c54x_test_indirect_circular_word
+)
+
+add_executable(ti_c54x_test_indirect_circular_contract
+    unit/address/test_indirect_circular_contract.c
+)
+target_compile_features(ti_c54x_test_indirect_circular_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_circular_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_circular_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_circular_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_circular_contract)
+add_test(NAME ti_c54x.indirect_circular_contract
+    COMMAND ti_c54x_test_indirect_circular_contract
+)
+
 add_executable(ti_c54x_test_address_effect_contract
     unit/address/test_address_effect_contract.c
 )
@@ -386,6 +418,38 @@ ti_c54x_enable_warnings(ti_c54x_test_address_effect_apply_contract)
 ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_apply_contract)
 add_test(NAME ti_c54x.address_effect_apply_contract
     COMMAND ti_c54x_test_address_effect_apply_contract
+)
+
+add_executable(ti_c54x_test_indirect_circular_effect_apply
+    unit/sequencer/test_indirect_circular_effect_apply.c
+)
+target_compile_features(ti_c54x_test_indirect_circular_effect_apply PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_circular_effect_apply PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_circular_effect_apply PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_circular_effect_apply)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_circular_effect_apply)
+add_test(NAME ti_c54x.indirect_circular_effect_apply
+    COMMAND ti_c54x_test_indirect_circular_effect_apply
+)
+
+add_executable(ti_c54x_test_indirect_circular_effect_apply_contract
+    unit/sequencer/test_indirect_circular_effect_apply_contract.c
+)
+target_compile_features(ti_c54x_test_indirect_circular_effect_apply_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_indirect_circular_effect_apply_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_indirect_circular_effect_apply_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_indirect_circular_effect_apply_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_indirect_circular_effect_apply_contract)
+add_test(NAME ti_c54x.indirect_circular_effect_apply_contract
+    COMMAND ti_c54x_test_indirect_circular_effect_apply_contract
 )
 
 add_executable(ti_c54x_test_address_effect_validate_contract
