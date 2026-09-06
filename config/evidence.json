@@ -952,6 +952,68 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The sequencer reverse-carry transaction validates the tagged source arm and POST_ACCESS relation before ordered selected-AR then AR0 dependency reads, preserves complete state on rejection, and commits at most one selected-AR write without recomputing reverse-carry arithmetic. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4.8-P3-28-BK-WIDTH",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4.8",
+        "printed_page_start": "3-28",
+        "printed_page_end": "3-28"
+      },
+      "assertion": "Section 3.3.4.8 defines BK as the 16-bit circular-buffer size register used by the ARAUs to specify the data-block size. This record does not claim circular arithmetic, memory mapping, reset, or timing behavior."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4",
+        "printed_page_start": "3-27",
+        "printed_page_end": "3-27"
+      },
+      "assertion": "Table 3-3 maps the CPU memory-mapped BK circular-buffer size register to data-memory address 0x19. This is a mapping record only; it does not implement or claim common-core MMR routing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.4",
+        "printed_page_start": "5-15",
+        "printed_page_end": "5-16"
+      },
+      "assertion": "The circular-addressing discussion defines BK as the circular-buffer size input and describes its relationship to the effective base, end, index, and step for future circular-addressing work. This record does not implement circular arithmetic or select boundary behavior."
+    },
+    {
+      "id": "E-PROJECT-ARCH-STATE-BK-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/state/block_size_register.h",
+        "anchor": "ti_c54x_arch_state_read_bk"
+      },
+      "assertion": "The private BK state seam owns a copied 16-bit value with checked read/write accessors, explicit OK/UNKNOWN/INVALID_ARGUMENT status, output-preserving rejected reads, and knownness established only by a valid write. Reset leaves BK physically zero but architecturally unknown. This is a project contract, not TI reset or circular behavior evidence."
     }
   ],
   "requirements": [
@@ -1668,6 +1730,46 @@
       "claim": "The sequencer reverse-carry application contract validates source shape and ordered dependencies, preserves state byte-for-byte on rejection, and commits at most one selected-AR POST_ACCESS write without recomputing arithmetic.",
       "evidence_ids": ["E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"],
       "test_ids": ["T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-ARCH-STATE-BK-WIDTH",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/state/",
+      "claim": "Represent the documented common circular-buffer size register BK as a 16-bit architectural value without claiming reset behavior, circular arithmetic, or memory-mapped routing.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S3.3.4.8-P3-28-BK-WIDTH"],
+      "test_ids": ["T-COMMON-ARCH-STATE-BK-WIDTH"]
+    },
+    {
+      "id": "REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "The private BK accessor contract keeps a copied 16-bit value with explicit OK/UNKNOWN/INVALID_ARGUMENT status, physically zeroes BK representation at reset while leaving its architectural value unknown, preserves rejected read outputs and state, and establishes knownness only through a valid write.",
+      "evidence_ids": ["E-PROJECT-ARCH-STATE-BK-CONTRACT"],
+      "test_ids": ["T-PROJECT-ARCH-STATE-BK-KNOWNNESS"]
+    },
+    {
+      "id": "REQ-COMMON-BK-MMR-ROUTING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/bus/",
+      "claim": "Expose BK at CPU data-memory MMR word address 0x0019 through a future bus/MMR route; state access remains owned by src/state.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS"],
+      "test_ids": ["T-COMMON-BK-MMR-ROUTING"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-BK",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "CMPT=0 circular address effects obtain BK through the state seam and use it as circular-buffer size R; address arithmetic, boundary, and operand-width behavior belong to separate requirements.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK"],
+      "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-BK"]
     }
   ],
   "tests": [
@@ -2049,6 +2151,38 @@
       "path": "tests/unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_reverse_carry_effect_apply_contract"},
       "requirement_ids": ["REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"]
+    },
+    {
+      "id": "T-COMMON-ARCH-STATE-BK-WIDTH",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/state/test_block_size_register.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.block_size_register"},
+      "requirement_ids": ["REQ-COMMON-ARCH-STATE-BK-WIDTH"]
+    },
+    {
+      "id": "T-PROJECT-ARCH-STATE-BK-KNOWNNESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_block_size_register_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.block_size_register_contract"},
+      "requirement_ids": ["REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS"]
+    },
+    {
+      "id": "T-COMMON-BK-MMR-ROUTING",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/bus/test_bk_mmr.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-BK-MMR-ROUTING"]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-CIRCULAR-BK",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_circular_bk.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-INDIRECT-CIRCULAR-BK"]
     }
   ]
 }

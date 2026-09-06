@@ -40,6 +40,7 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/address/indirect_reverse_carry.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
+	$(BUILD_DIR)/obj/state/block_size_register.o \
 	$(BUILD_DIR)/obj/cpu/cpu.o \
 	$(BUILD_DIR)/obj/debug/observer.o
 CPU_TEST := $(BUILD_DIR)/test_cpu_api
@@ -66,6 +67,8 @@ ARCH_STATE_RESET_TEST := $(BUILD_DIR)/test_arch_state_reset
 ARCH_STATE_KNOWNNESS_TEST := $(BUILD_DIR)/test_arch_state_knownness
 ARCH_STATE_ADDRESS_FIELDS_TEST := $(BUILD_DIR)/test_arch_state_address_fields
 ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST := $(BUILD_DIR)/test_arch_state_address_field_contract
+BLOCK_SIZE_REGISTER_TEST := $(BUILD_DIR)/test_block_size_register
+BLOCK_SIZE_REGISTER_CONTRACT_TEST := $(BUILD_DIR)/test_block_size_register_contract
 ADDRESS_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_address_effect_apply
 ADDRESS_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_apply_contract
 INDIRECT_CMPT0_STATE_TEST := $(BUILD_DIR)/test_indirect_cmpt0_state
@@ -94,6 +97,7 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/reverse_carry.o \
 	$(OBSERVER_OFF_DIR)/obj/state/arch_state.o \
+	$(OBSERVER_OFF_DIR)/obj/state/block_size_register.o \
 	$(OBSERVER_OFF_DIR)/obj/cpu/cpu.o \
 	$(OBSERVER_OFF_DIR)/obj/debug/observer.o
 
@@ -111,6 +115,7 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(REVERSE_CARRY_TEST) \
 	$(INDIRECT_REVERSE_CARRY_WORD_TEST) $(INDIRECT_REVERSE_CARRY_CONTRACT_TEST) \
 	$(ARCH_STATE_RESET_TEST) $(ARCH_STATE_KNOWNNESS_TEST) \
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST) $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST) \
+	$(BLOCK_SIZE_REGISTER_TEST) $(BLOCK_SIZE_REGISTER_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_APPLY_TEST) $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST) \
 	$(INDIRECT_CMPT0_STATE_TEST) $(ADDRESS_STATE_POLICY_CONTRACT_TEST) \
 	$(INDIRECT_LONG32_EFFECT_APPLY_TEST) \
@@ -149,6 +154,8 @@ test: build quality-test
 	$(ARCH_STATE_KNOWNNESS_TEST)
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST)
 	$(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST)
+	$(BLOCK_SIZE_REGISTER_TEST)
+	$(BLOCK_SIZE_REGISTER_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_APPLY_TEST)
 	$(ADDRESS_EFFECT_APPLY_CONTRACT_TEST)
 	$(INDIRECT_CMPT0_STATE_TEST)
@@ -339,6 +346,18 @@ $(ARCH_STATE_ADDRESS_FIELDS_TEST): tests/unit/state/test_arch_state_address_fiel
 $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST): tests/unit/state/test_arch_state_address_field_contract.c \
 	tests/support/test_harness.h src/state/arch_state.h \
 	src/state/register_layout.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(BLOCK_SIZE_REGISTER_TEST): tests/unit/state/test_block_size_register.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/block_size_register.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(BLOCK_SIZE_REGISTER_CONTRACT_TEST): tests/unit/state/test_block_size_register_contract.c \
+	tests/support/test_harness.h src/state/arch_state.h \
+	src/state/block_size_register.h $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
 

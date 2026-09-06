@@ -4,7 +4,8 @@
 /* Module contract
  * Owns: private, fixed-size architectural register storage, common TI reset
  * seeding, and checked knownness-aware AR/SP and ARP/CMPT status-field access,
- * knownness, and field-limited mutation for ARP, DP, CPL, and CMPT.
+ * knownness, and field-limited mutation for ARP, DP, CPL, and CMPT. It also
+ * owns private BK storage; block_size_register.h owns BK access.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -27,6 +28,7 @@ typedef struct ti_c54x_arch_state {
     uint16_t pc_word;
     uint16_t ifr;
     uint16_t rc;
+    uint16_t bk;
     uint16_t sp;
     uint16_t ar[8];
     uint16_t st0;
@@ -41,9 +43,10 @@ typedef struct ti_c54x_arch_state {
 } ti_c54x_arch_state;
 
 /* Seed the documented common TI reset subset.  The reset clears stale storage
- * and knownness first.  AR0-AR7 and SP remain physically zero but unknown,
- * because SPRU131G §6.9 does not initialize them.  A NULL state returns
- * INVALID_ARGUMENT. */
+ * and knownness first. AR0-AR7, SP, and BK remain physically zero but
+ * architecturally unknown: no reset value is adopted for them because
+ * SPRU131G §6.9 does not specify one. This zero-plus-unknown representation
+ * is project policy. A NULL state returns INVALID_ARGUMENT. */
 ti_c54x_arch_state_status
 ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state);
 

@@ -324,6 +324,38 @@ add_test(NAME ti_c54x.arch_state_address_field_contract
     COMMAND ti_c54x_test_arch_state_address_field_contract
 )
 
+add_executable(ti_c54x_test_block_size_register
+    unit/state/test_block_size_register.c
+)
+target_compile_features(ti_c54x_test_block_size_register PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_block_size_register PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_block_size_register PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_block_size_register)
+ti_c54x_enable_sanitizers(ti_c54x_test_block_size_register)
+add_test(NAME ti_c54x.block_size_register
+    COMMAND ti_c54x_test_block_size_register
+)
+
+add_executable(ti_c54x_test_block_size_register_contract
+    unit/state/test_block_size_register_contract.c
+)
+target_compile_features(ti_c54x_test_block_size_register_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_block_size_register_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_block_size_register_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_block_size_register_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_block_size_register_contract)
+add_test(NAME ti_c54x.block_size_register_contract
+    COMMAND ti_c54x_test_block_size_register_contract
+)
+
 add_executable(ti_c54x_test_address_effect_apply
     unit/sequencer/test_address_effect_apply.c
 )

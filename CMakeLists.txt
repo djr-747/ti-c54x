@@ -70,6 +70,7 @@ set(ti_c54x_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_reverse_carry.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_apply.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/state/arch_state.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/state/block_size_register.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/cpu.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/debug/observer.c
 )

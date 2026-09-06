@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 51 immutable evidence
-records, 60 requirements, and 45 tests (41 `PASSING`, 4 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 55 immutable evidence
+records, 64 requirements, and 49 tests (43 `PASSING`, 6 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -288,6 +288,22 @@ owned by the CPU shell. It is not the TI hardware-reset value and is intentional
 not migrated or embedded by this work piece. A future integration must preserve
 these two policies as separate contracts rather than making one field represent
 both a caller-selected start address and the documented `FF80h` reset vector.
+
+## Circular-buffer size register foundation
+
+The common state foundation now carries BK as a private 16-bit architectural
+value. TI `SPRU131G` §3.3.4.8 (printed p. 3-28) defines BK as the circular-buffer
+size register used by the ARAUs; §3.3.4/Table 3-3 (printed p. 3-27) maps the CPU
+memory-mapped register to data-memory address `0x19`, but MMR routing remains a
+planned `src/bus/` responsibility. The §5.5.3.4 record (printed pp. 5-15–5-16)
+is retained as future circular-addressing evidence only: no circular arithmetic,
+base alignment, boundary, step, width, or timing behavior is implemented here.
+
+`src/state/block_size_register.*` owns checked BK read/write accessors with
+explicit knownness and rejection statuses. Reset leaves the physical BK storage
+zeroed but unknown under the project contract; this work piece makes no TI reset
+claim. Circular address planners and memory-mapped register routing remain
+separate future ownership slices.
 
 ## Evidence and conformance rules
 
