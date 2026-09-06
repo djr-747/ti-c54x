@@ -2281,3 +2281,18 @@ rewritten after publication.
   the public 32-bit fetch carrier and private 16-bit common PC. Add a separately
   proven masked-pattern catalog form before the first operand-bearing opcode;
   never implement variable operand bits as ad hoc decoder branches.
+
+## 2026-09-06 — P2-W16 remote verification
+
+- Published implementation commit:
+  `f9cd7be4570f85fac2ef35835fac824462801f69`.
+- Published completion-ledger commit:
+  `884657b4dccb553ac7a0bb03c8abab05fe021885`.
+- GitHub Actions run
+  [34010592627](https://github.com/djr-747/ti-c54x/actions/runs/34010592627)
+  completed successfully for the published completion-ledger head.
+- Remote proof passed the GCC and Clang direct-Make suites, library-only and
+  full CMake configurations, CMake builds and CTest, installation, downstream
+  package-consumer smoke tests, and the Clang sanitizer build/test job.
+- Result: the P2-W16 implementation and completion record are published and
+  independently green on every repository-owned remote validation surface.
