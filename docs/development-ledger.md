@@ -4169,3 +4169,28 @@ rewritten after publication.
 - The FIT fanout policy proved useful: strict-fit families may parallelize,
   shared integration remains serialized, and any missing architecture seam is
   a hard GAP report. TC/OVM/SXM work remains a separate follow-up.
+
+## 2026-09-07 — P2-W28A transactional TC status foundation closeout
+
+- State: complete. The P2-W28A plan/evidence freeze landed as `5deed87`.
+  The implementation landed as `8f6c3d2`; remote CI was pending at ledger
+  entry time.
+- TDD evidence is RED/GREEN: architecture tests first failed on the missing
+  TC accessors, status resource, and transactional status delta; focused tests
+  then passed. Three new tests were added. Full local `make test` is green
+  (176 Python checks, all C checks, source-boundary checks over 203 files, and
+  manifests, evidence, knobs, and observer-off checks). No `make guard` target
+  exists. Independent review found no blocker.
+- Architecture: private typed TC accessors and knownness are owned by state;
+  `STATUS_TC` is collected through the resource-driven input path; and the
+  private accumulator status delta supports `C` and `TC` with `PRESERVE`,
+  `WRITE_0`, and `WRITE_1` actions. Existing MAX/MIN, ROL/ROR, SFTL, CMPL,
+  and logical accumulator handlers migrated to the shared delta path. The
+  foundation remained transactional and kept generic CPU orchestration.
+- `cpu.c` remained 428 lines and `effect_apply` is 64 lines. No public
+  API, OVA/B surface, memory, RPT/IRQ, timing, diagnostic, or environment
+  changes were made. The registry closed at 110 evidence records, 162
+  requirements (123 implemented, 17 planned, 22 unresolved), and 120 tests
+  (103 passing, 17 planned).
+- Follow-up: P2-W28B is next, subject to the same FIT/GAP review and serialized
+  shared-surface integration policy.
