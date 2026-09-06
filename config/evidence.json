@@ -1620,6 +1620,52 @@
         "anchor": "P2-W25: generic input collection and ROL/ROR vertical slice (planned)"
       },
       "assertion": "P2-W25 freezes a private generic resource-driven input collector with ACCUMULATORS and STATUS_C resources, a typed status_c value and status_c_known flag, transactional validation, and no hot-path environment, allocation, global, or diagnostic behavior; then consumes it for four ROL/ROR forms through the existing ACCUMULATOR_WRITE plus C_WRITE effect path without a CPU opcode branch or new public API."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SFTL-P4-158",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "SFTL",
+        "printed_page_start": "4-158",
+        "printed_page_end": "4-158"
+      },
+      "assertion": "The SFTL instruction description (printed p. 4-158, PDF p. 271) defines syntax SFTL src, SHIFT [,dst] for A/B accumulators and signed shifts -16..15. Its bit format 1111 00SD 111S HIFT derives value 0xF0E0 with mask 0xFCE0, consumes one program word, specifies the execution and carry cases, clears guard bits 39:32, and states that C is the only affected status field."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeat section does not positively authorize SFTL repetition: SFTL is not listed among the forms prohibited by Table 2-28, but the source provides no all-unlisted-forms rule. SFTL repeatability therefore remains unresolved, and summary cycle fields are not adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W26-SFTL-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W26: SFTL shifted-accumulator vertical slice (planned)"
+      },
+      "assertion": "P2-W26 freezes SFTL as a fit for the existing ACCUMULATORS input and ACCUMULATOR_WRITE plus C_WRITE effect path: a generic source/destination/shift5 layout, pure shift semantics, and CPU retirement with no production CPU change or opcode branch. Ownership remains split across catalog, decode, shift operations, existing accumulator sequencing, and CPU orchestration; repeatability and timing remain unresolved."
     }
   ],
   "requirements": [
@@ -3176,6 +3222,56 @@
       "claim": "ROL and ROR repeatability is unresolved: Table 2-28 does not list either form, but its preamble does not positively authorize every unlisted form. Do not classify ROL or ROR as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-SFTL-ENCODINGS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register SFTL_ACC/sftl_acc as value 0xF0E0 with mask 0xFCE0. The form consumes one program word, admits signed shifts -16..15, and produces exactly 128 source/destination/shift encodings without treating populated first-word entries as distinct instruction count.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SFTL-P4-158"],
+      "test_ids": ["T-COMMON-SFTL-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-SFTL-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode SFTL through TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5: source bit 9 is operand 0, destination bit 8 is operand 1, and raw shift bits 4:0 are operand 2. Extract the canonical five-bit field transactionally and sign-extend it as two's-complement -16..15; reject fixed-bit, layout, and noncanonical forms without output mutation.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SFTL-P4-158"],
+      "test_ids": ["T-COMMON-SFTL-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-SFTL-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/shift/",
+      "claim": "Produce pure SFTL semantics over the selected accumulator low32 and no other input state: q<0 shifts right by n=-q and writes source bit n-1 to C; q=0 preserves low32 and writes C=0; q>0 shifts left by q and writes source bit 32-q to C. SFTL does not consume pre-C. Clear guard bits 39:32, preserve the non-selected accumulator and every non-C status field, and emit the existing ACCUMULATOR_WRITE plus C_WRITE effect.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SFTL-P4-158"],
+      "test_ids": ["T-COMMON-SFTL-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-SFTL-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Route SFTL through the existing ACCUMULATORS input and generic effect transaction with no CPU production change or opcode branch. Unknown selected source or noncanonical input blocks retirement while unknown unselected state and unknown pre-C are allowed; admitted forms write a known result C, preserve non-C status, commit atomically, retire once with one attempt and PC+1, and reject at PC 0xffff without mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W26-SFTL-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-SFTL"]
+    },
+    {
+      "id": "REQ-COMMON-SFTL-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "SFTL repeatability is unresolved: Table 2-28 does not list SFTL, but its preamble does not positively authorize every unlisted form. Do not classify SFTL as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -4025,6 +4121,38 @@
       "path": "tests/unit/cpu/test_cpu_rol_ror.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_rol_ror"},
       "requirement_ids": ["REQ-PROJECT-CPU-ROL-ROR-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-SFTL-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_sftl_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SFTL-ENCODINGS"]
+    },
+    {
+      "id": "T-COMMON-SFTL-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_sftl_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SFTL-DECODE"]
+    },
+    {
+      "id": "T-COMMON-SFTL-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/shift/test_sftl.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SFTL-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-SFTL",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_sftl.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-SFTL-RETIREMENT"]
     }
   ]
 }

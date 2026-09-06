@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 95 immutable evidence records,
-139 requirements (112 `IMPLEMENTED`, 9 `PLANNED`, 18 `UNRESOLVED`), and 101 tests
-(92 `PASSING`, 9 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 98 immutable evidence records,
+144 requirements (112 `IMPLEMENTED`, 13 `PLANNED`, 19 `UNRESOLVED`), and 105 tests
+(92 `PASSING`, 13 `PLANNED`).
 
 ## Targets
 
@@ -139,6 +139,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 ROR, `4-145` |
 | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W25: generic input collection and ROL/ROR vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-SFTL-P4-158` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 SFTL, `4-158` |
+| `E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W26-SFTL-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W26: SFTL shifted-accumulator vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -381,6 +384,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-ROL-ROR-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/rotate/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-OPS` |
 | `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | `T-PROJECT-CPU-ROL-ROR` |
 | `REQ-COMMON-ROL-ROR-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY` |  |
+| `REQ-COMMON-SFTL-ENCODINGS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-SFTL-P4-158` | `T-COMMON-SFTL-CATALOG` |
+| `REQ-COMMON-SFTL-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-SFTL-P4-158` | `T-COMMON-SFTL-DECODE` |
+| `REQ-COMMON-SFTL-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/shift/` | `E-TI-C54X-SPRU172C-S4-SFTL-P4-158` | `T-COMMON-SFTL-OPS` |
+| `REQ-PROJECT-CPU-SFTL-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W26-SFTL-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-SFTL` |
+| `REQ-COMMON-SFTL-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY` |  |
 
 ## Tests
 
@@ -491,6 +499,10 @@ exist in the repository.
 | `T-COMMON-ROL-ROR-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_rol_ror_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rol_ror_decode"}` | `REQ-COMMON-ROL-ROR-DECODE` |
 | `T-COMMON-ROL-ROR-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/rotate/test_rol_ror.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rol_ror"}` | `REQ-COMMON-ROL-ROR-EFFECTS` |
 | `T-PROJECT-CPU-ROL-ROR` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_rol_ror.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_rol_ror"}` | `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` |
+| `T-COMMON-SFTL-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_sftl_metadata.c` | `null` | `REQ-COMMON-SFTL-ENCODINGS` |
+| `T-COMMON-SFTL-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_sftl_decode.c` | `null` | `REQ-COMMON-SFTL-DECODE` |
+| `T-COMMON-SFTL-OPS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/shift/test_sftl.c` | `null` | `REQ-COMMON-SFTL-EFFECTS` |
+| `T-PROJECT-CPU-SFTL` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_sftl.c` | `null` | `REQ-PROJECT-CPU-SFTL-RETIREMENT` |
 
 ## Correction and tombstone policy
 
