@@ -4194,3 +4194,49 @@ rewritten after publication.
   (103 passing, 17 planned).
 - Follow-up: P2-W28B is next, subject to the same FIT/GAP review and serialized
   shared-surface integration policy.
+
+## 2026-09-07 — P2-W28B ROLTC/SFTC rotate-through-C and conditional-shift vertical slice closeout
+
+- State: complete. The P2-W28 plan/evidence freeze landed as `5deed87`; the
+  P2-W28A implementation was `8f6c3d2` and its ledger closeout was `4e73e18`
+  (CI run `34058489923` green). P2-W28B implementation landed as
+  `7164ace58677dae5525e02c14655bbefc38e87f4`; its [GitHub Actions run
+  34059815766](https://github.com/djr-747/ti-c54x/actions/runs/34059815766)
+  is green. Performance/documentation landed as
+  `70425ccca3977ca355850131c34fe5cf759a8ee8`; its [GitHub Actions run
+  34060040089](https://github.com/djr-747/ti-c54x/actions/runs/34060040089)
+  is green.
+- TDD evidence is RED/GREEN: family RED first exposed missing opcode IDs,
+  catalog/decode metadata, headers, handlers, and unsupported CPU retirement;
+  GREEN added eight catalog, decode, pure-operation, and CPU tests. Full local
+  `make test` is green with 176 Python checks, all C tests, source-boundary
+  checks over 215 files, and evidence, build-manifest, knob, and observer-off
+  checks green. Full-gate review caught and fixed stale catalog-count coupling
+  in the shared Python contract; old logical-family total assertions were
+  removed so each family test owns only its rows.
+- ROLTC (`F492`/`FEFF`) selects A/B, rotates pre-TC into bit 0, writes old
+  low32 bit 31 to C, clears guard bits, and preserves TC. SFTC
+  (`F494`/`FEFF`) leaves low32 zero unchanged with TC=1; for nonzero values,
+  sign-equal low32 shifts left with guards preserved and TC=0, while
+  sign-different values remain unchanged with TC=1. C is preserved and SFTC
+  does not read pre-TC. Both use the generic transactional path; `cpu.c`
+  remains 428 lines.
+- A minimal central tooling GAP was found and closed under RED/GREEN: the
+  catalog schema resource allowlist gained `STATUS_TC` and
+  `ACCUMULATORS_STATUS_TC`. No runtime architecture GAP was required. The
+  catalog now has 15 rows / 1081 populated lookup entries / 4 reset-runnable
+  rows. The registry closes at 110 evidence records, 162 requirements
+  (131 implemented, 9 planned, 22 unresolved), and 120 tests (111 passing,
+  9 planned).
+- No knobs changed (8 total, including 3 observer bits); no public API,
+  memory, RPT/IRQ, machine timing, diagnostics, environment, allocation, or
+  emulator dependency was added. Residuals are repeatability, machine timing,
+  and the SFTC guard-only plus low32-zero evidence boundary.
+- Performance closure is hosted POSIX observer-off throughput only (no DSP
+  timing claim). Clean `7164ace` medians/throughput are 109.060/9.169,
+  182.474/5.480, 194.054/5.153, 111.847/8.941, and mixed 88.796/11.262.
+  Fixed deltas versus `ef87c94` are -10.18%, -12.69%, -4.36%, and -1.73%,
+  with noisy spreads 50.31%, 3.83%, 6.90%, and 112.44%; there is no confirmed
+  change and no DSP timing claim.
+- Follow-up: continue strict FIT fanout only for families that fit current
+  seams; any architecture GAP returns centrally before shared edits.
