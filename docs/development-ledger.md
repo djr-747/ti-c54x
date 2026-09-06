@@ -3800,3 +3800,19 @@ rewritten after publication.
   end-to-end ISA vertical slices; new infrastructure is added only when a
   concrete opcode family proves it is required, with related opcodes batched
   where evidence and ownership permit.
+
+## 2026-09-06 — P2-W21C remote verification
+
+- Published implementation commit:
+  `a3edba970cb2143bfb9d3eb437b9882084352a0d`.
+- Published completion-record commit:
+  `ff43359e3eaa933979842f693a71d659223abdbb`.
+- GitHub Actions run
+  [34033399541](https://github.com/djr-747/ti-c54x/actions/runs/34033399541)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream
+  package-consumer smoke tests, and Clang sanitizer configure/build/test.
+- Result: P2-W21C is published and green on every repository-owned build surface.
+  The standalone foundation baseline is now frozen against speculative expansion;
+  the next active work is an end-to-end ISA vertical slice.
