@@ -3150,3 +3150,17 @@ rewritten after publication.
   dependency, or external implementation.
 - Follow-up: publish and remotely verify this kickoff, then delegate the bounded
   repeat-family implementation to Luna under main-agent review and commit ownership.
+
+## 2026-09-06 — P2-W20D kickoff remote verification
+
+- Published kickoff commit:
+  `ea14aa8e355a469333ff2a6c6adcb62be8fbb909`.
+- GitHub Actions run
+  [34024592265](https://github.com/djr-747/ti-c54x/actions/runs/34024592265)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: the scope-safe W20D project effect contract, repeat-family ownership tree,
+  TDD matrix, and no-production-activation gate are published and green. The bounded
+  Luna implementation is next.
