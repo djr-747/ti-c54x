@@ -4124,3 +4124,48 @@ rewritten after publication.
 - Follow-up: only proceed with further family fanout after a strict FIT
   review; any architecture GAP returns to the central architecture owner
   before implementation, preserving serialized shared-surface review.
+
+## 2026-09-07 — P2-W27 AND/OR/XOR register-only logical accumulator vertical slice closeout
+
+- State: complete. The P2-W27 plan/evidence freeze landed as
+  `9e3e4099f6a748a207821d18d4af37fba9d7196c`; its GitHub Actions run
+  [34054743366](https://github.com/djr-747/ti-c54x/actions/runs/34054743366)
+  is green. The implementation landed as
+  `ef87c944ccf325617487df2946fafbfa0cfe17ba`; its run
+  [34055843312](https://github.com/djr-747/ti-c54x/actions/runs/34055843312)
+  is green. Performance/documentation landed as
+  `dac89d503c201790598e8f7fe44502529558e095`; its run
+  [34056286318](https://github.com/djr-747/ti-c54x/actions/runs/34056286318)
+  is green.
+- TDD fanout used explicit non-overlapping ops, catalog/decode, and CPU-proof
+  lanes; RED failures were limited to missing headers, handlers, IDs, rows,
+  and unsupported CPU words. Review added noncanonical-destination coverage,
+  removed a tautological reset-runnable assertion, made the decode loop 128
+  unique words, and corrected an over-strong unknown-carrier test. Full local
+  `make test` is green: 176 Python checks, all C/quality checks,
+  source-boundary checks over 200 files, and manifests/evidence/knobs/generated/
+  observer-off checks. Remote GCC/Clang/sanitizer/install/consumer/bench are
+  green.
+- AND `F080/FCE0`, OR `F0A0/FCE0`, and XOR `F0C0/FCE0` add 3 rows and 384
+  encoded first words; the catalog is 13 rows / 1077 entries / 4 reset-runnable.
+  Existing S/D/shift5 layout, `ACCUMULATORS` input, generic
+  `ACCUMULATOR_WRITE` with `C_PRESERVE`, and generic CPU retirement are used.
+  Full-40 logical shifts combine with the pre-destination; C and all status
+  are preserved, and knownness/canonicality plus `PC=ffff` remain transactional.
+  `cpu.c` remains 428 lines. No public API/state/effect/memory/RPT/IRQ/timing,
+  knob, environment-read, allocation, diagnostic, or emulator dependency changed.
+- Registry closes at 105 evidence records, 149 requirements (120 implemented,
+  9 planned, 20 unresolved), and 109 tests (100 passing, 9 planned).
+  Repeatability and machine timing remain unresolved.
+- Performance closure is hosted POSIX observer-off throughput only (no silicon
+  timing claim). Clean `ef87c94` records NOP 121.420 ns / 8.236 MIPS,
+  LD-DP 209.005 ns / 4.785 MIPS, LD-ASM 202.901 ns / 4.929 MIPS,
+  LD-ARP 113.815 ns / 8.786 MIPS, and `mixed-current` 96.359 ns / 10.378
+  MIPS over a 4/13 reset-runnable subset. Fixed deltas versus catalog-ten are
+  +25.00%, +103.87%, +107.22%, and +14.62%, with spreads 51.13%, 10.86%,
+  5.71%, and 117.11%. An immediate same-binary rerun normalized to 66.571,
+  98.326, 98.038, 96.481, and 86.448 ns, corroborating host noise only; no
+  confirmed regression or DSP timing claim is made.
+- The FIT fanout policy proved useful: strict-fit families may parallelize,
+  shared integration remains serialized, and any missing architecture seam is
+  a hard GAP report. TC/OVM/SXM work remains a separate follow-up.
