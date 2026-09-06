@@ -4073,3 +4073,54 @@ rewritten after publication.
   evidence; keep stateful operations out of the reset-runnable benchmark until
   their bootstrap contract exists; and preserve the serialized shared-surface
   review plus FIT/GAP reporting policy for the next ISA fanout.
+
+## 2026-09-07 — P2-W26 SFTL shifted-accumulator vertical slice closeout
+
+- State: complete. The P2-W26 plan/evidence freeze landed as
+  `1263a4d6bcffcec0fe0a6e76a273929353c33097`; its GitHub Actions run
+  [34052234254](https://github.com/djr-747/ti-c54x/actions/runs/34052234254)
+  is green. The implementation landed as
+  `cd88596ec2a02bb749e09bee698841cb3ce39dd2`; its GitHub Actions run
+  [34053101536](https://github.com/djr-747/ti-c54x/actions/runs/34053101536)
+  is green. The performance/documentation follow-up landed as
+  `979d1d6e3be9c7b0f6861dab40b46807c489e26c`; its GitHub Actions run
+  [34053379228](https://github.com/djr-747/ti-c54x/actions/runs/34053379228)
+  is green. This ledger entry records the closeout.
+- TDD evidence is RED/GREEN: the first red failures were limited to the missing
+  SFTL opcode ID, operand layout/header, catalog/schema registration, and
+  generated metadata; focused exhaustive tests then passed. Full local `make
+  test` passed with 176 Python checks, all C and quality checks, source-boundary
+  checks over 194 files, and manifests, evidence, knobs, generated, and
+  observer-off checks green. Registry closes at 98 evidence records, 144
+  requirements (116 implemented, 9 planned, 19 unresolved), and 105 tests
+  (96 passing, 9 planned).
+- SFTL registers `SFTL_ACC`/`sftl_acc` at `0xF0E0`/`0xFCE0`, one word, with
+  128 encoded first words spanning source, destination, and signed-five-bit
+  shift fields. The generic
+  `TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5` layout
+  extracts source bit 9, destination bit 8, and raw shift bits 4:0; the
+  handler sign-extends `-16..15`. A central review correction set the
+  one-piece operand `value_lsb` to zero before GREEN.
+- Semantics are pure and transactional: pre-C is ignored; q<0 shifts low32
+  right and carries source bit n-1, q=0 preserves low32 and clears C, q>0
+  shifts low32 left and carries source bit 32-q; guard bits 39:32 clear and
+  only C changes. The existing `ACCUMULATORS` input to
+  `ACCUMULATOR_WRITE` + `C_WRITE` effect path commits atomically. CPU
+  orchestration is unchanged and has no opcode branch; unknown selected or
+  noncanonical input rejects transactionally while unselected unknown state is
+  allowed. Catalog quality is 10 rows / 693 populated lookup entries, not 693
+  instructions, with reset-runnable coverage 4/10.
+- No knobs changed (8 remain, including 3 observer bits); no public API,
+  memory, RPT/IRQ, or machine-timing behavior was added. SFTL repeatability
+  remains unresolved; no DSP timing claim is made.
+- Performance closure is hosted POSIX observer-off throughput only. Clean
+  `cd88596` records NOP 97.138 ns / 10.295 MIPS, LD-DP 102.519 ns /
+  9.754 MIPS, LD-ASM 97.918 ns / 10.213 MIPS, LD-ARP 99.295 ns /
+  10.071 MIPS, and `mixed-current` 91.728 ns / 10.902 MIPS over a 4/10
+  reset-runnable subset. Fixed deltas versus catalog-nine are +57.08%,
+  +11.93%, +6.88%, and +2.73%; within-capture spreads are 36.02%, 10.71%,
+  32.95%, and 10.72%. Wide hosted noise/spreads and changed workload mean
+  no confirmed improvement or regression; these are not DSP timing claims.
+- Follow-up: only proceed with further family fanout after a strict FIT
+  review; any architecture GAP returns to the central architecture owner
+  before implementation, preserving serialized shared-surface review.
