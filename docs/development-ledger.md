@@ -3558,3 +3558,40 @@ rewritten after publication.
   The private WORD16 request remains unused by CPU execution and the public
   synchronous bus ABI is unchanged. P2-W21B may now begin under the separate
   `bus/byte_order/` owner.
+
+## 2026-09-06 — P2-W21B kickoff — explicit WORD16 byte order
+
+- State: active documentation/project-contract kickoff. No production source,
+  public API, request type, callback ABI, generated artifact, build manifest, or
+  executable test changed in this commit.
+- Ownership: create `src/bus/byte_order/word16_codec.[ch]` and the mirrored
+  `tests/unit/bus/byte_order/test_word16_codec.c`. Child manifests remain with the
+  new owner; existing parent bus manifests aggregate it, so no root manifest change
+  is required.
+- Codec decision: every call names zero-sentinel `INVALID`, `BIG`, or `LITTLE` byte
+  order. BIG maps `0x1234` to `0x12,0x34`; LITTLE maps it to `0x34,0x12`. Encode
+  returns two value-owned lanes and decode returns one copied word.
+- Status/ownership: results report only `OK`, `INVALID_ARGUMENT`, or
+  `INVALID_ORDER`. Decode borrows exactly two readable bytes until return and checks
+  null before order validity; encode accepts only scalars. Failed results zero every
+  named payload field without a padding-byte claim, and no pointer is retained.
+- Host-neutrality: implementation is limited to fixed-width shifts, masks, and
+  explicit scalar conversions. Pointer/type-punning casts, unions, packed structs,
+  native-layout `memcpy`, host-order inference, and a global current-order value are
+  outside the contract.
+- Policy boundary: this codec does not state the byte order of the C54x, a Nokia
+  device, program images, physical shared RAM, or snapshots/wire formats. Those are
+  separate adapter/profile policies that must select BIG or LITTLE explicitly.
+- TDD: exhaustively round-trip all 65,536 words in both orders; assert exact lane
+  vectors for zero, `0x1234`, and `0xffff`; cover zero/forged orders, null decode
+  with valid and invalid order, error payload zeroing, and borrowed-input
+  nonmutation. No TI conformance test is claimed.
+- Registry kickoff: 2 targets, 7 sources, 77 immutable evidence records, 112
+  requirements (88 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and 79 tests
+  (70 `PASSING`, 9 `PLANNED`). The new row is `PROJECT_CONTRACT_ONLY`.
+- Knobs/isolation: no `TEST`, `OBSERVE`, or `A/B` knob, environment read, observer,
+  diagnostic, allocator, mutable global, callback, host memory, transaction, wait,
+  CPU/state/ISA behavior, memory effect, firmware, or emulator dependency is added.
+- Follow-up: validate and publish the kickoff, then delegate the bounded W21B TDD
+  implementation under main-agent review and commit ownership. P2-W21C remains the
+  separate exactly-once resumable transaction owner.

@@ -1328,6 +1328,20 @@
         "anchor": "P2-W21A: private WORD16 bus-request contract (active kickoff)"
       },
       "assertion": "The P2-W21A project contract defines a private, value-owned request for exactly one architectural 16-bit word. Separate read and write constructors carry an explicit program, data, or I/O space and an exact uint32_t word-address input; program requests preserve the full carrier while data and I/O requests reject values above UINT16_MAX before narrowing. Construction reports exactly OK, INVALID_SPACE, or INVALID_ADDRESS, validating space before its address domain. Read requests have a canonical zero write value, write requests copy the exact uint16_t value, and invalid results zero every named request field without making a bytewise-padding claim. The type itself fixes WORD16 width. The request owns no callback, read result, pointer, byte order, host storage, transaction phase, wait state, issue/completion state, timing, arbitration, CPU state, opcode effect, observer, or diagnostic behavior. This is a project structure contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W21B: explicit WORD16 byte-order codec (active kickoff)"
+      },
+      "assertion": "The P2-W21B project contract defines private, pure by-value encode and decode results for one uint16_t word and exactly two uint8_t lanes under an explicit BIG or LITTLE byte-order argument. BIG maps 0x1234 to bytes 0x12,0x34 and LITTLE maps it to 0x34,0x12. Decode borrows exactly two readable bytes only until return, checks a null input before byte-order validity, and retains no pointer. Invalid results zero every named payload field without claiming padding-byte values. Implementations use value arithmetic rather than pointer casts, unions, packed objects, memcpy, or host-native order. The codec owns no global current order, program-image format, physical shared-memory lane policy, snapshot/wire format, callback, transaction, CPU state, or TI architectural endian claim."
     }
   ],
   "requirements": [
@@ -2496,6 +2510,16 @@
       "test_ids": ["T-PROJECT-BUS-WORD16-REQUEST-SHAPE"]
     },
     {
+      "id": "REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/bus/byte_order/",
+      "claim": "Encode one copied uint16_t word into exactly two value-owned uint8_t lanes and decode two borrowed lanes into one copied uint16_t under an explicit BIG or LITTLE byte order. BIG maps 0x1234 to 0x12,0x34 and LITTLE to 0x34,0x12; both orders round-trip the full uint16_t domain. Decode rejects null input before checking a forged order and retains no pointer. Invalid results zero every named payload field. The implementation uses shifts, masks, and explicit scalar conversion only, with no aliasing cast, union, packed object, memcpy, host-order inference, global order, image/shared-memory/snapshot policy, callback, transaction, CPU state, timing, or diagnostics.",
+      "evidence_ids": ["E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT"],
+      "test_ids": ["T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC"]
+    },
+    {
       "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -3221,6 +3245,14 @@
       "path": "tests/unit/bus/request/test_word16_request.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_request"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE"]
+    },
+    {
+      "id": "T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/bus/byte_order/test_word16_codec.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC"]
     },
     {
       "id": "T-COMMON-RPT-IMMEDIATE-DECODE",

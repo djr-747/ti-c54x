@@ -41,7 +41,8 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Active (P2-W21A kickoff) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
+| Shared-memory transaction semantics | Active (P2-W21B) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
+| Explicit WORD16 byte-order codec (P2-W21B) | Active kickoff | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
@@ -586,7 +587,7 @@ evidenced owner-local work may proceed independently.
 
 ### P2-W21: shared-memory transaction foundation
 
-State: P2-W21A implemented; P2-W21B is next. This work begins the independent gate
+State: P2-W21A implemented; P2-W21B active. This work begins the independent gate
 required before any instruction may mutate memory. The core remains word-native and
 host-endian-neutral; sharing, storage, device mapping, and arbitration stay outside
 the CPU instance.
@@ -653,6 +654,44 @@ status precedence and address domains, and validation is non-mutating for both v
 and invalid borrowed values. Nested Make/CMake manifests mirror the bus/request
 owner; root files add aggregation lines only. The full standalone Make gate passes.
 No public callback or CPU execution path consumes the request yet.
+
+#### P2-W21B: explicit WORD16 byte-order codec (active kickoff)
+
+This slice creates the separate `src/bus/byte_order/` and mirrored
+`tests/unit/bus/byte_order/` owners. `word16_codec.[ch]` converts one copied
+`uint16_t` word to exactly two value-owned `uint8_t` lanes, or two borrowed readable
+lanes to one copied word, under an explicit zero-sentinel `INVALID`, `BIG`, or
+`LITTLE` byte order. BIG maps `0x1234` to `{0x12, 0x34}` and LITTLE maps it to
+`{0x34, 0x12}`.
+
+Encode and decode return separate by-value result types. Their only statuses are
+`OK`, `INVALID_ARGUMENT`, and `INVALID_ORDER`. Encode accepts no pointer; decode
+borrows exactly two bytes until return and retains none. Decode validates a null
+input before the order, so null plus a forged order reports `INVALID_ARGUMENT`.
+Otherwise a zero or forged order reports `INVALID_ORDER`. Every failed result zeroes
+its named byte or word payload fields without making a C-padding claim.
+
+The implementation uses unsigned shifts, masks, and explicit fixed-width scalar
+conversions. Pointer/type-punning casts, unions, packed structs, native-layout
+`memcpy`, and host-order inference are forbidden. There is no mutable or immutable
+global "current endian" setting: program-image encoding, physical shared-memory
+lanes, and snapshot/wire formats remain three separately owned adapter/profile
+policies that select this codec explicitly.
+
+The TDD proof exhausts every `uint16_t` value through encode-then-decode for both
+orders, checks exact lane vectors for `0x0000`, `0x1234`, and `0xffff`, covers invalid
+and forged orders, proves the decode null-before-order precedence, checks failed
+named payload fields, and snapshots borrowed input lanes before and after decoding.
+Parent bus manifests aggregate the new child; the already present root bus
+aggregation is unchanged.
+
+This is a `PROJECT_CONTRACT` conversion policy, not evidence that C54x, Nokia,
+program images, shared RAM, or any device use one physical byte order. It adds no
+public API, request change, callback, host memory, transaction, phase, wait,
+arbitration, memory effect, CPU/state/ISA behavior, observer, diagnostic, knob,
+environment read, allocator, mutable global, firmware, or emulator dependency.
+Exit requires the exhaustive test to pass under the owner-local Make and CTest
+registrations while W21A and current CPU behavior remain unchanged.
 
 ## Delivery order
 

@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 76 immutable evidence
-records, 111 requirements, and 78 tests (70 `PASSING`, 8 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 77 immutable evidence
+records, 112 requirements, and 79 tests (70 `PASSING`, 9 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -410,6 +410,21 @@ every named request field, while the validator proves both valid and invalid
 borrowed requests remain unchanged without making assertions about C padding. The
 focused normal and sanitizer tests pass, the full standalone Make gate is green,
 and the current public callback ABI and CPU behavior remain unchanged.
+
+### WORD16 byte-order boundary (P2-W21B active)
+
+Byte lanes are an explicit conversion policy, not an attribute of the C host or a
+global property of the CPU. The private `src/bus/byte_order/` owner converts one
+16-bit word to or from exactly two lanes under a per-call BIG or LITTLE selector.
+Encode results own both bytes; decode borrows two readable bytes only during the
+call and returns a copied word. Invalid order and argument outcomes carry zero named
+payload fields.
+
+This helper does not select the encoding of a program image, the physical lanes of
+shared RAM, or a serialization format. Those owners must choose byte order
+explicitly and may differ. The common core therefore supports both conversions
+without claiming that either is the architectural or Nokia device default. Host
+casts, unions, packed layouts, and native-layout copies are outside the contract.
 
 ## Single-indirect address-effect slice
 
