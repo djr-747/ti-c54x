@@ -23,6 +23,9 @@
 #include "shift/op_shift.h"
 #include "shift/op_sftc.h"
 #include "logical/op_logical.h"
+#include "logical/immediate/and/op_and.h"
+#include "logical/immediate/or/op_or.h"
+#include "logical/immediate/xor/op_xor.h"
 
 /* The catalog handler token remains part of the X-macro consumer contract:
  * ti_c54x_op_##handler is the canonical semantic binding spelling. */

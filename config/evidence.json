@@ -3879,7 +3879,7 @@
     },
     {
       "id": "REQ-COMMON-LOGICAL-IMMEDIATE-CATALOG-METADATA",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3889,7 +3889,7 @@
     },
     {
       "id": "REQ-COMMON-LOGICAL-IMMEDIATE-DECODE-LAYOUT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3899,7 +3899,7 @@
     },
     {
       "id": "REQ-COMMON-AND-IMMEDIATE-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/logical/immediate/and/",
@@ -3909,7 +3909,7 @@
     },
     {
       "id": "REQ-COMMON-OR-IMMEDIATE-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/logical/immediate/or/",
@@ -3919,7 +3919,7 @@
     },
     {
       "id": "REQ-COMMON-XOR-IMMEDIATE-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/logical/immediate/xor/",
@@ -3929,7 +3929,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3939,7 +3939,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3949,7 +3949,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -5016,66 +5016,66 @@
     },
     {
       "id": "T-COMMON-LOGICAL-IMMEDIATE-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_logical_immediate_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.logical_immediate_metadata"},
       "requirement_ids": ["REQ-COMMON-LOGICAL-IMMEDIATE-CATALOG-METADATA"]
     },
     {
       "id": "T-COMMON-LOGICAL-IMMEDIATE-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_logical_immediate_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.logical_immediate_decode"},
       "requirement_ids": ["REQ-COMMON-LOGICAL-IMMEDIATE-DECODE-LAYOUT"]
     },
     {
       "id": "T-COMMON-AND-IMMEDIATE-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/logical/immediate/and/test_and.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.and_immediate"},
       "requirement_ids": ["REQ-COMMON-AND-IMMEDIATE-EFFECTS"]
     },
     {
       "id": "T-COMMON-OR-IMMEDIATE-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/logical/immediate/or/test_or.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.or_immediate"},
       "requirement_ids": ["REQ-COMMON-OR-IMMEDIATE-EFFECTS"]
     },
     {
       "id": "T-COMMON-XOR-IMMEDIATE-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/logical/immediate/xor/test_xor.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.xor_immediate"},
       "requirement_ids": ["REQ-COMMON-XOR-IMMEDIATE-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-AND-IMMEDIATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/logical/immediate/and/test_cpu_and.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_and_immediate"},
       "requirement_ids": ["REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT"]
     },
     {
       "id": "T-PROJECT-CPU-OR-IMMEDIATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/logical/immediate/or/test_cpu_or.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_or_immediate"},
       "requirement_ids": ["REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT"]
     },
     {
       "id": "T-PROJECT-CPU-XOR-IMMEDIATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/logical/immediate/xor/test_cpu_xor.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_xor_immediate"},
       "requirement_ids": ["REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT"]
     }
   ]

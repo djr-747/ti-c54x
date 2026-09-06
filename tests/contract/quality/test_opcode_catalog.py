@@ -22,6 +22,12 @@ LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
 )
+LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16 = (
+    "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16"
+)
+LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16 = (
+    "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16"
+)
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
@@ -111,7 +117,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_real_catalog_contains_current_catalog_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 16)
+        self.assertEqual(len(rows), 22)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -205,6 +211,35 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                     row.operand_layout,
                     LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5,
                 )
+                self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
+                self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
+        for row, symbol, handler, value, mask, layout in (
+            (rows[16], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
+             0xF030, 0xFCF0,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
+            (rows[17], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
+             0xF063, 0xFCFF,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
+            (rows[18], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
+             0xF040, 0xFCF0,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
+            (rows[19], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
+             0xF064, 0xFCFF,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
+            (rows[20], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
+             0xF050, 0xFCF0,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
+            (rows[21], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
+             0xF065, 0xFCFF,
+             LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
+        ):
+            with self.subTest(symbol=symbol):
+                self.assertEqual(row.symbol, symbol)
+                self.assertEqual(row.handler, handler)
+                self.assertEqual(row.first_word_value, value)
+                self.assertEqual(row.first_word_mask, mask)
+                self.assertEqual(row.program_word_count, 2)
+                self.assertEqual(row.operand_layout, layout)
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
 

@@ -7,3 +7,4 @@ $(eval $(call ti_c54x_add_test,logical_accumulator_metadata,isa/catalog,test_log
 $(eval $(call ti_c54x_add_test,roltc_metadata,isa/catalog,test_roltc_metadata.c))
 $(eval $(call ti_c54x_add_test,sftc_metadata,isa/catalog,test_sftc_metadata.c))
 $(eval $(call ti_c54x_add_test,exp_metadata,isa/catalog,test_exp_metadata.c))
+$(eval $(call ti_c54x_add_test,logical_immediate_metadata,isa/catalog,test_logical_immediate_metadata.c))

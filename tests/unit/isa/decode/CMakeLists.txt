@@ -13,3 +13,4 @@ ti_c54x_add_unit_test(logical_accumulator_decode test_logical_accumulator_decode
 ti_c54x_add_unit_test(roltc_decode test_roltc_decode.c)
 ti_c54x_add_unit_test(sftc_decode test_sftc_decode.c)
 ti_c54x_add_unit_test(exp_decode test_exp_decode.c)
+ti_c54x_add_unit_test(logical_immediate_decode test_logical_immediate_decode.c)

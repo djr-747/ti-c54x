@@ -106,7 +106,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 1083)
+        self.assertEqual(actual.count("= (uint16_t)"), 1287)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
@@ -140,6 +140,21 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
                                "F1C0", "F2C0", "F2DF"),
         }
         for symbol, words in logical_representatives.items():
+            for word in words:
+                with self.subTest(symbol=symbol, word=word):
+                    self.assertIn(
+                        f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_{symbol},",
+                        actual,
+                    )
+        logical_immediate_representatives = {
+            "AND_IMMEDIATE_SHIFT": ("F030", "F03F", "F130", "F230", "F33F"),
+            "AND_IMMEDIATE_SHIFT16": ("F063", "F163", "F263", "F363"),
+            "OR_IMMEDIATE_SHIFT": ("F040", "F04F", "F140", "F240", "F34F"),
+            "OR_IMMEDIATE_SHIFT16": ("F064", "F164", "F264", "F364"),
+            "XOR_IMMEDIATE_SHIFT": ("F050", "F05F", "F150", "F250", "F35F"),
+            "XOR_IMMEDIATE_SHIFT16": ("F065", "F165", "F265", "F365"),
+        }
+        for symbol, words in logical_immediate_representatives.items():
             for word in words:
                 with self.subTest(symbol=symbol, word=word):
                     self.assertIn(

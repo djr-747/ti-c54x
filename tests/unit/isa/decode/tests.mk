@@ -13,3 +13,4 @@ $(eval $(call ti_c54x_add_test,logical_accumulator_decode,isa/decode,test_logica
 $(eval $(call ti_c54x_add_test,roltc_decode,isa/decode,test_roltc_decode.c))
 $(eval $(call ti_c54x_add_test,sftc_decode,isa/decode,test_sftc_decode.c))
 $(eval $(call ti_c54x_add_test,exp_decode,isa/decode,test_exp_decode.c))
+$(eval $(call ti_c54x_add_test,logical_immediate_decode,isa/decode,test_logical_immediate_decode.c))

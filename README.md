@@ -22,19 +22,20 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover 16 declarative one-word opcode
-  rows: evidence-backed `NOP`; the three immediate status-field forms
+- Production decode and CPU execution now cover 22 declarative opcode rows:
+  evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
   `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, `SFTC`, and `EXP`. The logical
   families add 384
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
-  preserve C and all other status. Those rows expand to 1083 populated
-  first-word encodings; that is a lookup-population count, not instruction
-  count. Exact/masked
+  preserve C and all other status. Six two-word immediate AND/OR/XOR forms now
+  add 204 populated first-word encodings, for 1287 total; that is a
+  lookup-population count, not an instruction count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are covered by the standalone
   test surfaces. Repeatability and machine timing remain unresolved; no `cpu.c`,
-  public API, memory, RPT/IRQ, or timing change was needed for the two new rows.
+  public API, memory, RPT/IRQ, or timing change was needed for the six immediate
+  rows.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -82,15 +83,16 @@ Current progress:
   allocation, and emulator integration. Catalog coverage is now 16 rows and
   1083 populated words, with reset-runnable coverage at 4/16; EXP repeatability
   remains unresolved.
-- P2-W30 is frozen as a plan/evidence-only slice for six two-word immediate
-  AND/OR/XOR accumulator forms. The six rows would add 204 populated first words,
-  taking the catalog to 22 rows/1287 populated words while reset-runnable coverage
-  remains 4/22. Existing extension fetch, accumulator input/effect, tagged
-  transaction, and CPU retirement seams are reused; common computation and the
-  three family leaves have explicit mirrored ownership. Repeatability and timing
-  remain unresolved, and any new shared seam is a reported GAP.
-- The registry now records 122 evidence items, 178 requirements (138 implemented,
-  17 planned, 23 unresolved), and 135 tests (118 passing, 17 planned). The latest
+- P2-W30 implements six two-word immediate AND/OR/XOR accumulator forms. The
+  rows add 204 populated first words, taking the catalog to 22 rows/1287
+  populated words while reset-runnable coverage remains 4/22. Existing
+  extension fetch, accumulator input/effect, tagged transaction, and CPU
+  retirement seams are reused; common computation and the three family leaves
+  have explicit mirrored ownership. Focused strict and sanitizer tests, two
+  independent reviews, and the full local test gate are green. Repeatability
+  and timing remain unresolved, and any new shared seam is a reported GAP.
+- The registry now records 122 evidence items, 178 requirements (146 implemented,
+  9 planned, 23 unresolved), and 135 tests (126 passing, 9 planned). The latest
   clean catalog-sixteen performance record is captured at `fedbd6a`: NOP 124.251
   ns / 8.048 MIPS, LD-DP 205.652 ns / 4.863 MIPS, LD-ASM 209.142 ns / 4.781
   MIPS, LD-ARP 222.837 ns / 4.488 MIPS, and mixed-current 206.376 ns / 4.846

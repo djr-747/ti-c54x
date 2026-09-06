@@ -65,7 +65,7 @@ function-pointer dispatch tables.
 | P2-W28A TC/status foundation | Implemented — full local `make test` and [remote CI](https://github.com/djr-747/ti-c54x/actions/runs/34058489923) green | Private typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta are proven; all prior accumulator handlers migrated transactionally with no CPU branch |
 | P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
 | P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
-| P2-W30 two-word immediate AND/OR/XOR accumulator forms | Planned — evidence and FIT freeze only | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). Add only two decode-owned layouts; reuse extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; any further shared seam need is a hard GAP. Repeatability and timing remain unresolved. |
+| P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, and full local gate green; remote CI pending | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; repeatability and timing remain unresolved. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, and catalog-sixteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -194,13 +194,13 @@ coverage remaining 4/16; no timing or repeatability result is implied.
 
 ### P2-W30: two-word immediate logical accumulator vertical slice (planned)
 
-P2-W30 is a plan/evidence freeze for the two-word immediate AND, OR, and XOR
-accumulator forms. It is deliberately implementation-free: all six new rows,
-eight requirements, and eight tests remain `PLANNED` until RED contracts are
-written and the existing seams are demonstrated in isolation. The forms add 204
-populated first words (AND 68, OR 68, XOR 68), taking the catalog from 16 rows /
-1083 populated words to 22 rows / 1287 populated words. Because every form needs
-an initialized accumulator input, reset-runnable coverage remains 4/22.
+The immutable `(planned)` heading preserves the evidence-registry anchor. P2-W30
+is now implemented: the two-word immediate AND, OR, and XOR accumulator forms
+have six catalog rows, eight implemented requirements, and eight passing tests.
+The forms add 204 populated first words (AND 68, OR 68, XOR 68), taking the
+catalog from 16 rows / 1083 populated words to 22 rows / 1287 populated words.
+Because every form needs an initialized accumulator input, reset-runnable
+coverage remains 4/22.
 
 The central architecture seam is limited to two decode-owned two-word layouts:
 `S` bit 9, `D` bit 8, unsigned `SHFT4` bits 3:0, and extension word 1 `lk16`
@@ -224,13 +224,22 @@ surfaces, and integration. A lane must stop and report a GAP if it needs new
 memory, status, timing, IRQ/RPT, public API, knob, diagnostic, environment,
 allocation, or emulator behavior.
 
-Semantics use only the selected source accumulator. The prior destination is
-not an input even when `D != S`; an unknown distinct destination is therefore
-valid because it is overwritten. `lk16` is unsigned and zero-extended before
-the selected shift. Status is preserved. Absence from Table 2-28's
+The focused catalog, decode, family, and CPU tests prove the complete path and
+its malformed-input rejection. Semantics use only the selected source
+accumulator. The prior destination is not an input even when `D != S`; an
+unknown distinct destination is therefore valid because it is overwritten.
+`lk16` is unsigned and zero-extended before the selected shift. Status is
+preserved. Absence from Table 2-28's
 nonrepeatable list is not positive eligibility evidence, so logical-immediate
 repeatability remains unresolved; manual two-cycle summaries are evidence only,
 not a timing API or claim.
+
+Focused strict and ASan/UBSan tests, two independent reviews, the evidence and
+ownership checks, and the full standalone `make test` gate are green. Review
+found and closed one catalog-binding weakness: each generated row alias now
+rejects its sibling form transactionally instead of accepting either family ID.
+Remote CMake, Clang, install, consumer, and sanitizer matrix validation remains
+assigned to post-push CI.
 
 ### P2-W16: NOP-seeded opcode architecture
 
