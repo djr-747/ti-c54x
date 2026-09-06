@@ -2610,3 +2610,22 @@ rewritten after publication.
 - Follow-up: publish and verify this implementation and completion record, then
   implement P2-W19B transactional extension fetch and width-aware PC handling
   before evidence-first `RPT` work.
+
+## 2026-09-06 — P2-W19A remote verification
+
+- Published implementation commit:
+  `27e1404c2d731d94c502356ac4bce84068da2ad2`.
+- Published completion-ledger commit:
+  `fe5d46dba3e18d44ca5536fb7ee8eb47a63a0aab`.
+- GitHub Actions run
+  [34017109364](https://github.com/djr-747/ti-c54x/actions/runs/34017109364)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, the
+  library-only configuration, full CMake/CTest, installation, downstream
+  package-consumer smoke tests, and the Clang sanitizer configure/build/test
+  path.
+- Result: P2-W19A is published and proven across repository-owned build surfaces;
+  standalone isolation and private decode ownership remain intact. The next
+  slice is P2-W19B transactional extension-word fetch and width-aware program-PC
+  handling before `RPT`. This verification makes no claim about extension fetch,
+  broader ISA coverage, timing, memory, or IRQ behavior.
