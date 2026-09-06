@@ -120,10 +120,16 @@ Current progress:
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
   the catalog-seven `7cad341`, catalog-nine `705ac7b`, catalog-ten `cd88596`,
-  catalog-thirteen `ef87c94`, and catalog-fifteen `7164ace` records remain as
-  prior cohorts. The latest catalog-sixteen record and its identical-binary
-  diagnostic expose substantial host-frequency noise and therefore carry no
-  confirmed regression claim. See [hosted performance history](docs/performance.md).
+  catalog-thirteen `ef87c94`, catalog-fifteen `7164ace`, and catalog-sixteen
+  `fedbd6a` records remain as prior cohorts. The latest clean catalog-twenty-two
+  record at `9c22a33` measures NOP 131.883 ns / 7.582 MIPS, LD-DP 233.294 ns /
+  4.286 MIPS, LD-ASM 240.304 ns / 4.161 MIPS, LD-ARP 206.770 ns / 4.836 MIPS,
+  and mixed-current 109.273 ns / 9.151 MIPS with reset-runnable coverage of
+  4/22. The six new immediate rows are not benchmark-exercised because the
+  public API has no initialized-accumulator bootstrap; an identical-binary
+  diagnostic (80.803 ns NOP, 114.568–127.581 ns fixed LD, 108.974 ns mixed)
+  exposes host noise, so no confirmed regression claim is made. See [hosted
+  performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

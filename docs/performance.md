@@ -211,6 +211,30 @@ without a code or binary change. The clean catalog-sixteen deltas therefore do
 not establish a confirmed regression; they remain hosted noise/trend
 observations and make no architectural or silicon timing claim.
 
+The latest clean catalog-twenty-two record at `9c22a33` is the current hosted
+cohort. CI is green at
+<https://github.com/djr-747/ti-c54x/actions/runs/34067048536>.
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 131.883 ns | 7.582 MIPS |
+| `ld-dp` | 233.294 ns | 4.286 MIPS |
+| `ld-asm` | 240.304 ns | 4.161 MIPS |
+| `ld-arp` | 206.770 ns | 4.836 MIPS |
+| `mixed-current` | 109.273 ns | 9.151 MIPS |
+
+The reset-runnable subset remains four of 22 catalog rows. The six new two-word
+immediate AND/OR/XOR rows are not benchmark-exercised: each requires initialized
+accumulator state, and the public API intentionally provides no accumulator
+bootstrap surface. `mixed-current` therefore retains the same four-row stream
+and semantic hash; the fixed scenarios also retain their existing semantics.
+An identical-binary diagnostic capture (binary hash `d1d24...`; the tree was
+dirty only because history was appended) measured NOP 80.803 ns, LD-DP
+114.568 ns, LD-ASM 127.581 ns, LD-ARP 118.947 ns, and mixed 108.974 ns.
+The host spread and unchanged workloads mean this cohort establishes no
+confirmed regression or improvement; it is a hosted throughput observation,
+not a DSP or silicon timing claim.
+
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
 knob is an ACTIVE TEST/KEEP control, default OFF, owned by `bench/`; it has no
@@ -229,12 +253,14 @@ emulator behavior. The hosted benchmark currently requires POSIX
 
 ## Residual benchmark constraint
 
-`mixed-current` currently contains only one-word forms. Before the first
-multiword instruction is admitted, its per-window retirement count and
-program-word span must be derived together so the generated stream remains
-below the unresolved 16-bit program-PC boundary. This is a hosted benchmark
-correctness constraint; it does not resolve or claim the core's architectural
-boundary behavior.
+`mixed-current` currently contains only reset-runnable one-word forms and
+deliberately excludes every accumulator-input row because the public API has no
+initialized-accumulator bootstrap surface. Multiword rows are admitted in the
+catalog but remain outside the benchmark stream. Any future benchmark inclusion
+must derive per-window retirement count and program-word span together and keep
+the generated stream below the unresolved 16-bit program-PC boundary. This is a
+hosted benchmark correctness constraint; it does not resolve or claim the
+core's architectural boundary behavior.
 
 ## Ownership and acceptance
 
