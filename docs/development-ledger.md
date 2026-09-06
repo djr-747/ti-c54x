@@ -2876,3 +2876,20 @@ rewritten after publication.
 - Follow-up: publish and remotely verify P2-W20B, then begin P2-W20C. Operand-layout
   and repeatability metadata must land without transiently registering an RPT row
   that decodes successfully but can only terminate the CPU as `INVALID_STATE`.
+
+## 2026-09-06 — P2-W20B remote verification
+
+- Published implementation commit:
+  `00700d5dd8bd72b711a5cb8ad1147efd5198a92c`.
+- Published completion-record commit:
+  `1537f7cc25cda32a0ee910d7a25e2f4ced1e0f9e`.
+- GitHub Actions run
+  [34021405630](https://github.com/djr-747/ti-c54x/actions/runs/34021405630)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: the canonical complete-instruction bundle is published and green across
+  every repository-owned build surface. NOP compatibility, standalone isolation,
+  copied-value ownership, and generic CPU orchestration remain intact. P2-W20C
+  catalog-bound operand-layout and repeatability metadata is next.
