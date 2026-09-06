@@ -1891,3 +1891,24 @@ rewritten after publication.
 - Remote context: the P2-W13 kickoff passed GitHub Actions run `34003154833`.
   Push and verify the implementation and this completion ledger next, then begin
   the evidence-first circular MOD8/MOD10 WORD16 work piece.
+
+## 2026-09-06 — P2-W13 remote verification — Validation subownership
+
+- Verified commits: implementation
+  `55549dbf465c29bec7c2d3dcdebafc2dfcd9d6d4` and completion ledger
+  `c11b8d7d10b57a17fd59caa517d4afad35166905` on `origin/main`.
+- GitHub Actions: CI run
+  `https://github.com/djr-747/ti-c54x/actions/runs/34003761573` completed
+  successfully.
+- Remote gates: GCC and Clang passed direct standalone Make build/tests,
+  library-only CMake configure/build, full CMake configure/build/CTest,
+  installation, and downstream consumer package smoke tests. The Clang
+  sanitizer job passed configure, build, and CTest.
+- Result: no corrective implementation, test, evidence, ownership, packaging,
+  or isolation change was required. The intrinsic, dependency, orchestration,
+  and sole-mutation boundaries remain independently named and green.
+- Knobs and isolation: unchanged; remote verification introduced no `TEST`,
+  `OBSERVE`, or `A/B` knob, environment read, diagnostic dependency, firmware
+  input, public ABI, emulator coupling, or device-specific behavior.
+- Follow-up: make exact cycle-bounded resumability explicit in the timing plan,
+  then start P2-W14 with evidence and failing tests before circular arithmetic.
