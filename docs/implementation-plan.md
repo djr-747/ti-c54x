@@ -59,6 +59,7 @@ function-pointer dispatch tables.
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
+| P2-W25 ROL/ROR rotate-through-C vertical slice | Planned | Extract generic resource-driven input collection, then add four one-word ROL/ROR forms through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; repeatability and machine timing remain unresolved |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, and catalog-seven clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -1003,6 +1004,86 @@ pure one's-complement semantics, transactional effect application, and public
 CPU retirement tests without a CPU file-growth or opcode-identity exception.
 No memory, bus, device, emulator, RPT, IRQ, repeatability, or machine-cycle
 claim is added by this work piece.
+
+### P2-W25: generic input collection and ROL/ROR vertical slice (planned)
+
+P2-W25 is a two-step rotate-through-C slice. First, the CPU's current
+resource-driven input reads move behind a private generic collector. Then ROL and
+ROR consume that collector and the existing `ACCUMULATOR_WRITE` plus `C_WRITE`
+effect path. No new effect, sequencer, or public state API is introduced.
+
+Step 1 freezes the generic input contract:
+
+- Add a generic `STATUS_C` input-resource bit beside `ACCUMULATORS`. The copied
+  `ti_c54x_op_input_snapshot` owns typed C value/knownness (`status_c` and
+  `status_c_known`) alongside A/B raw40 values and knownness. Unrequested resources
+  are canonical zero/false; requested A/B unknownness is data, not collector
+  failure.
+- Extract collection into `src/cpu/input/collect.{c,h}`, mirrored by
+  `tests/unit/cpu/input/test_collect.c`. The collector is transactional: it
+  rejects unknown resource-mask bits and invalid requested backing pointers,
+  reads only requested resources, reads C exactly once when requested, and
+  leaves the caller's output unchanged on rejection. It owns no globals,
+  environment reads, allocation, logging, or diagnostic callbacks.
+- `src/cpu/cpu.c` makes one generic collector call for every instruction. No
+  opcode-identity branch is permitted, and CPU orchestration must shrink as the
+  private collector takes ownership of input gathering.
+
+Step 2 freezes ROL/ROR and their four forms:
+
+- `ROL` is value `0xF491`, mask `0xFEFF`; `ROR` is value `0xF490`, mask
+  `0xFEFF`. Each is one program word with S at bit 8, yielding exactly
+  A-in-place and B-in-place forms. `src/isa/decode/` owns a generic
+  `ACCUMULATOR_SOURCE` layout extracting S from word 0 bit 8; no rotate-named
+  field parser is allowed.
+- The catalog rows declare `ACCUMULATORS | STATUS_C` input resources. The
+  pure handlers live under `src/isa/ops/rotate/` and consume the selected source
+  plus pre-C. ROL shifts the selected low 32 bits left, inserts pre-C at bit 0,
+  and writes old bit 31 to C. ROR shifts right, inserts pre-C at bit 31, and
+  writes old bit 0 to C. Guard bits 39:32 are cleared in the destination;
+  no other status field changes.
+- Unknown selected source or unknown pre-C blocks retirement transactionally;
+  unknownness in the unselected accumulator is allowed. The generic collector
+  preserves both A/B knownness, and the existing accumulator-write sequencer
+  validates and commits the destination plus C atomically. PC `0xffff` boundary
+  rejection also rolls back all architectural output.
+- Ownership mirrors the tree: `src/isa/catalog/` owns rows and resource bits,
+  `src/isa/decode/` owns source extraction, `src/isa/ops/rotate/` owns pure
+  semantics, `src/cpu/input/` owns collection, `src/sequencer/accumulator/`
+  remains the effect owner, and `src/cpu/` only orchestrates generic collection
+  and retirement. Tests mirror these owners under
+  `tests/unit/cpu/input/`, `tests/unit/isa/decode/`,
+  `tests/unit/isa/ops/rotate/`, and `tests/unit/cpu/`.
+
+Catalog metadata and generated-lookup proof remain separately owned under
+`tests/unit/isa/catalog/`; the decode test links only the decode-owned layout
+requirement so normative ownership does not cross module boundaries.
+
+The TDD vectors cover C=0 and C=1 for both lanes; low-32 inputs
+`0x00000000`, `0x00000001`, `0x7fffffff`, `0x80000000`, and `0xffffffff`;
+guard-only and mixed raw40 values; canonical input/decode rejection with output
+nonmutation; all four CPU forms; non-C status preservation; unknown selected/C
+rollback; allowed unselected unknownness; PC-`0xffff` rollback; and exactly one
+attempt, one retirement, and PC+1 for admitted forms. Decode coverage is
+exhaustive over all 65,536 first words and must classify exactly
+`0xF491`, `0xF591`, `0xF490`, and `0xF590`.
+
+TI `SPRU172C` §4 ROL (printed p. 4-143) and ROR (printed p. 4-145) are the
+normative form/effect sources. Their descriptions support the low-32
+rotate-through-pre-C behavior, old endpoint-bit-to-C result, and guard-bit
+clearing; no summary one-cycle value is admitted as machine timing evidence.
+GNU binutils 2.42 commit `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e`,
+`opcodes/tic54x-opc.c`, is nonnormative encoding corroboration only and must not
+be copied or vendored. Table 2-28 does not positively authorize ROL or ROR
+repetition, so repeatability remains `UNRESOLVED`; no RPT/IRQ, memory, device,
+emulator, or timing behavior is part of this work piece.
+
+After registration, catalog quality should report nine declarative rows and 565
+populated encoded words; that count is not an instruction count. The mixed
+reset-runnable workload remains four of nine rows. The exit condition is the
+collector proof followed by four-form decode, pure rotate semantics, generic
+effect transaction, and CPU retirement proof without CPU opcode branching or
+CPU file growth.
 
 ### Hosted performance history (implemented; local and remote gates green)
 

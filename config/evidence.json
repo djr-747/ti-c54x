@@ -1558,6 +1558,68 @@
         "anchor": "P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)"
       },
       "assertion": "P2-W24 freezes a two-step standalone slice: first rename the P2-W23 select-named payload to generic ACCUMULATOR_WRITE with canonical C PRESERVE/WRITE validation and atomic status preservation, then implement CMPL's four 0xF493/0xFCFF forms through the generic ACCUMULATORS resource path without a CPU opcode branch or CPU file growth. Exhaustive decode coverage, full-40-bit one's-complement behavior, repeatability, and machine timing are explicitly separated by evidence status."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ROL-P4-143",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "ROL",
+        "printed_page_start": "4-143",
+        "printed_page_end": "4-143"
+      },
+      "assertion": "The ROL instruction description defines a one-word accumulator form with selected-accumulator selector S at bit 8. Its opcode diagram derives value 0xF491 with mask 0xFEFF, yielding ROL A and ROL B forms; the operation rotates the selected low 32-bit value through pre-C, returns the old bit 31 in C, and clears guard bits 39:32. No summary one-cycle value is adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ROR-P4-145",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "ROR",
+        "printed_page_start": "4-145",
+        "printed_page_end": "4-145"
+      },
+      "assertion": "The ROR instruction description defines a one-word accumulator form with selected-accumulator selector S at bit 8. Its opcode diagram derives value 0xF490 with mask 0xFEFF, yielding ROR A and ROR B forms; the operation rotates the selected low 32-bit value through pre-C, returns the old bit 0 in C, and clears guard bits 39:32. No summary one-cycle value is adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeat section does not positively authorize ROL or ROR repetition: neither form is listed among the forms prohibited by Table 2-28, but the source provides no all-unlisted-forms rule. ROL and ROR repeatability therefore remain unresolved, and the summary one-cycle field is not adopted as timing evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W25: generic input collection and ROL/ROR vertical slice (planned)"
+      },
+      "assertion": "P2-W25 freezes a private generic resource-driven input collector with ACCUMULATORS and STATUS_C resources, a typed status_c value and status_c_known flag, transactional validation, and no hot-path environment, allocation, global, or diagnostic behavior; then consumes it for four ROL/ROR forms through the existing ACCUMULATOR_WRITE plus C_WRITE effect path without a CPU opcode branch or new public API."
     }
   ],
   "requirements": [
@@ -3054,6 +3116,66 @@
       "claim": "CMPL repeatability is unresolved: Table 2-28 does not list CMPL, but its preamble does not positively authorize every unlisted form. Do not classify CMPL as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-OP-INPUT-COLLECTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Own one generic transactional input collector for resource masks. STATUS_C is a first-class resource beside ACCUMULATORS; the copied input snapshot carries a typed status_c value and status_c_known flag. The collector rejects unknown resource bits and invalid requested backing pointers, reads only requested resources, reads C once when requested, returns canonical zero/false for unrequested values, preserves A/B unknownness as data, and leaves output unchanged on rejection. It has no globals, environment reads, allocation, logging, or diagnostics, and the CPU uses one generic call without opcode identity branching.",
+      "evidence_ids": ["E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-OP-INPUT-COLLECTION"]
+    },
+    {
+      "id": "REQ-COMMON-ROL-ROR-ENCODINGS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register ROL as value 0xF491/mask 0xFEFF and ROR as value 0xF490/mask 0xFEFF. Each form consumes exactly one program word and S at bit 8 selects the in-place accumulator A or B, producing exactly four populated encodings without claiming that encoded words are distinct instructions.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ROL-P4-143", "E-TI-C54X-SPRU172C-S4-ROR-P4-145"],
+      "test_ids": ["T-COMMON-ROL-ROR-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-ROL-ROR-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode ROL/ROR through a generic ACCUMULATOR_SOURCE layout extracting S from word 0 bit 8. Exhaustive 65,536-word lookup coverage must classify exactly 0xF491, 0xF591, 0xF490, and 0xF590, reject canonical fixed-bit and layout near-misses, and preserve all unrelated catalog rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ROL-P4-143", "E-TI-C54X-SPRU172C-S4-ROR-P4-145"],
+      "test_ids": ["T-COMMON-ROL-ROR-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-ROL-ROR-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/rotate/",
+      "claim": "Produce pure ROL/ROR effects over the selected accumulator's low 32 bits and pre-C: ROL inserts pre-C at bit 0 and writes old bit 31 to C; ROR inserts pre-C at bit 31 and writes old bit 0 to C. Clear guard bits 39:32, preserve the non-selected accumulator and every other status field, and emit the existing generic accumulator-write plus C-write effect.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ROL-P4-143", "E-TI-C54X-SPRU172C-S4-ROR-P4-145"],
+      "test_ids": ["T-COMMON-ROL-ROR-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-ROL-ROR-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Route ROL/ROR through ACCUMULATORS|STATUS_C input resources and the existing generic effect transaction. Unknown selected source or unknown C blocks retirement while unknown unselected accumulator data is allowed; admitted forms preserve unrelated status, retire exactly once with one attempt and PC+1, and reject at PC 0xffff without mutation. No opcode-specific CPU branch or CPU growth is permitted.",
+      "evidence_ids": ["E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-ROL-ROR"]
+    },
+    {
+      "id": "REQ-COMMON-ROL-ROR-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "ROL and ROR repeatability is unresolved: Table 2-28 does not list either form, but its preamble does not positively authorize every unlisted form. Do not classify ROL or ROR as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -3863,6 +3985,46 @@
       "path": "tests/unit/cpu/test_cpu_cmpl.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_cmpl"},
       "requirement_ids": ["REQ-PROJECT-CMPL-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-OP-INPUT-COLLECTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OP-INPUT-COLLECTION"]
+    },
+    {
+      "id": "T-COMMON-ROL-ROR-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_rol_ror_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ROL-ROR-ENCODINGS"]
+    },
+    {
+      "id": "T-COMMON-ROL-ROR-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rol_ror_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ROL-ROR-DECODE"]
+    },
+    {
+      "id": "T-COMMON-ROL-ROR-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/rotate/test_rol_ror.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ROL-ROR-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-ROL-ROR",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_rol_ror.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-ROL-ROR-RETIREMENT"]
     }
   ]
 }
