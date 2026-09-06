@@ -1339,7 +1339,7 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {
         "path": "docs/implementation-plan.md",
-        "anchor": "P2-W21B: explicit WORD16 byte-order codec (active kickoff)"
+        "anchor": "P2-W21B: explicit WORD16 byte-order codec (implemented)"
       },
       "assertion": "The P2-W21B project contract defines private, pure by-value encode and decode results for one uint16_t word and exactly two uint8_t lanes under an explicit BIG or LITTLE byte-order argument. BIG maps 0x1234 to bytes 0x12,0x34 and LITTLE maps it to 0x34,0x12. Decode borrows exactly two readable bytes only until return, checks a null input before byte-order validity, and retains no pointer. Invalid results zero every named payload field without claiming padding-byte values. Implementations use value arithmetic rather than pointer casts, unions, packed objects, memcpy, or host-native order. The codec owns no global current order, program-image format, physical shared-memory lane policy, snapshot/wire format, callback, transaction, CPU state, or TI architectural endian claim."
     }
@@ -2511,7 +2511,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/byte_order/",
@@ -3248,10 +3248,10 @@
     },
     {
       "id": "T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/byte_order/test_word16_codec.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_codec"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC"]
     },
     {

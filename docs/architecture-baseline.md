@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 77 immutable evidence
-records, 112 requirements, and 79 tests (70 `PASSING`, 9 `PLANNED`).
+records, 112 requirements, and 79 tests (71 `PASSING`, 8 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -411,7 +411,7 @@ borrowed requests remain unchanged without making assertions about C padding. Th
 focused normal and sanitizer tests pass, the full standalone Make gate is green,
 and the current public callback ABI and CPU behavior remain unchanged.
 
-### WORD16 byte-order boundary (P2-W21B active)
+### WORD16 byte-order boundary (P2-W21B implemented)
 
 Byte lanes are an explicit conversion policy, not an attribute of the C host or a
 global property of the CPU. The private `src/bus/byte_order/` owner converts one
@@ -425,6 +425,13 @@ shared RAM, or a serialization format. Those owners must choose byte order
 explicitly and may differ. The common core therefore supports both conversions
 without claiming that either is the architectural or Nokia device default. Host
 casts, unions, packed layouts, and native-layout copies are outside the contract.
+
+The completed private leaf exhaustively round-trips all 65,536 word values under
+both orders and independently pins encode and decode lane vectors so mutually
+compensating conversion errors cannot hide. It also proves null-before-order status
+precedence, zero named error payloads, and borrowed-input nonmutation through both
+decode branches. Focused normal and sanitizer tests and the full standalone Make
+gate pass; the public ABI and CPU behavior remain unchanged.
 
 ## Single-indirect address-effect slice
 

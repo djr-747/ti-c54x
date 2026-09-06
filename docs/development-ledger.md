@@ -3618,3 +3618,49 @@ rewritten after publication.
 - Result: the W21B project contract is published and green on every
   repository-owned build surface. Its bounded TDD implementation may begin under
   the private `bus/byte_order/` owner.
+
+## 2026-09-06 — P2-W21B completion — explicit WORD16 byte order
+
+- State: implemented and green. Implementation commit:
+  `1ce1ba17aa67b2400c3cf59372737ac2127493a1`
+  (`P2-W21B: add WORD16 byte-order codec`).
+- TDD RED: the owner-mirrored test and manifests were registered first;
+  `rtk make -B build-fast/test_bus_word16_codec` failed because the required
+  `build-fast/obj/bus/byte_order/word16_codec.o` did not exist. Adding the private
+  codec made the same focused target and direct executable pass.
+- Codec result: zero-sentinel `INVALID`, `BIG`, and `LITTLE` orders select conversion
+  per call. Encode owns exactly two byte lanes; decode borrows exactly two readable
+  lanes until return and owns its copied WORD16 result. BIG maps `0x1234` to
+  `0x12,0x34`, while LITTLE maps it to `0x34,0x12`.
+- Validation: statuses are exactly `OK`, `INVALID_ARGUMENT`, and `INVALID_ORDER`.
+  Decode checks null before order, zero and forged orders are rejected, and each
+  failure zeroes every named payload field without making a padding-byte claim.
+- Host neutrality: production conversion uses fixed-width unsigned scalar shifts
+  and conversions only. No pointer cast, type punning, union, packed layout,
+  `memcpy`, native-order inference, or current-order global was introduced.
+- TDD GREEN: the focused proof exhausts all 65,536 WORD16 values under both orders.
+  Independent external encode/decode vectors prevent coupled conversion bugs from
+  cancelling; endpoints, error payloads, validation precedence, and borrowed-input
+  nonmutation through BIG and LITTLE are also covered.
+- Independent Luna review found no blocker or major production, C11, ownership,
+  isolation, manifest, or host-order issue. Its one minor independent-decode-vector
+  gap was closed before the implementation gate.
+- Size/shape: implementation is 93 lines, private interface 58 lines, and focused
+  proof 170 lines. Production and test leaves have nested Make/CMake manifests and
+  no file approaches the 500-line review threshold.
+- Registry final: 2 targets, 7 sources, 77 immutable evidence records, 112
+  requirements (89 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`), and 79 tests
+  (71 `PASSING`, 8 `PLANNED`). `T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` runs as
+  `ti_c54x.bus_word16_codec` in both supported build systems.
+- Validation: focused normal and ASan/UBSan tests passed. The full `make -B test`
+  gate passed 163 Python quality tests, 66 C unit targets, and 67 direct executions
+  including the minimal consumer. Source boundaries (145 files), manifests,
+  evidence, knobs, observer-disabled artifact, generated lookup staleness, and
+  `git diff --check` passed. Local CMake remains unavailable because the installed
+  executable is permission-denied; the remote matrix owns that proof.
+- Isolation: no public API, request change, callback, host memory, transaction,
+  phase, wait, arbitration, memory effect, CPU/state/ISA behavior, observer,
+  diagnostic, knob, environment read, allocator, mutable global, firmware,
+  emulator dependency, or TI/device byte-order claim was added.
+- Follow-up: publish and remotely verify the implementation and completion record,
+  then begin P2-W21C under the separate exactly-once resumable transaction owner.

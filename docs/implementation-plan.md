@@ -41,8 +41,8 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Active (P2-W21B) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
-| Explicit WORD16 byte-order codec (P2-W21B) | Active kickoff | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
+| Shared-memory transaction semantics | Active (P2-W21C next) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
+| Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
@@ -587,7 +587,7 @@ evidenced owner-local work may proceed independently.
 
 ### P2-W21: shared-memory transaction foundation
 
-State: P2-W21A implemented; P2-W21B active. This work begins the independent gate
+State: P2-W21A and P2-W21B implemented; P2-W21C is next. This work builds the independent gate
 required before any instruction may mutate memory. The core remains word-native and
 host-endian-neutral; sharing, storage, device mapping, and arbitration stay outside
 the CPU instance.
@@ -655,7 +655,7 @@ and invalid borrowed values. Nested Make/CMake manifests mirror the bus/request
 owner; root files add aggregation lines only. The full standalone Make gate passes.
 No public callback or CPU execution path consumes the request yet.
 
-#### P2-W21B: explicit WORD16 byte-order codec (active kickoff)
+#### P2-W21B: explicit WORD16 byte-order codec (implemented)
 
 This slice creates the separate `src/bus/byte_order/` and mirrored
 `tests/unit/bus/byte_order/` owners. `word16_codec.[ch]` converts one copied
@@ -690,8 +690,13 @@ program images, shared RAM, or any device use one physical byte order. It adds n
 public API, request change, callback, host memory, transaction, phase, wait,
 arbitration, memory effect, CPU/state/ISA behavior, observer, diagnostic, knob,
 environment read, allocator, mutable global, firmware, or emulator dependency.
-Exit requires the exhaustive test to pass under the owner-local Make and CTest
-registrations while W21A and current CPU behavior remain unchanged.
+The completed private leaf is 93 lines of implementation, 58 lines of interface,
+and 170 lines of focused proof. The proof exhausts both orders and independently
+pins external encode and decode vectors, closes null-before-order precedence and
+named error-payload behavior, and verifies borrowed-input nonmutation through both
+branches. Owner-local Make and CTest registrations mirror the production tree.
+Focused normal and sanitizer tests and the full standalone Make gate pass while
+W21A, the public ABI, and current CPU behavior remain unchanged.
 
 ## Delivery order
 
