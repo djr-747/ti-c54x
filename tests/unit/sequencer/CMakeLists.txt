@@ -21,3 +21,4 @@ ti_c54x_add_unit_test(address_operand_apply_contract test_address_operand_apply_
 ti_c54x_add_unit_test(nop_flow test_nop_flow.c)
 ti_c54x_add_unit_test(program_pc_bridge test_program_pc_bridge.c)
 ti_c54x_add_unit_test(program_pc_bridge_multiword test_program_pc_bridge_multiword.c)
+add_subdirectory(repeat)

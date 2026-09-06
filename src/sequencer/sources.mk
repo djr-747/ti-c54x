@@ -6,3 +6,4 @@ ti_c54x_core_sources += \
 	src/sequencer/address_effect_apply.c \
 	src/sequencer/sequential_pc.c \
 	src/sequencer/program_pc_bridge.c
+include src/sequencer/repeat/sources.mk

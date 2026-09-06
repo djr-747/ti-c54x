@@ -7,3 +7,4 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/sequential_pc.c"
     "${CMAKE_CURRENT_LIST_DIR}/program_pc_bridge.c"
 )
+include(${CMAKE_CURRENT_LIST_DIR}/repeat/sources.cmake)

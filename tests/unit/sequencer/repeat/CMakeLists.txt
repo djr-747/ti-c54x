@@ -1,0 +1,4 @@
+# Test ownership: tests/unit/sequencer/repeat owns pure repeat-policy proofs.
+ti_c54x_add_unit_test(repeat_cardinality_contract test_repeat_cardinality_contract.c)
+ti_c54x_add_unit_test(repeat_body_admission_contract test_repeat_body_admission_contract.c)
+ti_c54x_add_unit_test(repeat_request_gate_contract test_repeat_request_gate_contract.c)
