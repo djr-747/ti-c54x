@@ -15,12 +15,16 @@
 #include "isa/catalog/opcode_catalog.h"
 #include "op_nop.h"
 
-#define TI_C54X_OPCODE_EXACT(name, handler, word, count) \
-    [TI_C54X_OPCODE_ID_##name] = ti_c54x_op_##handler,
+#define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words) \
+    [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
+#define TI_C54X_OPCODE_MASKED(symbol, handler, first_word_value, \
+                              first_word_mask, program_words) \
+    [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
 static const ti_c54x_op_handler ti_c54x_handlers[TI_C54X_OPCODE_ID_COUNT] = {
 #include "../catalog/opcode_catalog.def"
 };
 #undef TI_C54X_OPCODE_EXACT
+#undef TI_C54X_OPCODE_MASKED
 
 ti_c54x_op_status
 ti_c54x_dispatch_decoded(const ti_c54x_decode_result *instruction,

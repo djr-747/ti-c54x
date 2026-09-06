@@ -1,9 +1,10 @@
 /*
  * Module contract
  *
- * Owns: the sole declarative exact-first-word opcode inventory for the
- * standalone TI C54x core. Every consumer includes this file under a
- * TI_C54X_OPCODE_EXACT macro definition and derives its own view.
+ * Owns: the sole declarative first-word opcode inventory for the standalone
+ * TI C54x core. The source schema supports EXACT and MASKED rows; this
+ * production inventory currently contains one EXACT row and no MASKED row.
+ * Every consumer derives its own view from this same file.
  * Does not own: opcode strings, timing, bus/state behavior, or a second
  * handwritten instruction table. The handler token is an operation binding
  * token owned by the ISA operations module.

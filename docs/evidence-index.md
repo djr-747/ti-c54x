@@ -7,7 +7,7 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 62 immutable evidence records,
-77 requirements, and 57 tests (53 `PASSING`, 4 `PLANNED`).
+77 requirements, and 57 tests (55 `PASSING`, 2 `PLANNED`).
 
 ## Targets
 
@@ -282,8 +282,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-INDIRECT-CIRCULAR-MOD14-OFFSET` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | — |
 | `REQ-COMMON-INDIRECT-CIRCULAR-CMPT1-DUAL` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | — |
 | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM`, `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` |
-| `REQ-PROJECT-MASKED-OPCODE-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-MASKED-OPCODE-CATALOG` |
-| `REQ-PROJECT-OPCODE-LOOKUP-GENERATION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-OPCODE-LOOKUP-GENERATION` |
+| `REQ-PROJECT-MASKED-OPCODE-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-MASKED-OPCODE-CATALOG` |
+| `REQ-PROJECT-OPCODE-LOOKUP-GENERATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-OPCODE-LOOKUP-GENERATION` |
 | `REQ-PROJECT-OPCODE-CATALOG-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-OPCODE-CATALOG-CONTRACT` | `T-PROJECT-OPCODE-CATALOG-CONTRACT` |
 
 ## Tests
@@ -348,8 +348,8 @@ exist in the repository.
 | `T-PROJECT-INDIRECT-CIRCULAR-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_circular_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_circular_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-CIRCULAR-APPLICATION` |
 | `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_validate_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_validate_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
 | `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_dependency_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_dependency_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
-| `T-PROJECT-MASKED-OPCODE-CATALOG` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py` | `null` | `REQ-PROJECT-MASKED-OPCODE-CATALOG` |
-| `T-PROJECT-OPCODE-LOOKUP-GENERATION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/catalog/test_opcode_lookup_generator.py` | `null` | `REQ-PROJECT-OPCODE-LOOKUP-GENERATION` |
+| `T-PROJECT-MASKED-OPCODE-CATALOG` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-MASKED-OPCODE-CATALOG` |
+| `T-PROJECT-OPCODE-LOOKUP-GENERATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/catalog/test_opcode_lookup_generator.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-OPCODE-LOOKUP-GENERATION` |
 | `T-PROJECT-OPCODE-CATALOG-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/test_opcode_catalog.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-OPCODE-CATALOG-CONTRACT` |
 
 ## Correction and tombstone policy

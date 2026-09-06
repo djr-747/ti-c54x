@@ -43,7 +43,7 @@ function-pointer dispatch tables.
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
 | Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
-| Masked opcode catalog foundation | Active kickoff | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
+| Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -81,10 +81,15 @@ sequencer and public CPU-shell contracts are ready.
 
 ### P2-W17: masked opcode catalog foundation (active kickoff)
 
+State: implemented. The completed work piece establishes the shared catalog
+schema, deterministic lookup generator, checked-in lookup artifact, and their
+exhaustive and synthetic quality proofs. Production still registers only the
+exact NOP row; no masked instruction is enabled by this slice.
+
 This work piece extends the P2-W16 catalog infrastructure without adding an
 operand-bearing or masked production instruction. The exact NOP row, its `0xF495`
 encoding, behavior, and public/private APIs remain unchanged. The sole
-`src/isa/catalog/` inventory gains an `EXACT` plus `MASKED` schema with these
+`src/isa/catalog/` inventory now has an `EXACT` plus `MASKED` schema with these
 project-contract rules:
 
 - Every encoding is canonical 16-bit `value`/`mask` data. `EXACT` is represented
@@ -93,17 +98,18 @@ project-contract rules:
 - Widths are one through 255 program words. IDs and handler tokens are unique.
   Pairwise pattern overlap is rejected deterministically; there is
   no priority or declaration-order tie-breaker.
-- A deterministic repository-owned generator emits a checked-in immutable
+- A deterministic repository-owned generator emits the checked-in immutable
   65,536-entry `uint16_t` direct lookup at
   `generated/isa/catalog/opcode_first_word.inc`. The
   ordinary Make, CMake, and installed-consumer builds consume only checked-in C
   artifacts and remain compiler-only/Python-free. Quality checks regenerate the
   artifact and reject stale output, but runtime has no initialization,
   allocation, or mutable global-table update.
-- Operand-field layouts/extraction and extension-word fetch are separate future
-  owners/work pieces. This foundation does not infer variable operand fields,
-  multiword fetch semantics, CPU fetch/decode/dispatch/retire integration,
-  timing, memory, bus, device, observer, XPC, or external-table behavior.
+- Operand-field layouts/extraction and extension-word fetch remain separate
+  future owners/work pieces. This foundation does not infer variable operand
+  fields, multiword fetch semantics, CPU fetch/decode/dispatch/retire
+  integration, timing, memory, bus, device, observer, XPC, or external-table
+  behavior.
 
 Ownership follows the tree: `src/isa/catalog/` owns the declarative rows and
 runtime lookup, `tools/isa/catalog/generate_opcode_lookup.py` owns deterministic
@@ -112,15 +118,15 @@ generation, `generated/isa/catalog/` owns the checked-in derivative, and
 and stale-artifact checks. No
 implementation file outside the catalog owner may add an opcode row or duplicate
 the generated table. Existing TI field/encoding evidence remains architectural
-context for later instruction work; the new catalog and generator evidence is
+context for later instruction work; the catalog and generator evidence is
 `PROJECT_CONTRACT_ONLY` and does not claim TI conformance.
 
-The TDD sequence is red first for malformed schema, invalid masks/widths,
-duplicate IDs or handlers, deterministic pairwise overlap rejection, and stale
-lookup output; implementation follows; then exhaustive 65,536-word mapping and
-generated-artifact immutability are proven, independently reviewed, and checked
-on the normal quality runner. The planned Python tests use `make test` through
-CTest `ti_c54x.quality.python` once implemented.
+The TDD proof now covers malformed schema, invalid masks/widths, duplicate IDs
+or handlers, deterministic pairwise overlap rejection, stale lookup output,
+exhaustive 65,536-word mapping, and generated-artifact immutability. The two
+Python tests run through `make test` via CTest
+`ti_c54x.quality.python`; normal Make, CMake, and installed-consumer builds
+consume only checked-in C artifacts and remain compiler-only/Python-free.
 
 ## Delivery order
 

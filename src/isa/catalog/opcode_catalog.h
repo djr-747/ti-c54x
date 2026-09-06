@@ -24,8 +24,12 @@ typedef enum ti_c54x_opcode_id {
     TI_C54X_OPCODE_ID_UNKNOWN = 0,
 #define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words) \
     TI_C54X_OPCODE_ID_##symbol,
+#define TI_C54X_OPCODE_MASKED(symbol, handler, first_word_value, \
+                              first_word_mask, program_words) \
+    TI_C54X_OPCODE_ID_##symbol,
 #include "opcode_catalog.def"
 #undef TI_C54X_OPCODE_EXACT
+#undef TI_C54X_OPCODE_MASKED
     TI_C54X_OPCODE_ID_COUNT
 } ti_c54x_opcode_id;
 

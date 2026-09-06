@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 62 immutable evidence
-records, 77 requirements, and 57 tests (53 `PASSING`, 4 `PLANNED`).
+records, 77 requirements, and 57 tests (55 `PASSING`, 2 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -98,31 +98,31 @@ claim and does not copy legacy or external implementation material. It makes no
 claim about masked encodings or CPU-shell integration. The project catalog
 contract is recorded separately from TI conformance evidence.
 
-### Masked opcode catalog foundation (P2-W17 kickoff)
+### Masked opcode catalog foundation (P2-W17 implemented)
 
-P2-W17 is an infrastructure-only extension of the exact-row catalog. The NOP
-`0xF495` row, behavior, and API remain unchanged; no masked or operand-bearing
-production instruction is registered. The sole `src/isa/catalog/` schema now
-plans `EXACT` and `MASKED` rows over canonical 16-bit `value`/`mask` pairs:
-masked rows must have a nonzero, non-full mask, values may not set bits outside
-their masks, widths are one through 255 program words, IDs and handlers are
-unique, and every pairwise overlap is rejected deterministically with no
-priority rule.
+P2-W17 is the implemented infrastructure-only extension of the exact-row
+catalog. The NOP `0xF495` row, behavior, and API remain unchanged; no masked or
+operand-bearing production instruction is registered. The shared schema under
+`tools/isa/catalog/` validates the sole `src/isa/catalog/` inventory and accepts
+`EXACT` and `MASKED` rows over canonical 16-bit `value`/`mask` pairs: masked
+rows must have a nonzero, non-full mask, values may not set bits outside their
+masks, widths are one through 255 program words, IDs and handlers are unique,
+and every pairwise overlap is rejected deterministically with no priority rule.
 
-The catalog subsystem also owns a deterministic generator at
+The catalog subsystem owns a deterministic generator at
 `tools/isa/catalog/generate_opcode_lookup.py` and a checked-in immutable
 65,536-entry `uint16_t` direct lookup derivative at
 `generated/isa/catalog/opcode_first_word.inc`. Normal Make, CMake, and consumer
 builds consume only checked-in C sources and do not run Python; quality checks
 regenerate and reject stale output. Runtime performs no table initialization,
-allocation, or mutable global update. The quality tests belong under
-`tests/contract/quality/isa/catalog/` and will run through the existing Python
-quality target (`make test`, CTest `ti_c54x.quality.python`) when implemented.
+allocation, or mutable global update. The schema and generator are proven by
+the passing quality tests under `tests/contract/quality/isa/catalog/`, run
+through `make test` and CTest `ti_c54x.quality.python`.
 
 Operand-field layouts/extraction and extension-word fetch are separate future
 owners before any real masked instruction. CPU fetch/decode/dispatch/retire,
 timing, memory, bus, device, observer, XPC, and external-code/table reuse remain
-outside this kickoff. Existing TI field evidence is architectural context only;
+outside this work piece. Existing TI field evidence is architectural context only;
 `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` is explicitly
 `PROJECT_CONTRACT_ONLY` and makes no TI conformance claim.
 

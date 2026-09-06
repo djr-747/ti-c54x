@@ -1,0 +1,268 @@
+"""Parse and validate the standalone ISA opcode catalog.
+
+Module contract
+---------------
+Owns: the small, deterministic source schema for exact and masked first-word
+opcode rows, including lexical validation, immutable normalized records, and
+pairwise overlap checks.  It is tooling code used before C compilation.
+Does not own: opcode generation, C macro consumers, operand extraction,
+instruction semantics, timing, or architectural evidence.  Parsing returns
+new immutable records; no caller-owned mutable object is retained.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import re
+from typing import Final, Iterable
+
+
+class OpcodeCatalogError(ValueError):
+    """Raised when catalog text violates the source contract."""
+
+
+@dataclass(frozen=True, slots=True)
+class OpcodeRow:
+    """One normalized first-word pattern from the declarative catalog.
+
+    ``first_word_value`` and ``first_word_mask`` are canonical 16-bit
+    integers. ``program_word_count`` carries its unit explicitly. ``form`` is
+    the source spelling (``EXACT`` or ``MASKED``), and ``source_line`` is the
+    one-based source line where the macro declaration begins.
+    """
+
+    symbol: str
+    handler: str
+    first_word_value: int
+    first_word_mask: int
+    program_word_count: int
+    form: str
+    source_line: int
+
+
+_ID_RE: Final = re.compile(r"^[A-Z][A-Z0-9_]*$")
+_HANDLER_RE: Final = re.compile(r"^[a-z][a-z0-9_]*$")
+_HEX_RE: Final = re.compile(r"^0[xX][0-9A-Fa-f]+$")
+_WIDTH_RE: Final = re.compile(r"^[0-9]+$")
+_ROW_RE: Final = re.compile(
+    r"^TI_C54X_OPCODE_(EXACT|MASKED)\(\s*"
+    r"([^,\s]+)\s*,\s*"
+    r"([^,\s]+)\s*,\s*"
+    r"([^,\s]+)\s*,\s*"
+    r"([^,\s]+)"
+    r"(?:\s*,\s*([^,\s]+))?\s*\)$"
+)
+
+_WORD_BITS = 16
+_WORD_MAX = (1 << _WORD_BITS) - 1
+
+
+def _strip_comments(text: str) -> str:
+    """Remove C comments while preserving newlines for source line reporting."""
+
+    result: list[str] = []
+    index = 0
+    in_block = False
+    while index < len(text):
+        if in_block:
+            end = text.find("*/", index)
+            if end < 0:
+                raise OpcodeCatalogError("unterminated block comment")
+            result.extend("\n" if char == "\n" else " " for char in text[index:end])
+            result.extend("  ")
+            index = end + 2
+            in_block = False
+            continue
+        if text.startswith("/*", index):
+            in_block = True
+            index += 2
+            continue
+        if text.startswith("//", index):
+            newline = text.find("\n", index)
+            if newline < 0:
+                result.extend(" " for _ in text[index:])
+                break
+            result.extend(" " for _ in text[index:newline])
+            result.append("\n")
+            index = newline + 1
+            continue
+        result.append(text[index])
+        index += 1
+    if in_block:  # Defensive: normally raised by the branch above.
+        raise OpcodeCatalogError("unterminated block comment")
+    return "".join(result)
+
+
+def _parse_word(token: str, location: str) -> int:
+    if not _HEX_RE.fullmatch(token):
+        raise OpcodeCatalogError(f"{location}: word must be hexadecimal")
+    value = int(token, 16)
+    if value > _WORD_MAX:
+        raise OpcodeCatalogError(f"{location}: word is outside 16-bit range")
+    return value
+
+
+def _parse_width(token: str, location: str) -> int:
+    if not _WIDTH_RE.fullmatch(token):
+        raise OpcodeCatalogError(f"{location}: width must be decimal")
+    value = int(token, 10)
+    if not 1 <= value <= 0xFF:
+        raise OpcodeCatalogError(f"{location}: width must be from 1 through 255")
+    return value
+
+
+def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, int]:
+    """Stable semantic ordering, independent of declaration order."""
+
+    return (
+        row.symbol,
+        row.handler,
+        row.first_word_value,
+        row.first_word_mask,
+        row.program_word_count,
+        row.form,
+        row.source_line,
+    )
+
+
+def _overlap_witness(first: OpcodeRow, second: OpcodeRow) -> int | None:
+    """Return the lowest 16-bit word matching both patterns, if one exists."""
+
+    shared_mask = first.first_word_mask & second.first_word_mask
+    if ((first.first_word_value ^ second.first_word_value) & shared_mask) != 0:
+        return None
+    return first.first_word_value | second.first_word_value
+
+
+def _validate_overlaps(rows: Iterable[OpcodeRow]) -> None:
+    ordered = sorted(rows, key=_row_key)
+    for index, first in enumerate(ordered):
+        for second in ordered[index + 1 :]:
+            witness = _overlap_witness(first, second)
+            if witness is None:
+                continue
+            names = sorted((first.symbol, second.symbol))
+            raise OpcodeCatalogError(
+                "overlapping opcode patterns "
+                f"{names[0]} and {names[1]} at 0x{witness:04X} "
+                f"(lines {min(first.source_line, second.source_line)} and "
+                f"{max(first.source_line, second.source_line)})"
+            )
+
+
+def _is_integer(value: object) -> bool:
+    """Return whether ``value`` is an integer field, excluding booleans."""
+
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def validate_catalog_rows(rows: Iterable[OpcodeRow]) -> tuple[OpcodeRow, ...]:
+    """Validate directly supplied rows and return an immutable normalized tuple.
+
+    ``parse_catalog`` and every generator entry point share this contract.  It
+    deliberately accepts an empty iterable so a derivative may render an
+    all-UNKNOWN lookup; the source parser separately rejects an empty catalog.
+    No caller-owned container is retained.
+    """
+
+    try:
+        normalized = tuple(rows)
+    except TypeError as error:
+        raise OpcodeCatalogError("opcode rows must be iterable") from error
+
+    if len(normalized) > _WORD_MAX:
+        raise OpcodeCatalogError(
+            f"opcode identity count {len(normalized)} exceeds UINT16_MAX ({_WORD_MAX})"
+        )
+
+    symbols: set[str] = set()
+    handlers: set[str] = set()
+    for position, row in enumerate(normalized, 1):
+        location = f"row {position}"
+        if not isinstance(row, OpcodeRow):
+            raise OpcodeCatalogError(f"{location}: expected OpcodeRow")
+        if not isinstance(row.symbol, str) or _ID_RE.fullmatch(row.symbol) is None:
+            raise OpcodeCatalogError(f"{location}: invalid or reserved opcode ID")
+        if row.symbol in {"UNKNOWN", "COUNT"}:
+            raise OpcodeCatalogError(f"{location}: invalid or reserved opcode ID")
+        if not isinstance(row.handler, str) or _HANDLER_RE.fullmatch(row.handler) is None:
+            raise OpcodeCatalogError(f"{location}: invalid handler token")
+        if row.symbol in symbols:
+            raise OpcodeCatalogError(f"{location}: duplicate opcode ID {row.symbol}")
+        if row.handler in handlers:
+            raise OpcodeCatalogError(f"{location}: duplicate handler token {row.handler}")
+        if not _is_integer(row.first_word_value) or not 0 <= row.first_word_value <= _WORD_MAX:
+            raise OpcodeCatalogError(f"{location}: value is outside 16-bit range")
+        if not _is_integer(row.first_word_mask) or not 0 <= row.first_word_mask <= _WORD_MAX:
+            raise OpcodeCatalogError(f"{location}: mask is outside 16-bit range")
+        if not _is_integer(row.program_word_count) or not 1 <= row.program_word_count <= 0xFF:
+            raise OpcodeCatalogError(f"{location}: width must be from 1 through 255")
+        if not isinstance(row.form, str) or row.form not in {"EXACT", "MASKED"}:
+            raise OpcodeCatalogError(f"{location}: unknown opcode form {row.form!r}")
+        if not _is_integer(row.source_line) or row.source_line <= 0:
+            raise OpcodeCatalogError(f"{location}: source line must be positive")
+        if row.form == "EXACT" and row.first_word_mask != _WORD_MAX:
+            raise OpcodeCatalogError(f"{location}: EXACT form requires a full 16-bit mask")
+        if row.form == "MASKED" and row.first_word_mask in {0, _WORD_MAX}:
+            raise OpcodeCatalogError(
+                f"{location}: MASKED form requires a partial nonzero mask"
+            )
+        if row.first_word_value & ~row.first_word_mask:
+            raise OpcodeCatalogError(f"{location}: value sets bits outside its mask")
+        symbols.add(row.symbol)
+        handlers.add(row.handler)
+
+    _validate_overlaps(normalized)
+    return normalized
+
+
+def parse_catalog(text: str) -> list[OpcodeRow]:
+    """Parse catalog macro rows into immutable normalized records.
+
+    The accepted forms are ``TI_C54X_OPCODE_EXACT(symbol, handler, value,
+    width)`` and ``TI_C54X_OPCODE_MASKED(symbol, handler, value, mask,
+    width)``.  Every non-empty non-comment line must contain exactly one row;
+    comments and blank lines are otherwise ignored.
+    """
+
+    if not isinstance(text, str):
+        raise OpcodeCatalogError("catalog text must be a string")
+    rows: list[OpcodeRow] = []
+    for line_number, raw_line in enumerate(_strip_comments(text).splitlines(), 1):
+        line = raw_line.strip()
+        if not line:
+            continue
+        match = _ROW_RE.fullmatch(line)
+        if match is None:
+            raise OpcodeCatalogError(f"malformed catalog row at line {line_number}")
+        form, symbol, handler, value_token, mask_or_width, width_token = match.groups()
+        location = f"line {line_number}"
+        if form == "EXACT":
+            if width_token is not None:
+                raise OpcodeCatalogError(
+                    f"{location}: EXACT requires value and width only"
+                )
+            value = _parse_word(value_token, f"{location}: value")
+            mask = _WORD_MAX
+            width = _parse_width(mask_or_width, f"{location}: width")
+        else:
+            if width_token is None:
+                raise OpcodeCatalogError(f"{location}: MASKED requires value, mask, and width")
+            value = _parse_word(value_token, f"{location}: value")
+            mask = _parse_word(mask_or_width, f"{location}: mask")
+            width = _parse_width(width_token, f"{location}: width")
+
+        rows.append(OpcodeRow(symbol, handler, value, mask, width, form, line_number))
+
+    normalized = validate_catalog_rows(rows)
+    if not normalized:
+        raise OpcodeCatalogError("catalog has no opcode rows")
+    return list(normalized)
+
+
+__all__ = [
+    "OpcodeCatalogError",
+    "OpcodeRow",
+    "parse_catalog",
+    "validate_catalog_rows",
+]

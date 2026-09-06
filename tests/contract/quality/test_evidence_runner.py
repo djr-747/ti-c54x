@@ -187,6 +187,62 @@ class EvidenceRunnerTests(unittest.TestCase):
         validate_test_runners(self.root, {"T-NESTED": {"state": "PASSING", "path": "tests/unit/isa/decode/test_fake.c", "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "nested.ctest"}}}, errors)
         self.assertEqual(errors, [])
 
+    def test_nested_python_quality_test_path_is_accepted(self) -> None:
+        self.write("tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py", "# passing\n")
+        self.write_build_manifests()
+        tests = {
+            "T-PY-NESTED": {
+                "state": "PASSING",
+                "path": "tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py",
+                "runner": {
+                    "kind": "PYTHON_UNITTEST_DISCOVERY",
+                    "make_goal": "test",
+                    "ctest_name": "quality.discovery",
+                },
+            }
+        }
+        errors: list[str] = []
+        validate_test_runners(self.root, tests, errors)
+        self.assertEqual(errors, [])
+
+    def test_python_quality_path_rejections_are_explicit(self) -> None:
+        """Reject malformed, hidden, and non-test discovery paths by policy."""
+
+        self.write_build_manifests()
+        cases = {
+            "traversal": ("tests/contract/quality/../test_traversal.py", "must be under tests/unit or tests/contract"),
+            "absolute": ("/tests/contract/quality/test_absolute.py", "must be under tests/unit or tests/contract"),
+            "backslash": ("tests\\contract\\quality\\test_backslash.py", "path is not normalized"),
+            "dot_component": ("tests/contract/quality/./test_dot.py", "must be under tests/unit or tests/contract"),
+            "empty_component": ("tests/contract/quality//test_empty.py", "must be under tests/unit or tests/contract"),
+            "hidden_owner": ("tests/contract/quality/.hidden/test_hidden.py", "contract quality test"),
+            "nonidentifier_owner": ("tests/contract/quality/isa/catalog-v1/test_bad_owner.py", "contract quality test"),
+            "outside_quality": ("tests/contract/other/test_outside.py", "contract quality test"),
+            "bad_basename": ("tests/contract/quality/isa/catalog/not_a_test.py", "contract quality test"),
+            "non_python": ("tests/contract/quality/isa/catalog/test_not_python.txt", "contract quality test"),
+            "missing_test_stem": ("tests/contract/quality/isa/catalog/test.py", "contract quality test"),
+        }
+        for name, (path, expected) in cases.items():
+            if not any(token in path for token in ("..", "\\", "/./", "//")) and not path.startswith("/"):
+                self.write(path, "# malformed path fixture\n")
+            errors: list[str] = []
+            validate_test_runners(
+                self.root,
+                {
+                    f"T-PY-{name.upper()}": {
+                        "state": "PASSING",
+                        "path": path,
+                        "runner": {
+                            "kind": "PYTHON_UNITTEST_DISCOVERY",
+                            "make_goal": "test",
+                            "ctest_name": "quality.discovery",
+                        },
+                    }
+                },
+                errors,
+            )
+            self.assertTrue(any(expected in error for error in errors), (path, errors))
+
     def test_cross_nested_owner_registration_is_rejected(self) -> None:
         self.write("tests/unit/isa/ops/test_fake.c", "int main(void) { return 0; }\n")
         self.write_build_manifests()

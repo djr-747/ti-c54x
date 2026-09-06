@@ -42,6 +42,13 @@ def _add(errors: list[str], message: str) -> None:
     errors.append(f"RUNNER: {message}")
 
 
+_PYTHON_TEST_BASENAME = r"test_[A-Za-z0-9_]+\.py"
+_PYTHON_OWNER_COMPONENT = r"[A-Za-z_][A-Za-z0-9_]*"
+_PYTHON_QUALITY_TEST_RE = re.compile(
+    rf"tests/contract/quality/(?:{_PYTHON_TEST_BASENAME}|(?:{_PYTHON_OWNER_COMPONENT}/)+{_PYTHON_TEST_BASENAME})"
+)
+
+
 def _path(root: Path, value: Any, identifier: str, errors: list[str], require_exists: bool) -> Path | None:
     if not isinstance(value, str) or not value or "\\" in value:
         _add(errors, f"test {identifier} path is not normalized")
@@ -185,7 +192,7 @@ def _registered_c(root: Path, path: str, runner: dict[str, Any], errors: list[st
 
 
 def _registered_python(root: Path, path: str, runner: dict[str, Any], errors: list[str]) -> None:
-    if not re.fullmatch(r"tests/contract/quality/test_[^/]+\.py", path):
+    if not _PYTHON_QUALITY_TEST_RE.fullmatch(path):
         _add(errors, f"Python discovery test path is not a contract quality test: {path}")
     _, make, _, _ = make_root_text(root)
     test_body = _make_target_body(make, "test")

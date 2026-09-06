@@ -1999,7 +1999,7 @@
     },
     {
       "id": "REQ-PROJECT-MASKED-OPCODE-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/catalog/",
@@ -2009,7 +2009,7 @@
     },
     {
       "id": "REQ-PROJECT-OPCODE-LOOKUP-GENERATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/catalog/",
@@ -2483,18 +2483,18 @@
     },
     {
       "id": "T-PROJECT-MASKED-OPCODE-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-MASKED-OPCODE-CATALOG"]
     },
     {
       "id": "T-PROJECT-OPCODE-LOOKUP-GENERATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/catalog/test_opcode_lookup_generator.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-OPCODE-LOOKUP-GENERATION"]
     }
   ]

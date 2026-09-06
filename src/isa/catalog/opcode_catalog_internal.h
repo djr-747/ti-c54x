@@ -4,7 +4,8 @@
 /*
  * Module contract
  *
- * Owns: the private catalog-to-decoder hand-off for exact first-word lookup.
+ * Owns: the private catalog-to-decoder hand-off for generated exact/masked
+ * first-word lookup.
  * Does not own: public decode result policy, opcode semantics, CPU state,
  * buses, timing, or diagnostics. This header is an internal source seam and
  * is not installed as a public library header.
