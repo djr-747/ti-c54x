@@ -1852,6 +1852,98 @@
         "anchor": "P2-W28B — ROLTC/SFTC vertical slice"
       },
       "assertion": "P2-W28B freezes ROLTC and SFTC as a post-foundation fit for the existing accumulator-source layout and generic CPU retirement. Rotate and shift family handlers may fan out only under their owning subtrees; catalog, decode, generated lookup, dispatch, manifests, and shared integration remain serialized. A new layout, opcode-specific CPU branch, memory, RPT/IRQ, parallel, timing, or public-API requirement is a hard GAP that must be reported before shared edits."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4.4-T-IDENTITY-P3-27-3-28",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4.4",
+        "printed_page_start": "3-27",
+        "printed_page_end": "3-28"
+      },
+      "assertion": "Table 3-3 identifies T as a 16-bit temporary register at MMR address 000Eh; the register discussion identifies T as the operand used by EXP and NORM."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S6.9-T-RESET-OMISSION-P6-25",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.9",
+        "printed_page_start": "6-25",
+        "printed_page_end": "6-25"
+      },
+      "assertion": "The documented reset list does not initialize T; this source therefore supplies no common reset value or knownness claim for the T register."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-EXP-P4-52",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "EXP",
+        "printed_page_start": "4-52",
+        "printed_page_end": "4-52"
+      },
+      "assertion": "EXP uses the one-word encoding value F48Eh with mask FEFFh and S bit 8 selecting accumulator A or B; it leaves the source accumulator unchanged and writes T as the count of redundant sign bits from bit 38 downward minus eight, with zero producing T=0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-EXP-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "EXP is absent from the Table 2-28 nonrepeatable list; that omission is not positive eligibility evidence, so EXP repeatability remains unresolved in the common target."
+    },
+    {
+      "id": "E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W29: T-register foundation and EXP accumulator vertical slice (planned)"
+      },
+      "assertion": "P2-W29A freezes private 16-bit T storage with explicit knownness and checked access, a value-owned T-register write effect, and a tagged transactional effect router that stages only affected candidate state and commits after validation. State, T-effect, and shared transaction architecture have exclusive ownership; a lane needing a shared seam reports GAP rather than adding a family-specific workaround."
+    },
+    {
+      "id": "E-PROJECT-P2-W29-EXP-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W29B: EXP accumulator vertical slice (planned)"
+      },
+      "assertion": "P2-W29B admits EXP only after the T foundation is green: the accumulator family owns its leaf and pure tests, while catalog/decode and CPU proof lanes own tests and the orchestrator serializes rows, generated lookup, dispatch, manifests, and CPU integration. No T input, MMR routing, memory, OVA/OVB, OVM/SXM, RPT/IRQ, parallel, timing, diagnostic, environment, allocation, or emulator seam may be introduced by this slice."
     }
   ],
   "requirements": [
@@ -3638,6 +3730,86 @@
       "claim": "SFTC repeatability remains unresolved because Table 2-28 does not positively authorize the form and its preamble supplies no all-unlisted-forms rule. Do not classify SFTC as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-ROLTC-SFTC-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-T-REGISTER-STATE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/temporary/",
+      "claim": "Own private 16-bit T storage with explicit knownness, seed physical storage to zero while architecturally unknown on reset because TI reset evidence omits T, and expose only checked private read/write access; do not add public T inspection or MMR routing.",
+      "evidence_ids": ["E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-T-REGISTER"]
+    },
+    {
+      "id": "REQ-PROJECT-T-WRITE-EFFECT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/temporary/",
+      "claim": "Own a value-owned TI_C54X_OP_EFFECT_T_REGISTER_WRITE and a transactional T-register application that validates the candidate before committing it, with no opcode-specific CPU branch or unconditional whole-state copy.",
+      "evidence_ids": ["E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-T-WRITE-EFFECT"]
+    },
+    {
+      "id": "REQ-PROJECT-EFFECT-TRANSACTION-ROUTING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Own a tagged-union root effect transaction/router that stages only affected candidate state, validates all staged effects, and commits atomically; cpu.c delegates routing and contains no opcode identity branch or growing effect-kind dispatch.",
+      "evidence_ids": ["E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-EFFECT-TRANSACTION"]
+    },
+    {
+      "id": "REQ-COMMON-EXP-ENCODINGS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register EXP_ACC/exp_acc as a one-word selected-accumulator form with value 0xF48E, mask 0xFEFF, S bit 8 selecting A/B, existing ACCUMULATOR_SOURCE layout, and ACCUMULATORS input resources.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-EXP-P4-52"],
+      "test_ids": ["T-COMMON-EXP-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-EXP-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode both EXP accumulator encodings through the existing value-owned layout and generic dispatch path, rejecting noncanonical words without adding CPU opcode identity logic.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-EXP-P4-52"],
+      "test_ids": ["T-COMMON-EXP-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-EXP-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/accumulator/",
+      "claim": "Implement EXP without mutating the selected source accumulator: count redundant sign bits from bit 38 downward minus eight, encode the signed -8..31 result in uint16_t T, and emit only the value-owned T-register write effect. Prove zero, both bounds, and the exact TI vectors including 0x0785432105 -> T=0xFFFC.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S3.3.4.4-T-IDENTITY-P3-27-3-28", "E-TI-C54X-SPRU172C-S4-EXP-P4-52"],
+      "test_ids": ["T-COMMON-EXP-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-EXP-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire EXP through the generic CPU decode/input/effect transaction path, committing T only after validation while leaving the source accumulator unchanged; no public T API, timing API, or opcode identity branch is added.",
+      "evidence_ids": ["E-PROJECT-P2-W29-T-REGISTER-EFFECT-TRANSACTION-CONTRACT", "E-PROJECT-P2-W29-EXP-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-EXP"]
+    },
+    {
+      "id": "REQ-COMMON-EXP-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "EXP repeatability remains unresolved: its absence from Table 2-28's nonrepeatable list is not positive eligibility evidence. Do not classify EXP as repeat-eligible or add timing behavior until positive evidence or explicit project policy resolves the boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-EXP-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -4639,6 +4811,62 @@
       "path": "tests/unit/cpu/test_cpu_sftc.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_sftc"},
       "requirement_ids": ["REQ-PROJECT-CPU-SFTC-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-T-REGISTER",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/temporary/test_t_register.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-T-REGISTER-STATE"]
+    },
+    {
+      "id": "T-PROJECT-T-WRITE-EFFECT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/temporary/test_t_write_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-T-WRITE-EFFECT"]
+    },
+    {
+      "id": "T-PROJECT-EFFECT-TRANSACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_effect_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-EFFECT-TRANSACTION-ROUTING"]
+    },
+    {
+      "id": "T-COMMON-EXP-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_exp_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-EXP-ENCODINGS"]
+    },
+    {
+      "id": "T-COMMON-EXP-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_exp_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-EXP-DECODE"]
+    },
+    {
+      "id": "T-COMMON-EXP-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/accumulator/test_exp.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-EXP-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-EXP",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_exp.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-EXP-RETIREMENT"]
     }
   ]
 }
