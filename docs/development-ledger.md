@@ -2454,3 +2454,45 @@ rewritten after publication.
 - Follow-up: implement the bridge and CPU transaction with red tests first,
   preserving the existing public carrier and attempted-count behavior, then run
   the repository fast gate and record implementation/remote-verification commits.
+
+## 2026-09-06 — P2-W18 complete — private program-PC bridge and CPU NOP transaction
+
+- Implementation commit: `52c76f75ff78935989136e398f658e838ae7bc47`.
+- Kickoff commit: `579e1e883cb5b65f36cde9978b895a58b332273a`; GitHub Actions run
+  [34013927291](https://github.com/djr-747/ti-c54x/actions/runs/34013927291)
+  passed.
+- Implemented the public CPU one-word fetch/decode/generated-dispatch/private
+  program-PC stage-and-commit path and NOP retirement. The transaction preserves
+  the exact 32-bit bus carrier, reports explicit high-address, unresolved-boundary,
+  and counter-overflow stops, uses retirement-budget `run` semantics, orders
+  attempted/retired counters explicitly, and never partially commits state.
+- The private bridge owns transactional 32-to-16 validation after decode/dispatch:
+  `0xfffe -> 0xffff` is admitted, while a one-word instruction at `0xffff` has an
+  unresolved successor. Invalid, stale, and malformed effects preserve caller
+  state and the effect object.
+- The direct-Make observer-on archive now derives from the canonical complete core
+  source inventory. Observer-enabled successful NOP and re-entry tests prove the
+  observer remains behaviorally neutral and fails closed.
+- TDD reds recorded: missing bridge header/implementation; the old CPU returned
+  unimplemented for NOP and lacked the new stop enums; observer builds had
+  incomplete hand-linked sources and no canonical observer-on archive.
+- Independent Luna review found no blocker or major issue. The minor local-counter
+  form was closed by documenting local deltas as bounded by guarded cumulative
+  counters; observer NOP coverage was added; the traceability nit was closed by
+  linking the CPU-boundary requirement to the CPU contract test.
+- Registry final: 2 targets, 7 sources, 63 evidence records, and 91 requirements
+  (77 implemented, 2 planned, 12 unresolved); 61 tests (59 passing, 2 planned).
+- Validation: `make -B test` passed; 161 Python quality tests and all 54
+  direct-Make C unit targets passed, followed by the 55-test direct execution
+  set including the minimal consumer. Strict warnings, evidence, knob,
+  source-boundary, manifest, observer-on/off archive, and generated-artifact
+  checks passed; `generate_opcode_lookup.py --check` and `git diff --check`
+  passed.
+- Knobs/isolation unchanged: no `TEST`/`OBSERVE`/`A/B` knob, environment read or
+  `getenv`, logging/diagnostic hot path, emulator/firmware dependency, external
+  code/table copy, timing/cycle claim, shared-memory mutation, IRQ/repeat
+  behavior, data bus, extra-word fetch, XPC inference, allocation, or mutable
+  process global was introduced.
+- Follow-up: publish and verify the implementation and this completion record;
+  next implement operand-field extraction and extension-word fetch, then begin
+  evidence-first `RPT`/IRQ work. This entry makes no claim of full ISA coverage.
