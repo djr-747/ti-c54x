@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 63 immutable evidence records,
-91 requirements, and 61 tests (59 `PASSING`, 2 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 64 immutable evidence records,
+92 requirements, and 62 tests (59 `PASSING`, 3 `PLANNED`).
 
 ## Targets
 
@@ -106,6 +106,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-INDIRECT-CIRCULAR-APPLICATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_apply.h` anchor `ti_c54x_sequencer_apply_address_result` |
 | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W17: masked opcode catalog foundation (active kickoff)` |
 | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)` |
+| `E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W19A: value-owned operand-field extraction (active kickoff)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -300,6 +301,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-COUNTER-PHASES` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | `T-PROJECT-CPU-EXECUTION-BUDGET` |
 | `REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | `T-PROJECT-CPU-EXECUTION-BUDGET` |
 | `REQ-PROJECT-CPU-COUNTER-OVERFLOW` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | `T-PROJECT-CPU-EXECUTION-BUDGET` |
+| `REQ-PROJECT-OPERAND-FIELD-EXTRACTION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT` | `T-PROJECT-OPERAND-FIELD-EXTRACTION` |
 
 ## Tests
 
@@ -370,6 +372,7 @@ exist in the repository.
 | `T-PROJECT-CPU-NOP-EXECUTION-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_nop_execution_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_nop_execution_contract"}` | `REQ-PROJECT-CPU-PUBLIC-PC-VALIDATION`, `REQ-PROJECT-CPU-FETCH-WORD16`, `REQ-PROJECT-CPU-FETCH-FAILURE-STOP`, `REQ-PROJECT-CPU-UNKNOWN-DECODE-STOP`, `REQ-PROJECT-CPU-NOP-DISPATCH`, `REQ-PROJECT-CPU-PC-COMMIT-ORDER`, `REQ-PROJECT-CPU-PC-BOUNDARIES` |
 | `T-PROJECT-CPU-EXECUTION-BUDGET` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_execution_budget.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_execution_budget"}` | `REQ-PROJECT-CPU-BUDGET-ZERO`, `REQ-PROJECT-CPU-COUNTER-PHASES`, `REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET`, `REQ-PROJECT-CPU-COUNTER-OVERFLOW` |
 | `T-PROJECT-PROGRAM-PC-BRIDGE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_program_pc_bridge.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.program_pc_bridge"}` | `REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE`, `REQ-PROJECT-CPU-PC-BOUNDARIES`, `REQ-PROJECT-SEQUENCER-PC-TRANSACTION` |
+| `T-PROJECT-OPERAND-FIELD-EXTRACTION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_operand_field.c` | `null` | `REQ-PROJECT-OPERAND-FIELD-EXTRACTION` |
 
 ## Correction and tombstone policy
 

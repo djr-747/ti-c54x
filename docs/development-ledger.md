@@ -2513,3 +2513,50 @@ rewritten after publication.
   standalone isolation is retained. Next is operand-field extraction and
   extension-word fetch before evidence-first `RPT`/IRQ work. This makes no claim
   of full ISA coverage, timing, memory, or IRQ implementation.
+
+## 2026-09-06 — P2-W19A kickoff — value-owned operand-field extraction
+
+- State: active kickoff; this append-only record changes documentation and
+  evidence planning only. No production, test, or build files were changed.
+- Prior published state: P2-W18 remote-verification head
+  `0fb32d1ea161f3d7a33c17de86e2a0d148a434a6`; its GitHub Actions run
+  `34015295148` passed. This kickoff does not rewrite that history.
+- Plan split: P2-W19 is divided into atomic P2-W19A extraction and P2-W19B
+  extension-word fetch/width-aware program-PC span and commit. Both precede
+  repeat work, including `RPT`. Bus reads remain owned by the planned
+  `src/cpu/` instruction-fetch module; sequencing owns width-aware span/commit,
+  not bus I/O.
+- Contract: `src/isa/decode/operand_field.[ch]` will own a pure,
+  allocation-free extractor over a borrowed caller-owned view of one or more
+  16-bit program words and a borrowed immutable field layout; it retains no
+  pointers.
+  Pieces identify a source program-word index, source LSB, width 1..16, and
+  destination/value LSB 0..63. Fields contain 1..N pieces and declare raw width
+  1..64. Pieces stay within source words and declared destination width;
+  destination pieces do not overlap and cover the declared value exactly;
+  source slices do not overlap within a source word. Successful extraction
+  publishes a caller-owned `uint64_t` raw value plus explicit width and supports
+  first-word, extension-word, split/non-contiguous, and 64-bit mechanics without
+  sign extension or semantic interpretation. Null/invalid views, layouts,
+  outputs, indexes, widths, overlap, and gaps leave output byte-for-byte
+  unchanged. The seam owns no bus, CPU, state, PC/effect, timing, memory,
+  interrupt/repeat, observer/diagnostic, file/environment, heap, or mutable-global
+  behavior and changes no production opcode inventory, catalog macro arity,
+  layout binding, handler, public API, or fetch path.
+- Ownership and proof: the implementation/header owner is
+  `src/isa/decode/operand_field.[ch]`; the planned executable proof is
+  `tests/unit/isa/decode/test_operand_field.c`, with owner-local Make/CMake
+  registration after implementation. The test plan exhausts valid one-word
+  positions and widths and covers representative multiword/non-contiguous/64-bit
+  fields plus the complete invalid and transactional matrix. Synthetic project
+  data proves mechanics only; no TI evidence or conformance claim is registered.
+- Registry kickoff: added exactly one project evidence record
+  `E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT`, one planned requirement
+  `REQ-PROJECT-OPERAND-FIELD-EXTRACTION`, and one planned test
+  `T-PROJECT-OPERAND-FIELD-EXTRACTION`, with forward and reverse links. Expected
+  totals are 2 targets, 7 sources, 64 immutable evidence records, 92 requirements
+  (77 implemented, 3 planned, 12 unresolved), and 62 tests (59 passing,
+  3 planned).
+- Focused checks for this docs-only kickoff: evidence checker, registry quality
+  unit coverage, and `git diff --check`; the full build/test gate remains owned by
+  the later implementation work piece.

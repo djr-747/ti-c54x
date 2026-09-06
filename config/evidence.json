@@ -1130,6 +1130,20 @@
         "anchor": "P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)"
       },
       "assertion": "The P2-W18 project contract defines a standalone CPU transaction from the exact public program-word carrier through one 16-bit program-word fetch, decode, semantic dispatch, private 16-bit sequential-PC staging, and transactional retirement. An attempt begins immediately before the bus read, so bus faults and unknown decoded words count once; high carriers are passed unchanged to the bus and a known NOP above the private 16-bit domain fails bridge validation without truncation. The contract preserves state on failed stages, separates attempted from retired counters, bounds run calls by retirements or the first stop, and treats cumulative counter overflow as an explicit no-mutation stop. It makes no XPC, timing, interrupt, repeat, data-memory, device, observer, or emulator-integration claim. This is a project orchestration contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W19A: value-owned operand-field extraction (active kickoff)"
+      },
+      "assertion": "The P2-W19A project contract defines a pure, allocation-free extractor over a borrowed view of one or more 16-bit program words and a borrowed immutable field layout; it retains no pointers. Pieces identify a source word index, source LSB, width 1..16, and destination LSB 0..63; fields declare raw width 1..64, require in-word pieces, non-overlapping destination pieces that cover the declared value exactly, and non-overlapping source slices within each source word. Successful extraction publishes a caller-owned uint64_t raw value plus explicit width; invalid views, layouts, outputs, indexes, widths, overlap, or gaps leave output byte-for-byte unchanged. The contract makes no sign-extension, semantic, bus, CPU, state, PC, effect, timing, memory, interrupt, repeat, observer, diagnostic, file, environment, heap, mutable-global, or TI instruction-conformance claim."
     }
   ],
   "requirements": [
@@ -2186,6 +2200,16 @@
       "claim": "Cumulative attempted and retired counter overflow is detected before mutation and produces TI_C54X_STOP_COUNTER_OVERFLOW with no fetch or counter mutation; counters must not silently wrap, and the overflow policy remains a planned executable contract until tested.",
       "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-EXECUTION-BUDGET"]
+    },
+    {
+      "id": "REQ-PROJECT-OPERAND-FIELD-EXTRACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Implement a pure, allocation-free operand-field extractor over a borrowed caller-owned view of one or more 16-bit program words and a borrowed immutable layout. A field contains one or more pieces with a source word index, source LSB, width 1..16, and destination/value LSB 0..63, and declares raw width 1..64. Pieces must stay within source words and the declared destination width; destination pieces must not overlap and must cover the declared value exactly; source slices must not overlap within a source word. Successful extraction assembles a caller-owned uint64_t raw value plus explicit width for first-word, extension-word, split/non-contiguous, and 64-bit mechanics. Null or invalid views/layouts/outputs, out-of-range indexes, invalid widths, overlap, or gaps must leave output byte-for-byte unchanged. The extractor performs no sign extension or semantic interpretation and owns no bus, CPU, state, PC/effect, timing, memory, interrupt/repeat, observer, diagnostic, file, environment, heap, or mutable-global behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT"],
+      "test_ids": ["T-PROJECT-OPERAND-FIELD-EXTRACTION"]
     }
   ],
   "tests": [
@@ -2715,6 +2739,14 @@
         "REQ-PROJECT-CPU-PC-BOUNDARIES",
         "REQ-PROJECT-SEQUENCER-PC-TRANSACTION"
       ]
+    },
+    {
+      "id": "T-PROJECT-OPERAND-FIELD-EXTRACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_operand_field.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OPERAND-FIELD-EXTRACTION"]
     }
   ]
 }
