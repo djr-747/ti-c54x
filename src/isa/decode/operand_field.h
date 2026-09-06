@@ -58,6 +58,11 @@ typedef struct ti_c54x_operand_field_value {
     uint8_t width_bits;
 } ti_c54x_operand_field_value;
 
+/* Validate one borrowed descriptor against a program-word width. */
+ti_c54x_operand_field_status ti_c54x_operand_field_validate_layout(
+    const ti_c54x_operand_field_layout *layout,
+    uint8_t program_word_count);
+
 /* Validate and assemble one borrowed field; no sign extension is performed. */
 ti_c54x_operand_field_status ti_c54x_operand_field_extract(
     const ti_c54x_program_words_view *word_view,

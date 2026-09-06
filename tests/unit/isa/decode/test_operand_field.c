@@ -221,6 +221,27 @@ test_invalid_layouts_and_indexes_are_transactional(void)
     }
 }
 
+static void
+test_descriptor_validation_seam_matches_extraction_rules(void)
+{
+    const ti_c54x_operand_field_piece pieces[] = {
+        {0U, 0U, 8U, 0U}, {1U, 0U, 8U, 8U}};
+    const ti_c54x_operand_field_layout layout = {pieces, 2U, 16U};
+    const ti_c54x_operand_field_piece bad_source = {2U, 0U, 16U, 0U};
+    const ti_c54x_operand_field_layout bad_layout = {&bad_source, 1U, 16U};
+
+    TI_C54X_TEST_CHECK(ti_c54x_operand_field_validate_layout(&layout, 2U) ==
+                       TI_C54X_OPERAND_FIELD_STATUS_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_field_validate_layout(&layout, 1U) ==
+                       TI_C54X_OPERAND_FIELD_STATUS_SOURCE_WORD_INDEX_OUT_OF_RANGE);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_field_validate_layout(&bad_layout, 2U) ==
+                       TI_C54X_OPERAND_FIELD_STATUS_SOURCE_WORD_INDEX_OUT_OF_RANGE);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_field_validate_layout(NULL, 1U) ==
+                       TI_C54X_OPERAND_FIELD_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_field_validate_layout(&layout, 0U) ==
+                       TI_C54X_OPERAND_FIELD_STATUS_INVALID_WORD_VIEW);
+}
+
 int
 main(void)
 {
@@ -230,6 +251,7 @@ main(void)
     test_input_words_are_borrowed_not_retained();
     test_invalid_arguments_and_views_are_transactional();
     test_invalid_layouts_and_indexes_are_transactional();
+    test_descriptor_validation_seam_matches_extraction_rules();
     puts("operand_field: ok");
     return 0;
 }

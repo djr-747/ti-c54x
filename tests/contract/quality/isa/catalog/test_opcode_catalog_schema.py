@@ -20,6 +20,8 @@ from tools.isa.catalog.opcode_catalog_schema import (
 
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
+LAYOUT_RPT_K = "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K"
+LAYOUT_RPT_LK = "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_ELIGIBLE = "TI_C54X_REPEATABILITY_ELIGIBLE"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
@@ -149,6 +151,13 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
                     f"{valid_prefix} {LAYOUT_NONE}, {repeatability})"
                 )
                 self.assertEqual(rows[0].repeatability, repeatability)
+
+        for layout in (LAYOUT_RPT_K, LAYOUT_RPT_LK):
+            with self.subTest(layout=layout):
+                rows = parse_catalog(
+                    f"{valid_prefix} {layout}, {REPEAT_UNRESOLVED})"
+                )
+                self.assertEqual(rows[0].operand_layout, layout)
 
     def test_malformed_comment_is_rejected_and_comments_blanks_are_allowed(self) -> None:
         parse_catalog(

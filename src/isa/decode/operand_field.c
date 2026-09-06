@@ -21,21 +21,17 @@ ti_c54x_operand_field_mask(uint8_t width_bits)
 }
 
 ti_c54x_operand_field_status
-ti_c54x_operand_field_extract(
-    const ti_c54x_program_words_view *word_view,
+ti_c54x_operand_field_validate_layout(
     const ti_c54x_operand_field_layout *layout,
-    ti_c54x_operand_field_value *value)
+    uint8_t program_word_count)
 {
     uint64_t destination_mask = UINT64_C(0);
-    uint64_t raw_value = UINT64_C(0);
     uint8_t piece_index;
-    ti_c54x_operand_field_value result = {0};
 
-    if (word_view == NULL || layout == NULL || value == NULL) {
+    if (layout == NULL) {
         return TI_C54X_OPERAND_FIELD_STATUS_INVALID_ARGUMENT;
     }
-    if (word_view->program_words == NULL ||
-        word_view->program_word_count == 0U) {
+    if (program_word_count == 0U) {
         return TI_C54X_OPERAND_FIELD_STATUS_INVALID_WORD_VIEW;
     }
     if (layout->pieces == NULL || layout->piece_count == 0U ||
@@ -58,7 +54,7 @@ ti_c54x_operand_field_extract(
                 layout->value_width_bits) {
             return TI_C54X_OPERAND_FIELD_STATUS_INVALID_LAYOUT;
         }
-        if (piece->program_word_index >= word_view->program_word_count) {
+        if (piece->program_word_index >= program_word_count) {
             return TI_C54X_OPERAND_FIELD_STATUS_SOURCE_WORD_INDEX_OUT_OF_RANGE;
         }
 
@@ -94,6 +90,35 @@ ti_c54x_operand_field_extract(
     if (destination_mask != ti_c54x_operand_field_mask(
                                 layout->value_width_bits)) {
         return TI_C54X_OPERAND_FIELD_STATUS_INVALID_LAYOUT;
+    }
+
+    return TI_C54X_OPERAND_FIELD_STATUS_OK;
+}
+
+ti_c54x_operand_field_status
+ti_c54x_operand_field_extract(
+    const ti_c54x_program_words_view *word_view,
+    const ti_c54x_operand_field_layout *layout,
+    ti_c54x_operand_field_value *value)
+{
+    uint64_t raw_value = UINT64_C(0);
+    uint8_t piece_index;
+    ti_c54x_operand_field_value result = {0};
+
+    if (word_view == NULL || layout == NULL || value == NULL) {
+        return TI_C54X_OPERAND_FIELD_STATUS_INVALID_ARGUMENT;
+    }
+    if (word_view->program_words == NULL ||
+        word_view->program_word_count == 0U) {
+        return TI_C54X_OPERAND_FIELD_STATUS_INVALID_WORD_VIEW;
+    }
+    {
+        const ti_c54x_operand_field_status status =
+            ti_c54x_operand_field_validate_layout(
+                layout, word_view->program_word_count);
+        if (status != TI_C54X_OPERAND_FIELD_STATUS_OK) {
+            return status;
+        }
     }
 
     result.raw_value = UINT64_C(0);

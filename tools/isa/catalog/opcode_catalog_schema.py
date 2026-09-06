@@ -49,7 +49,11 @@ _HANDLER_RE: Final = re.compile(r"^[a-z][a-z0-9_]*$")
 _HEX_RE: Final = re.compile(r"^0[xX][0-9A-Fa-f]+$")
 _WIDTH_RE: Final = re.compile(r"^[0-9]+$")
 _OPERAND_LAYOUT_TOKENS: Final = frozenset(
-    {"TI_C54X_OPERAND_LAYOUT_NONE"}
+    {
+        "TI_C54X_OPERAND_LAYOUT_NONE",
+        "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K",
+        "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK",
+    }
 )
 _REPEATABILITY_TOKENS: Final = frozenset(
     {

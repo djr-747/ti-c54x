@@ -11,6 +11,8 @@
 
 #include "opcode_decode.h"
 
+#include "operand_layout.h"
+
 #include <stddef.h>
 
 #include "../catalog/opcode_catalog_internal.h"
@@ -95,6 +97,14 @@ ti_c54x_decode_complete_instruction(
     }
     if (bundle->program_word_count != metadata->program_word_count) {
         return TI_C54X_INSTRUCTION_COMPLETION_STATUS_BUNDLE_COUNT_MISMATCH;
+    }
+    {
+        ti_c54x_operand_layout_set_view layout_view;
+        if (ti_c54x_operand_layout_set_resolve(
+                metadata->operand_layout, metadata->program_word_count,
+                &layout_view) != TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+            return TI_C54X_INSTRUCTION_COMPLETION_STATUS_OPERAND_LAYOUT_INVALID;
+        }
     }
     if (bundle->program_words[0] != first_word_result->first_word) {
         return TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_MISMATCH;
