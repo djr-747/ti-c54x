@@ -1314,6 +1314,20 @@
         "anchor": "P2-W20E: pure single-repeat policy foundation (active kickoff)"
       },
       "assertion": "The P2-W20E project contract defines three allocation-free, value-only policies under the dedicated repeat sequencer owner: checked uint16_t operand to uint32_t body-cardinality derivation, admission from the catalog's existing tri-state repeatability scalar without opcode inference, and a repeat-only request gate over an explicit remaining-body count plus maskable, NMI, or literal RS/reset class. Invalid inputs are explicit and transactional. These policies do not claim that a body executed, bind concrete opcode restrictions, sample or mutate IFR, progress RC, control PC, integrate CPU execution, or resolve predecode interrupt arbitration."
+    },
+    {
+      "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W21A: private WORD16 bus-request contract (active kickoff)"
+      },
+      "assertion": "The P2-W21A project contract defines a private, value-owned request for exactly one architectural 16-bit word. Separate read and write constructors carry an explicit program, data, or I/O space and an exact uint32_t word-address input; program requests preserve the full carrier while data and I/O requests reject values above UINT16_MAX before narrowing. Construction reports exactly OK, INVALID_SPACE, or INVALID_ADDRESS, validating space before its address domain. Read requests have a canonical zero write value, write requests copy the exact uint16_t value, and invalid results zero every named request field without making a bytewise-padding claim. The type itself fixes WORD16 width. The request owns no callback, read result, pointer, byte order, host storage, transaction phase, wait state, issue/completion state, timing, arbitration, CPU state, opcode effect, observer, or diagnostic behavior. This is a project structure contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -2472,6 +2486,16 @@
       "test_ids": ["T-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
     },
     {
+      "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/bus/request/",
+      "claim": "Construct and validate a private value-owned request for exactly one architectural 16-bit word. Separate read and write construction names program, data, or I/O space and consumes an exact uint32_t word-address input without I/O: program requests preserve the full carrier, while data and I/O reject addresses above UINT16_MAX before narrowing. Construction reports exactly OK, INVALID_SPACE, or INVALID_ADDRESS and validates space before its address domain. Read requests carry a canonical zero write value; write requests copy the exact uint16_t value. Invalid construction zeroes every named request field without requiring padding bytes to have a value. The request retains no pointer and owns no callback, result payload, byte order, host memory, transaction phase, wait/lifecycle state, arbitration, CPU state, opcode effect, timing, observation, or diagnostics.",
+      "evidence_ids": ["E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT"],
+      "test_ids": ["T-PROJECT-BUS-WORD16-REQUEST-SHAPE"]
+    },
+    {
       "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -3189,6 +3213,14 @@
       "path": "tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_request_gate_contract"},
       "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
+    },
+    {
+      "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/bus/request/test_word16_request.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE"]
     },
     {
       "id": "T-COMMON-RPT-IMMEDIATE-DECODE",

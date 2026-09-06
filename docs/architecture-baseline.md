@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 75 immutable evidence
-records, 110 requirements, and 77 tests (69 `PASSING`, 8 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 76 immutable evidence
+records, 111 requirements, and 78 tests (69 `PASSING`, 9 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -387,6 +387,22 @@ inactive, and W20F is deferred until a separately recorded original-hardware vec
 or stronger TI evidence resolves the externally visible behavior. A black-box
 differential vector may identify a hypothesis or disagreement, but cannot itself
 close a normative common-core requirement.
+
+### WORD16 bus-request boundary (P2-W21A active)
+
+The shared-memory foundation starts below CPU and opcode execution with a private
+`src/bus/request/` value. One request represents exactly one architectural 16-bit
+word in PROGRAM, DATA, or IO space and one READ or WRITE access. PROGRAM keeps the
+current exact 32-bit program-word carrier; DATA and IO admit only values through
+`0xffff`, rejecting wider inputs before narrowing. A read request has a canonical
+zero write value, while a write request owns the exact copied 16-bit value.
+
+Width is expressed by the WORD16 request type rather than a one-value enum, and a
+request carries no sequencer phase. Multiword composition stays explicit; the later
+transaction owner binds a copied request to phase and lifecycle state. This boundary
+owns no callbacks, read result, byte order, backing memory, waits, issue/completion,
+arbitration, CPU state, or device policy. In particular, shared memory is an adapter
+resource, not a fourth architectural address-space tag.
 
 ## Single-indirect address-effect slice
 

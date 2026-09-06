@@ -3433,3 +3433,50 @@ rewritten after publication.
   and provenance boundary are published and green on every repository-owned build
   surface. The active path now moves to P2-W21 shared-memory transaction foundations;
   production RPT decode remains inert.
+
+## 2026-09-06 — P2-W21A kickoff — private WORD16 bus request
+
+- State: active documentation/project-contract kickoff. No production source,
+  public header, callback ABI, generated artifact, build manifest, or executable
+  test changed in this commit.
+- Ownership: the first implementation creates `src/bus/request/` and mirrored
+  `tests/unit/bus/request/` leaf owners. Parent `src/bus/` and `tests/unit/bus/`
+  manifests aggregate the leaf; root Make/CMake files aggregate only the bus owner.
+- Request decision: one value-owned request represents exactly one architectural
+  16-bit word and names PROGRAM, DATA, or IO plus READ or WRITE. PROGRAM preserves
+  the exact `uint32_t` carrier. DATA and IO constructors also consume `uint32_t` so
+  values above `UINT16_MAX` are rejected before narrowing. A read request has a
+  canonical zero write value; a write request copies the exact `uint16_t` input.
+- Status decision: construction reports only `OK`, `INVALID_SPACE`, or
+  `INVALID_ADDRESS`, checking the space tag before its address domain. Failed
+  construction zeroes every named request field; tests do not compare or assign a
+  semantic value to C padding bytes.
+- Shape decision: the WORD16 type owns transfer width, so no one-value width enum is
+  added. The pure request owns no phase; P2-W21C binds a copied request to a named
+  sequencer phase when it becomes a resumable transaction. Multiword operands will
+  compose separately ordered word requests rather than imply atomic host `uint32_t`
+  access.
+- Shared-memory boundary: PROGRAM/DATA/IO remain the only architectural spaces.
+  `SHARED` is not added as a space because sharing, byte lanes, mapping, and
+  DSP/ARM/DMA/device arbitration belong to external adapters and profile owners.
+- ABI decision: the current synchronous public callbacks and
+  `ti_c54x_bus_status` remain unchanged. WAIT and pending-token behavior require the
+  later private transaction seam; no incomplete lifecycle is retrofitted into the
+  phase-one callback contract.
+- TDD plan: register `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` under the mirrored owner,
+  then prove all six space/access combinations, program/data/IO address boundaries,
+  pre-narrowing rejection, copied write values, canonical reads, invalid/forged
+  discriminants, named-field-zero invalid results, and null validation. Source-
+  boundary checks, rather than a dynamic callback test, prove the request owner has
+  no callback or host-I/O surface.
+- Registry kickoff: 2 targets, 7 sources, 76 immutable evidence records, 111
+  requirements (87 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and 78 tests
+  (69 `PASSING`, 9 `PLANNED`). The new requirement is explicitly
+  `PROJECT_CONTRACT`; no TI bus, byte-lane, wait-state, atomicity, or device claim is
+  inferred.
+- Knobs/isolation: no `TEST`, `OBSERVE`, or `A/B` knob, environment read, observer,
+  diagnostic, allocator, mutable global, host-memory pointer, firmware, emulator
+  dependency, CPU behavior, opcode row, memory effect, or timing API is introduced.
+- Follow-up: validate and publish the kickoff, then delegate the bounded W21A TDD
+  implementation under main-agent review and commit ownership. P2-W21B owns byte
+  order and P2-W21C owns the resumable exactly-once transaction lifecycle.

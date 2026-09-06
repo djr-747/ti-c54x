@@ -41,7 +41,7 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
+| Shared-memory transaction semantics | Active (P2-W21A kickoff) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
@@ -584,6 +584,68 @@ close the common requirement by itself. No such test input may introduce an emul
 build dependency. Until then, shared-memory transaction foundations and other fully
 evidenced owner-local work may proceed independently.
 
+### P2-W21: shared-memory transaction foundation
+
+State: active at P2-W21A. This work begins the independent gate required before any
+instruction may mutate memory. The core remains word-native and host-endian-neutral;
+sharing, storage, device mapping, and arbitration stay outside the CPU instance.
+
+The owner hierarchy is phased so no early value accumulates unrelated policy:
+
+1. P2-W21A creates `src/bus/request/` and the mirrored
+   `tests/unit/bus/request/` subtree for one pure WORD16 request value.
+2. P2-W21B creates `src/bus/byte_order/` for explicit BE and LE conversion of one
+   word to two byte lanes. Program-image encoding, physical shared-memory lanes,
+   and snapshot/wire formats remain separate policies rather than one global endian
+   flag.
+3. P2-W21C creates `src/bus/transaction/` for a copied request, caller-owned pending
+   token, named sequencer phase, and begin/poll/complete lifecycle with exactly-once
+   issue and completion across READY, WAIT, and FAULT outcomes.
+4. Only after that lifecycle is proven may `src/sequencer/memory/` own declarative
+   memory effects and ordered visibility. External adapters arbitrate DSP, ARM, DMA,
+   and device masters; the core never owns a host mutex or master identity.
+
+The existing synchronous public callbacks and `ti_c54x_bus_status` remain unchanged
+during the private foundation. A later one-shot adapter may wrap them, but WAIT is
+not appended to the current ABI and no new behavior is routed through `cpu.c` yet.
+
+#### P2-W21A: private WORD16 bus-request contract (active kickoff)
+
+The first slice owns only the canonical command for one architectural 16-bit word.
+`src/bus/request/word16_request.[ch]` defines zero-sentinel space and access enums,
+an exact `uint32_t address_word`, and a copied `uint16_t write_value_word`. Separate
+read and write constructors return a by-value status plus request: PROGRAM preserves
+the full 32-bit carrier; DATA and IO reject values above `UINT16_MAX` before any
+narrowing; READ always publishes a canonical zero write value; WRITE preserves the
+exact input value. Construction reports exactly `OK`, `INVALID_SPACE`, or
+`INVALID_ADDRESS`, validating the space discriminant before its address domain.
+Invalid construction zeroes every named request field, which leaves both
+discriminants invalid; no padding-byte value is promised or tested. A borrowed
+request validator retains no pointer and rejects null, zero, forged, range-invalid,
+or noncanonical values.
+
+WORD16 is fixed by the type, so W21A adds no redundant transfer-width enum.
+Multiword operands will compose separately ordered word requests rather than claim
+an accidentally atomic host `uint32_t` transfer. W21A also carries no phase: a named
+sequencer phase is bound by W21C when a request becomes a transaction, keeping pure
+request shape separate from issue/lifecycle policy.
+
+The planned TDD proof covers all six space/access combinations; zero, maximum, and
+full-width program carriers; DATA/IO zero and `0xffff`; rejection of `0x10000` and
+larger DATA/IO inputs without truncation; copied write boundaries; canonical read
+payload; zero/forged discriminants; invalid-result shape; borrowed-validator nulls;
+and named-field zeroing on each failure. Source-boundary checks prove that the
+callback-free request owner imports no host I/O surface. Source and test manifests
+mirror `bus/request/`; root Make/CMake files only aggregate the new bus owner.
+
+This is a project contract, not TI behavior. It adds no public API, callback, read
+completion, byte-order conversion, host memory, raw pointer, transaction token,
+phase, wait state, issued/completed state, timing, arbitration, memory map, opcode
+effect, CPU/state mutation, observer, diagnostic, knob, environment read, allocator,
+mutable global, firmware, or emulator dependency. Exit requires the registered
+project test to pass through both supported build systems with current CPU behavior
+unchanged.
+
 ## Delivery order
 
 1. Resolve the repository boundary and evidence policy.
@@ -686,10 +748,11 @@ casts a caller's byte-backed RAM. The caller owns mapped storage and arbitration
 the core exchanges fixed-width architectural values through an explicit bus
 transaction boundary.
 
-- Every request identifies program, data, or I/O space; architectural word
-  address; read or write direction; transfer width/composition; and its named
-  sequencer phase. A C54x CPU instance does not contain an ARM identity, shared-
-  RAM pointer, device map, or host mutex.
+- Every scheduled transaction binds a program, data, or I/O word request to its
+  named sequencer phase. The primitive request identifies its architectural word
+  address and read or write access; its type fixes WORD16 width, while multiword
+  composition remains explicit. A C54x CPU instance does not contain an ARM
+  identity, shared-RAM pointer, device map, or host mutex.
 - One architectural 16-bit word is the primitive transfer. Multiword values are
   composed from separately named word transfers in evidenced architectural word
   order; they are never treated as an accidentally atomic host `uint32_t`.

@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 75 immutable evidence records,
-110 requirements, and 77 tests (69 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 76 immutable evidence records,
+111 requirements, and 78 tests (69 `PASSING`, 9 `PLANNED`).
 
 ## Targets
 
@@ -118,6 +118,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.3 and 6.10.8, `6-31`–`6-36` |
 | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)` |
 | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20E: pure single-repeat policy foundation (active kickoff)` |
+| `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21A: private WORD16 bus-request contract (active kickoff)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -322,6 +323,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` |
 | `REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` |
 | `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
+| `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/request/` | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `REQ-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-DECODE` |
 | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-SINGLE-REPEAT-CARDINALITY` |
@@ -411,6 +413,7 @@ exist in the repository.
 | `T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_cardinality_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_cardinality_contract"}` | `REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` |
 | `T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_body_admission_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_body_admission_contract"}` | `REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` |
 | `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_request_gate_contract"}` | `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
+| `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/bus/request/test_word16_request.c` | `null` | `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `T-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_rpt_immediate_decode.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-DECODE` |
 | `T-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | COMMON_TI | `tests/unit/isa/ops/repeat/test_rpt_immediate.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `T-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_cardinality.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` |
