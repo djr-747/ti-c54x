@@ -3,7 +3,8 @@
 
 /* Module contract
  * Owns: transactional collection of the catalog-declared input resources
- * needed by one opcode handler into a copied input snapshot.
+ * needed by one opcode handler into a copied input snapshot. Status C and TC
+ * are independently selectable resources; unrequested sources are not read.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, mutation,
  * timing, buses, diagnostics, allocation, or global state. Source pointers
  * are borrowed for one call and the caller owns the output snapshot.

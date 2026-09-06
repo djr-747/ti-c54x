@@ -13,8 +13,8 @@
  * timing, and interrupt policy belong to later owners. STATUS_FIELD_WRITE
  * carries a copied field target/value only; mutation belongs to the status
  * sequencer. ACCUMULATOR_WRITE carries only a canonical destination value
- * and explicit C disposition; mutation belongs to its sequencer. Callers own
- * each effect object.
+ * and explicit C/TC status disposition; mutation belongs to its sequencer.
+ * Callers own each effect object.
  */
 
 #include <stdint.h>
@@ -48,17 +48,22 @@ typedef struct ti_c54x_op_status_field_write_effect {
     uint16_t raw_value;
 } ti_c54x_op_status_field_write_effect;
 
-typedef enum ti_c54x_op_accumulator_c_action {
-    TI_C54X_OP_ACCUMULATOR_C_PRESERVE = 0,
-    TI_C54X_OP_ACCUMULATOR_C_WRITE = 1,
-    TI_C54X_OP_ACCUMULATOR_C_ACTION_COUNT = 2
-} ti_c54x_op_accumulator_c_action;
+typedef enum ti_c54x_op_status_bit_action {
+    TI_C54X_OP_STATUS_BIT_PRESERVE = 0,
+    TI_C54X_OP_STATUS_BIT_WRITE_0 = 1,
+    TI_C54X_OP_STATUS_BIT_WRITE_1 = 2,
+    TI_C54X_OP_STATUS_BIT_ACTION_COUNT = 3
+} ti_c54x_op_status_bit_action;
+
+typedef struct ti_c54x_op_status_delta {
+    ti_c54x_op_status_bit_action c_action;
+    ti_c54x_op_status_bit_action tc_action;
+} ti_c54x_op_status_delta;
 
 typedef struct ti_c54x_op_accumulator_write_effect {
     uint8_t destination;
     ti_c54x_u40_t value_raw40;
-    ti_c54x_op_accumulator_c_action c_action;
-    uint8_t c_value;
+    ti_c54x_op_status_delta status_delta;
 } ti_c54x_op_accumulator_write_effect;
 
 typedef union ti_c54x_op_effect_payload {

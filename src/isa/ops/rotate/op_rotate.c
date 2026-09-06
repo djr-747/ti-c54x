@@ -112,9 +112,11 @@ static ti_c54x_op_status rotate_common(
         (uint8_t)source_field.raw_value;
     staged.payload.accumulator_write.value_raw40 =
         ti_c54x_u40_mask(rotated);
-    staged.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_WRITE;
-    staged.payload.accumulator_write.c_value = c_value;
+    staged.payload.accumulator_write.status_delta.c_action =
+        c_value != UINT8_C(0) ? TI_C54X_OP_STATUS_BIT_WRITE_1
+                              : TI_C54X_OP_STATUS_BIT_WRITE_0;
+    staged.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
     *effect = staged;
     return TI_C54X_OP_STATUS_OK;
 }

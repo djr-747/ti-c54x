@@ -86,9 +86,11 @@ static void assert_effect(const ti_c54x_op_effect *effect, uint64_t value,
                        destination);
     TI_C54X_TEST_CHECK_U64(effect->payload.accumulator_write.value_raw40,
                            value);
-    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.c_action ==
-                       TI_C54X_OP_ACCUMULATOR_C_WRITE);
-    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.c_value == c_value);
+    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.status_delta.c_action ==
+                       (c_value == 0U ? TI_C54X_OP_STATUS_BIT_WRITE_0
+                                      : TI_C54X_OP_STATUS_BIT_WRITE_1));
+    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.status_delta.tc_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
     TI_C54X_TEST_CHECK(effect->payload.accumulator_write.value_raw40 <=
                        TI_C54X_U40_MASK);
 }

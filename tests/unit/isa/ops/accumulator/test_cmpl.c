@@ -58,9 +58,10 @@ static void check(uint16_t word, uint64_t a, uint64_t b, bool a_known,
                        expected_destination);
     TI_C54X_TEST_CHECK_U64(direct.payload.accumulator_write.value_raw40,
                            expected_value);
-    TI_C54X_TEST_CHECK(direct.payload.accumulator_write.c_action ==
-                       TI_C54X_OP_ACCUMULATOR_C_PRESERVE);
-    TI_C54X_TEST_CHECK(direct.payload.accumulator_write.c_value == 0U);
+    TI_C54X_TEST_CHECK(direct.payload.accumulator_write.status_delta.c_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
+    TI_C54X_TEST_CHECK(direct.payload.accumulator_write.status_delta.tc_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
     TI_C54X_TEST_CHECK(memcmp(&direct, &dispatched, sizeof(direct)) == 0);
 }
 

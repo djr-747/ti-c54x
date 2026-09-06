@@ -1,6 +1,6 @@
 /* Module contract
  * Owns: structural validation and atomic accumulator-write effect commit,
- * including conditional C mutation.
+ * including conditional C/TC mutation.
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 
@@ -28,11 +28,10 @@ ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply(
     write = &effect->payload.accumulator_write;
     if (write->destination >= TI_C54X_ACCUMULATOR_INVALID ||
         write->value_raw40 > TI_C54X_U40_MASK ||
-        write->c_action < TI_C54X_OP_ACCUMULATOR_C_PRESERVE ||
-        write->c_action >= TI_C54X_OP_ACCUMULATOR_C_ACTION_COUNT ||
-        write->c_value > 1U ||
-        (write->c_action == TI_C54X_OP_ACCUMULATOR_C_PRESERVE &&
-         write->c_value != 0U)) {
+        write->status_delta.c_action < TI_C54X_OP_STATUS_BIT_PRESERVE ||
+        write->status_delta.c_action >= TI_C54X_OP_STATUS_BIT_ACTION_COUNT ||
+        write->status_delta.tc_action < TI_C54X_OP_STATUS_BIT_PRESERVE ||
+        write->status_delta.tc_action >= TI_C54X_OP_STATUS_BIT_ACTION_COUNT) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
     candidate_accumulators = *accumulators;
@@ -43,9 +42,20 @@ ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply(
         TI_C54X_ACCUMULATOR_OK) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
-    if (write->c_action == TI_C54X_OP_ACCUMULATOR_C_WRITE &&
-        ti_c54x_status_register_write_c(&candidate_status, write->c_value) !=
-            TI_C54X_STATUS_REGISTER_OK) {
+    if (write->status_delta.c_action != TI_C54X_OP_STATUS_BIT_PRESERVE &&
+        ti_c54x_status_register_write_c(
+            &candidate_status,
+            write->status_delta.c_action == TI_C54X_OP_STATUS_BIT_WRITE_1
+                ? UINT8_C(1)
+                : UINT8_C(0)) != TI_C54X_STATUS_REGISTER_OK) {
+        return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
+    }
+    if (write->status_delta.tc_action != TI_C54X_OP_STATUS_BIT_PRESERVE &&
+        ti_c54x_status_register_write_tc(
+            &candidate_status,
+            write->status_delta.tc_action == TI_C54X_OP_STATUS_BIT_WRITE_1
+                ? UINT8_C(1)
+                : UINT8_C(0)) != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
     *accumulators = candidate_accumulators;

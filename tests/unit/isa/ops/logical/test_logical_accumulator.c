@@ -138,10 +138,10 @@ static void assert_effect(const ti_c54x_op_effect *effect,
                            value);
     TI_C54X_TEST_CHECK(effect->payload.accumulator_write.value_raw40 <=
                        TI_C54X_U40_MASK);
-    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.c_action ==
-                       TI_C54X_OP_ACCUMULATOR_C_PRESERVE);
-    /* C_PRESERVE carries a canonical, ignored c_value. */
-    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.c_value == UINT8_C(0));
+    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.status_delta.c_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
+    TI_C54X_TEST_CHECK(effect->payload.accumulator_write.status_delta.tc_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
 }
 
 static void check_case(logical_kind kind,
@@ -322,7 +322,7 @@ static void check_knownness_and_canonicality(void)
                    TI_C54X_OP_STATUS_INVALID_OPERAND);
 
         /* Status C is not an input resource: unknown and arbitrary values are
-         * accepted, and C_PRESERVE always carries c_value zero. */
+         * accepted, and both status bits are preserved. */
         check_case(kind, 0U, 1U, UINT8_C(0x00), UINT64_C(0x12),
                    UINT64_C(0x34), true, true, UINT8_C(0x00), false,
                    TI_C54X_OP_STATUS_OK);

@@ -3511,7 +3511,7 @@
     },
     {
       "id": "REQ-PROJECT-TC-STATUS-ACCESS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/state/status/",
@@ -3521,7 +3521,7 @@
     },
     {
       "id": "REQ-PROJECT-OP-INPUT-TC-RESOURCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/input/",
@@ -3531,7 +3531,7 @@
     },
     {
       "id": "REQ-PROJECT-ACCUMULATOR-STATUS-DELTA",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/accumulator/",
@@ -4554,26 +4554,26 @@
     },
     {
       "id": "T-PROJECT-TC-STATUS-FIELD",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/state/status/test_tc_field.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.tc_field"},
       "requirement_ids": ["REQ-PROJECT-TC-STATUS-ACCESS"]
     },
     {
       "id": "T-PROJECT-OP-INPUT-TC",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/input/test_collect_tc.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_tc"},
       "requirement_ids": ["REQ-PROJECT-OP-INPUT-TC-RESOURCE"]
     },
     {
       "id": "T-PROJECT-ACCUMULATOR-STATUS-DELTA",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/accumulator/test_accumulator_status_delta.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.accumulator_status_delta"},
       "requirement_ids": ["REQ-PROJECT-ACCUMULATOR-STATUS-DELTA"]
     },
     {

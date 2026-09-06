@@ -118,6 +118,14 @@ ti_c54x_status_register_read_arp(const ti_c54x_status_register_state *state)
 }
 
 ti_c54x_status_register_field_result
+ti_c54x_status_register_read_tc(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st0,
+                      state == NULL ? 0U : state->st0_known_mask,
+                      TI_C54X_ST0_TC_MASK, TI_C54X_ST0_TC_SHIFT);
+}
+
+ti_c54x_status_register_field_result
 ti_c54x_status_register_read_cpl(const ti_c54x_status_register_state *state)
 {
     return read_field(state, state == NULL ? 0U : state->st1,
@@ -138,7 +146,7 @@ ti_c54x_status_register_read_c(const ti_c54x_status_register_state *state)
 {
     return read_field(state, state == NULL ? 0U : state->st0,
                       state == NULL ? 0U : state->st0_known_mask,
-                      TI_C54X_ST0_C_MASK, UINT8_C(11));
+                      TI_C54X_ST0_C_MASK, TI_C54X_ST0_C_SHIFT);
 }
 
 ti_c54x_status_register_status
@@ -175,6 +183,18 @@ ti_c54x_status_register_write_arp(ti_c54x_status_register_state *state,
 }
 
 ti_c54x_status_register_status
+ti_c54x_status_register_write_tc(ti_c54x_status_register_state *state,
+                                  uint8_t raw_value)
+{
+    if (state == NULL || raw_value > UINT8_C(1)) {
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+    return write_field(&state->st0, &state->st0_known_mask,
+                       TI_C54X_ST0_TC_MASK, TI_C54X_ST0_TC_SHIFT, raw_value,
+                       UINT8_C(1));
+}
+
+ti_c54x_status_register_status
 ti_c54x_status_register_write_cpl(ti_c54x_status_register_state *state,
                                    uint8_t raw_value)
 {
@@ -204,6 +224,6 @@ ti_c54x_status_register_write_c(ti_c54x_status_register_state *state,
         return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
     }
     return write_field(&state->st0, &state->st0_known_mask,
-                       TI_C54X_ST0_C_MASK, UINT8_C(11), raw_value,
+                       TI_C54X_ST0_C_MASK, TI_C54X_ST0_C_SHIFT, raw_value,
                        UINT8_C(1));
 }

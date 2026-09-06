@@ -44,9 +44,10 @@ int main(void)
     effect.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
     effect.payload.accumulator_write.destination = TI_C54X_ACCUMULATOR_A;
     effect.payload.accumulator_write.value_raw40 = 9U;
-    effect.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_WRITE;
-    effect.payload.accumulator_write.c_value = 1U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_WRITE_1;
+    effect.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                            &effect, &accumulators, &status) ==
                        TI_C54X_ACCUMULATOR_EFFECT_OK);
@@ -61,9 +62,10 @@ int main(void)
 
     effect.payload.accumulator_write.destination = TI_C54X_ACCUMULATOR_B;
     effect.payload.accumulator_write.value_raw40 = 4U;
-    effect.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_WRITE;
-    effect.payload.accumulator_write.c_value = 0U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_WRITE_0;
+    effect.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                            &effect, &accumulators, &status) ==
                        TI_C54X_ACCUMULATOR_EFFECT_OK);
@@ -86,9 +88,10 @@ int main(void)
         uint64_t value = 0U;
         effect.payload.accumulator_write.destination = TI_C54X_ACCUMULATOR_A;
         effect.payload.accumulator_write.value_raw40 = 12U;
-        effect.payload.accumulator_write.c_action =
-            TI_C54X_OP_ACCUMULATOR_C_PRESERVE;
-        effect.payload.accumulator_write.c_value = 0U;
+        effect.payload.accumulator_write.status_delta.c_action =
+            TI_C54X_OP_STATUS_BIT_PRESERVE;
+        effect.payload.accumulator_write.status_delta.tc_action =
+            TI_C54X_OP_STATUS_BIT_PRESERVE;
         TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                                &effect, &accumulators, &status) ==
                            TI_C54X_ACCUMULATOR_EFFECT_OK);
@@ -149,9 +152,10 @@ int main(void)
     effect.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
     effect.payload.accumulator_write.destination = TI_C54X_ACCUMULATOR_A;
     effect.payload.accumulator_write.value_raw40 = 12U;
-    effect.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_WRITE;
-    effect.payload.accumulator_write.c_value = 2U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_ACTION_COUNT;
+    effect.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
     memcpy(before_a, &accumulators, sizeof(before_a));
     memcpy(before_s, &status, sizeof(before_s));
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
@@ -159,26 +163,27 @@ int main(void)
                        TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT);
     TI_C54X_TEST_CHECK(memcmp(before_a, &accumulators, sizeof(before_a)) == 0);
     TI_C54X_TEST_CHECK(memcmp(before_s, &status, sizeof(before_s)) == 0);
-    effect.payload.accumulator_write.c_action =
-        (ti_c54x_op_accumulator_c_action)99U;
-    effect.payload.accumulator_write.c_value = 0U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        (ti_c54x_op_status_bit_action)99U;
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                            &effect, &accumulators, &status) ==
                        TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT);
-    effect.payload.accumulator_write.c_action =
-        (ti_c54x_op_accumulator_c_action)-1;
+    effect.payload.accumulator_write.status_delta.c_action =
+        (ti_c54x_op_status_bit_action)-1;
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                            &effect, &accumulators, &status) ==
                        TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT);
-    effect.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_PRESERVE;
-    effect.payload.accumulator_write.c_value = 1U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    effect.payload.accumulator_write.status_delta.tc_action =
+        (ti_c54x_op_status_bit_action)-1;
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
                            &effect, &accumulators, &status) ==
                        TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT);
-    effect.payload.accumulator_write.c_action =
-        TI_C54X_OP_ACCUMULATOR_C_WRITE;
-    effect.payload.accumulator_write.c_value = 0U;
+    effect.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_WRITE_0;
+    effect.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
     effect.payload.accumulator_write.value_raw40 =
         UINT64_C(0x10000000000);
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(

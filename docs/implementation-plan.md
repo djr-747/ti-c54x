@@ -62,8 +62,8 @@ function-pointer dispatch tables.
 | P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — full local and remote gates green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
 | P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
 | P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `ef87c94`; no confirmed regression | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
-| P2-W28A TC/status foundation | Planned | Add only the typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta required by the next proven forms; migrate every existing accumulator handler transactionally with no CPU branch |
-| P2-W28B ROLTC/SFTC vertical slice | Planned after P2-W28A GREEN | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; target 15 catalog rows and 1081 populated first-word encodings, with repeatability and timing unresolved |
+| P2-W28A TC/status foundation | Implemented — full local `make test` green; remote gate pending | Private typed TC state seam, STATUS_TC input resource, copied op-input knownness, and value-owned C+TC status delta are proven; all prior accumulator handlers migrated transactionally with no CPU branch |
+| P2-W28B ROLTC/SFTC vertical slice | Ready after P2-W28A; not started | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; target 15 catalog rows and 1081 populated first-word encodings, with repeatability and timing unresolved |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, and catalog-thirteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -1281,19 +1281,24 @@ second stage is the opcode proof that consumes it. No speculative overflow,
 memory, interrupt, repeat, parallel-issue, device, public-API, or timing
 surface is admitted.
 
-#### P2-W28A — shared TC/status foundation
+#### P2-W28A — shared TC/status foundation (implemented; local green, remote pending)
 
-The state/status owner adds private typed TC read/write accessors with explicit
-knownness, backed by the existing ST0 TC bit. The CPU-input owner adds a distinct
+The state/status owner added private typed TC read/write accessors with explicit
+knownness, backed by the existing ST0 TC bit. The input path added a distinct
 `STATUS_TC` resource and a composite `ACCUMULATORS_STATUS_TC` resource, copies
 `status_tc/status_tc_known` into `op_input`, and collects TC only when requested.
-The accumulator-sequencer owner replaces the C-only output shape with a
+The accumulator-sequencer owner replaced the C-only output shape with a
 value-owned status delta containing independent C and TC actions:
 `PRESERVE`, `WRITE_0`, or `WRITE_1`. Existing MAX/MIN, ROL/ROR, SFTL, CMPL, and
-logical handlers migrate to that shape without changing their established
+logical handlers migrated to that shape without changing their established
 semantics. The accumulator transaction validates the candidate accumulator and
 the complete status delta before committing both atomically; rejected effects
 leave all copied state unchanged.
+
+Closeout: the new seams are private APIs only. The C+TC delta is value-owned,
+all prior accumulator handlers are migrated, and `src/cpu/cpu.c`, the public
+API, memory, RPT/IRQ, timing, and OVA/OVB behavior are unchanged. Local targeted
+tests and the full local `make test` gate are green; the remote gate is pending.
 
 Ownership is explicit and mirrors the tree: `src/state/status/` owns TC access;
 `src/isa/catalog/` owns the resource-mask identity; `src/isa/ops/op_input.h`
@@ -1311,7 +1316,7 @@ allocation, observer, environment read, or hot-path diagnostic is allowed.
 
 #### P2-W28B — ROLTC/SFTC vertical slice
 
-After P2-W28A is GREEN, the rotate and shift family lanes may implement pure
+P2-W28A is GREEN locally, so the rotate and shift family lanes may implement pure
 handlers and family-local tests in parallel. Catalog/decode metadata and
 generated lookup are RED-first but production registration and all shared
 integration are serialized by the orchestrator. Both forms are one program
