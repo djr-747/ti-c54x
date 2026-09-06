@@ -38,6 +38,23 @@
       "exit_criterion": "Retain while examples ship"
     },
     {
+      "id": "TI_C54X_BUILD_BENCHMARKS",
+      "state": "ACTIVE",
+      "class": "TEST",
+      "disposition": "KEEP",
+      "owner": "bench/",
+      "default": false,
+      "scope": "hosted benchmark build and capture only",
+      "surface": "compile",
+      "architectural_effect": "none; selects observer-off hosted performance tooling and has no effect on core execution",
+      "tests": [
+        "Make bench, bench-smoke, bench-record, and bench-compare contracts",
+        "CMake benchmark option and CTest smoke registration",
+        "Hosted CI benchmark-tool contract"
+      ],
+      "exit_criterion": "Retain while hosted performance tracking is supported"
+    },
+    {
       "id": "TI_C54X_ENABLE_SANITIZERS",
       "state": "ACTIVE",
       "class": "TEST",

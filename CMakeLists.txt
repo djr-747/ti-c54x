@@ -14,6 +14,7 @@ option(TI_C54X_BUILD_EXAMPLES "Build small standalone examples" OFF)
 option(TI_C54X_ENABLE_SANITIZERS "Enable AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 option(TI_C54X_ENABLE_OBSERVERS "Compile structured observer callbacks into the core" OFF)
 option(TI_C54X_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
+option(TI_C54X_BUILD_BENCHMARKS "Build the hosted performance baseline" OFF)
 
 if(NOT CMAKE_C_STANDARD)
     set(CMAKE_C_STANDARD 11)
@@ -108,6 +109,33 @@ if(TI_C54X_BUILD_EXAMPLES)
     target_compile_features(ti_c54x_minimal PRIVATE c_std_11)
     ti_c54x_enable_warnings(ti_c54x_minimal)
     ti_c54x_enable_sanitizers(ti_c54x_minimal)
+endif()
+
+if(TI_C54X_BUILD_BENCHMARKS)
+    if(NOT UNIX)
+        message(FATAL_ERROR "Hosted benchmarks currently require POSIX CLOCK_MONOTONIC")
+    endif()
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+    enable_testing()
+    add_executable(ti_c54x_bench bench/ti_c54x_bench.c ${ti_c54x_core_sources})
+    target_compile_features(ti_c54x_bench PRIVATE c_std_11)
+    target_compile_definitions(ti_c54x_bench PRIVATE
+        TI_C54X_ENABLE_OBSERVERS=0
+    )
+    target_include_directories(ti_c54x_bench PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+    )
+    target_compile_options(ti_c54x_bench PRIVATE -O2 -DNDEBUG)
+    ti_c54x_enable_warnings(ti_c54x_bench)
+    add_test(NAME ti_c54x.bench_smoke
+        COMMAND "${Python3_EXECUTABLE}" tools/perf/capture.py
+            --benchmark "$<TARGET_FILE:ti_c54x_bench>"
+            --root "${PROJECT_SOURCE_DIR}" --allow-dirty
+            --compiler "${CMAKE_C_COMPILER}"
+            --build-flags "${CMAKE_C_FLAGS} -O2 -DNDEBUG -DTI_C54X_ENABLE_OBSERVERS=0")
+    set_tests_properties(ti_c54x.bench_smoke PROPERTIES
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
 
 install(TARGETS ti_c54x

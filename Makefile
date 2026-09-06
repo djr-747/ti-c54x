@@ -1,4 +1,4 @@
-.PHONY: all build test quality-test cmake-build install clean format
+.PHONY: all build test quality-test bench bench-smoke bench-record bench-compare cmake-build install clean format
 
 # Root policy: compiler flags, artifacts, orchestration, and packaging. Source
 # and test ownership manifests live beside the files they register.
@@ -29,6 +29,13 @@ OBSERVER_ON_DIR := $(BUILD_DIR)/observer-on
 OBSERVER_ON_LIB := $(OBSERVER_ON_DIR)/libti_c54x.a
 OBSERVER_OFF_DIR := $(BUILD_DIR)/observer-off
 OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
+BENCH_BUILD_DIR := build-bench
+BENCH_LIB := $(BENCH_BUILD_DIR)/libti_c54x.a
+BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_bench
+BENCH_CPPFLAGS := -Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0
+BENCH_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
+	-Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
+BENCH_OBJECTS = $(patsubst src/%.c,$(BENCH_BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
 
 # Each owner appends its source files; this is the sole source inventory used
 # by normal, observer-on, and observer-off static-library builds.
@@ -53,6 +60,22 @@ ti_c54x_test_targets :=
 ti_c54x_test_depfiles :=
 
 all: test
+
+bench: $(BENCH_EXE)
+	$(PYTHON) tools/perf/capture.py --benchmark $(BENCH_EXE) --root . --allow-dirty \
+		--compiler "$(CC)" --build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
+
+bench-smoke: bench
+
+bench-record: $(BENCH_EXE)
+	$(PYTHON) tools/perf/capture.py --benchmark $(BENCH_EXE) --root . \
+		--history bench/history/hosted-v1.jsonl --compiler "$(CC)" \
+		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
+
+bench-compare: $(BENCH_EXE)
+	$(PYTHON) tools/perf/capture.py --benchmark $(BENCH_EXE) --root . --allow-dirty \
+		--compiler "$(CC)" --build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)" | \
+	$(PYTHON) tools/perf/compare.py --history bench/history/hosted-v1.jsonl --current-file -
 
 # Root owns the common direct-Make test construction policy. Owner manifests
 # provide only target identity and source path, so test registration follows
@@ -117,6 +140,18 @@ $(OBSERVER_OFF_LIB): $(OBSERVER_OFF_OBJECTS)
 	@mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $@ $^
 
+$(BENCH_LIB): $(BENCH_OBJECTS)
+	@mkdir -p $(@D)
+	$(AR) $(ARFLAGS) $@ $^
+
+$(BENCH_EXE): bench/ti_c54x_bench.c $(BENCH_LIB)
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
+
+$(BENCH_BUILD_DIR)/obj/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) -MMD -MP -c $< -o $@
+
 $(MINIMAL): examples/minimal.c $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
@@ -139,13 +174,14 @@ format:
 		src/isa/ops/*.c src/isa/ops/*.h \
 		src/state/*.c src/state/*.h \
 		include/ti_c54x/*.h tests/unit/cpu/*.c tests/unit/debug/*.c \
+		bench/*.c \
 		tests/unit/foundation/*.c tests/unit/address/*.c \
 		tests/unit/state/*.c tests/unit/sequencer/*.c \
 		tests/unit/isa/decode/*.c tests/unit/isa/ops/*.c examples/*.c
 
 clean:
-	@rm -rf -- build-fast build-cmake
+	@rm -rf -- build-fast build-bench build-cmake build-bench-cmake
 
 -include $(LIB_OBJECTS:.o=.d) $(OBSERVER_ON_OBJECTS:.o=.d) \
-	$(OBSERVER_OFF_OBJECTS:.o=.d) \
+	$(OBSERVER_OFF_OBJECTS:.o=.d) $(BENCH_OBJECTS:.o=.d) \
 	$(ti_c54x_test_depfiles)

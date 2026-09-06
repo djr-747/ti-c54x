@@ -49,6 +49,13 @@ jobs:
             -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/ti-c54x-install"
           cmake --build "$RUNNER_TEMP/ti-c54x-consumer-build" --parallel
           "$RUNNER_TEMP/ti-c54x-consumer-build/ti_c54x_consumer_smoke"
+      - name: Hosted benchmark smoke
+        run: |
+          make bench
+          cmake -S . -B build-bench-ci -DTI_C54X_BUILD_TESTS=OFF -DTI_C54X_BUILD_BENCHMARKS=ON
+          cmake --build build-bench-ci --target ti_c54x_bench --parallel
+          ctest --test-dir build-bench-ci -R 'ti_c54x\.bench_smoke' \
+            --output-on-failure --no-tests=error
 
   sanitizers:
     name: clang sanitizers

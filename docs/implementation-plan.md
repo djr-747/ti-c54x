@@ -57,6 +57,7 @@ function-pointer dispatch tables.
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local gate green; remote verification pending | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
+| Hosted performance history | Implemented — full local gate green; remote verification and initial clean baseline pending | Observer-off end-to-end throughput capture with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -846,6 +847,39 @@ because these opcodes require them. The local registry is 82 immutable evidence
 records, 122 requirements (98 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and
 87 tests (78 `PASSING`, 9 `PLANNED`); the full local gate is green and remote
 verification remains pending.
+
+### Hosted performance history (implemented; local gate green)
+
+Performance capture is hosted tooling, not a standalone-core dependency and not
+architectural or silicon timing evidence. The observer-off benchmark measures
+end-to-end CPU execution through the public program bus with a monotonic host
+clock. `nop`, `ld-dp`, `ld-asm`, and `ld-arp` are stable fixed scenarios;
+`mixed-current` follows the production catalog and records its catalog count and
+semantic hash. Captures use an excluded warmup, seven recorded samples, and
+repeated windows with fewer than 65,535 retirements. Exact compiler/platform/CPU,
+build flags, clock, source commit, catalog count, scenario semantic hash, and
+benchmark/source hashes are recorded.
+
+History is clean-commit, append-only JSONL. Same-cohort comparison is advisory
+only and requires matching CPU/platform/machine/compiler/build flags/clock;
+fixed-scenario percentage comparison additionally requires the same scenario
+semantic hash. `mixed-current` may change catalog count/hash and is reported as
+an evolving, non-like-for-like trend rather than a regression percentage. No flaky
+CI throughput threshold is introduced. The hosted surface is `make bench`,
+`make bench-smoke`, `make bench-record`, `make bench-compare`, and
+capture/compare helpers under
+`tools/perf/`. The `TI_C54X_BUILD_BENCHMARKS` ACTIVE TEST/KEEP knob is
+default-off, owned by `bench/`, and has no architectural effect; these controls
+remain outside core execution. The full local gate is green (172 Python checks,
+73 C unit executables plus the minimal consumer, knobs, source boundaries, and
+registry checks); remote CMake verification and the initial clean baseline are
+pending.
+
+The current `mixed-current` benchmark stream contains only one-word forms. Before
+the first multiword instruction is added, its per-window retirement count and
+program-word span must be derived together so the stream stays below the
+unresolved 16-bit program-PC boundary; this hosted constraint does not claim a
+core boundary policy.
 
 ## Delivery order
 

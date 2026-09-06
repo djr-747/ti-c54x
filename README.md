@@ -42,6 +42,13 @@ Current progress:
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.
+- Hosted performance history is implemented and covered by the full local gate:
+  observer-off public-bus throughput, stable `nop`/`ld-dp`/`ld-asm`/`ld-arp`
+  scenarios, catalog-aware mixed workload, seven samples after warmup, and
+  clean-commit append-only JSONL. The 172 Python checks, 73 C executables plus
+  the minimal consumer, and registry/boundary checks are green; remote CMake
+  verification and the first clean baseline remain pending. See [hosted
+  performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.
@@ -82,6 +89,7 @@ TI_C54X_BUILD_EXAMPLES=OFF        minimal consumer example (default while API se
 TI_C54X_ENABLE_SANITIZERS=OFF     AddressSanitizer + UBSan where supported
 TI_C54X_ENABLE_OBSERVERS=OFF      structured lifecycle observers (test/diagnostic builds)
 TI_C54X_WARNINGS_AS_ERRORS=ON     strict warnings (default)
+TI_C54X_BUILD_BENCHMARKS=OFF      hosted observer-off performance tooling (no architectural effect)
 PYTHON=python3                     quality-check interpreter used by `make test`
 ```
 

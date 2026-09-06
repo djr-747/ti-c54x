@@ -18,6 +18,7 @@ identifier is reserved by an approved work piece but not implemented.
 |---|---|---|---|---|---|---|---|---|---|
 | `TI_C54X_BUILD_TESTS` | ACTIVE | TEST | KEEP | `tests/` | On | Build | None; selects test targets | Configure-on/off and CI test discovery | Retain while CTest is supported |
 | `TI_C54X_BUILD_EXAMPLES` | ACTIVE | TEST | KEEP | `examples/` | Off | Build | None; selects example targets | Minimal consumer build/run | Retain while examples ship |
+| `TI_C54X_BUILD_BENCHMARKS` | ACTIVE | TEST | KEEP | `bench/` | Off | Hosted benchmark build/capture | None; selects observer-off performance tooling only | Make bench/bench-smoke/bench-record/bench-compare, CMake smoke, hosted CI tool contract | Retain while hosted performance tracking is supported |
 | `TI_C54X_ENABLE_SANITIZERS` | ACTIVE | TEST | KEEP | `cmake/` | Off | Build | None; instruments local targets | ASan/UBSan CI job and non-leakage from installed target | Retain while supported toolchains provide sanitizers |
 | `TI_C54X_WARNINGS_AS_ERRORS` | ACTIVE | TEST | KEEP | `cmake/` | On | Build | None; changes diagnostic severity | GCC/Clang strict build | Retain; downstream opt-out remains supported |
 | `TI_C54X_ENABLE_OBSERVERS` | ACTIVE | OBSERVE | KEEP | `src/debug/` | Off | Build | None | Observer-off symbol/hot-path audit; observer-on event tests | Retain while the structured observer API is supported |
