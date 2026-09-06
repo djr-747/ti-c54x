@@ -1433,3 +1433,67 @@ rewritten after publication.
   sequencer, and evidence/build work to Luna agents with disjoint file ownership,
   integrate under the main orchestrator, run an independent closure review,
   validate once, commit, push, and verify remotely.
+
+## 2026-09-06 — P2-W10 completion — Reverse-carry WORD16 effects
+
+- State: complete in implementation commit
+  `d0328f12b1bd461040170081e5acfb44b1e210b9`.
+- Outcome: added a pure unsigned 16-bit reverse-carry foundation, a constrained
+  CMPT=0 MOD4/MOD7 WORD16 address planner and intrinsic validator, a distinct
+  value-owned reverse-carry source arm, and transactional sequencer application.
+  Valid effects preserve the old selected-AR operand address and commit exactly
+  one POST_ACCESS selected-AR update after ordered selected-AR then AR0 state
+  checks.
+- Ownership: `src/foundation/reverse_carry.[ch]` owns only reverse-carry
+  arithmetic; `src/address/indirect_reverse_carry.[ch]` owns mode validation,
+  planning, and effect-shape validation; `src/address/address_effect.h` owns the
+  copied source type; and `src/sequencer/address_effect_apply.[ch]` owns ordered
+  state validation and commit. Six new tests mirror the foundation, address,
+  and sequencer owners. Build and evidence changes remain in their existing
+  owning files.
+- TDD proof: COMMON_TI tests reproduce TI's complete worked MOD7 sequence and
+  safe MOD4 inverse transitions, then exercise both access kinds and AR1-AR7
+  through planner and sequencer boundaries. Project-contract tests independently
+  map reverse-carry through bit reversal and ordinary unsigned arithmetic across
+  every 16-bit left operand, all 16 one-hot right operands, and both operations.
+  They also prove invalid-input precedence, whole-register and FFT-window escape
+  rejection, exact-zero failed values/effects, copied-source lifetime, intrinsic
+  malformation rejection, phase/mode/source precedence, selected-AR-before-AR0
+  dependency ordering, and bytewise transactional rejection.
+- Evidence: the live registry now contains 2 targets, 7 sources, 51 immutable
+  evidence records, 60 requirements, and 45 tests (41 `PASSING`, 4 `PLANNED`).
+  TI records own only the documented old-address/update order, bit-15-to-bit-0
+  propagation, power-of-two AR0 use, and legal selected-AR0 syntax. Project
+  records separately own validation, deterministic status, zero-result, and
+  transaction behavior.
+- Explicit nonclaims: final carry/borrow discard and reverse-counter wrap,
+  selected-AR0 source/update ordering, LONG32 applicability or scaling, dual
+  operands, CMPT=1/ARP update, circular/BK state, MMR routing, buses, opcode
+  decode, timing/hazards, repeat behavior, devices, diagnostics, firmware, and
+  emulator integration remain unresolved or deferred.
+- Review corrections: orchestration review moved boundary and invalid-operation
+  assertions out of the COMMON_TI arithmetic test, replaced a production-shaped
+  ripple oracle with an independent bit-reversal oracle, added FFT-window escape
+  vectors, corrected the evidence direction to bit 15/MSB toward bit 0/LSB,
+  corrected the exact project anchor, and removed an unsupported planner-width
+  claim. Sequencer tests construct unknown state only through state-owner APIs.
+  Independent Luna closure review reported no remaining blockers and a clean GCC
+  analyzer pass.
+- File-shape decision: `src/sequencer/address_effect_apply.c` is 411 lines, below
+  the 500-line review threshold. It remains cohesive for this slice, but must be
+  split into named sequencer-owned validation/dependency modules before circular
+  effects are integrated.
+- Local validation: final-tree strict `make test` passed every registered C test
+  and all 96 Python quality tests. ASan/UBSan `make test` also passed. Evidence
+  (2 targets, 7 sources, 60 requirements, 45 tests), source-boundary (74 files),
+  knob-registry (7 knobs), observer-disabled artifact, and whitespace checks
+  passed. `make PYTHON=/definitely/missing build` proved the compiler-only
+  standalone path. CMake is unavailable on this host, so configure, CTest,
+  install, consumer, and sanitizer variants remain assigned to remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment lookup, diagnostic hook, file I/O, firmware input, emulator
+  dependency, process-global mutable state, or public private-header exposure
+  was added.
+- Follow-up: push the implementation and ledger commits, verify the remote
+  GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
+  ledger-only verification commit.
