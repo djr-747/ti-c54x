@@ -42,13 +42,13 @@ function-pointer dispatch tables.
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
 | Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
-| Opcode builder and decode | Active | The NOP-seeded catalog, direct first-word decoder, semantic dispatch seam, and checked sequential-PC retirement contract are independently tested; unknown words remain explicit |
+| Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
 ### P2-W16: NOP-seeded opcode architecture
 
-This work piece establishes the smallest evidence-backed ISA architecture slice
+This completed work piece establishes the smallest evidence-backed ISA architecture slice
 without integrating it into the public CPU shell. The ownership boundary is
 deliberate:
 

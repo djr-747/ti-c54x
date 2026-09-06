@@ -69,6 +69,49 @@ class BuildManifestTests(unittest.TestCase):
             "add_library(ti_c54x_observer_enabled STATIC ${ti_c54x_core_sources})\n",
         )
 
+    def hierarchy_fixture(self, *, cmake_child_order: tuple[str, ...] = ("catalog", "decode")) -> None:
+        for owner, source_name in (("isa/catalog", "catalog.c"), ("isa/decode", "decode.c")):
+            source = f"src/{owner}/{source_name}"
+            self.write(source, "int fixture_source;\n")
+            self.write(
+                f"src/{owner}/sources.mk",
+                f"ti_c54x_core_sources += {source}\n",
+            )
+            self.write(
+                f"src/{owner}/sources.cmake",
+                "list(APPEND ti_c54x_core_sources\n"
+                f"    \"${{CMAKE_CURRENT_LIST_DIR}}/{source_name}\"\n"
+                ")\n",
+            )
+        self.write(
+            "src/isa/sources.mk",
+            "include src/isa/catalog/sources.mk\n"
+            "include src/isa/decode/sources.mk\n",
+        )
+        cmake_children = "\n".join(
+            f"include(${{CMAKE_CURRENT_LIST_DIR}}/{child}/sources.cmake)"
+            for child in cmake_child_order
+        )
+        self.write("src/isa/sources.cmake", f"{cmake_children}\n")
+        self.write(
+            "Makefile",
+            "ti_c54x_core_sources :=\n"
+            "include src/isa/sources.mk\n"
+            "LIB_OBJECTS := $(patsubst src/%.c,build/%.o,$(ti_c54x_core_sources))\n"
+            "OBSERVER_OFF_OBJECTS := $(patsubst src/%.c,build-off/%.o,$(ti_c54x_core_sources))\n",
+        )
+        self.write(
+            "CMakeLists.txt",
+            "set(ti_c54x_core_sources)\n"
+            "include(${CMAKE_CURRENT_SOURCE_DIR}/src/isa/sources.cmake)\n"
+            "add_library(ti_c54x STATIC ${ti_c54x_core_sources})\n",
+        )
+        self.write(
+            "tests/CMakeLists.txt",
+            "add_library(ti_c54x_observer_off STATIC ${ti_c54x_core_sources})\n"
+            "add_library(ti_c54x_observer_enabled STATIC ${ti_c54x_core_sources})\n",
+        )
+
     @staticmethod
     def codes(errors: list[str]) -> set[str]:
         return {error.split(":", 2)[1] for error in errors}
@@ -102,6 +145,85 @@ class BuildManifestTests(unittest.TestCase):
         )
         errors = check_repository(self.root)
         self.assertIn("OWNER", self.codes(errors))
+
+    def test_aggregate_cannot_claim_descendant_source_directly(self) -> None:
+        self.hierarchy_fixture()
+        self.write(
+            "src/isa/sources.mk",
+            "ti_c54x_core_sources += src/isa/catalog/catalog.c\n"
+            "include src/isa/decode/sources.mk\n",
+        )
+        errors = check_repository(self.root)
+        self.assertIn("OWNER", self.codes(errors))
+
+    def test_aggregate_nested_manifests_expand_in_root_order(self) -> None:
+        self.hierarchy_fixture()
+        self.assertEqual(check_repository(self.root), [])
+
+    def test_aggregate_nested_order_must_match_between_build_systems(self) -> None:
+        self.hierarchy_fixture(cmake_child_order=("decode", "catalog"))
+        errors = check_repository(self.root)
+        self.assertIn("ORDER", self.codes(errors))
+
+    def test_manifest_include_cycle_is_rejected(self) -> None:
+        self.hierarchy_fixture()
+        self.write(
+            "src/isa/catalog/sources.mk",
+            "include src/isa/sources.mk\n",
+        )
+        self.write(
+            "src/isa/catalog/sources.cmake",
+            "include(${CMAKE_CURRENT_LIST_DIR}/../sources.cmake)\n",
+        )
+        errors = check_repository(self.root)
+        self.assertIn("CYCLE", self.codes(errors))
+
+    def test_duplicate_manifest_include_is_rejected(self) -> None:
+        self.hierarchy_fixture()
+        self.write(
+            "src/isa/sources.mk",
+            "include src/isa/catalog/sources.mk\n"
+            "include src/isa/catalog/sources.mk\n"
+            "include src/isa/decode/sources.mk\n",
+        )
+        self.write(
+            "src/isa/sources.cmake",
+            "include(${CMAKE_CURRENT_LIST_DIR}/catalog/sources.cmake)\n"
+            "include(${CMAKE_CURRENT_LIST_DIR}/catalog/sources.cmake)\n"
+            "include(${CMAKE_CURRENT_LIST_DIR}/decode/sources.cmake)\n",
+        )
+        errors = check_repository(self.root)
+        self.assertIn("DUPLICATE", self.codes(errors))
+
+    def test_root_and_aggregate_duplicate_include_is_rejected(self) -> None:
+        self.hierarchy_fixture()
+        self.write(
+            "Makefile",
+            "ti_c54x_core_sources :=\n"
+            "include src/isa/sources.mk\n"
+            "include src/isa/catalog/sources.mk\n"
+            "LIB_OBJECTS := $(patsubst src/%.c,build/%.o,$(ti_c54x_core_sources))\n"
+            "OBSERVER_OFF_OBJECTS := $(patsubst src/%.c,build-off/%.o,$(ti_c54x_core_sources))\n",
+        )
+        errors = check_repository(self.root)
+        self.assertIn("DUPLICATE", self.codes(errors))
+
+    def test_empty_leaf_manifest_is_rejected(self) -> None:
+        self.hierarchy_fixture()
+        self.write("src/isa/decode/sources.mk", "")
+        self.write("src/isa/decode/sources.cmake", "")
+        errors = check_repository(self.root)
+        self.assertIn("EMPTY", self.codes(errors))
+
+    def test_manifest_include_traversal_is_rejected(self) -> None:
+        self.hierarchy_fixture()
+        self.write(
+            "src/isa/sources.mk",
+            "include src/isa/catalog/sources.mk\n"
+            "include src/isa/../isa/decode/sources.mk\n",
+        )
+        errors = check_repository(self.root)
+        self.assertIn("TOKEN", self.codes(errors))
 
     def test_manifest_order_and_sets_must_match(self) -> None:
         self.fixture()

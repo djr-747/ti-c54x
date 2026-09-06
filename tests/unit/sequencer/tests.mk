@@ -18,3 +18,4 @@ $(eval $(call ti_c54x_add_test,indirect_circular_effect_apply,sequencer,test_ind
 $(eval $(call ti_c54x_add_test,indirect_circular_effect_apply_contract,sequencer,test_indirect_circular_effect_apply_contract.c))
 $(eval $(call ti_c54x_add_test,address_effect_state_contract,sequencer,test_address_effect_state_contract.c))
 $(eval $(call ti_c54x_add_test,address_operand_apply_contract,sequencer,test_address_operand_apply_contract.c))
+$(eval $(call ti_c54x_add_test,nop_flow,sequencer,test_nop_flow.c))

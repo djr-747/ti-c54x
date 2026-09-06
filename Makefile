@@ -37,6 +37,7 @@ include src/sequencer/sources.mk
 include src/state/sources.mk
 include src/cpu/sources.mk
 include src/debug/sources.mk
+include src/isa/sources.mk
 
 LIB_OBJECTS := $(patsubst src/%.c,$(BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
 OBSERVER_OFF_OBJECTS := $(patsubst src/%.c,$(OBSERVER_OFF_DIR)/obj/%.o,$(ti_c54x_core_sources))
@@ -68,6 +69,7 @@ include tests/unit/address/tests.mk
 include tests/unit/state/tests.mk
 include tests/unit/sequencer/tests.mk
 include tests/unit/debug/tests.mk
+include tests/unit/isa/tests.mk
 
 build: $(ti_c54x_test_targets) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
@@ -118,10 +120,14 @@ format:
 	clang-format -i src/cpu/*.c src/debug/*.c src/foundation/*.c \
 		src/address/*.c src/address/*.h \
 		src/sequencer/*.c src/sequencer/*.h \
+		src/isa/catalog/*.c src/isa/catalog/*.h \
+		src/isa/decode/*.c src/isa/decode/*.h \
+		src/isa/ops/*.c src/isa/ops/*.h \
 		src/state/*.c src/state/*.h \
 		include/ti_c54x/*.h tests/unit/cpu/*.c tests/unit/debug/*.c \
 		tests/unit/foundation/*.c tests/unit/address/*.c \
-		tests/unit/state/*.c tests/unit/sequencer/*.c examples/*.c
+		tests/unit/state/*.c tests/unit/sequencer/*.c \
+		tests/unit/isa/decode/*.c tests/unit/isa/ops/*.c examples/*.c
 
 clean:
 	@rm -rf -- build-fast build-cmake

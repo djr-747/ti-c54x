@@ -17,7 +17,7 @@ ALLOWED_SRC_OWNERS = {
     "sequencer",
     "state",
 }
-ALLOWED_ISA_OWNERS = {"decode", "ops"}
+ALLOWED_ISA_OWNERS = {"catalog", "decode", "ops"}
 PRODUCTION_SUFFIXES = {".c", ".h"}
 TEST_SUFFIXES = {".c", ".h"}
 TEST_ROOTS = {"contract", "differential", "fuzz"}

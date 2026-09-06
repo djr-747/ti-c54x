@@ -1159,7 +1159,7 @@
     },
     {
       "id": "REQ-COMMON-NOP-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -1169,7 +1169,7 @@
     },
     {
       "id": "REQ-PROJECT-OPCODE-CATALOG-CONTRACT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/catalog/",
@@ -1179,7 +1179,7 @@
     },
     {
       "id": "REQ-COMMON-NOP-SEMANTICS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/",
@@ -1189,7 +1189,7 @@
     },
     {
       "id": "REQ-COMMON-NOP-PC-SEQUENTIAL",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/",
@@ -2011,34 +2011,34 @@
     },
     {
       "id": "T-COMMON-NOP-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_nop_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.nop_decode"},
       "requirement_ids": ["REQ-COMMON-NOP-DECODE"]
     },
     {
       "id": "T-PROJECT-OPCODE-CATALOG-CONTRACT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/test_opcode_catalog.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-OPCODE-CATALOG-CONTRACT"]
     },
     {
       "id": "T-COMMON-NOP-SEMANTICS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/test_nop.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.nop"},
       "requirement_ids": ["REQ-COMMON-NOP-SEMANTICS"]
     },
     {
       "id": "T-COMMON-NOP-PC-SEQUENTIAL",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/test_nop_flow.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.nop_flow"},
       "requirement_ids": ["REQ-COMMON-NOP-PC-SEQUENTIAL"]
     },
     {

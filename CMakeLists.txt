@@ -65,6 +65,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/sources.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/state/sources.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/sources.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/debug/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/isa/sources.cmake)
 
 add_library(ti_c54x STATIC
     ${ti_c54x_core_sources}

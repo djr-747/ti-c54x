@@ -70,9 +70,13 @@ class SourceBoundaryTests(unittest.TestCase):
         report = check_tree(self.root)
         self.assertGreaterEqual(sum(v.code == "OWNERSHIP" for v in report.violations), 2)
 
-    def test_isa_requires_decode_or_ops_owner(self) -> None:
+    def test_isa_requires_a_named_subowner(self) -> None:
         self.clean_source("src/isa/fixture.c")
         self.assertIn("OWNERSHIP", self.codes_from_report())
+
+    def test_isa_catalog_is_a_valid_source_owner(self) -> None:
+        self.clean_source("src/isa/catalog/fixture.c")
+        self.assertNotIn("OWNERSHIP", self.codes_from_report())
 
     def test_forbidden_headers_and_calls_are_rejected(self) -> None:
         self.clean_source(body="#include <stdio.h>\nvoid f(void) { printf(\"x\"); }\n")
@@ -248,6 +252,7 @@ class SourceBoundaryTests(unittest.TestCase):
         self.clean_source()
         self.write("tests/support/fixture.c", CONTRACT)
         self.write("tests/unit/cpu/fixture.h", CONTRACT)
+        self.write("tests/unit/isa/catalog/fixture.c", CONTRACT)
         self.write("tests/unit/isa/ops/fixture.c", CONTRACT)
         self.write("tests/contract/fixture.c", CONTRACT)
         self.write("tests/differential/fixture.h", CONTRACT)

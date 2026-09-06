@@ -161,7 +161,7 @@ def _check_ownership(path: Path, root: Path, report: BoundaryReport) -> None:
         )
     elif owner == "isa" and (len(relative) < 3 or relative[2] not in ALLOWED_ISA_OWNERS):
         report.violations.append(
-            Violation(path, 1, "OWNERSHIP", "src/isa files must belong to src/isa/decode or src/isa/ops")
+            Violation(path, 1, "OWNERSHIP", "src/isa files must belong to src/isa/catalog, src/isa/decode, or src/isa/ops")
         )
 
 
@@ -189,7 +189,7 @@ def _check_test_ownership(path: Path, root: Path, report: BoundaryReport) -> Non
         return
     if relative[2] == "isa" and relative[3] not in ALLOWED_ISA_OWNERS:
         report.violations.append(
-            Violation(path, 1, "TEST_OWNERSHIP", "ISA unit tests must mirror decode or ops")
+            Violation(path, 1, "TEST_OWNERSHIP", "ISA unit tests must mirror catalog, decode, or ops")
         )
 
 
