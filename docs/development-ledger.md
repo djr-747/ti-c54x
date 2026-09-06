@@ -2089,3 +2089,16 @@ rewritten after publication.
 - Follow-up: verify both commits in standalone CI, then select the next bounded
   foundation slice. Shared-memory and exact-cycle execution remain plan-only
   gates and cannot be bypassed by a future memory-mutating opcode.
+
+## 2026-09-06 — P2-W14 remote verification
+
+- Verified implementation commit
+  `2c9dfb8d7c954438d6166542f03b3a93d1aba540` and completion-ledger commit
+  `701f29a5cf6727be549d56297f9aae198426bef3` in GitHub Actions run
+  `34005806734`.
+- The standalone matrix passed GCC and Clang direct-Make tests, library-only
+  configuration/build, full CMake/CTest, install/package checks, downstream
+  consumer smoke tests, and the Clang sanitizer build and tests.
+- Result: P2-W14 is remotely proven on the repository's independent build
+  surfaces. No emulator checkout, firmware image, environment gate, or external
+  project build participated.
