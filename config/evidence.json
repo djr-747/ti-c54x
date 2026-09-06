@@ -1496,6 +1496,68 @@
         "anchor": "P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)"
       },
       "assertion": "P2-W23 freezes a planned, standalone MAX/MIN vertical slice with four one-word encodings, decode-owned destination extraction, pure compare/select handlers, state-owned full 40-bit accumulators, a transactional sequencer effect, and CPU-owned atomic retirement. It claims no production implementation, repeatability, machine timing, memory, bus, device, emulator, RPT, or IRQ behavior; GNU binutils corroboration remains nonnormative and is not copied or vendored."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CMPL-FORMS-P4-32",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "CMPL",
+        "printed_page_start": "4-32",
+        "printed_page_end": "4-32"
+      },
+      "assertion": "The CMPL instruction description defines a one-word Class 1 accumulator form with source bit S at bit 9 and destination bit D at bit 8. Its opcode diagram derives value 0xF493 with mask 0xFCFF, yielding exactly four source/destination accumulator forms. No summary cycle claim is adopted."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CMPL-EFFECTS-P4-32",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "CMPL",
+        "printed_page_start": "4-32",
+        "printed_page_end": "4-32"
+      },
+      "assertion": "CMPL writes the one's complement of the selected source accumulator to the selected destination accumulator and specifies no status-register effect. The common implementation must preserve C and every non-destination field while complementing the complete architectural accumulator value."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The repeat section does not positively authorize CMPL repetition: CMPL is not listed among the forms prohibited by Table 2-28, but the source gives no all-unlisted-forms rule. CMPL repeatability therefore remains unresolved, and summary timing fields are not adopted as machine-cycle evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)"
+      },
+      "assertion": "P2-W24 freezes a two-step standalone slice: first rename the P2-W23 select-named payload to generic ACCUMULATOR_WRITE with canonical C PRESERVE/WRITE validation and atomic status preservation, then implement CMPL's four 0xF493/0xFCFF forms through the generic ACCUMULATORS resource path without a CPU opcode branch or CPU file growth. Exhaustive decode coverage, full-40-bit one's-complement behavior, repeatability, and machine timing are explicitly separated by evidence status."
     }
   ],
   "requirements": [
@@ -2942,6 +3004,56 @@
       "claim": "MAX and MIN repeatability is unresolved: TI Table 2-28 does not list them, but its preamble does not state that every unlisted instruction is repeatable. Do not classify either form as ELIGIBLE until positive evidence or an explicit project policy resolves this boundary.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-MAX-MIN-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/accumulator/",
+      "claim": "Rename the select-named accumulator effect to generic ACCUMULATOR_WRITE and validate a value-owned destination, canonical full-40-bit value, and explicit C action. PRESERVE requires c_value=0; WRITE requires c_value=0 or 1; unknown actions, invalid destinations, and noncanonical payloads reject without mutating either accumulator, C, or unrelated status state. The transaction applies exactly once and atomically.",
+      "evidence_ids": ["E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT"],
+      "test_ids": ["T-PROJECT-ACCUMULATOR-WRITE-EFFECT"]
+    },
+    {
+      "id": "REQ-COMMON-CMPL-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode CMPL as four exact one-word forms from value 0xF493 and mask 0xFCFF, with S at bit 9 selecting source A/B and D at bit 8 selecting destination A/B. A generic ACCUMULATOR_SOURCE_DESTINATION layout exposes source as operand 0 and destination as operand 1. Exhaustive 65,536-word lookup coverage must classify exactly those four forms, reject every fixed-bit near-miss, and preserve unrelated catalog rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CMPL-FORMS-P4-32"],
+      "test_ids": ["T-COMMON-CMPL-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-CMPL-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/accumulator/",
+      "claim": "Produce a pure CMPL effect that writes the full 40-bit one's complement of the selected source accumulator to the selected destination. The effect uses C PRESERVE, leaves c_value at canonical zero, and changes no status field or non-destination accumulator.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CMPL-EFFECTS-P4-32", "E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT"],
+      "test_ids": ["T-COMMON-CMPL-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-CMPL-CPU-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Route CMPL through the generic ACCUMULATORS input-resource mask and ACCUMULATOR_WRITE effect path. Retire each one-word form atomically with one attempt and one sequential PC increment, preserving C and unrelated state; no opcode-identity branch or new CPU file growth is permitted.",
+      "evidence_ids": ["E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-CMPL"]
+    },
+    {
+      "id": "REQ-COMMON-CMPL-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "CMPL repeatability is unresolved: Table 2-28 does not list CMPL, but its preamble does not positively authorize every unlisted form. Do not classify CMPL as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -3719,6 +3831,38 @@
       "path": "tests/unit/cpu/test_cpu_max_min.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_max_min"},
       "requirement_ids": ["REQ-PROJECT-MAX-MIN-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-ACCUMULATOR-WRITE-EFFECT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/accumulator/test_accumulator_write_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT"]
+    },
+    {
+      "id": "T-COMMON-CMPL-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_cmpl_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CMPL-DECODE"]
+    },
+    {
+      "id": "T-COMMON-CMPL-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/accumulator/test_cmpl.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CMPL-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-CMPL",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_cmpl.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CMPL-CPU-RETIREMENT"]
     }
   ]
 }

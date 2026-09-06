@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 87 immutable evidence records,
-128 requirements (103 `IMPLEMENTED`, 9 `PLANNED`, 16 `UNRESOLVED`), and 92 tests
-(83 `PASSING`, 9 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 91 immutable evidence records,
+133 requirements (103 `IMPLEMENTED`, 13 `PLANNED`, 17 `UNRESOLVED`), and 96 tests
+(83 `PASSING`, 13 `PLANNED`).
 
 ## Targets
 
@@ -131,6 +131,10 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §2.3, `2-8` |
 | `E-TI-C54X-SPRU172C-S2-5-T2-28-MAX-MIN-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)` |
+| `E-TI-C54X-SPRU172C-S4-CMPL-FORMS-P4-32` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 CMPL, `4-32` |
+| `E-TI-C54X-SPRU172C-S4-CMPL-EFFECTS-P4-32` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 CMPL, `4-32` |
+| `E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -362,6 +366,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/accumulator/` | `E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT` | `T-PROJECT-MAX-MIN-ACCUMULATOR-STATE` |
 | `REQ-PROJECT-MAX-MIN-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT` | `T-PROJECT-CPU-MAX-MIN` |
 | `REQ-COMMON-MAX-MIN-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-MAX-MIN-REPEATABILITY-BOUNDARY` |  |
+| `REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/accumulator/` | `E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT` | `T-PROJECT-ACCUMULATOR-WRITE-EFFECT` |
+| `REQ-COMMON-CMPL-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-CMPL-FORMS-P4-32` | `T-COMMON-CMPL-DECODE` |
+| `REQ-COMMON-CMPL-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/accumulator/` | `E-TI-C54X-SPRU172C-S4-CMPL-EFFECTS-P4-32`, `E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT` | `T-COMMON-CMPL-OPS` |
+| `REQ-PROJECT-CMPL-CPU-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT` | `T-PROJECT-CPU-CMPL` |
+| `REQ-COMMON-CMPL-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY` |  |
 
 ## Tests
 
@@ -463,6 +472,10 @@ exist in the repository.
 | `T-PROJECT-MAX-MIN-EFFECT-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/accumulator/test_max_min_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.max_min_effect"}` | `REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION` |
 | `T-PROJECT-MAX-MIN-ACCUMULATOR-STATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/accumulator/test_accumulator_state.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.accumulator_state"}` | `REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE` |
 | `T-PROJECT-CPU-MAX-MIN` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_max_min.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_max_min"}` | `REQ-PROJECT-MAX-MIN-CPU-RETIREMENT` |
+| `T-PROJECT-ACCUMULATOR-WRITE-EFFECT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/accumulator/test_accumulator_write_effect.c` | `null` | `REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT` |
+| `T-COMMON-CMPL-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_cmpl_decode.c` | `null` | `REQ-COMMON-CMPL-DECODE` |
+| `T-COMMON-CMPL-OPS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/accumulator/test_cmpl.c` | `null` | `REQ-COMMON-CMPL-EFFECTS` |
+| `T-PROJECT-CPU-CMPL` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_cmpl.c` | `null` | `REQ-PROJECT-CMPL-CPU-RETIREMENT` |
 
 ## Correction and tombstone policy
 
