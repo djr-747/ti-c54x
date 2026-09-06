@@ -3029,3 +3029,14 @@ rewritten after publication.
 - Delegation: a bounded Luna worker owns the decode/layout implementation and tests;
   the main agent owns design, integration, independent review, full validation,
   commits, publication, and ledger completion.
+
+## 2026-09-06 — P2-W20C2 kickoff remote verification
+
+- Published kickoff commit:
+  `c59d7d3d15b3cc11b9704ecbfe11dc5a6de1c6e8`.
+- GitHub Actions run
+  [34023175915](https://github.com/djr-747/ti-c54x/actions/runs/34023175915)
+  completed successfully across GCC, Clang, sanitizer, CMake/CTest, install, and
+  downstream-consumer surfaces.
+- Result: the immutable layout-set contract and inert-RPT staging boundary are
+  published and green. W20C2 decode implementation is active.
