@@ -3480,3 +3480,18 @@ rewritten after publication.
 - Follow-up: validate and publish the kickoff, then delegate the bounded W21A TDD
   implementation under main-agent review and commit ownership. P2-W21B owns byte
   order and P2-W21C owns the resumable exactly-once transaction lifecycle.
+
+## 2026-09-06 — P2-W21A kickoff remote verification
+
+- Published kickoff commit:
+  `ce3a921319ce55dcdbff50f1f786e5c13420092e`.
+- GitHub Actions run
+  [34028395152](https://github.com/djr-747/ti-c54x/actions/runs/34028395152)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and Clang sanitizer configure/build/test.
+- Result: the W21 owner split, private WORD16 request contract, unchanged synchronous
+  public ABI, explicit no-width/no-phase decision, project-only requirement, and
+  standalone isolation are published and green. The bounded Luna TDD implementation
+  is active under the new `bus/request/` ownership boundary.
