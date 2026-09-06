@@ -22,19 +22,25 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution register four instructions: evidence-backed
-  `NOP` plus the three immediate status-field forms `LD #k9,DP`, `LD #k5,ASM`,
-  and `LD #k3,ARP`. Exact/masked catalog generation, complete instruction bundles,
-  extension fetch, operand extraction, dispatch, PC staging, and retirement are
-  green under the full local and remote W22 gates.
+- Production decode and CPU execution now cover seven declarative one-word
+  instruction rows: evidence-backed `NOP`, the three
+  immediate status-field forms `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`, four
+  MAX/MIN accumulator forms, and four CMPL accumulator forms. Exact/masked catalog
+  generation, complete instruction bundles, extension fetch, operand extraction,
+  dispatch, PC staging, and retirement are green under the standalone gates.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
   retirement proof. The full standalone local gate is green; repeatability and
   machine timing remain unresolved.
-- The registry now records 87 evidence items, 128 requirements (103 implemented,
-  9 planned, 16 unresolved), and 92 tests (83 passing, 9 planned). The full
-  local and remote P2-W23 gates are green, and its clean performance record is
+- P2-W24 now generalizes the accumulator effect to explicit C `PRESERVE`/`WRITE`
+  actions and proves all four CMPL source/destination forms with exhaustive
+  decode, full-40-bit one's-complement semantics, and atomic CPU retirement.
+  Repeatability and machine timing remain unresolved; no silicon timing claim is
+  made.
+- The registry now records 91 evidence items, 133 requirements (107 implemented,
+  9 planned, 17 unresolved), and 96 tests (87 passing, 9 planned). The full
+  standalone P2-W24 gate is green, and the clean P2-W23 performance record is
   captured at `a14d331`.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.

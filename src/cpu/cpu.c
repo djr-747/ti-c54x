@@ -391,7 +391,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
 
         candidate_status = cpu->status;
         candidate_pc = cpu->pc_word;
-        if (effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_SELECT) {
+        if (effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE) {
             candidate_accumulators = cpu->accumulators;
             accumulator_candidate_valid = true;
             accumulator_effect_status = ti_c54x_accumulator_effect_apply(

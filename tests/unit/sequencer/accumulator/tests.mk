@@ -1,1 +1,1 @@
-$(eval $(call ti_c54x_add_test,max_min_effect,sequencer/accumulator,test_max_min_effect.c))
+$(eval $(call ti_c54x_add_test,accumulator_write_effect,sequencer/accumulator,test_accumulator_write_effect.c))

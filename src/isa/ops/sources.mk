@@ -5,3 +5,4 @@ ti_c54x_core_sources += \
 include src/isa/ops/repeat/sources.mk
 include src/isa/ops/load/sources.mk
 include src/isa/ops/compare/sources.mk
+include src/isa/ops/accumulator/sources.mk

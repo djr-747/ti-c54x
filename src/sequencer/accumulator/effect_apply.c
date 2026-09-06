@@ -1,5 +1,6 @@
 /* Module contract
- * Owns: structural validation and atomic accumulator+C effect commit.
+ * Owns: structural validation and atomic accumulator-write effect commit,
+ * including conditional C mutation.
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 
@@ -14,28 +15,36 @@ ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply(
 {
     ti_c54x_accumulator_state candidate_accumulators;
     ti_c54x_status_register_state candidate_status;
-    const ti_c54x_op_accumulator_select_effect *select;
+    const ti_c54x_op_accumulator_write_effect *write;
 
     if (effect == NULL || accumulators == NULL || status == NULL) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_ARGUMENT;
     }
-    if (effect->kind != TI_C54X_OP_EFFECT_ACCUMULATOR_SELECT) {
+    if (effect->kind != TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE) {
         return effect->kind == TI_C54X_OP_EFFECT_NONE
                    ? TI_C54X_ACCUMULATOR_EFFECT_OK
                    : TI_C54X_ACCUMULATOR_EFFECT_UNSUPPORTED;
     }
-    select = &effect->payload.accumulator_select;
-    if (select->destination >= TI_C54X_ACCUMULATOR_INVALID ||
-        select->selected_raw40 > TI_C54X_U40_MASK ||
-        select->c_value > 1U) {
+    write = &effect->payload.accumulator_write;
+    if (write->destination >= TI_C54X_ACCUMULATOR_INVALID ||
+        write->value_raw40 > TI_C54X_U40_MASK ||
+        write->c_action < TI_C54X_OP_ACCUMULATOR_C_PRESERVE ||
+        write->c_action >= TI_C54X_OP_ACCUMULATOR_C_ACTION_COUNT ||
+        write->c_value > 1U ||
+        (write->c_action == TI_C54X_OP_ACCUMULATOR_C_PRESERVE &&
+         write->c_value != 0U)) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
     candidate_accumulators = *accumulators;
     candidate_status = *status;
     if (ti_c54x_accumulator_write(&candidate_accumulators,
-                                  select->destination,
-                                  select->selected_raw40) != TI_C54X_ACCUMULATOR_OK ||
-        ti_c54x_status_register_write_c(&candidate_status, select->c_value) !=
+                                  write->destination,
+                                  write->value_raw40) !=
+        TI_C54X_ACCUMULATOR_OK) {
+        return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
+    }
+    if (write->c_action == TI_C54X_OP_ACCUMULATOR_C_WRITE &&
+        ti_c54x_status_register_write_c(&candidate_status, write->c_value) !=
             TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }

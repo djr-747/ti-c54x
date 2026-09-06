@@ -2,7 +2,8 @@
 #define TI_C54X_SEQUENCER_ACCUMULATOR_EFFECT_APPLY_H
 
 /* Module contract
- * Owns: validation and atomic commit of a value-owned accumulator+C effect.
+ * Owns: validation and atomic commit of a value-owned accumulator write
+ * effect, including its explicit C disposition.
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 

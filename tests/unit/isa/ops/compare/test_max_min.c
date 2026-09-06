@@ -39,21 +39,25 @@ static void check(uint16_t word, uint64_t a, uint64_t b, uint64_t selected,
              : ti_c54x_op_min_acc(&instruction, &input, &effect));
 
     TI_C54X_TEST_CHECK(status == TI_C54X_OP_STATUS_OK);
-    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_SELECT);
-    TI_C54X_TEST_CHECK(effect.payload.accumulator_select.destination ==
+    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.destination ==
                        (uint8_t)((word >> 8U) & 1U));
-    TI_C54X_TEST_CHECK_U64(effect.payload.accumulator_select.selected_raw40,
+    TI_C54X_TEST_CHECK_U64(effect.payload.accumulator_write.value_raw40,
                            selected);
-    TI_C54X_TEST_CHECK(effect.payload.accumulator_select.c_value == c);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.c_action ==
+                       TI_C54X_OP_ACCUMULATOR_C_WRITE);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.c_value == c);
     TI_C54X_TEST_CHECK(ti_c54x_dispatch_decoded_with_input_snapshot(
                            &instruction, &input, &dispatched) ==
                        TI_C54X_OP_STATUS_OK);
-    TI_C54X_TEST_CHECK(dispatched.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_SELECT);
-    TI_C54X_TEST_CHECK(dispatched.payload.accumulator_select.destination ==
+    TI_C54X_TEST_CHECK(dispatched.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(dispatched.payload.accumulator_write.destination ==
                        (uint8_t)((word >> 8U) & 1U));
-    TI_C54X_TEST_CHECK_U64(dispatched.payload.accumulator_select.selected_raw40,
+    TI_C54X_TEST_CHECK_U64(dispatched.payload.accumulator_write.value_raw40,
                            selected);
-    TI_C54X_TEST_CHECK(dispatched.payload.accumulator_select.c_value == c);
+    TI_C54X_TEST_CHECK(dispatched.payload.accumulator_write.c_action ==
+                       TI_C54X_OP_ACCUMULATOR_C_WRITE);
+    TI_C54X_TEST_CHECK(dispatched.payload.accumulator_write.c_value == c);
 }
 
 int main(void)

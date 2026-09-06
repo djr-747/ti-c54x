@@ -58,7 +58,7 @@ function-pointer dispatch tables.
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
-| P2-W24 generic accumulator-write effect and CMPL vertical slice | Planned | First generalize the accumulator effect to explicit C `PRESERVE`/`WRITE` actions, then implement CMPL; exhaustive decode, atomic retirement, and resource-mask proofs precede any further accumulator family fanout |
+| P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local gate green; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four and catalog-six clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -864,9 +864,9 @@ stable persistence guarantee is made. The mirrored tests are
 `ti_c54x.cpu_ld_status_fields`; the full local and remote gates are green.
 No memory/bus transaction, timing, RPT/IRQ, accumulator, device, or emulator work
 is part of this slice; any status-bank split and generic effect commit exist only
-because these opcodes require them. The local registry is 87 immutable evidence
-records, 128 requirements (103 `IMPLEMENTED`, 9 `PLANNED`, 16 `UNRESOLVED`), and
-92 tests (83 `PASSING`, 9 `PLANNED`); the full local repository gate is green and
+because these opcodes require them. The local registry is 91 immutable evidence
+records, 133 requirements (107 `IMPLEMENTED`, 9 `PLANNED`, 17 `UNRESOLVED`), and
+96 tests (87 `PASSING`, 9 `PLANNED`); the full local repository gate is green and
 remote P2-W23 validation is green, with the clean hosted performance record
 captured at `a14d331`.
 
@@ -939,6 +939,8 @@ behavior is part of this work piece.
 
 ### P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)
 
+State: implemented; this heading remains the frozen historical evidence anchor.
+
 P2-W24 is a two-step, CMPL-driven accumulator slice. The first step generalizes
 the P2-W23 sequencer payload from a select-named effect to a reusable
 `ACCUMULATOR_WRITE` effect. The second step registers and executes CMPL through
@@ -995,12 +997,12 @@ be copied or vendored. Table 2-28 does not positively authorize CMPL repetition,
 so repeatability remains `UNRESOLVED`; summary cycle/pipeline columns are not
 timing evidence and timing remains `UNRESOLVED`.
 
-Exit condition: the generic `ACCUMULATOR_WRITE` contract and its adversarial
-payload tests pass first; then CMPL's four forms pass exhaustive decode, pure
-ones-complement semantics, transactional effect application, and public CPU
-retirement tests without a CPU file-growth or opcode-identity exception. No
-memory, bus, device, emulator, RPT, IRQ, repeatability, or machine-cycle claim
-is added by this work piece.
+Exit condition: satisfied. The generic `ACCUMULATOR_WRITE` contract and its
+adversarial payload tests pass, and CMPL's four forms pass exhaustive decode,
+pure one's-complement semantics, transactional effect application, and public
+CPU retirement tests without a CPU file-growth or opcode-identity exception.
+No memory, bus, device, emulator, RPT, IRQ, repeatability, or machine-cycle
+claim is added by this work piece.
 
 ### Hosted performance history (implemented; local and remote gates green)
 

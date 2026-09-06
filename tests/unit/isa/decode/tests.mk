@@ -6,3 +6,4 @@ $(eval $(call ti_c54x_add_test,instruction_bundle,isa/decode,test_instruction_bu
 $(eval $(call ti_c54x_add_test,operand_layout_binding,isa/decode,test_operand_layout_binding.c))
 $(eval $(call ti_c54x_add_test,ld_status_fields_decode,isa/decode,test_ld_status_fields.c))
 $(eval $(call ti_c54x_add_test,max_min_decode,isa/decode,test_max_min_decode.c))
+$(eval $(call ti_c54x_add_test,cmpl_decode,isa/decode,test_cmpl_decode.c))

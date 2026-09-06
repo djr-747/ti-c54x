@@ -106,13 +106,14 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 557)
+        self.assertEqual(actual.count("= (uint16_t)"), 561)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
         self.assertIn("[0xF4A0] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,", actual)
         self.assertIn("[0xF486] = (uint16_t)TI_C54X_OPCODE_ID_MAX_ACC,", actual)
         self.assertIn("[0xF487] = (uint16_t)TI_C54X_OPCODE_ID_MIN_ACC,", actual)
+        self.assertIn("[0xF493] = (uint16_t)TI_C54X_OPCODE_ID_CMPL_ACC,", actual)
 
     def test_cli_generate_and_check_with_explicit_paths(self) -> None:
         source = (

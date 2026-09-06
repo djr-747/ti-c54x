@@ -2971,7 +2971,7 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/accumulator/",
-      "claim": "Validate and apply one value-owned MAX/MIN accumulator effect only at retirement. The handler receives a copied, read-only A/B input snapshot and owns compare/select correctness; the effect carries no source snapshots. The sequencer validates only destination, a canonical 40-bit two's-complement selected value, and one-bit C before atomically committing the candidate accumulator plus C state; structurally invalid or rejected effects preserve both accumulators and C.",
+      "claim": "Validate and apply MAX/MIN through the generic value-owned ACCUMULATOR_WRITE effect only at retirement. The handler receives a copied, read-only A/B input snapshot, owns compare/select correctness, and emits the explicit C WRITE action; the effect carries no source snapshots. The sequencer validates destination, a canonical 40-bit two's-complement selected value, the C action, and one-bit C before atomically committing the candidate accumulator plus C state; structurally invalid or rejected effects preserve both accumulators and the complete status state.",
       "evidence_ids": ["E-PROJECT-P2-W23-MAX-MIN-VERTICAL-CONTRACT"],
       "test_ids": ["T-PROJECT-MAX-MIN-EFFECT-TRANSACTION"]
     },
@@ -3007,7 +3007,7 @@
     },
     {
       "id": "REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/accumulator/",
@@ -3017,7 +3017,7 @@
     },
     {
       "id": "REQ-COMMON-CMPL-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3027,7 +3027,7 @@
     },
     {
       "id": "REQ-COMMON-CMPL-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/accumulator/",
@@ -3037,7 +3037,7 @@
     },
     {
       "id": "REQ-PROJECT-CMPL-CPU-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3812,8 +3812,8 @@
       "id": "T-PROJECT-MAX-MIN-EFFECT-TRANSACTION",
       "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
-      "path": "tests/unit/sequencer/accumulator/test_max_min_effect.c",
-      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.max_min_effect"},
+      "path": "tests/unit/sequencer/accumulator/test_accumulator_write_effect.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.accumulator_write_effect"},
       "requirement_ids": ["REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION"]
     },
     {
@@ -3834,34 +3834,34 @@
     },
     {
       "id": "T-PROJECT-ACCUMULATOR-WRITE-EFFECT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/accumulator/test_accumulator_write_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.accumulator_write_effect"},
       "requirement_ids": ["REQ-PROJECT-ACCUMULATOR-WRITE-EFFECT"]
     },
     {
       "id": "T-COMMON-CMPL-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_cmpl_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cmpl_decode"},
       "requirement_ids": ["REQ-COMMON-CMPL-DECODE"]
     },
     {
       "id": "T-COMMON-CMPL-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/accumulator/test_cmpl.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cmpl"},
       "requirement_ids": ["REQ-COMMON-CMPL-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-CMPL",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_cmpl.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_cmpl"},
       "requirement_ids": ["REQ-PROJECT-CMPL-CPU-RETIREMENT"]
     }
   ]

@@ -75,6 +75,9 @@ test_enum_ranges_and_metadata_values(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_metadata_for_id(
                            TI_C54X_OPCODE_ID_MAX_ACC)->input_resources ==
                        TI_C54X_INPUT_RESOURCES_ACCUMULATORS);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_metadata_for_id(
+                           TI_C54X_OPCODE_ID_CMPL_ACC)->input_resources ==
+                       TI_C54X_INPUT_RESOURCES_ACCUMULATORS);
 
     for (id = (int)TI_C54X_OPCODE_ID_UNKNOWN;
          id < (int)TI_C54X_OPCODE_ID_COUNT;

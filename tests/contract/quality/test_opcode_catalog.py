@@ -101,7 +101,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_real_catalog_contains_nop_and_status_load_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 6)
+        self.assertEqual(len(rows), 7)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -125,6 +125,10 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[5].first_word_value, 0xF487)
         self.assertEqual(rows[5].first_word_mask, 0xFEFF)
         self.assertEqual(rows[5].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[6].symbol, "CMPL_ACC")
+        self.assertEqual(rows[6].first_word_value, 0xF493)
+        self.assertEqual(rows[6].first_word_mask, 0xFCFF)
+        self.assertEqual(rows[6].input_resources, RESOURCES_ACCUMULATORS)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]
