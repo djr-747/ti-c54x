@@ -2377,11 +2377,11 @@
     },
     {
       "id": "REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/decode/",
-      "claim": "Bind each operand-bearing catalog row to immutable generated-or-static operand-layout and repeatability metadata, validate that binding outside opcode semantics, and produce copied operands through the shared field extractor so handlers never hand-mask encoded words. The catalog remains the sole inventory and runtime metadata remains immutable and initialization-free.",
+      "claim": "Resolve every production catalog row's scalar operand-layout identity through immutable decode-owned static descriptors, validate instruction width and binding outside opcode semantics, and produce copied operands through the shared field extractor so handlers never hand-mask encoded words. Layout sets support zero, one, or multiple fields; the catalog remains the sole inventory and runtime metadata remains immutable and initialization-free.",
       "evidence_ids": ["E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE"],
       "test_ids": ["T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
     },
@@ -3064,10 +3064,10 @@
     },
     {
       "id": "T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/decode/test_operand_layout_binding.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.operand_layout_binding"},
       "requirement_ids": ["REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
     },
     {

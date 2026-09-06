@@ -329,6 +329,16 @@ all carry the same typed layout/repeatability values. NOP is explicitly `NONE` p
 `UNRESOLVED`; no eligibility inference or RPT classification is made. The direct
 first-word lookup remains unchanged.
 
+P2-W20C2 now implements the decoder-owned half. Immutable layout sets support zero,
+one, or multiple operand fields and resolve from catalog scalar IDs with exact
+program-word-width checks. The shared operand-field validator remains the sole owner
+of bit coverage, overlap, width, and source-index rules; layout extraction publishes
+copied values transactionally and authenticates its process-lifetime static view.
+`NONE`, immediate RPT K, and immediate RPT lk descriptors exist, but both RPT
+identities are inert: `0xEC00` and `0xF070` still decode as unknown production words,
+and the generated direct lookup is unchanged. The next owner is the pure RPT
+operation/effect slice, not CPU opcode-specific control flow.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner

@@ -3040,3 +3040,57 @@ rewritten after publication.
   downstream-consumer surfaces.
 - Result: the immutable layout-set contract and inert-RPT staging boundary are
   published and green. W20C2 decode implementation is active.
+
+## 2026-09-06 — P2-W20C2 completion — immutable operand-layout sets
+
+- State: implemented and green. Implementation commit:
+  `4746a8c0a1074bdf3b9419721901a0f8f0808486`
+  (`P2-W20C2: add immutable operand layouts`). P2-W20C is complete; P2-W20D is
+  next.
+- TDD red: after registering the new decode-owned proof in both build systems, its
+  first focused build failed because `operand_layout.h` did not yet exist. The
+  implementation then made the same proof green without adding a production opcode.
+- Decode result: `operand_layout` owns process-lifetime immutable layout sets for
+  `NONE`, inert one-word RPT immediate-K, and inert two-word RPT immediate-lk.
+  Resolution checks scalar identity and explicit program-word width before publishing
+  a borrowed-static view; extraction authenticates that view and returns copied raw
+  values through the shared field extractor.
+- Field result: `operand_field` now exposes one pure descriptor-validation seam.
+  Resolution and extraction reuse its existing coverage, source/destination overlap,
+  bit-width, and source-word-index rules rather than reimplementing masks. Layout
+  sets support zero, one, or multiple fields and retain no caller storage.
+- Catalog/completion result: the catalog adds only namespaced scalar identities.
+  Complete-instruction binding resolves layout metadata generically, with no opcode-ID
+  branch. NOP remains the sole production row; `0xEC00` and `0xF070` remain unknown,
+  and the generated 65,536-entry first-word lookup is byte-for-byte unchanged.
+- Proof: the new mirrored decode test covers `NONE`, static descriptor lifetime,
+  multi-operand descriptor shape, K/lk minimum and maximum values, invalid IDs and
+  widths, field/index failures, forged views, and byte-transactional failure output.
+  Existing field, bundle, catalog, NOP, CPU, observer, and minimal-consumer tests
+  remain regressions.
+- Independent Luna review: clean, with no blocker or major finding across API shape,
+  ownership direction, transactionality, manifests, generated artifacts, CPU/decode
+  branching, or production-RPT isolation. The main follow-up tightened RPT wording
+  and boundary/transactionality assertions.
+- Size/shape: layout source/header are 203/78 lines, field source/header are 143/76,
+  completion decode source is 124, schema tooling is 314, and the new layout proof
+  is 254. No handwritten owner approaches the 500-line review threshold.
+- Registry final: 2 targets, 7 sources, 72 evidence records, and 106 requirements
+  (83 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`); 73 tests (65 `PASSING`, 8
+  `PLANNED`). `T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING` runs as
+  `ti_c54x.operand_layout_binding` in both supported build systems. The project
+  contract remains scope-safe; the separate planned common RPT decode requirement
+  retains the pinned TI immediate-layout evidence.
+- Validation: focused normal and ASan/UBSan layout/field tests passed. The frozen
+  full `make -B test` gate passed 163 Python quality tests, 60 C unit targets, and
+  61 direct executions including the minimal consumer. Generated lookup staleness,
+  manifests, source boundaries, evidence, knobs, observer-off artifact, and
+  `git diff --check` passed.
+- Isolation: no production RPT row, operation/effect, CPU/sequencer/state behavior,
+  public API, RC/PC/IRQ policy, timing, memory mutation, knob, environment read,
+  diagnostic, allocator, mutable global, emulator dependency, or external
+  implementation was introduced.
+- Follow-up: publish and remotely verify P2-W20C2. P2-W20D then owns a focused RPT
+  operation that converts these proven copied operands into a discriminated,
+  value-owned `REPEAT_START` effect without mutating state or creating an unsupported
+  production CPU path.

@@ -49,7 +49,7 @@ function-pointer dispatch tables.
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
 | RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
-| Catalog operand/repeat metadata (P2-W20C) | Active | Split scalar catalog tokens from decode-owned layout descriptors so every layer remains immutable, acyclic, and independently provable before RPT activation |
+| Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -393,9 +393,9 @@ one-word retirement; `cpu.c` contains no opcode-identity branch. P2-W20C is next
 must define catalog-bound operand-layout and repeatability metadata without
 prematurely activating an instruction whose effect the CPU cannot yet consume.
 
-#### P2-W20C: catalog operand-layout and repeatability metadata (active)
+#### P2-W20C: catalog operand-layout and repeatability metadata (complete)
 
-State: active, split into two atomic owner-specific proofs. Production continues to
+State: complete in two atomic owner-specific proofs. Production continues to
 register only NOP; no RPT first word, handler, effect, or CPU behavior is activated.
 
 P2-W20C1 is complete in implementation commit
@@ -413,8 +413,9 @@ byte-for-byte unchanged and normal builds remain compiler-only. The schema rejec
 old arity, unknown/unqualified/non-string tokens, and the reserved layout sentinels;
 completion and operations reject forged scalar metadata transactionally.
 
-P2-W20C2 is active. It adds decode-owned immutable operand-layout-set descriptors
-and resolution.
+P2-W20C2 is complete in implementation commit
+`4746a8c0a1074bdf3b9419721901a0f8f0808486`. It adds decode-owned immutable
+operand-layout-set descriptors and resolution.
 A layout set, rather than a single field, is required so future multi-operand
 instructions do not force a carrier redesign. The catalog stores only compact IDs,
 never decoder-owned pointers. Decode resolves an ID to process-lifetime static data,
@@ -441,7 +442,12 @@ decode. `operand_field` gains a pure descriptor-validation entry point reused by
 both resolution and extraction; W20C2 may not duplicate its coverage, overlap, or
 source-index rules. A value-owned layout-set view may borrow process-lifetime static
 descriptor storage, but no catalog metadata contains a pointer and no caller storage
-is retained.
+is retained. The executable layout proof covers minimum and maximum immediate
+values, invalid identities and widths, forged views, multi-operand descriptor shape,
+static lifetime, and transactional failures. The generated direct lookup remains
+byte-for-byte unchanged. P2-W20D is next and may build the typed value-owned
+`REPEAT_START` operation against these layouts, but it may not activate a production
+RPT row until generic effect consumption is coherent.
 
 ## Delivery order
 
