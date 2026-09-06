@@ -1002,6 +1002,38 @@
       "assertion": "The circular-addressing discussion defines BK as the circular-buffer size input and describes its relationship to the effective base, end, index, and step for future circular-addressing work. This record does not implement circular arithmetic or select boundary behavior."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3",
+        "printed_page_start": "5-13",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Table 5-4 defines MOD8 as using the old ARx value for the operand followed by circular ARx minus one, and MOD10 as using the old ARx value followed by circular ARx plus one; this record covers WORD16 fixed one-word steps only and does not select boundary, LONG32, or timing behavior."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.3.4",
+        "printed_page_start": "5-15",
+        "printed_page_end": "5-16"
+      },
+      "assertion": "Section 5.5.3.4 defines circular addressing from BK size R: choose N as the smallest integer with 2^N greater than R, align the base to 2^N, derive the effective base and end plus the index from ARx and BK, and apply the step at that index; no adjustment occurs for 0 <= index+step < BK, subtract BK when index+step >= BK, and add BK when index+step < 0. BK=0 disables circular modification, and the first access AR must point inside the buffer. This record does not select unsupported operand forms or timing behavior."
+    },
+    {
       "id": "E-PROJECT-ARCH-STATE-BK-CONTRACT",
       "immutable": true,
       "state": "PINNED",
@@ -1781,9 +1813,90 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/address/",
-      "claim": "CMPT=0 circular address effects obtain BK through the state seam and use it as circular-buffer size R; address arithmetic, boundary, and operand-width behavior belong to separate requirements.",
-      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK"],
+      "claim": "CMPT=0 circular MOD8/MOD10 effects obtain a known 16-bit BK size through the state seam and apply the documented R/N/base/index/step algorithm; BK=0 leaves the address unmodified, while unsupported forms remain separate requirements.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK",
+        "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"
+      ],
       "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-BK"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "For CMPT=0 WORD16 circular MOD8/MOD10 forms, admit any selected auxiliary register AR0-AR7, use the pre-access selected AR as the effective address, and produce a post-access circular decrement or increment by one data word respectively; behavior for an initial AR outside the documented buffer remains a separate unresolved requirement.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11",
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16",
+        "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-BK"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/",
+      "claim": "A valid CMPT=0 WORD16 MOD8/MOD10 effect carries the pre-access selected AR as its effective address and, for positive BK, one POST_ACCESS selected-AR circular update; BK=0 produces no AR update, while bus, memory, and timing behavior remain outside this slice.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16",
+        "E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM",
+        "E-TI-C54X-SPRU131G-S5.5.5-P5-24"
+      ],
+      "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-INITIAL-AR-BOUNDARY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The behavior for a circular operand whose initial selected AR is outside the buffer remains unresolved; the source requires the first access AR to point inside the buffer, but the project does not yet select rejection, normalization, or other handling.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-LONG32-SCALING",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The circular MOD8/MOD10 update scaling for LONG32 operands remains unresolved; the WORD16 fixed one-word evidence does not select whether access width changes the circular step.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-MOD9-MOD11-AR0",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The MOD9/MOD11 circular update semantics using AR0 as a step remain unresolved; no behavior is selected for source ordering, step snapshot, aliasing, or boundary handling.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-MOD14-OFFSET",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "The signed-offset circular behavior of MOD14 remains unresolved; no signed offset source, premodify ordering, or boundary combination is selected.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"],
+      "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-INDIRECT-CIRCULAR-CMPT1-DUAL",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "CMPT=1 and dual-indirect circular forms remain unresolved; no alternate register-file, operand sequencing, or circular update behavior is selected.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM"],
+      "test_ids": []
     },
     {
       "id": "REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
@@ -2207,9 +2320,20 @@
       "id": "T-COMMON-INDIRECT-CIRCULAR-BK",
       "state": "PLANNED",
       "scope": "COMMON_TI",
-      "path": "tests/unit/address/test_indirect_circular_bk.c",
+      "path": "tests/unit/address/test_indirect_circular_word.c",
       "runner": null,
-      "requirement_ids": ["REQ-COMMON-INDIRECT-CIRCULAR-BK"]
+      "requirement_ids": [
+        "REQ-COMMON-INDIRECT-CIRCULAR-BK",
+        "REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16"
+      ]
+    },
+    {
+      "id": "T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/test_indirect_circular_effect_apply.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION"]
     },
     {
       "id": "T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",

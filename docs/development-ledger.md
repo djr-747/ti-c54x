@@ -1948,3 +1948,56 @@ rewritten after publication.
 - Follow-up: implement P2-W14 circular MOD8/MOD10 WORD16 semantics without any
   timing claim; start timed execution only after the opcode inventory can carry
   explicit evidenced or unknown timing metadata.
+
+## 2026-09-06 — P2-W14 kickoff — Circular MOD8/MOD10 WORD16 effects
+
+- State: active; evidence and tests precede implementation.
+- Scope: common C54x, CMPT=0, one WORD16 data operand, AR0–AR7, and fixed-step
+  circular MOD8/MOD10 only. MOD8 addresses with the old AR and requests a
+  circular post-decrement by one; MOD10 addresses with the old AR and requests
+  a circular post-increment by one. Read and write operands share this address
+  behavior.
+- Evidence boundary: official `SPRU131G` Table 5-4 owns the two modification
+  forms and WORD16 step magnitude. Section 5.5.3.4 owns BK as buffer size, the
+  strict `2^N > BK` alignment, EFB/index formation, the three signed-step
+  partitions, the initial-in-buffer precondition, and the BK=0 no-modification
+  rule. The registry receives narrow immutable records before implementation.
+- BK=0 decision: the source explicitly describes the result as equivalent to
+  `ARx+0`; the planner therefore returns the old AR operand and a NONE update,
+  while retaining the selected-AR and BK snapshots so the sequencer still
+  proves that the planned inputs are current. It does not perform a same-value
+  architectural write merely to represent an absent modification.
+- Positive-BK domain: `N` is the least integer for which `2^N > BK`; EFB clears
+  the low `N` selected-AR bits; the admitted initial index is `0 <= index < BK`.
+  An interior fixed step stays unchanged, an upper crossing subtracts BK, and a
+  negative crossing adds BK. Intermediate arithmetic uses a wider signed type,
+  and the `N=16` mask case must avoid undefined shifts. An initial AR outside
+  the documented buffer is rejected as unresolved rather than assigned invented
+  hardware behavior.
+- Ownership: new private `src/address/indirect_circular.[ch]` owns pure scalar
+  planning, circular arithmetic, and intrinsic effect validation. The value-
+  owned address-source union gains a circular arm copying selected AR, MOD, and
+  BK. The sequencer intrinsic owner only dispatches and recognizes that arm;
+  the dependency owner reads CMPT then ARP, selected AR, then BK. The apply owner
+  remains the sole possible selected-AR writer, and BK is never mutated.
+- TDD shape: keep architectural vectors, planner-contract rejection cases,
+  common application behavior, and transactional/dependency contract proof in
+  four separately owned test files. Cover BK zero, size one, power-of-two and
+  non-power-of-two sizes, aligned bases, lower/upper wrap, interior movement,
+  `N=16`, both accesses, all AR selectors, malformed effects, unknown/stale AR
+  and BK, read precedence, exact one-write success, and bytewise nonmutation on
+  rejection.
+- Explicit exclusions: out-of-buffer hardware behavior, LONG32 circular width,
+  MOD9/MOD11 AR0 steps, MOD14 signed offset, dual operands, CMPT=1, MMR routing,
+  opcode decode, instruction fetch/repeat, interrupts, bus transfers, pipeline,
+  and machine-cycle timing remain unresolved or deferred. No ordinary 16-bit
+  wrap rule is inferred from circular arithmetic.
+- Build/isolation: register the private source and four tests in direct Make,
+  CMake/CTest, and the observer-disabled artifact without adding an installed
+  header, emulator, firmware image, environment read, file I/O, allocator,
+  logger, mutable process global, or device profile.
+- Knobs: none planned; the `TEST`/`OBSERVE`/`A/B` registry is unchanged.
+- Delegation: the main agent owns the decisions, integration, review, gates,
+  and commits. Luna workers own bounded evidence registration, test-first proof,
+  address-module implementation, sequencer integration, and independent review;
+  workers do not commit.
