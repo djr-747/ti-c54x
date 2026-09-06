@@ -1837,3 +1837,57 @@ rewritten after publication.
   and build ownership to Luna workers, integrate under the main orchestrator,
   independently review exact behavior preservation, validate once, then commit
   and verify remotely before circular implementation begins.
+
+## 2026-09-06 — P2-W13 completion — Sequencer validation subownership
+
+- State: complete in implementation commit
+  `55549dbf465c29bec7c2d3dcdebafc2dfcd9d6d4`.
+- Outcome: the prior 394-line read-only validator is now three explicit private
+  owners. `address_effect_intrinsic.[ch]` owns state-free effect shape, policy,
+  phase, relation, and candidate-commit construction;
+  `address_effect_dependencies.[ch]` owns ordered architectural reads; and the
+  58-line `address_effect_validate.c` owns only argument/result orchestration,
+  zero-on-error handling, and publication after both delegated checks succeed.
+  The 41-line `address_effect_apply.c` remains the sole AR mutation owner.
+- Preserved behavior: invalid arguments and requested phases still precede
+  rejected planner results; address-specific and generic intrinsic validation
+  precedes phase and effective-address relations; dependency reads remain CMPT
+  then ARP, selected AR then copied AR0, and CPL then DP/SP. NONE and AR0 remain
+  distinguishable through the commit target, and no failure publishes a partial
+  candidate or mutates architectural state.
+- Kickoff correction: the kickoff entry assigned planner-result status checking
+  to the intrinsic owner. Integration kept it in the top-level validator because
+  status belongs to the result container, while the intrinsic seam deliberately
+  accepts only the contained effect. This changes no status or precedence and
+  keeps the state-free owner independent of planner-result packaging.
+- Ownership and shape: handwritten implementations are 240 lines for intrinsic
+  validation, 184 for dependency reads, 58 for orchestration, and 41 for apply.
+  Both standalone CMake and direct Make source lists, including the observer-off
+  artifact, name the two new owners explicitly. No installed header or public ABI
+  was added.
+- TDD and evidence: this is a behavior-preserving refactor, so the existing
+  validation-descriptor and dependency-order contract tests remain its direct
+  executable proof; all existing address and sequencer tests remain regression
+  coverage. No new architectural claim was introduced, and the registry remains
+  2 targets, 7 sources, 56 immutable evidence records, 65 requirements, and 51
+  tests (45 `PASSING`, 6 `PLANNED`).
+- Independent review: a final read-only Luna audit found no behavioral or build
+  blocker and verified the exact rejection/read order, padding-safe output
+  clearing, delayed candidate publication, AR0 discriminator, sole-write
+  boundary, build wiring, and unchanged evidence/knob obligations.
+- Local validation: strict `make -B test` passed all C tests and all 96 Python
+  quality tests; ASan/UBSan `make -B test` passed; source boundaries passed for
+  86 files; evidence and knob checks passed; GCC `-fanalyzer` accepted all four
+  sequencer owners; the observer-disabled artifact check passed; and
+  `make -B PYTHON=/definitely/missing build` proved the compiler-only path.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment read, diagnostic hook, firmware input, emulator dependency,
+  allocator, file I/O, logger, or mutable process global was added.
+- Related timing decision: planning commit
+  `3b6c7dbd634c922015fdc756b683c555dea6d907` separates instruction budgets from
+  evidenced machine-cycle accounting and forbids handler-local magic costs.
+  Resumable exact-cycle execution remains a planned sequencer/API contract, not
+  implemented behavior in P2-W13.
+- Remote context: the P2-W13 kickoff passed GitHub Actions run `34003154833`.
+  Push and verify the implementation and this completion ledger next, then begin
+  the evidence-first circular MOD8/MOD10 WORD16 work piece.
