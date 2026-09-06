@@ -40,6 +40,7 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Active | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
+| Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -52,9 +53,11 @@ function-pointer dispatch tables.
 4. Prove address generation and ordered parallel memory effects.
 5. Add the declarative opcode inventory and mGBA-style generated dispatcher.
 6. Add the central sequencer before implementing opcode families.
-7. Implement opcode families as requirement-backed vertical slices.
-8. Add timing and silicon devices only from pinned evidence.
-9. Vendor a release into emulators through separate adapters.
+7. Prove the shared-memory transaction gate before any opcode family can mutate
+   memory.
+8. Implement opcode families as requirement-backed vertical slices.
+9. Add timing and silicon devices only from pinned evidence.
+10. Vendor a release into emulators through separate adapters.
 
 ## Timing and execution-budget gate
 
@@ -136,6 +139,52 @@ The first architecture target is a device-neutral common C54x core. A concrete
 silicon profile is added separately after common CPU semantics are stable; no
 device memory map, peripheral, vector table, XPC extension, or timing promise may
 leak into the common target without profile-specific evidence and tests.
+
+## Shared-memory transaction and byte-order gate
+
+The CPU core is word-native and host-endian-neutral. It never owns, aliases, or
+casts a caller's byte-backed RAM. The caller owns mapped storage and arbitration;
+the core exchanges fixed-width architectural values through an explicit bus
+transaction boundary.
+
+- Every request identifies program, data, or I/O space; architectural word
+  address; read or write direction; transfer width/composition; and its named
+  sequencer phase. A C54x CPU instance does not contain an ARM identity, shared-
+  RAM pointer, device map, or host mutex.
+- One architectural 16-bit word is the primitive transfer. Multiword values are
+  composed from separately named word transfers in evidenced architectural word
+  order; they are never treated as an accidentally atomic host `uint32_t`.
+- Byte-oriented adapters use explicit load/store conversion helpers. Program-
+  image encoding, physical shared-RAM byte-lane order, and snapshot/wire format
+  are three separate policies with separate owners and tests. None may inherit
+  the compiler host's byte order through a pointer cast, packed struct, union
+  pun, or native `memcpy` interpretation.
+- The timed bus seam begins one transaction, polls an owned pending token through
+  READY/WAIT/FAULT states, and completes it exactly once. Budget exhaustion,
+  wait-state polling, or retry must not reissue an MMIO read, duplicate a write,
+  or expose half of a multiword transfer.
+- Opcode handlers declare value-owned memory effects; they never call memory
+  directly. For parallel operations the complete read/write set is available to
+  the sequencer before issue, so overlap, read-before-write, resource conflicts,
+  and commit order are resolved once from evidence.
+- Architectural register/status/PC changes remain staged around memory progress.
+  A fault or unsupported transaction returns an explicit outcome under a tested
+  rollback/partial-visibility contract; it never relies on incidental callback
+  order.
+- DSP CPU, ARM CPU, DMA, and device masters are scheduled by the external bus or
+  emulator adapter. That owner supplies deterministic arbitration and visibility
+  boundaries. Host thread timing is never emulated hardware ordering; shared
+  backing storage must be serialized or synchronized by the adapter.
+- The common test bus proves request shape, wait/resume, fault propagation,
+  exactly-once issue/completion, word order, byte-lane conversion, overlapping
+  parallel accesses, and two independently scheduled masters. Profile tests then
+  pin device-specific maps, lanes, arbitration, and wait states.
+
+Exit condition: no instruction capable of writing memory is admitted until its
+handler emits a declarative memory effect, the sequencer and bus transaction tests
+prove exactly-once ordered visibility across suspension, every byte boundary has
+an explicit conversion policy, and the device-neutral core remains free of raw
+shared-memory pointers and platform arbitration.
 
 ## Work-piece identifiers and ledger
 
