@@ -33,8 +33,9 @@ Current progress:
   retirement proof. The full standalone local gate is green; repeatability and
   machine timing remain unresolved.
 - The registry now records 87 evidence items, 128 requirements (103 implemented,
-  9 planned, 16 unresolved), and 92 tests (83 passing, 9 planned). Remote
-  P2-W23 validation and its clean-commit performance record are pending.
+  9 planned, 16 unresolved), and 92 tests (83 passing, 9 planned). The full
+  local and remote P2-W23 gates are green, and its clean performance record is
+  captured at `a14d331`.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -53,7 +54,9 @@ Current progress:
   scenarios, catalog-aware mixed workload, seven samples each preceded by 16
   unrecorded warmup windows, and clean-commit append-only JSONL. The initial
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
-  `mixed-current`, with within-capture spread retained beside every result. See
+  `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
+  fixed-scenario cost is 2.37–3.79% above the first cohort, within the same order
+  as hosted spread, while the changed mixed workload is not compared. See
   [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and

@@ -69,6 +69,17 @@ make bench-record   # clean-commit capture appended to hosted history
 make bench-compare  # advisory comparison with latest same-cohort history
 ```
 
+## Recorded cohorts
+
+The initial clean catalog-four record at `aa0afc0` is the fixed-scenario baseline.
+The catalog-six MAX/MIN record at `a14d331` measures NOP at 65.538 ns/15.258 MIPS
+and the three fixed LD scenarios at 97.485–97.982 ns/10.206–10.258 MIPS. Their
+cost is 2.37–3.79% above the initial fixed cohort while the new record's
+within-capture spreads are 2.19–8.76%; this is a hosted trend observation, not a
+confirmed architectural or silicon regression. `mixed-current` records
+89.986 ns/11.113 MIPS with explicit `reset-runnable-subset` coverage of four of
+six catalog rows and is not compared to the catalog-four mixed result.
+
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
 knob is an ACTIVE TEST/KEEP control, default OFF, owned by `bench/`; it has no
