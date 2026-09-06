@@ -1789,3 +1789,51 @@ rewritten after publication.
   firmware input, public ABI change, or emulator coupling.
 - Follow-up: begin P2-W13 with an evidence-first circular-addressing boundary
   and BK dependency plan before implementing any arithmetic or effects.
+
+## 2026-09-06 — P2-W13 kickoff — Sequencer validation subownership
+
+- State: active; this is a behavior-preserving prerequisite for circular
+  addressing, not a new architectural mode.
+- Trigger: P2-W12 reduced the mutation owner to 41 lines but left the cohesive
+  read-only validator at 394 lines. Adding a circular source arm, intrinsic
+  shape, selected-AR/BK dependency order, and statuses there would approach the
+  500-line review threshold and recreate mixed ownership.
+- Ownership: new private `src/sequencer/address_effect_intrinsic.[ch]` owns
+  result-status, address-owner validator dispatch, generic operand/source/
+  update/policy shape, requested-phase mismatch, effective-address relation,
+  and production of a candidate commit. New private
+  `src/sequencer/address_effect_dependencies.[ch]` owns mode and source state
+  reads only. `address_effect_validate.c` owns argument checks, zero-on-error
+  orchestration, and publication of the candidate after dependencies succeed;
+  `address_effect_apply.c` remains the sole mutation owner.
+- Seam contract: the top-level validator clears caller output, rejects invalid
+  state/result/output pointers and requested phase, asks the intrinsic owner to
+  fill a local candidate, asks the dependency owner to validate borrowed state
+  against the already-validated effect, and copies the candidate out only on
+  success. The dependency seam is private and requires an intrinsically valid
+  effect; it never repairs or mutates state.
+- Preserved precedence and order: invalid arguments/requested phase; non-OK
+  result; address-specific and generic shape; policy mapping; phase mismatch;
+  update/address relation; CMPT then ARP; selected AR then copied AR0; CPL then
+  DP/SP. Every existing status value, direct NONE outcome, AR0 discriminator,
+  and single-AR commit must remain unchanged.
+- TDD: no new behavior or conformance claim is introduced. The two P2-W12 seam
+  tests and all existing direct, indexed, long-offset, reverse-carry, operand,
+  mode-policy, state, and transactional application tests remain the executable
+  proof. The split is accepted only if the full final suite is unchanged and
+  both new implementation owners remain well below the review threshold.
+- Build/isolation: register both sources in standalone CMake, direct Make, and
+  observer-disabled artifacts. Add no installed header, source-kind, status,
+  arithmetic, firmware, emulator, environment, diagnostic, allocator, logging,
+  mutable global, or knob.
+- Circular boundary for P2-W14: the official TI audit confirmed MOD8/MOD10 as
+  fixed-step circular post-updates and the printed algorithm partitions
+  `0 <= index + step < BK`, `index + step >= BK`, and
+  `index + step < 0`; BK zero means no circular modification. P2-W13 adopts none
+  of those semantics. Their exact evidence records, safe domain, source shape,
+  BK read order, and tests belong to the next work piece.
+- Knobs: none planned; the registry remains unchanged.
+- Follow-up: commit this kickoff decision, delegate disjoint core extraction
+  and build ownership to Luna workers, integrate under the main orchestrator,
+  independently review exact behavior preservation, validate once, then commit
+  and verify remotely before circular implementation begins.
