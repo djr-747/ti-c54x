@@ -413,7 +413,8 @@ byte-for-byte unchanged and normal builds remain compiler-only. The schema rejec
 old arity, unknown/unqualified/non-string tokens, and the reserved layout sentinels;
 completion and operations reject forged scalar metadata transactionally.
 
-P2-W20C2 adds decode-owned immutable operand-layout-set descriptors and resolution.
+P2-W20C2 is active. It adds decode-owned immutable operand-layout-set descriptors
+and resolution.
 A layout set, rather than a single field, is required so future multi-operand
 instructions do not force a carrier redesign. The catalog stores only compact IDs,
 never decoder-owned pointers. Decode resolves an ID to process-lifetime static data,
@@ -432,6 +433,15 @@ must remain unreferenced by the production opcode catalog until a typed
 `REPEAT_START` effect and generic consumption path can land coherently. RPT
 encoding/operation, RC and repeat-PC progression, body admission, interrupt gates,
 machine cycles, shared memory, and emulator integration remain outside W20C.
+
+The W20C2 resolver owns three initial identities: `NONE`, inert one-word RPT
+immediate-K, and inert two-word RPT immediate-lk. The RPT descriptors are grounded
+in the already pinned TI layouts but remain unreachable from production first-word
+decode. `operand_field` gains a pure descriptor-validation entry point reused by
+both resolution and extraction; W20C2 may not duplicate its coverage, overlap, or
+source-index rules. A value-owned layout-set view may borrow process-lifetime static
+descriptor storage, but no catalog metadata contains a pointer and no caller storage
+is retained.
 
 ## Delivery order
 

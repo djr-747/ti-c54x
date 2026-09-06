@@ -3001,3 +3001,31 @@ rewritten after publication.
 - Result: W20C1 scalar catalog metadata is published and green across every owned
   build surface. The generated lookup and production NOP behavior remain unchanged;
   W20C2 decode-owned immutable layout sets are next.
+
+## 2026-09-06 — P2-W20C2 kickoff — immutable operand-layout sets
+
+- State: active under the existing P2-W20C plan and
+  `REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING`; registry counts do not change.
+- Decode ownership: add a dedicated layout-set resolver/extractor under
+  `src/isa/decode/`. A set contains zero, one, or multiple operand-field layouts so
+  later multi-operand instructions do not require a carrier redesign. Returned
+  values may borrow only process-lifetime static descriptors and retain no caller
+  pointer.
+- Field ownership: extend `operand_field` with pure layout validation and reuse that
+  exact rule path from extraction and layout-set binding. Coverage, source/destination
+  overlap, bit widths, and source-word indices may not be reimplemented elsewhere.
+- Initial identities: retain `NONE` and add inert RPT immediate-K and immediate-lk
+  layout IDs/descriptors from already pinned TI evidence. They are directly provable
+  through the layout owner but remain absent from the production opcode catalog and
+  generated first-word lookup.
+- TDD: the planned `tests/unit/isa/decode/test_operand_layout_binding.c` proves
+  NONE, one/two-word extraction, multi-field set shape, every invalid token/index/
+  width/layout path, transactional output, static lifetime, and catalog NOP binding.
+  Existing operand-field, bundle, catalog, NOP, and CPU tests remain regressions.
+- Exclusions: no production RPT row, handler/effect, CPU/sequencer/state behavior,
+  repeat eligibility, RC/PC/IRQ policy, timing, memory mutation, public API, knob,
+  environment read, diagnostic, allocator, mutable global, emulator dependency, or
+  external implementation is introduced.
+- Delegation: a bounded Luna worker owns the decode/layout implementation and tests;
+  the main agent owns design, integration, independent review, full validation,
+  commits, publication, and ledger completion.
