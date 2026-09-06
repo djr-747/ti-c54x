@@ -2225,3 +2225,59 @@ rewritten after publication.
   mirrored build/test manifests, then update the three NOP requirements and the
   catalog project requirement only when passing executable tests and evidence
   checks are present. Shared-memory and timing gates remain future work.
+
+## 2026-09-06 — P2-W16 complete — NOP-seeded opcode architecture
+
+- State: complete in implementation commit
+  `f9cd7be4570f85fac2ef35835fac824462801f69`.
+- Catalog and decode: `src/isa/catalog/` is the sole handwritten instruction
+  inventory. Its initial `EXACT` NOP row expands through distinct X-macro passes
+  into opcode identity, immutable metadata, a fixed 65,536-entry `uint16_t`
+  first-word lookup, and the function-pointer handler table. Unregistered words
+  map to the zero-valued UNKNOWN identity; decoder results preserve the fetched
+  word and report a zero program-word count explicitly.
+- Semantics and sequencing: NOP validates against borrowed catalog metadata and
+  publishes the explicit `NONE` opcode effect only after success. It contains no
+  copied encoding literal and owns no PC, state, bus, timing, or observer action.
+  The sequencer separately stages a unit-bearing private 16-bit PC effect,
+  commits it only against the matching frozen source, and reports the unresolved
+  `0xffff` boundary without mutation.
+- Ownership: catalog, decode, opcode effects, NOP semantics, handler dispatch,
+  and sequential PC flow have separate private C/header owners with mirrored
+  Make/CMake test manifests. The generic dispatch header does not include the
+  NOP-family header. No public header or CPU-shell behavior changed.
+- Structural proof: the catalog contract rejects malformed rows, reserved or
+  duplicate IDs, duplicate exact words, duplicate handler bindings, invalid
+  widths/ranges, missing macro consumers, and a second NOP encoding literal in
+  handwritten ISA C/H. Decoder coverage exhaustively classifies all 65,536 first
+  words. The source-manifest checker now recursively proves normalized nested
+  aggregate reachability, exact leaf ownership, order parity, uniqueness,
+  acyclicity, and Make/CMake hierarchy parity.
+- Maintainability correction: recursive manifest parsing moved into the new
+  362-line `source_manifest_graph.py`; the policy/orchestration CLI is 165 lines.
+  No handwritten implementation, test, or quality module reaches the 500-line
+  review threshold.
+- TDD and review: initial red checks observed missing catalog/NOP/PC headers;
+  review-driven red checks then exposed duplicate encoding ownership, the
+  NOP-specific generic-header dependency, missing word-unit PC fields, catalog
+  collision gaps, nested-manifest false failures, and the missing CMake PC-test
+  registration. Each was corrected before promotion. An independent Luna audit
+  found no remaining blocker or major defect.
+- Registry: 2 targets, 7 sources, 61 evidence records, 75 requirements
+  (61 implemented, 2 planned, 12 unresolved), and 55 tests (53 passing,
+  2 planned). NOP decode, no-effect semantics, sequential PC flow, and the
+  project catalog contract are now implemented.
+- Validation: final standalone `make -B test` passed 137 Python quality tests,
+  all 50 C unit targets, the 51-test direct execution set including the minimal
+  consumer, evidence/knob/source/manifest checks, and the observer-disabled
+  artifact proof under strict warnings. Local CMake remains unavailable; remote
+  CI owns CMake/CTest, install, consumer, compiler-matrix, and sanitizer proof.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment read, emulator/firmware dependency, allocation, logging, public
+  ABI, machine-cycle value, XPC policy, memory effect, or device behavior was
+  introduced.
+- Follow-up: verify both commits remotely. Then plan the CPU-level
+  fetch/decode/dispatch/retire transaction with a named checked bridge between
+  the public 32-bit fetch carrier and private 16-bit common PC. Add a separately
+  proven masked-pattern catalog form before the first operand-bearing opcode;
+  never implement variable operand bits as ad hoc decoder branches.
