@@ -3979,3 +3979,46 @@ rewritten after publication.
 - `cpu.c` is at the 443-line review boundary. The next CPU growth must extract
   generic effect routing/retirement transaction logic rather than adding family
   branches.
+
+## 2026-09-07 — P2-W24 CMPL accumulator vertical slice completion and performance closure
+
+- State: complete. The evidence and architecture plan freeze landed as
+  `f53cf8496ef842e0b288932bb5742f648a903bed`; its GitHub Actions run
+  [34046263884](https://github.com/djr-747/ti-c54x/actions/runs/34046263884)
+  is green. The implementation landed as
+  `7cad341a7373a2a5737611848b985ed67c70dbcf`; its GitHub Actions run
+  [34047741091](https://github.com/djr-747/ti-c54x/actions/runs/34047741091)
+  is green. The performance/documentation follow-up landed as
+  `7f3dcc66b00091578a37db2c2abf9ac50a973c41`; its GitHub Actions run
+  [34048073006](https://github.com/djr-747/ti-c54x/actions/runs/34048073006)
+  is green.
+- TDD evidence is RED/GREEN: the accumulator-effect test first failed on
+  missing `ACCUMULATOR_WRITE`/C-action symbols, and the CMPL decode test first
+  failed on the missing CMPL opcode ID/layout. Focused decode, ops, sequencer,
+  CPU, and MAX/MIN regression tests then passed. Full local `make test` is
+  green (176 Python checks, source-boundary checks over 179 files, and all C,
+  quality, generated, and manifest checks). The registry is at 91 evidence
+  records, 133 requirements (107 implemented, 9 planned, 17 unresolved), and
+  96 tests (87 passing, 9 planned). Remote GCC/Clang, sanitizer, install,
+  consumer, and bench-smoke checks are green.
+- The reusable generic effect is `ACCUMULATOR_WRITE` with an explicit C
+  disposition (`PRESERVE` or `WRITE`); MAX/MIN use `WRITE`, while CMPL uses
+  `PRESERVE`. CMPL belongs to `src/isa/ops/accumulator/`, uses the generic S/D
+  layout, and admits exactly four one-word encodings (`F493`, `F593`, `F693`,
+  `F793`). Its semantics are a full 40-bit ones complement, require knownness
+  only for the selected source, and preserve all status bits byte-for-byte.
+  There is no opcode-specific CPU branch; `cpu.c` remains 443 lines. CMPL
+  repeatability and machine timing remain unresolved, and no memory, emulator,
+  RPT, or IRQ claim is made.
+- Performance closure is hosted POSIX observer-off measurement only (no silicon
+  timing claim). Clean `7cad341` records NOP at 69.057 ns / 14.481 MIPS,
+  LD-DP at 99.866 ns / 10.013 MIPS, LD-ASM at 100.477 ns / 9.953 MIPS, and
+  LD-ARP at 96.845 ns / 10.326 MIPS. The reset-runnable `mixed-current`
+  sample is 89.591 ns / 11.162 MIPS over a 4/7 runnable subset. Fixed deltas
+  versus `a14d331` are +5.37%, +2.44%, +2.89%, and -1.16%, with spreads of
+  7.64%, 63.19%, 9.49%, and 11.52%; this is a hosted-noise trend with no
+  confirmed regression. No knob changes were made.
+- Follow-up: perform a strict evidence-and-architecture FIT/GAP review before
+  the next small ISA fanout. Shared catalog, decode, state, sequencer, and CPU
+  surfaces remain serialized; family-local lanes may proceed only where the
+  contract is already proven.
