@@ -60,7 +60,7 @@ function-pointer dispatch tables.
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
 | P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — local proof green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
-| P2-W26 SFTL shifted-accumulator vertical slice | Planned | Freeze the SFTL five-bit signed shift layout and 128 encoded first words, prove pure low-32 shift semantics with explicit C output and atomic CPU retirement through existing generic effects; repeatability and machine timing remain unresolved |
+| P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local gate green; remote gate pending | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, and catalog-nine clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -1089,6 +1089,10 @@ the Table 2-28 boundary, and no machine-timing contract is claimed.
 
 ### P2-W26: SFTL shifted-accumulator vertical slice (planned)
 
+State: implemented; the immutable `(planned)` heading remains the historical
+evidence anchor. Catalog, decode, shift-operation, CPU, and full local repository
+proofs are green; the remote gate remains pending.
+
 P2-W26 is a narrow SFTL accumulator slice. It adds no public API, architectural
 state, input-resource bit, effect type, sequencer seam, memory behavior, RPT/IRQ
 behavior, device behavior, or machine-timing contract. SFTL consumes the
@@ -1139,6 +1143,11 @@ so repeatability remains `UNRESOLVED`. Any GNU binutils 2.42 reference at pinned
 commit `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e` is nonnormative corroboration
 only and must not be copied or vendored. Summary cycle fields are not admitted
 as machine-timing evidence.
+
+Closeout: the catalog now contains ten declarative rows and 693 populated
+encoded first words, not 693 distinct instructions; the mixed reset-runnable
+coverage remains four of ten rows. No `cpu.c` change, public API, memory,
+RPT/IRQ, or timing claim was added.
 
 ### Hosted performance history (implemented; local and remote gates green)
 

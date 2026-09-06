@@ -106,7 +106,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 565)
+        self.assertEqual(actual.count("= (uint16_t)"), 693)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
@@ -118,6 +118,13 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         self.assertIn("[0xF591] = (uint16_t)TI_C54X_OPCODE_ID_ROL_ACC,", actual)
         self.assertIn("[0xF490] = (uint16_t)TI_C54X_OPCODE_ID_ROR_ACC,", actual)
         self.assertIn("[0xF590] = (uint16_t)TI_C54X_OPCODE_ID_ROR_ACC,", actual)
+        for word in ("F0E0", "F0FF", "F1E0", "F1FF", "F2E0", "F2FF",
+                     "F3E0", "F3FF"):
+            with self.subTest(word=word):
+                self.assertIn(
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_SFTL_ACC,",
+                    actual,
+                )
 
     def test_cli_generate_and_check_with_explicit_paths(self) -> None:
         source = (

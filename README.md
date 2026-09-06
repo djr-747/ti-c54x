@@ -22,15 +22,15 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover nine declarative one-word
+- Production decode and CPU execution now cover ten declarative one-word
   opcode rows: evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
-  and `ROR`. Those rows expand to their encoded accumulator forms. The catalog
-  now has 565 populated first-word encodings;
-  that is a lookup-population count, not 565 distinct instructions. Exact/masked
+  `ROR`, and `SFTL`. Those rows expand to their encoded accumulator forms. The
+  catalog now has 693 populated first-word encodings; that is a lookup-population
+  count, not 693 distinct instructions. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
-  extraction, dispatch, PC staging, and retirement are green under the standalone
-  gates.
+  extraction, dispatch, PC staging, and retirement are green under the full
+  local standalone gate; remote P2-W26 validation is pending.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -46,9 +46,16 @@ Current progress:
   unknownness handling, and no opcode-specific CPU branch. ROL/ROR use the
   existing accumulator-write plus C-write effect path; benchmark coverage
   remains the four reset-runnable NOP/LD rows out of nine.
-- The registry now records 95 evidence items, 139 requirements (112 implemented,
-  9 planned, 18 unresolved), and 101 tests (92 passing, 9 planned). The full
-  local and remote P2-W25 gates are green. The latest clean catalog-nine hosted
+- P2-W26 now proves SFTL's generic source/destination/shift5 layout, signed
+  `-16..15` handling, low-32 shift semantics with explicit C output, guard
+  clearing, and atomic retirement through existing generic effects. The full
+  local P2-W26 gate is green. No `cpu.c` change, public API, memory,
+  RPT/IRQ, or timing claim was added; reset-runnable coverage remains four of
+  ten rows.
+- The registry now records 98 evidence items, 144 requirements (116 implemented,
+  9 planned, 19 unresolved), and 105 tests (96 passing, 9 planned). P2-W26's
+  full local validation is green; remote validation is pending. The latest clean
+  catalog-nine hosted
   performance record is captured at `705ac7b`: NOP 61.839 ns / 16.171 MIPS,
   LD-DP 91.592 ns / 10.918 MIPS, LD-ASM 91.619 ns / 10.915 MIPS, LD-ARP
   96.653 ns / 10.346 MIPS, and mixed-current 87.562 ns / 11.420 MIPS with

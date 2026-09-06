@@ -3225,7 +3225,7 @@
     },
     {
       "id": "REQ-COMMON-SFTL-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3235,7 +3235,7 @@
     },
     {
       "id": "REQ-COMMON-SFTL-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3245,7 +3245,7 @@
     },
     {
       "id": "REQ-COMMON-SFTL-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/shift/",
@@ -3255,7 +3255,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-SFTL-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -4124,34 +4124,34 @@
     },
     {
       "id": "T-COMMON-SFTL-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_sftl_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftl_metadata"},
       "requirement_ids": ["REQ-COMMON-SFTL-ENCODINGS"]
     },
     {
       "id": "T-COMMON-SFTL-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_sftl_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftl_decode"},
       "requirement_ids": ["REQ-COMMON-SFTL-DECODE"]
     },
     {
       "id": "T-COMMON-SFTL-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/shift/test_sftl.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sftl"},
       "requirement_ids": ["REQ-COMMON-SFTL-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-SFTL",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_sftl.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_sftl"},
       "requirement_ids": ["REQ-PROJECT-CPU-SFTL-RETIREMENT"]
     }
   ]

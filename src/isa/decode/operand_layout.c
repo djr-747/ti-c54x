@@ -87,6 +87,27 @@ static const ti_c54x_operand_layout_set
     ti_c54x_accumulator_source_destination_set = {
         ti_c54x_accumulator_source_destination_operands, UINT8_C(2)};
 
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_source_destination_shift5_source_piece = {
+        UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_source_destination_shift5_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_source_destination_shift5_shift_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_source_destination_shift5_operands[3] = {
+        {&ti_c54x_accumulator_source_destination_shift5_source_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_accumulator_source_destination_shift5_destination_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_accumulator_source_destination_shift5_shift_piece,
+         UINT8_C(1), UINT8_C(5)}};
+static const ti_c54x_operand_layout_set
+    ti_c54x_accumulator_source_destination_shift5_set = {
+        ti_c54x_accumulator_source_destination_shift5_operands, UINT8_C(3)};
+
 static ti_c54x_operand_layout_status
 ti_c54x_operand_layout_map_field_status(
     ti_c54x_operand_field_status status)
@@ -170,6 +191,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_accumulator_source_destination_set;
+    case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_accumulator_source_destination_shift5_set;
     default:
         return NULL;
     }
