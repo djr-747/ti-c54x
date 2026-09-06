@@ -48,10 +48,11 @@ Current progress:
   remains the four reset-runnable NOP/LD rows out of nine.
 - The registry now records 95 evidence items, 139 requirements (112 implemented,
   9 planned, 18 unresolved), and 101 tests (92 passing, 9 planned). The full
-  local P2-W25 gate is green; remote validation follows the implementation
-  commit. The latest clean catalog-seven hosted
-  performance record is captured at `7cad341` (NOP 14.481 MIPS; mixed-current
-  11.162 MIPS with reset-runnable coverage of 4/9).
+  local and remote P2-W25 gates are green. The latest clean catalog-nine hosted
+  performance record is captured at `705ac7b`: NOP 61.839 ns / 16.171 MIPS,
+  LD-DP 91.592 ns / 10.918 MIPS, LD-ASM 91.619 ns / 10.915 MIPS, LD-ARP
+  96.653 ns / 10.346 MIPS, and mixed-current 87.562 ns / 11.420 MIPS with
+  reset-runnable coverage of 4/9.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -71,11 +72,12 @@ Current progress:
   unrecorded warmup windows, and clean-commit append-only JSONL. The initial
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
-  the latest catalog-seven `7cad341` record measures 14.481 MIPS for NOP and
-  11.162 MIPS for `mixed-current`. Fixed-scenario deltas versus catalog-six
-  range from -1.16% to +5.37%, while within-capture spreads range from 7.64%
-  to 63.19%, so this remains a hosted trend only, not a confirmed regression
-  or architectural/silicon timing claim. The changed mixed workload is not
+  the catalog-seven `7cad341` record measured 14.481 MIPS for NOP and 11.162
+  MIPS for `mixed-current`; the latest catalog-nine `705ac7b` record is listed
+  above. Catalog-nine fixed-scenario deltas versus catalog-seven range from
+  -10.45% to -0.20%, with within-capture spreads of 6.05% to 29.42%; these are
+  hosted noise/trend observations—not confirmed improvements or regressions and
+  not architectural/silicon timing claims. The changed mixed workload is not
   compared. See [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and

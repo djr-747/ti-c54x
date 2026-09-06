@@ -80,7 +80,8 @@ confirmed architectural or silicon regression. `mixed-current` records
 89.986 ns/11.113 MIPS with explicit `reset-runnable-subset` coverage of four of
 six catalog rows and is not compared to the catalog-four mixed result.
 
-The latest clean catalog-seven record at `7cad341` is the current hosted cohort:
+The prior clean catalog-seven record at `7cad341` remains in history as the
+catalog-seven cohort:
 
 | Scenario | Median cost | Throughput |
 |---|---:|---:|
@@ -99,6 +100,25 @@ its catalog count changed even though the reset-runnable stream remains four
 rows, so it is not compared as a like-for-like result. All figures are hosted
 implementation-throughput observations, not
 architectural or silicon timing evidence.
+
+The latest clean catalog-nine record at `705ac7b` is the current hosted cohort:
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 61.839 ns | 16.171 MIPS |
+| `ld-dp` | 91.592 ns | 10.918 MIPS |
+| `ld-asm` | 91.619 ns | 10.915 MIPS |
+| `ld-arp` | 96.653 ns | 10.346 MIPS |
+| `mixed-current` | 87.562 ns | 11.420 MIPS |
+
+Relative to catalog-seven, the same-cohort fixed-scenario deltas are -10.45%
+(`nop`), -8.29% (`ld-dp`), -8.82% (`ld-asm`), and -0.20% (`ld-arp`). The
+catalog-nine within-capture spreads are 29.42% (`nop`), 6.05% (`ld-dp`),
+9.95% (`ld-asm`), and 14.40% (`ld-arp`). These are hosted noise/trend
+observations only and do not establish a confirmed improvement or regression.
+`mixed-current` is evolving and non-comparable because the catalog count changed;
+it is reset-runnable for four of nine rows. No result here is architectural or
+silicon timing evidence.
 
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
