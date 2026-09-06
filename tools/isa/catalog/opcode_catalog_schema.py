@@ -26,9 +26,11 @@ class OpcodeRow:
     """One normalized first-word pattern from the declarative catalog.
 
     ``first_word_value`` and ``first_word_mask`` are canonical 16-bit
-    integers. ``program_word_count`` carries its unit explicitly. ``form`` is
-    the source spelling (``EXACT`` or ``MASKED``), and ``source_line`` is the
-    one-based source line where the macro declaration begins.
+    integers. ``program_word_count`` carries its unit explicitly.
+    ``operand_layout`` and ``repeatability`` retain the fully namespaced
+    catalog tokens. ``form`` is the source spelling (``EXACT`` or ``MASKED``),
+    and ``source_line`` is the one-based source line where the macro
+    declaration begins.
     """
 
     symbol: str
@@ -36,6 +38,8 @@ class OpcodeRow:
     first_word_value: int
     first_word_mask: int
     program_word_count: int
+    operand_layout: str
+    repeatability: str
     form: str
     source_line: int
 
@@ -44,13 +48,18 @@ _ID_RE: Final = re.compile(r"^[A-Z][A-Z0-9_]*$")
 _HANDLER_RE: Final = re.compile(r"^[a-z][a-z0-9_]*$")
 _HEX_RE: Final = re.compile(r"^0[xX][0-9A-Fa-f]+$")
 _WIDTH_RE: Final = re.compile(r"^[0-9]+$")
+_OPERAND_LAYOUT_TOKENS: Final = frozenset(
+    {"TI_C54X_OPERAND_LAYOUT_NONE"}
+)
+_REPEATABILITY_TOKENS: Final = frozenset(
+    {
+        "TI_C54X_REPEATABILITY_UNRESOLVED",
+        "TI_C54X_REPEATABILITY_ELIGIBLE",
+        "TI_C54X_REPEATABILITY_INELIGIBLE",
+    }
+)
 _ROW_RE: Final = re.compile(
-    r"^TI_C54X_OPCODE_(EXACT|MASKED)\(\s*"
-    r"([^,\s]+)\s*,\s*"
-    r"([^,\s]+)\s*,\s*"
-    r"([^,\s]+)\s*,\s*"
-    r"([^,\s]+)"
-    r"(?:\s*,\s*([^,\s]+))?\s*\)$"
+    r"^TI_C54X_OPCODE_(EXACT|MASKED)\((.*)\)$"
 )
 
 _WORD_BITS = 16
@@ -111,7 +120,7 @@ def _parse_width(token: str, location: str) -> int:
     return value
 
 
-def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, int]:
+def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, int]:
     """Stable semantic ordering, independent of declaration order."""
 
     return (
@@ -120,6 +129,8 @@ def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, int]:
         row.first_word_value,
         row.first_word_mask,
         row.program_word_count,
+        row.operand_layout,
+        row.repeatability,
         row.form,
         row.source_line,
     )
@@ -197,6 +208,18 @@ def validate_catalog_rows(rows: Iterable[OpcodeRow]) -> tuple[OpcodeRow, ...]:
             raise OpcodeCatalogError(f"{location}: mask is outside 16-bit range")
         if not _is_integer(row.program_word_count) or not 1 <= row.program_word_count <= 0xFF:
             raise OpcodeCatalogError(f"{location}: width must be from 1 through 255")
+        if (
+            not isinstance(row.operand_layout, str)
+            or row.operand_layout not in _OPERAND_LAYOUT_TOKENS
+        ):
+            raise OpcodeCatalogError(
+                f"{location}: invalid or unresolved operand-layout token"
+            )
+        if (
+            not isinstance(row.repeatability, str)
+            or row.repeatability not in _REPEATABILITY_TOKENS
+        ):
+            raise OpcodeCatalogError(f"{location}: invalid repeatability token")
         if not isinstance(row.form, str) or row.form not in {"EXACT", "MASKED"}:
             raise OpcodeCatalogError(f"{location}: unknown opcode form {row.form!r}")
         if not _is_integer(row.source_line) or row.source_line <= 0:
@@ -220,9 +243,10 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
     """Parse catalog macro rows into immutable normalized records.
 
     The accepted forms are ``TI_C54X_OPCODE_EXACT(symbol, handler, value,
-    width)`` and ``TI_C54X_OPCODE_MASKED(symbol, handler, value, mask,
-    width)``.  Every non-empty non-comment line must contain exactly one row;
-    comments and blank lines are otherwise ignored.
+    width, operand_layout, repeatability)`` and
+    ``TI_C54X_OPCODE_MASKED(symbol, handler, value, mask, width,
+    operand_layout, repeatability)``. Every non-empty non-comment line must
+    contain exactly one row; comments and blank lines are otherwise ignored.
     """
 
     if not isinstance(text, str):
@@ -235,24 +259,42 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
         match = _ROW_RE.fullmatch(line)
         if match is None:
             raise OpcodeCatalogError(f"malformed catalog row at line {line_number}")
-        form, symbol, handler, value_token, mask_or_width, width_token = match.groups()
+        form, body = match.groups()
+        fields = tuple(field.strip() for field in body.split(","))
+        expected_fields = 6 if form == "EXACT" else 7
+        if len(fields) != expected_fields or any(not field for field in fields):
+            raise OpcodeCatalogError(
+                f"line {line_number}: {form} requires exactly "
+                f"{expected_fields} fields"
+            )
+        symbol, handler, value_token = fields[:3]
+        if form == "EXACT":
+            mask_or_width, operand_layout, repeatability = fields[3:]
+        else:
+            mask_or_width, width_token, operand_layout, repeatability = fields[3:]
         location = f"line {line_number}"
         if form == "EXACT":
-            if width_token is not None:
-                raise OpcodeCatalogError(
-                    f"{location}: EXACT requires value and width only"
-                )
             value = _parse_word(value_token, f"{location}: value")
             mask = _WORD_MAX
             width = _parse_width(mask_or_width, f"{location}: width")
         else:
-            if width_token is None:
-                raise OpcodeCatalogError(f"{location}: MASKED requires value, mask, and width")
             value = _parse_word(value_token, f"{location}: value")
             mask = _parse_word(mask_or_width, f"{location}: mask")
             width = _parse_width(width_token, f"{location}: width")
 
-        rows.append(OpcodeRow(symbol, handler, value, mask, width, form, line_number))
+        rows.append(
+            OpcodeRow(
+                symbol,
+                handler,
+                value,
+                mask,
+                width,
+                operand_layout,
+                repeatability,
+                form,
+                line_number,
+            )
+        )
 
     normalized = validate_catalog_rows(rows)
     if not normalized:

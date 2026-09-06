@@ -6,7 +6,8 @@
  *
  * Owns: pure by-value classification of one fetched 16-bit first program
  * word, including its raw value and derived program-word width, plus checked
- * transactional binding of that result to a copied complete instruction.
+ * transactional binding of that result to a copied complete instruction and
+ * its catalog-owned scalar layout/repeatability metadata.
  * Does not own: memory/bus fetches, CPU or status state, program-counter
  * sequencing, semantic effects, timing, observers, or diagnostics. Decoder
  * results retain no caller-owned storage. Completion inputs are borrowed and
@@ -48,11 +49,15 @@ typedef enum ti_c54x_instruction_completion_status {
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_BUNDLE_COUNT_INVALID = 10,
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_BUNDLE_COUNT_MISMATCH = 11,
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_MISMATCH = 12,
-    TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_PATTERN_MISMATCH = 13
+    TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_PATTERN_MISMATCH = 13,
+    TI_C54X_INSTRUCTION_COMPLETION_STATUS_OPERAND_LAYOUT_INVALID = 14,
+    TI_C54X_INSTRUCTION_COMPLETION_STATUS_REPEATABILITY_INVALID = 15
 } ti_c54x_instruction_completion_status;
 
 typedef struct ti_c54x_decoded_instruction {
     ti_c54x_opcode_id id;
+    ti_c54x_operand_layout_id operand_layout;
+    ti_c54x_repeatability_class repeatability;
     ti_c54x_instruction_word_bundle bundle;
 } ti_c54x_decoded_instruction;
 

@@ -17,11 +17,19 @@ from pathlib import Path
 from tools.isa.catalog.opcode_catalog_schema import OpcodeRow, parse_catalog
 
 
+LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
+REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+
+
 class OpcodeCatalogContractTests(unittest.TestCase):
     def test_parser_accepts_the_frozen_exact_row(self) -> None:
         self.assertEqual(
-            parse_catalog("TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1)\n"),
-            [OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, "EXACT", 1)],
+            parse_catalog(
+                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, {LAYOUT_NONE}, "
+                f"{REPEAT_UNRESOLVED})\n"
+            ),
+            [OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
+                       REPEAT_UNRESOLVED, "EXACT", 1)],
         )
 
     def test_parser_rejects_malformed_rows(self) -> None:
@@ -40,28 +48,31 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_parser_rejects_duplicate_and_reserved_ids(self) -> None:
         duplicate = "\n".join(
             (
-                "TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1)",
-                "TI_C54X_OPCODE_EXACT(NOP, nop, 0x1234, 1)",
+                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
             )
         )
         for symbol in ("UNKNOWN", "COUNT"):
             with self.subTest(symbol=symbol):
                 with self.assertRaises(ValueError):
-                    parse_catalog(f"TI_C54X_OPCODE_EXACT({symbol}, nop, 0x0000, 1)")
+                    parse_catalog(
+                        f"TI_C54X_OPCODE_EXACT({symbol}, nop, 0x0000, 1, "
+                        f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})"
+                    )
         with self.assertRaises(ValueError):
             parse_catalog(duplicate)
 
     def test_parser_rejects_duplicate_first_words_and_handler_tokens(self) -> None:
         duplicate_word = "\n".join(
             (
-                "TI_C54X_OPCODE_EXACT(FOO, foo, 0x1234, 1)",
-                "TI_C54X_OPCODE_EXACT(BAR, bar, 0x1234, 2)",
+                f"TI_C54X_OPCODE_EXACT(FOO, foo, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(BAR, bar, 0x1234, 2, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
             )
         )
         duplicate_handler = "\n".join(
             (
-                "TI_C54X_OPCODE_EXACT(FOO, shared, 0x1234, 1)",
-                "TI_C54X_OPCODE_EXACT(BAR, shared, 0x5678, 1)",
+                f"TI_C54X_OPCODE_EXACT(FOO, shared, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(BAR, shared, 0x5678, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
             )
         )
         for text in (duplicate_word, duplicate_handler):
@@ -71,12 +82,14 @@ class OpcodeCatalogContractTests(unittest.TestCase):
 
     def test_parser_rejects_handler_tokens_and_bad_ranges(self) -> None:
         invalid = (
-            "TI_C54X_OPCODE_EXACT(NOP, NOP, 0xF495, 1)",
-            "TI_C54X_OPCODE_EXACT(NOP, nop-handler, 0xF495, 1)",
-            "TI_C54X_OPCODE_EXACT(NOP, nop, 0x10000, 1)",
-            "TI_C54X_OPCODE_EXACT(NOP, nop, 0x-1, 1)",
-            "TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 0)",
-            "TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 256)",
+            "TI_C54X_OPCODE_EXACT(NOP, NOP, 0xF495, 1, "
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            "TI_C54X_OPCODE_EXACT(NOP, nop-handler, 0xF495, 1, "
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x10000, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x-1, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 0, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 256, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
         )
         for text in invalid:
             with self.subTest(text=text):
@@ -89,7 +102,8 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
-            OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, "EXACT", 0),
+            OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
+                      REPEAT_UNRESOLVED, "EXACT", 0),
         )
         self.assertGreater(rows[0].source_line, 0)
 

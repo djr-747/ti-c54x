@@ -30,6 +30,12 @@ ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
     if (metadata == NULL || metadata->id != TI_C54X_OPCODE_ID_NOP ||
         metadata->first_word_mask != UINT16_MAX ||
         instruction->id != metadata->id ||
+        metadata->operand_layout <= TI_C54X_OPERAND_LAYOUT_UNKNOWN ||
+        metadata->operand_layout >= TI_C54X_OPERAND_LAYOUT_COUNT ||
+        metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
+        metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        instruction->operand_layout != metadata->operand_layout ||
+        instruction->repeatability != metadata->repeatability ||
         metadata->program_word_count != UINT8_C(1) ||
         instruction->bundle.program_word_count != UINT8_C(1) ||
         instruction->bundle.program_word_count !=

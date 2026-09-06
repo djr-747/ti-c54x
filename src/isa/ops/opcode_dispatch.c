@@ -15,10 +15,12 @@
 #include "isa/catalog/opcode_catalog.h"
 #include "op_nop.h"
 
-#define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words) \
+#define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words, \
+                             operand_layout, repeatability) \
     [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
 #define TI_C54X_OPCODE_MASKED(symbol, handler, first_word_value, \
-                              first_word_mask, program_words) \
+                              first_word_mask, program_words, operand_layout, \
+                              repeatability) \
     [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
 static const ti_c54x_op_handler ti_c54x_handlers[TI_C54X_OPCODE_ID_COUNT] = {
 #include "../catalog/opcode_catalog.def"
@@ -50,6 +52,12 @@ ti_c54x_dispatch_decoded(const ti_c54x_decoded_instruction *instruction,
         metadata->program_word_count == UINT8_C(0) ||
         metadata->program_word_count >
             (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY ||
+        metadata->operand_layout <= TI_C54X_OPERAND_LAYOUT_UNKNOWN ||
+        metadata->operand_layout >= TI_C54X_OPERAND_LAYOUT_COUNT ||
+        metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
+        metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        instruction->operand_layout != metadata->operand_layout ||
+        instruction->repeatability != metadata->repeatability ||
         instruction->bundle.program_word_count == UINT8_C(0) ||
         instruction->bundle.program_word_count >
             (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY ||

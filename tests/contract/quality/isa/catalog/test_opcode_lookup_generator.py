@@ -22,6 +22,10 @@ from tools.isa.catalog.generate_opcode_lookup import (
 from tools.isa.catalog.opcode_catalog_schema import OpcodeCatalogError, OpcodeRow, parse_catalog
 
 
+LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
+REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+
+
 def _row(
     symbol: str,
     handler: str,
@@ -29,7 +33,8 @@ def _row(
     mask: int,
     form: str = "MASKED",
 ) -> OpcodeRow:
-    return OpcodeRow(symbol, handler, value, mask, 1, form, 1)
+    return OpcodeRow(symbol, handler, value, mask, 1, LAYOUT_NONE,
+                     REPEAT_UNRESOLVED, form, 1)
 
 
 class OpcodeLookupGeneratorTests(unittest.TestCase):
@@ -104,7 +109,10 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
 
     def test_cli_generate_and_check_with_explicit_paths(self) -> None:
-        source = "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1)\n"
+        source = (
+            "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1, "
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})\n"
+        )
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
             catalog = temp / "catalog.def"
@@ -150,7 +158,10 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
             self.assertFalse(output.exists())
 
     def test_check_mode_never_writes_or_creates_missing_artifact(self) -> None:
-        source = "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1)\n"
+        source = (
+            "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1, "
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})\n"
+        )
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
             catalog = temp / "catalog.def"

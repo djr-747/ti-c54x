@@ -25,6 +25,8 @@ valid_nop(void)
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_NOP);
     const ti_c54x_decoded_instruction instruction = {
         .id = metadata->id,
+        .operand_layout = metadata->operand_layout,
+        .repeatability = metadata->repeatability,
         .bundle = {
             .program_words = {metadata->first_word_value, UINT16_C(0)},
             .program_word_count = metadata->program_word_count}

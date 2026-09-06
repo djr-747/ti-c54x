@@ -2,7 +2,8 @@
  * Module contract
  *
  * Owns: pure first-word decode result construction from the catalog's direct
- * lookup plus transactional completion of a copied complete instruction.
+ * lookup plus transactional completion of a copied complete instruction and
+ * its scalar layout/repeatability metadata.
  * Unknown words remain explicit and preserve the raw fetched value.
  * Does not own: bus/memory fetches, CPU state, program-counter sequencing,
  * opcode semantics, timing, observers, or diagnostics.
@@ -70,6 +71,14 @@ ti_c54x_decode_complete_instruction(
             (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY) {
         return TI_C54X_INSTRUCTION_COMPLETION_STATUS_METADATA_COUNT_INVALID;
     }
+    if (metadata->operand_layout <= TI_C54X_OPERAND_LAYOUT_UNKNOWN ||
+        metadata->operand_layout >= TI_C54X_OPERAND_LAYOUT_COUNT) {
+        return TI_C54X_INSTRUCTION_COMPLETION_STATUS_OPERAND_LAYOUT_INVALID;
+    }
+    if (metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
+        metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT) {
+        return TI_C54X_INSTRUCTION_COMPLETION_STATUS_REPEATABILITY_INVALID;
+    }
     if (first_word_result->program_word_count == UINT8_C(0) ||
         first_word_result->program_word_count >
             (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY) {
@@ -97,6 +106,8 @@ ti_c54x_decode_complete_instruction(
 
     result = (ti_c54x_decoded_instruction){
         .id = first_word_result->id,
+        .operand_layout = metadata->operand_layout,
+        .repeatability = metadata->repeatability,
         .bundle = *bundle};
     *output = result;
     return TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK;
