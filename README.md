@@ -26,10 +26,10 @@ Current progress:
   `NOP` plus the three immediate status-field forms `LD #k9,DP`, `LD #k5,ASM`,
   and `LD #k3,ARP`. Exact/masked catalog generation, complete instruction bundles,
   extension fetch, operand extraction, dispatch, PC staging, and retirement are
-  green under the full local W22 gate; remote verification remains pending.
+  green under the full local and remote W22 gates.
 - W22 local registry closure records 82 evidence items, 122 requirements
   (98 implemented, 9 planned, 15 unresolved), and 87 tests (78 passing, 9
-  planned). The full local gate is green; remote verification is pending.
+  planned). The full local and remote gates are green.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -42,14 +42,14 @@ Current progress:
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.
-- Hosted performance history is implemented and covered by the full local gate:
+- Hosted performance history is implemented and covered by the full local and
+  remote gates:
   observer-off public-bus throughput, stable `nop`/`ld-dp`/`ld-asm`/`ld-arp`
   scenarios, catalog-aware mixed workload, seven samples each preceded by 16
-  unrecorded warmup windows, and
-  clean-commit append-only JSONL. The 172 Python checks, 73 C executables plus
-  the minimal consumer, and registry/boundary checks are green; remote CMake
-  verification and the first clean baseline remain pending. See [hosted
-  performance history](docs/performance.md).
+  unrecorded warmup windows, and clean-commit append-only JSONL. The initial
+  clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
+  `mixed-current`, with within-capture spread retained beside every result. See
+  [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

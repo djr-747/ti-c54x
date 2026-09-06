@@ -56,8 +56,8 @@ function-pointer dispatch tables.
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
-| P2-W22 immediate status-field LD vertical slice | Implemented — full local gate green; remote verification pending | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
-| Hosted performance history | Implemented — full local gate green; remote verification and initial clean baseline pending | Observer-off end-to-end throughput capture with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
+| Hosted performance history | Implemented — full local and remote gates green; initial clean baseline recorded at `aa0afc0` | Observer-off end-to-end throughput capture with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -839,24 +839,23 @@ stable persistence guarantee is made. The mirrored tests are
 `tests/unit/cpu/test_cpu_ld_status_fields.c`. Local C_EXECUTABLE runners are
 `ti_c54x.ld_status_fields_decode`, `ti_c54x.ld_status_fields_ops`,
 `ti_c54x.status_registers`, `ti_c54x.status_field_effect_apply`, and
-`ti_c54x.cpu_ld_status_fields`; the full local gate is green and remote
-verification remains pending.
+`ti_c54x.cpu_ld_status_fields`; the full local and remote gates are green.
 No memory/bus transaction, timing, RPT/IRQ, accumulator, device, or emulator work
 is part of this slice; any status-bank split and generic effect commit exist only
 because these opcodes require them. The local registry is 82 immutable evidence
 records, 122 requirements (98 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and
-87 tests (78 `PASSING`, 9 `PLANNED`); the full local gate is green and remote
-verification remains pending.
+87 tests (78 `PASSING`, 9 `PLANNED`); the full local and remote gates are green.
 
-### Hosted performance history (implemented; local gate green)
+### Hosted performance history (implemented; local and remote gates green)
 
 Performance capture is hosted tooling, not a standalone-core dependency and not
 architectural or silicon timing evidence. The observer-off benchmark measures
 end-to-end CPU execution through the public program bus with a monotonic host
 clock. `nop`, `ld-dp`, `ld-asm`, and `ld-arp` are stable fixed scenarios;
 `mixed-current` follows the production catalog and records its catalog count and
-semantic hash. Captures use an excluded warmup, seven recorded samples, and
-repeated windows with fewer than 65,535 retirements. Exact compiler/platform/CPU,
+semantic hash. Each of seven recorded samples is preceded by 16 excluded warmup
+windows and uses repeated measurement windows with fewer than 65,535 retirements.
+Exact compiler/platform/CPU,
 build flags, clock, source commit, catalog count, scenario semantic hash, and
 benchmark/source hashes are recorded.
 
@@ -872,8 +871,10 @@ capture/compare helpers under
 default-off, owned by `bench/`, and has no architectural effect; these controls
 remain outside core execution. The full local gate is green (172 Python checks,
 73 C unit executables plus the minimal consumer, knobs, source boundaries, and
-registry checks); remote CMake verification and the initial clean baseline are
-pending.
+registry checks), and the remote GCC, Clang, CMake, install/consumer, sanitizer,
+and benchmark-smoke gates are green. The initial clean baseline at `aa0afc0`
+records 15.62 MIPS for NOP and 11.39 MIPS for `mixed-current`; each scenario's
+within-capture spread is retained with the historical record.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and
