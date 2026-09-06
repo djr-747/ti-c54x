@@ -28,13 +28,20 @@ as the ISA grows. Every record carries the catalog row count and a deterministic
 per-scenario semantic hash, so a mixed result is never compared as if its workload
 were unchanged.
 
-Each recorded sample uses a warmup that is not included in history, then seven
-recorded samples. Each sample repeats multiple measurement windows whose
+Each scenario records seven samples, each preceded by 16 fixed warmup windows;
+the warmup windows are not included in history. Each sample repeats multiple
+measurement windows whose
 retirement count is strictly below 65,535; the repeated windows reduce short
 host scheduling noise without introducing an architectural cycle assumption.
 The capture output records the exact scenario, sample/window policy, compiler,
 platform, CPU, build flags, clock source, clean source commit, catalog count,
 scenario semantic hash, and benchmark/source hashes.
+
+For each like-for-like scenario, comparison also reports the baseline and
+current within-capture spread, `(max_elapsed_ns - min_elapsed_ns) /
+elapsed_ns * 100`, where `elapsed_ns` is the median sample. These percentages
+contextualize host scheduling and frequency noise; they are advisory only and
+do not create a pass/fail threshold.
 
 History is JSONL and append-only. `bench-record` may append only from a clean
 commit; a dirty tree or missing identity metadata is a capture error rather

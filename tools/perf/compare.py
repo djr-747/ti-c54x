@@ -43,8 +43,18 @@ def compare(baseline: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]
                 "status": "comparable",
                 "like_for_like": True,
                 "percent_change": (now - base) * 100.0 / base,
+                "baseline_spread_percent": _spread_percent(before[name]),
+                "current_spread_percent": _spread_percent(after[name]),
             }
     return {"same_cohort": same_cohort, "cohort_fields": cohort_fields, "scenarios": scenarios}
+
+
+def _spread_percent(result: dict[str, Any]) -> float:
+    """Return within-capture spread as a percent of the median metric."""
+    median = result["elapsed_ns"]
+    if median <= 0:
+        raise ValueError("median elapsed time must be positive")
+    return (result["max_elapsed_ns"] - result["min_elapsed_ns"]) * 100.0 / median
 
 
 def validate_record(record: dict[str, Any]) -> None:

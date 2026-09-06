@@ -29,7 +29,7 @@ class PerfToolsTests(unittest.TestCase):
                 "min_elapsed_ns": 7000000,
                 "max_elapsed_ns": 9000000,
                 "samples": 7,
-                "warmup_windows": 2,
+                "warmup_windows": 16,
                 "window_count": 16,
                 "retirements_per_window": 50000,
                 "semantic_hash": {
@@ -70,7 +70,7 @@ class PerfToolsTests(unittest.TestCase):
 
     def test_parse_rejects_order_policy_count_and_hash(self) -> None:
         for field, value in (("min_elapsed_ns", 9000001), ("max_elapsed_ns", 7999999),
-                             ("samples", 8), ("warmup_windows", 3),
+                             ("samples", 8), ("warmup_windows", 2),
                              ("window_count", 15), ("retirements_per_window", 1),
                              ("retired_count", 1), ("elapsed_ticks", 1),
                              ("ns_per_instruction", 1.0),
@@ -140,7 +140,10 @@ class PerfToolsTests(unittest.TestCase):
     def test_compare_only_reports_like_for_like(self) -> None:
         baseline = {"schema_version": 1, "catalog_instruction_count": 4, "cpu": "a", "platform": "p", "platform_machine": "x", "compiler": "c", "build_flags": "f", "clock_source": "CLOCK_MONOTONIC", "results": self._results()}
         current = {"schema_version": 1, "catalog_instruction_count": 4, "cpu": "a", "platform": "p", "platform_machine": "x", "compiler": "c", "build_flags": "f", "clock_source": "CLOCK_MONOTONIC", "results": self._results()}
-        self.assertTrue(compare(baseline, current)["scenarios"]["nop"]["like_for_like"])
+        result = compare(baseline, current)["scenarios"]["nop"]
+        self.assertTrue(result["like_for_like"])
+        self.assertEqual(result["baseline_spread_percent"], 25.0)
+        self.assertEqual(result["current_spread_percent"], 25.0)
 
     def test_compare_cohort_and_mixed_evolution(self) -> None:
         baseline = {"schema_version": 1, "catalog_instruction_count": 4, "cpu": "a", "platform": "p", "platform_machine": "x", "compiler": "c", "build_flags": "f", "clock_source": "CLOCK_MONOTONIC", "results": self._results()}

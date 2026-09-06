@@ -44,7 +44,8 @@ Current progress:
   is made.
 - Hosted performance history is implemented and covered by the full local gate:
   observer-off public-bus throughput, stable `nop`/`ld-dp`/`ld-asm`/`ld-arp`
-  scenarios, catalog-aware mixed workload, seven samples after warmup, and
+  scenarios, catalog-aware mixed workload, seven samples each preceded by 16
+  unrecorded warmup windows, and
   clean-commit append-only JSONL. The 172 Python checks, 73 C executables plus
   the minimal consumer, and registry/boundary checks are green; remote CMake
   verification and the first clean baseline remain pending. See [hosted
