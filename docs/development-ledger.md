@@ -2340,3 +2340,51 @@ rewritten after publication.
   hierarchy, add both planned tests, prove stale-output and compiler-only build
   boundaries, then record implementation and remote-verification ledger entries
   before planning operand-field or extension-word work.
+
+## 2026-09-06 — P2-W17 complete — masked opcode catalog foundation
+
+- State: complete in implementation commit
+  `a11791745778edb4ac7619fc8681013a1c239e2d`.
+- Schema and ownership: the immutable shared schema under `tools/isa/catalog/`
+  parses and validates the sole production inventory in `src/isa/catalog/`.
+  It normalizes exact rows to a full mask, accepts canonical partial nonzero
+  masks, rejects invalid widths/ranges/types, duplicate identities or handlers,
+  and every pairwise exact/masked overlap with a deterministic witness. The
+  production catalog still contains only the exact NOP row; this work piece
+  enables no operand-bearing instruction.
+- Generation and runtime: the repository-owned generator exhaustively expands
+  all 65,536 first words and emits a deterministic sparse symbolic initializer
+  at `generated/isa/catalog/opcode_first_word.inc`. The C catalog includes that
+  checked-in derivative inside an immutable 65,536-entry `uint16_t` lookup;
+  unspecified entries remain zero/UNKNOWN and decode remains one indexed load.
+  `--check` recomputes and compares in memory without writing. Normal Make,
+  CMake, and downstream consumer builds do not invoke Python.
+- TDD and review: red tests first exposed the missing shared schema, missing
+  generator, hard-coded exact-only C consumers, and rejection of ownership-
+  mirrored nested quality-test paths. Review then forced all direct-row and
+  generator inputs through one validator and extended malformed-path rejection
+  coverage. An independent Luna review found no blocker, major, or minor issue.
+- Registry: 2 targets, 7 sources, 62 evidence records, 77 requirements
+  (63 implemented, 2 planned, 12 unresolved), and 57 tests (55 passing,
+  2 planned). The two masked-catalog project-contract requirements and their
+  schema/generator tests are now implemented and passing; they make no TI
+  architectural-conformance claim.
+- Validation: `generate_opcode_lookup.py --check`, `git diff --check`, and the
+  final standalone `make -B test` passed. The gate ran 160 Python quality tests,
+  rebuilt and passed all 50 C unit targets and the 51-test direct execution set,
+  and passed evidence, knob, source-boundary, manifest, observer-disabled, and
+  minimal-consumer checks under strict warnings. Kickoff commit
+  `ba79925834d43dac8b4dd7a4cc33a8aa2cf79357` was independently green in GitHub
+  Actions run `34011441802`; the completed implementation still requires its
+  own remote matrix.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment read, diagnostic path, emulator/firmware dependency, public ABI,
+  runtime initialization, allocation, timing claim, or external source/table
+  copy was introduced.
+- Follow-up: publish and verify the implementation and completion record, then
+  add the private checked program-PC bridge and CPU NOP
+  fetch/decode/dispatch/stage/retire transaction. Operand-field extraction and
+  extension-word fetch remain separate owners before `RPT`. A future `RPT`
+  kickoff must register TI interrupt/repeat evidence and a versioned GNU
+  binutils transcript only as a secondary `TOOLCHAIN_ORACLE_ONLY` cross-check;
+  no external opcode table or implementation becomes repository source.
