@@ -232,7 +232,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_instruction_extension_fetch_result fetched;
         ti_c54x_decoded_instruction instruction;
         ti_c54x_instruction_completion_status completion_status;
-        ti_c54x_op_effect effect = {TI_C54X_OP_EFFECT_NONE};
+        ti_c54x_op_effect effect = {0};
         ti_c54x_program_pc_bridge_effect pc_effect;
         ti_c54x_program_pc_bridge_status bridge_status;
         ti_c54x_op_status op_status;
