@@ -3381,3 +3381,40 @@ rewritten after publication.
   repository-owned build surface. Production decode remains NOP-only, the common TI
   repeat requirements remain planned, and unresolved RC/PC/predecode-interrupt
   semantics continue to block W20F CPU integration.
+
+## 2026-09-06 — P2-W20F evidence closure — CPU integration deferred
+
+- State: bounded primary-source and toolchain-oracle review complete; no production
+  source, public API, catalog row, generated artifact, test runner, or build manifest
+  changed. W20F CPU integration is explicitly deferred rather than assigned inferred
+  RC, PC, or interrupt behavior.
+- TI evidence added: `SPRU172C` Rev C RPT printed page 4-146 states that software
+  cannot access RC while single-repeat execution decrements it. The MVDK/MVKD
+  entries on printed pages 4-108–4-114 make their repeated address increment depend
+  on current `RC != 0` and describe an initial `RC+1` transfer count. These facts do
+  not identify the decrement phase or final RC value.
+- TI evidence boundary retained: `SPRU131G` Rev G §6.7 starts the interrupt barrier
+  once RPT is decoded. Its generic request receipt, acknowledgement, latency, and
+  pipeline sections do not specify whether an already-pending request wins before
+  that decode boundary. Generic PC and block-repeat descriptions do not define the
+  single-repeat PC hold/reload rule or final PC.
+- Requirement decision: `REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION`,
+  `REQ-COMMON-SINGLE-REPEAT-PC-FLOW`, and
+  `REQ-COMMON-SINGLE-REPEAT-PREDECODE-IRQ-ARBITRATION` remain `UNRESOLVED` with no
+  invented tests. The common integrated RPT requirements remain `PLANNED` and the
+  project-only W20D/W20E proofs remain unchanged.
+- Secondary oracle: official GNU binutils 2.42 at pinned sourceware commit
+  `c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e9` confirms only masks, word counts,
+  operand ranges, repeat-marker, and nonrepeatability metadata. It offers no RC/PC/
+  IFR/arbitration execution semantics and remains `TOOLCHAIN_ORACLE_ONLY`; no GPL
+  implementation, table, comment, or fixture is copied.
+- Registry after the evidence additions: 2 targets, 7 sources, 75 immutable evidence
+  records, 110 requirements (87 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`), and
+  77 tests (69 `PASSING`, 8 `PLANNED`).
+- Next normative proof input: stronger TI evidence or a versioned original-hardware
+  observation recording exact initial state, program words, request timing, visible
+  RC/PC results, and provenance. An optional black-box differential vector may
+  identify a hypothesis or disagreement but cannot close the common requirement by
+  itself, and may not become a standalone build dependency.
+- Follow-up: validate and publish this evidence closure, then advance the independent
+  shared-memory transaction foundation before any memory-mutating opcode family.

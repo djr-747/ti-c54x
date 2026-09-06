@@ -52,6 +52,7 @@ function-pointer dispatch tables.
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
+| RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -551,6 +552,37 @@ Request gating validates counts through 65536, reports only `NOT_BLOCKED` or
 device path. Make and CMake aggregate matching repeat-owner manifests, while CPU,
 state, opcode effects, production lookup, and every unresolved integration policy
 remain unchanged.
+
+#### P2-W20F: CPU integration evidence closure (deferred)
+
+State: evidence review complete; implementation is intentionally deferred. A
+second bounded audit of official TI `SPRU172C` Rev C and `SPRU131G` Rev G material
+confirmed the existing RPT load, cardinality, repeatability, and post-decode
+interrupt gate, but did not close the three execution-order questions required by
+the generic CPU transaction.
+
+The additional narrow evidence is useful but insufficient for retirement:
+
+- The RPT entry says RC is inaccessible to software while single-repeat execution
+  decrements it. It does not state the decrement edge or final visible RC.
+- Repeated MVDK/MVKD behavior tests the current RC value for a conditional address
+  increment. That proves an instruction body can depend on repeat progress, so an
+  abstract remaining-count loop cannot be assumed to reproduce all architectural
+  RC behavior.
+- Generic sequential-PC, block-repeat, request-receipt, acknowledgement, latency,
+  and pipeline examples do not specify the single-repeat PC hold/reload mechanism,
+  final PC, or arbitration of a request already pending before RPT reaches decode.
+- GNU binutils 2.42 remains a secondary encoding and operand-shape oracle only. Its
+  opcode metadata supplies no RC, PC, IFR, or interrupt-arbitration semantics.
+
+Therefore production RPT rows remain inactive and `cpu.c` gains no repeat branch or
+effect consumer. The next admissible normative W20F input is stronger TI evidence
+or a versioned original-hardware observation that records initial state, program
+words, request timing, externally visible RC/PC results, and provenance. An optional
+black-box differential vector may expose a hypothesis or disagreement but cannot
+close the common requirement by itself. No such test input may introduce an emulator
+build dependency. Until then, shared-memory transaction foundations and other fully
+evidenced owner-local work may proceed independently.
 
 ## Delivery order
 

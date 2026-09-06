@@ -47,7 +47,11 @@ activate RPT in production decode. P2-W20E is implemented and green as three pur
 owner-separated repeat-sequencer policy proofs for exhaustive `uint32_t`
 cardinality derivation, preclassified-body admission, and repeat-only request
 gating. Actual body execution, production classification, and IRQ integration
-remain planned. The broader
+remain planned. A follow-up TI evidence audit confirmed that the manuals do not
+define the decrement timing edge or final visible RC required by this integration
+contract, single-repeat PC flow, or arbitration for a request already pending
+before RPT decode, so W20F CPU integration is deliberately deferred rather than
+guessed. The broader
 implementation is split
 into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not

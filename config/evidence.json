@@ -1192,6 +1192,38 @@
       "assertion": "The RPT operation encodes immediate #K as 0xEC00 with K in bits 7:0, encodes immediate #lk as first word 0xF070 followed by one 16-bit extension word, loads RC with the operand value, repeats the following instruction operand+1 times, changes no status bits, and is itself nonrepeatable. The examples establish #2 as three body executions and #0xffff as 65536 body executions."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-RPT-P4-146-RC-INACCESSIBLE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "RPT",
+        "printed_page_start": "4-146",
+        "printed_page_end": "4-146"
+      },
+      "assertion": "The RPT description states that software cannot access RC while single-repeat execution is decrementing it. This establishes an active-repeat access restriction but does not identify the decrement phase or the architecturally visible value after the final body execution."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MVDK-MVKD-P4-108-4-114-RPT-RC-PREDICATE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "MVDK and MVKD",
+        "printed_page_start": "4-108",
+        "printed_page_end": "4-114"
+      },
+      "assertion": "The MVDK and MVKD repeat descriptions make their automatic address increment conditional on the current RC value being nonzero and describe the total transfer count as the value in RC at instruction start plus one. This proves that a body-visible RC predicate matters to these repeated operations, but not when RC decrements or what value remains after completion."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-P2-19-2-21-RPT-BODY",
       "immutable": true,
       "state": "PINNED",
@@ -2517,6 +2549,8 @@
       "claim": "Resolve the exact RC decrement phase during single-repeat execution and the architecturally visible final RC value before integrating repeat retirement into the CPU.",
       "evidence_ids": [
         "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147",
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-RC-INACCESSIBLE",
+        "E-TI-C54X-SPRU172C-S4-MVDK-MVKD-P4-108-4-114-RPT-RC-PREDICATE",
         "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
       ],
       "test_ids": []

@@ -5,7 +5,7 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 73 immutable evidence
+The current registry contains 2 targets, 7 sources, 75 immutable evidence
 records, 110 requirements, and 77 tests (69 `PASSING`, 8 `PLANNED`).
 
 ## Targets and address boundary
@@ -373,6 +373,20 @@ first, interior, and maximum remaining counts for maskable, NMI, and literal
 RS/reset classes, with explicit range/kind failures. These tests execute through
 owner-local Make and CTest registrations; the parent sequencer manifests only
 aggregate the repeat subtree.
+
+The P2-W20F evidence-closure review does not authorize CPU integration. A second
+pass over official TI `SPRU172C` and `SPRU131G` material adds two narrower facts:
+software cannot access RC while single-repeat execution decrements it, and the
+repeated MVDK/MVKD forms use a current-`RC != 0` predicate for their address
+increment behavior. Neither fact identifies the decrement phase or final RC.
+The generic PC, block-repeat, interrupt-receipt, acknowledgement, and pipeline
+sections likewise do not define a single-repeat PC hold/reload rule, final PC, or
+the arbitration edge for a request already pending before RPT reaches decode.
+Those three requirements therefore remain unresolved, production RPT decode stays
+inactive, and W20F is deferred until a separately recorded original-hardware vector
+or stronger TI evidence resolves the externally visible behavior. A black-box
+differential vector may identify a hypothesis or disagreement, but cannot itself
+close a normative common-core requirement.
 
 ## Single-indirect address-effect slice
 
