@@ -4,10 +4,12 @@
 /*
  * Module contract
  *
- * Owns: ordered, read-only validation of one value-owned address effect and
- * the minimal commit description consumed by address_effect_apply.c.
- * Does not own: architectural mutation, planning arithmetic, opcode decode,
- * CPU lifecycle, buses, memory, timing, diagnostics, or public ABI.
+ * Owns: the composite read-only validation entry point and the minimal commit
+ * description consumed by address_effect_apply.c. Intrinsic effect checks and
+ * architectural dependency reads are delegated to their private owners.
+ * Does not own: intrinsic shape rules, architectural state reads or mutation,
+ * planning arithmetic, opcode decode, CPU lifecycle, buses, memory, timing,
+ * diagnostics, or public ABI.
  */
 
 #include <stdint.h>

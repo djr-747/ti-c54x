@@ -141,18 +141,19 @@ The project contract does not elevate those API details into architectural
 evidence.
 
 The sequencer consumes that planner result without redoing its arithmetic. Its
-private read-only validation seam checks result status, selected AR and update
-shape, requested phase, the PRE/POST effective-address relation, mode state,
-and ordered source dependencies before producing either a zero-valued NONE
-descriptor or one discriminated AR commit descriptor. A known selected AR must
-still equal the effect's expected before value (or the no-update effective
-address); otherwise validation returns a stale-state status. Unknown AR state
-is reported separately. The application seam owns the sole checked AR write;
-a valid NONE descriptor does not mutate state. Every rejection preserves the
-complete private state byte-for-byte. This is a project sequencing contract:
-it does not add ARP, bus, memory, timing, opcode, or address-boundary behavior,
-and it deliberately does not require `value_after` to differ from
-`value_before` by one or two.
+private read-only validation entry first rejects invalid result containers,
+then delegates state-free operand/source/update/policy/phase checks to the
+intrinsic owner and mode/source state reads to the dependency owner. Only after
+both owners succeed does it publish either a zero-valued NONE descriptor or one
+discriminated AR commit descriptor. A known selected AR must still equal the
+effect's expected before value (or the no-update effective address); otherwise
+validation returns a stale-state status. Unknown AR state is reported
+separately. The application seam owns the sole checked AR write; a valid NONE
+descriptor does not mutate state. Every rejection preserves the complete
+private state byte-for-byte. This is a project sequencing contract: it does not
+add ARP, bus, memory, timing, opcode, or address-boundary behavior, and it
+deliberately does not require `value_after` to differ from `value_before` by one
+or two.
 
 ### AR0-indexed WORD16 slice
 

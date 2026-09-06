@@ -38,6 +38,8 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/address/indirect_indexed.o \
 	$(BUILD_DIR)/obj/address/indirect_long_offset.o \
 	$(BUILD_DIR)/obj/address/indirect_reverse_carry.o \
+	$(BUILD_DIR)/obj/sequencer/address_effect_intrinsic.o \
+	$(BUILD_DIR)/obj/sequencer/address_effect_dependencies.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_validate.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
@@ -96,6 +98,8 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_indexed.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_long_offset.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_reverse_carry.o \
+	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_intrinsic.o \
+	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_dependencies.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_validate.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_apply.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
