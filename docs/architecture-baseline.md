@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 65 immutable evidence
-records, 94 requirements, and 64 tests (60 `PASSING`, 4 `PLANNED`).
+records, 94 requirements, and 64 tests (62 `PASSING`, 2 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -157,16 +157,16 @@ NOP and sequential-flow records support only the one-word NOP/no-status/sequenti
 context; the carrier, stop, counter, and transaction rules are project-contract
 requirements anchored in the implementation plan. Timing, shared-memory mutation,
 interrupts/repeat, operand extension fetch, full ISA coverage, profiles, and
-emulator integration remain outside this slice. The next implementation slice is
-operand-field extraction followed by extension-word fetch.
+emulator integration remain outside this slice. Operand-field extraction and
+extension-word fetch are now proven in the completed P2-W19A/P2-W19B seams.
 
 ### Value-owned operand-field extraction (P2-W19A implemented)
 
 P2-W19A is the implemented first half of a deliberately split pre-repeat
 foundation. It owns only a pure, allocation-free extractor in
-`src/isa/decode/operand_field.[ch]`;
-P2-W19B will separately own extension-word fetch and width-aware PC span/commit.
-The split keeps bus I/O in the planned `src/cpu/` instruction-fetch owner while
+`src/isa/decode/operand_field.[ch]`; completed P2-W19B separately owns
+extension-word fetch and width-aware PC span/commit.
+The split keeps bus I/O in the `src/cpu/` instruction-fetch owner while
 `src/sequencer/` owns sequencing and commit, and keeps both concerns out of the
 decode value assembly seam. No production opcode inventory, catalog macro arity,
 layout binding, handler, public API, or fetch path changes in 19A.
@@ -224,7 +224,13 @@ instruction can be integrated. It adds no production opcode, handler, catalog ro
 or CPU retire behavior. The evidence record is project-contract-only and makes no
 TI conformance, machine-cycle, memory, interrupt, repeat, or emulator claim.
 
-The planned `src/cpu/instruction_fetch.[ch]` owner collects only extension words
+Status: implemented and green at commit
+`3e57e316bdac5cbb469cba2cc5d5060cc45d1dea`. Focused normal and ASan/UBSan tests
+cover both seams, and the full standalone `make -B test` gate passed. The next
+slice is evidence-first RPT/IRQ semantics; count-two CPU retirement, timing,
+memory mutation, XPC, and emulator integration remain out of scope.
+
+The implemented `src/cpu/instruction_fetch.[ch]` owner collects only extension words
 after a first word has already been fetched and decoded. Its allocation-free
 by-value result has helper capacity exactly two `uint16_t` program words (not an
 ISA-wide maximum), explicit `program_word_count`, status, and exact bus status.
@@ -245,25 +251,26 @@ buses, unsupported widths, overflow, callback failure, and callback scribbles ar
 deterministic. The helper owns no first-word fetch, counters, CPU/PC/state mutation,
 common 16-bit/XPC policy, timing/waits, memory, observers, or diagnostics.
 
-The planned `src/sequencer/sequential_pc.[ch]` and `program_pc_bridge.[ch]` owners
+The implemented `src/sequencer/sequential_pc.[ch]` and
+`program_pc_bridge.[ch]` owners
 generalize staged PC effects to explicit `uint8_t` widths 1..255. Both operands
 are converted to `uint32_t` before addition for hosts where `int` is 16 bits.
 Checked arithmetic rejects count zero and sums above `UINT16_MAX` as unresolved,
 with no pre-validation wrap or narrowing. Count one preserves the existing
 `0xfffe -> 0xffff` admission and `0xffff` unresolved boundary. Valid, stale, and
 malformed effects remain transactional. The public bridge rejects carriers above
-`0xffff` without
-inferring XPC and delegates admitted width arithmetic; it performs no bus I/O.
+`0xffff` without inferring XPC and delegates admitted width arithmetic; it performs
+no bus I/O.
 
 P2-W18 CPU orchestration and NOP ordering remain unchanged; no count-two opcode is
 registered, so the CPU does not yet consume this helper end-to-end. Later RPT work
 will choose the ordering of bridge span validation, extension reads, operand
-extraction, and semantics. `last_fetched_word` remains unchanged. Planned proofs
+extraction, and semantics. `last_fetched_word` remains unchanged. Passing proofs
 are owned by `tests/unit/cpu/test_instruction_extension_fetch.c` and
 `tests/unit/sequencer/test_program_pc_bridge_multiword.c`, with exhaustive width,
 boundary, failure, callback, no-retention, and no-mutation cases. Existing P2-W18
-CPU tests remain regression gates.
-The boundary matrix explicitly admits `0xfffd + 2 = 0xffff` and rejects
+CPU tests remain regression gates, and both new tests pass under their owner-local
+runners. The boundary matrix explicitly admits `0xfffd + 2 = 0xffff` and rejects
 `0xfffe + 2` as unresolved, alongside count zero and all widths through 255.
 
 ## Single-indirect address-effect slice

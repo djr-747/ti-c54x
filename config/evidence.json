@@ -2227,7 +2227,7 @@
     },
     {
       "id": "REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2237,7 +2237,7 @@
     },
     {
       "id": "REQ-PROJECT-SEQUENCER-MULTIWORD-PC",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
@@ -2784,18 +2784,18 @@
     },
     {
       "id": "T-PROJECT-INSTRUCTION-EXTENSION-FETCH",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_instruction_extension_fetch.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_instruction_extension_fetch"},
       "requirement_ids": ["REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH"]
     },
     {
       "id": "T-PROJECT-SEQUENCER-MULTIWORD-PC",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/test_program_pc_bridge_multiword.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.program_pc_bridge_multiword"},
       "requirement_ids": ["REQ-PROJECT-SEQUENCER-MULTIWORD-PC"]
     }
   ]

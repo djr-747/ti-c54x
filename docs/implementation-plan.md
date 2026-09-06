@@ -46,7 +46,7 @@ function-pointer dispatch tables.
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
-| Transactional extension fetch and width-aware program PC (P2-W19B) | Active | Freeze allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit contracts before any multiword opcode or RPT integration |
+| Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -186,10 +186,10 @@ handwritten source list.
 ### P2-W19A: value-owned operand-field extraction (active kickoff)
 
 State: implemented. P2-W19 is deliberately split into two atomic contracts:
-P2-W19A proves value-owned operand-field extraction first; P2-W19B will separately
-prove extension-word fetch and width-aware program-PC span/commit. Both precede
+P2-W19A proves value-owned operand-field extraction first; completed P2-W19B
+proves extension-word fetch and width-aware program-PC span/commit. Both precede
 repeat instructions, including `RPT`, so operand shape and multiword sequencing are
-not smuggled into an opcode handler. Bus reads belong to `src/cpu/` (the planned
+not smuggled into an opcode handler. Bus reads belong to `src/cpu/` (the
 instruction-fetch owner); `src/sequencer/` owns only the resulting width-aware
 program-PC span and commit policy.
 
@@ -233,7 +233,7 @@ hot path. No such generator or specialization exists in this work piece.
 
 ### P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)
 
-State: active contract kickoff. This work piece freezes the two seams needed before
+State: implemented and green. This work piece froze the two seams needed before
 any multiword opcode, including `RPT`, is allowed to enter CPU retirement. It adds no
 production opcode, handler, catalog row, or CPU end-to-end count-two integration.
 The implementation and tests must remain standalone, allocation-free, and
@@ -282,14 +282,20 @@ unchanged. Ownership follows the tree: `src/cpu/` owns fetch collection,
 `src/sequencer/` owns PC arithmetic and transactional application, and tests live
 under `tests/unit/cpu/` and `tests/unit/sequencer/` respectively.
 
-The planned proofs cover count-one/no-read, exact low/high count-two carriers,
+The passing proofs cover count-one/no-read, exact low/high count-two carriers,
 `UINT32_MAX` overflow, missing callbacks, every bus-fault status, callback scribble
 on failure, no retry, complete-bundle-only publication, deterministic failures, no
 pointer retention, exhaustive valid widths and boundaries 1..255, count-one
 regression, explicit `0xfffd + 2 = 0xffff` admission and `0xfffe + 2`
 unresolved-boundary rejection, high public carriers, malformed/stale effects, and
 no mutation. Existing P2-W18 CPU tests remain regression gates. Both new tests are
-`PROJECT_CONTRACT_ONLY` with no runner until their owners implement them.
+`PROJECT_CONTRACT_ONLY` and passing under their owner-local runners.
+
+The implementation commit is `3e57e316bdac5cbb469cba2cc5d5060cc45d1dea`. Focused
+normal and ASan/UBSan tests passed for both new seams, and the full standalone
+`make -B test` gate passed. The next work is evidence-first RPT/IRQ semantics;
+this slice does not claim TI conformance, timing, repeat, IRQ, memory mutation,
+XPC, or emulator integration.
 
 ## Delivery order
 

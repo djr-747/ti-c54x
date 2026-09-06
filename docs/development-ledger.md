@@ -2694,3 +2694,48 @@ rewritten after publication.
 - Focused docs-only validation: run the evidence/schema and registry quality
   checks plus `git diff --check`; do not run the full build/test gate for this
   kickoff. The later implementation work owns the coherent `make -B test` gate.
+
+## 2026-09-06 — P2-W19B completion — transactional extension fetch and width-aware program PC
+
+- State: implemented and green. Implementation commit:
+  `3e57e316bdac5cbb469cba2cc5d5060cc45d1dea` (`P2-W19B: add extension fetch and width-aware PC`).
+- Plan: complete the two private seams required before multiword opcode or repeat
+  integration: CPU-owned extension collection and sequencer-owned width-aware PC
+  span/commit. The anchored plan heading remains `P2-W19B: transactional extension
+  fetch and width-aware program PC (active kickoff)` so the immutable evidence
+  locator remains stable.
+- TDD red summaries: the CPU extension-fetch matrix was initially unavailable
+  without its owner implementation and the multiword PC matrix was initially
+  rejected by the one-word-only planner. The implementation then made the red
+  cases executable: count-one/no-read, exact count-two carriers and failure
+  publication on the fetch seam; exhaustive widths, boundaries, malformed/stale
+  effects, and no-mutation cases on the PC seam.
+- Ownership/API decisions: `src/cpu/instruction_fetch.[ch]` owns a by-value,
+  allocation-free two-word helper result and retains no bus/context pointer;
+  `src/sequencer/sequential_pc.[ch]` and `program_pc_bridge.[ch]` own checked
+  `uint8_t` widths 1..255 and transactional 16-bit PC effects. The helper does
+  not fetch the first word or mutate CPU state, and the bridge performs no bus
+  I/O. No production opcode, catalog row, handler, or CPU count-two retirement
+  integration was introduced.
+- Independent review: Luna implementation review reported no blocker, major, or
+  minor finding. The fetch collector is 74 source lines, sequential-PC owner is
+  80, and public-carrier bridge remains 114; ownership is mirrored by the directory
+  tree and no monolith was introduced.
+- Registry final: 2 targets, 7 sources, 65 immutable evidence records, and 94
+  requirements (80 `IMPLEMENTED`, 2 `PLANNED`, 12 `UNRESOLVED`); 64 tests (62
+  `PASSING`, 2 `PLANNED`). The two W19B requirements are implemented and their
+  tests are passing under `ti_c54x.cpu_instruction_extension_fetch` and
+  `ti_c54x.program_pc_bridge_multiword`.
+- Validation: focused normal and ASan/UBSan tests passed for both new seams;
+  full main validation `make -B test` passed with 161 Python quality tests, 57 C
+  unit targets, and 58 direct executions including the minimal consumer. The
+  evidence checker, evidence registry/runner unit tests, and `git diff --check`
+  also passed.
+- Isolation: no environment reads or `getenv`, allocator, logging, diagnostic,
+  knob, public API, `cpu.c`, or P2-W18 contract changes. No timing, TI
+  conformance, repeat, IRQ, memory mutation, XPC, or emulator integration claim
+  was added.
+- Follow-up: publish the implementation and completion records, verify CI, then
+  begin evidence-first RPT/IRQ semantics. RPT will decide the later orchestration
+  ordering among span validation, extension reads, operand extraction, and
+  semantics.
