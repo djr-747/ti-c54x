@@ -2496,3 +2496,20 @@ rewritten after publication.
 - Follow-up: publish and verify the implementation and this completion record;
   next implement operand-field extraction and extension-word fetch, then begin
   evidence-first `RPT`/IRQ work. This entry makes no claim of full ISA coverage.
+
+## 2026-09-06 — P2-W18 remote verification
+
+- Published implementation commit:
+  `52c76f75ff78935989136e398f658e838ae7bc47`.
+- Published completion-ledger commit:
+  `a4e70865804de3b5c8d3598ed65a545c8b19a91b`.
+- GitHub Actions run
+  [34015197239](https://github.com/djr-747/ti-c54x/actions/runs/34015197239)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make tests, library-only
+  configure/build, full CMake/CTest, installation, downstream package-consumer
+  tests, and Clang sanitizer configure/build/test.
+- Result: P2-W18 is published and proven across repository-owned build surfaces;
+  standalone isolation is retained. Next is operand-field extraction and
+  extension-word fetch before evidence-first `RPT`/IRQ work. This makes no claim
+  of full ISA coverage, timing, memory, or IRQ implementation.
