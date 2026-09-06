@@ -3541,3 +3541,20 @@ rewritten after publication.
   dependency, or external implementation was introduced.
 - Follow-up: publish and remotely verify the implementation and completion record,
   then begin P2-W21B as the separate explicit WORD16 byte-order codec owner.
+
+## 2026-09-06 — P2-W21A remote verification
+
+- Published implementation commit:
+  `2f23aeea02042f3419623a585066c192c2f2a402`.
+- Published completion-record commit:
+  `73fce87b7d2e74a5e3dbfef405759da476710c49`.
+- GitHub Actions run
+  [34029176546](https://github.com/djr-747/ti-c54x/actions/runs/34029176546)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and Clang sanitizer configure/build/test.
+- Result: P2-W21A is published and green on every repository-owned build surface.
+  The private WORD16 request remains unused by CPU execution and the public
+  synchronous bus ABI is unchanged. P2-W21B may now begin under the separate
+  `bus/byte_order/` owner.
