@@ -63,6 +63,24 @@ contracts. Early execution continues to use instruction budgets; a machine-cycle
 budget API is not exposed until its common-core timing claims have pinned evidence
 and executable tests.
 
+- The eventual timed API uses explicit units. `ti_c54x_cpu_tick()` advances
+  exactly one DSP machine cycle and never overshoots; a one-cycle instruction may
+  start and retire in that call. `ti_c54x_cpu_run_cycles()` consumes no more than
+  its machine-cycle budget, while `ti_c54x_cpu_step_instruction()` continues only
+  until the next retirement or an explicit stop. Existing instruction-budget
+  entry points are not silently redefined as cycle-budget entry points.
+- A multi-cycle instruction is a private resumable sequencer transaction. Budget
+  exhaustion leaves its decoded identity, phase, resource classification,
+  prepared effects, and any pending bus transaction in the CPU instance; the
+  next tick resumes that transaction instead of decoding or applying it again.
+  Results distinguish cycles consumed, instructions started, instructions
+  retired, in-flight progress, and the exact reason execution stopped.
+- Architectural register, status, and PC effects are prepared by semantics and
+  committed exactly once at retirement. Bus activity occurs only at an
+  evidence-backed sequencer phase; a read result remains staged until retirement,
+  while externally visible writes occur exactly once at the evidenced bus-
+  completion point. Ending a budget mid-instruction must not expose a partial
+  architectural commit or reissue a completed bus side effect.
 - Opcode semantic handlers produce architectural effects. They do not increment a
   global cycle counter or embed ad hoc numeric costs.
 - The generated opcode inventory provides a named timing/resource classification
@@ -76,6 +94,27 @@ and executable tests.
 - A future timed result reports machine cycles with an explicitly named unit.
   Instruction-budget APIs remain available for deterministic semantic execution;
   neither budget is presented as the other.
+- An instruction whose timing classification is unknown does not enter the timed
+  transaction and never defaults to one cycle. The timed API returns an explicit
+  unknown-timing stop, with no instruction side effect; an already in-flight
+  transaction can only report states admitted by the contract under which it
+  started.
+- Per-instance cumulative instruction and machine-cycle counters are `uint64_t`
+  and use checked increments. Exhaustion returns an explicit sticky counter-
+  overflow stop before beginning another cycle; neither cumulative values nor
+  per-call deltas silently wrap.
+- A future timed bus profile must support an allocation-free begin/poll/complete
+  transaction (or an equivalent explicit READY/WAIT protocol), because the
+  current synchronous callback cannot represent wait cycles without overshoot.
+  Retry, completion, and fault paths must prove that reads and writes are issued
+  and committed at most once.
+- Interrupt sampling is a named sequencer boundary but remains unresolved until
+  primary interrupt/pipeline evidence pins it. The core must not assume sampling
+  on every tick or only at retirement by convenience.
+- ARM-to-DSP scheduling belongs solely to an emulator adapter. It uses a reduced
+  rational ratio and integer phase accumulator to decide how many exact DSP
+  cycles to request per ARM tick; the standalone core never receives an ARM tick,
+  host-clock ratio, PLL model, or fractional cycle.
 - Timing metadata is static/generated and allocation-free. Runtime accounting uses
   compact typed fields or resource flags passed through the sequencer, with no
   environment lookup, logging hook, string dispatch, or mutable process global in
@@ -88,7 +127,10 @@ and executable tests.
 Exit condition: every implemented instruction form has either an evidenced timing
 classification or an explicit unknown marker; the sequencer and device profile
 compose costs without double counting; instruction and machine-cycle budgets are
-provably distinct; and no handler-local magic cycle increment exists.
+provably distinct; one-cycle budgets never overshoot and can resume an in-flight
+instruction; retirement and bus effects occur exactly once; counters cannot wrap;
+the external rational scheduler introduces no fractional core state; and no
+handler-local magic cycle increment exists.
 
 The first architecture target is a device-neutral common C54x core. A concrete
 silicon profile is added separately after common CPU semantics are stable; no
