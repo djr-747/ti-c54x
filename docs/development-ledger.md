@@ -1701,3 +1701,70 @@ rewritten after publication.
 - Follow-up: commit this kickoff decision, delegate disjoint implementation and
   proof/build ownership to Luna workers, integrate and independently review the
   final tree, run the local gates once, then commit and verify remotely.
+
+## 2026-09-06 — P2-W12 completion — Sequencer address-effect decomposition
+
+- State: complete in implementation commit
+  `cebd507d221e50ee6667f65594c77da5c5b17abc`.
+- Outcome: `ti_c54x_sequencer_validate_address_effect` is now a private,
+  read-only transaction-preparation seam. It validates one borrowed planner
+  result against borrowed architectural state and returns either a fully
+  zeroed NONE descriptor or one discriminated selected-AR commit descriptor.
+  `ti_c54x_sequencer_apply_address_result` is reduced to orchestration and the
+  sole final AR write.
+- Preserved behavior: argument and requested-phase rejection precedes non-OK
+  result rejection; address-owned MOD13/reverse validators precede generic
+  effect checks; intrinsic source/update/policy shape precedes phase mismatch;
+  phase mismatch precedes the update/address relation; mode state precedes
+  source state. CMPT and ARP, selected AR and copied AR0, and CPL and DP/SP keep
+  their established read/status order. Direct effects still produce no commit,
+  and an AR0 write remains distinct from NONE through the target discriminator.
+- Transaction boundary: the validator clears the complete caller-owned commit
+  object before every path that can return an error and never mutates state.
+  The apply layer consumes only a successful descriptor, performs no duplicate
+  validation or dependency read, and permits at most one checked AR write.
+- Ownership and file shape: `address_effect_validate.c` is the cohesive
+  read-only owner at 394 lines with a 45-line private header;
+  `address_effect_apply.c` is 41 lines. The initial combined proof reached 499
+  lines, so integration split it by responsibility into a 226-line validation/
+  descriptor contract and a 246-line dependency-order contract rather than
+  accepting a near-threshold test monolith. Future circular growth must split
+  intrinsic shape from state dependencies before the validator approaches 500
+  lines.
+- TDD proof: `test_address_effect_validate_contract.c` proves null and invalid
+  inputs, rejected planner results, malformed operand/source/update/policy
+  shapes, phase precedence, full zero-on-error output, exact NONE/PRE/POST
+  descriptors including AR0, and bytewise state nonmutation.
+  `test_address_effect_dependency_contract.c` independently reaches and proves
+  CMPT/ARP, selected-AR-before-AR0, and CPL-before-DP/SP dependency outcomes,
+  including unknown and stale sources. Every pre-existing sequencer and address
+  application test remains unchanged as behavior-preservation coverage.
+- Evidence: one immutable project-contract record and one implemented
+  sequencer requirement link both new proof owners. The registry now contains
+  2 targets, 7 sources, 56 immutable evidence records, 65 requirements, and 51
+  tests (45 `PASSING`, 6 `PLANNED`). No TI architectural behavior was added by
+  this refactor.
+- Review corrections: integration made descriptor clearing padding-safe,
+  corrected the new header's mandatory module-contract marker, removed
+  misleading public-boundary wording, split the 499-line test, repaired the
+  Make target layout required by static runner proof, and fixed the dependency
+  helper to request each effect's actual phase so its vectors reach state reads.
+  A final independent Luna review found no remaining blocker and identified a
+  stale current-count paragraph, which was corrected in the architecture
+  baseline along with the new validation/apply ownership description.
+- Local validation: final-tree strict `make -B test` passed every registered C
+  test and all 96 Python quality tests. ASan/UBSan `make -B test` also passed.
+  Source boundaries passed for 82 files; evidence passed at 65 requirements and
+  51 tests; knob and observer-disabled artifact gates passed. GCC `-fanalyzer`
+  accepted both sequencer implementation files, and
+  `make -B PYTHON=/definitely/missing build` proved the standalone
+  compiler-only path. CMake configure, CTest, install, consumer, and sanitizer
+  variants remain assigned to remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment lookup, diagnostic hook, file I/O, firmware input, emulator
+  dependency, mutable process global, allocator, or public ABI surface was
+  added.
+- Remote context: the P2-W12 kickoff commit passed GitHub Actions run
+  `34001721915`. Push and verify the implementation and this completion ledger
+  next, then begin the evidence-first circular-addressing work piece against
+  the explicit BK dependency.
