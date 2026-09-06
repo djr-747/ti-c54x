@@ -1912,3 +1912,39 @@ rewritten after publication.
   input, public ABI, emulator coupling, or device-specific behavior.
 - Follow-up: make exact cycle-bounded resumability explicit in the timing plan,
   then start P2-W14 with evidence and failing tests before circular arithmetic.
+
+## 2026-09-06 — Timing-plan refinement — Exact-cycle resumability
+
+- State: architecture decision recorded in planning commit
+  `fb043f61ee7e184a7069b2e207872d73e85067ba`; no timed execution behavior is
+  implemented or claimed by this entry.
+- Decision: the future timed surface has explicit machine-cycle units. One tick
+  advances exactly one DSP machine cycle, a cycle-budget run never overshoots,
+  and an instruction-step convenience continues until one retirement or an
+  explicit stop. Existing instruction-budget entry points are never silently
+  reinterpreted as cycle budgets.
+- Continuation boundary: a multi-cycle instruction is a private per-instance
+  sequencer transaction. Budget exhaustion preserves its decoded identity,
+  phase, timing/resource class, prepared effects, and pending bus transaction;
+  the next tick resumes it. Register/status/PC effects commit once at retirement,
+  and evidenced bus effects complete once at their named phase.
+- Failure discipline: unknown timing never defaults to one cycle; checked
+  `uint64_t` accounting cannot silently wrap; a timed bus profile must expose an
+  allocation-free READY/WAIT transaction; and interrupt sampling remains an
+  explicit unresolved boundary until primary evidence pins it.
+- Integration boundary: an emulator adapter, not the standalone core, owns the
+  reduced rational ARM-to-DSP ratio and integer phase accumulator. The common
+  core receives only whole DSP-cycle budgets and contains no ARM tick, host
+  clock, PLL, or fractional-cycle state.
+- Independent review: a read-only Luna audit checked the existing public CPU and
+  synchronous bus surfaces and confirmed that exact-cycle resumability belongs
+  in the plan now, while concrete APIs, pending-state layout, interrupt phases,
+  wait protocol, and instruction costs must wait for opcode and primary timing
+  evidence.
+- Validation: all 96 Python quality tests, evidence/knob/source-boundary checks,
+  and the observer-disabled artifact check passed after the planning edit.
+- Knobs and isolation: unchanged. The decision adds no knob, environment read,
+  diagnostic hook, code, ABI, emulator dependency, or timing value.
+- Follow-up: implement P2-W14 circular MOD8/MOD10 WORD16 semantics without any
+  timing claim; start timed execution only after the opcode inventory can carry
+  explicit evidenced or unknown timing metadata.
