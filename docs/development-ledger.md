@@ -2801,3 +2801,17 @@ rewritten after publication.
   piece owns the coherent full standalone test gate.
 - Follow-up: commit and remotely verify this kickoff, then begin P2-W20B with red
   tests for the canonical complete-instruction bundle and unchanged NOP behavior.
+
+## 2026-09-06 — P2-W20A kickoff remote verification
+
+- Published kickoff commit:
+  `0b1f0825c631b39cdfa77c033f377b141166886f`.
+- GitHub Actions run
+  [34020296678](https://github.com/djr-747/ti-c54x/actions/runs/34020296678)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: the RPT evidence, phased owner hierarchy, planned proof inventory, and
+  explicit unresolved boundaries are published and green. No production behavior
+  changed. P2-W20B canonical instruction-bundle TDD is next.
