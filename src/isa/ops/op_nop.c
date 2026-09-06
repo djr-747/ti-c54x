@@ -20,7 +20,7 @@ ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
                ti_c54x_op_effect *effect)
 {
     const ti_c54x_opcode_metadata *metadata;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
 
     if (instruction == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;

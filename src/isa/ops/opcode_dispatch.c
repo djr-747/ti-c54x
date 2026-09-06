@@ -33,7 +33,7 @@ ti_c54x_dispatch_decoded(const ti_c54x_decoded_instruction *instruction,
                          ti_c54x_op_effect *effect)
 {
     const ti_c54x_opcode_metadata *metadata;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_op_handler handler;
     int id;
     ti_c54x_op_status status;
