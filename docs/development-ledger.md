@@ -2001,3 +2001,40 @@ rewritten after publication.
   and commits. Luna workers own bounded evidence registration, test-first proof,
   address-module implementation, sequencer integration, and independent review;
   workers do not commit.
+
+## 2026-09-06 — Architecture-plan refinement — Shared-memory gate
+
+- State: structural requirement recorded in planning commit
+  `8629f8a2fd1178fa547c44c3b415b9ce513370d3`; no memory-mutation behavior is
+  implemented or claimed by this entry.
+- Decision: memory is a first-class transaction owned across bus and sequencer
+  boundaries before any load/store handler may mutate it. The core exchanges
+  typed architectural words and never owns or aliases caller byte-backed RAM.
+- Ordering and suspension: handlers declare complete value-owned memory effects;
+  the sequencer resolves evidenced parallel read/write order; and an explicit
+  begin/poll/complete transaction survives waits and budget exhaustion without
+  reissuing reads or duplicating writes. Architectural effects remain staged
+  around that transaction under a separately tested fault/visibility contract.
+- Shared ownership: an external bus/emulator adapter arbitrates DSP CPU, ARM CPU,
+  DMA, and device masters deterministically. Host thread timing cannot determine
+  emulated order, and the common core contains no ARM identity, shared-RAM
+  pointer, device map, host mutex, or platform arbitration.
+- Endianness: the common C54x core is word-native and host-endian-neutral. Each
+  byte-oriented boundary explicitly owns its conversion: image encoding, physical
+  byte-lane order, and snapshot/wire format are not interchangeable. Multiword
+  values follow evidenced DSP word order and never rely on host `uint32_t`
+  layout, casts, packed structs, union punning, or native byte order.
+- Nokia integration note: the current DCT3 tree identifies its ARM/flash, DSP
+  images, HPI, and ordinary mailbox words as big-endian, while some protocol
+  fields have separately evidenced little-endian encoding. Those are future
+  Nokia-profile adapter facts and do not become a global common-core flag.
+- Proof obligation: a common test bus must cover request shape, READY/WAIT/fault,
+  exactly-once issue/completion, word composition, explicit BE/LE adapters,
+  overlapping parallel accesses, and deterministic independent masters before a
+  memory-writing opcode slice can pass.
+- Validation: all 96 Python quality tests and evidence parity passed after the
+  plan edit. P2-W14 remains register-address arithmetic only and does not cross
+  this gate.
+- Knobs and isolation: unchanged. No knob, environment read, code, public ABI,
+  emulator dependency, memory map, raw pointer, timing value, or device behavior
+  was added.
