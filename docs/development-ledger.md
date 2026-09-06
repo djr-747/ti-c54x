@@ -2927,3 +2927,16 @@ rewritten after publication.
 - Validation for this docs-only kickoff is limited to evidence/schema quality and
   `git diff --check`; the implementation work piece owns its coherent standalone
   full test gate.
+
+## 2026-09-06 — P2-W20C kickoff remote verification
+
+- Published kickoff commit:
+  `bac48dc04e763ce0c879c8ecfd2bc201e010b75c`.
+- GitHub Actions run
+  [34021936812](https://github.com/djr-747/ti-c54x/actions/runs/34021936812)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: the W20C1/W20C2 ownership split, planned proof, and no-RPT-activation gate
+  are published and green. W20C1 scalar catalog metadata TDD is next.
