@@ -3924,3 +3924,58 @@ rewritten after publication.
   with no architectural effect. Before the first multiword catalog
   instruction, derive the `mixed-current` program-word span and retirement
   window under the unresolved 16-bit PC boundary.
+
+## 2026-09-06 — P2-W23 MAX/MIN accumulator vertical slice completion and performance closure
+
+- State: complete. The implementation landed as
+  `a14d331a361eaad8881942b030f5b3bea8e69160`; its GitHub Actions run
+  [34045099893](https://github.com/djr-747/ti-c54x/actions/runs/34045099893)
+  is green. The performance/documentation follow-up landed as
+  `ed1be7f4f5dce61a052494b2ecf7eab538ccfe45`; its GitHub Actions run
+  [34045384864](https://github.com/djr-747/ti-c54x/actions/runs/34045384864)
+  is green.
+- TDD evidence is RED/GREEN: the planned focused tests were wired before
+  production code, captured the expected failures, then passed after the
+  vertical slice was implemented. Full local `make test` is green (176 Python
+  tests plus all C and quality checks). The registry closes at 87 evidence
+  items, 128 requirements (103 implemented, 9 planned, 16 unresolved), and
+  92 tests (83 passing, 9 planned).
+- MAX_ACC (`0xF486`/`0xF586`) and MIN_ACC (`0xF487`/`0xF587`) admit four
+  concrete one-word encodings through two masked catalog rows, with the generic
+  MAX/MIN layout owning D at word-0 bit 8.
+  Their handlers perform signed full-40-bit A/B compare/select (ties select
+  A), return a value-owned accumulator effect and C value, and leave
+  the non-destination accumulator untouched. Catalog rows own declaration and
+  input resources; decode owns generic metadata/layout extraction; compare
+  owns pure semantics; accumulator state owns canonical raw-40 values and
+  knownness; the accumulator sequencer validates and commits effects
+  atomically; CPU owns lifecycle and PC-boundary retirement. Mirrored tests
+  follow that ownership tree. Direct handlers share one input/effect contract,
+  preserve output on malformed input, and do not carry source snapshots in
+  effects.
+- Catalog input-resource metadata is explicit: NOP and LD rows declare
+  `NONE`, MAX/MIN rows declare `ACCUMULATORS`. The typed mask is copied into
+  decoded metadata and validated generically; CPU reads an accumulator snapshot
+  only when the mask requests it, and candidate accumulator copy/commit is
+  confined to the generic accumulator-effect path. This removes unconditional
+  accumulator work from NOP/LD hot paths and keeps the core independent of any
+  emulator or firmware image.
+- Performance closure is hosted POSIX observer-off measurement only (no silicon
+  timing claim). Clean `a14d331` records NOP at 65.538 ns / 15.258 MIPS and LD
+  at 97.485–97.982 ns / 10.206–10.258 MIPS, a fixed +2.37–3.79% delta versus
+  `aa0afc0`; new spreads are 2.19–8.76%. The reset-runnable `mixed-current`
+  sample is 89.986 ns / 11.113 MIPS over a 4/6 runnable subset and is not
+  compared across the catalog change. The initial implementation regressed
+  NOP/LD by 13–25% because it unconditionally copied accumulator state; the
+  generic resource-mask correction removed that work. Two post-fix samples
+  remained noisy (one within −3.7%..+3.4%, the other +11.7%..+13.7%), so the
+  clean cohort is reported without claiming universal recovery.
+- Fanout policy is explicit: use 2–3 family-local implementation lanes, then
+  serialize shared integration; an architecture GAP stops and reports rather
+  than widening ownership. IRQ, RPT, memory, and timing semantics remain
+  serialized. The CMPL scout remains a GAP until a generic accumulator-effect
+  C disposition (`PRESERVE`/`WRITE`) is specified; it must not introduce a CPU
+  opcode-identity branch.
+- `cpu.c` is at the 443-line review boundary. The next CPU growth must extract
+  generic effect routing/retirement transaction logic rather than adding family
+  branches.
