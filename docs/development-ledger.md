@@ -3495,3 +3495,49 @@ rewritten after publication.
   public ABI, explicit no-width/no-phase decision, project-only requirement, and
   standalone isolation are published and green. The bounded Luna TDD implementation
   is active under the new `bus/request/` ownership boundary.
+
+## 2026-09-06 — P2-W21A completion — private WORD16 bus request
+
+- State: implemented and green. Implementation commit:
+  `2f23aeea02042f3419623a585066c192c2f2a402`
+  (`P2-W21A: add WORD16 bus requests`).
+- TDD RED: owner-mirrored tests and manifests were registered first;
+  `rtk make -B build-fast/test_bus_word16_request` failed because the required
+  `build-fast/obj/bus/request/word16_request.o` did not exist. Implementation made
+  that same target and direct executable pass.
+- Request result: separate read and write constructors return a value-owned status
+  plus request. PROGRAM preserves all `uint32_t` carriers through `UINT32_MAX`;
+  DATA/IO reject `0x10000` and `UINT32_MAX` before narrowing. READ owns canonical
+  zero write data; WRITE copies zero, interior, and `UINT16_MAX` values.
+- Validation: status is exactly `OK`, `INVALID_SPACE`, or `INVALID_ADDRESS`; invalid
+  space wins before address validation. Failed construction zeroes every named
+  request field. The borrowed validator rejects null, zero/forged discriminants,
+  wide DATA/IO carriers, and noncanonical reads, and named-field snapshots prove it
+  mutates neither valid nor invalid input. No padding-byte claim is made.
+- Ownership: implementation and test live under mirrored `bus/request/` leaf
+  subtrees. Parent bus manifests aggregate the leaf; root Make/CMake and the CMake
+  test root each add only the required bus aggregation line. No callback, phase,
+  width enum, read result, lifecycle state, or unrelated bus policy entered W21A.
+- Independent Luna review found no blocker or major behavioral, C11, range,
+  precedence, transactionality, ownership, isolation, manifest, or future-W21C
+  issue. Its one minor nonmutation-proof finding was closed with named-field
+  snapshots before the implementation gate.
+- Size/shape: implementation is 102 lines, private interface 77 lines, and focused
+  proof 247 lines. No file approaches the 500-line review threshold.
+- Registry final: 2 targets, 7 sources, 76 immutable evidence records, 111
+  requirements (88 `IMPLEMENTED`, 8 `PLANNED`, 15 `UNRESOLVED`), and 78 tests
+  (70 `PASSING`, 8 `PLANNED`). `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` runs as
+  `ti_c54x.bus_word16_request` in both supported build systems.
+- Validation: focused normal and ASan/UBSan tests passed. The frozen full
+  `make -B test` gate passed 163 Python quality tests, 65 C unit targets, and 66
+  direct executions including the minimal consumer. Source boundaries (142 files),
+  manifests, evidence, knobs, observer-disabled artifact, generated lookup
+  staleness, and `git diff --check` passed. Local CMake remains unavailable because
+  the installed executable is permission-denied; the remote matrix owns that proof.
+- Isolation: no public ABI, CPU/state/sequencer/ISA behavior, callback invocation,
+  read completion, byte-order rule, host memory, raw storage pointer, phase, wait,
+  issue/completion state, timing, arbitration, map, opcode effect, observer,
+  diagnostic, knob, environment read, allocator, mutable global, firmware, emulator
+  dependency, or external implementation was introduced.
+- Follow-up: publish and remotely verify the implementation and completion record,
+  then begin P2-W21B as the separate explicit WORD16 byte-order codec owner.

@@ -2487,7 +2487,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/request/",
@@ -3216,10 +3216,10 @@
     },
     {
       "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/request/test_word16_request.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_request"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE"]
     },
     {

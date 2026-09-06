@@ -586,9 +586,10 @@ evidenced owner-local work may proceed independently.
 
 ### P2-W21: shared-memory transaction foundation
 
-State: active at P2-W21A. This work begins the independent gate required before any
-instruction may mutate memory. The core remains word-native and host-endian-neutral;
-sharing, storage, device mapping, and arbitration stay outside the CPU instance.
+State: P2-W21A implemented; P2-W21B is next. This work begins the independent gate
+required before any instruction may mutate memory. The core remains word-native and
+host-endian-neutral; sharing, storage, device mapping, and arbitration stay outside
+the CPU instance.
 
 The owner hierarchy is phased so no early value accumulates unrelated policy:
 
@@ -645,6 +646,13 @@ effect, CPU/state mutation, observer, diagnostic, knob, environment read, alloca
 mutable global, firmware, or emulator dependency. Exit requires the registered
 project test to pass through both supported build systems with current CPU behavior
 unchanged.
+
+The completed private leaf is 102 lines of implementation, 77 lines of interface,
+and 247 lines of focused proof. Its constructors and validator preserve the frozen
+status precedence and address domains, and validation is non-mutating for both valid
+and invalid borrowed values. Nested Make/CMake manifests mirror the bus/request
+owner; root files add aggregation lines only. The full standalone Make gate passes.
+No public callback or CPU execution path consumes the request yet.
 
 ## Delivery order
 

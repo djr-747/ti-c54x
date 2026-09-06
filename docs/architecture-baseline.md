@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 76 immutable evidence
-records, 111 requirements, and 78 tests (69 `PASSING`, 9 `PLANNED`).
+records, 111 requirements, and 78 tests (70 `PASSING`, 8 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -388,7 +388,7 @@ or stronger TI evidence resolves the externally visible behavior. A black-box
 differential vector may identify a hypothesis or disagreement, but cannot itself
 close a normative common-core requirement.
 
-### WORD16 bus-request boundary (P2-W21A active)
+### WORD16 bus-request boundary (P2-W21A implemented)
 
 The shared-memory foundation starts below CPU and opcode execution with a private
 `src/bus/request/` value. One request represents exactly one architectural 16-bit
@@ -403,6 +403,13 @@ transaction owner binds a copied request to phase and lifecycle state. This boun
 owns no callbacks, read result, byte order, backing memory, waits, issue/completion,
 arbitration, CPU state, or device policy. In particular, shared memory is an adapter
 resource, not a fourth architectural address-space tag.
+
+The completed leaf returns only `OK`, `INVALID_SPACE`, or `INVALID_ADDRESS`, with
+space validation preceding address-domain validation. Invalid construction zeroes
+every named request field, while the validator proves both valid and invalid
+borrowed requests remain unchanged without making assertions about C padding. The
+focused normal and sanitizer tests pass, the full standalone Make gate is green,
+and the current public callback ABI and CPU behavior remain unchanged.
 
 ## Single-indirect address-effect slice
 
