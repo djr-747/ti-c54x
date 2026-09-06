@@ -1195,6 +1195,27 @@ rewritten after publication.
   GCC/Clang/CMake/install/consumer/sanitizer gates, and record that run in a
   ledger-only verification commit.
 
+## 2026-09-06 — P2-W10 remote verification — Reverse-carry WORD16 effects
+
+- Verified commits: implementation
+  `d0328f12b1bd461040170081e5acfb44b1e210b9` and completion ledger
+  `0088b5a7f4dcae197b6a64c523447048e8308e4d` on `origin/main`.
+- GitHub Actions: CI run
+  `https://github.com/djr-747/ti-c54x/actions/runs/34000243852` completed
+  successfully.
+- Remote gates: GCC and Clang both passed the direct standalone Make build and
+  tests, library-only CMake configure/build, full CMake configure/build/CTest,
+  install, and downstream consumer package smoke test. The Clang sanitizer job
+  passed configure, build, and CTest under the configured sanitizers.
+- Result: no corrective implementation or evidence change was required. The
+  reverse-carry work piece remains `Complete`; final propagation/wrap,
+  selected-AR0 alias ordering, and LONG32 remain explicitly unresolved.
+- Knobs and isolation: unchanged; remote validation introduced no core knob,
+  environment lookup, diagnostic dependency, or emulator coupling.
+- Follow-up: begin the separately owned BK architectural-state/accessor
+  prerequisite, then split sequencer validation/dependency ownership before
+  integrating circular address effects.
+
 ## 2026-09-06 — P2-W9 verification — Remote signed long-offset gates
 
 - Verified evidence: GitHub Actions run `33998478157` passed for implementation
