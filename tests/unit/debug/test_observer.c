@@ -148,8 +148,8 @@ test_instances_have_independent_masks(void)
 static void
 test_observation_does_not_change_architectural_result(void)
 {
-    observer_fixture first_fixture = {0xCAFEU, 0U};
-    observer_fixture second_fixture = {0xCAFEU, 0U};
+    observer_fixture first_fixture = {UINT16_C(0xF495), 0U};
+    observer_fixture second_fixture = {UINT16_C(0xF495), 0U};
     event_log first_log = {0};
     event_log second_log = {0};
     ti_c54x_state first_state;
@@ -163,6 +163,7 @@ test_observation_does_not_change_architectural_result(void)
     ti_c54x_run_result first_result = ti_c54x_cpu_step(first);
     ti_c54x_run_result second_result = ti_c54x_cpu_step(second);
 
+    TI_C54X_TEST_CHECK(first_result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
     TI_C54X_TEST_CHECK(first_result.reason == second_result.reason);
     TI_C54X_TEST_CHECK(first_result.pc_word == second_result.pc_word);
     TI_C54X_TEST_CHECK(first_result.opcode_word == second_result.opcode_word);
@@ -172,10 +173,14 @@ test_observation_does_not_change_architectural_result(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(second, &second_state) ==
                        TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(first_state.pc_word == second_state.pc_word);
+    TI_C54X_TEST_CHECK(first_state.pc_word == UINT32_C(1));
     TI_C54X_TEST_CHECK(first_state.last_fetched_word ==
                        second_state.last_fetched_word);
     TI_C54X_TEST_CHECK(first_state.instructions_attempted_total ==
                        second_state.instructions_attempted_total);
+    TI_C54X_TEST_CHECK(first_state.instructions_retired_total ==
+                       second_state.instructions_retired_total);
+    TI_C54X_TEST_CHECK(first_state.instructions_retired_total == UINT64_C(1));
     ti_c54x_cpu_deinit(first);
     ti_c54x_cpu_deinit(second);
     free(first_storage);
@@ -185,7 +190,7 @@ test_observation_does_not_change_architectural_result(void)
 static void
 test_callback_reentry_fails_closed(void)
 {
-    observer_fixture fixture = {0xBEEFU, 0U};
+    observer_fixture fixture = {UINT16_C(0xF495), 0U};
     event_log log = {0};
     void *storage = NULL;
     ti_c54x_cpu *cpu = make_cpu(&storage, &fixture, TI_C54X_TRACE_MASK_FETCH,
@@ -195,12 +200,15 @@ test_callback_reentry_fails_closed(void)
 
     log.cpu_for_reentry = cpu;
     result = ti_c54x_cpu_step(cpu);
-    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_UNIMPLEMENTED_OPCODE);
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(1));
     TI_C54X_TEST_CHECK(log.reentry_attempts == 1U);
     TI_C54X_TEST_CHECK(log.nested_result.reason == TI_C54X_STOP_INVALID_STATE);
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(state.last_fetch_valid);
-    TI_C54X_TEST_CHECK(state.last_fetched_word == UINT16_C(0xBEEF));
+    TI_C54X_TEST_CHECK(state.last_fetched_word == UINT16_C(0xF495));
+    TI_C54X_TEST_CHECK(state.instructions_retired_total == UINT64_C(1));
     ti_c54x_cpu_deinit(cpu);
     free(storage);
 }

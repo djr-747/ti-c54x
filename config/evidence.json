@@ -2033,7 +2033,7 @@
     },
     {
       "id": "REQ-COMMON-CPU-NOP-SEQUENTIAL-EXECUTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/cpu/",
@@ -2047,7 +2047,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-BUDGET-ZERO",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2057,7 +2057,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-PUBLIC-PC-VALIDATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2070,7 +2070,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-FETCH-WORD16",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2083,7 +2083,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-FETCH-FAILURE-STOP",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2093,7 +2093,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-UNKNOWN-DECODE-STOP",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2106,7 +2106,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-NOP-DISPATCH",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2119,7 +2119,7 @@
     },
     {
       "id": "REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
@@ -2129,17 +2129,17 @@
     },
     {
       "id": "REQ-PROJECT-CPU-PC-BOUNDARIES",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
       "claim": "The private program-PC bridge accepts 0xfffe to 0xffff, while a one-word instruction staged at 0xffff maps to TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY before retirement and leaves the committed PC unchanged.",
       "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
-      "test_ids": ["T-PROJECT-PROGRAM-PC-BRIDGE"]
+      "test_ids": ["T-PROJECT-PROGRAM-PC-BRIDGE", "T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
     },
     {
       "id": "REQ-PROJECT-SEQUENCER-PC-TRANSACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
@@ -2149,7 +2149,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-PC-COMMIT-ORDER",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2159,7 +2159,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-COUNTER-PHASES",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2169,7 +2169,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2179,7 +2179,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-COUNTER-OVERFLOW",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -2669,33 +2669,34 @@
     },
     {
       "id": "T-COMMON-CPU-NOP-EXECUTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/cpu/test_cpu_nop_execution.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_nop_execution"},
       "requirement_ids": ["REQ-COMMON-CPU-NOP-SEQUENTIAL-EXECUTION"]
     },
     {
       "id": "T-PROJECT-CPU-NOP-EXECUTION-CONTRACT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_nop_execution_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_nop_execution_contract"},
       "requirement_ids": [
         "REQ-PROJECT-CPU-PUBLIC-PC-VALIDATION",
         "REQ-PROJECT-CPU-FETCH-WORD16",
         "REQ-PROJECT-CPU-FETCH-FAILURE-STOP",
         "REQ-PROJECT-CPU-UNKNOWN-DECODE-STOP",
         "REQ-PROJECT-CPU-NOP-DISPATCH",
-        "REQ-PROJECT-CPU-PC-COMMIT-ORDER"
+        "REQ-PROJECT-CPU-PC-COMMIT-ORDER",
+        "REQ-PROJECT-CPU-PC-BOUNDARIES"
       ]
     },
     {
       "id": "T-PROJECT-CPU-EXECUTION-BUDGET",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_execution_budget.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_execution_budget"},
       "requirement_ids": [
         "REQ-PROJECT-CPU-BUDGET-ZERO",
         "REQ-PROJECT-CPU-COUNTER-PHASES",
@@ -2705,10 +2706,10 @@
     },
     {
       "id": "T-PROJECT-PROGRAM-PC-BRIDGE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/test_program_pc_bridge.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.program_pc_bridge"},
       "requirement_ids": [
         "REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE",
         "REQ-PROJECT-CPU-PC-BOUNDARIES",

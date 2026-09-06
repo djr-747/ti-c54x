@@ -25,11 +25,13 @@ CPPFLAGS += -DTI_C54X_ENABLE_OBSERVERS=0
 endif
 
 LIB := $(BUILD_DIR)/libti_c54x.a
+OBSERVER_ON_DIR := $(BUILD_DIR)/observer-on
+OBSERVER_ON_LIB := $(OBSERVER_ON_DIR)/libti_c54x.a
 OBSERVER_OFF_DIR := $(BUILD_DIR)/observer-off
 OBSERVER_OFF_LIB := $(OBSERVER_OFF_DIR)/libti_c54x.a
 
 # Each owner appends its source files; this is the sole source inventory used
-# by both normal and observer-off static-library builds.
+# by normal, observer-on, and observer-off static-library builds.
 ti_c54x_core_sources :=
 include src/foundation/sources.mk
 include src/address/sources.mk
@@ -40,6 +42,7 @@ include src/debug/sources.mk
 include src/isa/sources.mk
 
 LIB_OBJECTS := $(patsubst src/%.c,$(BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
+OBSERVER_ON_OBJECTS := $(patsubst src/%.c,$(OBSERVER_ON_DIR)/obj/%.o,$(ti_c54x_core_sources))
 OBSERVER_OFF_OBJECTS := $(patsubst src/%.c,$(OBSERVER_OFF_DIR)/obj/%.o,$(ti_c54x_core_sources))
 
 OBSERVER_TEST := $(BUILD_DIR)/test_observer
@@ -94,6 +97,15 @@ $(BUILD_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
+$(OBSERVER_ON_DIR)/obj/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -UTI_C54X_ENABLE_OBSERVERS \
+		-DTI_C54X_ENABLE_OBSERVERS=1 -MMD -MP -c $< -o $@
+
+$(OBSERVER_ON_LIB): $(OBSERVER_ON_OBJECTS)
+	@mkdir -p $(@D)
+	$(AR) $(ARFLAGS) $@ $^
+
 $(OBSERVER_OFF_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -UTI_C54X_ENABLE_OBSERVERS \
@@ -132,5 +144,6 @@ format:
 clean:
 	@rm -rf -- build-fast build-cmake
 
--include $(LIB_OBJECTS:.o=.d) $(OBSERVER_OFF_OBJECTS:.o=.d) \
+-include $(LIB_OBJECTS:.o=.d) $(OBSERVER_ON_OBJECTS:.o=.d) \
+	$(OBSERVER_OFF_OBJECTS:.o=.d) \
 	$(ti_c54x_test_depfiles)

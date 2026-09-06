@@ -30,12 +30,20 @@ typedef enum ti_c54x_error {
 } ti_c54x_error;
 
 typedef enum ti_c54x_stop_reason {
+    /* Preserve existing numeric values; append new reasons below them. */
     TI_C54X_STOP_BUDGET_EXHAUSTED = 0,
     TI_C54X_STOP_UNIMPLEMENTED_OPCODE = 1,
     TI_C54X_STOP_BUS_FAULT = 2,
     TI_C54X_STOP_IDLE = 3,
     TI_C54X_STOP_BREAKPOINT = 4,
-    TI_C54X_STOP_INVALID_STATE = 5
+    TI_C54X_STOP_INVALID_STATE = 5,
+    /* A known instruction's public carrier is outside the common supported
+     * program-word range; the fetched instruction did not retire. */
+    TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS = 6,
+    /* A known instruction reached the unresolved common-word boundary. */
+    TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY = 7,
+    /* A cumulative attempt or retirement counter could not be incremented. */
+    TI_C54X_STOP_COUNTER_OVERFLOW = 8
 } ti_c54x_stop_reason;
 
 typedef struct ti_c54x_config {
@@ -57,7 +65,9 @@ typedef struct ti_c54x_run_result {
     ti_c54x_program_word_address pc_word;
     uint16_t opcode_word;
     bool opcode_valid;
-    /* Counts produced by this call only, not cumulative CPU totals. */
+    /* Counts are program-instruction attempts/retirements produced by this
+     * call only, not cumulative CPU totals. A failed fetch or decode attempt
+     * is counted as attempted but never retired. */
     uint64_t instructions_attempted;
     uint64_t instructions_retired;
 } ti_c54x_run_result;
@@ -83,7 +93,17 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu);
 ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
                                   ti_c54x_state *state);
 
+/* Execute at most one instruction retirement.  A step performs one complete
+ * fetch/decode/dispatch/retire transaction or returns its first stop reason.
+ * A failed bus fetch or unknown opcode is an attempt but not a retirement. */
 ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu);
+
+/* Execute until instruction_budget retirements have committed or the first
+ * stop is reached.  The budget is measured in retired program instructions,
+ * not bus fetches or machine cycles; attempts that fail to fetch, decode, or
+ * retire are still reported in the per-call attempted count.  Successful
+ * budget completion returns TI_C54X_STOP_BUDGET_EXHAUSTED and emits no stop
+ * event. */
 ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                    uint64_t instruction_budget);
 

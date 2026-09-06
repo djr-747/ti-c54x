@@ -44,7 +44,7 @@ function-pointer dispatch tables.
 | Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
-| Private program-PC bridge and CPU NOP transaction | Active kickoff | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
+| Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -131,7 +131,7 @@ consume only checked-in C artifacts and remain compiler-only/Python-free.
 
 ### P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)
 
-State: active kickoff. This work piece is the first cross-owner execution slice:
+State: implemented. This work piece is the first cross-owner execution slice:
 it connects the existing public CPU shell to the existing exact NOP decoder and
 dispatch seam without adding another instruction or changing the catalog.
 
@@ -157,8 +157,7 @@ The contract is intentionally explicit about what is and is not architectural:
   CPU does not expose a partial PC commit.
 - `run(N)` is an instruction-retirement budget: it returns after `N` successful
   retirements or the first explicit stop and never overshoots. Cumulative counter
-  overflow is a planned explicit no-mutation stop; silent unsigned wrap is
-  forbidden until a direct test proves the policy.
+  overflow is an explicit no-mutation stop; silent unsigned wrap is forbidden.
 - The public result uses distinct
   `TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS`,
   `TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY`, and
@@ -168,18 +167,19 @@ The contract is intentionally explicit about what is and is not architectural:
 
 Ownership mirrors the tree. The implementation seam belongs under
 `src/sequencer/program_pc_bridge.[ch]`, CPU orchestration remains under
-`src/cpu/`, and the planned tests are split between
+`src/cpu/`, and the passing tests are split between
 `tests/unit/sequencer/test_program_pc_bridge.c` and the CPU-owned execution,
 budget, and common-NOP files. The project-contract evidence for this boundary is
 anchored by this heading; TI evidence is used only for the existing NOP word,
 one-word width, no status effects, and sequential-flow context.
 
-This kickoff excludes operand-field extraction, extension-word fetch, timing or
+This completed slice excludes operand-field extraction, extension-word fetch, timing or
 machine-cycle accounting, shared-memory mutation, data-memory buses, interrupts,
-repeat state, observers/diagnostics, device profiles, emulator adapters, and all
-other ISA families. Observer behavior is unchanged; direct Make linkage will use
-an observer-enabled archive derived from the canonical source inventory, matching
-the existing CMake variant and avoiding a second handwritten source list.
+repeat state, new observer/diagnostic behavior, device profiles, emulator
+adapters, and all other ISA families. Existing observer behavior is unchanged;
+direct Make linkage uses an observer-enabled archive derived from the canonical
+source inventory, matching the existing CMake variant and avoiding a second
+handwritten source list.
 
 ## Delivery order
 

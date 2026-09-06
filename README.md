@@ -22,10 +22,12 @@ the standalone Python quality gate.
 
 The standalone foundations and generated exact/masked decode infrastructure are
 green. Only the evidence-backed NOP is registered, and its semantics remain
-private to the core. The active work piece is the end-to-end CPU NOP transaction:
-fetch, decode, dispatch, private program-PC staging, and retirement. Timing,
-shared-memory mutation, interrupts and repeat, the full ISA, device profiles, and
-emulator integration are not implemented yet or remain deferred. See the
+private to the core. The end-to-end CPU NOP transaction is now implemented and
+green: fetch, decode, dispatch, private program-PC staging, and transactional
+retirement are covered by executable tests. The next slice is operand-field
+extraction and extension-word fetch. Timing, shared-memory mutation, interrupts
+and repeat, the full ISA, device profiles, and emulator integration are not
+implemented yet or remain deferred. See the
 [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for the current work state.
 

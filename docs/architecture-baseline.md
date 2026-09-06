@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 63 immutable evidence
-records, 91 requirements, and 61 tests (55 `PASSING`, 6 `PLANNED`).
+records, 91 requirements, and 61 tests (59 `PASSING`, 2 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -128,7 +128,7 @@ outside this work piece. Existing TI field evidence is architectural context onl
 
 ### Private program-PC bridge and CPU NOP transaction (P2-W18 active kickoff)
 
-P2-W18 is the first planned cross-owner execution slice. It connects the existing
+P2-W18 is the first completed cross-owner execution slice. It connects the existing
 public CPU shell to the exact NOP decoder and generated dispatch seam while
 keeping the private 16-bit common-PC policy inside `src/sequencer/`. The public
 `ti_c54x_program_word_address` remains an exact 32-bit carrier for bus callbacks;
@@ -139,7 +139,7 @@ truncation or retirement. Unsupported carriers, unresolved program boundaries,
 and cumulative-counter exhaustion have distinct public stop reasons; malformed
 internal transactions continue to fail as invalid state.
 
-The planned transaction begins an attempt immediately before the program-word bus
+The implemented transaction begins an attempt immediately before the program-word bus
 read, fetches one 16-bit word, and then classifies it. Consequently, bus faults
 and unknown words count as one attempted instruction but do not retire; zero
 budget and cumulative-counter preflight failure count zero. A known NOP contributes
@@ -147,8 +147,8 @@ no opcode-owned effects, stages sequential PC through the private bridge, and
 commits the PC only after semantic and boundary validation. `0xfffe -> 0xffff` is
 admitted; a one-word successor staged from `0xffff` is an explicit unresolved
 boundary with no retirement or committed-PC mutation. `run(N)` stops after `N`
-retirements or the first explicit stop. Counter overflow is a planned explicit
-no-wrap stop and remains unimplemented until executable coverage exists.
+retirements or the first explicit stop. Counter overflow is an explicit no-wrap
+stop covered by the execution-budget test.
 
 Ownership and evidence remain separate: `src/cpu/` owns public orchestration,
 fetch, dispatch sequencing, stop/counter reporting, and retirement accounting;
@@ -157,7 +157,8 @@ NOP and sequential-flow records support only the one-word NOP/no-status/sequenti
 context; the carrier, stop, counter, and transaction rules are project-contract
 requirements anchored in the implementation plan. Timing, shared-memory mutation,
 interrupts/repeat, operand extension fetch, full ISA coverage, profiles, and
-emulator integration remain outside this slice.
+emulator integration remain outside this slice. The next implementation slice is
+operand-field extraction followed by extension-word fetch.
 
 The corrected direct-addressing evidence in `SPRU131G` §5.4 records a 7-bit
 `dma`. For `CPL=0`, the implemented common requirement is the complete

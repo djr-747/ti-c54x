@@ -8,6 +8,7 @@ the Make/CMake implementations or production C source behavior.
 
 from __future__ import annotations
 
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -289,6 +290,60 @@ class BuildManifestTests(unittest.TestCase):
         )
         errors = check_repository(self.root)
         self.assertIn("CANONICAL", self.codes(errors))
+
+    def test_observer_on_linkage_uses_canonical_archive_and_distinct_gate(self) -> None:
+        repository = Path(__file__).resolve().parents[3]
+        makefile = (repository / "Makefile").read_text(encoding="utf-8")
+        debug_manifest = (repository / "tests" / "unit" / "debug" / "tests.mk").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertRegex(
+            makefile,
+            r"(?m)^OBSERVER_ON_DIR := \$\(BUILD_DIR\)/observer-on$",
+        )
+        self.assertRegex(
+            makefile,
+            r"(?m)^OBSERVER_ON_OBJECTS := \$\(patsubst src/%\.c,\$\(OBSERVER_ON_DIR\)/obj/%.o,\$\(ti_c54x_core_sources\)\)$",
+        )
+        self.assertRegex(
+            makefile,
+            r"(?m)^OBSERVER_ON_LIB := \$\(OBSERVER_ON_DIR\)/libti_c54x\.a$",
+        )
+        self.assertRegex(
+            makefile,
+            r"(?m)^OBSERVER_OFF_OBJECTS := \$\(patsubst src/%\.c,\$\(OBSERVER_OFF_DIR\)/obj/%.o,\$\(ti_c54x_core_sources\)\)$",
+        )
+        self.assertNotEqual(
+            self._assignment(makefile, "OBSERVER_ON_DIR"),
+            self._assignment(makefile, "OBSERVER_OFF_DIR"),
+        )
+        self.assertIn("$(OBSERVER_ON_OBJECTS)", makefile)
+        self.assertIn("$(OBSERVER_OFF_OBJECTS)", makefile)
+        self.assertRegex(
+            makefile,
+            r"-UTI_C54X_ENABLE_OBSERVERS\s*\\\s*-DTI_C54X_ENABLE_OBSERVERS=1",
+        )
+        self.assertIn("-UTI_C54X_ENABLE_OBSERVERS", makefile)
+        self.assertIn("-DTI_C54X_ENABLE_OBSERVERS=0", makefile)
+
+        self.assertNotIn("src/cpu/cpu.c", debug_manifest)
+        self.assertNotIn("src/debug/observer.c", debug_manifest)
+        self.assertRegex(
+            debug_manifest,
+            r"(?m)^\$\(OBSERVER_TEST\): tests/unit/debug/test_observer\.c \$\(OBSERVER_ON_LIB\)$",
+        )
+        self.assertIn("$(OBSERVER_ON_LIB)", debug_manifest)
+        self.assertIn("-UTI_C54X_ENABLE_OBSERVERS", debug_manifest)
+        self.assertIn("-DTI_C54X_ENABLE_OBSERVERS=1", debug_manifest)
+
+    @staticmethod
+    def _assignment(text: str, variable: str) -> str:
+        pattern = re.compile(rf"(?m)^{re.escape(variable)}\s*:=\s*(.+)$")
+        match = pattern.search(text)
+        if match is None:
+            return ""
+        return match.group(1).strip()
 
     def test_concrete_root_source_paths_are_rejected(self) -> None:
         self.fixture()

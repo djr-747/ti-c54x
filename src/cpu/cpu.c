@@ -13,6 +13,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "isa/decode/opcode_decode.h"
+#include "isa/ops/op_effect.h"
+#include "isa/ops/opcode_dispatch.h"
+#include "sequencer/program_pc_bridge.h"
+
 #if TI_C54X_ENABLE_OBSERVERS
 static void emit_trace(ti_c54x_cpu *cpu, ti_c54x_trace_kind kind)
 {
@@ -69,6 +74,40 @@ static ti_c54x_run_result invalid_result(void)
     result.instructions_attempted = 0U;
     result.instructions_retired = 0U;
     return result;
+}
+
+static ti_c54x_run_result
+stop_result(ti_c54x_cpu *cpu,
+            ti_c54x_stop_reason reason,
+            ti_c54x_bus_status bus_status,
+            uint64_t instructions_attempted,
+            uint64_t instructions_retired)
+{
+    ti_c54x_run_result result;
+
+    emit_trace(cpu, TI_C54X_TRACE_STOP);
+    result = result_from_cpu(cpu, reason, bus_status,
+                             instructions_attempted, instructions_retired);
+    cpu->execution_active = false;
+    return result;
+}
+
+static ti_c54x_stop_reason
+bridge_status_to_stop(ti_c54x_program_pc_bridge_status status)
+{
+    switch (status) {
+    case TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_CARRIER:
+        return TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS;
+    case TI_C54X_PROGRAM_PC_BRIDGE_UNRESOLVED_BOUNDARY:
+        return TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY;
+    case TI_C54X_PROGRAM_PC_BRIDGE_OK:
+    case TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT:
+    case TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_PROGRAM_WORD_COUNT:
+    case TI_C54X_PROGRAM_PC_BRIDGE_INVALID_EFFECT:
+    case TI_C54X_PROGRAM_PC_BRIDGE_STALE_SOURCE:
+    default:
+        return TI_C54X_STOP_INVALID_STATE;
+    }
 }
 
 size_t ti_c54x_cpu_size(void)
@@ -172,9 +211,8 @@ ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu)
 ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                    uint64_t instruction_budget)
 {
-    uint16_t opcode_word = 0U;
-    ti_c54x_bus_status bus_status;
-    ti_c54x_run_result result;
+    uint64_t instructions_attempted = 0U;
+    uint64_t instructions_retired = 0U;
 
     if (cpu == NULL || cpu->execution_active) {
         return invalid_result();
@@ -186,32 +224,84 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
     }
 
     cpu->execution_active = true;
-    cpu->instructions_attempted++;
-    if (cpu->bus.program_read_word == NULL) {
-        bus_status = TI_C54X_BUS_NO_CALLBACK;
-    } else {
-        bus_status = cpu->bus.program_read_word(cpu->bus.context,
-                                                cpu->pc_word,
-                                                &opcode_word);
-    }
-    if (bus_status != TI_C54X_BUS_OK) {
-        cpu->last_fetched_word = 0U;
-        cpu->last_fetch_valid = false;
-        emit_trace(cpu, TI_C54X_TRACE_STOP);
-        result = result_from_cpu(cpu, TI_C54X_STOP_BUS_FAULT, bus_status, 1U,
-                                 0U);
-        cpu->execution_active = false;
-        return result;
+    while (instructions_retired < instruction_budget) {
+        uint16_t opcode_word = 0U;
+        ti_c54x_bus_status bus_status;
+        ti_c54x_decode_result decoded;
+        ti_c54x_op_effect effect = {TI_C54X_OP_EFFECT_NONE};
+        ti_c54x_program_pc_bridge_effect pc_effect;
+        ti_c54x_program_pc_bridge_status bridge_status;
+        ti_c54x_op_status op_status;
+
+        /* Per-call deltas start at zero and never exceed their cumulative
+         * counterparts, so this preflight also proves the local increments
+         * below are representable. */
+        if (cpu->instructions_attempted == UINT64_MAX ||
+            cpu->instructions_retired == UINT64_MAX) {
+            return stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        /* The attempt is accounted for immediately before the sole bus read.
+         * This keeps failed reads observable as attempts without ever making
+         * them retirements. */
+        cpu->instructions_attempted++;
+        instructions_attempted++;
+        if (cpu->bus.program_read_word == NULL) {
+            bus_status = TI_C54X_BUS_NO_CALLBACK;
+        } else {
+            bus_status = cpu->bus.program_read_word(cpu->bus.context,
+                                                    cpu->pc_word,
+                                                    &opcode_word);
+        }
+        if (bus_status != TI_C54X_BUS_OK) {
+            cpu->last_fetched_word = 0U;
+            cpu->last_fetch_valid = false;
+            return stop_result(cpu, TI_C54X_STOP_BUS_FAULT, bus_status,
+                               instructions_attempted,
+                               instructions_retired);
+        }
+
+        cpu->last_fetched_word = opcode_word;
+        cpu->last_fetch_valid = true;
+        emit_trace(cpu, TI_C54X_TRACE_FETCH);
+        decoded = ti_c54x_decode_first_word(opcode_word);
+        if (decoded.status != TI_C54X_DECODE_STATUS_OK) {
+            return stop_result(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        op_status = ti_c54x_dispatch_decoded(&decoded, &effect);
+        if (op_status != TI_C54X_OP_STATUS_OK ||
+            effect.kind != TI_C54X_OP_EFFECT_NONE) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        bridge_status = ti_c54x_program_pc_bridge_plan(
+            cpu->pc_word, decoded.program_word_count, &pc_effect);
+        if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+            return stop_result(cpu, bridge_status_to_stop(bridge_status),
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+        bridge_status = ti_c54x_program_pc_bridge_apply(&cpu->pc_word,
+                                                        &pc_effect);
+        if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        cpu->instructions_retired++;
+        instructions_retired++;
     }
 
-    cpu->last_fetched_word = opcode_word;
-    cpu->last_fetch_valid = true;
-    emit_trace(cpu, TI_C54X_TRACE_FETCH);
-    /* Phase one has no opcode semantics.  Keeping PC at the trapping word
-     * makes retries and black-box comparisons deterministic. */
-    emit_trace(cpu, TI_C54X_TRACE_STOP);
-    result = result_from_cpu(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
-                             TI_C54X_BUS_OK, 1U, 0U);
     cpu->execution_active = false;
-    return result;
+    return result_from_cpu(cpu, TI_C54X_STOP_BUDGET_EXHAUSTED,
+                           TI_C54X_BUS_OK, instructions_attempted,
+                           instructions_retired);
 }
