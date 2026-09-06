@@ -1630,3 +1630,24 @@ rewritten after publication.
   dependency, process-global mutable state, or public ABI surface was added.
 - Follow-up: push and verify P2-W11 remotely, then execute P2-W12 as an atomic
   sequencer validation/dependency split before implementing circular effects.
+
+## 2026-09-06 — P2-W11 remote verification — BK architectural state
+
+- Verified commits: implementation
+  `9dcc7d9d84c1c93cc35c27ead3a582b3df4e4a95` and completion ledger
+  `b57194e83f33e3c8ba70ad31e5b6b2e2570176d6` on `origin/main`.
+- GitHub Actions: CI run
+  `https://github.com/djr-747/ti-c54x/actions/runs/34001357808` completed
+  successfully.
+- Remote gates: GCC and Clang both passed the direct standalone Make build and
+  tests, library-only CMake configure/build, full CMake configure/build/CTest,
+  install, and downstream consumer package smoke test. The Clang sanitizer job
+  passed configure, build, and CTest under the configured sanitizers.
+- Result: no corrective implementation, evidence, state-ownership, or build
+  change was required. BK state remains a private prerequisite only; MMR
+  routing and circular BK consumption remain explicitly planned.
+- Knobs and isolation: unchanged; remote validation introduced no `TEST`,
+  `OBSERVE`, or `A/B` knob, environment lookup, diagnostic dependency, firmware
+  input, public ABI change, or emulator coupling.
+- Follow-up: execute P2-W12 as an atomic behavior-preserving split of sequencer
+  validation/dependency ownership before implementing circular effects.
