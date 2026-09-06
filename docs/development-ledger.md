@@ -3216,3 +3216,32 @@ rewritten after publication.
   emulator dependency, or external implementation was introduced.
 - Follow-up: publish and remotely verify W20D, then begin P2-W20E as the pure
   `src/sequencer/repeat/` owner without activating production RPT decode prematurely.
+
+## 2026-09-06 — P2-W20D Clang portability correction and remote verification
+
+- Published implementation commit:
+  `f4a445ccd8d6bb54d791c86f12066409fc0c6cef`.
+- Published completion-record commit:
+  `120b7100407ae6ec1f229361599891db6073280d`.
+- The first completion run
+  [34025437867](https://github.com/djr-747/ti-c54x/actions/runs/34025437867)
+  exposed one Clang-only `-Wmissing-field-initializers` error in the CPU's local
+  effect value after the effect carrier gained its payload union. GCC and the frozen
+  local gate had accepted the partial aggregate initializer.
+- Correction commit: `73434c65190118a1f8ac2d314abecbb0ab99c469`
+  (`fix: initialize expanded CPU effect`). It replaces that partial initializer with
+  a complete zero-initializer. This is behavior-preserving because
+  `TI_C54X_OP_EFFECT_NONE` is explicitly zero and the CPU still rejects every
+  non-`NONE` effect.
+- Local correction validation: the frozen full `make -B test` gate passed 163 Python
+  quality tests, 61 C unit targets, and 62 direct executions including the minimal
+  consumer. Clang is not installed on the development host, so the exact compiler
+  regression remained owned by the remote matrix.
+- GitHub Actions run
+  [34025576755](https://github.com/djr-747/ti-c54x/actions/runs/34025576755)
+  completed successfully across GCC, Clang, and Clang sanitizers, including direct
+  Make tests, library-only builds, CMake/CTest, installation, and downstream package
+  consumption.
+- Result: W20D is published and green on every repository-owned build surface. The
+  typed immediate-RPT effect remains pure and inactive in production decode; P2-W20E
+  may now begin under the dedicated `src/sequencer/repeat/` owner.
