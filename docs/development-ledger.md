@@ -2175,3 +2175,16 @@ rewritten after publication.
 - Follow-up: push the implementation and ledger commits, verify the standalone
   remote matrix, then begin P2-W16 with the evidence-backed NOP catalog, pure
   decoder, no-effect semantics, and checked sequential-PC retirement seam.
+
+## 2026-09-06 — P2-W15 remote verification
+
+- Verified implementation commit
+  `5a3123e95eacc2e43456c86f3a820d7d4358d775` and completion-ledger commit
+  `f611c3ee177825508d7957364f171bccacc66c55` in GitHub Actions run
+  `34008390915`.
+- The standalone matrix passed GCC and Clang direct-Make tests, library-only
+  configuration/build, full CMake/CTest, install/package checks, downstream
+  consumer smoke tests, and the Clang sanitizer build and tests.
+- Result: P2-W15 is proven on every independent repository build surface. The
+  ownership-mirrored manifests are ready to accept nested ISA modules without an
+  emulator checkout, firmware image, environment gate, or external project build.
