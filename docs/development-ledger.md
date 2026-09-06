@@ -3291,3 +3291,17 @@ rewritten after publication.
   implementation.
 - Follow-up: publish and remotely verify the kickoff, then delegate the bounded
   three-leaf implementation to Luna under main-agent review and commit ownership.
+
+## 2026-09-06 — P2-W20E kickoff remote verification
+
+- Published kickoff commit:
+  `86f08ac1c623490d97ff29572b68e29f995b89eb`.
+- GitHub Actions run
+  [34026125995](https://github.com/djr-747/ti-c54x/actions/runs/34026125995)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: the W20E evidence boundary, three project contracts, three-leaf ownership
+  plan, TDD matrix, corrected registry counts, and deliberate no-common-conformance
+  claim are published and green. The bounded Luna implementation is next.
