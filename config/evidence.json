@@ -2386,6 +2386,16 @@
       "test_ids": ["T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
     },
     {
+      "id": "REQ-PROJECT-RPT-IMMEDIATE-EFFECT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/repeat/",
+      "claim": "Given a copied operand-field value already extracted from either inert immediate-RPT layout, build one discriminated value-owned REPEAT_START effect that carries the exact unsigned 16-bit operand without retaining caller storage. Invalid inputs leave output byte-for-byte unchanged. The effect is not a claim of production decode, dispatch, RC mutation, repeat cardinality, sequencing, interrupt behavior, or CPU consumption.",
+      "evidence_ids": ["E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE"],
+      "test_ids": ["T-PROJECT-RPT-IMMEDIATE-EFFECT"]
+    },
+    {
       "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -2403,7 +2413,7 @@
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
-      "owner_path": "src/isa/ops/",
+      "owner_path": "src/isa/ops/repeat/",
       "claim": "For either immediate RPT form, carry the exact decoded operand as the value loaded into RC and produce no status-bit effect; the operation itself is nonrepeatable.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"],
       "test_ids": ["T-COMMON-RPT-IMMEDIATE-OPERATION"]
@@ -3071,6 +3081,14 @@
       "requirement_ids": ["REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING"]
     },
     {
+      "id": "T-PROJECT-RPT-IMMEDIATE-EFFECT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/repeat/test_rpt_immediate_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-RPT-IMMEDIATE-EFFECT"]
+    },
+    {
       "id": "T-COMMON-RPT-IMMEDIATE-DECODE",
       "state": "PLANNED",
       "scope": "COMMON_TI",
@@ -3082,7 +3100,7 @@
       "id": "T-COMMON-RPT-IMMEDIATE-OPERATION",
       "state": "PLANNED",
       "scope": "COMMON_TI",
-      "path": "tests/unit/isa/ops/test_rpt_immediate.c",
+      "path": "tests/unit/isa/ops/repeat/test_rpt_immediate.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-RPT-IMMEDIATE-OPERATION"]
     },

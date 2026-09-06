@@ -3111,3 +3111,42 @@ rewritten after publication.
   surface. Catalog scalar metadata and decode-owned immutable layout sets are now
   complete; production decode still contains only NOP, and P2-W20D's pure typed RPT
   effect is next.
+
+## 2026-09-06 — P2-W20D kickoff — typed immediate-RPT effect
+
+- State: active under new `REQ-PROJECT-RPT-IMMEDIATE-EFFECT` and
+  `T-PROJECT-RPT-IMMEDIATE-EFFECT`. Kickoff totals are 2 targets, 7 sources, 72
+  evidence records, 107 requirements (83 implemented, 9 planned, 15 unresolved),
+  and 74 tests (65 passing, 9 planned).
+- Scope decision: W20D proves a project-owned effect boundary only. The existing
+  common TI RPT decode and operation requirements remain planned because no
+  production row, RC mutation, repeat sequencing, or repeatability classification
+  is activated here.
+- Input decision: the pure repeat-family builder consumes a borrowed copied
+  operand-field value already extracted from W20C2's inert K/lk layouts. It does not
+  accept a forged catalog-decoded instruction, retain caller storage, re-mask opcode
+  words, or duplicate decoder validation.
+- Effect decision: extend the private discriminated effect with `REPEAT_START` and
+  one exact unsigned 16-bit operand value. Do not encode operand+1 body cardinality,
+  RC phase/final state, PC flow, interrupt admission, timing, or state pointers in
+  the opcode-owned value.
+- Ownership: the first repeat opcode-family module lives under
+  `src/isa/ops/repeat/`, with tests under the mirrored
+  `tests/unit/isa/ops/repeat/` subtree and owner-local Make/CMake manifests. Parent
+  ops manifests aggregate rather than flatten that subowner.
+- TDD: first register the test so it fails for the missing module/effect, then prove
+  layout-composed K/lk minimum, interior, and maximum values; exact copied payloads;
+  explicit invalid-argument versus invalid-operand status; invalid widths/raw
+  ranges; nulls; deterministic NOP compatibility; and byte-preserving failures.
+  Existing production-decode tests remain the no-RPT gate.
+- Independent Luna audits: both recommend the narrow typed effect and keeping the
+  common TI operation planned until a generic consumer can apply it. The main
+  architecture decision additionally avoids passing a catalog-decoded carrier with
+  no valid RPT opcode identity.
+- Exclusions: no catalog row, lookup regeneration, semantic dispatch, CPU change,
+  RC/state mutation, body cardinality, repeat PC, eligibility, IRQ/NMI/IFR/reset
+  policy, bus fetch, machine cycles, shared memory, profile, public API, observer,
+  diagnostic, knob, environment read, allocator, mutable global, emulator
+  dependency, or external implementation.
+- Follow-up: publish and remotely verify this kickoff, then delegate the bounded
+  repeat-family implementation to Luna under main-agent review and commit ownership.

@@ -41,8 +41,9 @@ the copied decoded value. P2-W20C2 is implemented and green: decode now owns
 immutable zero/one/multi-operand layout sets, shared descriptor validation, and
 transactional copied extraction. The one- and two-word RPT immediate layouts are
 proven but remain inert; production decode still registers only NOP. P2-W20C is
-complete and P2-W20D's typed `REPEAT_START` operation is next. The broader
-implementation is split
+complete. P2-W20D is active as a narrow project-contract proof for a typed,
+value-owned `REPEAT_START` effect; it does not claim RC mutation or activate RPT
+in production decode. The broader implementation is split
 into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
 guessed. Timing, shared-memory mutation, the full ISA, device profiles, and

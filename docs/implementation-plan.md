@@ -50,6 +50,7 @@ function-pointer dispatch tables.
 | RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
+| Typed immediate-RPT effect (P2-W20D) | Active | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -448,6 +449,38 @@ static lifetime, and transactional failures. The generated direct lookup remains
 byte-for-byte unchanged. P2-W20D is next and may build the typed value-owned
 `REPEAT_START` operation against these layouts, but it may not activate a production
 RPT row until generic effect consumption is coherent.
+
+#### P2-W20D: typed immediate-RPT effect (active)
+
+State: active as one project-contract TDD proof. This work piece does not implement
+or close the common TI RPT operation requirement; it prepares the value boundary
+that later state/sequencer integration can consume.
+
+`src/isa/ops/repeat/` owns a pure immediate-RPT effect builder and its mirrored
+test subtree. Its input is a borrowed, copied `ti_c54x_operand_field_value` already
+extracted through one of W20C2's inert K/lk layouts. This avoids inventing a valid
+`ti_c54x_decoded_instruction` identity before RPT exists in the catalog and keeps
+first-word masks entirely under decode/catalog ownership. The builder accepts only
+the proven unsigned 8-bit K and 16-bit lk field shapes, retains no pointer, and
+publishes only after full validation. Null pointers use `INVALID_ARGUMENT`; a
+nonnull field with an unsupported width or a raw value outside its declared width
+uses the new private `INVALID_OPERAND` status without renumbering existing values.
+
+`src/isa/ops/op_effect.h` adds a discriminated `REPEAT_START` payload containing
+the exact `uint16_t` operand value. The payload deliberately does not contain
+operand+1 cardinality, a repeated-body PC, cycle cost, interrupt state, or a state
+pointer; those belong to later sequencer/state owners. Existing NOP and dispatch
+paths must initialize the expanded effect deterministically, while CPU continues to
+accept only `NONE` and therefore remains unchanged.
+
+The TDD proof covers K and lk composition through the immutable layout extractor,
+minimum/interior/maximum values, copied ownership, invalid widths and out-of-range
+raw values, nulls, and byte-transactional failure output. The implementation creates
+no production RPT catalog row, first-word lookup, generated handler-table entry,
+dispatch path, or CPU behavior. The existing common RPT decode and operation
+requirements remain `PLANNED`; RC mutation/decrement, operand+1 cardinality,
+repeat-body eligibility, IRQ/NMI/IFR/reset admission, repeated-body PC flow, timing,
+memory, profiles, and emulator integration remain outside W20D.
 
 ## Delivery order
 
