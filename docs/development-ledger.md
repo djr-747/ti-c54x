@@ -1579,3 +1579,54 @@ rewritten after publication.
   evidence/build/docs to Luna agents with disjoint ownership, integrate under
   the main orchestrator, run an independent closure review, validate once,
   commit, push, and verify remotely.
+
+## 2026-09-06 — P2-W11 completion — BK architectural state prerequisite
+
+- State: complete in implementation commit
+  `9dcc7d9d84c1c93cc35c27ead3a582b3df4e4a95`.
+- Outcome: the private architectural aggregate now carries an exact 16-bit BK
+  value and a dedicated scalar-knownness bit. The state-owned
+  `ti_c54x_arch_state_read_bk` and `ti_c54x_arch_state_write_bk` seam reports
+  existing OK/UNKNOWN/INVALID_ARGUMENT statuses, preserves rejected outputs and
+  state, and accepts every `uint16_t` value without truncation.
+- Reset boundary: deterministic common-state construction physically clears BK
+  storage but does not mark it known. This zero-plus-unknown representation is
+  explicitly project policy because the pinned common TI reset list prescribes
+  no BK value; it is not presented as a hardware reset assertion.
+- Ownership: `src/state/arch_state.[ch]` owns aggregate storage and reset,
+  `src/state/register_layout.h` owns the knownness-bit position, and
+  `src/state/block_size_register.[ch]` owns only checked BK access. Mirrored
+  tests live under `tests/unit/state/`. No circular planner, sequencer, bus,
+  MMR, public header, or emulator module reaches into this state directly.
+- TDD proof: the COMMON_TI test round-trips all 65,536 representable BK values
+  through the checked state seam. The PROJECT_CONTRACT_ONLY test proves reset
+  unknownness and physical representation, caller-output preservation, exact
+  zero/one/maximum values, sole BK/knownness mutation, stale-state reset
+  clearing, NULL precedence, and bytewise nonmutation on rejection.
+- Evidence: the live registry now contains 2 targets, 7 sources, 55 immutable
+  evidence records, 64 requirements, and 49 tests (43 `PASSING`, 6 `PLANNED`).
+  TI records separately pin BK width, CPU MMR address `0x0019`, and BK's future
+  circular-size role. Only the width requirement is implemented here; MMR
+  routing and circular BK dependency remain planned with null runners.
+- Review corrections: orchestration standardized the symbols on the existing
+  `ti_c54x_arch_state_read_*`/`write_*` naming convention, narrowed reset wording
+  from an initialization claim to an evidence-bound unknown value, added the
+  direct `stddef.h` dependency in the contract test, and rewrote planned
+  requirements as target behavior rather than process notes. The evidence gate
+  caught a forbidden timing token in a planned circular requirement; the claim
+  was narrowed to BK dependency and passed on rerun. Independent Luna closure
+  review and GCC analyzer checks found no remaining blockers.
+- File shape: the new owner is 41 C lines plus a 39-line private header;
+  `arch_state.c` remains 237 lines. All remain well below review thresholds.
+- Local validation: final-tree strict `make test` passed every registered C test
+  and all 96 Python quality tests. ASan/UBSan `make test` also passed. Evidence
+  (2 targets, 7 sources, 64 requirements, 49 tests), source-boundary (78 files),
+  knob-registry (7 knobs), observer-disabled artifact, GCC analyzer, and
+  whitespace checks passed. `make PYTHON=/definitely/missing build` proved the
+  compiler-only standalone path. CMake is unavailable locally, so configure,
+  CTest, install, consumer, and sanitizer variants remain assigned to remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob,
+  environment lookup, diagnostic hook, file I/O, firmware input, emulator
+  dependency, process-global mutable state, or public ABI surface was added.
+- Follow-up: push and verify P2-W11 remotely, then execute P2-W12 as an atomic
+  sequencer validation/dependency split before implementing circular effects.
