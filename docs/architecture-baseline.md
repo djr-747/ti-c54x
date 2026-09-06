@@ -6,7 +6,7 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 64 immutable evidence
-records, 92 requirements, and 62 tests (59 `PASSING`, 3 `PLANNED`).
+records, 92 requirements, and 62 tests (60 `PASSING`, 2 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -160,36 +160,47 @@ interrupts/repeat, operand extension fetch, full ISA coverage, profiles, and
 emulator integration remain outside this slice. The next implementation slice is
 operand-field extraction followed by extension-word fetch.
 
-### Value-owned operand-field extraction (P2-W19A active kickoff)
+### Value-owned operand-field extraction (P2-W19A implemented)
 
-P2-W19A is the first half of a deliberately split pre-repeat foundation. It owns
-only a pure, allocation-free extractor in `src/isa/decode/operand_field.[ch]`;
+P2-W19A is the implemented first half of a deliberately split pre-repeat
+foundation. It owns only a pure, allocation-free extractor in
+`src/isa/decode/operand_field.[ch]`;
 P2-W19B will separately own extension-word fetch and width-aware PC span/commit.
 The split keeps bus I/O in the planned `src/cpu/` instruction-fetch owner while
 `src/sequencer/` owns sequencing and commit, and keeps both concerns out of the
 decode value assembly seam. No production opcode inventory, catalog macro arity,
 layout binding, handler, public API, or fetch path changes in 19A.
 
-The extractor borrows a caller-owned view of one or more 16-bit program words and
-a borrowed immutable layout, retains no pointers, and publishes a caller-owned
-`uint64_t` raw value plus explicit width only after validation. Each conceptual
-piece names a program-word index, source LSB, width 1..16, and destination/value
-LSB 0..63. A field contains 1..N pieces and declares a raw width 1..64. Pieces
-stay within their source word and declared destination width; destination pieces
-do not overlap and cover the declared value exactly; source slices for one field
-do not overlap within a source word. First-word, extension-word,
+The extractor accepts a borrowed `ti_c54x_program_words_view`: its
+`program_words` pointer names an array of at least `program_word_count`
+`uint16_t` elements that remains alive and unchanged for the call. A borrowed
+immutable layout similarly borrows an array of at least `piece_count` pieces, while
+the output is caller-owned. No pointer is retained, and a caller may safely
+discard or mutate its input only after the call returns. Each conceptual piece
+names a program-word index, source LSB, width 1..16, and destination/value LSB
+0..63. A field contains 1..N pieces and declares a raw width 1..64. Pieces stay
+within their source word and declared destination width; destination pieces do
+not overlap and cover the declared value exactly; source slices for one field do
+not overlap within a source word. First-word, extension-word,
 split/non-contiguous, and 64-bit mechanics are represented without sign
 extension or semantic interpretation.
 
 Null or invalid views/layouts/outputs, out-of-range word indexes, invalid widths,
-overlap, or gaps leave the output byte-for-byte unchanged. The seam owns no bus,
-CPU, architectural state, PC/effect, timing, memory, interrupt/repeat, observer,
-diagnostic, file/environment, heap, or mutable-global behavior. Its planned test
-exhausts valid one-word positions and widths, then covers representative
-multiword/non-contiguous/64-bit fields and the complete invalid/transactional
-matrix under `tests/unit/isa/decode/test_operand_field.c`. The registry evidence
-is `PROJECT_CONTRACT_ONLY` mechanics evidence and makes no TI encoding or
-instruction-conformance claim.
+overlap, or gaps leave the output byte-for-byte unchanged. The passing test
+exhausts every valid one-word source position and width, then covers extension-
+word, multiword/non-contiguous, 64-bit, borrowed-input, and complete invalid/
+transactional matrices under `tests/unit/isa/decode/test_operand_field.c`. The
+seam owns no bus, CPU, architectural state, PC/effect, timing, memory,
+interrupt/repeat, observer, diagnostic, file/environment, heap, or mutable-global
+behavior. The registry evidence is `PROJECT_CONTRACT_ONLY` mechanics evidence and
+makes no TI encoding or instruction-conformance claim.
+
+Performance boundary: this checked general extractor proves descriptor mechanics
+without allocation, but production hot paths need not revalidate an immutable
+descriptor on every instruction. A future catalog/layout binding may validate
+layouts offline and emit or directly use specialized extraction, keeping runtime
+descriptor revalidation out of the required hot path. No generator or
+specialization is claimed or present here.
 
 The corrected direct-addressing evidence in `SPRU131G` §5.4 records a 7-bit
 `dma`. For `CPL=0`, the implemented common requirement is the complete

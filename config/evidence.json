@@ -2203,7 +2203,7 @@
     },
     {
       "id": "REQ-PROJECT-OPERAND-FIELD-EXTRACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/decode/",
@@ -2742,10 +2742,10 @@
     },
     {
       "id": "T-PROJECT-OPERAND-FIELD-EXTRACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/decode/test_operand_field.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.operand_field"},
       "requirement_ids": ["REQ-PROJECT-OPERAND-FIELD-EXTRACTION"]
     }
   ]
