@@ -3885,3 +3885,42 @@ rewritten after publication.
 - No knob, environment read, emulator, cycle/timing, memory, RPT/IRQ,
   accumulator, or device behavior was added. Foundation freeze remains in force;
   the next work is concrete ISA vertical batches.
+
+## 2026-09-06 — hosted performance history completion and baseline
+
+- Harness implementation commit:
+  `c47a4dc9cacd6faa9afe5f07fe6e60676be72cb5`.
+  GitHub Actions run
+  [34038916643](https://github.com/djr-747/ti-c54x/actions/runs/34038916643)
+  completed successfully.
+- Stabilization commit:
+  `aa0afc0c97e121724af0d895f4d4bf617f0e5610`. Full local `make -B test` was
+  green: 172 Python checks, 73 C unit executables plus the minimal consumer,
+  and knobs, boundaries, manifests, evidence, observer-disabled, and generated
+  checks. GitHub Actions run
+  [34039488241](https://github.com/djr-747/ti-c54x/actions/runs/34039488241)
+  completed successfully.
+- Initial baseline/history and documentation commit:
+  `33a1d2553a5a5aad44006cc567f906d440c1b139`. Local `make test` was green
+  after restoring the immutable evidence anchor. GitHub Actions run
+  [34039763667](https://github.com/djr-747/ti-c54x/actions/runs/34039763667)
+  completed successfully.
+- Decision: hosted POSIX `CLOCK_MONOTONIC` observer-off end-to-end public-bus
+  callback throughput only; no silicon timing claim. Each result uses the
+  median of seven recorded samples, with every sample preceded by 16
+  unrecorded warmup windows. Comparisons are advisory and use baseline/current
+  `(max-min)/median` spread; no CI threshold is imposed. Fixed semantic-hash
+  scenarios remain comparable across catalog growth, while `mixed-current`
+  evolves with catalog count and hash.
+- The first uncommitted baseline was discarded: same-binary reruns varied by
+  7–23%. `CLOCK_THREAD_CPUTIME_ID` and best-of-seven were tested and rejected
+  because they did not improve repeatability uniformly.
+- Exact clean baseline from `aa0afc0`: `nop` 64.023 ns/instruction,
+  15.619508 MIPS, 13.30% spread; `ld-dp` 93.924 ns, 10.646890 MIPS,
+  2.08% spread; `ld-asm` 94.222 ns, 10.613212 MIPS, 8.60% spread;
+  `ld-arp` 94.939 ns, 10.533079 MIPS, 5.08% spread; `mixed-current` 87.770
+  ns, 11.393391 MIPS, 7.86% spread. Catalog=4, GCC `cc` 15.2, i7-1255U.
+- `TI_C54X_BUILD_BENCHMARKS` remains TEST/KEEP, default OFF, owned by `bench/`,
+  with no architectural effect. Before the first multiword catalog
+  instruction, derive the `mixed-current` program-word span and retirement
+  window under the unresolved 16-bit PC boundary.
