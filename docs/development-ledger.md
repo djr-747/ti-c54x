@@ -2560,3 +2560,53 @@ rewritten after publication.
 - Focused checks for this docs-only kickoff: evidence checker, registry quality
   unit coverage, and `git diff --check`; the full build/test gate remains owned by
   the later implementation work piece.
+
+## 2026-09-06 — P2-W19A complete — value-owned operand-field extraction
+
+- State: complete in implementation commit
+  `27e1404c2d731d94c502356ac4bce84068da2ad2`.
+- Kickoff commit: `72fdcd762c0e629cd8d7f457182cce674832b64d`; GitHub Actions run
+  `34016034357` passed. This entry records completion only; remote verification
+  remains a separate follow-up.
+- Private decode-owned API: `ti_c54x_program_words_view` explicitly carries the
+  borrowed `program_words` array and its `program_word_count` extent. The borrowed
+  immutable layout carries its piece array and `piece_count` extent. Both arrays
+  must remain alive and unchanged through the call; the caller owns the output
+  `uint64_t` raw value and explicit width, and no input pointer is retained.
+- Validation and behavior: source slices are 1..16 bits and fields are 1..64
+  bits. The implementation proves extraction from first words and already-
+  supplied extension words, multiword and non-contiguous assembly, piece-order
+  independence, and full 64-bit values; exact destination coverage and
+  non-overlap, per-word source non-overlap, source-index and bit-bound checks,
+  and transactional preservation of output on rejection are explicit. No sign
+  semantics are applied.
+- TDD: the initial red exposed the missing `operand_field.h` after owner manifest
+  registration. Green covered the focused normal build/test and the focused
+  AddressSanitizer/UndefinedBehaviorSanitizer path.
+- Review: independent Luna review found no blocker or major issue. It closed the
+  explicit array-extent/lifetime wording, exact program-word naming, staged zero
+  initialization, owner-manifest comments, and mixed-invalid precedence
+  documentation. Main review also restored the already-published immutable
+  evidence assertion and planned requirement claim verbatim; completion changes
+  only their state/runner.
+- Ownership/shape: the initial review covered 116 C source lines, 67 header lines,
+  and 235 test lines. The implementation remains split along the decode owner and
+  owner-local manifests; no monolith was introduced.
+- Performance boundary: this is a checked general, heap-free descriptor mechanism.
+  A future generated or specialized catalog/layout binding may validate layouts
+  offline and avoid descriptor revalidation in the hot path, but no such binding
+  is implemented or claimed here.
+- Registry final: 2 targets, 7 sources, 64 evidence records, and 92 requirements
+  (78 implemented, 2 planned, 12 unresolved); 62 tests (60 passing, 2 planned).
+- Validation: `make -B test` passed with 161 Python quality tests, 55 C unit
+  targets, and 56 direct execution tests including the minimal consumer (the
+  prior 54/55 plus this target). Strict warnings, evidence, knob, source,
+  manifest, observer-artifact, and generated-artifact checks passed;
+  `generate_opcode_lookup.py --check` and `git diff --check` passed.
+- Knobs/isolation unchanged: no knob, environment read or `getenv`, diagnostic or
+  logging path, public API, catalog opcode/macro/handler/fetch behavior, bus,
+  CPU/state/PC, timing, memory, IRQ/repeat, emulator dependency, external copy,
+  mutable global, or allocator was introduced.
+- Follow-up: publish and verify this implementation and completion record, then
+  implement P2-W19B transactional extension fetch and width-aware PC handling
+  before evidence-first `RPT` work.
