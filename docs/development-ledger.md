@@ -4240,3 +4240,49 @@ rewritten after publication.
   change and no DSP timing claim.
 - Follow-up: continue strict FIT fanout only for families that fit current
   seams; any architecture GAP returns centrally before shared edits.
+
+## 2026-09-07 — P2-W29 EXP accumulator-to-T vertical slice closeout
+
+- State: complete. The plan/evidence freeze landed as
+  `463259c9c8602878cf15296043eedf68a3ab64fa`. Implementation landed as
+  `fedbd6a342ad19be0e53d90d82ad8fe8e5ac74fc`; performance and documentation
+  landed as `27cf0b3`. The implementation CI run
+  [34062796872](https://github.com/djr-747/ti-c54x/actions/runs/34062796872)
+  is green. The performance/documentation run
+  [34063227898](https://github.com/djr-747/ti-c54x/actions/runs/34063227898)
+  is green across GCC, Clang, Clang sanitizers, install/consumer, and hosted
+  benchmark smoke coverage.
+- TDD fanout used seven bounded RED contracts (T state, T effect, effect
+  transaction, EXP metadata, EXP decode, EXP handler, and CPU EXP), followed by
+  focused GREEN checks and two independent reviews. Full local `make test` was
+  green after correcting the initial expected catalog-count mismatch (15/1081
+  to 16/1083): 176 Python tests plus all C tests, source-boundary checks over
+  230 files, and build-manifest, evidence, knob, and observer-off checks.
+  The registry closes at 116 evidence items, 170 requirements (138 implemented,
+  9 planned, 23 unresolved), and 127 tests (118 passing, 9 planned).
+- Architecture: private `uint16_t` T state resets to physical zero while
+  remaining architecturally unknown; the T effect is value-only; and the
+  generic tagged candidate-only transaction routes `NONE`, status,
+  accumulator, and T-register effects. CPU retirement is
+  dispatch -> stage effect -> candidate PC -> commit transaction -> assign PC
+  -> retire. EXP is the one-word `0xF48E` / mask `0xFEFF` accumulator-source
+  form, uses the existing accumulator-source input, writes encoded values
+  `-8..31` to T, and leaves the selected accumulator unchanged.
+- No public T/MMR, memory, RPT/IRQ, timing, knob, diagnostic/environment,
+  allocation, or emulator-integration surface changed. EXP repeatability remains
+  unresolved. No knobs changed. No unplanned architecture GAP was found:
+  shared changes were serialized by the orchestrator, and no family CPU
+  workaround was introduced.
+- Performance closure is hosted POSIX observer-off throughput only, with no DSP
+  timing claim. Clean catalog-16 on the `fedbd6a` binary (`def3fe...`) records
+  NOP 124.251 ns / 8.048 MIPS, DP 205.652 / 4.863, ASM 209.142 / 4.781,
+  ARP 222.837 / 4.488, and mixed 206.376 / 4.846 over 4/16 reset-runnable
+  rows. Fixed deltas versus catalog-15 are +13.93%, +12.70%, +7.78%, and
+  +99.23%; capture spreads are 22.39%, 0.92%, 4.17%, and 8.71%. An identical
+  binary dirty diagnostic measured NOP 68.561 / 14.586, DP 101.587 / 9.844,
+  ASM 104.687 / 9.552, ARP 106.211 / 9.415, and mixed 96.438 / 10.369
+  (same-binary changes -44.82% to -53.27%), so no confirmed regression is
+  claimed.
+- Follow-up: select only the next two or three ISA families after strict FIT
+  review. Any need for shared architecture must stop the lane and produce a
+  GAP report before central integration.
