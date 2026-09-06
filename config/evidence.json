@@ -1102,6 +1102,20 @@
         "anchor": "ti_c54x_sequencer_apply_address_result"
       },
       "assertion": "The sequencer application contract validates circular effect shape and phase, reads CMPT/ARP before the selected AR and then BK, distinguishes unknown and stale dependencies, commits at most one selected-AR write for positive BK, and leaves canonical BK=0 NONE effects non-mutating. This is a project contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W17: masked opcode catalog foundation (active kickoff)"
+      },
+      "assertion": "The P2-W17 project contract extends the sole opcode catalog with EXACT and MASKED canonical 16-bit value/mask rows, rejects invalid masks, widths, duplicate IDs or handlers, and deterministic pairwise overlaps without priority; a repository-owned generator emits a checked-in immutable 65,536-entry uint16_t direct lookup while normal builds remain compiler-only and runtime performs no initialization, allocation, or global mutation. No masked production instruction, operand-field extraction, extension-word fetch, CPU integration, timing, memory, bus, device, observer, or external table behavior is claimed. This is a project structure contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -1982,6 +1996,26 @@
         "T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
         "T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-MASKED-OPCODE-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "The sole opcode catalog accepts canonical EXACT and MASKED 16-bit value/mask rows, preserves the existing exact NOP row and behavior, rejects invalid masks, widths, duplicate IDs or handlers, and rejects every pairwise overlap deterministically without a priority rule; no masked production instruction is registered.",
+      "evidence_ids": ["E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT"],
+      "test_ids": ["T-PROJECT-MASKED-OPCODE-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-OPCODE-LOOKUP-GENERATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "The catalog subsystem's deterministic tools/isa/catalog/generate_opcode_lookup.py emits the checked-in immutable generated/isa/catalog/opcode_first_word.inc as a 65,536-entry uint16_t direct lookup; normal Make, CMake, and consumer builds remain compiler-only and Python-free, quality checks regenerate and reject stale output, and runtime performs no initialization, allocation, or mutable global-table update.",
+      "evidence_ids": ["E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT"],
+      "test_ids": ["T-PROJECT-OPCODE-LOOKUP-GENERATION"]
     }
   ],
   "tests": [
@@ -2446,6 +2480,22 @@
       "path": "tests/unit/sequencer/test_address_effect_dependency_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_dependency_contract"},
       "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM"]
+    },
+    {
+      "id": "T-PROJECT-MASKED-OPCODE-CATALOG",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/catalog/test_opcode_catalog_schema.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MASKED-OPCODE-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-OPCODE-LOOKUP-GENERATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/catalog/test_opcode_lookup_generator.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OPCODE-LOOKUP-GENERATION"]
     }
   ]
 }

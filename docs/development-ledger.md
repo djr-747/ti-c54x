@@ -2296,3 +2296,47 @@ rewritten after publication.
   package-consumer smoke tests, and the Clang sanitizer build/test job.
 - Result: the P2-W16 implementation and completion record are published and
   independently green on every repository-owned remote validation surface.
+
+## 2026-09-06 — P2-W17 kickoff — masked opcode catalog foundation
+
+- State: active kickoff; this entry records the contract and evidence boundary
+  before any masked production instruction or generator implementation lands.
+  The registry now contains 2 targets, 7 sources, 62 immutable evidence records,
+  77 requirements (61 implemented, 4 planned, 12 unresolved), and 57 tests (53
+  passing, 4 planned).
+- Scope: extend the sole `src/isa/catalog/` inventory with `EXACT` and `MASKED`
+  canonical 16-bit `value`/`mask` rows. `MASKED` masks are nonzero and not
+  `0xffff`; values cannot set bits outside their mask; widths are 1..255 program
+  words; IDs and handler tokens are unique; every pairwise overlap is
+  rejected deterministically with no priority. The existing exact NOP row,
+  `0xF495` behavior, and API remain unchanged. No masked production row is
+  registered in this work piece.
+- Evidence: `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` is anchored to the P2-W17
+  implementation-plan section and is explicitly `PROJECT_CONTRACT_ONLY`; it
+  captures structure and build policy only. Existing TI field/encoding records
+  remain architectural context and are not reclassified as proof of this local
+  catalog contract.
+- Generation/build contract: the catalog subsystem owns a deterministic generator
+  at `tools/isa/catalog/generate_opcode_lookup.py` and a checked-in immutable
+  65,536-entry `uint16_t` direct lookup derivative at
+  `generated/isa/catalog/opcode_first_word.inc`.
+  Normal Make, CMake, and consumer builds remain compiler-only and Python-free;
+  quality checks regenerate and reject stale output. Runtime performs no
+  initialization, allocation, or mutable global-table update.
+- Ownership and exclusions: `src/isa/catalog/` owns schema and runtime lookup,
+  `tools/isa/catalog/` owns generation, `generated/isa/catalog/` owns the
+  derivative, and `tests/contract/quality/isa/catalog/` owns the two planned
+  Python quality tests. Operand-field layouts/extraction and extension-word
+  fetch are separate future work pieces before real operand semantics. CPU
+  fetch/decode/dispatch/retire integration, timing, memory, bus, device,
+  observer, XPC, and external code/table reuse are excluded.
+- TDD sequence: red schema, invalid-mask/width, duplicate-ID/handler, overlap,
+  stale-artifact, and generator checks first; implementation second; exhaustive
+  65,536-word mapping and generated-artifact immutability proof third; then
+  independent review and normal quality validation. Planned tests will use the
+  existing Python quality runner (`make test`, CTest
+  `ti_c54x.quality.python`) when implemented.
+- Follow-up: implement the catalog schema and generator under the ownership
+  hierarchy, add both planned tests, prove stale-output and compiler-only build
+  boundaries, then record implementation and remote-verification ledger entries
+  before planning operand-field or extension-word work.
