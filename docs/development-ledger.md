@@ -3743,3 +3743,18 @@ rewritten after publication.
 - Validation for this docs-only kickoff: run `tools/quality/check_evidence.py`
   and `git diff --check` only. The implementation work owns focused normal and
   sanitizer tests and the full standalone gate before its commit.
+
+## 2026-09-06 — P2-W21C kickoff remote verification
+
+- Published kickoff commit:
+  `9d04a1dc6035bc0fa512679bf46c21f2e4634e59`.
+- GitHub Actions run
+  [34031597203](https://github.com/djr-747/ti-c54x/actions/runs/34031597203)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream
+  package-consumer smoke tests, and Clang sanitizer configure/build/test.
+- Result: the P2-W21C lifecycle-only transaction contract is published and green
+  on every repository-owned build surface. Implementation may proceed within the
+  private `src/bus/transaction/` owner; external issue/visibility proof and
+  deterministic arbitration remain separately owned future work.
