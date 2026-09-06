@@ -1666,6 +1666,116 @@
         "anchor": "P2-W26: SFTL shifted-accumulator vertical slice (planned)"
       },
       "assertion": "P2-W26 freezes SFTL as a fit for the existing ACCUMULATORS input and ACCUMULATOR_WRITE plus C_WRITE effect path: a generic source/destination/shift5 layout, pure shift semantics, and CPU retirement with no production CPU change or opcode branch. Ownership remains split across catalog, decode, shift operations, existing accumulator sequencing, and CPU orchestration; repeatability and timing remain unresolved."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-AND-P4-11",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "AND",
+        "printed_page_start": "4-11",
+        "printed_page_end": "4-11"
+      },
+      "assertion": "The AND instruction description defines the one-word accumulator source/destination/shift form 1111 00SD 100S HIFT with signed SHIFT -16..15 and no status effects. Its fixed bits derive value 0xF080 with mask 0xFCE0, yielding 128 encoded first words; the operation combines the destination with the shifted source. Summary cycle fields are not adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-OR-P4-123",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "OR",
+        "printed_page_start": "4-123",
+        "printed_page_end": "4-123"
+      },
+      "assertion": "The OR instruction description defines the one-word accumulator source/destination/shift form 1111 00SD 101S HIFT with signed SHIFT -16..15 and no status effects. Its fixed bits derive value 0xF0A0 with mask 0xFCE0, yielding 128 encoded first words; the operation combines the destination with the shifted source. Summary cycle fields are not adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-XOR-P4-201",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "XOR",
+        "printed_page_start": "4-201",
+        "printed_page_end": "4-201"
+      },
+      "assertion": "The XOR instruction description defines the one-word accumulator source/destination/shift form 1111 00SD 110S HIFT with signed SHIFT -16..15 and no status effects. Its fixed bits derive value 0xF0C0 with mask 0xFCE0, yielding 128 encoded first words; the operation combines the destination with the shifted source. Summary cycle fields are not adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S2-3-P2-8-2-9-LOGICAL-ALU-SHIFTER",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.3.1/2.3.3",
+        "printed_page_start": "2-8",
+        "printed_page_end": "2-9"
+      },
+      "assertion": "SPRU131G describes a 40-bit ALU that performs Boolean operations, 40-bit accumulators, and a 40-bit barrel-shifter input/output path to and from the accumulators and ALU. This supports the full-40-bit logical accumulator operand contract without adding a timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4-2-3-P4-12-LOGICAL-C-PRESERVE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.2.3",
+        "printed_page_start": "4-12",
+        "printed_page_end": "4-12"
+      },
+      "assertion": "The status-register description states that C is not affected by logical operations. The planned AND/OR/XOR effects therefore use C_PRESERVE and preserve all other status fields."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LOGICAL-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "Table 2-28 does not positively authorize the register-only AND, OR, or XOR forms as repeatable; its preamble provides no all-unlisted-forms rule. Their repeatability therefore remains UNRESOLVED, and summary cycle fields are not adopted as machine-timing evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W27-LOGICAL-ACCUMULATOR-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)"
+      },
+      "assertion": "P2-W27 freezes AND/OR/XOR as a strict fit for the existing ACCUMULATORS input, generic accumulator-write effect, and CPU retirement seams: one-word rows, generic source/destination/shift5 extraction, pure logical handlers, canonical full-40-bit results, C_PRESERVE, and transactional PC retirement. Ownership is mirrored by catalog, decode, logical operations, existing input/effect owners, and CPU orchestration; any memory, status, state, effect, sequencing, RPT/IRQ, timing, parallel-execution, public-API, or CPU-branch gap is a hard stop rather than a family workaround."
     }
   ],
   "requirements": [
@@ -3272,6 +3382,56 @@
       "claim": "SFTL repeatability is unresolved: Table 2-28 does not list SFTL, but its preamble does not positively authorize every unlisted form. Do not classify SFTL as repeat-eligible until positive evidence or explicit project policy resolves the boundary.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-ENCODINGS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register AND_ACC_SHIFT/and_acc_shift as value 0xF080 with mask 0xFCE0, OR_ACC_SHIFT/or_acc_shift as 0xF0A0/0xFCE0, and XOR_ACC_SHIFT/xor_acc_shift as 0xF0C0/0xFCE0. Each consumes one program word and exactly 128 encoded first words; populated first-word entries are not distinct instruction count. The fixed bits7:5 are AND=100, OR=101, XOR=110, disjoint from SFTL=111.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-AND-P4-11", "E-TI-C54X-SPRU172C-S4-OR-P4-123", "E-TI-C54X-SPRU172C-S4-XOR-P4-201"],
+      "test_ids": ["T-COMMON-LOGICAL-ACCUMULATOR-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all three logical accumulator families through TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5: S bit9, D bit8, and raw shift5 bits4:0 sign-extended to q=-16..15. The omitted destination is only assembler alias D=S, not a catalog row; fixed-bit, layout, and noncanonical forms reject transactionally without output mutation.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-AND-P4-11", "E-TI-C54X-SPRU172C-S4-OR-P4-123", "E-TI-C54X-SPRU172C-S4-XOR-P4-201"],
+      "test_ids": ["T-COMMON-LOGICAL-ACCUMULATOR-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/logical/",
+      "claim": "Produce pure AND/OR/XOR effects using pre-instruction destination combined with a shifted source. Sign-extend raw shift5 q; q<0 performs logical full-40 right shift, q=0 identity, and q>0 full-40 left shift masked to 40. Guard bits participate, the result is canonical 40-bit with no sign extension, C_PRESERVE applies, and all other status is unchanged. Both participating accumulators must be known/canonical; when S==D, unknown unselected accumulator data is allowed.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S2-3-P2-8-2-9-LOGICAL-ALU-SHIFTER", "E-TI-C54X-SPRU131G-S4-2-3-P4-12-LOGICAL-C-PRESERVE", "E-TI-C54X-SPRU172C-S4-AND-P4-11", "E-TI-C54X-SPRU172C-S4-OR-P4-123", "E-TI-C54X-SPRU172C-S4-XOR-P4-201"],
+      "test_ids": ["T-COMMON-LOGICAL-ACCUMULATOR-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-LOGICAL-ACCUMULATOR-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Route AND/OR/XOR through existing ACCUMULATORS input, generic accumulator-write effect, and CPU retirement with no opcode-specific CPU branch or public API. Reject unknown selected or required participating accumulator data transactionally, permit unknown unselected data only when S==D, preserve PC and architectural state on failure, and retire admitted one-word forms exactly once with PC+1; reject PC 0xffff without mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W27-LOGICAL-ACCUMULATOR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-LOGICAL-ACCUMULATOR"]
+    },
+    {
+      "id": "REQ-COMMON-LOGICAL-ACCUMULATOR-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "AND, OR, and XOR register-only accumulator repeatability remains unresolved: Table 2-28 does not positively authorize these forms, and no timing or repeat eligibility may be inferred from their omission or summary fields until positive evidence or explicit policy resolves the boundary.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-LOGICAL-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -4153,6 +4313,38 @@
       "path": "tests/unit/cpu/test_cpu_sftl.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_sftl"},
       "requirement_ids": ["REQ-PROJECT-CPU-SFTL-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-LOGICAL-ACCUMULATOR-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_logical_accumulator_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-ENCODINGS"]
+    },
+    {
+      "id": "T-COMMON-LOGICAL-ACCUMULATOR-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_logical_accumulator_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-DECODE"]
+    },
+    {
+      "id": "T-COMMON-LOGICAL-ACCUMULATOR-OPS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/logical/test_logical_accumulator.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LOGICAL-ACCUMULATOR-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-LOGICAL-ACCUMULATOR",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_logical_accumulator.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-LOGICAL-ACCUMULATOR-RETIREMENT"]
     }
   ]
 }

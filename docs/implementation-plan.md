@@ -59,8 +59,9 @@ function-pointer dispatch tables.
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
-| P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — local proof green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
+| P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — full local and remote gates green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
 | P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
+| P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Planned | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, and catalog-ten clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -84,6 +85,19 @@ not hide the gap behind a family-specific CPU branch or silently broaden state,
 memory, interrupt, repeat, or timing policy. IRQ/RPT interaction, shared-memory
 ordering, and multi-work-unit timing remain serialized cross-cutting work even
 when individual opcode semantics appear independent.
+
+For P2-W27, Phase 1 is TDD RED fanout: the catalog/decode lane owns metadata,
+layout, and quality fixtures; the logical-operations lane owns only
+`src/isa/ops/logical/` and its pure-handler tests; and the CPU-proof lane owns
+`tests/unit/cpu/test_cpu_logical_accumulator.c` plus its manifests. None of
+these lanes may add production rows, generated artifacts, shared resources, or
+CPU behavior before its corresponding test is RED. Phase 2 is CODE_READY:
+family-local production may proceed only after the existing layout, resource,
+effect, and CPU seams are shown to fit; catalog/decode/generated/shared-surface
+changes are serialized by the orchestrator. Any gap in memory, status, state,
+effects, sequencing, RPT/IRQ, timing, parallel execution, public API, or CPU
+branching is a hard stop and must be reported with its evidence locator,
+missing contract, owner, test, and hot-path consequence.
 
 ### P2-W16: NOP-seeded opcode architecture
 
@@ -1148,6 +1162,71 @@ Closeout: the catalog now contains ten declarative rows and 693 populated
 encoded first words, not 693 distinct instructions; the mixed reset-runnable
 coverage remains four of ten rows. No `cpu.c` change, public API, memory,
 RPT/IRQ, or timing claim was added.
+
+### P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)
+
+State: planned; keep this immutable `(planned)` heading as the evidence anchor.
+P2-W27 adds three register-only one-word logical accumulator families without
+introducing architectural state, input resources, effect kinds, sequencing
+seams, public APIs, memory, RPT/IRQ, parallel execution, or timing claims.
+
+The normative forms are TI `SPRU172C` §4 AND (printed p. 4-11), OR (p. 4-123),
+and XOR (p. 4-201):
+
+- `AND_ACC_SHIFT`/`and_acc_shift`: value `0xF080`, mask `0xFCE0`, opcode
+  `1111 00SD 100S HIFT`, one word, 128 encoded first words.
+- `OR_ACC_SHIFT`/`or_acc_shift`: value `0xF0A0`, mask `0xFCE0`, opcode
+  `1111 00SD 101S HIFT`, one word, 128 encoded first words.
+- `XOR_ACC_SHIFT`/`xor_acc_shift`: value `0xF0C0`, mask `0xFCE0`, opcode
+  `1111 00SD 110S HIFT`, one word, 128 encoded first words.
+
+The fixed bits 7:5 are AND=`100`, OR=`101`, XOR=`110`, disjoint from the
+existing SFTL=`111` row under the same mask. An omitted destination is only the
+assembler alias `D=S`, never an additional catalog row. The post-slice catalog
+expectation is 13 rows and 1077 populated first-word encodings; those entries
+are encodings rather than instruction count, and reset-runnable coverage stays
+four of 13.
+
+`SPRU131G` §2.3.1/§2.3.3 (printed pp. 2-8–2-9) supplies the 40-bit Boolean
+ALU, accumulator, and barrel-shifter foundation. Decode reuses
+`TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5`: S is bit 9, D
+is bit 8, and raw shift bits 4:0 sign-extend to `q=-16..15`. The existing
+`ACCUMULATORS` input and generic accumulator-write effect remain the only
+resource/effect path.
+
+Pure handlers in `src/isa/ops/logical/` operate on the pre-instruction
+destination and shifted source. For `q<0`, logically right-shift the full
+40-bit source by `-q`; for `q=0`, use identity; for `q>0`, left-shift the
+full-40 source and mask to 40 bits. Combine with `&`, `|`, or `^`. Guard bits
+participate, the result is canonical 40-bit with no sign extension, and
+`SPRU131G` §4.2.3 (p. 4-12) requires `C_PRESERVE` with all other status
+unchanged. Both participating accumulators must be known/canonical; if `S==D`,
+unknown data in the unselected accumulator is allowed. Invalid inputs and
+effects reject transactionally at the PC boundary without mutation.
+
+Ownership mirrors the repository hierarchy: `src/isa/catalog/` owns rows and
+resource metadata; `src/isa/decode/` owns the generic layout/extraction;
+`src/isa/ops/logical/` owns pure handlers; `src/cpu/input/` and
+`src/sequencer/accumulator/` remain owners of input collection and generic
+effects; and `src/cpu/` only orchestrates generic retirement. Phase 1 RED tests
+are independently owned at
+`tests/unit/isa/catalog/test_logical_accumulator_metadata.c`,
+`tests/unit/isa/decode/test_logical_accumulator_decode.c`,
+`tests/unit/isa/ops/logical/test_logical_accumulator.c`, and
+`tests/unit/cpu/test_cpu_logical_accumulator.c`. Phase 2 production starts only
+after those contracts fail for the missing family rows/handlers; the
+orchestrator serializes catalog, decode, generated, and shared changes. Any
+architecture gap is a hard stop/report under the fanout policy above.
+
+The TDD proof must exhaust all 384 family encodings and all 65,536 first words,
+exercise q boundaries `-16,-1,0,1,15`, guard-bearing full-40 vectors, every
+source/destination combination, fixed-bit collision rejection, the S==D
+unknownness rule, canonical/unknown transactional rejection, C and all-status
+preservation, exactly one attempt/retirement with PC+1, and PC `0xffff`
+rollback. Repeatability remains `UNRESOLVED`: Table 2-28 (printed pp. 2-19–
+2-21) does not positively authorize these register forms, and no summary cycle
+field is timing evidence. GNU binutils material, if consulted, is
+nonnormative corroboration only.
 
 ### Hosted performance history (implemented; local and remote gates green)
 
