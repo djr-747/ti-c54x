@@ -61,8 +61,8 @@ function-pointer dispatch tables.
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
 | P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — full local and remote gates green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
 | P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
-| P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local gate green; remote pending | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
-| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, and catalog-ten clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W27 AND/OR/XOR register-only logical accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `ef87c94`; no confirmed regression | Three one-word logical accumulator families fit the existing input/effect/retirement seams; 13 catalog rows and 1077 populated first-word encodings after the slice, with repeatability unresolved and no new architecture |
+| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, and catalog-thirteen clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -1165,9 +1165,11 @@ RPT/IRQ, or timing claim was added.
 
 ### P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)
 
-State: implemented; targeted proof and the full local gate are green. Keep the
-immutable `(planned)` heading as the evidence anchor. Remote validation and the
-clean hosted performance record remain pending.
+State: implemented; targeted proof and full local and remote gates are green.
+Keep the immutable `(planned)` heading as the evidence anchor. The clean
+catalog-thirteen performance record is captured at `ef87c94`; it shows no
+confirmed regression. This is a hosted implementation observation only, not a
+DSP timing claim.
 P2-W27 adds three register-only one-word logical accumulator families without
 introducing architectural state, input resources, effect kinds, sequencing
 seams, public APIs, memory, RPT/IRQ, parallel execution, or timing claims.
@@ -1289,6 +1291,22 @@ Relative to catalog-nine, the same-cohort fixed-scenario deltas are +57.08%,
 semantic or CPU-orchestration changes do not establish a confirmed regression or
 improvement. The mixed workload remains evolving and non-comparable, and these
 hosted measurements are not DSP timing evidence.
+
+The clean catalog-thirteen record at `ef87c94` measures 121.420 ns/8.236 MIPS
+for NOP, 209.005 ns/4.785 MIPS for `ld-dp`, 202.901 ns/4.929 MIPS for
+`ld-asm`, 113.815 ns/8.786 MIPS for `ld-arp`, and 96.359 ns/10.378 MIPS for
+`mixed-current`, with reset-runnable coverage of four of 13 catalog rows. Its
+fixed-scenario deltas versus catalog-ten are +25.00%, +103.87%, +107.22%, and
++14.62%; current spreads are 51.13%, 10.86%, 5.71%, and 117.11%. Fixed code
+paths and CPU orchestration are unchanged; the large deltas and spreads do not
+support a confirmed regression. CI is green at
+<https://github.com/djr-747/ti-c54x/actions/runs/34055843312>.
+
+An immediate identical-binary diagnostic rerun (hash `144ffa...`; dirty only
+because history was appended) normalized to NOP 66.571 ns/15.022 MIPS,
+`ld-dp` 98.326/10.170, `ld-asm` 98.038/10.200, `ld-arp` 96.481/10.365, and
+mixed 86.448/11.568. It corroborates host noise only, not a history baseline or
+performance claim.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and

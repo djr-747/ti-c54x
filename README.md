@@ -22,16 +22,19 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover ten declarative one-word
+- Production decode and CPU execution now cover 13 declarative one-word
   opcode rows: evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
-  `ROR`, and `SFTL`. Those rows expand to their encoded accumulator forms. The
-  catalog now has 693 populated first-word encodings; that is a lookup-population
-  count, not 693 distinct instructions. Exact/masked
+  `ROR`, `SFTL`, `AND`, `OR`, and `XOR`. The logical families add 384
+  register-accumulator encodings with full-40-bit Boolean/shift semantics and
+  preserve C and all other status. Those rows expand to 1077 populated
+  first-word encodings; that is a lookup-population count, not instruction
+  count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are green under the full
-  local standalone gate; the P2-W26 implementation validation is green on both
-  local and remote standalone gates.
+  local and remote standalone gates. Repeatability and machine timing remain
+  unresolved; no `cpu.c`, public API, architectural state, memory, RPT/IRQ, or
+  timing change was needed.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -46,25 +49,25 @@ Current progress:
   `ACCUMULATORS | STATUS_C`, typed `status_c`/`status_c_known`, transactional
   unknownness handling, and no opcode-specific CPU branch. ROL/ROR use the
   existing accumulator-write plus C-write effect path; benchmark coverage
-  remains the four reset-runnable NOP/LD rows out of ten.
+  remains the four reset-runnable NOP/LD rows out of 13.
 - P2-W26 now proves SFTL's generic source/destination/shift5 layout, signed
   `-16..15` handling, low-32 shift semantics with explicit C output, guard
   clearing, and atomic retirement through existing generic effects. The full
   local P2-W26 gate is green. No `cpu.c` change, public API, memory,
-  RPT/IRQ, or timing claim was added; reset-runnable coverage remains four of
-  ten rows.
-- The registry now records 98 evidence items, 144 requirements (116 implemented,
-  9 planned, 19 unresolved), and 105 tests (96 passing, 9 planned). P2-W26's
+  RPT/IRQ, or timing claim was added; reset-runnable coverage is four of 13
+  rows.
+- The registry now records 105 evidence items, 149 requirements (120 implemented,
+  9 planned, 20 unresolved), and 109 tests (100 passing, 9 planned). P2-W27's
   full local and remote implementation validation is green. The latest clean
-  catalog-ten hosted performance record is captured at `cd88596`: NOP 97.138
-  ns / 10.295 MIPS, LD-DP 102.519 ns / 9.754 MIPS, LD-ASM 97.918 ns / 10.213
-  MIPS, LD-ARP 99.295 ns / 10.071 MIPS, and mixed-current 91.728 ns / 10.902
-  MIPS with reset-runnable coverage of 4/10. The catalog-nine record remains
-  the prior cohort; the latest fixed-scenario deltas are +57.08%, +11.93%,
-  +6.88%, and +2.73%, with current spreads of 36.02%, 10.71%, 32.95%, and
-  10.72%. Wide host noise/spreads and the absence of fixed-scenario semantic or
-  CPU-orchestration changes do not establish a confirmed regression or
-  improvement, and these measurements are not DSP timing evidence.
+  catalog-thirteen hosted performance record is captured at `ef87c94` (CI
+  [green](https://github.com/djr-747/ti-c54x/actions/runs/34055843312)): NOP
+  121.420 ns / 8.236 MIPS, LD-DP 209.005 ns / 4.785 MIPS, LD-ASM 202.901 ns /
+  4.929 MIPS, LD-ARP 113.815 ns / 8.786 MIPS, and mixed-current 96.359 ns /
+  10.378 MIPS with reset-runnable coverage of 4/13. Versus catalog-ten, fixed
+  deltas are +25.00%, +103.87%, +107.22%, and +14.62%; current spreads are
+  51.13%, 10.86%, 5.71%, and 117.11%. The large deltas and host spreads do not
+  support a confirmed regression; these are hosted implementation observations,
+  not DSP timing evidence.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -84,14 +87,13 @@ Current progress:
   unrecorded warmup windows, and clean-commit append-only JSONL. The initial
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
-  the catalog-seven `7cad341` record measured 14.481 MIPS for NOP and 11.162
-  MIPS for `mixed-current`; catalog-nine `705ac7b` remains the prior cohort.
-  The latest catalog-ten `cd88596` record is listed above. Its fixed-scenario
-  deltas versus catalog-nine are +57.08% to +2.73%, with within-capture spreads
-  of 10.71% to 36.02%; wide host noise/spreads and the absence of fixed-scenario
-  semantic or CPU-orchestration changes do not establish a confirmed regression
-  or improvement. The changed mixed workload is not compared. None of these
-  hosted observations is DSP timing evidence. See [hosted performance history](docs/performance.md).
+  the catalog-seven `7cad341`, catalog-nine `705ac7b`, and catalog-ten `cd88596`
+  records remain as prior cohorts. An identical-binary diagnostic rerun (hash
+  `144ffa...`, dirty only because history was appended) normalized to NOP 66.571
+  ns / 15.022 MIPS, LD-DP 98.326 / 10.170, LD-ASM 98.038 / 10.200, LD-ARP
+  96.481 / 10.365, and mixed 86.448 / 11.568. This corroborates host noise
+  only, not a history baseline or performance claim. See [hosted performance
+  history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.
