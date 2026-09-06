@@ -1144,6 +1144,20 @@
         "anchor": "P2-W19A: value-owned operand-field extraction (active kickoff)"
       },
       "assertion": "The P2-W19A project contract defines a pure, allocation-free extractor over a borrowed view of one or more 16-bit program words and a borrowed immutable field layout; it retains no pointers. Pieces identify a source word index, source LSB, width 1..16, and destination LSB 0..63; fields declare raw width 1..64, require in-word pieces, non-overlapping destination pieces that cover the declared value exactly, and non-overlapping source slices within each source word. Successful extraction publishes a caller-owned uint64_t raw value plus explicit width; invalid views, layouts, outputs, indexes, widths, overlap, or gaps leave output byte-for-byte unchanged. The contract makes no sign-extension, semantic, bus, CPU, state, PC, effect, timing, memory, interrupt, repeat, observer, diagnostic, file, environment, heap, mutable-global, or TI instruction-conformance claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)"
+      },
+      "assertion": "The P2-W19B project contract freezes two standalone private seams before any multiword opcode integration. The instruction-fetch owner accepts a copied first program word and exact uint32_t first_program_word_address plus a bus descriptor and context borrowed for the call only, retains no pointer, and returns a fully initialized by-value result whose fixed program_words[2] bundle capacity is a helper limit rather than an ISA-wide maximum. Count zero and counts above two are rejected before I/O. Count one copies and publishes the supplied first word with zero callbacks. Count two admits high carriers, checks first_program_word_address+1 before exactly one callback at that exact carrier, and rejects UINT32_MAX overflow before I/O. Count one, invalid-bus, unsupported-count, and address-overflow results use TI_C54X_BUS_OK because no bus transaction was attempted; a missing count-two callback maps to a bus fault plus TI_C54X_BUS_NO_CALLBACK; callback failure maps to a bus fault while preserving its exact non-OK bus status. Every non-OK result zeroes the named bundle count and both words without retry. The helper owns no first-word fetch, counters, CPU/PC/state mutation, common 16-bit/XPC policy, timing, memory, observers, or diagnostics. Independently, the sequencer bridge and sequential-PC owners accept explicit widths 1..255, convert both operands to uint32_t before addition, reject count zero and sums above UINT16_MAX without wrap or narrowing, preserve one-word boundaries and transactional valid/stale/malformed effect behavior, reject public carriers above UINT16_MAX without XPC inference, and perform no bus I/O. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -2210,6 +2224,26 @@
       "claim": "Implement a pure, allocation-free operand-field extractor over a borrowed caller-owned view of one or more 16-bit program words and a borrowed immutable layout. A field contains one or more pieces with a source word index, source LSB, width 1..16, and destination/value LSB 0..63, and declares raw width 1..64. Pieces must stay within source words and the declared destination width; destination pieces must not overlap and must cover the declared value exactly; source slices must not overlap within a source word. Successful extraction assembles a caller-owned uint64_t raw value plus explicit width for first-word, extension-word, split/non-contiguous, and 64-bit mechanics. Null or invalid views/layouts/outputs, out-of-range indexes, invalid widths, overlap, or gaps must leave output byte-for-byte unchanged. The extractor performs no sign extension or semantic interpretation and owns no bus, CPU, state, PC/effect, timing, memory, interrupt/repeat, observer, diagnostic, file, environment, heap, or mutable-global behavior.",
       "evidence_ids": ["E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT"],
       "test_ids": ["T-PROJECT-OPERAND-FIELD-EXTRACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "The private instruction-fetch helper collects only extension words after a first word has already been fetched and decoded. It accepts a copied first word and exact uint32_t first_program_word_address plus a bus descriptor and context borrowed for the call only, retains no pointer, and returns an allocation-free, fully initialized by-value result whose bundle has helper capacity exactly two program words rather than an ISA-wide maximum. Count zero and counts above two are rejected before I/O. Count one copies and publishes the supplied first word with zero callbacks. Count two checks first_program_word_address+1 before exactly one callback at that exact carrier, admits high carriers without truncation, and rejects UINT32_MAX overflow before I/O. Count one, invalid-bus, unsupported-count, and address-overflow results use TI_C54X_BUS_OK because no bus transaction was attempted; a missing count-two callback maps to a bus fault with TI_C54X_BUS_NO_CALLBACK; callback failure maps to a bus fault while preserving its exact non-OK bus status. Every non-OK result zeroes the named bundle program_word_count and both words without retry, including when a callback scribbles before failing. The helper owns no first-word fetch, attempts, retirements, CPU/PC/state mutation, common 16-bit/XPC policy, timing, memory effects, observers, or diagnostics.",
+      "evidence_ids": ["E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT"],
+      "test_ids": ["T-PROJECT-INSTRUCTION-EXTENSION-FETCH"]
+    },
+    {
+      "id": "REQ-PROJECT-SEQUENCER-MULTIWORD-PC",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private sequential-PC and public program-PC bridge seams accept explicit program_word_count values from 1 through 255, convert both operands to uint32_t before checked addition for 16-bit-int hosts, reject count zero and any sum above UINT16_MAX without wrapping or narrowing before validation, and preserve transactional valid/stale/malformed effect behavior. Count one preserves the admitted 0xfffe-to-0xffff transition and unresolved one-word source at 0xffff; count two admits 0xfffd-to-0xffff and rejects 0xfffe as unresolved. The public bridge rejects carriers above UINT16_MAX without XPC inference and delegates admitted width arithmetic; no bus I/O is performed.",
+      "evidence_ids": ["E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT"],
+      "test_ids": ["T-PROJECT-SEQUENCER-MULTIWORD-PC"]
     }
   ],
   "tests": [
@@ -2747,6 +2781,22 @@
       "path": "tests/unit/isa/decode/test_operand_field.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.operand_field"},
       "requirement_ids": ["REQ-PROJECT-OPERAND-FIELD-EXTRACTION"]
+    },
+    {
+      "id": "T-PROJECT-INSTRUCTION-EXTENSION-FETCH",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_instruction_extension_fetch.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH"]
+    },
+    {
+      "id": "T-PROJECT-SEQUENCER-MULTIWORD-PC",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_program_pc_bridge_multiword.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-SEQUENCER-MULTIWORD-PC"]
     }
   ]
 }

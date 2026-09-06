@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 64 immutable evidence
-records, 92 requirements, and 62 tests (60 `PASSING`, 2 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 65 immutable evidence
+records, 94 requirements, and 64 tests (60 `PASSING`, 4 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -216,6 +216,55 @@ that a direct effect selects the tagged DP source only under `CPL=0`, or the
 tagged SP source only under `CPL=1`, while preserving the planned data-word
 address; that source-selection contract is kept narrow and does not claim
 direct long32 behavior.
+
+### Transactional extension fetch and width-aware program PC (P2-W19B active kickoff)
+
+P2-W19B freezes the two private seams needed before any multiword opcode or repeat
+instruction can be integrated. It adds no production opcode, handler, catalog row,
+or CPU retire behavior. The evidence record is project-contract-only and makes no
+TI conformance, machine-cycle, memory, interrupt, repeat, or emulator claim.
+
+The planned `src/cpu/instruction_fetch.[ch]` owner collects only extension words
+after a first word has already been fetched and decoded. Its allocation-free
+by-value result has helper capacity exactly two `uint16_t` program words (not an
+ISA-wide maximum), explicit `program_word_count`, status, and exact bus status.
+Inputs copy the first word and exact 32-bit `first_program_word_address` and borrow
+a bus descriptor/context only for the call; no pointer is retained. Width zero and
+every width above two are rejected before any callback. Width one publishes the
+first word with zero callbacks and `TI_C54X_BUS_OK` because no bus transaction was
+attempted. Validation and overflow paths that make zero callbacks—including null
+buses, unsupported widths, and address overflow—report `TI_C54X_BUS_OK` in the
+bus-status field for the same reason.
+Width two checks `first_program_word_address + 1` before one exact callback, admits
+high carriers without truncation, rejects `UINT32_MAX` overflow before I/O, maps
+missing callbacks to a bus fault plus `TI_C54X_BUS_NO_CALLBACK`, preserves every
+callback failure's exact non-OK bus status, and maps fetch status to bus fault.
+Every non-OK path publishes no partial result (zero count and zero words), all
+named result fields are initialized deterministically, and no retry occurs. Null
+buses, unsupported widths, overflow, callback failure, and callback scribbles are
+deterministic. The helper owns no first-word fetch, counters, CPU/PC/state mutation,
+common 16-bit/XPC policy, timing/waits, memory, observers, or diagnostics.
+
+The planned `src/sequencer/sequential_pc.[ch]` and `program_pc_bridge.[ch]` owners
+generalize staged PC effects to explicit `uint8_t` widths 1..255. Both operands
+are converted to `uint32_t` before addition for hosts where `int` is 16 bits.
+Checked arithmetic rejects count zero and sums above `UINT16_MAX` as unresolved,
+with no pre-validation wrap or narrowing. Count one preserves the existing
+`0xfffe -> 0xffff` admission and `0xffff` unresolved boundary. Valid, stale, and
+malformed effects remain transactional. The public bridge rejects carriers above
+`0xffff` without
+inferring XPC and delegates admitted width arithmetic; it performs no bus I/O.
+
+P2-W18 CPU orchestration and NOP ordering remain unchanged; no count-two opcode is
+registered, so the CPU does not yet consume this helper end-to-end. Later RPT work
+will choose the ordering of bridge span validation, extension reads, operand
+extraction, and semantics. `last_fetched_word` remains unchanged. Planned proofs
+are owned by `tests/unit/cpu/test_instruction_extension_fetch.c` and
+`tests/unit/sequencer/test_program_pc_bridge_multiword.c`, with exhaustive width,
+boundary, failure, callback, no-retention, and no-mutation cases. Existing P2-W18
+CPU tests remain regression gates.
+The boundary matrix explicitly admits `0xfffd + 2 = 0xffff` and rejects
+`0xfffe + 2` as unresolved, alongside count zero and all widths through 255.
 
 ## Single-indirect address-effect slice
 

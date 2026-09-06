@@ -2629,3 +2629,68 @@ rewritten after publication.
   slice is P2-W19B transactional extension-word fetch and width-aware program-PC
   handling before `RPT`. This verification makes no claim about extension fetch,
   broader ISA coverage, timing, memory, or IRQ behavior.
+
+## 2026-09-06 — P2-W19B kickoff — transactional extension fetch and width-aware program PC
+
+- State: active contract kickoff; implementation and completion commits are pending.
+- Prior repository head: `63115639c67a167f5df31cfa410cc51914956f2c`; the P2-W19A
+  remote verification at GitHub Actions run `34017216955` is green.
+- Plan: freeze two owner-local, standalone seams before any multiword opcode or
+  repeat integration. `src/cpu/instruction_fetch.[ch]` owns allocation-free
+  extension collection after first-word fetch/decode, while
+  `src/sequencer/sequential_pc.[ch]` and `program_pc_bridge.[ch]` own checked
+  width-aware PC span and transactional application. No production opcode,
+  handler, catalog row, or CPU count-two retire integration is introduced.
+- Instruction-fetch contract: the by-value result has helper capacity exactly two
+  program words (not an ISA-wide maximum), explicit count, status, and exact bus
+  status. The input copies the first word and exact `uint32_t`
+  `first_program_word_address` and borrows the bus descriptor and callback context
+  only for the call, retaining neither.
+  Count zero and widths above two are rejected before callbacks. Count one
+  publishes the first word with zero callbacks and `TI_C54X_BUS_OK` because no bus
+  was attempted. Null-bus, unsupported-width, and address-overflow results also
+  report `TI_C54X_BUS_OK` because no bus transaction was attempted. Count two
+  checks `first_program_word_address + 1` before exactly one callback at that exact
+  carrier, admits high carriers without truncation, rejects `UINT32_MAX` overflow
+  before I/O, maps a missing callback to a bus fault plus
+  `TI_C54X_BUS_NO_CALLBACK`, preserves each callback failure's exact non-OK bus
+  status, maps fetch status to bus fault, and publishes zero count/words with all
+  named result fields initialized on every non-OK path without retry. No first-word
+  fetch, counter, CPU/PC/state, common 16-bit/XPC, timing, memory, observer, or
+  diagnostic behavior belongs to this helper.
+- Program-PC contract: explicit widths 1..255 convert both operands to `uint32_t`
+  before addition for 16-bit-int hosts; count zero and sums above `UINT16_MAX` are
+  rejected without wrap or narrowing. Existing one-word boundaries remain exact
+  (`0xfffe -> 0xffff` admitted and `0xffff` unresolved). The matrix also admits
+  `0xfffd + 2 = 0xffff` and rejects `0xfffe + 2` as unresolved. Valid, stale,
+  and malformed effects stay transactional. Public carriers above `0xffff` are
+  rejected without XPC inference, and this seam performs no bus I/O. P2-W18 NOP
+  orchestration, attempted/retired counters, observer behavior,
+  one-fetch-per-attempt contract, and `last_fetched_word` policy are unchanged;
+  their tests remain regression gates. RPT work will choose the later ordering of
+  span validation, extension reads, operand extraction, and semantics.
+- Planned tests: `T-PROJECT-INSTRUCTION-EXTENSION-FETCH` at
+  `tests/unit/cpu/test_instruction_extension_fetch.c` proves count-one/no-read,
+  exact low/high count-two carriers, overflow, missing callbacks, every bus-fault
+  status, callback scribble, no retry, complete-bundle-only publication,
+  deterministic failures, and no pointer retention. `T-PROJECT-SEQUENCER-MULTIWORD-PC`
+  at `tests/unit/sequencer/test_program_pc_bridge_multiword.c` exhausts count zero,
+  valid widths and boundaries 1..255, count-one regression, explicit two-word
+  boundary cases, high carriers, malformed/stale effects, and no mutation. Both
+  remain `PLANNED` with null runners until their owners implement them.
+- Registry kickoff: added immutable evidence
+  `E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT`, planned requirements
+  `REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH` and
+  `REQ-PROJECT-SEQUENCER-MULTIWORD-PC`, and planned tests
+  `T-PROJECT-INSTRUCTION-EXTENSION-FETCH` and
+  `T-PROJECT-SEQUENCER-MULTIWORD-PC`, with forward and reverse links. Expected
+  totals are 2 targets, 7 sources, 65 immutable evidence records, 94 requirements
+  (78 implemented, 4 planned, 12 unresolved), and 64 tests (60 passing, 4 planned).
+- Scope/provenance: no TI evidence or conformance claim is added. Machine-cycle
+  timing, memory effects, IRQ, repeat semantics, emulator integration, external
+  code/tables, environment knobs, diagnostics, allocators, and mutable globals
+  remain out of scope. Ownership follows the directory hierarchy and no monolith
+  is introduced.
+- Focused docs-only validation: run the evidence/schema and registry quality
+  checks plus `git diff --check`; do not run the full build/test gate for this
+  kickoff. The later implementation work owns the coherent `make -B test` gate.

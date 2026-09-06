@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 64 immutable evidence records,
-92 requirements, and 62 tests (60 `PASSING`, 2 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 65 immutable evidence records,
+94 requirements, and 64 tests (60 `PASSING`, 4 `PLANNED`).
 
 ## Targets
 
@@ -107,6 +107,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W17: masked opcode catalog foundation (active kickoff)` |
 | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)` |
 | `E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W19A: value-owned operand-field extraction (active kickoff)` |
+| `E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -302,6 +303,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | `T-PROJECT-CPU-EXECUTION-BUDGET` |
 | `REQ-PROJECT-CPU-COUNTER-OVERFLOW` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT` | `T-PROJECT-CPU-EXECUTION-BUDGET` |
 | `REQ-PROJECT-OPERAND-FIELD-EXTRACTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P2-W19A-OPERAND-FIELD-CONTRACT` | `T-PROJECT-OPERAND-FIELD-EXTRACTION` |
+| `REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT` | `T-PROJECT-INSTRUCTION-EXTENSION-FETCH` |
+| `REQ-PROJECT-SEQUENCER-MULTIWORD-PC` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W19B-EXTENSION-FETCH-PC-CONTRACT` | `T-PROJECT-SEQUENCER-MULTIWORD-PC` |
 
 ## Tests
 
@@ -373,6 +376,8 @@ exist in the repository.
 | `T-PROJECT-CPU-EXECUTION-BUDGET` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_execution_budget.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_execution_budget"}` | `REQ-PROJECT-CPU-BUDGET-ZERO`, `REQ-PROJECT-CPU-COUNTER-PHASES`, `REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET`, `REQ-PROJECT-CPU-COUNTER-OVERFLOW` |
 | `T-PROJECT-PROGRAM-PC-BRIDGE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_program_pc_bridge.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.program_pc_bridge"}` | `REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE`, `REQ-PROJECT-CPU-PC-BOUNDARIES`, `REQ-PROJECT-SEQUENCER-PC-TRANSACTION` |
 | `T-PROJECT-OPERAND-FIELD-EXTRACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_operand_field.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.operand_field"}` | `REQ-PROJECT-OPERAND-FIELD-EXTRACTION` |
+| `T-PROJECT-INSTRUCTION-EXTENSION-FETCH` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_instruction_extension_fetch.c` | `null` | `REQ-PROJECT-INSTRUCTION-EXTENSION-FETCH` |
+| `T-PROJECT-SEQUENCER-MULTIWORD-PC` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_program_pc_bridge_multiword.c` | `null` | `REQ-PROJECT-SEQUENCER-MULTIWORD-PC` |
 
 ## Correction and tombstone policy
 

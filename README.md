@@ -27,12 +27,13 @@ fetch, decode, dispatch, private program-PC staging, and transactional retiremen
 are covered by executable tests. P2-W19A is implemented and green: the checked,
 value-owned operand-field extractor proves exhaustive one-word slices plus
 multiword, non-contiguous, 64-bit, borrowed-input, and transactional cases.
-P2-W19B extension-word fetch and width-aware PC span/commit is next before repeat
-work. Timing, shared-memory mutation, interrupts and repeat, the full ISA, device
-profiles, and emulator integration are not implemented yet or remain deferred. See
-the
-[implementation plan](docs/implementation-plan.md) and
-[development ledger](docs/development-ledger.md) for the current work state.
+P2-W19B is the active contract kickoff for transactional extension-word fetch and
+width-aware program-PC span/commit before repeat work. It adds no production
+opcode, handler, catalog row, or CPU retire integration yet. Timing, shared-memory
+mutation, interrupts and repeat, the full ISA, device profiles, and emulator
+integration are not implemented yet or remain deferred. See the
+[implementation plan](docs/implementation-plan.md) and [development
+ledger](docs/development-ledger.md) for the current work state.
 
 ## Build and test
 
