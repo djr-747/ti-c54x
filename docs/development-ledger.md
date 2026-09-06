@@ -1768,3 +1768,24 @@ rewritten after publication.
   `34001721915`. Push and verify the implementation and this completion ledger
   next, then begin the evidence-first circular-addressing work piece against
   the explicit BK dependency.
+
+## 2026-09-06 — P2-W12 remote verification — Sequencer decomposition
+
+- Verified commits: implementation
+  `cebd507d221e50ee6667f65594c77da5c5b17abc` and completion ledger
+  `8816b117b4d74cd130ac91c31b4b53abc7c9a183` on `origin/main`.
+- GitHub Actions: CI run
+  `https://github.com/djr-747/ti-c54x/actions/runs/34002761612` completed
+  successfully.
+- Remote gates: GCC and Clang passed direct standalone Make build/tests,
+  library-only CMake configure/build, full CMake configure/build/CTest,
+  installation, and downstream consumer package smoke tests. The Clang
+  sanitizer job passed configure, build, and CTest.
+- Result: no corrective implementation, evidence, ownership, packaging, or
+  test change was required. The private validator remains read-only and the
+  41-line apply owner remains the only architectural mutation boundary.
+- Knobs and isolation: unchanged; remote validation introduced no `TEST`,
+  `OBSERVE`, or `A/B` knob, environment lookup, diagnostic dependency,
+  firmware input, public ABI change, or emulator coupling.
+- Follow-up: begin P2-W13 with an evidence-first circular-addressing boundary
+  and BK dependency plan before implementing any arithmetic or effects.
