@@ -3758,3 +3758,45 @@ rewritten after publication.
   on every repository-owned build surface. Implementation may proceed within the
   private `src/bus/transaction/` owner; external issue/visibility proof and
   deterministic arbitration remain separately owned future work.
+
+## 2026-09-06 — P2-W21C completion — resumable WORD16 transaction protocol
+
+- Implementation commit: `a3edba970cb2143bfb9d3eb437b9882084352a0d`.
+- State: P2-W21C is implemented and green. The private owner is
+  `src/bus/transaction/`, mirrored by `tests/unit/bus/transaction/`; production
+  leaves are `word16_transaction.[ch]` and `word16_transaction_validate.[ch]`.
+  Lifecycle and adversarial validation remain separate owners and tests.
+- TDD: the focused RED run preceded the missing production leaves; GREEN then
+  passed the lifecycle and adversarial executables. Independent review found no
+  major defect and the follow-up closed duplicate-terminal, stale-precedence,
+  forged-shape, borrowed-observation, reset, and zero-result proof gaps.
+- Contract result: the callback-free, allocation-free reducer proves lifecycle-only
+  IDLE/ISSUE_READY/IN_FLIGHT/COMPLETION_READY/COMPLETE/FAULT states, one issue
+  authorization, resumable WAIT, one terminal observation, canonical READY/FAULT
+  completion, stale IDs, and no active-work cancellation. Exactly-once remains a
+  protocol claim under caller ownership and unique-ID preconditions; this record
+  does not claim actual callback/MMIO/RAM counts, visibility, arbitration, timing,
+  memory effects, CPU/ISA behavior, or public ABI changes.
+- Registry result: 2 targets, 7 sources, 78 immutable evidence records, 115
+  requirements (91 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`), and 82 tests
+  (73 `PASSING`, 9 `PLANNED`). The two implemented tests run as
+  `ti_c54x.bus_word16_transaction` and
+  `ti_c54x.bus_word16_transaction_contract`; the external adapter
+  exactly-once requirement/test remains `PLANNED` with a null runner.
+- Full gate: 163 Python quality tests, 68 C unit targets, and 69 direct
+  executions including the minimal consumer passed; source boundaries (151
+  files), manifests, evidence, knobs, observer-disabled, and generated checks
+  were green. Focused normal and ASan/UBSan tests passed. The local CMake
+  executable remains permission-denied; remote CMake owns that proof.
+- Size/shape review: production files are 227/113 lines, headers 115/40,
+  lifecycle test 453, and adversarial test 499. Tests remain separate by
+  lifecycle versus adversarial ownership; future growth must split rather than
+  exceed the review threshold.
+- Knobs/integration: no `TEST`, `OBSERVE`, or `A/B` knob and no integration
+  behavior was added. Follow-up publish/remote verification precedes the next ISA
+  slice; external adapter/visibility work stays deferred until a concrete memory
+  opcode requires it.
+- Direction: speculative foundation expansion is now frozen. Work shifts to
+  end-to-end ISA vertical slices; new infrastructure is added only when a
+  concrete opcode family proves it is required, with related opcodes batched
+  where evidence and ownership permit.

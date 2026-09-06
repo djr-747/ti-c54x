@@ -1,6 +1,8 @@
 # ti-c54x implementation plan
 
-Status: foundations in progress.
+Status: the standalone foundation baseline is established and ISA vertical slices
+are the active track. P2-W21C is implemented and green; external adapter visibility
+is deferred until a concrete memory opcode requires it.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -41,7 +43,7 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Active (P2-W21C kickoff) | Word-native requests, explicit byte-lane adapters, a pure resumable transaction reducer, and later external visibility/arbitration proofs precede load/store effects |
+| Shared-memory transaction semantics | Foundation complete (P2-W21C) | Word-native requests, explicit byte-lane adapters, and a pure resumable transaction reducer are proven; external visibility/arbitration remains adapter-owned and demand-driven by a concrete load/store slice |
 | Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
@@ -587,7 +589,9 @@ evidenced owner-local work may proceed independently.
 
 ### P2-W21: shared-memory transaction foundation
 
-State: P2-W21A and P2-W21B implemented; P2-W21C is an active docs-only kickoff.
+State: P2-W21A, P2-W21B, and P2-W21C implemented and green. External adapter
+visibility and arbitration remain planned but are introduced only when a concrete
+memory opcode requires them.
 This work builds the independent gate required before any instruction may mutate
 memory. The core remains word-native and host-endian-neutral; sharing, storage,
 device mapping, and arbitration stay outside the CPU instance.
@@ -701,15 +705,15 @@ branches. Owner-local Make and CTest registrations mirror the production tree.
 Focused normal and sanitizer tests and the full standalone Make gate pass while
 W21A, the public ABI, and current CPU behavior remain unchanged.
 
-#### P2-W21C: resumable WORD16 transaction protocol (active kickoff)
+#### P2-W21C: resumable WORD16 transaction protocol (implemented)
 
-This is a docs-only contract kickoff for the private `src/bus/transaction/` owner,
-mirrored by `tests/unit/bus/transaction/`. The planned production leaves are
-`word16_transaction.[ch]` and `word16_transaction_validate.[ch]`; focused proofs
-will be `test_word16_transaction.c` for lifecycle behavior and
-`test_word16_transaction_contract.c` for adversarial validation. Parent bus and
-test manifests will aggregate the child later; this kickoff changes no source,
-public ABI, CPU path, request type, codec, or build manifest.
+This implementation owns the private `src/bus/transaction/` leaf, mirrored by
+`tests/unit/bus/transaction/`. Production leaves are `word16_transaction.[ch]`
+and `word16_transaction_validate.[ch]`; `test_word16_transaction.c` proves
+lifecycle behavior and `test_word16_transaction_contract.c` proves adversarial
+validation. Ownership is explicit in nested Make/CMake manifests and parent
+aggregation. The implementation changes no public ABI, CPU path, request type,
+codec, or adapter behavior.
 
 The reducer is pure, callback-free, allocation-free, and host-storage-free. The
 caller declares transaction storage as canonical `{0}`. Its lifecycle vocabulary
@@ -781,9 +785,20 @@ write zero payload, all three public fault statuses, one completion, reset/reuse
 with a fresh ID, and stale observations. The adversarial contract proof covers
 canonical and forged states/requests, nulls, zero or forged observation kinds and
 bus statuses, noncanonical payloads, active-reset rejection, precedence, named
-field nonmutation, and zero failed issue/completion payloads. Both planned tests
-remain runner-null until the owner implementation exists; focused normal and
-sanitizer tests plus the full gate belong to the later implementation commit.
+field nonmutation, and zero failed issue/completion payloads. Focused normal and
+ASan/UBSan tests pass with runners `ti_c54x.bus_word16_transaction` and
+`ti_c54x.bus_word16_transaction_contract`; the full standalone gate is green.
+
+The completion review recorded TDD RED before the production leaves existed,
+independent lifecycle/adversarial ownership, no major defect, and closed proof
+gaps. Production files are 227/113 lines, headers 115/40, lifecycle test 453,
+and adversarial test 499; future growth splits tests rather than exceeding the
+review threshold. The implementation commit is `a3edba970cb2143bfb9d3eb437b9882084352a0d`.
+No knob or integration behavior was added. Actual callback/MMIO/RAM exactly-once
+visibility, arbitration, timing, memory effects, CPU/ISA integration, and public
+ABI behavior remain outside this leaf. Follow-up publish/remote verification is
+required before the next ISA slice; external adapter work stays deferred until a
+concrete memory opcode requires it.
 
 ## Delivery order
 
@@ -798,6 +813,11 @@ sanitizer tests plus the full gate belong to the later implementation commit.
 8. Implement opcode families as requirement-backed vertical slices.
 9. Add timing and silicon devices only from pinned evidence.
 10. Vendor a release into emulators through separate adapters.
+
+After P2-W21C, speculative foundation expansion is frozen. Work shifts to
+end-to-end ISA vertical slices; new infrastructure is introduced only when a
+concrete opcode family proves it is required, with related opcodes batched where
+evidence and ownership permit.
 
 ## Timing and execution-budget gate
 

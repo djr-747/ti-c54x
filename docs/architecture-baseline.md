@@ -6,8 +6,8 @@ The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
 The current registry contains 2 targets, 7 sources, 78 immutable evidence
-records, 115 requirements (89 `IMPLEMENTED`, 11 `PLANNED`, 15 `UNRESOLVED`),
-and 82 tests (71 `PASSING`, 11 `PLANNED`).
+records, 115 requirements (91 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`),
+and 82 tests (73 `PASSING`, 9 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -436,10 +436,10 @@ precedence, zero named error payloads, and borrowed-input nonmutation through bo
 decode branches. Focused normal and sanitizer tests and the full standalone Make
 gate pass; the public ABI and CPU behavior remain unchanged.
 
-### Resumable WORD16 transaction protocol (P2-W21C active kickoff)
+### Resumable WORD16 transaction protocol (P2-W21C implemented)
 
-P2-W21C is the next private bus leaf under `src/bus/transaction/`, with mirrored
-planned tests under `tests/unit/bus/transaction/`. It is a pure, callback-free,
+P2-W21C is the implemented private bus leaf under `src/bus/transaction/`, with mirrored
+tests under `tests/unit/bus/transaction/`. It is a pure, callback-free,
 allocation-free reducer; no public ABI, CPU path, request type, byte-order codec,
 host memory pointer, arbitration, device, timing, observer, diagnostic,
 environment, or global behavior enters this slice.
@@ -487,7 +487,19 @@ preconditions. A separate planned external adapter owner must prove actual
 callback/MMIO/RAM issue and completion counts and physical visibility across
 wait-state suspension; deterministic multi-master arbitration remains another later
 proof. W21C does not fabricate an adapter count or claim shared-memory visibility.
-The lifecycle and adversarial tests remain planned until implementation.
+The lifecycle and adversarial tests pass as `ti_c54x.bus_word16_transaction` and
+`ti_c54x.bus_word16_transaction_contract`.
+
+The completion review recorded TDD RED before implementation, independent
+lifecycle/adversarial ownership, no major defect, and closed proof gaps. The
+implementation commit is `a3edba970cb2143bfb9d3eb437b9882084352a0d`; production
+files are 227/113 lines, headers 115/40, lifecycle test 453, and adversarial test
+499. Future growth splits tests rather than exceeding the review threshold.
+Actual callback/MMIO/RAM exactly-once visibility, arbitration, timing, memory
+effects, CPU/ISA integration, and public ABI behavior remain outside this leaf.
+No knobs or integration behavior were added. Follow-up publish/remote
+verification precedes the next ISA slice; external adapter work stays deferred
+until a concrete memory opcode requires it.
 
 ## Single-indirect address-effect slice
 

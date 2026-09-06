@@ -20,51 +20,23 @@ make a license-selection or compatibility claim. See the [provenance review](doc
 The machine-readable [`config/evidence.json`](config/evidence.json) registry is checked by
 the standalone Python quality gate.
 
-The standalone foundations and generated exact/masked decode infrastructure are
-green. Only the evidence-backed NOP is registered, and its semantics remain
-private to the core. The end-to-end CPU NOP transaction is implemented and green:
-fetch, decode, dispatch, private program-PC staging, and transactional retirement
-are covered by executable tests. P2-W19A is implemented and green: the checked,
-value-owned operand-field extractor proves exhaustive one-word slices plus
-multiword, non-contiguous, 64-bit, borrowed-input, and transactional cases.
-P2-W19B is implemented and green: the standalone transactional extension-word
-fetch helper and width-aware program-PC span/commit seams are covered by focused
-CPU and sequencer tests. It adds no production opcode, handler, catalog row, or
-CPU count-two retirement integration. P2-W20A is complete: TI evidence now pins the
-two immediate RPT forms, operand+1 execution cardinality, repeatability rules, and
-post-decode IRQ/NMI deferral with the reset exception. P2-W20B is implemented and
-green: one decode-owned copied instruction bundle now moves through fetch, checked
-completion, and generic dispatch while preserving one-callback NOP behavior. The
-CPU gained no opcode-specific branch. P2-W20C1 is implemented and green: every
-catalog row now owns explicit scalar layout/repeatability metadata, carried through
-the copied decoded value. P2-W20C2 is implemented and green: decode now owns
-immutable zero/one/multi-operand layout sets, shared descriptor validation, and
-transactional copied extraction. The one- and two-word RPT immediate layouts are
-proven but remain inert; production decode still registers only NOP. P2-W20C is
-complete. P2-W20D is implemented and green as a narrow project-contract proof for
-a typed, value-owned `REPEAT_START` effect; it does not claim RC mutation or
-activate RPT in production decode. P2-W20E is implemented and green as three pure,
-owner-separated repeat-sequencer policy proofs for exhaustive `uint32_t`
-cardinality derivation, preclassified-body admission, and repeat-only request
-gating. Actual body execution, production classification, and IRQ integration
-remain planned. A follow-up TI evidence audit confirmed that the manuals do not
-define the decrement timing edge or final visible RC required by this integration
-contract, single-repeat PC flow, or arbitration for a request already pending
-before RPT decode, so W20F CPU integration is deliberately deferred rather than
-guessed. The broader
-implementation is split
-into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
-and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
-guessed. P2-W21A is implemented and green as a private, value-owned WORD16
-bus-request foundation. P2-W21B is implemented and green as a separate exhaustive
-BIG/LITTLE WORD16 byte-lane codec. P2-W21C is now an active docs-only kickoff for
-the private callback-free resumable WORD16 transaction reducer: lifecycle,
-stale-token, canonical payload, and no-cancellation rules are frozen, while
-external visibility and arbitration remain later adapter-owned proofs. Timing,
-shared-memory mutation, the full ISA, device profiles, and emulator integration
-remain deferred. See the
-[implementation plan](docs/implementation-plan.md) and [development
-ledger](docs/development-ledger.md) for the current work state.
+Current progress:
+
+- Production decode and CPU execution register one instruction: evidence-backed
+  `NOP`. Exact/masked catalog generation, complete instruction bundles, extension
+  fetch, operand extraction, dispatch, PC staging, and retirement are green.
+- Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
+  unresolved RC/PC/IRQ details are not guessed.
+- The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
+  explicit WORD16 requests and BIG/LITTLE conversion, and a callback-free resumable
+  transaction reducer. External memory visibility, arbitration, and timing remain
+  demand-driven work.
+- Speculative foundation expansion is frozen. The active track is end-to-end ISA
+  vertical slices, adding infrastructure only when a concrete opcode family needs
+  it. Emulator integration remains deferred.
+
+See the [implementation plan](docs/implementation-plan.md) and
+[development ledger](docs/development-ledger.md) for detailed status and evidence.
 
 ## Build and test
 

@@ -1353,7 +1353,7 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {
         "path": "docs/implementation-plan.md",
-        "anchor": "P2-W21C: resumable WORD16 transaction protocol (active kickoff)"
+        "anchor": "P2-W21C: resumable WORD16 transaction protocol (implemented)"
       },
       "assertion": "The P2-W21C project contract defines a private, callback-free, allocation-free WORD16 reducer under src/bus/transaction/. Caller-declared canonical {0} storage carries lifecycle-only IDLE, ISSUE_READY, IN_FLIGHT, COMPLETION_READY, COMPLETE, and FAULT states plus a fresh nonzero caller-generated uint64_t transaction_id, copied valid W21A request, staged read word, and staged ti_c54x_bus_status. prepare copies a borrowed request only from IDLE; begin authorizes one issue and returns a copied request/id; repeated WAIT polling remains IN_FLIGHT without reissue; one READY or FAULT observation latches COMPLETION_READY; complete publishes canonical payload once; reset may clear only IDLE, COMPLETE, or FAULT and never cancels active work. Statuses are exactly OK, WAIT, FAULT, INVALID_ARGUMENT, INVALID_STATE, and STALE_TRANSACTION. Faults preserve known non-OK public bus statuses as payload, while WAIT and non-success read payloads are zero and writes never publish a read word. Rejected transitions preserve named fields. Exactly-once is a protocol claim only for one authoritative, non-copied active storage instance under caller ownership and unique-ID preconditions; external issue count, physical visibility, arbitration, host memory, device, timing, observer, diagnostic, environment, global, public ABI, CPU, request, and codec behavior are separate future work."
     }
@@ -2645,7 +2645,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/transaction/",
@@ -2655,7 +2655,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/transaction/",
@@ -3348,18 +3348,18 @@
     },
     {
       "id": "T-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/transaction/test_word16_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_transaction"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE"]
     },
     {
       "id": "T-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/transaction/test_word16_transaction_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_transaction_contract"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION"]
     },
     {
