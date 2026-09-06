@@ -20,6 +20,11 @@
 #include <stdint.h>
 #include <string.h>
 
+static const ti_c54x_op_input_snapshot zero_input = {0};
+
+#define TI_C54X_NOP_CALL(instruction, effect) \
+    ti_c54x_op_nop((instruction), &zero_input, (effect))
+
 static ti_c54x_decoded_instruction
 valid_nop(void)
 {
@@ -65,6 +70,11 @@ test_enum_ranges_and_metadata_values(void)
     TI_C54X_TEST_CHECK(nop->operand_layout == TI_C54X_OPERAND_LAYOUT_NONE);
     TI_C54X_TEST_CHECK(nop->repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
+    TI_C54X_TEST_CHECK(nop->input_resources ==
+                       TI_C54X_INPUT_RESOURCES_NONE);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_metadata_for_id(
+                           TI_C54X_OPCODE_ID_MAX_ACC)->input_resources ==
+                       TI_C54X_INPUT_RESOURCES_ACCUMULATORS);
 
     for (id = (int)TI_C54X_OPCODE_ID_UNKNOWN;
          id < (int)TI_C54X_OPCODE_ID_COUNT;
@@ -105,6 +115,7 @@ test_completion_copies_tokens_transactionally(void)
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(decoded.operand_layout == metadata->operand_layout);
     TI_C54X_TEST_CHECK(decoded.repeatability == metadata->repeatability);
+    TI_C54X_TEST_CHECK(decoded.input_resources == metadata->input_resources);
 
     first.first_word = UINT16_C(0);
     bundle.program_words[0] = UINT16_C(0);
@@ -139,7 +150,7 @@ test_forged_tokens_are_rejected_transactionally(void)
     instruction.repeatability = TI_C54X_REPEATABILITY_COUNT;
     (void)memset(&effect, 0x5a, sizeof(effect));
     (void)memcpy(before, &effect, sizeof(before));
-    TI_C54X_TEST_CHECK(ti_c54x_op_nop(&instruction, &effect) ==
+    TI_C54X_TEST_CHECK(TI_C54X_NOP_CALL(&instruction, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_DECODE);
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 
@@ -147,7 +158,15 @@ test_forged_tokens_are_rejected_transactionally(void)
     instruction.repeatability = (ti_c54x_repeatability_class)-1;
     (void)memset(&effect, 0x69, sizeof(effect));
     (void)memcpy(before, &effect, sizeof(before));
-    TI_C54X_TEST_CHECK(ti_c54x_op_nop(&instruction, &effect) ==
+    TI_C54X_TEST_CHECK(TI_C54X_NOP_CALL(&instruction, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
+
+    instruction = valid_nop();
+    instruction.input_resources = (ti_c54x_input_resource_mask)0x80U;
+    (void)memset(&effect, 0x71, sizeof(effect));
+    (void)memcpy(before, &effect, sizeof(before));
+    TI_C54X_TEST_CHECK(ti_c54x_dispatch_decoded(&instruction, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_DECODE);
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 }

@@ -28,9 +28,10 @@ class OpcodeRow:
     ``first_word_value`` and ``first_word_mask`` are canonical 16-bit
     integers. ``program_word_count`` carries its unit explicitly.
     ``operand_layout`` and ``repeatability`` retain the fully namespaced
-    catalog tokens. ``form`` is the source spelling (``EXACT`` or ``MASKED``),
-    and ``source_line`` is the one-based source line where the macro
-    declaration begins.
+    catalog tokens. ``input_resources`` is the namespaced resource-mask token.
+    ``form`` is the source spelling (``EXACT`` or ``MASKED``), and
+    ``source_line`` is the one-based source line where the macro declaration
+    begins.
     """
 
     symbol: str
@@ -42,6 +43,7 @@ class OpcodeRow:
     repeatability: str
     form: str
     source_line: int
+    input_resources: str
 
 
 _ID_RE: Final = re.compile(r"^[A-Z][A-Z0-9_]*$")
@@ -56,6 +58,7 @@ _OPERAND_LAYOUT_TOKENS: Final = frozenset(
         "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP",
         "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM",
         "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP",
+        "TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC",
     }
 )
 _REPEATABILITY_TOKENS: Final = frozenset(
@@ -63,6 +66,12 @@ _REPEATABILITY_TOKENS: Final = frozenset(
         "TI_C54X_REPEATABILITY_UNRESOLVED",
         "TI_C54X_REPEATABILITY_ELIGIBLE",
         "TI_C54X_REPEATABILITY_INELIGIBLE",
+    }
+)
+_INPUT_RESOURCE_TOKENS: Final = frozenset(
+    {
+        "TI_C54X_INPUT_RESOURCES_NONE",
+        "TI_C54X_INPUT_RESOURCES_ACCUMULATORS",
     }
 )
 _ROW_RE: Final = re.compile(
@@ -127,7 +136,7 @@ def _parse_width(token: str, location: str) -> int:
     return value
 
 
-def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, int]:
+def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, str, int]:
     """Stable semantic ordering, independent of declaration order."""
 
     return (
@@ -138,6 +147,7 @@ def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, in
         row.program_word_count,
         row.operand_layout,
         row.repeatability,
+        row.input_resources,
         row.form,
         row.source_line,
     )
@@ -227,6 +237,11 @@ def validate_catalog_rows(rows: Iterable[OpcodeRow]) -> tuple[OpcodeRow, ...]:
             or row.repeatability not in _REPEATABILITY_TOKENS
         ):
             raise OpcodeCatalogError(f"{location}: invalid repeatability token")
+        if (
+            not isinstance(row.input_resources, str)
+            or row.input_resources not in _INPUT_RESOURCE_TOKENS
+        ):
+            raise OpcodeCatalogError(f"{location}: invalid input-resource token")
         if not isinstance(row.form, str) or row.form not in {"EXACT", "MASKED"}:
             raise OpcodeCatalogError(f"{location}: unknown opcode form {row.form!r}")
         if not _is_integer(row.source_line) or row.source_line <= 0:
@@ -250,10 +265,11 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
     """Parse catalog macro rows into immutable normalized records.
 
     The accepted forms are ``TI_C54X_OPCODE_EXACT(symbol, handler, value,
-    width, operand_layout, repeatability)`` and
+    width, operand_layout, repeatability, input_resources)`` and
     ``TI_C54X_OPCODE_MASKED(symbol, handler, value, mask, width,
-    operand_layout, repeatability)``. Every non-empty non-comment line must
-    contain exactly one row; comments and blank lines are otherwise ignored.
+    operand_layout, repeatability, input_resources)``. Every non-empty
+    non-comment line must contain exactly one row; comments and blank lines
+    are otherwise ignored.
     """
 
     if not isinstance(text, str):
@@ -268,7 +284,7 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
             raise OpcodeCatalogError(f"malformed catalog row at line {line_number}")
         form, body = match.groups()
         fields = tuple(field.strip() for field in body.split(","))
-        expected_fields = 6 if form == "EXACT" else 7
+        expected_fields = 7 if form == "EXACT" else 8
         if len(fields) != expected_fields or any(not field for field in fields):
             raise OpcodeCatalogError(
                 f"line {line_number}: {form} requires exactly "
@@ -276,9 +292,9 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
             )
         symbol, handler, value_token = fields[:3]
         if form == "EXACT":
-            mask_or_width, operand_layout, repeatability = fields[3:]
+            mask_or_width, operand_layout, repeatability, input_resources = fields[3:]
         else:
-            mask_or_width, width_token, operand_layout, repeatability = fields[3:]
+            mask_or_width, width_token, operand_layout, repeatability, input_resources = fields[3:]
         location = f"line {line_number}"
         if form == "EXACT":
             value = _parse_word(value_token, f"{location}: value")
@@ -300,6 +316,7 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
                 repeatability,
                 form,
                 line_number,
+                input_resources,
             )
         )
 

@@ -5,8 +5,8 @@
  * Module contract
  *
  * Owns: the private ST0, ST1, and PMST register bank, common reset seed,
- * knownness masks, and checked field-local access for DP, ASM, ARP, CPL, and
- * CMPT. Reads return canonical zero/unknown values when a field is unknown.
+ * knownness masks, and checked field-local access for DP, ASM, ARP, C, CPL,
+ * and CMPT. Reads return canonical zero/unknown values when a field is unknown.
  * Does not own: CPU lifecycle, program counter, opcode semantics, effect
  * sequencing, buses, timing, diagnostics, or public persistence formats.
  */
@@ -54,6 +54,8 @@ ti_c54x_status_register_field_result
 ti_c54x_status_register_read_cpl(const ti_c54x_status_register_state *state);
 ti_c54x_status_register_field_result
 ti_c54x_status_register_read_cmpt(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_c(const ti_c54x_status_register_state *state);
 
 ti_c54x_status_register_status
 ti_c54x_status_register_write_dp(ti_c54x_status_register_state *state,
@@ -70,6 +72,9 @@ ti_c54x_status_register_write_cpl(ti_c54x_status_register_state *state,
 ti_c54x_status_register_status
 ti_c54x_status_register_write_cmpt(ti_c54x_status_register_state *state,
                                     uint8_t raw_value);
+ti_c54x_status_register_status
+ti_c54x_status_register_write_c(ti_c54x_status_register_state *state,
+                                 uint8_t raw_value);
 
 #ifdef __cplusplus
 }

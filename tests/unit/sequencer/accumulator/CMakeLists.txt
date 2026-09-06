@@ -1,0 +1,1 @@
+ti_c54x_add_unit_test(max_min_effect test_max_min_effect.c)

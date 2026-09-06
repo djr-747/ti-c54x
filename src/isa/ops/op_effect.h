@@ -12,10 +12,14 @@
  * copied uint16_t immediate operand only; repeat cardinality, state, PC,
  * timing, and interrupt policy belong to later owners. STATUS_FIELD_WRITE
  * carries a copied field target/value only; mutation belongs to the status
- * sequencer. Callers own each effect object.
+ * sequencer. ACCUMULATOR_SELECT carries only a canonical selected value,
+ * destination, and C effect; mutation belongs to its sequencer. Callers own
+ * each effect object.
  */
 
 #include <stdint.h>
+
+#include "foundation/arithmetic40.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +28,8 @@ extern "C" {
 typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_NONE = 0,
     TI_C54X_OP_EFFECT_REPEAT_START = 1,
-    TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE = 2
+    TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE = 2,
+    TI_C54X_OP_EFFECT_ACCUMULATOR_SELECT = 3
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -43,9 +48,16 @@ typedef struct ti_c54x_op_status_field_write_effect {
     uint16_t raw_value;
 } ti_c54x_op_status_field_write_effect;
 
+typedef struct ti_c54x_op_accumulator_select_effect {
+    uint8_t destination;
+    ti_c54x_u40_t selected_raw40;
+    uint8_t c_value;
+} ti_c54x_op_accumulator_select_effect;
+
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
     ti_c54x_op_status_field_write_effect status_field_write;
+    ti_c54x_op_accumulator_select_effect accumulator_select;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {

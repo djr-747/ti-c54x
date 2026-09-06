@@ -24,6 +24,7 @@ from tools.isa.catalog.opcode_catalog_schema import OpcodeCatalogError, OpcodeRo
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 
 
 def _row(
@@ -34,7 +35,7 @@ def _row(
     form: str = "MASKED",
 ) -> OpcodeRow:
     return OpcodeRow(symbol, handler, value, mask, 1, LAYOUT_NONE,
-                     REPEAT_UNRESOLVED, form, 1)
+                     REPEAT_UNRESOLVED, form, 1, RESOURCES_NONE)
 
 
 class OpcodeLookupGeneratorTests(unittest.TestCase):
@@ -105,16 +106,18 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 553)
+        self.assertEqual(actual.count("= (uint16_t)"), 557)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn("[0xEA00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,", actual)
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
         self.assertIn("[0xF4A0] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,", actual)
+        self.assertIn("[0xF486] = (uint16_t)TI_C54X_OPCODE_ID_MAX_ACC,", actual)
+        self.assertIn("[0xF487] = (uint16_t)TI_C54X_OPCODE_ID_MIN_ACC,", actual)
 
     def test_cli_generate_and_check_with_explicit_paths(self) -> None:
         source = (
             "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1, "
-            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})\n"
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
@@ -163,7 +166,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
     def test_check_mode_never_writes_or_creates_missing_artifact(self) -> None:
         source = (
             "TI_C54X_OPCODE_EXACT(TEST, test, 0x0042, 1, "
-            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})\n"
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)

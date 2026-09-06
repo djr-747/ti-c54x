@@ -15,6 +15,7 @@
 #include "isa/decode/opcode_decode.h"
 
 #include "op_effect.h"
+#include "op_input.h"
 #include "op_status.h"
 
 #ifdef __cplusplus
@@ -23,10 +24,16 @@ extern "C" {
 
 typedef ti_c54x_op_status (*ti_c54x_op_handler)(
     const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 
 ti_c54x_op_status ti_c54x_dispatch_decoded(
     const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_dispatch_decoded_with_input_snapshot(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 
 #ifdef __cplusplus

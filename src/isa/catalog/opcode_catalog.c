@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: X-macro-derived opcode IDs and immutable metadata, including scalar
- * operand-layout/repeatability classifications, plus the generated direct
+ * operand-layout/repeatability/input-resource classifications, plus the generated direct
  * 16-bit first-word lookup. The lookup is a fixed 65,536-entry value table;
  * unspecified entries remain the zero/UNKNOWN identity.
  * Does not own: opcode strings, semantic dispatch, timing, CPU state, buses,
@@ -22,23 +22,26 @@ static const ti_c54x_opcode_metadata ti_c54x_opcode_metadata_table[
             UINT16_C(0),
             UINT8_C(0),
             TI_C54X_OPERAND_LAYOUT_UNKNOWN,
-            TI_C54X_REPEATABILITY_UNRESOLVED},
+            TI_C54X_REPEATABILITY_UNRESOLVED,
+            TI_C54X_INPUT_RESOURCES_NONE},
 #define TI_C54X_OPCODE_EXACT(symbol, handler, first_word, program_words, \
-                             operand_layout, repeatability) \
+                             operand_layout, repeatability, input_resources) \
     [TI_C54X_OPCODE_ID_##symbol] = {TI_C54X_OPCODE_ID_##symbol, \
                                     (uint16_t)(first_word), UINT16_MAX, \
                                     (uint8_t)(program_words), \
                                     (ti_c54x_operand_layout_id)(operand_layout), \
-                                    (ti_c54x_repeatability_class)(repeatability)},
+                                    (ti_c54x_repeatability_class)(repeatability), \
+                                    (ti_c54x_input_resource_mask)(input_resources)},
 #define TI_C54X_OPCODE_MASKED(symbol, handler, first_word_value, \
                               first_word_mask, program_words, operand_layout, \
-                              repeatability) \
+                              repeatability, input_resources) \
     [TI_C54X_OPCODE_ID_##symbol] = {TI_C54X_OPCODE_ID_##symbol, \
                                     (uint16_t)(first_word_value), \
                                     (uint16_t)(first_word_mask), \
                                     (uint8_t)(program_words), \
                                     (ti_c54x_operand_layout_id)(operand_layout), \
-                                    (ti_c54x_repeatability_class)(repeatability)},
+                                    (ti_c54x_repeatability_class)(repeatability), \
+                                    (ti_c54x_input_resource_mask)(input_resources)},
 #include "opcode_catalog.def"
 #undef TI_C54X_OPCODE_EXACT
 #undef TI_C54X_OPCODE_MASKED

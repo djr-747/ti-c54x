@@ -19,6 +19,8 @@ from tools.isa.catalog.opcode_catalog_schema import OpcodeRow, parse_catalog
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
+RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 
 
 class OpcodeCatalogContractTests(unittest.TestCase):
@@ -26,10 +28,10 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(
             parse_catalog(
                 f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, {LAYOUT_NONE}, "
-                f"{REPEAT_UNRESOLVED})\n"
+                f"{REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
             ),
             [OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
-                       REPEAT_UNRESOLVED, "EXACT", 1)],
+                       REPEAT_UNRESOLVED, "EXACT", 1, RESOURCES_NONE)],
         )
 
     def test_parser_rejects_malformed_rows(self) -> None:
@@ -48,8 +50,8 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_parser_rejects_duplicate_and_reserved_ids(self) -> None:
         duplicate = "\n".join(
             (
-                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+                f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
             )
         )
         for symbol in ("UNKNOWN", "COUNT"):
@@ -57,7 +59,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     parse_catalog(
                         f"TI_C54X_OPCODE_EXACT({symbol}, nop, 0x0000, 1, "
-                        f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})"
+                        f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})"
                     )
         with self.assertRaises(ValueError):
             parse_catalog(duplicate)
@@ -65,14 +67,14 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_parser_rejects_duplicate_first_words_and_handler_tokens(self) -> None:
         duplicate_word = "\n".join(
             (
-                f"TI_C54X_OPCODE_EXACT(FOO, foo, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-                f"TI_C54X_OPCODE_EXACT(BAR, bar, 0x1234, 2, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(FOO, foo, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+                f"TI_C54X_OPCODE_EXACT(BAR, bar, 0x1234, 2, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
             )
         )
         duplicate_handler = "\n".join(
             (
-                f"TI_C54X_OPCODE_EXACT(FOO, shared, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-                f"TI_C54X_OPCODE_EXACT(BAR, shared, 0x5678, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+                f"TI_C54X_OPCODE_EXACT(FOO, shared, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+                f"TI_C54X_OPCODE_EXACT(BAR, shared, 0x5678, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
             )
         )
         for text in (duplicate_word, duplicate_handler):
@@ -83,13 +85,13 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_parser_rejects_handler_tokens_and_bad_ranges(self) -> None:
         invalid = (
             "TI_C54X_OPCODE_EXACT(NOP, NOP, 0xF495, 1, "
-            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
             "TI_C54X_OPCODE_EXACT(NOP, nop-handler, 0xF495, 1, "
-            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x10000, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x-1, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 0, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
-            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 256, {LAYOUT_NONE}, {REPEAT_UNRESOLVED})",
+            f"{LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x10000, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0x-1, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 0, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
+            f"TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 256, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
         )
         for text in invalid:
             with self.subTest(text=text):
@@ -99,11 +101,11 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_real_catalog_contains_nop_and_status_load_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 4)
+        self.assertEqual(len(rows), 6)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
-                      REPEAT_UNRESOLVED, "EXACT", 0),
+                      REPEAT_UNRESOLVED, "EXACT", 0, RESOURCES_NONE),
         )
         self.assertGreater(rows[0].source_line, 0)
         self.assertEqual(rows[1].symbol, "LD_IMMEDIATE_DP")
@@ -115,6 +117,14 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[3].symbol, "LD_IMMEDIATE_ARP")
         self.assertEqual(rows[3].first_word_value, 0xF4A0)
         self.assertEqual(rows[3].first_word_mask, 0xFFF8)
+        self.assertEqual(rows[4].symbol, "MAX_ACC")
+        self.assertEqual(rows[4].first_word_value, 0xF486)
+        self.assertEqual(rows[4].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[4].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[5].symbol, "MIN_ACC")
+        self.assertEqual(rows[5].first_word_value, 0xF487)
+        self.assertEqual(rows[5].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[5].input_resources, RESOURCES_ACCUMULATORS)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

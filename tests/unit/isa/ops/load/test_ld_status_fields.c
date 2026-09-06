@@ -18,7 +18,8 @@
 #include <string.h>
 
 typedef ti_c54x_op_status (*ld_handler)(
-    const ti_c54x_decoded_instruction *, ti_c54x_op_effect *);
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
 
 typedef struct ld_case {
     ti_c54x_opcode_id id;
@@ -30,6 +31,8 @@ typedef struct ld_case {
     ti_c54x_op_status_field_target target;
     ld_handler handler;
 } ld_case;
+
+static const ti_c54x_op_input_snapshot zero_input = {0};
 
 static const ld_case cases[] = {
     {TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,
@@ -77,7 +80,7 @@ test_success_and_dispatch(const ld_case *test_case)
         ti_c54x_op_effect dispatched;
 
         memset(&effect, 0xA5, sizeof(effect));
-        TI_C54X_TEST_CHECK(test_case->handler(&instruction, &effect) ==
+        TI_C54X_TEST_CHECK(test_case->handler(&instruction, &zero_input, &effect) ==
                            TI_C54X_OP_STATUS_OK);
         TI_C54X_TEST_CHECK(effect.kind ==
                            TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE);
@@ -110,16 +113,19 @@ test_forged_and_failed_inputs_are_transactional(const ld_case *test_case)
 
     memset(&effect, 0x31, sizeof(effect));
     memcpy(before, &effect, sizeof(before));
-    TI_C54X_TEST_CHECK(test_case->handler(NULL, &effect) ==
+    TI_C54X_TEST_CHECK(test_case->handler(NULL, &zero_input, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
-    TI_C54X_TEST_CHECK(test_case->handler(&instruction, NULL) ==
+    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &zero_input, NULL) ==
                        TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(test_case->handler(&instruction, NULL, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 
     instruction.id = TI_C54X_OPCODE_ID_NOP;
     memset(&effect, 0x42, sizeof(effect));
     memcpy(before, &effect, sizeof(before));
-    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &effect) ==
+    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &zero_input, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_DECODE);
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 
@@ -127,7 +133,15 @@ test_forged_and_failed_inputs_are_transactional(const ld_case *test_case)
     instruction.operand_layout = TI_C54X_OPERAND_LAYOUT_NONE;
     memset(&effect, 0x53, sizeof(effect));
     memcpy(before, &effect, sizeof(before));
-    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &effect) ==
+    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &zero_input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
+
+    instruction = decode_word(test_case, test_case->value);
+    instruction.input_resources = TI_C54X_INPUT_RESOURCES_ACCUMULATORS;
+    memset(&effect, 0x54, sizeof(effect));
+    memcpy(before, &effect, sizeof(before));
+    TI_C54X_TEST_CHECK(test_case->handler(&instruction, &zero_input, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_DECODE);
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 }

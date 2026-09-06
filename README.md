@@ -27,9 +27,14 @@ Current progress:
   and `LD #k3,ARP`. Exact/masked catalog generation, complete instruction bundles,
   extension fetch, operand extraction, dispatch, PC staging, and retirement are
   green under the full local and remote W22 gates.
-- W22 local registry closure records 82 evidence items, 122 requirements
-  (98 implemented, 9 planned, 15 unresolved), and 87 tests (78 passing, 9
-  planned). The full local and remote gates are green.
+- P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
+  `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
+  checked accumulator knownness, transactional sequencer commit, and public CPU
+  retirement proof. The full standalone local gate is green; repeatability and
+  machine timing remain unresolved.
+- The registry now records 87 evidence items, 128 requirements (103 implemented,
+  9 planned, 16 unresolved), and 92 tests (83 passing, 9 planned). Remote
+  P2-W23 validation and its clean-commit performance record are pending.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,

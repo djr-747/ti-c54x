@@ -51,6 +51,13 @@ static const ti_c54x_operand_field_layout ti_c54x_ld_arp_operand = {
 static const ti_c54x_operand_layout_set ti_c54x_ld_arp_set = {
     &ti_c54x_ld_arp_operand, UINT8_C(1)};
 
+static const ti_c54x_operand_field_piece ti_c54x_max_min_destination_piece = {
+    UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_max_min_destination_operand = {
+    &ti_c54x_max_min_destination_piece, UINT8_C(1), UINT8_C(1)};
+static const ti_c54x_operand_layout_set ti_c54x_max_min_destination_set = {
+    &ti_c54x_max_min_destination_operand, UINT8_C(1)};
+
 static ti_c54x_operand_layout_status
 ti_c54x_operand_layout_map_field_status(
     ti_c54x_operand_field_status status)
@@ -125,6 +132,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_ld_arp_set;
+    case TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_max_min_destination_set;
     default:
         return NULL;
     }

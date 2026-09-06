@@ -53,12 +53,19 @@ typedef struct bench_sample {
     uint64_t retired;
 } bench_sample;
 
+typedef enum bench_catalog_coverage_mode {
+    TI_C54X_BENCH_COVERAGE_FIXED = 0,
+    TI_C54X_BENCH_COVERAGE_RESET_RUNNABLE_SUBSET = 1
+} bench_catalog_coverage_mode;
+
 typedef struct bench_scenario {
     const char *name;
     const uint16_t *words;
     size_t word_count;
     unsigned instruction_count;
     bool catalog_current;
+    bench_catalog_coverage_mode coverage_mode;
+    unsigned catalog_covered_instruction_count;
 } bench_scenario;
 
 static uint64_t scenario_hash(const bench_scenario *scenario)
@@ -88,11 +95,25 @@ static bool valid_scenario_shape(const bench_scenario *scenario)
         scenario->instruction_count == 0U) {
         return false;
     }
-    if (!scenario->catalog_current && scenario->instruction_count != 1U) {
-        return false;
+    if (!scenario->catalog_current) {
+        return scenario->coverage_mode == TI_C54X_BENCH_COVERAGE_FIXED &&
+               scenario->instruction_count == 1U &&
+               scenario->catalog_covered_instruction_count == 1U;
     }
-    return !scenario->catalog_current ||
-           scenario->instruction_count == TI_C54X_BENCH_CATALOG_INSTRUCTION_COUNT;
+    return scenario->coverage_mode ==
+               TI_C54X_BENCH_COVERAGE_RESET_RUNNABLE_SUBSET &&
+           scenario->catalog_covered_instruction_count > 0U &&
+           scenario->catalog_covered_instruction_count <
+               TI_C54X_BENCH_CATALOG_INSTRUCTION_COUNT &&
+           scenario->instruction_count ==
+               scenario->catalog_covered_instruction_count;
+}
+
+static const char *coverage_mode_name(bench_catalog_coverage_mode mode)
+{
+    return mode == TI_C54X_BENCH_COVERAGE_FIXED
+               ? "fixed"
+               : "reset-runnable-subset";
 }
 
 static ti_c54x_bus_status bench_program_read(
@@ -236,15 +257,19 @@ static bool run_scenario(const bench_scenario *scenario)
             ",\"min_elapsed_ns\":%" PRIu64 ",\"max_elapsed_ns\":%" PRIu64
             ",\"samples\":%d,\"warmup_windows\":%d,\"window_count\":%d"
             ",\"retirements_per_window\":%d,\"semantic_hash\":\"%016" PRIx64 "\""
-            ",\"scenario_instruction_count\":%d,\"catalog_instruction_count\":%d"
+            ",\"scenario_instruction_count\":%u,\"catalog_instruction_count\":%d"
+            ",\"catalog_coverage_mode\":\"%s\""
+            ",\"catalog_covered_instruction_count\":%u"
             ",\"ns_per_instruction\":%.3f"
             ",\"instructions_per_second\":%.3f}\n",
             TI_C54X_BENCH_SCHEMA_VERSION, scenario->name, retired, median_ns,
             median_ns, min_ns, max_ns, TI_C54X_BENCH_SAMPLES,
             TI_C54X_BENCH_WARMUPS, TI_C54X_BENCH_WINDOWS,
             TI_C54X_BENCH_RETIREMENTS_PER_WINDOW,
-            scenario_hash(scenario), (int)scenario->instruction_count,
+            scenario_hash(scenario), scenario->instruction_count,
             TI_C54X_BENCH_CATALOG_INSTRUCTION_COUNT,
+            coverage_mode_name(scenario->coverage_mode),
+            scenario->catalog_covered_instruction_count,
             (double)median_ns / (double)retired,
             (double)retired * 1000000000.0 / (double)median_ns);
     }
@@ -263,9 +288,12 @@ int main(void)
                                     UINT16_C(0xED00) | UINT16_C(0x001F),
                                     UINT16_C(0xF4A0) | UINT16_C(0x0007)};
     static const bench_scenario scenarios[] = {
-        {"nop", nop, 1U, 1U, false},       {"ld-dp", ld_dp, 1U, 1U, false},
-        {"ld-asm", ld_asm, 1U, 1U, false}, {"ld-arp", ld_arp, 1U, 1U, false},
-        {"mixed-current", mixed, 4U, 4U, true}};
+        {"nop", nop, 1U, 1U, false, TI_C54X_BENCH_COVERAGE_FIXED, 1U},
+        {"ld-dp", ld_dp, 1U, 1U, false, TI_C54X_BENCH_COVERAGE_FIXED, 1U},
+        {"ld-asm", ld_asm, 1U, 1U, false, TI_C54X_BENCH_COVERAGE_FIXED, 1U},
+        {"ld-arp", ld_arp, 1U, 1U, false, TI_C54X_BENCH_COVERAGE_FIXED, 1U},
+        {"mixed-current", mixed, 4U, 4U, true,
+         TI_C54X_BENCH_COVERAGE_RESET_RUNNABLE_SUBSET, 4U}};
 
     for (size_t index = 0; index < sizeof(scenarios) / sizeof(scenarios[0]);
          ++index) {

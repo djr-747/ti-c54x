@@ -29,7 +29,9 @@ def compare(baseline: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]
     scenarios = {}
     for name in sorted(set(before) & set(after)):
         if (before[name]["semantic_hash"] != after[name]["semantic_hash"] or
-                (name == "mixed-current" and before[name]["catalog_instruction_count"] != after[name]["catalog_instruction_count"])):
+                (name == "mixed-current" and
+                 (before[name]["catalog_instruction_count"] != after[name]["catalog_instruction_count"] or
+                  _coverage_signature(before[name]) != _coverage_signature(after[name])))):
             scenarios[name] = {"status": "evolving", "like_for_like": False}
         elif not same_cohort:
             scenarios[name] = {"status": "different-cohort", "like_for_like": False}
@@ -47,6 +49,15 @@ def compare(baseline: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]
                 "current_spread_percent": _spread_percent(after[name]),
             }
     return {"same_cohort": same_cohort, "cohort_fields": cohort_fields, "scenarios": scenarios}
+
+
+def _coverage_signature(result: dict[str, Any]) -> tuple[str, int]:
+    """Normalize optional mixed coverage metadata for evolution checks."""
+    mode = result.get("catalog_coverage_mode")
+    covered = result.get("catalog_covered_instruction_count")
+    if mode is None and result["scenario"] == "mixed-current":
+        return ("full-catalog", result["catalog_instruction_count"])
+    return (mode, covered)
 
 
 def _spread_percent(result: dict[str, Any]) -> float:

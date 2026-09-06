@@ -81,6 +81,11 @@ ti_c54x_decode_complete_instruction(
         metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT) {
         return TI_C54X_INSTRUCTION_COMPLETION_STATUS_REPEATABILITY_INVALID;
     }
+    if ((metadata->input_resources &
+         (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        return TI_C54X_INSTRUCTION_COMPLETION_STATUS_METADATA_UNAVAILABLE;
+    }
     if (first_word_result->program_word_count == UINT8_C(0) ||
         first_word_result->program_word_count >
             (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY) {
@@ -99,10 +104,10 @@ ti_c54x_decode_complete_instruction(
         return TI_C54X_INSTRUCTION_COMPLETION_STATUS_BUNDLE_COUNT_MISMATCH;
     }
     {
-        ti_c54x_operand_layout_set_view layout_view;
         if (ti_c54x_operand_layout_set_resolve(
                 metadata->operand_layout, metadata->program_word_count,
-                &layout_view) != TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+                &(ti_c54x_operand_layout_set_view){0}) !=
+            TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
             return TI_C54X_INSTRUCTION_COMPLETION_STATUS_OPERAND_LAYOUT_INVALID;
         }
     }
@@ -118,6 +123,7 @@ ti_c54x_decode_complete_instruction(
         .id = first_word_result->id,
         .operand_layout = metadata->operand_layout,
         .repeatability = metadata->repeatability,
+        .input_resources = metadata->input_resources,
         .bundle = *bundle};
     *output = result;
     return TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK;

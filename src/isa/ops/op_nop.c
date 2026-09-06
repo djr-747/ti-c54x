@@ -17,12 +17,13 @@
 
 ti_c54x_op_status
 ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
+               const ti_c54x_op_input_snapshot *input,
                ti_c54x_op_effect *effect)
 {
     const ti_c54x_opcode_metadata *metadata;
     ti_c54x_op_effect staged = {0};
 
-    if (instruction == NULL || effect == NULL) {
+    if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
 
@@ -34,8 +35,13 @@ ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
         metadata->operand_layout >= TI_C54X_OPERAND_LAYOUT_COUNT ||
         metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
         metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        (metadata->input_resources &
+         (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
+            TI_C54X_INPUT_RESOURCES_NONE ||
+        metadata->input_resources != TI_C54X_INPUT_RESOURCES_NONE ||
         instruction->operand_layout != metadata->operand_layout ||
         instruction->repeatability != metadata->repeatability ||
+        instruction->input_resources != metadata->input_resources ||
         metadata->program_word_count != UINT8_C(1) ||
         instruction->bundle.program_word_count != UINT8_C(1) ||
         instruction->bundle.program_word_count !=

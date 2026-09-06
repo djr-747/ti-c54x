@@ -7,7 +7,7 @@
  * Owns: pure by-value classification of one fetched 16-bit first program
  * word, including its raw value and derived program-word width, plus checked
  * transactional binding of that result to a copied complete instruction and
- * its catalog-owned scalar layout/repeatability metadata.
+ * its catalog-owned scalar layout/repeatability/input-resource metadata.
  * Does not own: memory/bus fetches, CPU or status state, program-counter
  * sequencing, semantic effects, timing, observers, or diagnostics. Decoder
  * results retain no caller-owned storage. Completion inputs are borrowed and
@@ -58,6 +58,7 @@ typedef struct ti_c54x_decoded_instruction {
     ti_c54x_opcode_id id;
     ti_c54x_operand_layout_id operand_layout;
     ti_c54x_repeatability_class repeatability;
+    ti_c54x_input_resource_mask input_resources;
     ti_c54x_instruction_word_bundle bundle;
 } ti_c54x_decoded_instruction;
 

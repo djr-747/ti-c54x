@@ -14,6 +14,7 @@
 
 #include "../debug/observer.h"
 #include "../state/status/registers.h"
+#include "../state/accumulator/accumulator.h"
 
 struct ti_c54x_cpu {
     ti_c54x_program_word_address pc_word;
@@ -23,6 +24,7 @@ struct ti_c54x_cpu {
     uint64_t instructions_retired;
     ti_c54x_program_word_address reset_pc_word;
     ti_c54x_status_register_state status;
+    ti_c54x_accumulator_state accumulators;
     ti_c54x_bus bus;
     ti_c54x_observer_state observer;
     bool execution_active;

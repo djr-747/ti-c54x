@@ -57,10 +57,30 @@ function-pointer dispatch tables.
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
-| P2-W23 MAX/MIN accumulator vertical slice | Planned — contract frozen; implementation not started | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
+| P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local gate green; remote CI and clean performance record pending | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | Hosted performance history | Implemented — full local and remote gates green; initial clean baseline recorded at `aa0afc0` | Observer-off end-to-end throughput capture with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
+
+## ISA implementation fanout policy
+
+ISA work may run in small batches of two or three independent family lanes only
+after each lane passes an architecture-fit review. A fitting lane has pinned
+evidence, an existing typed input/effect/sequencer path, exclusive family-local
+source and test ownership, and no need for opcode-identity logic in the CPU.
+The main orchestrator owns architecture decisions, integration, commits, and
+shared surfaces; catalog, generated decode, state, sequencer, CPU, and public API
+changes are serialized through one integration owner rather than edited by
+multiple family lanes.
+
+An implementation lane must stop when an instruction exposes an architecture
+gap. Its report identifies the instruction form and evidence locator, the exact
+missing contract, the owning subtree, the smallest proposed general seam, the
+tests needed to prove it, and any timing or hot-path consequence. The lane must
+not hide the gap behind a family-specific CPU branch or silently broaden state,
+memory, interrupt, repeat, or timing policy. IRQ/RPT interaction, shared-memory
+ordering, and multi-work-unit timing remain serialized cross-cutting work even
+when individual opcode semantics appear independent.
 
 ### P2-W16: NOP-seeded opcode architecture
 
@@ -844,13 +864,16 @@ stable persistence guarantee is made. The mirrored tests are
 No memory/bus transaction, timing, RPT/IRQ, accumulator, device, or emulator work
 is part of this slice; any status-bank split and generic effect commit exist only
 because these opcodes require them. The local registry is 87 immutable evidence
-records, 128 requirements (98 `IMPLEMENTED`, 14 `PLANNED`, 16 `UNRESOLVED`), and
-92 tests (78 `PASSING`, 14 `PLANNED`); the full local and remote gates are green.
+records, 128 requirements (103 `IMPLEMENTED`, 9 `PLANNED`, 16 `UNRESOLVED`), and
+92 tests (83 `PASSING`, 9 `PLANNED`); the full local repository gate is green and
+remote P2-W23 validation is pending.
 
 ### P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)
 
-P2-W23 is the next narrow accumulator-only ISA slice. It freezes the contract and
-test ownership before any production row or state/effect implementation lands:
+State: implemented; this heading remains the frozen historical evidence anchor.
+
+P2-W23 is a narrow accumulator-only ISA slice. The production rows, state/effect
+owners, and public CPU proof now implement the frozen contract:
 
 - `MAX dst` registers `MAX_ACC` as `0xF486/0xFEFF`; `MIN dst` registers
   `MIN_ACC` as `0xF487/0xFEFF`. Each mask leaves only destination bit D variable,
@@ -873,7 +896,7 @@ test ownership before any production row or state/effect implementation lands:
   storage, checked access, and knownness; `src/sequencer/accumulator/` validates
   only the effect payload structure and atomically applies the candidate
   accumulator plus C state once; `src/cpu/` owns checked snapshot acquisition,
-  fetch/dispatch/retire integration. Anticipated tests mirror those owners
+  fetch/dispatch/retire integration. Tests mirror those owners
   under `tests/unit/isa/decode/`, `tests/unit/isa/ops/compare/`,
   `tests/unit/state/accumulator/`, `tests/unit/sequencer/accumulator/`, and
   `tests/unit/cpu/`.
@@ -889,6 +912,18 @@ test ownership before any production row or state/effect implementation lands:
   no premature public set-state/bootstrap API is introduced. The CPU proof
   checks one attempt/retire, sequential PC +1, destination-only mutation, C
   result, and unknown-word stop.
+
+Review boundary: `src/cpu/cpu.c` is nearing the 500-line review threshold. The
+next CPU growth must extract effect routing/retirement transaction into its own
+owner; no opcode family may add a new CPU opcode-identity branch.
+
+Performance note: the initial P2-W23 implementation copied accumulator snapshots
+and candidate state for every opcode, measuring a 13–25% NOP/LD regression. Catalog
+input-resource masks now declare `NONE` for NOP/LD and `ACCUMULATORS` only for
+MAX/MIN; CPU snapshot/candidate work follows that generic mask. Two local
+bench-compare samples were noisy: one remained +11.7% to +13.7% for NOP/LD,
+while the other was within -3.7% to +3.4% versus the hosted cohort; spread
+remains high and needs follow-up.
 
 TI `SPRU172C` §4 MAX/MIN (printed pp. 4-99–4-100) is the normative form and
 effect evidence; TI `SPRU131G` §2.3 (printed p. 2-8) is the normative

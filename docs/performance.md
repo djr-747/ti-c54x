@@ -24,9 +24,15 @@ redefined:
 | `ld-arp` | Immediate status-field load to ARP |
 
 `mixed-current` is deliberately different: it follows the production catalog
-as the ISA grows. Every record carries the catalog row count and a deterministic
-per-scenario semantic hash, so a mixed result is never compared as if its workload
-were unchanged.
+as the ISA grows. While an instruction requires architecturally initialized state
+that has no public bootstrap surface, the stream is explicitly a
+`reset-runnable-subset`; each result records `catalog_coverage_mode` and
+`catalog_covered_instruction_count` alongside the total catalog row count. Every
+record also carries a deterministic per-scenario semantic hash, so a mixed result
+is never compared as if its workload were unchanged. The fixed scenarios are the
+comparable regression canaries as catalog rows are added; their matching semantic
+hashes permit observing dispatch/catalog growth without pretending the mixed
+subset covers newly state-dependent instructions.
 
 Each scenario records seven samples, each preceded by 16 fixed warmup windows;
 the warmup windows are not included in history. Each sample repeats multiple
@@ -48,9 +54,9 @@ commit; a dirty tree or missing identity metadata is a capture error rather
 than an implicit comparison baseline. A same-cohort comparison is advisory and
 requires matching CPU, platform/machine, compiler, build flags, and clock
 source. Fixed-scenario percentage comparisons additionally require the same
-scenario semantic hash; `mixed-current` may change catalog count/hash and is then
-reported as an evolving, non-like-for-like trend rather than a regression
-percentage. There is intentionally no flaky CI throughput threshold: hosted
+scenario semantic hash; `mixed-current` may change catalog count, hash, or
+coverage metadata and is then reported as an evolving, non-like-for-like trend
+rather than a regression percentage. There is intentionally no flaky CI throughput threshold: hosted
 history is for trend review, while correctness and architectural claims remain
 test/evidence work.
 

@@ -2885,7 +2885,7 @@
     },
     {
       "id": "REQ-COMMON-MAX-MIN-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -2895,7 +2895,7 @@
     },
     {
       "id": "REQ-COMMON-MAX-MIN-SELECTION-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/compare/",
@@ -2905,7 +2905,7 @@
     },
     {
       "id": "REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/accumulator/",
@@ -2915,7 +2915,7 @@
     },
     {
       "id": "REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/state/accumulator/",
@@ -2925,7 +2925,7 @@
     },
     {
       "id": "REQ-PROJECT-MAX-MIN-CPU-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3682,42 +3682,42 @@
     },
     {
       "id": "T-COMMON-MAX-MIN-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_max_min_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.max_min_decode"},
       "requirement_ids": ["REQ-COMMON-MAX-MIN-DECODE"]
     },
     {
       "id": "T-COMMON-MAX-MIN-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/compare/test_max_min.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.max_min_compare"},
       "requirement_ids": ["REQ-COMMON-MAX-MIN-SELECTION-EFFECTS"]
     },
     {
       "id": "T-PROJECT-MAX-MIN-EFFECT-TRANSACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/accumulator/test_max_min_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.max_min_effect"},
       "requirement_ids": ["REQ-PROJECT-MAX-MIN-ACCUMULATOR-EFFECT-TRANSACTION"]
     },
     {
       "id": "T-PROJECT-MAX-MIN-ACCUMULATOR-STATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/state/accumulator/test_accumulator_state.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.accumulator_state"},
       "requirement_ids": ["REQ-PROJECT-MAX-MIN-ACCUMULATOR-STATE"]
     },
     {
       "id": "T-PROJECT-CPU-MAX-MIN",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_max_min.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_max_min"},
       "requirement_ids": ["REQ-PROJECT-MAX-MIN-CPU-RETIREMENT"]
     }
   ]

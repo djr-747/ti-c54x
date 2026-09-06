@@ -20,6 +20,7 @@
 static ti_c54x_op_status
 ti_c54x_op_ld_status_field_common(
     const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect,
     ti_c54x_opcode_id expected_id,
     uint8_t expected_width,
@@ -30,7 +31,7 @@ ti_c54x_op_ld_status_field_common(
     ti_c54x_operand_field_value field = {0U, 0U};
     ti_c54x_op_effect staged = {0};
 
-    if (instruction == NULL || effect == NULL) {
+    if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
 
@@ -43,9 +44,14 @@ ti_c54x_op_ld_status_field_common(
         metadata->operand_layout <= TI_C54X_OPERAND_LAYOUT_UNKNOWN ||
         metadata->operand_layout >= TI_C54X_OPERAND_LAYOUT_COUNT ||
         metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        (metadata->input_resources &
+         (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
+            TI_C54X_INPUT_RESOURCES_NONE ||
+        metadata->input_resources != TI_C54X_INPUT_RESOURCES_NONE ||
         instruction->id != expected_id ||
         instruction->operand_layout != metadata->operand_layout ||
         instruction->repeatability != metadata->repeatability ||
+        instruction->input_resources != metadata->input_resources ||
         instruction->bundle.program_word_count !=
             metadata->program_word_count ||
         (uint16_t)(instruction->bundle.program_words[0] &
@@ -61,11 +67,11 @@ ti_c54x_op_ld_status_field_common(
     }
 
     {
-        const ti_c54x_program_words_view input = {
+        const ti_c54x_program_words_view words = {
             instruction->bundle.program_words, metadata->program_word_count};
         const ti_c54x_operand_layout_status status =
             ti_c54x_operand_layout_set_extract_operand(
-                &view, &input, UINT8_C(0), &field);
+                &view, &words, UINT8_C(0), &field);
         if (status != TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
             field.width_bits != expected_width ||
             field.raw_value > UINT64_C(0xFFFF)) {
@@ -82,27 +88,30 @@ ti_c54x_op_ld_status_field_common(
 
 ti_c54x_op_status
 ti_c54x_op_ld_immediate_dp(const ti_c54x_decoded_instruction *instruction,
+                           const ti_c54x_op_input_snapshot *input,
                            ti_c54x_op_effect *effect)
 {
     return ti_c54x_op_ld_status_field_common(
-        instruction, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,
+        instruction, input, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP,
         UINT8_C(9), TI_C54X_OP_STATUS_FIELD_TARGET_DP);
 }
 
 ti_c54x_op_status
 ti_c54x_op_ld_immediate_asm(const ti_c54x_decoded_instruction *instruction,
+                            const ti_c54x_op_input_snapshot *input,
                             ti_c54x_op_effect *effect)
 {
     return ti_c54x_op_ld_status_field_common(
-        instruction, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,
+        instruction, input, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,
         UINT8_C(5), TI_C54X_OP_STATUS_FIELD_TARGET_ASM);
 }
 
 ti_c54x_op_status
 ti_c54x_op_ld_immediate_arp(const ti_c54x_decoded_instruction *instruction,
+                            const ti_c54x_op_input_snapshot *input,
                             ti_c54x_op_effect *effect)
 {
     return ti_c54x_op_ld_status_field_common(
-        instruction, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,
+        instruction, input, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,
         UINT8_C(3), TI_C54X_OP_STATUS_FIELD_TARGET_ARP);
 }

@@ -18,6 +18,11 @@
 #include <stdint.h>
 #include <string.h>
 
+static const ti_c54x_op_input_snapshot zero_input = {0};
+
+#define TI_C54X_NOP_CALL(instruction, effect) \
+    ti_c54x_op_nop((instruction), &zero_input, (effect))
+
 static ti_c54x_decoded_instruction
 valid_nop(void)
 {
@@ -51,7 +56,7 @@ test_direct_nop_success_and_no_effect(void)
     ti_c54x_op_effect effect;
 
     (void)memset(&effect, 0xa5, sizeof(effect));
-    TI_C54X_TEST_CHECK(ti_c54x_op_nop(&instruction, &effect) ==
+    TI_C54X_TEST_CHECK(TI_C54X_NOP_CALL(&instruction, &effect) ==
                        TI_C54X_OP_STATUS_OK);
     TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_NONE);
 }
@@ -81,7 +86,7 @@ test_direct_nop_rejects_forged_values_transactionally(void)
         (void)memset(&effect, 0x3c, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
-            ti_c54x_op_nop(&instruction, &effect),
+            TI_C54X_NOP_CALL(&instruction, &effect),
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 
@@ -94,7 +99,7 @@ test_direct_nop_rejects_forged_values_transactionally(void)
         (void)memset(&effect, 0x4d, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
-            ti_c54x_op_nop(&instruction, &effect),
+            TI_C54X_NOP_CALL(&instruction, &effect),
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 
@@ -107,7 +112,29 @@ test_direct_nop_rejects_forged_values_transactionally(void)
         (void)memset(&effect, 0x5e, sizeof(effect));
         (void)memcpy(before, &effect, sizeof(before));
         check_failure_preserves_effect(
-            ti_c54x_op_nop(&instruction, &effect),
+            TI_C54X_NOP_CALL(&instruction, &effect),
+            TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
+    }
+
+    instruction = valid_nop();
+    instruction.input_resources = TI_C54X_INPUT_RESOURCES_ACCUMULATORS;
+    {
+        ti_c54x_op_effect effect;
+        unsigned char before[sizeof(effect)];
+        (void)memset(&effect, 0x61, sizeof(effect));
+        (void)memcpy(before, &effect, sizeof(before));
+        check_failure_preserves_effect(
+            TI_C54X_NOP_CALL(&instruction, &effect),
+            TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
+    }
+    instruction.input_resources = (ti_c54x_input_resource_mask)0x80U;
+    {
+        ti_c54x_op_effect effect;
+        unsigned char before[sizeof(effect)];
+        (void)memset(&effect, 0x62, sizeof(effect));
+        (void)memcpy(before, &effect, sizeof(before));
+        check_failure_preserves_effect(
+            TI_C54X_NOP_CALL(&instruction, &effect),
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
 }
@@ -122,11 +149,14 @@ test_direct_nop_rejects_null_arguments(void)
     (void)memset(&effect, 0x77, sizeof(effect));
     (void)memcpy(before, &effect, sizeof(before));
     check_failure_preserves_effect(
-        ti_c54x_op_nop(NULL, &effect), TI_C54X_OP_STATUS_INVALID_ARGUMENT,
+        TI_C54X_NOP_CALL(NULL, &effect), TI_C54X_OP_STATUS_INVALID_ARGUMENT,
         &effect, before);
     check_failure_preserves_effect(
-        ti_c54x_op_nop(&instruction, NULL), TI_C54X_OP_STATUS_INVALID_ARGUMENT,
+        TI_C54X_NOP_CALL(&instruction, NULL), TI_C54X_OP_STATUS_INVALID_ARGUMENT,
         &effect, before);
+    check_failure_preserves_effect(
+        ti_c54x_op_nop(&instruction, NULL, &effect),
+        TI_C54X_OP_STATUS_INVALID_ARGUMENT, &effect, before);
 }
 
 static void

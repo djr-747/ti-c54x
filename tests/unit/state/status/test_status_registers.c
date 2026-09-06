@@ -90,6 +90,9 @@ static void test_exhaustive_field_writes_preserve_surrounding_bits(void)
 static void test_cpl_cmpt_and_invalid_writes(void)
 {
     ti_c54x_status_register_state state;
+    ti_c54x_status_register_field_result c;
+    uint16_t before_st0;
+    uint16_t before_known;
 
     TI_C54X_TEST_CHECK(ti_c54x_status_register_reset_common(&state) ==
                        TI_C54X_STATUS_REGISTER_OK);
@@ -99,6 +102,28 @@ static void test_cpl_cmpt_and_invalid_writes(void)
                        TI_C54X_STATUS_REGISTER_OK);
     TI_C54X_TEST_CHECK((state.st1 & TI_C54X_ST1_CPL_MASK) != 0U);
     TI_C54X_TEST_CHECK((state.st1 & TI_C54X_ST1_CMPT_MASK) != 0U);
+    c = ti_c54x_status_register_read_c(&state);
+    TI_C54X_TEST_CHECK(c.status == TI_C54X_STATUS_REGISTER_OK);
+    TI_C54X_TEST_CHECK(c.raw_value == 1U);
+    before_st0 = state.st0;
+    before_known = state.st0_known_mask;
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&state, 0U) ==
+                       TI_C54X_STATUS_REGISTER_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_c(&state).raw_value == 0U);
+    TI_C54X_TEST_CHECK((state.st0 & (uint16_t)~TI_C54X_ST0_C_MASK) ==
+                       (before_st0 & (uint16_t)~TI_C54X_ST0_C_MASK));
+    TI_C54X_TEST_CHECK((state.st0_known_mask & (uint16_t)~TI_C54X_ST0_C_MASK) ==
+                       (before_known & (uint16_t)~TI_C54X_ST0_C_MASK));
+    before_st0 = state.st0;
+    before_known = state.st0_known_mask;
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&state, 2U) ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(state.st0 == before_st0);
+    TI_C54X_TEST_CHECK(state.st0_known_mask == before_known);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_c(NULL).status ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(NULL, 0U) ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(ti_c54x_status_register_write_dp(&state, 0x200U) ==
                        TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(ti_c54x_status_register_write_asm(&state, 0x20U) ==

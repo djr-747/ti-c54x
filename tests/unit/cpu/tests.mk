@@ -5,3 +5,4 @@ $(eval $(call ti_c54x_add_test,cpu_nop_execution_contract,cpu,test_cpu_nop_execu
 $(eval $(call ti_c54x_add_test,cpu_execution_budget,cpu,test_cpu_execution_budget.c))
 $(eval $(call ti_c54x_add_test,cpu_instruction_extension_fetch,cpu,test_instruction_extension_fetch.c))
 $(eval $(call ti_c54x_add_test,cpu_ld_status_fields,cpu,test_cpu_ld_status_fields.c))
+$(eval $(call ti_c54x_add_test,cpu_max_min,cpu,test_cpu_max_min.c))

@@ -5,4 +5,5 @@ ti_c54x_add_unit_test(arch_state_address_fields test_arch_state_address_fields.c
 ti_c54x_add_unit_test(arch_state_address_field_contract test_arch_state_address_field_contract.c)
 ti_c54x_add_unit_test(block_size_register test_block_size_register.c)
 ti_c54x_add_unit_test(block_size_register_contract test_block_size_register_contract.c)
+add_subdirectory(accumulator)
 add_subdirectory(status)

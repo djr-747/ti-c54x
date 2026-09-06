@@ -33,6 +33,12 @@ typedef struct ti_c54x_state {
     bool asm_known;
     uint8_t arp;
     bool arp_known;
+    uint64_t accumulator_a_raw40;
+    bool accumulator_a_known;
+    uint64_t accumulator_b_raw40;
+    bool accumulator_b_known;
+    uint8_t c;
+    bool c_known;
 } ti_c54x_state;
 
 #ifdef __cplusplus

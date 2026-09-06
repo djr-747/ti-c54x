@@ -1,0 +1,1 @@
+ti_c54x_add_unit_test(accumulator_state test_accumulator_state.c)

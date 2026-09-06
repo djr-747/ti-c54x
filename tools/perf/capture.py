@@ -42,6 +42,10 @@ REQUIRED_RESULT_FIELDS = {
     "semantic_hash", "scenario_instruction_count", "catalog_instruction_count", "ns_per_instruction",
     "instructions_per_second",
 }
+OPTIONAL_COVERAGE_FIELDS = {
+    "catalog_coverage_mode", "catalog_covered_instruction_count",
+}
+VALID_COVERAGE_MODES = {"fixed", "reset-runnable-subset", "full-catalog"}
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 GIT_SHA_PATTERN = re.compile(r"[0-9a-f]{40,64}")
 
@@ -77,6 +81,31 @@ def validate_result(value: Any) -> None:
         raise ValueError("benchmark policy values changed")
     if value["retired_count"] != value["window_count"] * value["retirements_per_window"]:
         raise ValueError("sample/count invariants failed")
+    coverage_present = [field in value for field in OPTIONAL_COVERAGE_FIELDS]
+    if any(coverage_present) and not all(coverage_present):
+        raise ValueError("catalog coverage metadata must be provided together")
+    if all(coverage_present):
+        mode = value["catalog_coverage_mode"]
+        covered = value["catalog_covered_instruction_count"]
+        if not isinstance(mode, str) or mode not in VALID_COVERAGE_MODES:
+            raise ValueError("invalid catalog coverage mode")
+        if (isinstance(covered, bool) or not isinstance(covered, int) or
+                covered <= 0 or covered > value["catalog_instruction_count"]):
+            raise ValueError("invalid catalog covered instruction count")
+        if value["scenario"] in FIXED_SCENARIOS:
+            if mode != "fixed" or covered != 1:
+                raise ValueError("fixed scenario coverage must be fixed/1")
+        elif value["scenario"] == "mixed-current":
+            if mode == "reset-runnable-subset":
+                if covered >= value["catalog_instruction_count"] or covered != value["scenario_instruction_count"]:
+                    raise ValueError("reset-runnable subset coverage must be strict and complete")
+            elif mode == "full-catalog":
+                if covered != value["catalog_instruction_count"] or covered != value["scenario_instruction_count"]:
+                    raise ValueError("full catalog coverage count mismatch")
+            else:
+                raise ValueError("mixed-current coverage mode is invalid")
+    elif value["scenario"] == "mixed-current" and value["scenario_instruction_count"] != value["catalog_instruction_count"]:
+        raise ValueError("legacy mixed-current coverage must be full catalog")
     expected_ns = value["elapsed_ns"] / value["retired_count"]
     expected_ips = value["retired_count"] * 1_000_000_000.0 / value["elapsed_ns"]
     if abs(value["ns_per_instruction"] - expected_ns) > 0.01 or abs(value["instructions_per_second"] - expected_ips) > max(0.01, expected_ips * 0.00001):
@@ -95,7 +124,9 @@ def validate_results(results: list[dict[str, Any]], catalog_count: int | None = 
     for result in results:
         if result["scenario"] in FIXED_SCENARIOS and result["scenario_instruction_count"] != 1:
             raise ValueError("fixed scenarios must contain one instruction")
-        if result["scenario"] == "mixed-current" and result["scenario_instruction_count"] != result["catalog_instruction_count"]:
+        if (result["scenario"] == "mixed-current" and
+                "catalog_coverage_mode" not in result and
+                result["scenario_instruction_count"] != result["catalog_instruction_count"]):
             raise ValueError("mixed-current instruction count mismatch")
 
 
