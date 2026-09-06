@@ -57,10 +57,12 @@ into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
 guessed. P2-W21A is implemented and green as a private, value-owned WORD16
 bus-request foundation. P2-W21B is implemented and green as a separate exhaustive
-BIG/LITTLE WORD16 byte-lane codec; resumable transactions begin next under P2-W21C,
-while arbitration and memory effects remain later owners. Timing, shared-memory
-mutation, the full ISA, device
-profiles, and emulator integration remain deferred. See the
+BIG/LITTLE WORD16 byte-lane codec. P2-W21C is now an active docs-only kickoff for
+the private callback-free resumable WORD16 transaction reducer: lifecycle,
+stale-token, canonical payload, and no-cancellation rules are frozen, while
+external visibility and arbitration remain later adapter-owned proofs. Timing,
+shared-memory mutation, the full ISA, device profiles, and emulator integration
+remain deferred. See the
 [implementation plan](docs/implementation-plan.md) and [development
 ledger](docs/development-ledger.md) for the current work state.
 

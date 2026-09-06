@@ -3681,3 +3681,65 @@ rewritten after publication.
   The private codec remains outside the public ABI and CPU execution path, and no
   physical byte order is implied. P2-W21C may now begin under the separate
   resumable exactly-once transaction owner.
+
+## 2026-09-06 — P2-W21C kickoff — resumable WORD16 transaction protocol
+
+- State: active documentation/project-contract kickoff. No production source,
+  public ABI, CPU path, request type, codec, test, or build manifest changed.
+- Ownership: the planned private owner is `src/bus/transaction/`, mirrored by
+  `tests/unit/bus/transaction/`; planned implementation leaves are
+  `word16_transaction.[ch]` and `word16_transaction_validate.[ch]`. Focused tests
+  are `test_word16_transaction.c` for lifecycle behavior and
+  `test_word16_transaction_contract.c` for adversarial validation. Parent bus and
+  test manifests aggregate the child only in the later implementation piece.
+- Correction recorded: the earlier plan phrase “named sequencer phase” is
+  superseded. W21C has lifecycle-only states `IDLE=0`, `ISSUE_READY`,
+  `IN_FLIGHT`, `COMPLETION_READY`, `COMPLETE`, and `FAULT`; it adds no
+  `PRE_ACCESS`, `ACCESS`, `POST_ACCESS`, or other semantic phase field. Address
+  PRE/POST belongs to address effects, while future `src/sequencer/memory/` owns
+  instruction/memory-effect phase binding.
+- Contract: caller-declared canonical `{0}` storage is the pending token and
+  copies a fresh caller-generated nonzero `uint64_t transaction_id`, valid W21A
+  request, staged read word, and staged `ti_c54x_bus_status`. The caller maintains
+  one authoritative storage instance and must not copy it by value while active. A
+  fresh ID is required while stale observations could exist; ID generation/wrap is
+  external, and an ID cannot detect a copied state with the same ID or deliberate
+  ID reuse.
+  `prepare` copies a borrowed request only from IDLE; `begin` returns copied
+  request/id and authorizes exactly one issue; repeated WAIT polling remains
+  IN_FLIGHT; first READY/FAULT latches COMPLETION_READY; `complete` publishes one
+  result; and reset only clears IDLE/COMPLETE/FAULT, never active work. There is
+  no abort operation.
+- Status and payload policy: exactly `OK`, `WAIT`, `FAULT`, `INVALID_ARGUMENT`,
+  `INVALID_STATE`, and `STALE_TRANSACTION`. Null pointer, canonical state/legal
+  lifecycle, zero ID, stale nonzero ID, then observation payload validation is the
+  precedence. WAIT/READY observations carry `TI_C54X_BUS_OK`; FAULT accepts only
+  known non-OK `UNMAPPED`, `FAULT`, or `NO_CALLBACK`. WAIT/FAULT and READY-write
+  read payloads are zero; READY-read accepts any WORD16. Failed outputs and
+  rejected transitions preserve named fields; no padding-byte claim is made.
+- Exactly-once scope: this is protocol-only under caller ownership and unique-ID
+  preconditions. A separate planned `src/bus/adapter/` requirement/test owns real
+  callback/MMIO/RAM issue and completion counts and physical visibility across
+  wait-state suspension. Deterministic multi-master arbitration remains a separate
+  later proof. No fake adapter counter is included in W21C.
+- TDD plan: lifecycle coverage includes all six space/access combinations, copied
+  request/source mutation, begin once, repeated WAIT, READY read vectors, READY
+  write zeroing, all public fault statuses, completion once, reset/reuse with a
+  fresh ID, and stale old observations. Adversarial validation covers forged
+  states/requests, nulls, invalid observation tags/status/payloads, active reset,
+  precedence, named-field nonmutation, and zero failed issue/completion payloads.
+- Registry kickoff: 2 targets, 7 sources, 78 immutable evidence records, 115
+  requirements (89 `IMPLEMENTED`, 11 `PLANNED`, 15 `UNRESOLVED`), and 82 tests
+  (71 `PASSING`, 11 `PLANNED`). Added evidence
+  `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT`, requirements
+  `REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE`,
+  `REQ-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION`, and
+  `REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE`, plus their owner-mirrored
+  planned tests. All are `PROJECT_CONTRACT_ONLY`.
+- Knobs/isolation: no `TEST`, `OBSERVE`, or `A/B` knob, environment read,
+  observer, diagnostic, allocator, mutable global, host-memory pointer, public
+  callback, CPU/state/ISA behavior, timing, device, firmware, or emulator
+  dependency is introduced.
+- Validation for this docs-only kickoff: run `tools/quality/check_evidence.py`
+  and `git diff --check` only. The implementation work owns focused normal and
+  sanitizer tests and the full standalone gate before its commit.

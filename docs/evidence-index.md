@@ -6,8 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 77 immutable evidence records,
-112 requirements, and 79 tests (71 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 78 immutable evidence records,
+115 requirements (89 `IMPLEMENTED`, 11 `PLANNED`, 15 `UNRESOLVED`), and 82 tests
+(71 `PASSING`, 11 `PLANNED`).
 
 ## Targets
 
@@ -120,6 +121,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20E: pure single-repeat policy foundation (active kickoff)` |
 | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21A: private WORD16 bus-request contract (active kickoff)` |
 | `E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21B: explicit WORD16 byte-order codec (implemented)` |
+| `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21C: resumable WORD16 transaction protocol (active kickoff)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -335,6 +337,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-RC-INACCESSIBLE`, `E-TI-C54X-SPRU172C-S4-MVDK-MVKD-P4-108-4-114-RPT-RC-PREDICATE`, `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ` |  |
 | `REQ-COMMON-SINGLE-REPEAT-PC-FLOW` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU131G-S6.1-P6-3`, `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ` |  |
 | `REQ-COMMON-SINGLE-REPEAT-PREDECODE-IRQ-ARBITRATION` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/interrupt/` | `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ`, `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR` |  |
+| `REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/transaction/` | `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | `T-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` |
+| `REQ-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/transaction/` | `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | `T-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION` |
+| `REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/adapter/` | `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | `T-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE` |
 
 ## Tests
 
@@ -423,6 +428,9 @@ exist in the repository.
 | `T-COMMON-SINGLE-REPEAT-IRQ-GATE` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_irq_gate.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-IRQ-GATE` |
 | `T-COMMON-SINGLE-REPEAT-PENDING-REQUEST` | PLANNED | COMMON_TI | `tests/unit/sequencer/interrupt/test_repeat_pending_request.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST` |
 | `T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_body_eligibility.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` |
+| `T-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/bus/transaction/test_word16_transaction.c` | `null` | `REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` |
+| `T-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/bus/transaction/test_word16_transaction_contract.c` | `null` | `REQ-PROJECT-BUS-WORD16-TRANSACTION-VALIDATION` |
+| `T-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/bus/adapter/test_word16_exactly_once.c` | `null` | `REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE` |
 
 ## Correction and tombstone policy
 

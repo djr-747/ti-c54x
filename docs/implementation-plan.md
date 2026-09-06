@@ -41,7 +41,7 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Active (P2-W21C next) | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
+| Shared-memory transaction semantics | Active (P2-W21C kickoff) | Word-native requests, explicit byte-lane adapters, a pure resumable transaction reducer, and later external visibility/arbitration proofs precede load/store effects |
 | Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
@@ -587,10 +587,10 @@ evidenced owner-local work may proceed independently.
 
 ### P2-W21: shared-memory transaction foundation
 
-State: P2-W21A and P2-W21B implemented; P2-W21C is next. This work builds the independent gate
-required before any instruction may mutate memory. The core remains word-native and
-host-endian-neutral; sharing, storage, device mapping, and arbitration stay outside
-the CPU instance.
+State: P2-W21A and P2-W21B implemented; P2-W21C is an active docs-only kickoff.
+This work builds the independent gate required before any instruction may mutate
+memory. The core remains word-native and host-endian-neutral; sharing, storage,
+device mapping, and arbitration stay outside the CPU instance.
 
 The owner hierarchy is phased so no early value accumulates unrelated policy:
 
@@ -600,9 +600,11 @@ The owner hierarchy is phased so no early value accumulates unrelated policy:
    word to two byte lanes. Program-image encoding, physical shared-memory lanes,
    and snapshot/wire formats remain separate policies rather than one global endian
    flag.
-3. P2-W21C creates `src/bus/transaction/` for a copied request, caller-owned pending
-   token, named sequencer phase, and begin/poll/complete lifecycle with exactly-once
-   issue and completion across READY, WAIT, and FAULT outcomes.
+3. P2-W21C creates `src/bus/transaction/` for a copied request, caller-owned
+   transaction object/pending token, lifecycle-only state, and a begin/poll/complete
+   reducer with protocol-only exactly-once issue and completion across READY, WAIT,
+   and FAULT outcomes. External visibility and arbitration remain a separate planned
+   adapter owner.
 4. Only after that lifecycle is proven may `src/sequencer/memory/` own declarative
    memory effects and ordered visibility. External adapters arbitrate DSP, ARM, DMA,
    and device masters; the core never owns a host mutex or master identity.
@@ -628,9 +630,10 @@ or noncanonical values.
 
 WORD16 is fixed by the type, so W21A adds no redundant transfer-width enum.
 Multiword operands will compose separately ordered word requests rather than claim
-an accidentally atomic host `uint32_t` transfer. W21A also carries no phase: a named
-sequencer phase is bound by W21C when a request becomes a transaction, keeping pure
-request shape separate from issue/lifecycle policy.
+an accidentally atomic host `uint32_t` transfer. W21A also carries no phase: W21C
+binds a copied request only to transaction identity and lifecycle state. A later
+`src/sequencer/memory/` owner binds instruction and memory-effect phases, keeping
+pure request shape separate from both lifecycle and semantic phase policy.
 
 The planned TDD proof covers all six space/access combinations; zero, maximum, and
 full-width program carriers; DATA/IO zero and `0xffff`; rejection of `0x10000` and
@@ -697,6 +700,90 @@ named error-payload behavior, and verifies borrowed-input nonmutation through bo
 branches. Owner-local Make and CTest registrations mirror the production tree.
 Focused normal and sanitizer tests and the full standalone Make gate pass while
 W21A, the public ABI, and current CPU behavior remain unchanged.
+
+#### P2-W21C: resumable WORD16 transaction protocol (active kickoff)
+
+This is a docs-only contract kickoff for the private `src/bus/transaction/` owner,
+mirrored by `tests/unit/bus/transaction/`. The planned production leaves are
+`word16_transaction.[ch]` and `word16_transaction_validate.[ch]`; focused proofs
+will be `test_word16_transaction.c` for lifecycle behavior and
+`test_word16_transaction_contract.c` for adversarial validation. Parent bus and
+test manifests will aggregate the child later; this kickoff changes no source,
+public ABI, CPU path, request type, codec, or build manifest.
+
+The reducer is pure, callback-free, allocation-free, and host-storage-free. The
+caller declares transaction storage as canonical `{0}`. Its lifecycle vocabulary
+is deliberately not an address-effect phase vocabulary:
+`IDLE=0`, `ISSUE_READY`, `IN_FLIGHT`, `COMPLETION_READY`, `COMPLETE`, and `FAULT`.
+`PRE_ACCESS` and `POST_ACCESS` remain owned by address effects; future
+`src/sequencer/memory/` work binds instruction/memory-effect phases separately.
+
+The transaction object is the caller-owned pending token and copies a fresh,
+caller-generated nonzero `uint64_t transaction_id`, a valid W21A request, a staged
+read word, and a staged `ti_c54x_bus_status`. The caller must provide a fresh ID
+for each reuse while stale observations may exist; generation, wrap, and identity
+allocation are external policies. Active transaction storage must not be copied or
+used as a second authoritative value while active. Ordinary pointers to the same
+storage do not create a second authority. An ID cannot detect a copied state bearing
+the same ID or deliberate ID reuse, so those are explicit caller preconditions
+rather than implementation claims.
+
+The planned header-level API is:
+
+- `prepare(tx *, borrowed valid request *, id)` copies the request and ID only from
+  canonical `IDLE` and enters `ISSUE_READY`.
+- `begin(tx *)` returns a by-value issue result with exactly the named fields
+  `status`, `transaction_id`, and `request`. Only success enters `IN_FLIGHT` and
+  authorizes one external issue; failed issue results zero `transaction_id` and
+  every named request field.
+- `poll(tx *, borrowed observation *)` accepts the copied ID and zero-sentinel
+  `INVALID`, `WAIT`, `READY`, or `FAULT` observation. Repeated canonical `WAIT`
+  returns transaction status `WAIT` and remains `IN_FLIGHT` without another begin
+  or issue authorization. The first canonical `READY` returns `OK`, or the first
+  canonical `FAULT` returns transaction status `FAULT`; either latches one
+  observation and enters `COMPLETION_READY`. Later polls are rejected.
+- `complete(tx *, id)` returns a by-value result with exactly the named fields
+  `status`, `bus_status`, and `read_value_word`. While `IN_FLIGHT`, a matching
+  nonzero ID returns transaction status `WAIT` and leaves the transaction unchanged;
+  zero and nonmatching IDs still return `INVALID_ARGUMENT` and
+  `STALE_TRANSACTION`, respectively. With a matching ID in `COMPLETION_READY`, it
+  returns transaction status `OK`, bus status `TI_C54X_BUS_OK`, and a read word only
+  for a READ/READY transaction, or transaction status `FAULT`, the exact staged
+  non-OK bus status, and a zero read word. It then enters `COMPLETE` or `FAULT`;
+  duplicate completion is rejected. Every failed completion result zeroes its
+  `bus_status` and `read_value_word` fields.
+- `reset(tx *)` clears only canonical `IDLE`, `COMPLETE`, or `FAULT` to zeroed
+  `IDLE`; it rejects `ISSUE_READY`, `IN_FLIGHT`, and `COMPLETION_READY`, so it
+  cannot imply cancellation. There is no abort operation in this contract.
+
+Statuses are exactly `OK`, `WAIT`, `FAULT`, `INVALID_ARGUMENT`, `INVALID_STATE`,
+and `STALE_TRANSACTION`. Null pointers are checked first, then canonical state
+and lifecycle, then zero IDs as invalid arguments, then nonmatching nonzero IDs as
+stale, and finally observation tag/payload shape. `WAIT` and `READY` observations
+carry `TI_C54X_BUS_OK`; `FAULT` accepts only the existing known non-OK
+`UNMAPPED`, `FAULT`, or `NO_CALLBACK` public bus statuses. WAIT/FAULT read payloads
+are zero, READY writes publish no read word, and READY reads may publish any
+`uint16_t`. Every rejected transition preserves all named transaction fields; no
+C-padding-byte claim is made.
+
+Exactly-once is a protocol claim only: one issue authorization and one terminal
+completion per authoritative token under the caller ownership and unique-ID
+preconditions. A separate planned `src/bus/adapter/` owner and
+`tests/unit/bus/adapter/test_word16_exactly_once.c` must prove actual callback,
+MMIO, or RAM issue and completion counts and physical visibility across wait-state
+suspension. Deterministic multi-master arbitration remains another separately owned
+later proof. W21C fabricates no adapter count and claims no host memory, device,
+timing, observer, diagnostic, environment, global, CPU, request, or codec behavior.
+
+The TDD matrix covers all six space/access combinations, copied request and source
+mutation, one begin, repeated WAIT, READY reads `0`, `0x1234`, and `0xffff`, READY
+write zero payload, all three public fault statuses, one completion, reset/reuse
+with a fresh ID, and stale observations. The adversarial contract proof covers
+canonical and forged states/requests, nulls, zero or forged observation kinds and
+bus statuses, noncanonical payloads, active-reset rejection, precedence, named
+field nonmutation, and zero failed issue/completion payloads. Both planned tests
+remain runner-null until the owner implementation exists; focused normal and
+sanitizer tests plus the full gate belong to the later implementation commit.
 
 ## Delivery order
 
@@ -800,11 +887,13 @@ casts a caller's byte-backed RAM. The caller owns mapped storage and arbitration
 the core exchanges fixed-width architectural values through an explicit bus
 transaction boundary.
 
-- Every scheduled transaction binds a program, data, or I/O word request to its
-  named sequencer phase. The primitive request identifies its architectural word
-  address and read or write access; its type fixes WORD16 width, while multiword
-  composition remains explicit. A C54x CPU instance does not contain an ARM
-  identity, shared-RAM pointer, device map, or host mutex.
+- Every bus transaction binds a program, data, or I/O word request to a unique
+  transaction identity and explicit lifecycle state. A later sequencer owner binds
+  that transaction to an evidenced instruction or memory-effect phase. The
+  primitive request identifies its architectural word address and read or write
+  access; its type fixes WORD16 width, while multiword composition remains explicit.
+  A C54x CPU instance does not contain an ARM identity, shared-RAM pointer, device
+  map, or host mutex.
 - One architectural 16-bit word is the primitive transfer. Multiword values are
   composed from separately named word transfers in evidenced architectural word
   order; they are never treated as an accidentally atomic host `uint32_t`.

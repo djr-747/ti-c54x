@@ -5,8 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 77 immutable evidence
-records, 112 requirements, and 79 tests (71 `PASSING`, 8 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 78 immutable evidence
+records, 115 requirements (89 `IMPLEMENTED`, 11 `PLANNED`, 15 `UNRESOLVED`),
+and 82 tests (71 `PASSING`, 11 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -399,10 +400,12 @@ zero write value, while a write request owns the exact copied 16-bit value.
 
 Width is expressed by the WORD16 request type rather than a one-value enum, and a
 request carries no sequencer phase. Multiword composition stays explicit; the later
-transaction owner binds a copied request to phase and lifecycle state. This boundary
-owns no callbacks, read result, byte order, backing memory, waits, issue/completion,
-arbitration, CPU state, or device policy. In particular, shared memory is an adapter
-resource, not a fourth architectural address-space tag.
+transaction owner binds a copied request only to transaction identity and lifecycle
+state. A separate later `src/sequencer/memory/` owner binds instruction and
+memory-effect phases. This boundary owns no callbacks, read result, byte order,
+backing memory, waits, issue/completion, arbitration, CPU state, or device policy.
+In particular, shared memory is an adapter resource, not a fourth architectural
+address-space tag.
 
 The completed leaf returns only `OK`, `INVALID_SPACE`, or `INVALID_ADDRESS`, with
 space validation preceding address-domain validation. Invalid construction zeroes
@@ -432,6 +435,59 @@ compensating conversion errors cannot hide. It also proves null-before-order sta
 precedence, zero named error payloads, and borrowed-input nonmutation through both
 decode branches. Focused normal and sanitizer tests and the full standalone Make
 gate pass; the public ABI and CPU behavior remain unchanged.
+
+### Resumable WORD16 transaction protocol (P2-W21C active kickoff)
+
+P2-W21C is the next private bus leaf under `src/bus/transaction/`, with mirrored
+planned tests under `tests/unit/bus/transaction/`. It is a pure, callback-free,
+allocation-free reducer; no public ABI, CPU path, request type, byte-order codec,
+host memory pointer, arbitration, device, timing, observer, diagnostic,
+environment, or global behavior enters this slice.
+
+The caller declares canonical `{0}` transaction storage. Lifecycle-only states are
+`IDLE=0`, `ISSUE_READY`, `IN_FLIGHT`, `COMPLETION_READY`, `COMPLETE`, and `FAULT`.
+Address-effect `PRE_ACCESS`/`POST_ACCESS` phases are not reused here; future
+`src/sequencer/memory/` work owns memory-effect phase binding. The transaction
+object is the pending token and copies a fresh nonzero caller-generated
+`uint64_t transaction_id`, a valid W21A request, staged read word, and staged
+`ti_c54x_bus_status`. The caller maintains one authoritative storage instance and
+must not copy it by value while active. Fresh IDs are a caller precondition for
+reuse while stale observations could exist; IDs cannot detect duplicated state
+bearing the same ID or deliberate ID reuse.
+
+`prepare` copies a borrowed valid request and ID only from `IDLE` and enters
+`ISSUE_READY`. `begin` returns a by-value issue result whose exact named fields are
+`status`, `transaction_id`, and `request`; only a success transition to `IN_FLIGHT`
+authorizes one external issue. `poll` accepts copied-ID observations with `INVALID`,
+`WAIT`, `READY`, or `FAULT` tags: repeated canonical WAIT returns transaction status
+WAIT and remains `IN_FLIGHT`, the first READY returns OK, and the first FAULT returns
+transaction status FAULT. READY and FAULT each latch one observation and enter
+`COMPLETION_READY`; later polls are rejected. `complete` returns a by-value result
+whose exact named fields are `status`, `bus_status`, and `read_value_word`. While
+IN_FLIGHT, a matching nonzero ID returns WAIT unchanged; zero and nonmatching IDs
+still return INVALID_ARGUMENT and STALE_TRANSACTION. With a matching ID in
+COMPLETION_READY it publishes one canonical result and enters COMPLETE or FAULT.
+Failed issue and completion results zero every named payload field. `reset` permits
+only IDLE, COMPLETE, or FAULT and rejects active states, so no cancellation or abort
+semantics are implied.
+
+The exact status set is `OK`, `WAIT`, `FAULT`, `INVALID_ARGUMENT`,
+`INVALID_STATE`, and `STALE_TRANSACTION`. Null pointers precede canonical state
+and lifecycle checks, zero IDs are invalid arguments, nonmatching nonzero IDs are
+stale, and observation payload validation is last. FAULT carries only a known
+non-OK `ti_c54x_bus_status` (`UNMAPPED`, `FAULT`, or `NO_CALLBACK`); WAIT and READY
+carry `TI_C54X_BUS_OK`. WAIT/FAULT read payloads are zero, READY writes publish no
+read word, READY reads may publish any WORD16, and failed outputs are zeroed.
+Rejected transitions preserve every named transaction field without a padding-byte
+claim.
+
+The exactly-once statement is protocol-only: one issue authorization and one
+terminal completion per authoritative token under ownership and unique-ID
+preconditions. A separate planned external adapter owner must prove actual
+callback/MMIO/RAM issue and completion counts and physical visibility across
+wait-state suspension; deterministic multi-master arbitration remains another later
+proof. W21C does not fabricate an adapter count or claim shared-memory visibility.
+The lifecycle and adversarial tests remain planned until implementation.
 
 ## Single-indirect address-effect slice
 
