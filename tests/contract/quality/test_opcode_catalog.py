@@ -18,9 +18,13 @@ from tools.isa.catalog.opcode_catalog_schema import OpcodeRow, parse_catalog
 
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
+LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
+RESOURCES_ACCUMULATORS_STATUS_C = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
+)
 
 
 class OpcodeCatalogContractTests(unittest.TestCase):
@@ -101,7 +105,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
     def test_real_catalog_contains_nop_and_status_load_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
         rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 7)
+        self.assertEqual(len(rows), 9)
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -129,6 +133,24 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[6].first_word_value, 0xF493)
         self.assertEqual(rows[6].first_word_mask, 0xFCFF)
         self.assertEqual(rows[6].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[7].symbol, "ROL_ACC")
+        self.assertEqual(rows[7].handler, "rol_acc")
+        self.assertEqual(rows[7].first_word_value, 0xF491)
+        self.assertEqual(rows[7].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[7].program_word_count, 1)
+        self.assertEqual(rows[7].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[7].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[7].input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_C)
+        self.assertEqual(rows[8].symbol, "ROR_ACC")
+        self.assertEqual(rows[8].handler, "ror_acc")
+        self.assertEqual(rows[8].first_word_value, 0xF490)
+        self.assertEqual(rows[8].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[8].program_word_count, 1)
+        self.assertEqual(rows[8].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[8].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[8].input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_C)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "instruction_fetch.h"
+#include "input/collect.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/opcode_dispatch.h"
@@ -290,7 +291,6 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_program_word_address candidate_pc;
         ti_c54x_status_field_effect_status status_effect_status;
         ti_c54x_accumulator_effect_status accumulator_effect_status;
-        ti_c54x_accumulator_snapshot accumulator_snapshot;
         ti_c54x_op_input_snapshot op_input = {0};
         bool accumulator_candidate_valid = false;
 
@@ -358,28 +358,13 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
-        if ((instruction.input_resources &
-             (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
-            TI_C54X_INPUT_RESOURCES_NONE) {
+        if (ti_c54x_input_collect(
+                instruction.input_resources,
+                &(ti_c54x_input_sources){&cpu->accumulators, &cpu->status},
+                &op_input) != TI_C54X_INPUT_COLLECT_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
-        }
-        if ((instruction.input_resources & TI_C54X_INPUT_RESOURCES_ACCUMULATORS) !=
-            TI_C54X_INPUT_RESOURCES_NONE) {
-            const ti_c54x_accumulator_status accumulator_status =
-                ti_c54x_accumulator_read_snapshot(&cpu->accumulators,
-                                                   &accumulator_snapshot);
-            if (accumulator_status != TI_C54X_ACCUMULATOR_OK &&
-                accumulator_status != TI_C54X_ACCUMULATOR_UNKNOWN) {
-                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            op_input.accumulator_a_raw40 = accumulator_snapshot.a_raw40;
-            op_input.accumulator_b_raw40 = accumulator_snapshot.b_raw40;
-            op_input.accumulator_a_known = accumulator_snapshot.a_known;
-            op_input.accumulator_b_known = accumulator_snapshot.b_known;
         }
         op_status = ti_c54x_dispatch_decoded_with_input_snapshot(
             &instruction, &op_input, &effect);

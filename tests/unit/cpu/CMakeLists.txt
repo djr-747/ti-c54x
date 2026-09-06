@@ -7,3 +7,5 @@ ti_c54x_add_unit_test(cpu_instruction_extension_fetch test_instruction_extension
 ti_c54x_add_unit_test(cpu_ld_status_fields test_cpu_ld_status_fields.c)
 ti_c54x_add_unit_test(cpu_max_min test_cpu_max_min.c)
 ti_c54x_add_unit_test(cpu_cmpl test_cpu_cmpl.c)
+ti_c54x_add_unit_test(cpu_rol_ror test_cpu_rol_ror.c)
+add_subdirectory(input)

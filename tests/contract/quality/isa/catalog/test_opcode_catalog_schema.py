@@ -25,11 +25,16 @@ LAYOUT_RPT_LK = "TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK"
 LAYOUT_LD_DP = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP"
 LAYOUT_LD_ASM = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM"
 LAYOUT_LD_ARP = "TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP"
+LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_ELIGIBLE = "TI_C54X_REPEATABILITY_ELIGIBLE"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
+RESOURCES_STATUS_C = "TI_C54X_INPUT_RESOURCES_STATUS_C"
+RESOURCES_ACCUMULATORS_STATUS_C = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
+)
 
 
 class OpcodeCatalogSchemaTests(unittest.TestCase):
@@ -156,7 +161,8 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
                 self.assertEqual(rows[0].repeatability, repeatability)
 
         for layout in (LAYOUT_RPT_K, LAYOUT_RPT_LK, LAYOUT_LD_DP,
-                       LAYOUT_LD_ASM, LAYOUT_LD_ARP):
+                       LAYOUT_LD_ASM, LAYOUT_LD_ARP,
+                       LAYOUT_ACCUMULATOR_SOURCE):
             with self.subTest(layout=layout):
                 rows = parse_catalog(
                     f"{valid_prefix} {layout}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})"
@@ -164,11 +170,14 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
                 self.assertEqual(rows[0].operand_layout, layout)
 
     def test_input_resource_tokens_are_namespaced_and_known(self) -> None:
-        rows = parse_catalog(
-            f"TI_C54X_OPCODE_EXACT(ACC, acc, 0x1234, 1, {LAYOUT_NONE}, "
-            f"{REPEAT_UNRESOLVED}, {RESOURCES_ACCUMULATORS})"
-        )
-        self.assertEqual(rows[0].input_resources, RESOURCES_ACCUMULATORS)
+        for resource in (RESOURCES_ACCUMULATORS, RESOURCES_STATUS_C,
+                         RESOURCES_ACCUMULATORS_STATUS_C):
+            with self.subTest(resource=resource):
+                rows = parse_catalog(
+                    f"TI_C54X_OPCODE_EXACT(ACC, acc, 0x1234, 1, {LAYOUT_NONE}, "
+                    f"{REPEAT_UNRESOLVED}, {resource})"
+                )
+                self.assertEqual(rows[0].input_resources, resource)
         with self.assertRaises(OpcodeCatalogError):
             parse_catalog(
                 f"TI_C54X_OPCODE_EXACT(BAD, bad, 0x1234, 1, {LAYOUT_NONE}, "

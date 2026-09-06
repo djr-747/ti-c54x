@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 95 immutable evidence records,
-139 requirements (107 `IMPLEMENTED`, 14 `PLANNED`, 18 `UNRESOLVED`), and 101 tests
-(87 `PASSING`, 14 `PLANNED`).
+139 requirements (112 `IMPLEMENTED`, 9 `PLANNED`, 18 `UNRESOLVED`), and 101 tests
+(92 `PASSING`, 9 `PLANNED`).
 
 ## Targets
 
@@ -375,11 +375,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-CMPL-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/accumulator/` | `E-TI-C54X-SPRU172C-S4-CMPL-EFFECTS-P4-32`, `E-TI-C54X-SPRU131G-S2.3-P2-8-ACCUMULATOR-40BIT` | `T-COMMON-CMPL-OPS` |
 | `REQ-PROJECT-CMPL-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W24-CMPL-ACCUMULATOR-WRITE-CONTRACT` | `T-PROJECT-CPU-CMPL` |
 | `REQ-COMMON-CMPL-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-CMPL-REPEATABILITY-BOUNDARY` |  |
-| `REQ-PROJECT-OP-INPUT-COLLECTION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | `T-PROJECT-OP-INPUT-COLLECTION` |
-| `REQ-COMMON-ROL-ROR-ENCODINGS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-CATALOG` |
-| `REQ-COMMON-ROL-ROR-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-DECODE` |
-| `REQ-COMMON-ROL-ROR-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/rotate/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-OPS` |
-| `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | `T-PROJECT-CPU-ROL-ROR` |
+| `REQ-PROJECT-OP-INPUT-COLLECTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | `T-PROJECT-OP-INPUT-COLLECTION` |
+| `REQ-COMMON-ROL-ROR-ENCODINGS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-CATALOG` |
+| `REQ-COMMON-ROL-ROR-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-DECODE` |
+| `REQ-COMMON-ROL-ROR-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/rotate/` | `E-TI-C54X-SPRU172C-S4-ROL-P4-143`, `E-TI-C54X-SPRU172C-S4-ROR-P4-145` | `T-COMMON-ROL-ROR-OPS` |
+| `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | `T-PROJECT-CPU-ROL-ROR` |
 | `REQ-COMMON-ROL-ROR-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY` |  |
 
 ## Tests
@@ -486,11 +486,11 @@ exist in the repository.
 | `T-COMMON-CMPL-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_cmpl_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpl_decode"}` | `REQ-COMMON-CMPL-DECODE` |
 | `T-COMMON-CMPL-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/accumulator/test_cmpl.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpl"}` | `REQ-COMMON-CMPL-EFFECTS` |
 | `T-PROJECT-CPU-CMPL` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_cmpl.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_cmpl"}` | `REQ-PROJECT-CMPL-CPU-RETIREMENT` |
-| `T-PROJECT-OP-INPUT-COLLECTION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect.c` | `null` | `REQ-PROJECT-OP-INPUT-COLLECTION` |
-| `T-COMMON-ROL-ROR-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_rol_ror_metadata.c` | `null` | `REQ-COMMON-ROL-ROR-ENCODINGS` |
-| `T-COMMON-ROL-ROR-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_rol_ror_decode.c` | `null` | `REQ-COMMON-ROL-ROR-DECODE` |
-| `T-COMMON-ROL-ROR-OPS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/rotate/test_rol_ror.c` | `null` | `REQ-COMMON-ROL-ROR-EFFECTS` |
-| `T-PROJECT-CPU-ROL-ROR` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_rol_ror.c` | `null` | `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` |
+| `T-PROJECT-OP-INPUT-COLLECTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_input_collect"}` | `REQ-PROJECT-OP-INPUT-COLLECTION` |
+| `T-COMMON-ROL-ROR-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_rol_ror_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rol_ror_metadata"}` | `REQ-COMMON-ROL-ROR-ENCODINGS` |
+| `T-COMMON-ROL-ROR-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_rol_ror_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rol_ror_decode"}` | `REQ-COMMON-ROL-ROR-DECODE` |
+| `T-COMMON-ROL-ROR-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/rotate/test_rol_ror.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rol_ror"}` | `REQ-COMMON-ROL-ROR-EFFECTS` |
+| `T-PROJECT-CPU-ROL-ROR` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_rol_ror.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_rol_ror"}` | `REQ-PROJECT-CPU-ROL-ROR-RETIREMENT` |
 
 ## Correction and tombstone policy
 

@@ -7,3 +7,5 @@ $(eval $(call ti_c54x_add_test,cpu_instruction_extension_fetch,cpu,test_instruct
 $(eval $(call ti_c54x_add_test,cpu_ld_status_fields,cpu,test_cpu_ld_status_fields.c))
 $(eval $(call ti_c54x_add_test,cpu_max_min,cpu,test_cpu_max_min.c))
 $(eval $(call ti_c54x_add_test,cpu_cmpl,cpu,test_cpu_cmpl.c))
+$(eval $(call ti_c54x_add_test,cpu_rol_ror,cpu,test_cpu_rol_ror.c))
+include tests/unit/cpu/input/tests.mk

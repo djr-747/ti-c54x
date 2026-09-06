@@ -22,12 +22,15 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover seven declarative one-word
-  instruction rows: evidence-backed `NOP`, the three
-  immediate status-field forms `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`, four
-  MAX/MIN accumulator forms, and four CMPL accumulator forms. Exact/masked catalog
-  generation, complete instruction bundles, extension fetch, operand extraction,
-  dispatch, PC staging, and retirement are green under the standalone gates.
+- Production decode and CPU execution now cover nine declarative one-word
+  opcode rows: evidence-backed `NOP`; the three immediate status-field forms
+  `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
+  and `ROR`. Those rows expand to their encoded accumulator forms. The catalog
+  now has 565 populated first-word encodings;
+  that is a lookup-population count, not 565 distinct instructions. Exact/masked
+  catalog generation, complete instruction bundles, extension fetch, operand
+  extraction, dispatch, PC staging, and retirement are green under the standalone
+  gates.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -38,11 +41,17 @@ Current progress:
   decode, full-40-bit one's-complement semantics, and atomic CPU retirement.
   Repeatability and machine timing remain unresolved; no silicon timing claim is
   made.
-- The registry now records 91 evidence items, 133 requirements (107 implemented,
-  9 planned, 17 unresolved), and 96 tests (87 passing, 9 planned). The full
-  local and remote P2-W24 gates are green. The latest clean catalog-seven hosted
+- P2-W25 now provides a generic resource-driven input collector with
+  `ACCUMULATORS | STATUS_C`, typed `status_c`/`status_c_known`, transactional
+  unknownness handling, and no opcode-specific CPU branch. ROL/ROR use the
+  existing accumulator-write plus C-write effect path; benchmark coverage
+  remains the four reset-runnable NOP/LD rows out of nine.
+- The registry now records 95 evidence items, 139 requirements (112 implemented,
+  9 planned, 18 unresolved), and 101 tests (92 passing, 9 planned). The full
+  local P2-W25 gate is green; remote validation follows the implementation
+  commit. The latest clean catalog-seven hosted
   performance record is captured at `7cad341` (NOP 14.481 MIPS; mixed-current
-  11.162 MIPS with reset-runnable coverage of 4/7).
+  11.162 MIPS with reset-runnable coverage of 4/9).
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,

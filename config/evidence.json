@@ -3119,7 +3119,7 @@
     },
     {
       "id": "REQ-PROJECT-OP-INPUT-COLLECTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/input/",
@@ -3129,7 +3129,7 @@
     },
     {
       "id": "REQ-COMMON-ROL-ROR-ENCODINGS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -3139,7 +3139,7 @@
     },
     {
       "id": "REQ-COMMON-ROL-ROR-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -3149,7 +3149,7 @@
     },
     {
       "id": "REQ-COMMON-ROL-ROR-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/rotate/",
@@ -3159,7 +3159,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-ROL-ROR-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -3988,42 +3988,42 @@
     },
     {
       "id": "T-PROJECT-OP-INPUT-COLLECTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/input/test_collect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect"},
       "requirement_ids": ["REQ-PROJECT-OP-INPUT-COLLECTION"]
     },
     {
       "id": "T-COMMON-ROL-ROR-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_rol_ror_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rol_ror_metadata"},
       "requirement_ids": ["REQ-COMMON-ROL-ROR-ENCODINGS"]
     },
     {
       "id": "T-COMMON-ROL-ROR-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_rol_ror_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rol_ror_decode"},
       "requirement_ids": ["REQ-COMMON-ROL-ROR-DECODE"]
     },
     {
       "id": "T-COMMON-ROL-ROR-OPS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/rotate/test_rol_ror.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rol_ror"},
       "requirement_ids": ["REQ-COMMON-ROL-ROR-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-ROL-ROR",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/test_cpu_rol_ror.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_rol_ror"},
       "requirement_ids": ["REQ-PROJECT-CPU-ROL-ROR-RETIREMENT"]
     }
   ]

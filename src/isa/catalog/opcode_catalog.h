@@ -46,6 +46,7 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM,
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP,
     TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC,
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
@@ -60,8 +61,12 @@ typedef enum ti_c54x_repeatability_class {
 typedef uint8_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
+#define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \
-    (TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+    (TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C)
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;
