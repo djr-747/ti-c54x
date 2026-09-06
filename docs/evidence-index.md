@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 65 immutable evidence records,
-94 requirements, and 64 tests (62 `PASSING`, 2 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 73 immutable evidence records,
+110 requirements, and 77 tests (66 `PASSING`, 11 `PLANNED`).
 
 ## Targets
 
@@ -115,6 +115,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6-10-7-P6-34-RPT-IRQ-COMPLETION` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.7, `6-34` |
 | `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.3 and 6.10.8, `6-31`–`6-36` |
 | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)` |
+| `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20E: pure single-repeat policy foundation (active kickoff)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -316,6 +317,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CATALOG-METADATA-TOKENS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | `T-PROJECT-CATALOG-METADATA-TOKENS` |
 | `REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | `T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING` |
 | `REQ-PROJECT-RPT-IMMEDIATE-EFFECT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/repeat/` | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | `T-PROJECT-RPT-IMMEDIATE-EFFECT` |
+| `REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` |
+| `REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` |
+| `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
 | `REQ-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-DECODE` |
 | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-SINGLE-REPEAT-CARDINALITY` |
@@ -402,6 +406,9 @@ exist in the repository.
 | `T-PROJECT-CATALOG-METADATA-TOKENS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/catalog/test_opcode_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.opcode_metadata"}` | `REQ-PROJECT-CATALOG-METADATA-TOKENS` |
 | `T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_operand_layout_binding.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.operand_layout_binding"}` | `REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING` |
 | `T-PROJECT-RPT-IMMEDIATE-EFFECT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/repeat/test_rpt_immediate_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rpt_immediate_effect"}` | `REQ-PROJECT-RPT-IMMEDIATE-EFFECT` |
+| `T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_cardinality_contract.c` | `null` | `REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY` |
+| `T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_body_admission_contract.c` | `null` | `REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION` |
+| `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c` | `null` | `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
 | `T-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_rpt_immediate_decode.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-DECODE` |
 | `T-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | COMMON_TI | `tests/unit/isa/ops/repeat/test_rpt_immediate.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `T-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_cardinality.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` |

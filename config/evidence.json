@@ -1268,6 +1268,20 @@
         "anchor": "P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)"
       },
       "assertion": "The P2-W20A project contract requires a value-owned canonical instruction bundle, catalog-bound immutable operand-layout and repeatability metadata, discriminated opcode effects, a pure repeat owner with uint32_t body cardinality, and generic IRQ admission/reset-exception handoff. RPT handlers must not mutate architectural state, PC, interrupt state, memory, buses, observers, diagnostics, or timing directly; CPU integration may consume generic effects only after the explicitly unresolved RC, repeat-PC, and pending-request arbitration rules are resolved. This is a project structure contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W20E: pure single-repeat policy foundation (active kickoff)"
+      },
+      "assertion": "The P2-W20E project contract defines three allocation-free, value-only policies under the dedicated repeat sequencer owner: checked uint16_t operand to uint32_t body-cardinality derivation, admission from the catalog's existing tri-state repeatability scalar without opcode inference, and a repeat-only request gate over an explicit remaining-body count plus maskable, NMI, or literal RS/reset class. Invalid inputs are explicit and transactional. These policies do not claim that a body executed, bind concrete opcode restrictions, sample or mutate IFR, progress RC, control PC, integrate CPU execution, or resolve predecode interrupt arbitration."
     }
   ],
   "requirements": [
@@ -2396,6 +2410,36 @@
       "test_ids": ["T-PROJECT-RPT-IMMEDIATE-EFFECT"]
     },
     {
+      "id": "REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Derive a copied uint32_t body-execution cardinality equal to a copied uint16_t repeat operand plus one, including 65536 for operand 0xffff, without narrow arithmetic or mutation. Invalid arguments leave caller-owned output unchanged. This pure policy does not claim that any instruction body executed or define RC or PC behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION"],
+      "test_ids": ["T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY"]
+    },
+    {
+      "id": "REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Map the existing catalog-owned repeatability scalar to an explicit repeat-body admission decision: ELIGIBLE admits, INELIGIBLE rejects, and UNRESOLVED remains non-admitting and distinct. Invalid arguments or forged enum values leave caller-owned output unchanged; no opcode identity, width, operand, or addressing form is inferred.",
+      "evidence_ids": ["E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION"],
+      "test_ids": ["T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION"]
+    },
+    {
+      "id": "REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Given a caller-supplied body-execution count remaining in the range zero through 65536 and an explicit maskable, NMI, or literal RS/reset request class, report only the repeat gate's decision: an inactive gate blocks nothing, an active gate defers maskable and NMI requests, and literal RS/reset is never blocked. Invalid inputs leave caller-owned output unchanged. The policy owns no request sampling, IFR state, acknowledgement, priority, vector, or device wiring.",
+      "evidence_ids": ["E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION"],
+      "test_ids": ["T-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
+    },
+    {
       "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -3087,6 +3131,30 @@
       "path": "tests/unit/isa/ops/repeat/test_rpt_immediate_effect.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rpt_immediate_effect"},
       "requirement_ids": ["REQ-PROJECT-RPT-IMMEDIATE-EFFECT"]
+    },
+    {
+      "id": "T-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/repeat/test_repeat_cardinality_contract.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-CARDINALITY-POLICY"]
+    },
+    {
+      "id": "T-PROJECT-SINGLE-REPEAT-BODY-ADMISSION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/repeat/test_repeat_body_admission_contract.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-BODY-ADMISSION"]
+    },
+    {
+      "id": "T-PROJECT-SINGLE-REPEAT-REQUEST-GATE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
     },
     {
       "id": "T-COMMON-RPT-IMMEDIATE-DECODE",

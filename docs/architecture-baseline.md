@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 65 immutable evidence
-records, 94 requirements, and 64 tests (62 `PASSING`, 2 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 73 immutable evidence
+records, 110 requirements, and 77 tests (66 `PASSING`, 11 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -348,6 +348,23 @@ decode masks or mutate architectural state. It also does not add operand+1;
 cardinality belongs to the single-repeat sequencer. Existing production dispatch
 and CPU execution remain NOP-only, and the common TI RPT operation requirement
 remains planned until the effect has a proven generic consumer.
+
+P2-W20E is active as a similarly narrow project-contract foundation under the
+new `src/sequencer/repeat/` owner. Three leaf policies remain separate: checked
+`uint16_t` operand to `uint32_t` body-cardinality derivation, admission from the
+catalog's existing tri-state repeatability scalar, and a repeat-only request gate
+over an explicit remaining-body count plus maskable, NMI, or literal RS/reset
+request class. The gate reports only whether repeat blocks a request; it does not
+decide general interrupt eligibility.
+
+This pure slice intentionally does not close the common TI cardinality,
+body-eligibility, or IRQ-gate requirements. A derived count is not proof that CPU
+execution performed that many body retirements, and generic admission over a
+preclassified scalar is not proof that specific production rows carry the right
+classification. Those common requirements stay planned for integration-level
+proof. IFR sampling and mutation stay under the later `src/sequencer/interrupt/`
+owner, while RC progression, PC flow, and predecode request arbitration remain
+unresolved.
 
 ## Single-indirect address-effect slice
 

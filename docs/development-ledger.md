@@ -3245,3 +3245,49 @@ rewritten after publication.
 - Result: W20D is published and green on every repository-owned build surface. The
   typed immediate-RPT effect remains pure and inactive in production decode; P2-W20E
   may now begin under the dedicated `src/sequencer/repeat/` owner.
+
+## 2026-09-06 — P2-W20E kickoff — pure single-repeat policy foundation
+
+- State: active under three new project-contract requirements and tests for
+  cardinality derivation, preclassified-body admission, and repeat-only request
+  gating. Kickoff totals are 2 targets, 7 sources, 73 evidence records, 110
+  requirements (84 implemented, 11 planned, 15 unresolved), and 77 tests (66
+  passing, 11 planned).
+- Scope decision: W20E remains a pure policy foundation. The existing common TI
+  cardinality, body-eligibility, and IRQ-gate requirements remain planned because a
+  computed count does not prove body retirement, a generic scalar decision does not
+  prove concrete production classifications, and no active repeat window is yet
+  integrated.
+- Ownership: create `src/sequencer/repeat/` and the mirrored
+  `tests/unit/sequencer/repeat/` subtree. Cardinality, body admission, and request
+  gating are separate leaf modules; parent Make/CMake manifests aggregate the child
+  owner rather than listing its sources and tests directly.
+- Cardinality decision: accept the complete copied `uint16_t` operand domain, widen
+  before adding one, and publish a caller-owned `uint32_t` count transactionally.
+  The proof sweeps all 65,536 operands and explicitly checks one and 65536 endpoints.
+- Eligibility decision: consume only the catalog's scalar tri-state class. Only
+  `ELIGIBLE` admits; `INELIGIBLE` rejects; `UNRESOLVED` remains distinct and cannot
+  silently admit. No opcode identity, width, operand, addressing form, or table
+  lookup enters the policy.
+- Request-gate decision: accept an explicit remaining-body count from zero through
+  65536 plus maskable, NMI, or literal RS/reset class. The repeat gate blocks nothing
+  when inactive, defers maskable and NMI while active, and never blocks literal
+  reset. This is not general interrupt admission and owns no IFR state.
+- TDD: register three planned project tests, then make each fail for its missing leaf
+  module before implementation. Cover invalid pointers, forged enums, counts above
+  65536, and transactional outputs in addition to the valid policy matrix. Existing
+  common RPT tests remain planned.
+- Independent Luna audits: both recommend the three-leaf owner shape and flag the
+  existing common cardinality wording as too broad for a pure calculation. The main
+  decision follows the conservative alternative: add project proofs now and leave
+  integration-level TI conformance for W20F or later.
+- Documentation correction: the evidence-index and architecture-baseline headline
+  counts are updated from their stale P2-W19B values to the current kickoff totals;
+  historical ledger counts remain unchanged.
+- Exclusions: no production RPT row, generated lookup change, opcode-effect
+  consumption, CPU/state/RC/PC mutation, body execution loop, IFR sampling/latching/
+  clearing, device wiring, timing, bus, memory, observer, diagnostic, knob,
+  environment read, allocator, mutable global, emulator dependency, or external
+  implementation.
+- Follow-up: publish and remotely verify the kickoff, then delegate the bounded
+  three-leaf implementation to Luna under main-agent review and commit ownership.

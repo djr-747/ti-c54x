@@ -51,6 +51,7 @@ function-pointer dispatch tables.
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
+| Pure single-repeat policy foundation (P2-W20E) | Active | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -491,6 +492,53 @@ state, bus, observer, or host surface. Source and tests live in mirrored repeat-
 subtrees with owner-local manifests. P2-W20E is next and owns pure single-repeat
 cardinality, body admission, and request-admission policy; W20D does not precompute
 those decisions.
+
+#### P2-W20E: pure single-repeat policy foundation (active kickoff)
+
+State: active as three project-contract TDD proofs. The common TI cardinality,
+body-eligibility, and IRQ-gate requirements remain planned until production
+integration proves actual body retirement, concrete catalog classifications, and
+the active repeat window. This avoids treating a useful pure calculation as broader
+execution conformance.
+
+`src/sequencer/repeat/` becomes a dedicated subowner with three leaf modules and a
+mirrored test subtree:
+
+- `repeat_cardinality` accepts a copied `uint16_t` operand, widens before adding one,
+  and transactionally publishes a `uint32_t` body-execution count. The complete
+  input range is valid, including zero to one and `0xffff` to 65536. It owns no
+  execution loop, RC, PC, state, effect consumption, or timing.
+- `repeat_body_eligibility` consumes only the existing catalog-owned
+  `ti_c54x_repeatability_class` scalar. `ELIGIBLE` admits, `INELIGIBLE` rejects, and
+  `UNRESOLVED` remains explicitly non-admitting. Forged values fail; the policy may
+  not inspect opcode identity, width, operands, addressing forms, or catalog tables.
+- `repeat_request_gate` consumes a caller-supplied `uint32_t` count remaining and a
+  small gate-local request class: maskable, NMI, or literal RS/reset. Zero means the
+  repeat gate is inactive and blocks nothing; counts one through 65536 defer
+  maskable and NMI requests while never blocking literal reset. Larger counts and
+  forged request kinds fail transactionally. “Not blocked” is deliberately not a
+  claim that another interrupt policy must service the request.
+
+Each leaf owns its status/decision types and value contract. Parent sequencer
+Make/CMake manifests aggregate `repeat/`; they do not flatten the leaf sources into
+an unrelated owner. The first TDD registration creates three planned project tests
+under `tests/unit/sequencer/repeat/`, then implementation makes only those contracts
+passing. The existing common tests remain planned and separate.
+
+W20E must not import the W20D opcode effect, decode a catalog row, mutate CPU or
+architectural state, sample or write IFR, choose sources/vectors/priorities, advance
+or reload PC, expose architectural RC phase/final value, add timing, touch memory or
+buses, add observers/diagnostics/knobs, read the environment, allocate, or activate
+production RPT decode. Pending-request persistence stays with the later
+`src/sequencer/interrupt/` owner. RC progression, repeated-body PC flow, and
+predecode interrupt arbitration remain explicitly unresolved.
+
+Exit condition: the three project requirements and mirrored tests are passing in
+Make and CTest; the full `uint16_t` cardinality domain is proven without wrap;
+unresolved repeatability never admits; request decisions cover inactive, first,
+interior, and 65536-remaining windows plus invalid inputs; source and test manifests
+mirror the new owner; production lookup remains unchanged; and the common TI rows
+remain planned without overclaim.
 
 ## Delivery order
 
