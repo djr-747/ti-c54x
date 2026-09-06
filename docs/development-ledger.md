@@ -2815,3 +2815,24 @@ rewritten after publication.
 - Result: the RPT evidence, phased owner hierarchy, planned proof inventory, and
   explicit unresolved boundaries are published and green. No production behavior
   changed. P2-W20B canonical instruction-bundle TDD is next.
+
+## 2026-09-06 — P2-W20B kickoff — canonical complete-instruction bundle
+
+- State: active. The stable contract is the P2-W20B subsection under the existing
+  P2-W20A implementation-plan anchor. Production still registers only NOP.
+- Decode ownership: move the copied two-word helper bundle type under
+  `src/isa/decode/`, retain an explicit helper-capacity boundary, and add a
+  transactional complete-instruction binder that validates first-word decode,
+  catalog metadata/pattern, bundle count, and copied first word before publication.
+- CPU/operation ownership: CPU extension fetch only populates the canonical value;
+  semantic dispatch and NOP consume the completed value. NOP remains one callback,
+  one attempted/retired instruction, one-word PC advance, and no opcode-owned
+  effect. CPU code gains no opcode-ID branch.
+- TDD: add the planned decode-owned bundle test first, retain extension-fetch,
+  decode, dispatch, CPU transaction, counter, PC bridge, and observer regressions,
+  then run focused normal/sanitizer proof before the single coherent full gate.
+- Exclusions: no RPT catalog row, operand-layout binding, repeat effect/state, RC,
+  IRQ, timing, memory mutation, public API, knob, diagnostic path, or emulator
+  dependency is introduced.
+- Follow-up: implement through explicitly split decode, CPU, and opcode owners;
+  main reviews and commits after the full standalone gate.

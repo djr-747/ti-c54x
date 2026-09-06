@@ -47,7 +47,8 @@ function-pointer dispatch tables.
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
-| RPT evidence and instruction-transaction architecture (P2-W20A) | Active | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
+| RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
+| Canonical complete-instruction bundle (P2-W20B) | Active | One decode-owned copied bundle becomes the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -355,6 +356,29 @@ already pending before RPT decode. Detailed pipeline and machine-cycle behavior
 also remains outside the active timing contract. These gaps do not weaken the
 proven cardinality or post-decode interrupt gate; they prevent premature CPU
 integration.
+
+#### P2-W20B: canonical complete-instruction bundle (active kickoff)
+
+This work piece moves the current two-word helper bundle type from CPU ownership to
+`src/isa/decode/` and adds a checked complete-instruction binding without changing
+the production catalog. The fixed capacity remains explicitly local to the current
+helper and is not advertised as the ISA maximum. The bundle contains copied 16-bit
+program words plus an explicit count and retains no pointers.
+
+The existing first-word decode remains the only catalog lookup needed for an
+attempt. A new completion step validates the first-word result, immutable metadata,
+bundle count/capacity, first-word identity/pattern, and full copied bundle before
+publishing a value-owned decoded instruction transactionally. Dispatch and NOP
+consume that complete value. CPU orchestration calls the existing extension-fetch
+owner to populate it, but NOP still performs exactly one bus callback, has identical
+stop/counter/PC behavior, and remains the only registered production opcode.
+
+Ownership is split: `src/isa/decode/` owns the type and completion validation;
+`src/cpu/` owns fetching/population and execution orchestration; `src/isa/ops/`
+owns the complete-instruction handler signature and NOP validation. Tests and build
+manifests mirror each owner. The work piece adds no operand layout, RPT row/effect,
+repeat state, architectural state integration, IRQ behavior, machine cycles,
+memory mutation, observer event, knob, public API, or emulator dependency.
 
 ## Delivery order
 
