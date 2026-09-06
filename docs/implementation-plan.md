@@ -49,6 +49,7 @@ function-pointer dispatch tables.
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
 | RPT evidence and instruction-transaction architecture (P2-W20A) | Complete | Immediate-RPT encodings, repeat/IRQ rules, owner hierarchy, staged implementation slices, and unresolved semantics are frozen before code changes |
 | Canonical complete-instruction bundle (P2-W20B) | Complete | One decode-owned copied bundle is the checked handoff from CPU extension fetch through complete decode and semantic dispatch while NOP behavior remains unchanged |
+| Catalog operand/repeat metadata (P2-W20C) | Active | Split scalar catalog tokens from decode-owned layout descriptors so every layer remains immutable, acyclic, and independently provable before RPT activation |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -391,6 +392,42 @@ and passes that value through generic dispatch. NOP still performs one callback 
 one-word retirement; `cpu.c` contains no opcode-identity branch. P2-W20C is next and
 must define catalog-bound operand-layout and repeatability metadata without
 prematurely activating an instruction whose effect the CPU cannot yet consume.
+
+#### P2-W20C: catalog operand-layout and repeatability metadata (active)
+
+State: active, split into two atomic owner-specific proofs. Production continues to
+register only NOP; no RPT first word, handler, effect, or CPU behavior is activated.
+
+P2-W20C1 extends the sole X-macro catalog row with two fully namespaced scalar
+tokens: a catalog-owned operand-layout identity and a tri-state repeatability class.
+The valid repeatability states are `UNRESOLVED`, `ELIGIBLE`, and `INELIGIBLE`;
+unresolved is a safe explicit state and never implies admission. Layout identity
+reserves `UNKNOWN` as invalid for production rows and provides `NONE` for NOP.
+NOP binds `NONE` plus `UNRESOLVED`, because this slice does not infer its body
+eligibility from absence in an exclusion summary. The Python schema, every C
+X-macro pass, immutable metadata, complete decoded-instruction value, dispatch,
+and NOP validation must agree on the tokens. The generated 65,536-entry lookup
+remains byte-for-byte unchanged and normal builds remain compiler-only.
+
+P2-W20C2 adds decode-owned immutable operand-layout-set descriptors and resolution.
+A layout set, rather than a single field, is required so future multi-operand
+instructions do not force a carrier redesign. The catalog stores only compact IDs,
+never decoder-owned pointers. Decode resolves an ID to process-lifetime static data,
+validates every field against the instruction program-word width, and routes copied
+operand extraction through `operand_field`; handlers never hand-mask instruction
+words. Outputs are transactional and no caller pointer is retained.
+
+The directory hierarchy stays explicit: `src/isa/catalog/` owns row syntax, token
+identity, immutable metadata, and catalog tests; `src/isa/decode/` owns descriptors,
+resolution, extraction, and mirrored decode tests; `src/isa/ops/` only consumes the
+completed values. CPU, sequencer, state, timing, buses, observers, diagnostics,
+knobs, allocators, environment, and public API are unchanged.
+
+RPT layout identities may exist only as inert decoder metadata during W20C2. They
+must remain unreferenced by the production opcode catalog until a typed
+`REPEAT_START` effect and generic consumption path can land coherently. RPT
+encoding/operation, RC and repeat-PC progression, body admission, interrupt gates,
+machine cycles, shared memory, and emulator integration remain outside W20C.
 
 ## Delivery order
 

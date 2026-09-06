@@ -2893,3 +2893,37 @@ rewritten after publication.
   every repository-owned build surface. NOP compatibility, standalone isolation,
   copied-value ownership, and generic CPU orchestration remain intact. P2-W20C
   catalog-bound operand-layout and repeatability metadata is next.
+
+## 2026-09-06 — P2-W20C kickoff — catalog metadata and operand-layout ownership
+
+- State: active. The stable contract is the P2-W20C implementation-plan subsection.
+  Registry kickoff totals are 2 targets, 7 sources, 72 evidence records, 106
+  requirements (81 implemented, 10 planned, 15 unresolved), and 73 tests (63
+  passing, 10 planned).
+- Decision: split W20C into two atomic proofs. W20C1 owns scalar catalog metadata
+  tokens; W20C2 owns decode layout-set descriptors/resolution/extraction. This keeps
+  catalog independent of decoder types and avoids a speculative single-operand
+  carrier that would not scale across the ISA.
+- W20C1: every sole-inventory opcode row must name a fully namespaced operand-layout
+  identity and tri-state repeatability class. NOP uses layout `NONE` and explicit
+  `UNRESOLVED` repeatability. Schema, C macro passes, immutable metadata, decoded
+  values, dispatch, and NOP validation agree; the direct lookup does not change.
+- W20C2: `src/isa/decode/` owns immutable layout sets, source-width validation, and
+  copied extraction through the existing shared field extractor. The catalog owns
+  scalar IDs only; handlers own no masks. Outputs remain transactional and no input
+  pointer is retained.
+- Staging rule: no production RPT row, handler, effect, or CPU path lands in W20C.
+  Inert RPT layouts may be proven only under decode ownership. Catalog activation
+  must be coherent with a typed `REPEAT_START` effect and generic consumer; a
+  decode-success then CPU-`INVALID_STATE` interval is forbidden.
+- Delegation/review: two independent Luna read-only audits converged on the scalar
+  token/decode resolver split. A bounded Luna worker may own implementation files;
+  the main agent retains architecture decisions, integration, validation, commits,
+  publication, and the append-only completion record.
+- Exclusions: no TI execution claim, RC/repeat-PC policy, body eligibility decision,
+  interrupt gate, cycle model, memory mutation, public API, knob, environment read,
+  diagnostic, allocator, mutable global, emulator dependency, or external source is
+  introduced.
+- Validation for this docs-only kickoff is limited to evidence/schema quality and
+  `git diff --check`; the implementation work piece owns its coherent standalone
+  full test gate.

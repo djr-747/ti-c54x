@@ -2366,6 +2366,16 @@
       "test_ids": ["T-PROJECT-CANONICAL-INSTRUCTION-BUNDLE"]
     },
     {
+      "id": "REQ-PROJECT-CATALOG-METADATA-TOKENS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Require every sole-inventory opcode row to name a catalog-owned scalar operand-layout token and tri-state repeatability classification, carry both through immutable metadata and the copied decoded-instruction value, and validate them outside opcode semantics. UNKNOWN layout tokens are never valid for a production row; UNRESOLVED repeatability is explicit and must never imply eligibility.",
+      "evidence_ids": ["E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE"],
+      "test_ids": ["T-PROJECT-CATALOG-METADATA-TOKENS"]
+    },
+    {
       "id": "REQ-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",
       "state": "PLANNED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -3043,6 +3053,14 @@
       "path": "tests/unit/isa/decode/test_instruction_bundle.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.instruction_bundle"},
       "requirement_ids": ["REQ-PROJECT-CANONICAL-INSTRUCTION-BUNDLE"]
+    },
+    {
+      "id": "T-PROJECT-CATALOG-METADATA-TOKENS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_opcode_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CATALOG-METADATA-TOKENS"]
     },
     {
       "id": "T-PROJECT-CATALOG-OPERAND-LAYOUT-BINDING",

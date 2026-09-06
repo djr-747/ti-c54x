@@ -315,6 +315,14 @@ opcode-identity branch to CPU orchestration. Catalog activation for RPT remains
 deferred until its typed effect has a generic consumption contract, avoiding an
 intermediate decode-success/CPU-`INVALID_STATE` architecture.
 
+P2-W20C preserves the dependency direction by storing only scalar layout and
+repeatability identities in catalog metadata. Decode owns the immutable layout-set
+descriptors and the token resolver; catalog headers never include decoder field
+types or retain their pointers. Repeatability is tri-state rather than boolean, so
+unresolved evidence cannot silently become an eligible repeated body. Layout sets
+support zero, one, or multiple named fields and route every copied value through the
+shared field extractor.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner
