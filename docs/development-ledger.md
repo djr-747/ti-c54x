@@ -3418,3 +3418,18 @@ rewritten after publication.
   itself, and may not become a standalone build dependency.
 - Follow-up: validate and publish this evidence closure, then advance the independent
   shared-memory transaction foundation before any memory-mutating opcode family.
+
+## 2026-09-06 — P2-W20F evidence-closure remote verification
+
+- Published evidence-closure commit:
+  `62ece60e02c18b80bf8698542a1cc56bca3f823c`.
+- GitHub Actions run
+  [34027853902](https://github.com/djr-747/ti-c54x/actions/runs/34027853902)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and Clang sanitizer configure/build/test.
+- Result: the narrowed RC evidence, unchanged unresolved requirements, W20F deferral,
+  and provenance boundary are published and green on every repository-owned build
+  surface. The active path now moves to P2-W21 shared-memory transaction foundations;
+  production RPT decode remains inert.
