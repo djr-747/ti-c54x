@@ -35,9 +35,10 @@ two immediate RPT forms, operand+1 execution cardinality, repeatability rules, a
 post-decode IRQ/NMI deferral with the reset exception. P2-W20B is implemented and
 green: one decode-owned copied instruction bundle now moves through fetch, checked
 completion, and generic dispatch while preserving one-callback NOP behavior. The
-CPU gained no opcode-specific branch. P2-W20C is active and deliberately split:
-catalog-owned scalar layout/repeatability tokens first, then decode-owned immutable
-layout sets and extraction. The broader implementation is split
+CPU gained no opcode-specific branch. P2-W20C1 is implemented and green: every
+catalog row now owns explicit scalar layout/repeatability metadata, carried through
+the copied decoded value. P2-W20C2 decode-owned immutable layout sets and extraction
+are next. The broader implementation is split
 into canonical instruction-bundle, catalog-layout, opcode-effect, repeat-control,
 and later CPU-integration proofs; unresolved RC/PC/arbitration details are not
 guessed. Timing, shared-memory mutation, the full ISA, device profiles, and

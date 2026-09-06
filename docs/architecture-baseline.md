@@ -323,6 +323,12 @@ unresolved evidence cannot silently become an eligible repeated body. Layout set
 support zero, one, or multiple named fields and route every copied value through the
 shared field extractor.
 
+P2-W20C1 now implements the scalar half of that contract. The sole X-macro row,
+immutable catalog metadata, copied decoded-instruction value, and generic dispatch
+all carry the same typed layout/repeatability values. NOP is explicitly `NONE` plus
+`UNRESOLVED`; no eligibility inference or RPT classification is made. The direct
+first-word lookup remains unchanged.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner

@@ -2367,7 +2367,7 @@
     },
     {
       "id": "REQ-PROJECT-CATALOG-METADATA-TOKENS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/catalog/",
@@ -3056,10 +3056,10 @@
     },
     {
       "id": "T-PROJECT-CATALOG-METADATA-TOKENS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/catalog/test_opcode_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.opcode_metadata"},
       "requirement_ids": ["REQ-PROJECT-CATALOG-METADATA-TOKENS"]
     },
     {

@@ -398,7 +398,9 @@ prematurely activating an instruction whose effect the CPU cannot yet consume.
 State: active, split into two atomic owner-specific proofs. Production continues to
 register only NOP; no RPT first word, handler, effect, or CPU behavior is activated.
 
-P2-W20C1 extends the sole X-macro catalog row with two fully namespaced scalar
+P2-W20C1 is complete in implementation commit
+`d56a9cc28f183c8e348837e393458660e37091d3`. It extends the sole X-macro
+catalog row with two fully namespaced scalar
 tokens: a catalog-owned operand-layout identity and a tri-state repeatability class.
 The valid repeatability states are `UNRESOLVED`, `ELIGIBLE`, and `INELIGIBLE`;
 unresolved is a safe explicit state and never implies admission. Layout identity
@@ -406,8 +408,10 @@ reserves `UNKNOWN` as invalid for production rows and provides `NONE` for NOP.
 NOP binds `NONE` plus `UNRESOLVED`, because this slice does not infer its body
 eligibility from absence in an exclusion summary. The Python schema, every C
 X-macro pass, immutable metadata, complete decoded-instruction value, dispatch,
-and NOP validation must agree on the tokens. The generated 65,536-entry lookup
-remains byte-for-byte unchanged and normal builds remain compiler-only.
+and NOP validation agree on the tokens. The generated 65,536-entry lookup remains
+byte-for-byte unchanged and normal builds remain compiler-only. The schema rejects
+old arity, unknown/unqualified/non-string tokens, and the reserved layout sentinels;
+completion and operations reject forged scalar metadata transactionally.
 
 P2-W20C2 adds decode-owned immutable operand-layout-set descriptors and resolution.
 A layout set, rather than a single field, is required so future multi-operand

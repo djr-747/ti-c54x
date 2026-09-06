@@ -2940,3 +2940,48 @@ rewritten after publication.
   smoke tests, and the Clang sanitizer configure/build/test path.
 - Result: the W20C1/W20C2 ownership split, planned proof, and no-RPT-activation gate
   are published and green. W20C1 scalar catalog metadata TDD is next.
+
+## 2026-09-06 — P2-W20C1 completion — scalar catalog metadata tokens
+
+- State: implemented and green. Implementation commit:
+  `d56a9cc28f183c8e348837e393458660e37091d3`
+  (`P2-W20C1: add catalog metadata tokens`). P2-W20C remains active for W20C2.
+- TDD red: before production/schema completion, 18 focused catalog tests produced
+  3 failures and 10 errors because old four/five-field rows lacked mandatory layout
+  and repeatability metadata and direct `OpcodeRow` values lacked the new fields.
+- Catalog/schema result: exact and masked rows now require fully namespaced scalar
+  layout and repeatability tokens. The frozen Python row schema validates arity,
+  types, known values, reserved sentinels, duplicates, ranges, and overlap; all
+  three C X-macro passes consume the same sole inventory. The generated direct
+  lookup is byte-for-byte unchanged and still classifies only NOP.
+- Runtime result: immutable opcode metadata and the copied decoded-instruction value
+  carry `ti_c54x_operand_layout_id` and `ti_c54x_repeatability_class`. Completion,
+  dispatch, and NOP validate ranges/equality transactionally. NOP is `NONE` plus
+  `UNRESOLVED`; unresolved never means eligible and no repeat gate is claimed.
+- Ownership: `src/isa/catalog/` owns token identity, row schema, and immutable
+  metadata; `src/isa/decode/` only copies and validates the scalars; operations only
+  consume the completed value. Mirrored C proof lives under
+  `tests/unit/isa/catalog/`. No decoder descriptor pointer enters catalog metadata.
+- Independent Luna review: no blocker, major, C11/undefined-behavior, schema,
+  ownership, manifest, generated-artifact, or transactional finding. The main
+  follow-up added explicit negative forged-enum cases and non-string schema inputs.
+  Repeated hot-path validation remains intentional until a measured generated
+  trusted path can replace it safely.
+- Size/shape: catalog source/header are 71/70 lines, schema tooling is 310, complete
+  decode source/header are 114/81, dispatch/NOP are 83/52, and the new catalog test
+  is 189. No handwritten owner approaches the 500-line review threshold.
+- Registry final: 2 targets, 7 sources, 72 evidence records, and 106 requirements
+  (82 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`); 73 tests (64 `PASSING`, 9
+  `PLANNED`). `T-PROJECT-CATALOG-METADATA-TOKENS` runs as
+  `ti_c54x.opcode_metadata` in both supported build systems.
+- Validation: focused normal and ASan/UBSan ISA tests passed; the coherent full
+  `make -B test` gate passed 163 Python quality tests, 59 C unit targets, and 60
+  direct executions including the minimal consumer. Generated lookup staleness,
+  manifests, source boundaries, evidence, knobs, observer-off artifact, and
+  `git diff --check` passed.
+- Isolation: no RPT row/layout/effect, CPU/state/sequencer/public API change,
+  environment read, diagnostic, observer, knob, allocation, mutable global, timing,
+  shared memory, emulator dependency, or external implementation was introduced.
+- Follow-up: publish and remotely verify W20C1, then implement W20C2 decode-owned
+  immutable layout sets and copied extraction without activating RPT production
+  decode.
