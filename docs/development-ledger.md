@@ -2985,3 +2985,19 @@ rewritten after publication.
 - Follow-up: publish and remotely verify W20C1, then implement W20C2 decode-owned
   immutable layout sets and copied extraction without activating RPT production
   decode.
+
+## 2026-09-06 — P2-W20C1 remote verification
+
+- Published implementation commit:
+  `d56a9cc28f183c8e348837e393458660e37091d3`.
+- Published completion-record commit:
+  `e932963af34e20f131ffa4814f6db6de5fd3b912`.
+- GitHub Actions run
+  [34023016646](https://github.com/djr-747/ti-c54x/actions/runs/34023016646)
+  completed successfully.
+- The remote matrix passed GCC and Clang direct-Make builds/tests, library-only
+  configuration/build, full CMake/CTest, installation, downstream package-consumer
+  smoke tests, and the Clang sanitizer configure/build/test path.
+- Result: W20C1 scalar catalog metadata is published and green across every owned
+  build surface. The generated lookup and production NOP behavior remain unchanged;
+  W20C2 decode-owned immutable layout sets are next.
