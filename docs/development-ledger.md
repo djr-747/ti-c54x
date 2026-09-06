@@ -2133,3 +2133,45 @@ rewritten after publication.
 - Follow-up: P2-W16 starts the evidence-backed one-row NOP inventory/decoder,
   semantic no-effect, and sequential-PC seam. Unresolved address modes remain
   explicit semantic traps and no longer block decoder scaffolding.
+
+## 2026-09-06 — P2-W15 complete — Ownership-mirrored build manifests
+
+- State: complete in implementation commit
+  `5a3123e95eacc2e43456c86f3a820d7d4358d775`.
+- Delivered scope: root build files now own only policy and orchestration while
+  each `src/<owner>/` and `tests/unit/<owner>/` directory owns its source or test
+  inventory. The root Makefile fell from 560 to 130 lines, the root CMake file
+  is 138 lines, and `tests/CMakeLists.txt` fell from 800 to 113 lines.
+- Preserved surfaces: all 18 handwritten core sources remain registered in the
+  same order for normal and observer-disabled libraries. All 47 C unit-test
+  targets remain registered, and direct Make executes those targets plus the
+  minimal downstream consumer for 48 executions.
+- Structural proof: the new manifest graph follows only reachable nested Make
+  and CMake manifests, requires exact owner-directory correspondence, rejects
+  disconnected fragments and non-normalized traversal, and distinguishes macro
+  registrations from direct special targets. The source-manifest checker proves
+  exact membership, uniqueness, order parity, paired Make/CMake ownership, and
+  that both normal and observer-disabled object sets derive from the same source
+  inventory. Nested future owners such as `isa/decode` are covered.
+- Maintainability: manifest parsing, evidence-runner policy, build-manifest
+  checking, registry tests, and runner tests have separate owners; all remain
+  below the 500-line review threshold. No production C file or public header
+  changed.
+- TDD and review: adversarial tests first exposed direct-target aggregate bypass,
+  cross-owner registration, orphan fragments, path traversal, source-list drift,
+  and a literal-target fallback through the macro path. Corrections reject each
+  case while accepting correctly nested owners. An independent review found no
+  remaining blocker; its relative-root helper observation is non-blocking because
+  every repository caller resolves the root before use.
+- Validation: the final standalone `make -B test` passed all 121 Python quality
+  tests, rebuilt and passed every C unit test under strict warnings, built the
+  observer-disabled archive, and passed the minimal consumer. Evidence and build
+  manifest checks and `git diff --check` passed. CMake is unavailable locally;
+  the independent CMake/CTest, install, consumer, compiler-matrix, and sanitizer
+  proof remains assigned to remote CI.
+- Knobs and isolation: unchanged. No `TEST`, `OBSERVE`, or `A/B` knob, environment
+  read, emulator dependency, firmware input, runtime behavior, public API, opcode
+  table, or timing claim was added.
+- Follow-up: push the implementation and ledger commits, verify the standalone
+  remote matrix, then begin P2-W16 with the evidence-backed NOP catalog, pure
+  decoder, no-effect semantics, and checked sequential-PC retirement seam.
