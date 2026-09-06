@@ -1651,3 +1651,53 @@ rewritten after publication.
   input, public ABI change, or emulator coupling.
 - Follow-up: execute P2-W12 as an atomic behavior-preserving split of sequencer
   validation/dependency ownership before implementing circular effects.
+
+## 2026-09-06 — P2-W12 kickoff — Sequencer address-effect decomposition
+
+- State: active; this is a behavior-preserving architecture work piece, not a
+  new addressing-mode implementation.
+- Objective: remove read-only validation and architectural dependency checking
+  from `src/sequencer/address_effect_apply.c` before circular addressing adds
+  BK as another explicit dependency. Preserve the complete externally observed
+  status, precedence, read-order, and transactional-mutation contract.
+- Ownership: new private `src/sequencer/address_effect_validate.[ch]` owns
+  intrinsic effect validation, requested-phase validation, ordered mode/source
+  reads, and production of a caller-owned commit descriptor. The existing
+  `address_effect_apply.[ch]` remains the public-private application boundary
+  and becomes the sole owner of the final AR write. Neither module owns address
+  arithmetic, planner policy, state storage, buses, opcode decode, diagnostics,
+  or public ABI.
+- Seam: `ti_c54x_sequencer_validate_address_effect` borrows immutable state and
+  result objects, receives the requested phase, and fills a discriminated
+  `{target, ar_index, value_after}` commit descriptor only after complete
+  validation. The descriptor is zeroed on entry and remains zero for every
+  rejection. The validator never mutates state; `NONE` and an AR0 write remain
+  distinguishable by the target discriminator.
+- Preserved precedence: invalid pointers or requested phase; non-OK planner
+  result; address-owner intrinsic validators; generic operand, source, update,
+  and policy shape; requested-phase mismatch; update/effective-address
+  relation; mode-state reads; source-dependency reads; commit description.
+  CMPT precedes ARP, the selected AR precedes copied AR0 for indexed and
+  reverse-carry effects, and CPL precedes DP or SP for direct effects.
+- TDD proof: add a mirrored
+  `tests/unit/sequencer/test_address_effect_validate_contract.c` project test
+  that poisons the output descriptor before rejection cases, proves exact
+  NONE/PRE/POST descriptors including a valid AR0 target, proves bytewise state
+  nonmutation, and exercises the existing status/read-order matrix directly.
+  Every existing apply, direct, indexed, long-offset, reverse-carry, operand,
+  and state-policy test remains a regression gate.
+- Evidence: add one immutable project-contract record, one implemented
+  sequencer requirement, and one passing test record for the private validation
+  seam. No new TI architectural claim is made by this refactor.
+- File-shape gate: the extracted validator is one cohesive read-only owner and
+  must remain below the 500-line review threshold. If circular support would
+  approach that threshold, split intrinsic shape validation from ordered state
+  dependencies before adding it; do not regrow an all-purpose sequencer file.
+- Build/isolation: register the new source in standalone CMake, direct Make,
+  and observer-disabled artifacts, and the new test in Make and CTest. Add no
+  emulator, firmware, host, environment, allocation, file, logging, mutable
+  global, diagnostic, or installed-header dependency.
+- Knobs: none planned; the `TEST`/`OBSERVE`/`A/B` registry is unchanged.
+- Follow-up: commit this kickoff decision, delegate disjoint implementation and
+  proof/build ownership to Luna workers, integrate and independently review the
+  final tree, run the local gates once, then commit and verify remotely.
