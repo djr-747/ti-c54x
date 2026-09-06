@@ -38,6 +38,7 @@ LIB_OBJECTS := \
 	$(BUILD_DIR)/obj/address/indirect_indexed.o \
 	$(BUILD_DIR)/obj/address/indirect_long_offset.o \
 	$(BUILD_DIR)/obj/address/indirect_reverse_carry.o \
+	$(BUILD_DIR)/obj/sequencer/address_effect_validate.o \
 	$(BUILD_DIR)/obj/sequencer/address_effect_apply.o \
 	$(BUILD_DIR)/obj/state/arch_state.o \
 	$(BUILD_DIR)/obj/state/block_size_register.o \
@@ -71,6 +72,8 @@ BLOCK_SIZE_REGISTER_TEST := $(BUILD_DIR)/test_block_size_register
 BLOCK_SIZE_REGISTER_CONTRACT_TEST := $(BUILD_DIR)/test_block_size_register_contract
 ADDRESS_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_address_effect_apply
 ADDRESS_EFFECT_APPLY_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_apply_contract
+ADDRESS_EFFECT_VALIDATE_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_validate_contract
+ADDRESS_EFFECT_DEPENDENCY_CONTRACT_TEST := $(BUILD_DIR)/test_address_effect_dependency_contract
 INDIRECT_CMPT0_STATE_TEST := $(BUILD_DIR)/test_indirect_cmpt0_state
 ADDRESS_STATE_POLICY_CONTRACT_TEST := $(BUILD_DIR)/test_address_state_policy_contract
 INDIRECT_LONG32_EFFECT_APPLY_TEST := $(BUILD_DIR)/test_indirect_long32_effect_apply
@@ -93,6 +96,7 @@ OBSERVER_OFF_OBJECTS := \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_indexed.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_long_offset.o \
 	$(OBSERVER_OFF_DIR)/obj/address/indirect_reverse_carry.o \
+	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_validate.o \
 	$(OBSERVER_OFF_DIR)/obj/sequencer/address_effect_apply.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/arithmetic40.o \
 	$(OBSERVER_OFF_DIR)/obj/foundation/reverse_carry.o \
@@ -117,6 +121,8 @@ build: $(CPU_TEST) $(ARITHMETIC_TEST) $(REVERSE_CARRY_TEST) \
 	$(ARCH_STATE_ADDRESS_FIELDS_TEST) $(ARCH_STATE_ADDRESS_FIELD_CONTRACT_TEST) \
 	$(BLOCK_SIZE_REGISTER_TEST) $(BLOCK_SIZE_REGISTER_CONTRACT_TEST) \
 	$(ADDRESS_EFFECT_APPLY_TEST) $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST) \
+	$(ADDRESS_EFFECT_VALIDATE_CONTRACT_TEST) \
+	$(ADDRESS_EFFECT_DEPENDENCY_CONTRACT_TEST) \
 	$(INDIRECT_CMPT0_STATE_TEST) $(ADDRESS_STATE_POLICY_CONTRACT_TEST) \
 	$(INDIRECT_LONG32_EFFECT_APPLY_TEST) \
 	$(INDIRECT_INDEXED_EFFECT_APPLY_TEST) $(INDIRECT_INDEXED_EFFECT_APPLY_CONTRACT_TEST) \
@@ -158,6 +164,8 @@ test: build quality-test
 	$(BLOCK_SIZE_REGISTER_CONTRACT_TEST)
 	$(ADDRESS_EFFECT_APPLY_TEST)
 	$(ADDRESS_EFFECT_APPLY_CONTRACT_TEST)
+	$(ADDRESS_EFFECT_VALIDATE_CONTRACT_TEST)
+	$(ADDRESS_EFFECT_DEPENDENCY_CONTRACT_TEST)
 	$(INDIRECT_CMPT0_STATE_TEST)
 	$(ADDRESS_STATE_POLICY_CONTRACT_TEST)
 	$(INDIRECT_LONG32_EFFECT_APPLY_TEST)
@@ -371,6 +379,20 @@ $(ADDRESS_EFFECT_APPLY_TEST): tests/unit/sequencer/test_address_effect_apply.c \
 $(ADDRESS_EFFECT_APPLY_CONTRACT_TEST): tests/unit/sequencer/test_address_effect_apply_contract.c \
 	tests/support/test_harness.h src/sequencer/address_effect_apply.h \
 	src/address/address_effect.h src/address/indirect_single.h \
+	src/state/arch_state.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(ADDRESS_EFFECT_VALIDATE_CONTRACT_TEST): tests/unit/sequencer/test_address_effect_validate_contract.c \
+	tests/support/test_harness.h src/sequencer/address_effect_validate.h \
+	src/sequencer/address_effect_apply.h src/address/address_effect.h \
+	src/state/arch_state.h $(LIB)
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
+
+$(ADDRESS_EFFECT_DEPENDENCY_CONTRACT_TEST): tests/unit/sequencer/test_address_effect_dependency_contract.c \
+	tests/support/test_harness.h src/sequencer/address_effect_validate.h \
+	src/sequencer/address_effect_apply.h src/address/address_effect.h \
 	src/state/arch_state.h $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@

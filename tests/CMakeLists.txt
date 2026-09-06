@@ -388,6 +388,38 @@ add_test(NAME ti_c54x.address_effect_apply_contract
     COMMAND ti_c54x_test_address_effect_apply_contract
 )
 
+add_executable(ti_c54x_test_address_effect_validate_contract
+    unit/sequencer/test_address_effect_validate_contract.c
+)
+target_compile_features(ti_c54x_test_address_effect_validate_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_effect_validate_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_effect_validate_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_effect_validate_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_validate_contract)
+add_test(NAME ti_c54x.address_effect_validate_contract
+    COMMAND ti_c54x_test_address_effect_validate_contract
+)
+
+add_executable(ti_c54x_test_address_effect_dependency_contract
+    unit/sequencer/test_address_effect_dependency_contract.c
+)
+target_compile_features(ti_c54x_test_address_effect_dependency_contract PRIVATE c_std_11)
+target_include_directories(ti_c54x_test_address_effect_dependency_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+target_link_libraries(ti_c54x_test_address_effect_dependency_contract PRIVATE ti_c54x::core)
+ti_c54x_enable_warnings(ti_c54x_test_address_effect_dependency_contract)
+ti_c54x_enable_sanitizers(ti_c54x_test_address_effect_dependency_contract)
+add_test(NAME ti_c54x.address_effect_dependency_contract
+    COMMAND ti_c54x_test_address_effect_dependency_contract
+)
+
 add_executable(ti_c54x_test_address_effect_state_contract
     unit/sequencer/test_address_effect_state_contract.c
 )

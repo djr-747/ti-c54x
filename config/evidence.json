@@ -1014,6 +1014,20 @@
         "anchor": "ti_c54x_arch_state_read_bk"
       },
       "assertion": "The private BK state seam owns a copied 16-bit value with checked read/write accessors, explicit OK/UNKNOWN/INVALID_ARGUMENT status, output-preserving rejected reads, and knownness established only by a valid write. Reset leaves BK physically zero but architecturally unknown. This is a project contract, not TI reset or circular behavior evidence."
+    },
+    {
+      "id": "E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "src/sequencer/address_effect_validate.h",
+        "anchor": "ti_c54x_sequencer_validate_address_effect"
+      },
+      "assertion": "The private sequencer validation seam performs deterministic read-only address-effect validation in its documented dependency order, writes a zeroed commit description on every error, and leaves the sole architectural-state write to the apply boundary. This is a project contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -1770,6 +1784,19 @@
       "claim": "CMPT=0 circular address effects obtain BK through the state seam and use it as circular-buffer size R; address arithmetic, boundary, and operand-width behavior belong to separate requirements.",
       "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK"],
       "test_ids": ["T-COMMON-INDIRECT-CIRCULAR-BK"]
+    },
+    {
+      "id": "REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private address-effect validation seam is read-only and deterministic, enforces the documented dependency and rejection order, zeroes its commit description on every error, and leaves the sole architectural-state write to the apply boundary.",
+      "evidence_ids": ["E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM"],
+      "test_ids": [
+        "T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
+        "T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER"
+      ]
     }
   ],
   "tests": [
@@ -2183,6 +2210,22 @@
       "path": "tests/unit/address/test_indirect_circular_bk.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-INDIRECT-CIRCULAR-BK"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_effect_validate_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_validate_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM"]
+    },
+    {
+      "id": "T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_address_effect_dependency_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.address_effect_dependency_contract"},
+      "requirement_ids": ["REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM"]
     }
   ]
 }

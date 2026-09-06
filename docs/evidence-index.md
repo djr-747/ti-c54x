@@ -6,8 +6,8 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 55 immutable evidence records,
-64 requirements, and 49 tests (43 `PASSING`, 6 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 56 immutable evidence records,
+65 requirements, and 51 tests (45 `PASSING`, 6 `PLANNED`).
 
 ## Targets
 
@@ -98,6 +98,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §3.3.4, `3-27` |
 | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.3.4, `5-15`–`5-16` |
 | `E-PROJECT-ARCH-STATE-BK-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/state/block_size_register.h` anchor `ti_c54x_arch_state_read_bk` |
+| `E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `src/sequencer/address_effect_validate.h` anchor `ti_c54x_sequencer_validate_address_effect` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -265,6 +266,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-STATE-BK-CONTRACT` | `T-PROJECT-ARCH-STATE-BK-KNOWNNESS` |
 | `REQ-COMMON-BK-MMR-ROUTING` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/bus/` | `E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS` | `T-COMMON-BK-MMR-ROUTING` |
 | `REQ-COMMON-INDIRECT-CIRCULAR-BK` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK` | `T-COMMON-INDIRECT-CIRCULAR-BK` |
+| `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM`, `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` |
 
 ## Tests
 
@@ -323,6 +325,8 @@ exist in the repository.
 | `T-PROJECT-ARCH-STATE-BK-KNOWNNESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_block_size_register_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.block_size_register_contract"}` | `REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS` |
 | `T-COMMON-BK-MMR-ROUTING` | PLANNED | COMMON_TI | `tests/unit/bus/test_bk_mmr.c` | `null` | `REQ-COMMON-BK-MMR-ROUTING` |
 | `T-COMMON-INDIRECT-CIRCULAR-BK` | PLANNED | COMMON_TI | `tests/unit/address/test_indirect_circular_bk.c` | `null` | `REQ-COMMON-INDIRECT-CIRCULAR-BK` |
+| `T-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_validate_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_validate_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
+| `T-PROJECT-ADDRESS-EFFECT-DEPENDENCY-ORDER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_address_effect_dependency_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.address_effect_dependency_contract"}` | `REQ-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM` |
 
 ## Correction and tombstone policy
 

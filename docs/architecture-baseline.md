@@ -5,8 +5,8 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 55 immutable evidence
-records, 64 requirements, and 49 tests (43 `PASSING`, 6 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 56 immutable evidence
+records, 65 requirements, and 51 tests (45 `PASSING`, 6 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -140,17 +140,19 @@ rejected under the project contract; this is not a claim that hardware wraps.
 The project contract does not elevate those API details into architectural
 evidence.
 
-The sequencer application seam in `src/sequencer/` consumes that planner result
-without redoing its arithmetic. It validates the result status, selected AR and
-update shape, requested phase, and PRE/POST effective-address relation before
-reading architectural state. A known selected AR must still equal the effect's
-expected before value (or the no-update effective address); otherwise the call
-returns a stale-state status. Unknown AR state is reported separately. A valid
-AR update performs one checked write, while a valid NONE effect does not mutate
-state. Every rejection preserves the complete private state byte-for-byte. This
-is a project sequencing contract: it does not add ARP, bus, memory, timing,
-opcode, or address-boundary behavior, and it deliberately does not require
-`value_after` to differ from `value_before` by one or two.
+The sequencer consumes that planner result without redoing its arithmetic. Its
+private read-only validation seam checks result status, selected AR and update
+shape, requested phase, the PRE/POST effective-address relation, mode state,
+and ordered source dependencies before producing either a zero-valued NONE
+descriptor or one discriminated AR commit descriptor. A known selected AR must
+still equal the effect's expected before value (or the no-update effective
+address); otherwise validation returns a stale-state status. Unknown AR state
+is reported separately. The application seam owns the sole checked AR write;
+a valid NONE descriptor does not mutate state. Every rejection preserves the
+complete private state byte-for-byte. This is a project sequencing contract:
+it does not add ARP, bus, memory, timing, opcode, or address-boundary behavior,
+and it deliberately does not require `value_after` to differ from
+`value_before` by one or two.
 
 ### AR0-indexed WORD16 slice
 

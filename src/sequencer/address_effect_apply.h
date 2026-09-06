@@ -4,8 +4,11 @@
 /*
  * Module contract
  *
- * Owns: checked, transactional application of one value-owned indirect
- * address effect to caller-owned private architectural state. Canonical
+ * Owns: the callable private entry point and final transactional application
+ * of one value-owned indirect address effect to caller-owned architectural
+ * state. Ordered validation, dependency reads, and the private commit
+ * descriptor are implemented by address_effect_validate.c; this module owns
+ * only the final sole-AR write after validation succeeds. Canonical
  * data-operand shape and the value-owned source snapshot are intrinsic
  * producer contracts validated before any phase relation or state access.
  * MOD13 long-offset and MOD4/MOD7 reverse-carry effects invoke their
