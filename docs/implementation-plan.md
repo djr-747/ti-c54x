@@ -41,6 +41,7 @@ function-pointer dispatch tables.
 | Sequencer validation subownership | Active | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Planned | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and one post-access AR update pass planner and transactional tests |
 | Opcode builder and decode | Blocked on address/evidence foundations | Every first word classifies uniquely; semantics may trap |
+| Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
 ## Delivery order
@@ -54,6 +55,40 @@ function-pointer dispatch tables.
 7. Implement opcode families as requirement-backed vertical slices.
 8. Add timing and silicon devices only from pinned evidence.
 9. Vendor a release into emulators through separate adapters.
+
+## Timing and execution-budget gate
+
+Instruction count and machine-cycle cost are separate units and separate API
+contracts. Early execution continues to use instruction budgets; a machine-cycle
+budget API is not exposed until its common-core timing claims have pinned evidence
+and executable tests.
+
+- Opcode semantic handlers produce architectural effects. They do not increment a
+  global cycle counter or embed ad hoc numeric costs.
+- The generated opcode inventory provides a named timing/resource classification
+  seam alongside decode metadata. Exact values remain absent until evidenced; an
+  unknown classification is explicit and cannot silently default to one cycle.
+- `src/sequencer/` owns common CPU pipeline, branch/delay, repeat, and resource-
+  conflict accounting. Timing that depends on a sequence is tested as a sequence,
+  not reduced to a misleading per-opcode scalar.
+- `src/bus/` and `src/devices/` profile owners add documented memory, peripheral,
+  and wait-state costs. Device costs never leak into the common target.
+- A future timed result reports machine cycles with an explicitly named unit.
+  Instruction-budget APIs remain available for deterministic semantic execution;
+  neither budget is presented as the other.
+- Timing metadata is static/generated and allocation-free. Runtime accounting uses
+  compact typed fields or resource flags passed through the sequencer, with no
+  environment lookup, logging hook, string dispatch, or mutable process global in
+  the execution path.
+- Each base-cost, pipeline-conflict, repeat, branch, bus, and wait-state behavior
+  needs a requirement, narrow primary evidence, and direct or sequence-level test.
+  Performance benchmarks may measure implementation overhead but cannot substitute
+  for architectural timing evidence.
+
+Exit condition: every implemented instruction form has either an evidenced timing
+classification or an explicit unknown marker; the sequencer and device profile
+compose costs without double counting; instruction and machine-cycle budgets are
+provably distinct; and no handler-local magic cycle increment exists.
 
 The first architecture target is a device-neutral common C54x core. A concrete
 silicon profile is added separately after common CPU semantics are stable; no
