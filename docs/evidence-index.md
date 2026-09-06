@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 122 immutable evidence records,
-178 requirements (146 `IMPLEMENTED`, 9 `PLANNED`, 23 `UNRESOLVED`), and 135 tests
-(126 `PASSING`, 9 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 125 immutable evidence records,
+181 requirements (146 `IMPLEMENTED`, 12 `PLANNED`, 23 `UNRESOLVED`), and 138 tests
+(126 `PASSING`, 12 `PLANNED`).
 
 ## Targets
 
@@ -166,6 +166,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-XOR-IMMEDIATE-P4-201-4-202` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §XOR, `4-201`–`4-202` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-LOGICAL-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W30: two-word immediate logical accumulator vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-LD-ACCUMULATOR-SXM-P4-66-4-69` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LD, `4-66`–`4-69` |
+| `E-TI-C54X-SPRU172C-S4-STL-ACCUMULATOR-LOW-P4-172-4-173` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §STL, `4-172`–`4-173` |
+| `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W31A: fixed-MOD2 memory prerequisites (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -447,6 +450,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-AND-IMMEDIATE` |
 | `REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-OR-IMMEDIATE` |
 | `REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-XOR-IMMEDIATE` |
+| `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
+| `REQ-PROJECT-SXM-CHECKED-ACCESS` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/status/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-SXM-FIELD` |
+| `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-OP-INPUT-SXM` |
 
 ## Tests
 
@@ -591,6 +597,9 @@ exist in the repository.
 | `T-PROJECT-CPU-AND-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/and/test_cpu_and.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_and_immediate"}` | `REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT` |
 | `T-PROJECT-CPU-OR-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/or/test_cpu_or.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_or_immediate"}` | `REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT` |
 | `T-PROJECT-CPU-XOR-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/xor/test_cpu_xor.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_xor_immediate"}` | `REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT` |
+| `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/state/test_cpu_arch_state_composition.c` | `null` | `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
+| `T-PROJECT-SXM-FIELD` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/state/status/test_sxm_field.c` | `null` | `REQ-PROJECT-SXM-CHECKED-ACCESS` |
+| `T-PROJECT-OP-INPUT-SXM` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_sxm.c` | `null` | `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` |
 
 ## Correction and tombstone policy
 

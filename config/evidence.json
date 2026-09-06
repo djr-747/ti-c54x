@@ -2010,6 +2010,39 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W30: two-word immediate logical accumulator vertical slice (planned)"},
       "assertion": "P2-W30 freezes two decode-owned two-word operand layouts and reuses the existing extension fetch, complete-instruction bundle, program-PC bridge, accumulator input, accumulator-write effect, tagged transaction, and CPU retirement seams. Common logical-immediate validation, immediate construction, and parameterized computation are owned by src/isa/ops/logical/immediate/common/; AND, OR, and XOR leaves own only their family subtrees and mirrored tests; catalog, generated lookup, dispatch, parent manifests, CPU shared surfaces, and integration remain orchestrator-owned. Any new memory, status, timing, IRQ/RPT, public API, knob, diagnostic, environment, allocation, or emulator seam is a hard GAP."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-ACCUMULATOR-SXM-P4-66-4-69",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-69"},
+      "assertion": "The LD accumulator description defines LD Smem,dst and its indirect forms, states that accumulator loads are affected by the ST1 sign-extension mode bit SXM, and shows the same data-memory word loading as zero-filled when SXM=0 and sign-extended when SXM=1. The form and SXM behavior are instruction evidence only; address-bus, wait-state, timing, and memory-visibility policy remain outside this common record."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-STL-ACCUMULATOR-LOW-P4-172-4-173",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "STL", "printed_page_start": "4-172", "printed_page_end": "4-173"},
+      "assertion": "The STL description defines STL src,Smem and its indirect single-data-memory form: the source accumulator is shifted as selected, then bits 15-0 of the shifted value are stored to Smem. It identifies SXM as an affected status input and does not by itself establish a bus adapter, memory mutation, shared visibility, byte order, fault, or timing contract."
+    },
+    {
+      "id": "E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W31A: fixed-MOD2 memory prerequisites (planned)"},
+      "assertion": "P2-W31A freezes only three prerequisites for a later fixed-MOD2 LD/STL memory slice: CPU ownership of one canonical ti_c54x_arch_state with the 32-bit public program-word carrier preserved through the existing common 16-bit PC bridge; a private checked SXM read and knownness seam under src/state/status/; and a generic STATUS_SXM input resource copied into op-input state. Accumulators, T, counters, bus, and observers remain separate owners. No memory effect, WAIT/public ABI, shared visibility, byte order, fault, AR wrap, repeatability, timing, or opcode row is admitted; those require later evidence-first freezes."
     }
   ],
   "requirements": [
@@ -3956,6 +3989,36 @@
       "claim": "Retire XOR immediate through the generic two-word fetch, decode, input, accumulator-write transaction, and PC path: fetch the extension once at PC+1, roll back an extension-read failure, allow PC=0xfffd to retire at 0xffff, and reject the PC=0xfffe candidate PC+2 atomically with no state, PC, or retirement mutation.",
       "evidence_ids": ["E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-XOR-IMMEDIATE"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Compose each CPU around exactly one owned ti_c54x_arch_state as the sole owner of PC, status, AR0-AR7, SP, DP, CPL, and CMPT; remove duplicate CPU PC/status storage while preserving the 32-bit public program-word carrier by widening arch_state.pc_word to ti_c54x_program_word_address and retaining common 16-bit validity in the existing program-PC bridge. Initialization and reset seed the documented common state before applying the configured reset carrier; public inspection, execution, and observer behavior remain byte- and semantically equivalent. Accumulator, T, counters, bus, and observer state remain separately owned.",
+      "evidence_ids": ["E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-ARCH-STATE-COMPOSITION"]
+    },
+    {
+      "id": "REQ-PROJECT-SXM-CHECKED-ACCESS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/status/",
+      "claim": "Provide a private checked SXM field read accessor and explicit knownness result under src/state/status/, deriving the field from the existing ST1 representation and refusing unknown or malformed status state without mutation. This prerequisite adds no SXM write accessor.",
+      "evidence_ids": ["E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-SXM-FIELD"]
+    },
+    {
+      "id": "REQ-PROJECT-OP-INPUT-SXM-RESOURCE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Add STATUS_SXM as a catalog input resource and copy status_sxm plus status_sxm_known into op-input state through the generic resource collector. The resource is collection-only in this freeze: no opcode consumes it, no opcode-specific CPU branch is added, and no status write or memory behavior is implied.",
+      "evidence_ids": ["E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-OP-INPUT-SXM"]
     }
   ],
   "tests": [
@@ -5077,6 +5140,30 @@
       "path": "tests/unit/cpu/isa/logical/immediate/xor/test_cpu_xor.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_xor_immediate"},
       "requirement_ids": ["REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-CPU-ARCH-STATE-COMPOSITION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/state/test_cpu_arch_state_composition.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION"]
+    },
+    {
+      "id": "T-PROJECT-SXM-FIELD",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/status/test_sxm_field.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-SXM-CHECKED-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-OP-INPUT-SXM",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_sxm.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OP-INPUT-SXM-RESOURCE"]
     }
   ]
 }

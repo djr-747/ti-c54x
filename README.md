@@ -91,8 +91,17 @@ Current progress:
   have explicit mirrored ownership. Focused strict and sanitizer tests, two
   independent reviews, and the full local test gate are green. Repeatability
   and timing remain unresolved, and any new shared seam is a reported GAP.
-- The registry now records 122 evidence items, 178 requirements (146 implemented,
-  9 planned, 23 unresolved), and 135 tests (126 passing, 9 planned). The latest
+- P2-W31A is an evidence-only freeze for the next fixed-MOD2 memory slice. It
+  plans one canonical CPU-owned `ti_c54x_arch_state`, a private checked SXM
+  read/knownness seam, and generic `STATUS_SXM` input collection. No memory
+  effects, public ABI, WAIT adapter, shared visibility, byte-order, fault, wrap,
+  repeatability, timing, or LD/STL catalog rows are admitted yet; those remain
+  separate P2-W31B+ evidence freezes. For motivation only, the future pair
+  `LD *ARx+,dst` / `STL src,*ARx+` is 16 encodings each (`0x1090`/`0xFEF8` and
+  `0x8090`/`0xFEF8`) and would imply a future 24-row/1319-populated catalog,
+  not a current production claim; reset-runnable coverage would remain 4/24.
+- The registry now records 125 evidence items, 181 requirements (146 implemented,
+  12 planned, 23 unresolved), and 138 tests (126 passing, 12 planned). The latest
   clean catalog-sixteen performance record is captured at `fedbd6a`: NOP 124.251
   ns / 8.048 MIPS, LD-DP 205.652 ns / 4.863 MIPS, LD-ASM 209.142 ns / 4.781
   MIPS, LD-ARP 222.837 ns / 4.488 MIPS, and mixed-current 206.376 ns / 4.846

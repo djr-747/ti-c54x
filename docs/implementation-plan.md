@@ -66,6 +66,7 @@ function-pointer dispatch tables.
 | P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
 | P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
+| P2-W31A fixed-MOD2 memory prerequisites | Planned — evidence and ownership freeze only; no implementation or opcode rows | Freeze the canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection needed before a later `LD *ARx+,dst` / `STL src,*ARx+` slice. Keep memory effects, adapters, public ABI, visibility, byte order, faults, wrap, repeatability, and timing in later P2-W31B+ work. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, catalog-sixteen, and catalog-twenty-two clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -243,6 +244,49 @@ found and closed one catalog-binding weakness: each generated row alias now
 rejects its sibling form transactionally instead of accepting either family ID.
 Remote CMake, Clang, install, consumer, and sanitizer matrix validation remains
 assigned to post-push CI.
+
+### P2-W31A: fixed-MOD2 memory prerequisites (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the next
+memory-oriented slice. P2-W31A is an evidence and architecture freeze only:
+there are no production changes, catalog rows, generated encodings, memory
+effects, or public API changes in this work piece.
+
+The first prerequisite is canonical CPU state composition. `src/cpu/` must own
+one embedded `ti_c54x_arch_state`, which is the sole owner of PC, status, AR0–AR7,
+SP, DP, CPL, and CMPT. Duplicate CPU PC/status storage is removed. The private
+`arch_state.pc_word` is widened to `ti_c54x_program_word_address` so the existing
+32-bit public program-word carrier remains representable; the existing program-PC
+bridge continues to enforce the common target's 16-bit validity and does not infer
+XPC or extended pages. Initialization/reset seeds the documented common state,
+then applies the configured reset carrier. Public inspection, execution, and
+observer behavior must remain byte- and semantically equivalent. Accumulators, T,
+execution counters, bus descriptors, and observers remain separate owners.
+
+The second prerequisite is a private checked SXM read under
+`src/state/status/`. It derives SXM from the existing ST1 representation and
+returns explicit value/knownness or a checked failure. This slice intentionally
+adds no write accessor: status writes remain separate until a later evidenced
+instruction requires them.
+
+The third prerequisite is generic input plumbing. `src/cpu/input/` adds a
+`STATUS_SXM` catalog input resource and copies `status_sxm` plus
+`status_sxm_known` into the operation-input value. Collection is generic and
+opcode-agnostic; no handler consumes SXM yet, and no opcode-specific CPU branch
+is allowed.
+
+For later motivation only, TI lists future fixed-MOD2 forms `LD *ARx+,dst`
+(`0x1090`/`0xFEF8`) and `STL src,*ARx+` (`0x8090`/`0xFEF8`), sixteen encodings
+each. If separately frozen and implemented, those pairs would take the catalog
+from 22/1287 to a future 24/1319 rows/populated words while reset-runnable
+coverage would remain 4/24. These are not production claims or catalog rows in
+P2-W31A.
+
+P2-W31A explicitly leaves the WAIT adapter and public ABI, memory effects,
+shared-memory visibility, byte order, fault visibility, AR `0xffff` wrap,
+repeatability, timing, and the actual LD/STL rows to later P2-W31B+ evidence
+freezes. A lane that needs any of those seams must report a GAP with its evidence,
+owner, tests, and hot-path consequence rather than broaden this prerequisite.
 
 ### P2-W16: NOP-seeded opcode architecture
 
