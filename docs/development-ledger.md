@@ -2406,3 +2406,51 @@ rewritten after publication.
   separately owned CPU transaction and operand-field work without an emulator,
   firmware image, Python runtime dependency, environment gate, or external
   opcode table.
+
+## 2026-09-06 — P2-W18 kickoff — private program-PC bridge and CPU NOP transaction
+
+- State: active kickoff; no implementation or test files were changed by this
+  record.
+- Plan: connect the standalone public CPU shell to the existing exact NOP decode
+  and generated dispatch seam through a private 16-bit program-PC bridge. The
+  stable plan anchor is `P2-W18: private program-PC bridge and CPU NOP transaction
+  (active kickoff)` in `docs/implementation-plan.md`.
+- Ownership: `src/cpu/` will own instruction-budget orchestration, exact public
+  carrier handling, one-word program fetch, decode/dispatch sequencing, stop and
+  counter reporting, and retirement accounting. `src/sequencer/` will own the
+  value-owned private PC stage/commit bridge. Planned tests mirror those owners
+  under `tests/unit/cpu/` and `tests/unit/sequencer/`.
+- Contract decisions: the attempt phase begins immediately before the program-bus
+  read, so bus faults and unknown decoded words count one attempted instruction;
+  zero budget and cumulative-counter preflight failure count zero. The exact
+  32-bit public carrier is passed to the bus, including high-carrier unknown-word
+  probes. A known decoded NOP above `0xffff` fails private bridge validation
+  without truncation, XPC inference, PC commit, or retirement. `0xfffe -> 0xffff`
+  is admitted, while a one-word successor from `0xffff` is an explicit unresolved
+  boundary. `run(N)` stops after `N` retirements or the first stop, and cumulative
+  attempted/retired overflow is an explicit planned no-wrap/no-mutation stop. The
+  three new policy stops will be named
+  `TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS`,
+  `TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY`, and
+  `TI_C54X_STOP_COUNTER_OVERFLOW`; malformed internal transactions retain
+  `TI_C54X_STOP_INVALID_STATE`.
+- Evidence boundary: existing TI records are used only for NOP word/width, no
+  status effects, and sequential-flow context. Carrier handling, stop reasons,
+  counter phases, bridge transactionality, and run orchestration are local
+  `PROJECT_CONTRACT_ONLY` requirements under the new P2-W18 evidence anchor.
+- Exclusions: operand layouts and extension fetch, timing/cycles, shared-memory
+  mutation, interrupts/repeat, data-memory buses, observers/diagnostics, profiles,
+  emulator adapters, and other ISA families remain separate work pieces.
+- Build compatibility: observer behavior is excluded and unchanged, but the
+  direct-Make observer-enabled test must link a full archive derived from the
+  canonical source manifest once CPU orchestration imports ISA and sequencer
+  owners; this mirrors the already-correct CMake variant and prevents dependency
+  drift.
+- Registry: current authoritative totals are 2 targets, 7 sources, 63 immutable
+  evidence records, 91 requirements, and 61 tests (55 `PASSING`, 6 `PLANNED`).
+- Validation: `python3 tools/quality/check_evidence.py` and `git diff --check`
+  pass for the kickoff records. Implementation and full test validation remain
+  pending the next work-piece commit.
+- Follow-up: implement the bridge and CPU transaction with red tests first,
+  preserving the existing public carrier and attempted-count behavior, then run
+  the repository fast gate and record implementation/remote-verification commits.

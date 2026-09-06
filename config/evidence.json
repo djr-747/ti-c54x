@@ -1116,6 +1116,20 @@
         "anchor": "P2-W17: masked opcode catalog foundation (active kickoff)"
       },
       "assertion": "The P2-W17 project contract extends the sole opcode catalog with EXACT and MASKED canonical 16-bit value/mask rows, rejects invalid masks, widths, duplicate IDs or handlers, and deterministic pairwise overlaps without priority; a repository-owned generator emits a checked-in immutable 65,536-entry uint16_t direct lookup while normal builds remain compiler-only and runtime performs no initialization, allocation, or global mutation. No masked production instruction, operand-field extraction, extension-word fetch, CPU integration, timing, memory, bus, device, observer, or external table behavior is claimed. This is a project structure contract, not TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)"
+      },
+      "assertion": "The P2-W18 project contract defines a standalone CPU transaction from the exact public program-word carrier through one 16-bit program-word fetch, decode, semantic dispatch, private 16-bit sequential-PC staging, and transactional retirement. An attempt begins immediately before the bus read, so bus faults and unknown decoded words count once; high carriers are passed unchanged to the bus and a known NOP above the private 16-bit domain fails bridge validation without truncation. The contract preserves state on failed stages, separates attempted from retired counters, bounds run calls by retirements or the first stop, and treats cumulative counter overflow as an explicit no-mutation stop. It makes no XPC, timing, interrupt, repeat, data-memory, device, observer, or emulator-integration claim. This is a project orchestration contract, not TI conformance evidence."
     }
   ],
   "requirements": [
@@ -2016,6 +2030,162 @@
       "claim": "The catalog subsystem's deterministic tools/isa/catalog/generate_opcode_lookup.py emits the checked-in immutable generated/isa/catalog/opcode_first_word.inc as a 65,536-entry uint16_t direct lookup; normal Make, CMake, and consumer builds remain compiler-only and Python-free, quality checks regenerate and reject stale output, and runtime performs no initialization, allocation, or mutable global-table update.",
       "evidence_ids": ["E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT"],
       "test_ids": ["T-PROJECT-OPCODE-LOOKUP-GENERATION"]
+    },
+    {
+      "id": "REQ-COMMON-CPU-NOP-SEQUENTIAL-EXECUTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Within the valid common program-counter domain, the end-to-end CPU path fetches the evidenced one-word NOP, applies no NOP-owned status effect, and advances the common program counter by one program word as the sequential flow effect.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6.1-P6-3",
+        "E-TI-C54X-SPRU131G-S6.2-P6-4",
+        "E-TI-C54X-SPRU172C-S4.NOP-P4-121"
+      ],
+      "test_ids": ["T-COMMON-CPU-NOP-EXECUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-BUDGET-ZERO",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "A zero instruction budget returns without invoking the program bus, decoding, semantic dispatch, or either execution counter, and without mutating CPU state.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-EXECUTION-BUDGET"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-PUBLIC-PC-VALIDATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Preserve the public 32-bit program-word carrier exactly through the program-bus callback, including high-carrier addresses used to classify unknown words; do not truncate the carrier or infer XPC/page semantics. A known decoded NOP at a carrier above 0xffff is rejected later with TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS before any truncation and leaves committed state unchanged.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT",
+        "E-PROJECT-CPU-SHELL-API"
+      ],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-FETCH-WORD16",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Each instruction attempt requests exactly one 16-bit program word through the caller-owned program bus at the exact public 32-bit carrier before decode, without fetching an extension word in this slice; private 16-bit bridge validation occurs only after a known instruction is decoded.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT",
+        "E-PROJECT-CPU-SHELL-API"
+      ],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-FETCH-FAILURE-STOP",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "An instruction attempt begins immediately before the program-bus read. A program-bus fetch failure therefore stops execution after exactly one attempted instruction but before decode, semantic dispatch, retirement, or PC mutation, and is not retried in the same instruction-budget step.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-UNKNOWN-DECODE-STOP",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "An unknown fetched word stops execution after the successful fetch but before semantic dispatch, leaves the private and public PC unchanged, and contributes exactly one attempted instruction but no retirement.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT",
+        "E-PROJECT-OPCODE-CATALOG-CONTRACT"
+      ],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-NOP-DISPATCH",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "A known NOP dispatches through the generated catalog and semantic function-pointer seam; its handler contributes no opcode-owned architectural, status, bus, memory, device, or observer mutation, leaving PC staging to the sequencer.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT",
+        "E-PROJECT-OPCODE-CATALOG-CONTRACT"
+      ],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private program-PC bridge accepts the public 32-bit carrier and explicit program-word count, validates the carrier before deriving the common 16-bit PC, stages a checked sequential successor without consulting XPC, and exposes an explicit status plus value-owned public/common before/after words for transactional CPU orchestration.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-PROGRAM-PC-BRIDGE"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-PC-BOUNDARIES",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private program-PC bridge accepts 0xfffe to 0xffff, while a one-word instruction staged at 0xffff maps to TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY before retirement and leaves the committed PC unchanged.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-PROGRAM-PC-BRIDGE"]
+    },
+    {
+      "id": "REQ-PROJECT-SEQUENCER-PC-TRANSACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "The private bridge commits only a valid staged effect whose frozen public source matches the live carrier; invalid or stale effects and unsupported or unresolved plans leave the caller-owned carrier and caller-owned effect output unchanged.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-PROGRAM-PC-BRIDGE"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-PC-COMMIT-ORDER",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "The CPU commits a staged sequential PC only after semantic dispatch and bridge validation succeed; rejected fetch, decode, semantic, carrier, or boundary stages preserve the committed PC and do not retire.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-NOP-EXECUTION-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-COUNTER-PHASES",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "The attempted counter increments exactly once immediately before each program-bus read, so bus failures and unknown decoded words count as one attempted instruction; a zero budget and cumulative-counter preflight failure count zero. The retired counter increments exactly once only after semantic effects and PC commit both succeed; failed or unresolved steps do not retire.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-EXECUTION-BUDGET"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "An instruction-budget run returns after exactly N successful retirements or at the first explicit stop, whichever comes first, and never overshoots the requested retirement count.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-EXECUTION-BUDGET"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-COUNTER-OVERFLOW",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Cumulative attempted and retired counter overflow is detected before mutation and produces TI_C54X_STOP_COUNTER_OVERFLOW with no fetch or counter mutation; counters must not silently wrap, and the overflow policy remains a planned executable contract until tested.",
+      "evidence_ids": ["E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-EXECUTION-BUDGET"]
     }
   ],
   "tests": [
@@ -2496,6 +2666,54 @@
       "path": "tests/contract/quality/isa/catalog/test_opcode_lookup_generator.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-OPCODE-LOOKUP-GENERATION"]
+    },
+    {
+      "id": "T-COMMON-CPU-NOP-EXECUTION",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/test_cpu_nop_execution.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CPU-NOP-SEQUENTIAL-EXECUTION"]
+    },
+    {
+      "id": "T-PROJECT-CPU-NOP-EXECUTION-CONTRACT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_nop_execution_contract.c",
+      "runner": null,
+      "requirement_ids": [
+        "REQ-PROJECT-CPU-PUBLIC-PC-VALIDATION",
+        "REQ-PROJECT-CPU-FETCH-WORD16",
+        "REQ-PROJECT-CPU-FETCH-FAILURE-STOP",
+        "REQ-PROJECT-CPU-UNKNOWN-DECODE-STOP",
+        "REQ-PROJECT-CPU-NOP-DISPATCH",
+        "REQ-PROJECT-CPU-PC-COMMIT-ORDER"
+      ]
+    },
+    {
+      "id": "T-PROJECT-CPU-EXECUTION-BUDGET",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_execution_budget.c",
+      "runner": null,
+      "requirement_ids": [
+        "REQ-PROJECT-CPU-BUDGET-ZERO",
+        "REQ-PROJECT-CPU-COUNTER-PHASES",
+        "REQ-PROJECT-CPU-RUN-RETIREMENT-BUDGET",
+        "REQ-PROJECT-CPU-COUNTER-OVERFLOW"
+      ]
+    },
+    {
+      "id": "T-PROJECT-PROGRAM-PC-BRIDGE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/test_program_pc_bridge.c",
+      "runner": null,
+      "requirement_ids": [
+        "REQ-PROJECT-SEQUENCER-PROGRAM-PC-BRIDGE",
+        "REQ-PROJECT-CPU-PC-BOUNDARIES",
+        "REQ-PROJECT-SEQUENCER-PC-TRANSACTION"
+      ]
     }
   ]
 }

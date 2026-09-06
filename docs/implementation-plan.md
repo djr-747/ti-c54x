@@ -44,6 +44,7 @@ function-pointer dispatch tables.
 | Shared-memory transaction semantics | Planned before first memory-mutating opcode | Word-native requests, explicit byte-lane adapters, deterministic multi-master arbitration, resumable waits, and exactly-once visibility are proven before load/store effects |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
+| Private program-PC bridge and CPU NOP transaction | Active kickoff | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -127,6 +128,58 @@ exhaustive 65,536-word mapping, and generated-artifact immutability. The two
 Python tests run through `make test` via CTest
 `ti_c54x.quality.python`; normal Make, CMake, and installed-consumer builds
 consume only checked-in C artifacts and remain compiler-only/Python-free.
+
+### P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)
+
+State: active kickoff. This work piece is the first cross-owner execution slice:
+it connects the existing public CPU shell to the existing exact NOP decoder and
+dispatch seam without adding another instruction or changing the catalog.
+
+The contract is intentionally explicit about what is and is not architectural:
+
+- `src/cpu/` owns instruction-budget orchestration, public-carrier handling,
+  caller-bus fetch, decode/dispatch sequencing, stop reasons, and cumulative
+  attempted/retired counters. A zero budget performs no fetch or attempt.
+- `src/sequencer/` owns the private common 16-bit program-PC bridge. It stages a
+  sequential successor as value-owned transaction data; it never truncates a
+  public 32-bit carrier or infers XPC/page state. `0xfffe -> 0xffff` is admitted;
+  staging a one-word successor from `0xffff` returns an explicit unresolved
+  boundary and cannot retire.
+- The execution order starts an attempt immediately before the program-bus read,
+  passes the exact public 32-bit carrier to that callback, fetches exactly one
+  16-bit program word, classifies it, and stops on fetch failure or unknown
+  decode while preserving committed state. Bus faults and unknown words count as
+  one attempted instruction; zero budget and cumulative-counter preflight failure
+  count zero. A known NOP at a carrier above `0xffff` reaches bridge validation
+  and stops there without truncation or XPC inference. For an admitted word, the
+  CPU dispatches NOP through the generated function-pointer seam, stages the
+  private PC, commits PC transactionally, then increments `retired` once. The
+  CPU does not expose a partial PC commit.
+- `run(N)` is an instruction-retirement budget: it returns after `N` successful
+  retirements or the first explicit stop and never overshoots. Cumulative counter
+  overflow is a planned explicit no-mutation stop; silent unsigned wrap is
+  forbidden until a direct test proves the policy.
+- The public result uses distinct
+  `TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS`,
+  `TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY`, and
+  `TI_C54X_STOP_COUNTER_OVERFLOW` reasons for the three new policy stops;
+  malformed internal dispatch or stale-transaction states remain
+  `TI_C54X_STOP_INVALID_STATE`.
+
+Ownership mirrors the tree. The implementation seam belongs under
+`src/sequencer/program_pc_bridge.[ch]`, CPU orchestration remains under
+`src/cpu/`, and the planned tests are split between
+`tests/unit/sequencer/test_program_pc_bridge.c` and the CPU-owned execution,
+budget, and common-NOP files. The project-contract evidence for this boundary is
+anchored by this heading; TI evidence is used only for the existing NOP word,
+one-word width, no status effects, and sequential-flow context.
+
+This kickoff excludes operand-field extraction, extension-word fetch, timing or
+machine-cycle accounting, shared-memory mutation, data-memory buses, interrupts,
+repeat state, observers/diagnostics, device profiles, emulator adapters, and all
+other ISA families. Observer behavior is unchanged; direct Make linkage will use
+an observer-enabled archive derived from the canonical source inventory, matching
+the existing CMake variant and avoiding a second handwritten source list.
 
 ## Delivery order
 
