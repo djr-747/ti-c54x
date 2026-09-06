@@ -30,7 +30,8 @@ Current progress:
   count, not 693 distinct instructions. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are green under the full
-  local standalone gate; remote P2-W26 validation is pending.
+  local standalone gate; the P2-W26 implementation validation is green on both
+  local and remote standalone gates.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -45,7 +46,7 @@ Current progress:
   `ACCUMULATORS | STATUS_C`, typed `status_c`/`status_c_known`, transactional
   unknownness handling, and no opcode-specific CPU branch. ROL/ROR use the
   existing accumulator-write plus C-write effect path; benchmark coverage
-  remains the four reset-runnable NOP/LD rows out of nine.
+  remains the four reset-runnable NOP/LD rows out of ten.
 - P2-W26 now proves SFTL's generic source/destination/shift5 layout, signed
   `-16..15` handling, low-32 shift semantics with explicit C output, guard
   clearing, and atomic retirement through existing generic effects. The full
@@ -54,12 +55,16 @@ Current progress:
   ten rows.
 - The registry now records 98 evidence items, 144 requirements (116 implemented,
   9 planned, 19 unresolved), and 105 tests (96 passing, 9 planned). P2-W26's
-  full local validation is green; remote validation is pending. The latest clean
-  catalog-nine hosted
-  performance record is captured at `705ac7b`: NOP 61.839 ns / 16.171 MIPS,
-  LD-DP 91.592 ns / 10.918 MIPS, LD-ASM 91.619 ns / 10.915 MIPS, LD-ARP
-  96.653 ns / 10.346 MIPS, and mixed-current 87.562 ns / 11.420 MIPS with
-  reset-runnable coverage of 4/9.
+  full local and remote implementation validation is green. The latest clean
+  catalog-ten hosted performance record is captured at `cd88596`: NOP 97.138
+  ns / 10.295 MIPS, LD-DP 102.519 ns / 9.754 MIPS, LD-ASM 97.918 ns / 10.213
+  MIPS, LD-ARP 99.295 ns / 10.071 MIPS, and mixed-current 91.728 ns / 10.902
+  MIPS with reset-runnable coverage of 4/10. The catalog-nine record remains
+  the prior cohort; the latest fixed-scenario deltas are +57.08%, +11.93%,
+  +6.88%, and +2.73%, with current spreads of 36.02%, 10.71%, 32.95%, and
+  10.72%. Wide host noise/spreads and the absence of fixed-scenario semantic or
+  CPU-orchestration changes do not establish a confirmed regression or
+  improvement, and these measurements are not DSP timing evidence.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
@@ -80,12 +85,13 @@ Current progress:
   clean baseline at `aa0afc0` records 15.62 MIPS for NOP and 11.39 MIPS for
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
   the catalog-seven `7cad341` record measured 14.481 MIPS for NOP and 11.162
-  MIPS for `mixed-current`; the latest catalog-nine `705ac7b` record is listed
-  above. Catalog-nine fixed-scenario deltas versus catalog-seven range from
-  -10.45% to -0.20%, with within-capture spreads of 6.05% to 29.42%; these are
-  hosted noise/trend observations—not confirmed improvements or regressions and
-  not architectural/silicon timing claims. The changed mixed workload is not
-  compared. See [hosted performance history](docs/performance.md).
+  MIPS for `mixed-current`; catalog-nine `705ac7b` remains the prior cohort.
+  The latest catalog-ten `cd88596` record is listed above. Its fixed-scenario
+  deltas versus catalog-nine are +57.08% to +2.73%, with within-capture spreads
+  of 10.71% to 36.02%; wide host noise/spreads and the absence of fixed-scenario
+  semantic or CPU-orchestration changes do not establish a confirmed regression
+  or improvement. The changed mixed workload is not compared. None of these
+  hosted observations is DSP timing evidence. See [hosted performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

@@ -60,8 +60,8 @@ function-pointer dispatch tables.
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
 | P2-W25 ROL/ROR rotate-through-C vertical slice | Implemented — local proof green; repeatability remains unresolved | Generic resource-driven input collection and four one-word ROL/ROR forms are proven through the existing `ACCUMULATOR_WRITE` + `C_WRITE` effect path; machine timing remains outside the contract |
-| P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local gate green; remote gate pending | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
-| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, and catalog-nine clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
+| P2-W26 SFTL shifted-accumulator vertical slice | Implemented — full local and remote gates green | SFTL's five-bit signed shift layout, 128 encodings, low-32 shift semantics with explicit C output, and atomic CPU retirement are proven through existing generic effects; repeatability and machine timing remain unresolved |
+| Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, and catalog-ten clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
 
@@ -1090,8 +1090,8 @@ the Table 2-28 boundary, and no machine-timing contract is claimed.
 ### P2-W26: SFTL shifted-accumulator vertical slice (planned)
 
 State: implemented; the immutable `(planned)` heading remains the historical
-evidence anchor. Catalog, decode, shift-operation, CPU, and full local repository
-proofs are green; the remote gate remains pending.
+evidence anchor. Catalog, decode, shift-operation, CPU, full local repository,
+and remote implementation proofs are green.
 
 P2-W26 is a narrow SFTL accumulator slice. It adds no public API, architectural
 state, input-resource bit, effect type, sequencer seam, memory behavior, RPT/IRQ
@@ -1183,15 +1183,26 @@ ns/11.162 MIPS for `mixed-current` with reset-runnable coverage of four of
 seven catalog rows. Its fixed-scenario deltas versus catalog-six range from
 -1.16% to +5.37%, while within-capture spreads range from 7.64% to 63.19%; each
 scenario's spread remains retained with the historical record. These are hosted
-trend measurements only. The latest catalog-nine record at `705ac7b` measures
+trend measurements only. The catalog-nine record at `705ac7b` measures
 61.839 ns/16.171 MIPS for NOP, 91.592 ns/10.918 MIPS for `ld-dp`, 91.619
 ns/10.915 MIPS for `ld-asm`, 96.653 ns/10.346 MIPS for `ld-arp`, and 87.562
 ns/11.420 MIPS for `mixed-current` with reset-runnable coverage of four of nine
 catalog rows. Its same-cohort fixed-scenario deltas versus catalog-seven range
 from -10.45% to -0.20%, with current spreads from 6.05% to 29.42%. The mixed
 workload remains evolving and non-comparable because the catalog count changed.
-These results establish neither an improvement nor a regression and are not
-architectural or silicon timing evidence.
+These prior-cohort results establish neither an improvement nor a regression and
+are not architectural or silicon timing evidence.
+
+The latest clean catalog-ten record at `cd88596` measures 97.138 ns/10.295 MIPS
+for NOP, 102.519 ns/9.754 MIPS for `ld-dp`, 97.918 ns/10.213 MIPS for `ld-asm`,
+99.295 ns/10.071 MIPS for `ld-arp`, and 91.728 ns/10.902 MIPS for
+`mixed-current` with reset-runnable coverage of four of ten catalog rows.
+Relative to catalog-nine, the same-cohort fixed-scenario deltas are +57.08%,
++11.93%, +6.88%, and +2.73%; current spreads are 36.02%, 10.71%, 32.95%, and
+10.72%, respectively. Wide host noise/spreads and the absence of fixed-scenario
+semantic or CPU-orchestration changes do not establish a confirmed regression or
+improvement. The mixed workload remains evolving and non-comparable, and these
+hosted measurements are not DSP timing evidence.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and

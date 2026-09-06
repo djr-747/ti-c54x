@@ -101,7 +101,7 @@ rows, so it is not compared as a like-for-like result. All figures are hosted
 implementation-throughput observations, not
 architectural or silicon timing evidence.
 
-The latest clean catalog-nine record at `705ac7b` is the current hosted cohort:
+The clean catalog-nine record at `705ac7b` remains the prior hosted cohort:
 
 | Scenario | Median cost | Throughput |
 |---|---:|---:|
@@ -119,6 +119,25 @@ observations only and do not establish a confirmed improvement or regression.
 `mixed-current` is evolving and non-comparable because the catalog count changed;
 it is reset-runnable for four of nine rows. No result here is architectural or
 silicon timing evidence.
+
+The latest clean catalog-ten record at `cd88596` is the current hosted cohort:
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 97.138 ns | 10.295 MIPS |
+| `ld-dp` | 102.519 ns | 9.754 MIPS |
+| `ld-asm` | 97.918 ns | 10.213 MIPS |
+| `ld-arp` | 99.295 ns | 10.071 MIPS |
+| `mixed-current` | 91.728 ns | 10.902 MIPS |
+
+Relative to catalog-nine, the same-cohort fixed-scenario deltas are +57.08%
+(`nop`), +11.93% (`ld-dp`), +6.88% (`ld-asm`), and +2.73% (`ld-arp`). The
+catalog-ten within-capture spreads are 36.02% (`nop`), 10.71% (`ld-dp`),
+32.95% (`ld-asm`), and 10.72% (`ld-arp`). The mixed workload remains evolving
+and non-comparable; it is reset-runnable for four of ten rows. Wide host
+noise/spreads and the absence of fixed-scenario semantic or CPU-orchestration
+changes do not establish a confirmed regression or improvement. These are hosted
+implementation-throughput observations, not DSP timing evidence.
 
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
