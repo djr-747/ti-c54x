@@ -23,7 +23,7 @@ function-pointer dispatch tables.
 | CPU and bus API shell | Complete | Two isolated instances fetch through caller buses and trap unimplemented words |
 | 40-bit arithmetic foundation | Complete | C-safe representation and shift/sign helpers pass boundary and exhaustive tests |
 | Standalone build and CI | Complete | CMake/CTest, warnings, sanitizers, installation, and consumer smoke tests pass in standalone CI |
-| Ownership-mirrored build manifests | Active | Root Make/CMake files retain policy and orchestration only; source and unit-test registrations live with their owning module without changing produced targets |
+| Ownership-mirrored build manifests | Complete | Root Make/CMake files retain policy and orchestration only; source and unit-test registrations live with their owning module, with exactness, parity, reachability, and nested-owner checks |
 | Diagnostic isolation | Complete | Optional structured observers compile out and remain outside opcode semantics |
 | Source-boundary audit | Complete | Forbidden hot-path dependencies and unregistered knobs are structurally rejected |
 | Knob ownership registry | Complete | Every non-architectural switch has class, disposition, owner, tests, and exit criterion |

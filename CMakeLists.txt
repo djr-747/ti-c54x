@@ -58,26 +58,13 @@ function(ti_c54x_enable_sanitizers target)
     endif()
 endfunction()
 
-set(ti_c54x_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/arithmetic40.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/reverse_carry.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/data_operand.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/direct_dp.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/direct_sp.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_single.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_indexed.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_long_offset.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_reverse_carry.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/address/indirect_circular.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_intrinsic.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_dependencies.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_validate.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/address_effect_apply.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/state/arch_state.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/state/block_size_register.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/cpu.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/debug/observer.c
-)
+set(ti_c54x_core_sources)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/address/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/sequencer/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/state/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/cpu/sources.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/debug/sources.cmake)
 
 add_library(ti_c54x STATIC
     ${ti_c54x_core_sources}

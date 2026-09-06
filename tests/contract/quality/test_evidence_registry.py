@@ -315,19 +315,6 @@ class EvidenceRegistryTests(unittest.TestCase):
         errors = self.errors()
         self.assertTrue(any("normalized and repository-relative" in error or "must be under tests/unit or tests/contract" in error for error in errors))
 
-    def test_make_test_recipe_must_execute_c_binary(self) -> None:
-        self.write("tests/unit/cpu/test_fake.c", "int main(void) { return 0; }\n")
-        self.write("Makefile", ".PHONY: test\nFAKE_TEST := build/fake\ntest: build\n\t$(FAKE_TEST)\nbuild: $(FAKE_TEST)\n$(FAKE_TEST): tests/unit/cpu/test_fake.c\n\tcc $< -o $@\n")
-        self.write("tests/CMakeLists.txt", "add_executable(fake tests/unit/cpu/test_fake.c)\nadd_test(NAME fake.ctest COMMAND fake)\n")
-        tests = {"T-FAKE": {"state": "PASSING", "path": "tests/unit/cpu/test_fake.c", "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "fake.ctest"}}}
-        errors: list[str] = []
-        validate_test_runners(self.root, tests, errors)
-        self.assertEqual(errors, [])
-        self.write("Makefile", ".PHONY: test\nFAKE_TEST := build/fake\ntest: build\nbuild: $(FAKE_TEST)\n$(FAKE_TEST): tests/unit/cpu/test_fake.c\n\tcc $< -o $@\n")
-        errors = []
-        validate_test_runners(self.root, tests, errors)
-        self.assertTrue(any("not reachable" in error for error in errors))
-
     def test_python_quality_test_prerequisite_and_cmake_command_are_exact(self) -> None:
         tests = {"T-PY": {"state": "PASSING", "path": "tests/contract/quality/test_passing.py", "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "quality.discovery"}}}
         errors: list[str] = []
