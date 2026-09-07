@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 133 immutable evidence records,
-202 requirements (171 `IMPLEMENTED`, 8 `PLANNED`, 23 `UNRESOLVED`), and 162 tests
-(154 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 136 immutable evidence records,
+207 requirements (171 `IMPLEMENTED`, 13 `PLANNED`, 23 `UNRESOLVED`), and 167 tests
+(154 `PASSING`, 13 `PLANNED`).
 
 ## Targets
 
@@ -177,6 +177,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-SSBX-P4-166` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SSBX, `4-166` |
 | `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RSBX, `4-151` |
 | `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W32: SSBX/RSBX status-bit vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-CMPR-P4-34` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CMPR, `4-34` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-CMPR-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5, `2-19`–`2-21` |
+| `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W33: CMPR CC,ARx vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -482,6 +485,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/status/` | `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-STATUS-BIT-WRITE-APPLICATION` |
 | `REQ-COMMON-SSBX-RSBX-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/status/` | `E-TI-C54X-SPRU172C-S4-SSBX-P4-166`, `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | `T-COMMON-SSBX-RSBX-EFFECTS` |
 | `REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-SSBX-RSBX-RETIREMENT` |
+| `REQ-COMMON-CMPR-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-CMPR-P4-34`, `E-TI-C54X-SPRU172C-S2.5-T2-28-CMPR-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-CMPR-CATALOG` |
+| `REQ-COMMON-CMPR-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-CMPR-P4-34` | `T-COMMON-CMPR-DECODE` |
+| `REQ-PROJECT-CMPR-AR-INPUT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CMPR-AR-INPUT` |
+| `REQ-COMMON-CMPR-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-CMPR-P4-34` | `T-COMMON-CMPR-EFFECTS` |
+| `REQ-PROJECT-CPU-CMPR-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-CMPR-RETIREMENT` |
 
 ## Tests
 
@@ -653,6 +661,11 @@ exist in the repository.
 | `T-PROJECT-STATUS-BIT-WRITE-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/status/test_status_bit_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.status_bit_effect"}` | `REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION` |
 | `T-COMMON-SSBX-RSBX-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/status/test_ssbx_rsbx.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ssbx_rsbx_ops"}` | `REQ-COMMON-SSBX-RSBX-EFFECTS` |
 | `T-PROJECT-CPU-SSBX-RSBX-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/status/test_cpu_ssbx_rsbx.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ssbx_rsbx"}` | `REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT` |
+| `T-COMMON-CMPR-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_cmpr_metadata.c` | `null` | `REQ-COMMON-CMPR-CATALOG` |
+| `T-COMMON-CMPR-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_cmpr_decode.c` | `null` | `REQ-COMMON-CMPR-DECODE` |
+| `T-PROJECT-CMPR-AR-INPUT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_auxiliary_registers.c` | `null` | `REQ-PROJECT-CMPR-AR-INPUT` |
+| `T-COMMON-CMPR-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/compare/test_cmpr.c` | `null` | `REQ-COMMON-CMPR-EFFECTS` |
+| `T-PROJECT-CPU-CMPR-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/compare/test_cpu_cmpr.c` | `null` | `REQ-PROJECT-CPU-CMPR-RETIREMENT` |
 
 ## Correction and tombstone policy
 

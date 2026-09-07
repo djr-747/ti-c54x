@@ -2150,6 +2150,52 @@
         "anchor": "P2-W32: SSBX/RSBX status-bit vertical slice (planned)"
       },
       "assertion": "P2-W32 freezes SSBX and RSBX as a bounded fit for one private transactional status-bit application seam and the existing generic CPU retirement path. Shared status and CPU owners validate and publish value-owned candidates without opcode-identity branches, while family handlers remain isolated under the status-operations subtree."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CMPR-P4-34",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "CMPR",
+        "printed_page_start": "4-34",
+        "printed_page_end": "4-34"
+      },
+      "assertion": "The TI CMPR instruction entry defines the one-word CMPR CC,ARx encoding with value 0xF4A8 and mask 0xFCF8: CC occupies bits 9:8 and ARx occupies bits 2:0. The selected auxiliary register is compared against AR0 using unsigned EQ, LT, GT, or NEQ semantics, and the result is represented by the documented TC condition while unrelated architectural state remains unaffected. TI §2.5/Table 2-28 (printed pp. 2-19–2-21) lists CMPR as nonrepeatable; the common slice therefore records repeatability as INELIGIBLE without making a timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-CMPR-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "TI Table 2-28's repeatability boundary lists CMPR as nonrepeatable. The common slice records CMPR repeatability as INELIGIBLE and makes no machine-cycle or timing claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W33: CMPR CC,ARx vertical slice (planned)"
+      },
+      "assertion": "P2-W33 freezes CMPR as a bounded fit for a copied generic AUXILIARY_REGISTERS input snapshot containing all eight AR values and knownness, existing checked architectural-state reads, the STATUS_BIT_WRITE route targeting ST0 bit 12, and generic CPU retirement. The handler reports UNKNOWN_INPUT unless AR0 and selected ARx are known; no opcode-specific CPU branch, public API, memory, timing, interrupt/repeat, device, or environment seam is introduced."
     }
   ],
   "requirements": [
@@ -4336,6 +4382,56 @@
       "claim": "Retire SSBX and RSBX through generic decode, input, status-effect transaction, and sequential-PC paths with one instruction attempt and retirement, preserving unrelated architectural state and without an opcode-specific CPU branch, memory access, RPT/IRQ behavior, knob, or public ABI change.",
       "evidence_ids": ["E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-SSBX-RSBX-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-CMPR-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word CMPR CC,ARx row with value 0xF4A8, mask 0xFCF8, CC bits 9:8, ARx bits 2:0, 32 encodings, and repeatability INELIGIBLE without adding timing or unrelated state claims.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CMPR-P4-34", "E-TI-C54X-SPRU172C-S2.5-T2-28-CMPR-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": ["T-COMMON-CMPR-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-CMPR-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode CMPR CC,ARx through value-owned fields, extracting unsigned CC values 0 through 3 and ARx values 0 through 7 from one program word without opcode-specific CPU logic.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CMPR-P4-34"],
+      "test_ids": ["T-COMMON-CMPR-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-CMPR-AR-INPUT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect a copied generic AUXILIARY_REGISTERS input snapshot containing all eight uint16 AR values and per-register knownness through existing checked architectural-state reads. CMPR handlers must receive UNKNOWN_INPUT unless AR0 and the selected ARx are known, with no hidden state alias or public API change.",
+      "evidence_ids": ["E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CMPR-AR-INPUT"]
+    },
+    {
+      "id": "REQ-COMMON-CMPR-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Implement a pure CMPR handler that compares selected ARx against AR0 as unsigned 16-bit values for EQ, LT, GT, or NEQ, writes TC=1 iff the condition is true and otherwise TC=0, and preserves every other raw and known status bit.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CMPR-P4-34"],
+      "test_ids": ["T-COMMON-CMPR-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-CMPR-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire CMPR through generic decode, AUXILIARY_REGISTERS input collection, STATUS_BIT_WRITE targeting ST0 bit 12, and sequential-PC paths with one instruction attempt and retirement. The CPU adds no opcode-specific branch, public API, memory, timing, interrupt/repeat, device, or environment behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-CMPR-RETIREMENT"]
     }
   ],
   "tests": [
@@ -5673,6 +5769,46 @@
       "path": "tests/unit/cpu/isa/status/test_cpu_ssbx_rsbx.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ssbx_rsbx"},
       "requirement_ids": ["REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-CMPR-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_cmpr_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CMPR-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-CMPR-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_cmpr_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CMPR-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-CMPR-AR-INPUT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_auxiliary_registers.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CMPR-AR-INPUT"]
+    },
+    {
+      "id": "T-COMMON-CMPR-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_cmpr.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-CMPR-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-CMPR-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/compare/test_cpu_cmpr.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-CMPR-RETIREMENT"]
     }
   ]
 }
