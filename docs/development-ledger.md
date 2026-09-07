@@ -5081,3 +5081,64 @@ rewritten after publication.
   claim, IRQ/RPT behavior, device/MMR policy, knob, environment read,
   diagnostic path, allocator, mutable global, or emulator dependency was
   added. TDD begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W36 fixed-MOD2 immediate-store implementation
+
+- State: implementation commit
+  `28e87ea0e7e1ae8ba9d4cc89e64aaac332ab1fea` completes the bounded
+  two-word fixed-MOD2 `ST #lk,*ARx+` vertical slice. The catalog now contains
+  30 rows and 1,447 populated first words, with reset-runnable coverage
+  unchanged at 6/30. P2-W31P hosted stability and the W31B immediate-READY
+  benchmark follow-ups remain open and nonblocking.
+- TDD RED was captured in three independent owner lanes. Catalog/decode tests
+  failed on the absent immediate-store identity and ARF-plus-extension layout;
+  the pure-operation test failed on the absent handler header; and the
+  public-CPU test reached `STOP_UNIMPLEMENTED_OPCODE`. No production row,
+  layout, or handler preceded those failures.
+- GREEN registers `ST_IMMEDIATE_SMEM_MOD2` at `0x7690/0xFFF8`, with fixed
+  bit 8, ARF in bits 2:0, two program words, no input resources, and
+  repeatability UNRESOLVED. The private `ARF_EXTENSION16` layout extracts ARF
+  from first-word bits 2:0 and copies all 16 bits of word 1 as `lk`. The
+  checked and trusted leaves stage the existing generic fixed-MOD2 WORD16
+  WRITE with the exact raw immediate in `write_value_word` and
+  `complete=NULL`; input values and knownness are not inspected.
+- Generic extension fetch, sequential-PC, W31B transaction, and CPU paths
+  provide first-word/extension fetch ordering, the old-AR write address,
+  postincrement and PC+2 only after READY, WAIT resume with the same
+  transaction ID and no refetch, data and extension FAULT rollback, dependency
+  rejection, and checked AR=0xffff rejection. Tests cover all eight ARFs,
+  immediate boundaries `0x0000`, `0x7fff`, `0x8000`, and `0xffff`, status,
+  accumulator, and T preservation, and program boundaries at 0xfffd/0xfffe.
+  No opcode-specific CPU or sequencer production path was added.
+- GREEN exposed a hidden RED-fixture defect: the CPU test wrote typed CMPT=0
+  and ARP=0, then replaced the raw status registers and undid that setup. The
+  owner reordered raw status seeding before the typed writes. The 0xfffe
+  width-two boundary assertion was also aligned with the established memory
+  transaction route, which reports `STOP_INVALID_STATE` for the invalid
+  candidate PC; 0xfffd retires at PC 0xffff. Neither correction changed
+  production behavior or weakened the architectural assertions.
+- Catalog fixtures advanced to 30 rows, 1,447 populated words, and 31
+  generated identities. The generated lookup maps exactly
+  `0x7690..0x7697`; collision and stale-UNKNOWN review was clean. Schema,
+  GNU Make, and CMake manifests include the new private layout, handler, and
+  four executable contracts.
+- Validation: all four focused catalog, decode, pure-operation, and public-CPU
+  targets passed under strict warnings and again in a forced ASan/UBSan build.
+  `make quality-test` passed all 186 Python tests plus evidence, knob,
+  source-boundary, build-manifest, and observer-disabled artifact checks. Two
+  independent Luna reviews found no P0/P1/P2 finding. After clearing the
+  expected sanitizer-object contamination, the authoritative clean,
+  unsanitized standalone `make test` completed successfully.
+- Size decision: the new production files are bounded leaf owners. The
+  cohesive two-field descriptor leaves
+  `src/isa/decode/operand_layout.c` at 535 lines. That file remains the single
+  layout-data/resolver owner, is well below the 800-line split threshold, and
+  the reviewed decision is not to split it in this slice.
+- Evidence accounting is now 145 evidence records; 222 requirements (188
+  IMPLEMENTED, 8 PLANNED, 26 UNRESOLVED); 179 tests (171 PASSING, 8 PLANNED);
+  and 7 source records. Immediate-store repeatability remains unresolved by
+  design.
+- No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
+  policy, device/MMR behavior, knob, environment read, logging, diagnostic
+  fanout, allocator, mutable global, or emulator dependency was added.
+  `LD Smem,DP/ASM` remains the next recorded strict-fit ISA candidate.
