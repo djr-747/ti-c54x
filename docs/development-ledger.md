@@ -5184,3 +5184,60 @@ rewritten after publication.
   timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
   environment read, diagnostic path, allocator, mutable global, or emulator
   dependency was added. TDD begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W37 fixed-MOD2 memory-to-status implementation
+
+- State: implementation commit
+  `05e8c4a96b251f5c191f7f2a590653bb94120072` completes the bounded
+  fixed-MOD2 `LD Smem,DP` and `LD Smem,ASM` vertical slice. The catalog now
+  contains 32 rows and 1,463 populated first words, with reset-runnable
+  coverage unchanged at 6/32. P2-W31P hosted stability and the W31B
+  immediate-READY benchmark follow-ups remain open and nonblocking.
+- TDD RED was captured in three independent owner lanes. Catalog/decode tests
+  failed on the absent DP/ASM identities; the pure-operation test failed on
+  the absent handler header; and the public-CPU test reached
+  `STOP_UNIMPLEMENTED_OPCODE`. No production row or handler preceded those
+  failures.
+- GREEN registers `LD_DP_SMEM_MOD2` at `0x4690/0xFFF8` and
+  `LD_ASM_SMEM_MOD2` at `0x3290/0xFFF8`, with fixed bit 8, ARF in bits 2:0,
+  one program word, no input resources, and exactly eight encodings each.
+  DP repeatability is INELIGIBLE; ASM remains UNRESOLVED. No memory-to-ARP
+  form was invented.
+- The catalog schema requires unique handler tokens. Integration preserved
+  that invariant with thin `ld_dp_smem` and `ld_asm_smem` checked/trusted
+  bindings over one shared internal semantic core. Both stage the existing
+  fixed-MOD2 WORD16 MEMORY read and complete through `STATUS_FIELD_WRITE`,
+  masking the copied value to `0x01ff` for DP or `0x001f` for ASM.
+- Generic W31B address and CPU paths provide the old selected-AR read address,
+  postincrement and sequential PC only after READY, WAIT resume with the same
+  transaction ID and no refetch, FAULT/no-endpoint rollback, CMPT/ARP/AR
+  knownness rejection, and checked AR=0xffff rejection. Tests cover both
+  forms, all eight ARFs, boundary read values, status-field masking and
+  preservation, checked/trusted/dispatch parity, transactional forged-input
+  rejection, and accumulator/T preservation. No opcode-specific CPU or
+  sequencer production branch was added.
+- The first authoritative clean full gate exposed two stale LDU UNKNOWN
+  fixtures: `0x1290 ^ 0x2000` is the newly valid ASM base `0x3290`. The
+  catalog and decode fixtures now use `0x2008`, yielding the adjacent still-
+  unknown `0x3298`, so they retain their overaccept boundary without denying
+  the evidenced W37 row. Focused LDU and W37 tests passed after the correction.
+- Validation: all four focused catalog, decode, pure-operation, and public-CPU
+  targets passed under strict warnings and again in a forced ASan/UBSan build.
+  `make quality-test` passed all 186 Python tests plus evidence, knob,
+  source-boundary, build-manifest, and observer-disabled artifact checks. Two
+  independent Luna reviews found no functional finding; an independent CMake
+  configure/build and four-test ctest run also passed. After the stale-fixture
+  corrections, the authoritative clean, unsanitized standalone `make test`
+  completed successfully.
+- Size decision: the new shared production leaf is 283 lines. W37 adds no
+  operand layout, so `src/isa/decode/operand_layout.c` remains unchanged at
+  535 lines. It remains the cohesive layout-data/resolver owner below the
+  800-line split threshold, and the reviewed decision remains not to split it.
+- Evidence accounting is now 148 evidence records; 227 requirements (192
+  IMPLEMENTED, 8 PLANNED, 27 UNRESOLVED); 183 tests (175 PASSING, 8 PLANNED);
+  and 7 source records. ASM repeatability remains unresolved by design.
+- No public ABI, timing or performance claim, machine-cycle API, new resource,
+  effect kind or address kind, IRQ/RPT policy, device/MMR behavior, knob,
+  environment read, logging, diagnostic fanout, allocator, mutable global, or
+  emulator dependency was added. Selection of the next ISA slice remains
+  evidence-first.
