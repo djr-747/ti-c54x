@@ -48,6 +48,19 @@ ti_c54x_sequencer_plan_sequential_pc(
     uint8_t program_word_count,
     ti_c54x_sequential_pc_effect *effect);
 
+/*
+ * Internal bridge seam: check the same width-sized arithmetic while writing
+ * only the destination word on success. The bridge performs carrier and
+ * width validation before calling this helper and supplies a field in its
+ * caller-owned effect, so rejected calls leave that effect byte-for-byte
+ * unchanged. This is not a public CPU ABI or a general effect constructor.
+ */
+ti_c54x_sequential_pc_status
+ti_c54x_sequencer_plan_sequential_pc_trusted(
+    uint16_t pc_word_before,
+    uint8_t program_word_count,
+    uint16_t *pc_word_after);
+
 /* Validate and commit a previously staged transition transactionally. */
 ti_c54x_sequential_pc_status
 ti_c54x_sequencer_apply_sequential_pc(

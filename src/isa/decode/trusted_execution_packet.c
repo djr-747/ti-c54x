@@ -14,6 +14,15 @@
 
 #include "operand_layout_internal.h"
 
+static inline bool ti_c54x_trusted_execution_packet_extract_operands(
+    const ti_c54x_trusted_opcode_binding *binding,
+    const ti_c54x_instruction_word_bundle *bundle,
+    ti_c54x_trusted_operand_values *operands)
+{
+    return ti_c54x_operand_layout_extract_all_trusted(
+        binding->operand_plan, bundle, operands->values, &operands->count);
+}
+
 static bool ti_c54x_trusted_execution_packet_stage(
     const ti_c54x_trusted_opcode_binding *binding,
     const ti_c54x_instruction_word_bundle *bundle,
@@ -26,9 +35,8 @@ static bool ti_c54x_trusted_execution_packet_stage(
     staged->instruction.repeatability = metadata->repeatability;
     staged->instruction.input_resources = metadata->input_resources;
     staged->instruction.bundle = *bundle;
-    if (!ti_c54x_operand_layout_extract_all_trusted(
-            binding->operand_plan, bundle, staged->operands.values,
-            &staged->operands.count)) {
+    if (!ti_c54x_trusted_execution_packet_extract_operands(
+            binding, bundle, &staged->operands)) {
         return false;
     }
     staged->handler = binding->handler;
@@ -79,17 +87,35 @@ ti_c54x_trusted_execution_packet_prepare_fast(
     const ti_c54x_instruction_word_bundle *bundle,
     ti_c54x_trusted_execution_packet *output)
 {
-    ti_c54x_trusted_execution_packet staged = {0};
+    ti_c54x_trusted_operand_values staged_operands = {0};
+    const ti_c54x_opcode_metadata *metadata;
 
     if (binding == NULL || bundle == NULL || output == NULL) {
         return TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT;
     }
-    /* Private precondition: binding came from the one first-word lookup and
-     * names a supported catalog row.  Do not canonical-check or re-resolve
-     * anything on this hot path. */
-    if (!ti_c54x_trusted_execution_packet_stage(binding, bundle, &staged)) {
+    /* Private precondition: binding came from the one first-word lookup,
+     * bundle->program_word_count and first word already match that row, and
+     * output points to writable packet storage.  Do not canonical-check or
+     * re-resolve
+     * anything on this hot path.  The immutable binding carries the already
+     * validated operand plan, so extraction is the only fallible operation.
+     * Keep it staged until it succeeds; this preserves output transactional
+     * behavior even if a corrupted private plan is detected in a debug build.
+     * The valid path writes packet members directly, avoiding a zeroed
+     * 104-byte temporary packet and its aggregate copy. */
+    if (!ti_c54x_trusted_execution_packet_extract_operands(
+            binding, bundle, &staged_operands)) {
         return TI_C54X_TRUSTED_EXECUTION_PACKET_OPERAND_PLAN_UNAVAILABLE;
     }
-    *output = staged;
+
+    metadata = &binding->metadata;
+    output->instruction = (ti_c54x_decoded_instruction){
+        metadata->id,
+        metadata->operand_layout,
+        metadata->repeatability,
+        metadata->input_resources,
+        *bundle};
+    output->operands = staged_operands;
+    output->handler = binding->handler;
     return TI_C54X_TRUSTED_EXECUTION_PACKET_OK;
 }

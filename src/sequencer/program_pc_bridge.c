@@ -101,8 +101,34 @@ ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_plan_trusted(
     uint8_t program_word_count,
     ti_c54x_program_pc_bridge_effect *effect)
 {
-    return ti_c54x_program_pc_bridge_plan_impl(
-        public_pc_word_before, program_word_count, effect);
+    ti_c54x_sequential_pc_status sequential_status;
+
+    if (effect == NULL) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT;
+    }
+    if (program_word_count == UINT8_C(0)) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_PROGRAM_WORD_COUNT;
+    }
+    if (public_pc_word_before > (uint32_t)UINT16_MAX) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_CARRIER;
+    }
+
+    /* The arithmetic owner writes this field only after a valid sum. */
+    sequential_status = ti_c54x_sequencer_plan_sequential_pc_trusted(
+        (uint16_t)public_pc_word_before, program_word_count,
+        &effect->common_pc_word_after);
+    if (sequential_status == TI_C54X_SEQUENTIAL_PC_UNRESOLVED_BOUNDARY) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_UNRESOLVED_BOUNDARY;
+    }
+    if (sequential_status != TI_C54X_SEQUENTIAL_PC_OK) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT;
+    }
+
+    effect->public_pc_word_before = public_pc_word_before;
+    effect->common_pc_word_before = (uint16_t)public_pc_word_before;
+    effect->public_pc_word_after = (uint32_t)effect->common_pc_word_after;
+    effect->program_word_count = program_word_count;
+    return TI_C54X_PROGRAM_PC_BRIDGE_OK;
 }
 
 ti_c54x_program_pc_bridge_status

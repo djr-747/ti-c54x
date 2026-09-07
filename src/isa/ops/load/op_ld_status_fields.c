@@ -18,6 +18,16 @@
 #include "isa/decode/operand_layout.h"
 #include "isa/ops/dispatch/trusted_semantics.h"
 
+static void ld_status_field_write(
+    uint16_t raw_value,
+    ti_c54x_op_status_field_target target,
+    ti_c54x_op_effect *effect)
+{
+    *effect = (ti_c54x_op_effect){
+        .kind = TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE,
+        .payload.status_field_write = {.target = target, .raw_value = raw_value}};
+}
+
 static ti_c54x_op_status ld_status_field_value(
     uint16_t raw_value,
     ti_c54x_op_status_field_target target,
@@ -25,9 +35,7 @@ static ti_c54x_op_status ld_status_field_value(
 {
     ti_c54x_op_effect staged = {0};
 
-    staged.kind = TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE;
-    staged.payload.status_field_write.target = target;
-    staged.payload.status_field_write.raw_value = raw_value;
+    ld_status_field_write(raw_value, target, &staged);
     *effect = staged;
     return TI_C54X_OP_STATUS_OK;
 }
@@ -134,8 +142,9 @@ ti_c54x_op_ld_immediate_arp(const ti_c54x_decoded_instruction *instruction,
     { \
         (void)instruction; \
         (void)input; \
-        return ld_status_field_value( \
+        ld_status_field_write( \
             (uint16_t)operands->values[0].raw_value, target, effect); \
+        return TI_C54X_OP_STATUS_OK; \
     }
 
 TI_C54X_DEFINE_TRUSTED_LD(ld_immediate_dp,

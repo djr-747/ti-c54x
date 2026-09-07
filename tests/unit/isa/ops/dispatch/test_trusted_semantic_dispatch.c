@@ -76,6 +76,48 @@ static void test_every_registered_effect_matches(void)
     }
 }
 
+static void test_trusted_status_field_effect_values(void)
+{
+    struct trusted_ld_case {
+        ti_c54x_opcode_id id;
+        uint16_t word;
+        ti_c54x_op_status_field_target target;
+        uint16_t raw_value;
+    };
+    static const struct trusted_ld_case cases[] = {
+        {TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP, UINT16_C(0xEBAB),
+         TI_C54X_OP_STATUS_FIELD_TARGET_DP, UINT16_C(0x01AB)},
+        {TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM, UINT16_C(0xED12),
+         TI_C54X_OP_STATUS_FIELD_TARGET_ASM, UINT16_C(0x0012)},
+        {TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP, UINT16_C(0xF4A5),
+         TI_C54X_OP_STATUS_FIELD_TARGET_ARP, UINT16_C(0x0005)}};
+    const ti_c54x_op_input_snapshot input = {0};
+    size_t index;
+
+    for (index = 0U; index < sizeof(cases) / sizeof(cases[0]); ++index) {
+        const ti_c54x_trusted_opcode_binding *binding =
+            ti_c54x_trusted_opcode_binding_for_id(cases[index].id);
+        const ti_c54x_instruction_word_bundle bundle = {
+            {cases[index].word, UINT16_C(0)}, UINT8_C(1)};
+        ti_c54x_trusted_execution_packet packet;
+        ti_c54x_op_effect effect;
+
+        TI_C54X_TEST_CHECK(binding != NULL);
+        TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
+                               binding, &bundle, &packet) ==
+                           TI_C54X_TRUSTED_EXECUTION_PACKET_OK);
+        (void)memset(&effect, 0xA5, sizeof(effect));
+        TI_C54X_TEST_CHECK(ti_c54x_dispatch_trusted(&packet, &input, &effect) ==
+                           TI_C54X_OP_STATUS_OK);
+        TI_C54X_TEST_CHECK(effect.kind ==
+                           TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE);
+        TI_C54X_TEST_CHECK(effect.payload.status_field_write.target ==
+                           cases[index].target);
+        TI_C54X_TEST_CHECK(effect.payload.status_field_write.raw_value ==
+                           cases[index].raw_value);
+    }
+}
+
 static void test_argument_failures_preserve_output(void)
 {
     const ti_c54x_trusted_opcode_binding *binding =
@@ -132,6 +174,7 @@ static void test_semantic_failure_preserves_output(void)
 int main(void)
 {
     test_every_registered_effect_matches();
+    test_trusted_status_field_effect_values();
     test_argument_failures_preserve_output();
     test_semantic_failure_preserves_output();
     puts("trusted_semantic_dispatch: ok");

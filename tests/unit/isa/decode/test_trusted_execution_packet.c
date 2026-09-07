@@ -110,7 +110,6 @@ static void test_rejections_are_transactional(void)
         ti_c54x_trusted_opcode_binding_for_id(
             TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP);
     ti_c54x_instruction_word_bundle bundle = bundle_for(&nop->metadata);
-    ti_c54x_trusted_execution_packet packet = {0};
 
     check_failure(unknown, &bundle,
                   TI_C54X_TRUSTED_EXECUTION_PACKET_UNKNOWN_OPCODE);
@@ -127,12 +126,10 @@ static void test_rejections_are_transactional(void)
     bundle.program_words[0] ^= UINT16_C(1);
     check_failure(nop, &bundle,
                   TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH);
-    TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
-                           NULL, &bundle, &packet) ==
-                       TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT);
-    TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
-                           nop, NULL, &packet) ==
-                       TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT);
+    check_failure(NULL, &bundle,
+                  TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT);
+    check_failure(nop, NULL,
+                  TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
                            nop, &bundle, NULL) ==
                        TI_C54X_TRUSTED_EXECUTION_PACKET_INVALID_ARGUMENT);
@@ -148,8 +145,8 @@ static void test_fast_and_checked_packets_are_equivalent(void)
             ti_c54x_trusted_opcode_binding_for_id((ti_c54x_opcode_id)raw_id);
         const ti_c54x_instruction_word_bundle bundle =
             bundle_for(&binding->metadata);
-        ti_c54x_trusted_execution_packet checked;
-        ti_c54x_trusted_execution_packet fast;
+        ti_c54x_trusted_execution_packet checked = {0};
+        ti_c54x_trusted_execution_packet fast = {0};
 
         TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
                                binding, &bundle, &checked) ==
