@@ -4772,3 +4772,37 @@ rewritten after publication.
   repeatability claim, knob, environment read, logging, diagnostic fanout,
   allocator, mutable global, device/MMR behavior, or emulator dependency was
   added. Selection of the next ISA slice remains evidence-first.
+
+## 2026-09-08 — P2-W33 CMPR evidence activation
+
+- State: evidence and ownership activation landed as
+  `f23f54fce6bfb449fcebfec3b3902a6e61b1884d`. P2-W33 is the active
+  bounded ISA slice; P2-W31P hosted stability and the W31B2 immediate-READY
+  benchmark follow-ups remain open and unchanged.
+- TI `SPRU172C` evidence pins one-word `CMPR CC,ARx` at
+  `0xF4A8/0xFCF8`, with CC in bits 9:8 and ARx in bits 2:0, yielding 32
+  encodings. The selected unsigned EQ/LT/GT/NEQ comparison tests ARx against
+  AR0 and writes TC to one iff the condition is true. Table 2-28 explicitly
+  classifies CMPR as nonrepeatable.
+- Five planned contracts separate catalog, decode, generic copied
+  `AUXILIARY_REGISTERS` input collection, pure comparison effects, and generic
+  CPU retirement. The input snapshot carries all eight 16-bit AR values plus
+  knownness; unknown AR0 or selected ARx rejects the instruction without a
+  partial effect. The handler reuses `STATUS_BIT_WRITE` for ST0 bit 12.
+- Candidate review rejected `LD #K,dst` because the registered TI evidence
+  does not fully define short-immediate widening for every K under both SXM
+  states. It also rejected fixed-MOD2 STH because saturation-on-store depends
+  on the currently unmodeled and reset-unknown SST state. Neither gap was
+  hidden behind an inferred semantic or configuration assumption.
+- Expected completed coverage is 27 catalog rows and 1,415 populated first
+  words, with reset-runnable coverage unchanged at 6/27. Activation registry
+  totals are 136 evidence records; 207 requirements (171 implemented, 13
+  planned, 23 unresolved); and 167 tests (154 passing, 13 planned).
+- Validation: `make quality-test` passed all 186 Python tests plus evidence,
+  knob, source-boundary, build-manifest, and observer-disabled artifact checks;
+  `git diff --check` also passed.
+- No production or generated source, executable test, public ABI, memory
+  behavior, timing model, machine-cycle API, RPT/IRQ policy, knob, environment
+  read, diagnostic path, allocator, mutable global, device behavior, or
+  emulator dependency changed. TDD proceeds with owner-local RED tests before
+  the catalog row or handler is added.
