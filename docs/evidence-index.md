@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 142 immutable evidence records,
-217 requirements (184 `IMPLEMENTED`, 8 `PLANNED`, 25 `UNRESOLVED`), and 175 tests
-(167 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 145 immutable evidence records,
+222 requirements (188 `IMPLEMENTED`, 8 `PLANNED`, 26 `UNRESOLVED`), and 179 tests
+(171 `PASSING`, 8 `PLANNED`).
 
 ## Targets
 
@@ -509,10 +509,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-LD-T-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LD-T-RETIREMENT` |
 | `REQ-COMMON-LD-T-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 | `REQ-COMMON-LDU-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
-| `REQ-COMMON-ST-IMMEDIATE-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-ST-IMMEDIATE-CATALOG` |
-| `REQ-COMMON-ST-IMMEDIATE-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167` | `T-COMMON-ST-IMMEDIATE-DECODE` |
-| `REQ-COMMON-ST-IMMEDIATE-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-ST-IMMEDIATE-EFFECTS` |
-| `REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W36-ST-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` |
+| `REQ-COMMON-ST-IMMEDIATE-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-ST-IMMEDIATE-CATALOG` |
+| `REQ-COMMON-ST-IMMEDIATE-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167` | `T-COMMON-ST-IMMEDIATE-DECODE` |
+| `REQ-COMMON-ST-IMMEDIATE-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-ST-IMMEDIATE-EFFECTS` |
+| `REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W36-ST-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` |
 | `REQ-COMMON-ST-IMMEDIATE-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 
 ## Tests
@@ -698,10 +698,10 @@ exist in the repository.
 | `T-COMMON-LD-T-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_ld_t_smem_decode.c` | {"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_t_smem_decode"} | `REQ-COMMON-LD-T-DECODE` |
 | `T-COMMON-LD-T-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_ld_t_smem.c` | {"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_t_smem_ops"} | `REQ-COMMON-LD-T-EFFECTS` |
 | `T-PROJECT-CPU-LD-T-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_t_smem.c` | {"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ld_t_smem"} | `REQ-PROJECT-CPU-LD-T-RETIREMENT` |
-| `T-COMMON-ST-IMMEDIATE-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_st_immediate_smem_metadata.c` | `null` | `REQ-COMMON-ST-IMMEDIATE-CATALOG` |
-| `T-COMMON-ST-IMMEDIATE-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_st_immediate_smem_decode.c` | `null` | `REQ-COMMON-ST-IMMEDIATE-DECODE` |
-| `T-COMMON-ST-IMMEDIATE-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/store/test_st_immediate_smem.c` | `null` | `REQ-COMMON-ST-IMMEDIATE-EFFECTS` |
-| `T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_st_immediate_smem.c` | `null` | `REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` |
+| `T-COMMON-ST-IMMEDIATE-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_st_immediate_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_immediate_smem_metadata"}` | `REQ-COMMON-ST-IMMEDIATE-CATALOG` |
+| `T-COMMON-ST-IMMEDIATE-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_st_immediate_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_immediate_smem_decode"}` | `REQ-COMMON-ST-IMMEDIATE-DECODE` |
+| `T-COMMON-ST-IMMEDIATE-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_st_immediate_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_immediate_smem_ops"}` | `REQ-COMMON-ST-IMMEDIATE-EFFECTS` |
+| `T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_st_immediate_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_st_immediate_smem"}` | `REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT` |
 
 ## Correction and tombstone policy
 

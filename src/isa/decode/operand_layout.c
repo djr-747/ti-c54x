@@ -80,6 +80,17 @@ static const ti_c54x_operand_field_layout ti_c54x_arf_operand = {
 static const ti_c54x_operand_layout_set ti_c54x_arf_set = {
     &ti_c54x_arf_operand, UINT8_C(1)};
 
+static const ti_c54x_operand_field_piece ti_c54x_arf_extension16_arf_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(3), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_arf_extension16_extension_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_arf_extension16_operands[2] = {
+    {&ti_c54x_arf_extension16_arf_piece, UINT8_C(1), UINT8_C(3)},
+    {&ti_c54x_arf_extension16_extension_piece, UINT8_C(1), UINT8_C(16)}};
+static const ti_c54x_operand_layout_set ti_c54x_arf_extension16_set = {
+    ti_c54x_arf_extension16_operands, UINT8_C(2)};
+
 static const ti_c54x_operand_field_piece
     ti_c54x_accumulator_arf_accumulator_piece = {
         UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
@@ -228,6 +239,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             &ti_c54x_ld_arp_set},
         [TI_C54X_OPERAND_LAYOUT_ARF] = {
             TI_C54X_OPERAND_LAYOUT_ARF, UINT8_C(1), &ti_c54x_arf_set},
+        [TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16] = {
+            TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16, UINT8_C(2),
+            &ti_c54x_arf_extension16_set},
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF, UINT8_C(1),
             &ti_c54x_accumulator_arf_set},
@@ -344,6 +358,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_ARF:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_arf_set;
+    case TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_arf_extension16_set;
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_accumulator_arf_set;

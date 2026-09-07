@@ -49,6 +49,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP,
     /* Generic one-word auxiliary-register field (first-word bits 2:0). */
     TI_C54X_OPERAND_LAYOUT_ARF,
+    /* Two-word auxiliary-register plus raw extension-word field. */
+    TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF,
     TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE,

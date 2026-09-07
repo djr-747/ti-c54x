@@ -31,14 +31,15 @@ Current progress:
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
   preserve C and all other status. Six two-word immediate AND/OR/XOR forms now
   add 204 populated first-word encodings; fixed-MOD2 `LD`/`STL`/`LDU`,
-  SSBX/RSBX, CMPR, and fixed-MOD2 `LD Smem,T` bring the current catalog to 1439 populated first-word
+  SSBX/RSBX, CMPR, fixed-MOD2 `LD Smem,T`, and fixed-MOD2 immediate `ST #lk,*ARx+`
+  bring the current catalog to 1447 populated first-word
   encodings; that is a
   lookup-population count, not an instruction count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are covered by the standalone
   test surfaces. Repeatability and machine timing remain unresolved; no `cpu.c`,
-  public API, memory, RPT/IRQ, or timing change was needed for the six immediate
-  rows.
+  public API, new memory seam, RPT/IRQ, or timing claim was added for these
+  immediate rows.
 - P2-W23 now adds four exact MAX/MIN accumulator encodings (`0xF486`, `0xF586`,
   `0xF487`, `0xF587`) with signed full-40-bit selection, tie/C semantics,
   checked accumulator knownness, transactional sequencer commit, and public CPU
@@ -158,15 +159,18 @@ Current progress:
   remains unresolved and no timing claim is made. Catalog coverage is now 29
   rows/1439 populated first words with 6/29 reset-runnable; W31P and W31B
   immediate-READY performance follow-ups remain open and nonblocking.
-- P2-W36 activates the bounded fixed-MOD2 two-word `ST #lk,*ARx+` evidence
+- P2-W36 implements the bounded fixed-MOD2 two-word `ST #lk,*ARx+` evidence
   slice from TI `SPRU172C` §4 Store T/TRN/immediate (printed pp. 4-166–4-167):
   first-word value `0x7690`, mask `0xFFF8`, ARF bits 2:0, eight encodings, and
-  a private `TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16` layout. The extension word
-  is copied as raw `lk`; existing extension fetch, width-aware PC, generic
+  a private `TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16` layout. The copied
+  extension word is raw `lk`; existing extension fetch, width-aware PC, generic
   MEMORY WRITE, old-AR transfer, postincrement, and WAIT/READY/FAULT contracts
-  are the planned seams. Repeatability remains unresolved; implementation is
-  not yet claimed. Candidate `LD Smem,DP/ASM` is deferred, while `ST T`, `STH`,
-  and ALU/control forms remain blocked by their documented seams.
+  are reused without CPU production changes. Focused strict/sanitizer tests,
+  quality, independent review, and the full standalone gate are green.
+  Repeatability remains unresolved and no timing claim is made. Candidate
+  `LD Smem,DP/ASM` is deferred, while `ST T`, `STH`, and ALU/control forms
+  remain blocked by their documented seams. Catalog coverage is now 30 rows/
+  1447 populated first words with 6/30 reset-runnable.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -176,8 +180,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 145 evidence items, 222 requirements (184 implemented,
-  12 planned, 26 unresolved), and 179 tests (167 passing, 12 planned). Hosted
+- The registry now records 145 evidence items, 222 requirements (188 implemented,
+  8 planned, 26 unresolved), and 179 tests (171 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -186,8 +190,8 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. P2-W33, P2-W34, and P2-W35 are
-  implementation-complete; P2-W36 is the active evidence-fit activation. The
+- Speculative foundation expansion is frozen. P2-W33, P2-W34, P2-W35, and
+  P2-W36 are implementation-complete. The
   P2-W31P hosted stability and W31B2 immediate-READY benchmark follow-ups
   remain open and nonblocking.
   Emulator integration remains deferred.
