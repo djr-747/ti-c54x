@@ -5288,3 +5288,56 @@ rewritten after publication.
   timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
   environment read, diagnostic path, allocator, mutable global, or emulator
   dependency was added. TDD begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W38 fixed-MOD2 LD Smem,16 implementation
+
+- State: implementation commit
+  `27c8df3665e1c086be872f8539b92411407de376` completes the bounded
+  fixed-MOD2 `LD Smem,16,dst` vertical slice. The catalog now contains 33
+  rows and 1,479 populated first words, with reset-runnable coverage unchanged
+  at 6/33. P2-W31P hosted stability and the W31B immediate-READY benchmark
+  follow-ups remain open and nonblocking.
+- TDD RED was captured in three independently owned lanes. Catalog/decode
+  tests failed because the instruction identity was absent; pure-operation
+  tests failed because the checked and trusted symbols were absent; and the
+  public-CPU test reached `STOP_UNIMPLEMENTED_OPCODE`. No production row or
+  handler preceded those failures.
+- GREEN registers `LD_SMEM_SHIFT16_MOD2` at `0x4490/0xFEF8`, with D in bit 8,
+  ARF in bits 2:0, one program word, `ACCUMULATOR_ARF`, `STATUS_SXM`, exactly
+  sixteen encodings, and unresolved repeatability. The handler reads WORD16
+  Smem, zero-extends it for SXM=0 or sign-extends it for SXM=1 to canonical
+  40 bits, and then logically shifts left 16. Frozen vectors cover zero,
+  `0x7fff`, `0x8000`, `0xffff`, and the printed `0xfedc`/SXM=1 example.
+  C, TC, OV, and unrelated architectural state are preserved; OVM and OVdst
+  do not apply to this fixed-16 form.
+- The unique `ld_smem_shift16` checked/trusted binding extends the existing
+  `op_ld_smem` leaf through shared validation, SXM widening, and value staging,
+  with a separate static completion callback. Existing MEMORY read,
+  ACCUMULATOR_WRITE, fixed-MOD2 addressing, and generic CPU WAIT/READY/FAULT
+  and sequential-PC paths are reused. No opcode-specific CPU production branch
+  or new layout, resource, effect, address, state, API, or source seam was
+  introduced.
+- Integration corrected four test assumptions exposed by the new row: bit 8
+  is the D operand rather than an invalid XOR near-miss; `0x4690` is the valid
+  W37 DP sibling so `0x4698` remains the explicit unknown neighbor; the stale
+  W37 catalog ID count advanced from 33 to 34; and the aggregate fixed-MOD2
+  memory-row count advanced from two to three.
+- Validation: all four focused catalog, decode, pure-operation, and public-CPU
+  targets passed under strict warnings. Those targets plus the earlier
+  `test_ld_smem_ops` and `test_cpu_ld_smem` regressions passed in a forced
+  ASan/UBSan build. `make quality-test` passed all 186 Python tests and the
+  evidence, knob, source-boundary, build-manifest, and observer-disabled
+  artifact checks. Independent Luna semantic and integration reviews found no
+  remaining functional issue after the aggregate-count correction. An
+  independent CMake configure/build and full CTest passed 178/178, followed by
+  a successful authoritative clean standalone `make test`.
+- Size decision: `src/isa/ops/load/op_ld_smem.c` is 357 lines and its header is
+  44 lines, both below 500. W38 adds no layout code, so
+  `src/isa/decode/operand_layout.c` remains 535 lines with its reviewed
+  no-split decision in force.
+- Evidence accounting is now 151 evidence records; 232 requirements (196
+  IMPLEMENTED, 8 PLANNED, 28 UNRESOLVED); 187 tests (179 PASSING, 8 PLANNED);
+  and 7 source records. Repeatability remains unresolved by design.
+- No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
+  policy, device/MMR behavior, knob, environment read, logging, diagnostic
+  fanout, allocator, mutable global, or emulator dependency was added.
