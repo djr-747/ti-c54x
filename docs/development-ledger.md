@@ -4499,3 +4499,31 @@ rewritten after publication.
   and one O3/LTO binary, retain three consecutive captures from each, and run the
   acceptance checker over each same-binary set. Record inconclusive sets rather
   than silently replacing them; close W31P only after both profiles pass.
+
+## 2026-09-07 — P2-W31P first hosted acceptance attempt
+
+- State: both first three-capture sets are `INCONCLUSIVE`; W31P acceptance remains
+  open and W31B2 remains paused. The six clean capture records and their audit
+  summary landed as `12105cdddd144c863be8806d18bdfa207d3ff297`.
+- Set `P2-W31P-O2-0D4F333-SET1` used one O2/no-LTO observer-off binary
+  (`e5bb3ea8bd86cda00fa5b98aac90958d62beb9f6857c1a6f86e616ba6e325362`).
+  NOP medians were 45.956–47.526 ns, while the three status-load medians reached
+  65.721 ns; the checker also found per-capture stability ratios as high as
+  0.378515. The complete set is retained rather than averaged or discarded.
+- Set `P2-W31P-O3-LTO-0D4F333-SET1` used one O3/LTO observer-off binary
+  (`356e780749de36e7de1ae3bc2bc43b552128bd79b1f5bbb7aba593ec54857285`).
+  Most fixed medians were below 60 ns, but the noisiest capture reached 62.579 ns
+  for LD-ASM and 66.884 ns for LD-ARP; stability ratios reached 0.855695. This
+  complete set is also retained as inconclusive evidence.
+- Both sets were captured from clean `0d4f333f58208e7ed0d749aec8eec39898c1342b`
+  on the same i7-1255U host with GCC 15.2.0 and exact frozen flags. These are
+  hosted implementation observations only, not TI cycle or silicon claims. No
+  knob, production diagnostic, runtime instrumentation, or benchmark semantic
+  policy changed.
+- Follow-up profiling attributes the largest O2 costs to full staged packet
+  clearing/copying and nested staged PC planning, followed by status-effect
+  construction. Implement and test bounded portable-C direct-fill trusted paths,
+  preserving checked failure atomicity and ownership. Any replacement capture
+  set must use a new ID and record the external-condition change; fixed P-core
+  affinity with competing agent/build load removed is the first admissible host
+  condition to evaluate after the optimization commit is clean.
