@@ -4943,3 +4943,42 @@ rewritten after publication.
   policy, device/MMR behavior, knob, environment read, logging, diagnostic
   fanout, allocator, mutable global, or emulator dependency was added.
   Selection of the next ISA slice remains evidence-first.
+
+## 2026-09-08 — P2-W35 fixed-MOD2 LD-to-T evidence activation
+
+- State: evidence and ownership activation landed as
+  `3fcac0a611c01cd04ef67b83c7ad50186929306a`. P2-W35 is the active
+  bounded ISA slice. P2-W31P hosted stability and the W31B immediate-READY
+  benchmark follow-ups remain open and nonblocking.
+- TI `SPRU172C` §4.70 printed pp. 4-70–4-71 defines one-word `LD Smem,T`
+  with opcode diagram `0011_0000_IAAAAAAA`, execution `T = Smem`, and no
+  status-bit effect. Composed with the registered standard-indirect MOD2 rule,
+  the selected row is `0x3090/0xFFF8`: bit 8 is fixed zero, only ARF bits 2:0
+  vary, and exactly eight first words are admitted. The `*AR3+` example reads
+  data `0xFEDC` from old address `0x0300` before AR3 becomes `0x0301`.
+- Review corrected the initial scout's proposed `0xFEF8` mask before evidence
+  activation. That mask would have incorrectly treated fixed bit 8 as a D/T
+  operand and admitted 16 words. The primary opcode diagram instead requires
+  `0xFFF8` and eight ARF-only encodings.
+- Four planned contracts separate catalog registration, a new private generic
+  `ARF` operand layout, pure MEMORY completion to the existing
+  `T_REGISTER_WRITE` effect, and generic CPU retirement. The W31B lifecycle
+  continues to own old-AR transfer, postincrement after READY, WAIT resume,
+  FAULT rollback, CMPT=0/ARP=0 validation, and checked AR=0xffff rejection.
+- Repeatability remains explicitly UNRESOLVED. Table 2-28 excludes long-offset
+  and absolute single-data forms and lists some LD destinations, but absence of
+  LD-to-T from the forbidden list is not treated as positive eligibility.
+- Expected completed coverage is 29 catalog rows and 1,439 populated first
+  words, with reset-runnable coverage unchanged at 6/29. Activation accounting
+  is 142 evidence records; 217 requirements (180 IMPLEMENTED, 12 PLANNED,
+  25 UNRESOLVED); and 175 tests (163 PASSING, 12 PLANNED).
+- Validation: `make quality-test` passed all 186 Python tests plus evidence,
+  knob, source-boundary, build-manifest, and observer-disabled artifact checks;
+  `git diff --check` passed. The existing 506-line operand-layout owner emitted
+  its reviewed size warning; W35 requires an explicit no-split decision before
+  adding the cohesive three-bit descriptor.
+- No production, generated, or executable-test file changed. No public T/MMR
+  API, new memory/address/effect kind, CPU opcode branch, timing or
+  machine-cycle claim, IRQ/RPT behavior, device policy, knob, environment read,
+  diagnostic path, allocator, mutable global, or emulator dependency was
+  added. TDD begins with owner-local RED tests.
