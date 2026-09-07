@@ -91,7 +91,7 @@ test_fixed_bit_near_misses(void)
     static const uint16_t unknown_near_misses[] = {
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
         UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2008),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;

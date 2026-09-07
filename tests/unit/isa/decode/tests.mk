@@ -20,4 +20,5 @@ $(eval $(call ti_c54x_add_test,ssbx_rsbx_decode,isa/decode,test_ssbx_rsbx_decode
 $(eval $(call ti_c54x_add_test,cmpr_decode,isa/decode,test_cmpr_decode.c))
 $(eval $(call ti_c54x_add_test,ldu_smem_decode,isa/decode,test_ldu_smem_decode.c))
 $(eval $(call ti_c54x_add_test,ld_t_smem_decode,isa/decode,test_ld_t_smem_decode.c))
+$(eval $(call ti_c54x_add_test,ld_status_smem_decode,isa/decode,test_ld_status_smem_decode.c))
 $(eval $(call ti_c54x_add_test,st_immediate_smem_decode,isa/decode,test_st_immediate_smem_decode.c))

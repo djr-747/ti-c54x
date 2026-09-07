@@ -89,7 +89,7 @@ test_fixed_bit_near_misses_and_forged_completion(void)
     static const uint16_t unknown_near_misses[] = {
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
         UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2008),
         UINT16_C(0x4000), UINT16_C(0x8000)};
     const uint16_t word = LDU_VALUE;
     const ti_c54x_decode_result valid = ti_c54x_decode_first_word(word);
