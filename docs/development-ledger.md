@@ -4728,3 +4728,47 @@ rewritten after publication.
   populated first words remain correct. No encoding, evidence locator,
   requirement/test state, production source, executable test, or behavior
   changed. The standalone evidence checker remained green.
+
+## 2026-09-08 — P2-W32 SSBX/RSBX implementation
+
+- State: implementation commit
+  `3d9bd1866a129ee620cd76b6e2d7f4bf2c450bb4` completes the bounded
+  SSBX/RSBX status-bit vertical slice. The catalog now contains 26 rows and
+  1,383 populated first words, with 6/26 rows reset-runnable. P2-W31P hosted
+  stability and the W31B2 immediate-READY benchmark follow-ups remain open.
+- TDD RED was captured independently by owner. Status tests failed on the
+  absent checked ST0/ST1 bit writer, value-owned effect payload, application
+  leaf, and root transaction route. Catalog/decode tests failed on the absent
+  IDs and N/SBIT layout; operation tests failed on the absent status-family
+  header; CPU proof failed at the absent catalog identities. No production row
+  or behavior was added before those failures were recorded.
+- GREEN registers SSBX `0xF5B0/0xFDF0` and RSBX
+  `0xF4B0/0xFDF0`, with N at bit 9, SBIT at bits 3:0, one program word,
+  repeatability INELIGIBLE, and no input resources. SSBX stages binary one and
+  RSBX binary zero for the selected ST0/ST1 raw bit. The checked state leaf also
+  marks exactly that bit known; every unrelated raw and knownness bit is
+  preserved, including when ST1 reserved bit 10 is selected.
+- The shared implementation adds one private `STATUS_BIT_WRITE` effect, an
+  explicit state-layer target mapping, and a distinct candidate-only root
+  transaction route. All payload validation precedes publication. Checked and
+  trusted handlers remain pure and value-owned. Existing generic CPU dispatch,
+  sequential-PC planning, counters, and retirement consume the effect without
+  any production CPU change or opcode-identity branch.
+- Review found no P0/P1 semantic blocker. Integration review corrected a RED
+  near-miss that accidentally selected the valid sibling opcode, refreshed the
+  three catalog-size quality fixtures, clarified the catalog module contract,
+  and fixed one clean-build `-Wconversion` diagnostic by constructing the bit
+  mask only after range validation.
+- Validation: all focused state, status-effect, root-transaction,
+  catalog/decode, pure-operation, CPU-retirement, and fixed-MOD2 regression
+  targets passed. `make quality-test` passed all 186 Python tests and every
+  registry, knob, source-boundary, manifest, and observer-off artifact check.
+  Nine focused targets passed from a clean ASan/UBSan build. The authoritative
+  clean `make test` completed successfully.
+- Evidence accounting is now 133 evidence records; 202 requirements (171
+  IMPLEMENTED, 8 PLANNED, 23 UNRESOLVED); 162 tests (154 PASSING, 8 PLANNED);
+  and 7 source records.
+- No public ABI, memory behavior, RPT/IRQ policy, machine-cycle API, timing or
+  repeatability claim, knob, environment read, logging, diagnostic fanout,
+  allocator, mutable global, device/MMR behavior, or emulator dependency was
+  added. Selection of the next ISA slice remains evidence-first.
