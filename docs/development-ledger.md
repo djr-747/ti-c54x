@@ -5387,3 +5387,60 @@ rewritten after publication.
   timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
   environment read, diagnostic path, allocator, mutable global, or emulator
   dependency was added. Implementation begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W39 generic T input and fixed-MOD2 ST T implementation
+
+- State: implementation commit
+  `1449255b8e0c4217be77001b7b1e8ebe3230eb6a` completes the generic T-input
+  prerequisite and bounded fixed-MOD2 `ST T,*ARx+` vertical slice. Catalog
+  coverage is 34 rows and 1,487 populated first words, with reset-runnable
+  coverage unchanged at 6/34. P2-W31P hosted stability and the W31B
+  immediate-READY benchmark follow-ups remain open and nonblocking.
+- TDD RED was captured in five independently owned lanes. The input test failed
+  on the absent T resource, source, and snapshot fields; catalog/decode tests
+  failed on the absent identity and resource; the pure-operation test failed on
+  the absent header; and the public-CPU test could not reach an implemented
+  opcode. No catalog row or production handler preceded those failures.
+- GREEN adds catalog input-resource bit 32 as `T_REGISTER`, extends the copied
+  opcode input with raw16 T plus explicit knownness, and borrows the existing
+  private T owner only during collection. Known values `0x0000`, `0x7fff`,
+  `0x8000`, and `0xffff` copy exactly. Reset-unknown T produces canonical zero
+  with `known=false`; missing requested sources reject transactionally, while
+  unrequested T is never required.
+- The catalog registers `ST_T_SMEM_MOD2`/`st_t_smem` at `0x8C90/0xFFF8`, with
+  fixed bit 8, ARF in bits 2:0, one program word, the existing ARF layout,
+  `T_REGISTER` input, eight encodings, and unresolved repeatability. The
+  generated lookup remains the sole immutable first-word derivative.
+- Checked and trusted store leaves stage the existing generic DATA WORD16
+  MEMORY WRITE with exact copied T, MOD2 plus selected ARF, and `complete=NULL`.
+  Unknown T returns `UNKNOWN_INPUT` without publishing an effect. Existing
+  memory sequencing uses the old selected-AR address, commits postincrement
+  and PC+1 only with READY, resumes WAIT under the stable transaction without
+  refetch, and rolls back on FAULT, missing endpoint, unknown address inputs,
+  or the unresolved AR=`0xffff` boundary. No opcode-specific CPU branch was
+  added.
+- Integration generalized the aggregate fixed-MOD2 metadata proof because the
+  new ARF-only row has eight encodings and fixed bit 8, unlike the three prior
+  accumulator rows with sixteen encodings and variable D/S. The full gate also
+  exposed two stale W38-era `ID_COUNT == 34` assertions; both now expect 35.
+- Validation: all five focused targets and the existing input, STL, and
+  immediate-store regressions passed under strict warnings. The W39 targets
+  plus existing store operation/CPU regressions passed in a forced ASan/UBSan
+  build. `make quality-test` passed all 186 Python tests and the evidence, knob,
+  source-boundary, build-manifest, and observer-disabled artifact checks. An
+  independent Luna semantic review was clean; integration review found only
+  the two stale ID-count fixtures above. A fresh independent CMake build passed
+  CTest 183/183, followed by a successful authoritative clean standalone
+  `make test`.
+- Size decision: the new pure store leaf is 158 lines and its header is 36;
+  input collection is 149 lines and CPU execution is 448. W39 adds no operand
+  layout, so the existing 535-line layout owner retains its reviewed no-split
+  decision. All handwritten files remain below the 500-line review threshold
+  except that already-reviewed layout owner.
+- Evidence accounting is now 154 evidence records; 238 requirements (201
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 192 tests (184 PASSING, 8 PLANNED);
+  and 7 source records. ST T repeatability remains unresolved by design.
+- No public ABI, new effect/address/state/layout seam, timing or performance
+  claim, machine-cycle API, IRQ/RPT policy, device/MMR behavior, knob,
+  environment read, logging, diagnostic fanout, allocator, mutable global, or
+  emulator dependency was added.
