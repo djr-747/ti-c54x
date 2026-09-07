@@ -5241,3 +5241,50 @@ rewritten after publication.
   environment read, logging, diagnostic fanout, allocator, mutable global, or
   emulator dependency was added. Selection of the next ISA slice remains
   evidence-first.
+
+## 2026-09-08 — P2-W38 fixed-MOD2 LD Smem,16 evidence activation
+
+- State: evidence and ownership activation landed as
+  `cf0f2d4128b8bfa78f508b9fb7c16b444c3e5c66`. P2-W38 is the active
+  bounded ISA slice. P2-W31P hosted stability and the W31B immediate-READY
+  benchmark follow-ups remain open and nonblocking.
+- TI `SPRU172C` §4.66 printed pp. 4-65–4-69 defines syntax 3
+  `LD Smem,16,dst` with diagram `0100_010D_IAAAAAAA`. Composed with the
+  registered standard-indirect MOD2 rule, the selected row is
+  `0x4490/0xFEF8`: D occupies bit 8, ARF occupies bits 2:0, and the row admits
+  exactly sixteen one-word encodings.
+- The WORD16 operand is zero-extended when SXM=0 or sign-extended when SXM=1
+  to canonical 40 bits, then shifted left 16 within the 40-bit accumulator.
+  Frozen boundary vectors include `0x8000` producing `0x0080000000` or
+  `0xff80000000`, and `0xffff` producing `0x00ffff0000` or `0xffffff0000`.
+  The printed `FEDC`/SXM=1 example produces `0xfffedc0000`. OVM and OVdst
+  apply only to the separate SHIFT/ASM syntaxes, so this fixed-16 form
+  preserves C, TC, OV, and unrelated state.
+- Four planned contracts separate catalog registration, reuse of the existing
+  `ACCUMULATOR_ARF` decode layout, a pure SXM-dependent MEMORY completion to
+  `ACCUMULATOR_WRITE`, and generic CPU retirement. Existing W31B paths supply
+  the old selected-AR read address, postincrement only after READY, WAIT resume
+  without refetch, FAULT rollback, CMPT=0/ARP=0 validation, checked AR=0xffff
+  rejection, and sequential PC retirement. No new layout, resource, effect,
+  address kind, state, CPU branch, public API, or source manifest is required.
+- Repeatability remains UNRESOLVED. Table 2-28 absence is not positive
+  eligibility evidence, and the separately forbidden long-offset or absolute
+  forms do not decide this fixed-MOD2 form. No timing claim is adopted.
+- Candidate review deferred STH and LDR because their guard/rounding policies
+  remain recorded gaps; `LD #K,dst` lacks a frozen short-immediate widening
+  rule; `ST T,Smem` needs a generic T input resource; and `LD Smem,TS,dst`
+  needs that resource plus shift-count semantics. Those gaps were not hidden
+  behind family-local behavior.
+- Expected completed coverage is 33 catalog rows and 1,479 populated first
+  words, with reset-runnable coverage unchanged at 6/33. Activation accounting
+  is 151 evidence records; 232 requirements (192 IMPLEMENTED, 12 PLANNED,
+  28 UNRESOLVED); 187 tests (175 PASSING, 12 PLANNED); and 7 sources.
+- Validation: `make quality-test` passed all 186 Python tests plus evidence,
+  knob, source-boundary, build-manifest, and observer-disabled artifact checks;
+  `git diff --check` passed. The existing load leaf is 241 lines before W38;
+  the 535-line operand-layout owner is unchanged and retains its reviewed
+  no-split decision.
+- No production, generated, or executable-test file changed. No public ABI,
+  timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
+  environment read, diagnostic path, allocator, mutable global, or emulator
+  dependency was added. TDD begins with owner-local RED tests.
