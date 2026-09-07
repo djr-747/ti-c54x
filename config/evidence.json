@@ -2288,6 +2288,52 @@
         "anchor": "P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)"
       },
       "assertion": "P2-W35 fits fixed-MOD2 LD-to-T into the existing MEMORY effect/completion and generic CPU retirement paths, adding only the private generic ARF operand layout and reusing the existing T_REGISTER_WRITE effect. CMPT=0 and ARP=0 are inherited from the W31B contract; the old selected AR transfer precedes postincrement, and the checked planner's AR=0xffff boundary remains in force. No new public T/MMR API, resource, address kind, CPU opcode branch, timing, IRQ/RPT, device, environment, diagnostics, allocation, or repeatability behavior is added."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "Store T/TRN/immediate",
+        "printed_page_start": "4-166",
+        "printed_page_end": "4-167"
+      },
+      "assertion": "TI SPRU172C's Store T/TRN/immediate entry defines the two-word ST #lk,Smem form with syntax-3 opcode diagram 0111_0110_IAAAAAAA. Composed with the registered standard-indirect MOD2 rule for *ARx+, this slice uses first-word value 0x7690 and mask 0xFFF8: bit 8 is fixed zero and only ARF bits 2:0 vary, yielding exactly eight encodings. Word 1 is the copied raw immediate lk; execution writes lk to the old selected AR WORD16 before postincrement and reports Status Bits None."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The fixed-MOD2 immediate ST form is absent from Table 2-28's explicitly forbidden repeatability list, but that absence is not positive eligibility evidence. The separately listed fixed long-offset or absolute single-data cases do not decide this *ARx+ form; repeatability therefore remains UNRESOLVED without a timing or repeat-execution claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W36-ST-IMMEDIATE-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W36: fixed-MOD2 immediate-store vertical slice (planned)"
+      },
+      "assertion": "P2-W36 fits the two-word fixed-MOD2 immediate ST #lk,*ARx+ form into existing extension fetch, width-aware PC, generic MEMORY WRITE, and generic CPU WAIT/READY/FAULT retirement contracts. The planned private TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16 layout owns ARF plus copied raw lk; CMPT=0 and ARP=0 preserve old-AR write-before-postincrement, with write_value_word and complete=NULL. No public ABI, CPU opcode branch, new resource/effect/address kind, timing, IRQ/RPT, device/MMR, environment, diagnostics, allocation, or repeatability behavior is added. LD Smem,DP/ASM is deferred; ST T, STH, and ALU/control candidates remain blocked by their documented seams."
     }
   ],
   "requirements": [
@@ -4638,6 +4684,63 @@
       "claim": "Resolve whether fixed-MOD2 LD-to-T is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute cases do not decide this form.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-ST-IMMEDIATE-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced two-word fixed-MOD2 immediate ST #lk,*ARx+ row with first-word value 0x7690, mask 0xFFF8, ARF bits 2:0, exactly eight encodings, program_word_count=2, the private ARF_EXTENSION16 operand layout, no input resources, and repeatability UNRESOLVED.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21"
+      ],
+      "test_ids": ["T-COMMON-ST-IMMEDIATE-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-ST-IMMEDIATE-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the two-word fixed-MOD2 immediate ST #lk,*ARx+ through the private TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16 layout, yielding eight ARF encodings and preserving the copied raw extension word lk transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167"],
+      "test_ids": ["T-COMMON-ST-IMMEDIATE-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-ST-IMMEDIATE-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Produce a pure two-word fixed-MOD2 immediate ST MEMORY WRITE effect that writes the copied raw lk WORD16 to the old selected AR address, stages postincrement after the write, uses write_value_word with complete=NULL, and reports no status-bit effects.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-ST-IMMEDIATE-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire the two-word fixed-MOD2 immediate ST through generic extension fetch, width-aware PC staging, MEMORY WRITE, old-AR write-before-postincrement, and generic WAIT/READY/FAULT paths under CMPT=0/ARP=0 without an opcode-specific CPU branch or new public ABI, timing, IRQ/RPT, device/MMR, environment, diagnostic, or allocation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W36-ST-IMMEDIATE-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-ST-IMMEDIATE-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Resolve whether fixed-MOD2 two-word immediate ST #lk,*ARx+ is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute cases do not decide this form.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -6079,6 +6182,38 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_t_smem.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_t_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-T-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-ST-IMMEDIATE-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_immediate_smem_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-IMMEDIATE-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-ST-IMMEDIATE-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_st_immediate_smem_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-IMMEDIATE-DECODE"]
+    },
+    {
+      "id": "T-COMMON-ST-IMMEDIATE-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_st_immediate_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-IMMEDIATE-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/store/test_cpu_st_immediate_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT"]
     }
   ]
 }
