@@ -4629,3 +4629,25 @@ rewritten after publication.
   same explicit affinity/warm-up/weight controls, use a new set ID, and continue
   treating any preempted capture as evidence rather than selectively retrying a
   single member.
+
+## 2026-09-08 — P2-W31B2 activation with W31P left open
+
+- State: current intent updated in
+  `071de4ddc6413b8af9725ef4c1b6406d8868c639`. P2-W31P remains open with its
+  structural and correctness gates green, every optimized fixed-scenario median
+  below 60 ns, and exact three-capture hosted stability acceptance still
+  pending/deferred. This is not a performance acceptance claim.
+- Decision: the open hosted stability follow-up no longer blocks P2-W31B2.
+  Fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+` are now the active bounded ISA
+  slice through the already-proven transactional memory path.
+- The frozen W31P acceptance rule and append-only performance history are
+  unchanged. Dedicated immediate-READY LD/STL scenarios must still meet the
+  same hosted target before later memory-family fanout; WAIT-capable behavior
+  remains a separate correctness contract.
+- Validation: standalone `make quality-test` passed after restoring the exact
+  immutable evidence-locator headings: 186 Python tests, evidence/knob/source
+  boundary/build-manifest checks, and the observer-disabled artifact check.
+- No production code, public ABI, opcode inventory, requirement/evidence state,
+  knob, benchmark semantic, runtime behavior, timing model, or TI silicon claim
+  changed. Follow-up begins with RED catalog/decode tests for the two pinned
+  masked rows, then proceeds by owner through pure effects and CPU retirement.
