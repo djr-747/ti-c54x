@@ -31,7 +31,7 @@ Current progress:
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
   preserve C and all other status. Six two-word immediate AND/OR/XOR forms now
   add 204 populated first-word encodings; fixed-MOD2 `LD`/`STL`/`LDU`,
-  SSBX/RSBX, and CMPR bring the current catalog to 1431 populated first-word
+  SSBX/RSBX, CMPR, and fixed-MOD2 `LD Smem,T` bring the current catalog to 1439 populated first-word
   encodings; that is a
   lookup-population count, not an instruction count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
@@ -148,15 +148,16 @@ Current progress:
   effects; repeatability remains unresolved. Catalog coverage is 28 rows/1431
   populated words with 6/28 reset-runnable. W31P hosted stability and W31B
   immediate-READY performance follow-ups remain open and nonblocking.
-- P2-W35 is activated as the bounded fixed-MOD2 `LD Smem,T` evidence slice from
-  TI `SPRU172C` §4.70 (printed pp. 4-70–4-71): one word, value `0x3090`, mask
-  `0xFFF8` with bit 8 fixed zero, ARF bits 2:0, and eight encodings. Its planned
-  private generic `TI_C54X_OPERAND_LAYOUT_ARF` layout reuses the existing
-  MEMORY completion and `T_REGISTER_WRITE`; old-AR WORD16 transfer precedes
-  postincrement under CMPT=0/ARP=0. Repeatability remains unresolved and no
-  timing claim is made. Expected post-slice coverage is 29 rows/1439 populated
-  first words with 6/29 reset-runnable; W31P and W31B immediate-READY
-  performance follow-ups remain open and nonblocking.
+- P2-W35 implements the bounded fixed-MOD2 `LD Smem,T` evidence slice from TI
+  `SPRU172C` §4.70 (printed pp. 4-70–4-71): one word, value `0x3090`, mask
+  `0xFFF8` with bit 8 fixed zero, ARF bits 2:0, and eight encodings. Its private
+  generic `TI_C54X_OPERAND_LAYOUT_ARF` layout reuses the existing MEMORY
+  completion and `T_REGISTER_WRITE`; old-AR WORD16 transfer precedes
+  postincrement under CMPT=0/ARP=0. Focused strict/sanitizer tests, quality,
+  independent review, and the full standalone gate are green. Repeatability
+  remains unresolved and no timing claim is made. Catalog coverage is now 29
+  rows/1439 populated first words with 6/29 reset-runnable; W31P and W31B
+  immediate-READY performance follow-ups remain open and nonblocking.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -166,8 +167,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 142 evidence items, 217 requirements (180 implemented,
-  12 planned, 25 unresolved), and 175 tests (163 passing, 12 planned). Hosted
+- The registry now records 142 evidence items, 217 requirements (184 implemented,
+  8 planned, 25 unresolved), and 175 tests (167 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -176,8 +177,8 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. P2-W33 and P2-W34 are
-  implementation-complete and P2-W35 is evidence-activated; the P2-W31P hosted stability
+- Speculative foundation expansion is frozen. P2-W33, P2-W34, and P2-W35 are
+  implementation-complete; the P2-W31P hosted stability
   and W31B2 immediate-READY benchmark follow-ups remain open and nonblocking.
   Emulator integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields

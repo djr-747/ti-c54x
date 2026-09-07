@@ -12,3 +12,4 @@ ti_c54x_add_unit_test(fixed_mod2_memory_metadata test_fixed_mod2_memory_metadata
 ti_c54x_add_unit_test(ssbx_rsbx_metadata test_ssbx_rsbx_metadata.c)
 ti_c54x_add_unit_test(cmpr_metadata test_cmpr_metadata.c)
 ti_c54x_add_unit_test(ldu_smem_metadata test_ldu_smem_metadata.c)
+ti_c54x_add_unit_test(ld_t_smem_metadata test_ld_t_smem_metadata.c)

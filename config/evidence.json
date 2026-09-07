@@ -4584,7 +4584,7 @@
     },
     {
       "id": "REQ-COMMON-LD-T-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -4598,7 +4598,7 @@
     },
     {
       "id": "REQ-COMMON-LD-T-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4608,7 +4608,7 @@
     },
     {
       "id": "REQ-COMMON-LD-T-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/load/",
@@ -4621,7 +4621,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-LD-T-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -6050,34 +6050,34 @@
     },
     {
       "id": "T-COMMON-LD-T-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_ld_t_smem_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_t_smem_metadata"},
       "requirement_ids": ["REQ-COMMON-LD-T-CATALOG"]
     },
     {
       "id": "T-COMMON-LD-T-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_ld_t_smem_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_t_smem_decode"},
       "requirement_ids": ["REQ-COMMON-LD-T-DECODE"]
     },
     {
       "id": "T-COMMON-LD-T-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/load/test_ld_t_smem.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_t_smem_ops"},
       "requirement_ids": ["REQ-COMMON-LD-T-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-LD-T-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_t_smem.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_t_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-T-RETIREMENT"]
     }
   ]

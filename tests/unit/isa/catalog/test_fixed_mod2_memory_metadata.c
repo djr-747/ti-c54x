@@ -42,8 +42,8 @@ test_metadata_rows(void)
     const size_t row_count = sizeof(rows) / sizeof(rows[0]);
 
     TI_C54X_TEST_CHECK(row_count == 2U);
-    /* Unknown plus the 28 catalog rows is the complete generated identity. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 29);
+    /* Unknown plus the 29 catalog rows is the complete generated identity. */
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 30);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];
@@ -96,7 +96,7 @@ test_each_row_has_exactly_sixteen_encodings_and_population(void)
             ++populated_first_words;
         }
     }
-    TI_C54X_TEST_CHECK(populated_first_words == 1431U);
+    TI_C54X_TEST_CHECK(populated_first_words == 1439U);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];

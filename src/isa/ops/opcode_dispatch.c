@@ -18,6 +18,7 @@
 #include "compare/op_compare.h"
 #include "compare/op_cmpr.h"
 #include "load/op_ld_smem.h"
+#include "load/op_ld_t_smem.h"
 #include "load/op_ldu_smem.h"
 #include "load/op_ld_status_fields.h"
 #include "op_nop.h"

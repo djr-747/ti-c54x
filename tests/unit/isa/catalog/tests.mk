@@ -12,3 +12,4 @@ $(eval $(call ti_c54x_add_test,fixed_mod2_memory_metadata,isa/catalog,test_fixed
 $(eval $(call ti_c54x_add_test,ssbx_rsbx_metadata,isa/catalog,test_ssbx_rsbx_metadata.c))
 $(eval $(call ti_c54x_add_test,cmpr_metadata,isa/catalog,test_cmpr_metadata.c))
 $(eval $(call ti_c54x_add_test,ldu_smem_metadata,isa/catalog,test_ldu_smem_metadata.c))
+$(eval $(call ti_c54x_add_test,ld_t_smem_metadata,isa/catalog,test_ld_t_smem_metadata.c))
