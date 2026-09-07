@@ -2104,6 +2104,52 @@
         "anchor": "P2-W31P-BASELINE-2026-09-07"
       },
       "assertion": "The committed P2-W31P baseline audit records the exact source and binary hashes, commands, compiler flags, host/toolchain identity, scenario identities, medians, and observed ranges for two portable O2/no-LTO captures and one portable O3/LTO capture. It freezes a 60-nanosecond exclusive target and an objective three-capture stability rule while explicitly showing that the triggering observations themselves are not an acceptance set or a TI timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SSBX-P4-166",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "SSBX",
+        "printed_page_start": "4-166",
+        "printed_page_end": "4-166"
+      },
+      "assertion": "The TI SSBX instruction entry defines the one-word status-bit set encoding value 0xF5B0 with mask 0xFDF0: N selects ST0 or ST1, SBIT selects one raw status bit 0 through 15, and the selected bit is set while the remaining status bits are unaffected. The common slice accepts every encoded SBIT value, including ST1 reserved bit 10, without inferring additional side effects."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RSBX-P4-151",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "RSBX",
+        "printed_page_start": "4-151",
+        "printed_page_end": "4-151"
+      },
+      "assertion": "The TI RSBX instruction entry defines the one-word status-bit clear encoding value 0xF4B0 with mask 0xFDF0: N selects ST0 or ST1, SBIT selects one raw status bit 0 through 15, and the selected bit is cleared while the remaining status bits are unaffected. The common slice accepts every encoded SBIT value, including ST1 reserved bit 10, without inferring additional side effects."
+    },
+    {
+      "id": "E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W32: SSBX/RSBX status-bit vertical slice (planned)"
+      },
+      "assertion": "P2-W32 freezes SSBX and RSBX as a bounded fit for one private transactional status-bit application seam and the existing generic CPU retirement path. Shared status and CPU owners validate and publish value-owned candidates without opcode-identity branches, while family handlers remain isolated under the status-operations subtree."
     }
   ],
   "requirements": [
@@ -4240,6 +4286,56 @@
       "claim": "Enforce hosted portable O2/no-LTO and O3/LTO benchmark profiles with fixed scenario names and semantic identity, warmup and measurement rules, recorded compiler/platform/build context, and append-only comparison data while bench owns scenario construction. On one reference host, three stable observer-off captures of both profiles must place every fixed scenario below 60 nanoseconds per retired instruction. The contract reports spread and missing coverage and explicitly does not impose a hard cross-host CI threshold, machine-cycle timing claim, or W31B2 memory READY performance claim.",
       "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT", "E-PROJECT-P2-W31P-HOSTED-BASELINE-AUDIT"],
       "test_ids": ["T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT"]
+    },
+    {
+      "id": "REQ-COMMON-SSBX-RSBX-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word SSBX and RSBX rows with values 0xF5B0 and 0xF4B0, shared mask 0xFDF0, N at bit 9, SBIT at bits 3:0, and no input resources. The catalog must expose 16 encodings per row and mark repeatability INELIGIBLE without claiming timing or reserved-bit side effects.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SSBX-P4-166", "E-TI-C54X-SPRU172C-S4-RSBX-P4-151"],
+      "test_ids": ["T-COMMON-SSBX-RSBX-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-SSBX-RSBX-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode one-word SSBX and RSBX operands through value-owned fields: N selects ST0 or ST1 and SBIT selects raw bit 0 through 15. Every encoded SBIT value, including ST1 reserved bit 10, is admitted without inventing a second architectural effect.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SSBX-P4-166", "E-TI-C54X-SPRU172C-S4-RSBX-P4-151"],
+      "test_ids": ["T-COMMON-SSBX-RSBX-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/status/",
+      "claim": "Provide a private transactional status-bit write/application route that changes only the selected raw ST0 or ST1 bit and marks only that bit known, preserving every other raw and known bit. Set and clear candidates validate before commit and reject no encoded SBIT value solely because it names ST1 reserved bit 10.",
+      "evidence_ids": ["E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-STATUS-BIT-WRITE-APPLICATION"]
+    },
+    {
+      "id": "REQ-COMMON-SSBX-RSBX-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/status/",
+      "claim": "Implement pure SSBX and RSBX handlers that produce value-owned status-bit set or clear effects for the selected register and SBIT, preserve all unrelated status state, and add no memory, timing, repeat, interrupt, diagnostic, or environment behavior.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SSBX-P4-166", "E-TI-C54X-SPRU172C-S4-RSBX-P4-151"],
+      "test_ids": ["T-COMMON-SSBX-RSBX-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire SSBX and RSBX through generic decode, input, status-effect transaction, and sequential-PC paths with one instruction attempt and retirement, preserving unrelated architectural state and without an opcode-specific CPU branch, memory access, RPT/IRQ behavior, knob, or public ABI change.",
+      "evidence_ids": ["E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-SSBX-RSBX-RETIREMENT"]
     }
   ],
   "tests": [
@@ -5537,6 +5633,46 @@
       "path": "tests/contract/quality/perf/test_release_lto_benchmark_contract.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT"]
+    },
+    {
+      "id": "T-COMMON-SSBX-RSBX-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ssbx_rsbx_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SSBX-RSBX-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-SSBX-RSBX-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ssbx_rsbx_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SSBX-RSBX-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-STATUS-BIT-WRITE-APPLICATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/status/test_status_bit_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION"]
+    },
+    {
+      "id": "T-COMMON-SSBX-RSBX-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/status/test_ssbx_rsbx.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-SSBX-RSBX-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-SSBX-RSBX-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/status/test_cpu_ssbx_rsbx.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT"]
     }
   ]
 }

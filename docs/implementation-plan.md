@@ -5,10 +5,10 @@ are the active track. P2-W31B1 now implements the transactional DATA endpoint an
 persistent memory-instruction root. P2-W31P remains open with structural and
 correctness gates green; optimized hosted cohorts are below the 60 ns median
 target, while exact three-capture stability acceptance is pending/deferred.
-That hosted follow-up no longer blocks P2-W31B2, which is now the active ISA
-slice. W31B2 catalog/decode metadata and pure generic MEMORY effects are
-implemented, and CPU end-to-end retirement is green; focused/full/sanitizer
-review closure and immediate-READY benchmark follow-up remain pending.
+That hosted follow-up no longer blocks P2-W32, which is now the active ISA
+slice. W31B2 catalog/decode metadata, pure generic MEMORY effects, CPU
+end-to-end retirement, focused/full/sanitizer validation, and independent
+review are complete; its immediate-READY benchmark follow-up remains pending.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -74,7 +74,8 @@ function-pointer dispatch tables.
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
 | P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
 | P2-W31P performance architecture freeze | Implemented — structural/correctness gates green; hosted acceptance pending/deferred | The common CPU path now uses one catalog-derived opcode binding, one trusted value-owned execution packet with a static operand plan, and one trusted PC plan. Checked boundaries, generic resources, effect atomicity, observers, and memory WAIT/RESUME remain intact. Optimized hosted cohorts are below the 60 ns median target; exact three-capture stability remains open and does not block W31B2. |
-| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 implementation and retirement green, review closure pending | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 now registers and decodes `LD *ARx+,dst` plus `STL src,*ARx+`, implements their pure generic MEMORY effects, and proves CPU end-to-end retirement. Catalog coverage is 24 rows/1319 populated first words (4/24 reset-runnable); focused/full/sanitizer review closure and immediate-READY benchmark follow-up remain pending. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
+| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | Implemented — focused/full/sanitizer gates and two independent reviews green; immediate-READY benchmark follow-up pending | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 registers and decodes `LD *ARx+,dst` plus `STL src,*ARx+`, implements their pure generic MEMORY effects, and proves CPU end-to-end retirement. Catalog coverage is 24 rows/1319 populated first words (4/24 reset-runnable); the immediate-READY benchmark follow-up remains pending. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
+| P2-W32 SSBX/RSBX status-bit vertical slice | Planned — evidence and ownership activation | Add the TI SPRU172C SSBX/RSBX catalog/decode rows (`0xF5B0`/`0xF4B0`, mask `0xFDF0`), a generalized private status-bit write/application seam, pure set/clear handlers, and generic CPU retirement. Accept all encoded SBIT values, including ST1 reserved bit 10, while changing and marking known only the selected raw status bit. The planned slice is one word, has no input resources, is repeatability INELIGIBLE, and adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI. Expected post-slice coverage is 26 rows/1383 populated first words (likely 6/26 reset-runnable). |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -543,6 +544,41 @@ The common target does not claim machine-cycle cost, repeatability,
 adapter contract, dual data reads, parallel issue, posted writes, or any
 fault/recovery behavior not represented by the project endpoint protocol.
 Those remain explicit GAP or UNRESOLVED work for later evidence freezes.
+
+### P2-W32: SSBX/RSBX status-bit vertical slice (planned)
+
+This is the next non-memory ISA slice. Its evidence boundary is limited to the
+registered TI `SPRU172C` SSBX entry (printed p. 4-166) and RSBX entry (printed
+p. 4-151); no emulator, device profile, timing table, or inferred status
+policy is an authority. The rows are one-word forms with values `0xF5B0`
+(SSBX) and `0xF4B0` (RSBX), shared mask `0xFDF0`, `N` at bit 9, and `SBIT` at
+bits 3:0. They have no input resources and are marked repeatability
+`INELIGIBLE` from the registered instruction boundary.
+
+The slice adds five independently testable ownership pieces:
+
+1. `src/isa/catalog/` registers the two rows and their 16 encodings each;
+   `src/isa/decode/` owns the value-owned `N` and `SBIT` extraction.
+2. `src/sequencer/status/` generalizes the private status-bit write/application
+   route. A candidate changes and marks known only the selected raw ST0 or ST1
+   bit, preserving every unrelated raw and known bit and committing atomically.
+3. `src/isa/ops/status/` owns pure SSBX/RSBX handlers that produce set/clear
+   effects only. `N=1, SBIT=10` is accepted as the encoded ST1 reserved bit;
+   this slice does not invent a side effect for its reserved meaning.
+4. `src/cpu/` retires both forms through generic decode, input, status-effect,
+   and sequential-PC paths. No opcode-specific CPU branch, memory request,
+   RPT/IRQ behavior, timing API, knob, environment read, diagnostic callback,
+   or public ABI change is permitted.
+
+TDD starts with RED catalog/decode, status-application, pure-handler, and CPU
+retirement tests under mirrored owner paths. GREEN may proceed only after the
+existing status-field transaction is shown to fit the generalized raw-bit
+candidate; a new status route must remain private and transactional. Any need
+for status-register policy, reserved-bit behavior, memory, interrupts,
+repeat, parallel issue, timing, or public state is a GAP report, not a family
+workaround. The expected post-slice catalog is 26 rows and 1383 populated
+first words, with reset-runnable coverage likely 6/26; these are lookup
+population counts, not a distinct-instruction or timing claim.
 
 ### P2-W16: NOP-seeded opcode architecture
 

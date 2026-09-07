@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 130 immutable evidence records,
-197 requirements (166 `IMPLEMENTED`, 8 `PLANNED`, 23 `UNRESOLVED`), and 157 tests
-(149 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 133 immutable evidence records,
+202 requirements (166 `IMPLEMENTED`, 13 `PLANNED`, 23 `UNRESOLVED`), and 162 tests
+(149 `PASSING`, 13 `PLANNED`).
 
 ## Targets
 
@@ -174,6 +174,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-STL-SMEM-MOD2-P4-172-4-173` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §STL, `4-172`–`4-173` |
 | `E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W31P: trusted execution hot path and release-performance contract (planned)` |
 | `E-PROJECT-P2-W31P-HOSTED-BASELINE-AUDIT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `bench/audits/p2-w31p-baseline.json` anchor `P2-W31P-BASELINE-2026-09-07` |
+| `E-TI-C54X-SPRU172C-S4-SSBX-P4-166` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SSBX, `4-166` |
+| `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RSBX, `4-151` |
+| `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W32: SSBX/RSBX status-bit vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -474,6 +477,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/execution/` | `E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT` | `T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` |
 | `REQ-PROJECT-TRUSTED-PC-COMMIT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT` | `T-PROJECT-TRUSTED-PC-COMMIT` |
 | `REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT`, `E-PROJECT-P2-W31P-HOSTED-BASELINE-AUDIT` | `T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT` |
+| `REQ-COMMON-SSBX-RSBX-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-SSBX-P4-166`, `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | `T-COMMON-SSBX-RSBX-CATALOG` |
+| `REQ-COMMON-SSBX-RSBX-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-SSBX-P4-166`, `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | `T-COMMON-SSBX-RSBX-DECODE` |
+| `REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/status/` | `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-STATUS-BIT-WRITE-APPLICATION` |
+| `REQ-COMMON-SSBX-RSBX-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/status/` | `E-TI-C54X-SPRU172C-S4-SSBX-P4-166`, `E-TI-C54X-SPRU172C-S4-RSBX-P4-151` | `T-COMMON-SSBX-RSBX-EFFECTS` |
+| `REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W32-STATUS-BIT-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-SSBX-RSBX-RETIREMENT` |
 
 ## Tests
 
@@ -640,6 +648,11 @@ exist in the repository.
 | `T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/execution/test_trusted_instruction_path.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_instruction_path"}` | `REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` |
 | `T-PROJECT-TRUSTED-PC-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/pc/test_trusted_pc_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_pc_commit"}` | `REQ-PROJECT-TRUSTED-PC-COMMIT` |
 | `T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_release_lto_benchmark_contract.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT` |
+| `T-COMMON-SSBX-RSBX-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_ssbx_rsbx_metadata.c` | `null` | `REQ-COMMON-SSBX-RSBX-CATALOG` |
+| `T-COMMON-SSBX-RSBX-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_ssbx_rsbx_decode.c` | `null` | `REQ-COMMON-SSBX-RSBX-DECODE` |
+| `T-PROJECT-STATUS-BIT-WRITE-APPLICATION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/status/test_status_bit_effect.c` | `null` | `REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION` |
+| `T-COMMON-SSBX-RSBX-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/status/test_ssbx_rsbx.c` | `null` | `REQ-COMMON-SSBX-RSBX-EFFECTS` |
+| `T-PROJECT-CPU-SSBX-RSBX-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/status/test_cpu_ssbx_rsbx.c` | `null` | `REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT` |
 
 ## Correction and tombstone policy
 
