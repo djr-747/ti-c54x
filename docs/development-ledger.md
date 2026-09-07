@@ -4859,3 +4859,39 @@ rewritten after publication.
   performance claim, knob, environment read, logging, diagnostic fanout,
   allocator, mutable global, device/MMR behavior, or emulator dependency was
   added. Selection of the next ISA slice remains evidence-first.
+
+## 2026-09-08 — P2-W34 fixed-MOD2 LDU evidence activation
+
+- State: evidence and ownership activation landed as
+  `4d77bdf53cbaf9cd3211e28cce0a2d658b8da0d5`. P2-W34 is the active
+  bounded ISA slice. The P2-W31P hosted-stability and W31B immediate-READY
+  benchmark captures remain open and, by current owner direction, do not block
+  this evidence-fit reuse of the established fixed-MOD2 transaction path.
+- TI `SPRU172C` printed p. 4-79 defines one-word LDU with opcode diagram
+  `0001_001D_IAAAAAAA`, unsigned WORD16 load into destination bits 15:0,
+  clearing of bits 39:16 regardless of SXM, and no status-bit effect. Composed
+  with the registered standard-indirect MOD2 field, the selected row is
+  `0x1290/0xFEF8`, with D at bit 8 and ARF at bits 2:0, for 16 first words.
+- Four planned contracts separate catalog registration, value-owned decode,
+  pure MEMORY effect/completion, and generic CPU retirement. The existing
+  W31B contract supplies CMPT=0, ARP=0, old-AR transfer before postincrement,
+  READY-only architectural commit, and checked rejection at AR=0xffff. LDU
+  needs no SXM input or new input resource, effect kind, address kind, memory
+  lifecycle, or opcode-specific CPU branch.
+- Repeatability remains explicitly `UNRESOLVED`. LDU is absent from Table
+  2-28 and fixed MOD2 is not the separately forbidden long-offset/absolute
+  case, but absence from that negative list is not treated as positive
+  eligibility evidence.
+- Expected completed coverage is 28 catalog rows and 1,431 populated first
+  words, with reset-runnable coverage unchanged at 6/28. Activation accounting
+  is 139 evidence records; 212 requirements (176 IMPLEMENTED, 12 PLANNED,
+  24 UNRESOLVED); and 171 tests (159 PASSING, 12 PLANNED).
+- Validation: the evidence checker passed with 2 targets, 7 sources, 212
+  requirements, and 171 tests. `make quality-test` passed all 186 Python tests
+  plus evidence, knob, source-boundary, build-manifest, and observer-disabled
+  artifact checks; `git diff --check` passed. The existing 506-line operand
+  layout owner emitted its already-reviewed size warning and is unchanged.
+- No production, generated, or executable-test file changed. No knob, public
+  ABI, timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy,
+  environment read, diagnostic path, allocator, mutable global, or emulator
+  dependency was added. Implementation begins with owner-local RED tests.
