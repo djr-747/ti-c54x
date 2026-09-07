@@ -179,6 +179,38 @@ discarding, and no TI machine-cycle, DSP, or silicon timing claim is implied.
 The next replacement requires a new set ID and a documented external-condition
 change.
 
+#### SET3 replacement attempt (CPU1 warm-up)
+
+Each capture below used CPU1 affinity and a two-second same-core warm-up with
+`timeout 2s taskset -c 1 sha256sum /dev/zero` immediately before the benchmark. The clean
+source commit was `f6713e19b9516e89015b1163fa95eea3f0da46e5` for all six
+records.
+
+Set `P2-W31P-O2-F6713E1-CPU1-WARM-SET3` (`portable-o2-no-lto`) used binary
+`3471856af42d10128572be44038e323d4e15b23321032c7b32f70548e4363a58`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T12:36:32.801561+00:00 | 29.290, 42.266, 42.099, 42.935 | 9.378, 2.687, 48.169, 1.945 | `ld-asm` 48.169% > 15% |
+| 2026-09-07T12:36:55.817960+00:00 | 26.806, 40.612, 41.655, 42.086 | 56.331, 16.782, 6.175, 5.785 | `nop` 56.331%; `ld-dp` 16.782% > 15% |
+| 2026-09-07T12:37:21.898408+00:00 | 25.409, 38.726, 38.065, 39.001 | 14.463, 5.095, 2.295, 3.455 | none; individually meets all gates |
+
+Set `P2-W31P-O3-LTO-F6713E1-CPU1-WARM-SET3` (`portable-o3-lto`) used binary
+`2f36515659092aa944fede68b4333a485bcab1e75c78938168af9aeacbb1635e`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T12:37:45.078671+00:00 | 20.189, 26.511, 25.401, 25.777 | 8.705, 3.087, 0.532, 1.528 | none; individually meets all gates |
+| 2026-09-07T12:38:07.072135+00:00 | 22.442, 29.807, 29.142, 28.271 | 21.975, 21.771, 36.809, 4.729 | `nop`, `ld-dp`, `ld-asm` stability > 15% |
+| 2026-09-07T12:38:29.359592+00:00 | 20.448, 27.694, 28.147, 27.044 | 20.412, 5.644, 15.974, 4.199 | `nop` 20.412%; `ld-asm` 15.974% > 15% |
+
+Both SET3 cohorts are `INCONCLUSIVE` solely on the exact consecutive-three
+stability rule. O2 capture 3 and O3 capture 1 individually met every median and
+stability gate, but cannot be cherry-picked: acceptance requires three
+consecutive captures in one set. Records are retained without averaging or
+discarding, and no TI machine-cycle, DSP, or silicon timing claim is made. Any
+next replacement requires a new set ID and a documented changed condition.
+
 W31B2 remains paused until this gate is met. Its first two immediate-READY memory
 forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
 scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
