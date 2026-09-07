@@ -4462,3 +4462,40 @@ rewritten after publication.
   prove the release-profile/audit contract and exhaustive trusted binding;
   then add packet, trusted dispatch, CPU path, and PC-plan tests before their
   production implementations.
+
+## 2026-09-07 — P2-W31P trusted hot-path implementation
+
+- State: implementation and structural evidence complete; hosted acceptance
+  remains pending. The implementation landed as
+  `f36c1e30c8812f14f7ce9de1397e169c624699bf`. W31B2 remains paused until both
+  required three-capture hosted profile sets pass.
+- The common CPU path now performs one catalog-derived binding selection and
+  constructs one value-owned trusted execution packet carrying a prevalidated
+  static operand plan and trusted semantic handler. Checked packet construction
+  remains available for forged-input tests, while the CPU uses the private fast
+  constructor without a second binding lookup or dynamic layout resolution.
+- Trusted semantic leaves preserve the existing generic resource collection and
+  atomic effect boundary. The sequencer's checked and trusted PC APIs share one
+  planning implementation; trusted commit applies the already-proven plan rather
+  than repeating arithmetic or validation. Existing memory WAIT/RESUME behavior
+  and compile-time observer isolation remain intact, with focused regressions for
+  same-run WAIT-to-READY continuation and observer-enabled trusted retirement.
+- TDD evidence is GREEN. The exact committed tree passed standalone `make test`:
+  186 Python tests, the full C executable suite, the evidence and knob registries,
+  source-boundary checks over 285 files, build-manifest checks, and the
+  observer-disabled artifact check. Focused trusted-path strict, ASan/UBSan, and
+  observer-enabled builds also passed independent review. `git diff --check` and
+  the release-performance contract's direct CLI regression passed.
+- The registry now contains 130 evidence records, 197 requirements (161
+  implemented, 13 planned, 23 unresolved), and 157 tests (143 passing, 14
+  planned). No knob was added or changed. No public ABI, ISA inventory, timing
+  model, device behavior, environment access, allocator, file I/O, logging, or
+  emulator dependency was introduced.
+- The release benchmark target now forces an isolated O3/LTO rebuild, and the
+  acceptance checker verifies source/binary/scenario identity, audit coherence,
+  fixed-scenario coverage, the 60 ns ceiling, and the 0.15 range/median stability
+  limit. These are hosted implementation gates only, not TI machine-cycle claims.
+- Follow-up: from this clean implementation commit, build one O2/no-LTO binary
+  and one O3/LTO binary, retain three consecutive captures from each, and run the
+  acceptance checker over each same-binary set. Record inconclusive sets rather
+  than silently replacing them; close W31P only after both profiles pass.
