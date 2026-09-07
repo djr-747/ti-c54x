@@ -4687,3 +4687,33 @@ rewritten after publication.
 - No knob, public ABI, environment read, logging, allocation, mutable global,
   machine-cycle API, repeat behavior, device/MMR behavior, timing model, or TI
   silicon claim changed.
+
+## 2026-09-08 — P2-W32 SSBX/RSBX evidence activation
+
+- State: evidence and ownership activation landed as
+  `99243d2e3afa74c922a000db1cfcfe514c90fdae`. P2-W32 is the active
+  non-memory ISA slice; P2-W31P hosted stability and the W31B2 immediate-READY
+  benchmark follow-ups remain open and unchanged.
+- TI `SPRU172C` evidence now pins one-word SSBX at `0xF5B0/0xFDF0`
+  (printed p. 4-166) and RSBX at `0xF4B0/0xFDF0` (printed p. 4-151), with N at
+  bit 9, SBIT at bits 3:0, no input resources, and repeatability INELIGIBLE.
+  SSBX sets and RSBX clears the selected raw ST0/ST1 bit; every encoded SBIT,
+  including ST1 reserved bit 10, is admitted without invented side effects.
+- Five planned contracts separate catalog, decode, architectural handler
+  effects, the project-owned transactional status-bit application seam, and
+  project-owned generic CPU retirement. The expected completed catalog is 26
+  rows and 1,383 populated first words, likely 6/26 reset-runnable.
+- Review corrected draft SSBX/RSBX set-versus-clear prose before publication
+  and separated the shared transaction and CPU-retirement requirements from TI
+  architectural claims through the immutable P2-W32 project-contract record.
+  Current registry totals are 133 evidence records, 202 requirements (166
+  implemented, 13 planned, 23 unresolved), and 162 tests (149 passing, 13
+  planned).
+- Validation: the evidence checker passed with 2 targets, 7 sources, 202
+  requirements, and 162 tests; the complete `make quality-test` gate passed all
+  186 Python tests plus evidence, knob, source-boundary, build-manifest, and
+  observer-disabled artifact checks.
+- No production or generated source, executable test, public ABI, memory path,
+  RPT/IRQ behavior, timing claim, knob, environment read, diagnostic path,
+  allocator, or mutable global changed. TDD proceeds with RED owner-local tests
+  before any catalog row or status-bit implementation is added.
