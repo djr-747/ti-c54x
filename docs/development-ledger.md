@@ -4383,7 +4383,7 @@ rewritten after publication.
 - State: complete. The plan/evidence freeze landed as `7fbd6ec`; the
   implementation landed as `cbb428b`. Its GitHub Actions run
   [34077005133](https://github.com/djr-747/ti-c54x/actions/runs/34077005133)
-  was still in progress when this ledger record was written.
+  is green across the repository's full CI matrix.
 - TDD evidence is RED/GREEN. Focused strict and ASan/UBSan bus, sequencer, and
   CPU tests passed, followed by an independent combined review. Full standalone
   local `make test` is green: 176 Python tests plus all C tests, evidence and
