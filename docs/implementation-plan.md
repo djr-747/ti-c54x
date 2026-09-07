@@ -2,7 +2,9 @@
 
 Status: the standalone foundation baseline is established and ISA vertical slices
 are the active track. P2-W31B1 now implements the transactional DATA endpoint and
-persistent memory-instruction root; the fixed-MOD2 LD/STL pair is next in W31B2.
+persistent memory-instruction root. W31B2 is explicitly paused behind the P2-W31P
+performance architecture freeze; no additional memory opcode fanout proceeds until
+the trusted execution path and its performance evidence are in place.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -67,7 +69,8 @@ function-pointer dispatch tables.
 | P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
 | P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
-| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 next | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 registers and retires `LD *ARx+,dst` plus `STL src,*ARx+`. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
+| P2-W31P performance architecture freeze | Active — W31B2 paused pending this freeze | Move the common CPU path to one catalog-derived opcode binding and one trusted value-owned execution packet, with generated/static operand plans and one trusted PC plan. Preserve checked decode/dispatch boundaries for forged-input tests, generic resource collection, effect atomicity, observers, and the existing memory WAIT path. Pass structural proofs and the hosted performance gate before more ISA fanout. |
+| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 paused behind P2-W31P | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 will register and retire `LD *ARx+,dst` plus `STL src,*ARx+` only after the P2-W31P gate. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, catalog-sixteen, and catalog-twenty-two clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -285,12 +288,124 @@ forms to later P2-W31B+ evidence freezes. A lane that needs any of those seams
 must report a GAP with its evidence, owner, tests, and hot-path consequence
 rather than broaden this prerequisite.
 
+### P2-W31P: trusted execution hot path and release-performance contract (planned)
+
+State: active evidence freeze. W31B2 remains paused until this work piece is
+implemented and its structural and hosted-performance evidence is green.
+
+W31B2 is paused at this boundary. The current implementation has clean ownership
+and transactional semantics, but the hosted audit shows that the common retired
+instruction path still performs too much defensive work. The next architecture
+slice is therefore a shared CPU/decode optimization, not another opcode family.
+It must improve the common path without weakening the checked contracts or making
+the library dependent on a particular compiler, linker, host, or emulator.
+
+The frozen shape is:
+
+- `src/isa/catalog/` continues to own the compact generated first-word-to-ID
+  lookup and immutable scalar metadata. `src/isa/ops/dispatch/` owns the
+  catalog-derived per-ID binding that combines those immutable facts with the
+  semantic handler. A CPU iteration performs one first-word ID lookup and one
+  per-ID binding selection. It does not repeatedly look up metadata, revalidate
+  a layout, or re-extract fields after the packet has been prepared.
+- `src/isa/decode/` owns the checked decode boundary and creates one private,
+  value-owned trusted execution packet. Packet preparation consumes the selected
+  binding and one prevalidated generated/static operand plan, then copies the
+  decoded instruction facts, handler, and extracted operand values into the
+  packet. The packet retains no data pointer or caller-owned storage; a stored
+  function pointer refers only to process-lifetime code. It is prepared once per
+  instruction and is not a public mutable object. Checked decode and dispatch
+  entry points remain available for forged-input tests; the fast path consumes
+  only a packet produced by the private constructor.
+- A packet lives only through ordinary semantic dispatch. If it produces a
+  MEMORY effect, the existing root transaction copies the decoded instruction,
+  input, effect, address, and PC candidates before the packet expires. The root
+  retains no packet pointer. Its endpoint context remains the separately
+  borrowed caller-owned object copied into the CPU bus descriptor for the CPU
+  lifetime; that endpoint lifetime is not packet ownership and is unchanged by
+  this work.
+- `src/cpu/input/` continues to own generic resource collection. The CPU does not
+  add an opcode switch, family-specific resource lookup, or handler-specific field
+  extraction. New resources extend the generic collector and its packet contract.
+- `src/cpu/execution/` owns the trusted packet loop and one precomputed PC plan.
+  PC validation and span arithmetic happen while preparing the plan; retirement
+  performs one trusted commit after the semantic effect is proven. The loop keeps
+  the existing attempt/retire/stop behavior and never turns opcode identity into
+  CPU orchestration logic.
+- `src/sequencer/instruction/`, the existing effect transaction, and its owned
+  status/accumulator/temporary leaves retain effect atomicity, candidate
+  validation, commit ordering, observer boundaries, and resource/effect
+  ownership. The memory WAIT/RESUME path is unchanged: a pending transaction is
+  resumed before fetch and is never refetched, redecoded, or reissued by the
+  optimization.
+- `bench/` owns fixed-scenario construction and observer-off captures; `tests/`
+  mirrors the owning source subtree for packet, binding, PC-plan, atomicity, and
+  regression proofs. No new monolithic `cpu.c`, decoder, or opcode-family file is
+  permitted; a source owner approaching the project size review threshold must
+  split before adding another concern.
+
+The portable default deliberately does not use a 65,536-entry pointer table or
+GNU computed goto. A full pointer table imposes a large, permanently resident
+data structure and avoidable relocation/cache pressure for a vendored library;
+computed goto would make the default dispatch contract compiler-specific. The
+catalog-derived binding and direct generated lookup retain predictable portable C
+while allowing a consumer to opt into ordinary compiler IPO/LTO. The standard
+consumer build remains free to choose IPO; the core must not require it. The
+benchmark release profile may use portable `-O3` plus LTO and must record the
+exact flags in every capture.
+
+TDD and validation proceed in explicit phases:
+
+1. RED: capture the current O2/no-LTO and O3/LTO audit, add packet and binding
+   contract tests, and add deterministic structural checks for one lookup/one
+   binding, one packet-preparation extraction pass, one PC plan, and no
+   opcode-specific CPU switch.
+2. GREEN: add the generated/static binding and value-owned trusted packet behind
+   the existing checked decode/dispatch seams. Prove forged IDs, layouts,
+   operands, PC spans, and packets are rejected before the trusted path; prove
+   valid packets execute with the same effect, observer, stop, and retirement
+   behavior as the checked path.
+3. GREEN: route the CPU fast path through the packet and one PC plan while keeping
+   memory WAIT/READY/FAULT and cancellation behavior byte-for-byte equivalent at
+   the contract level. Add strict, sanitizer, observer-off, and consumer-build
+   evidence before touching W31B2.
+4. PERF: repeat each fixed scenario in three stable same-host captures for both
+   the portable O2/no-LTO diagnostic profile and the advisory portable
+   O3/LTO release profile, record compiler/linker/platform metadata, and compare
+   against the frozen audit. A set is exactly three consecutive captures with
+   identical binary and scenario hashes. Every target scenario in every capture
+   must remain below 60 ns and have `(max - min) / median <= 0.15`. A failing
+   set is retained as `INCONCLUSIVE`, never silently discarded or selectively
+   averaged; a replacement uses a new set ID and records the changed external
+   condition.
+5. W31B2 gate: add immediate-READY `LD *ARx+,dst` and `STL src,*ARx+` benchmark
+   scenarios. Their observer-off fixed-scenario medians must meet the same target
+   before ISA fanout resumes. WAIT-capable memory remains a separate contract and
+   is not hidden in the benchmark's immediate-READY path.
+
+Acceptance is an implementation-throughput target, not a TI timing claim: on one
+same host, both observer-off profiles must record a median below 60 ns per retired
+instruction for every fixed scenario in three stable captures. The O2/no-LTO
+requirement prevents IPO from hiding a structurally expensive execution path;
+O3/LTO proves the intended release profile. This is advisory evidence and is not
+a flaky CI threshold. Structural tests must also prove the binding/packet/PC-plan
+invariants deterministically, and no result may trade away effect atomicity,
+observer isolation, or memory WAIT semantics. There is no runtime knob,
+environment read, diagnostic path, A/B switch, or test instrumentation in the
+production core for this work; source checks and measurement live in their test
+and benchmark owners.
+
+The triggering observations and the exact commands, hashes, host/toolchain
+metadata, raw medians, ranges, and acceptance rule are committed in
+`bench/audits/p2-w31p-baseline.json`. Those observations freeze the problem;
+they do not constitute the later three-capture acceptance set.
+
 ### P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)
 
 State: W31B1 is implemented with focused strict and ASan/UBSan tests, an
 independent combined review, and the full standalone local gate green. W31B2 is
-next and uses these seams for the first fixed-MOD2 data-memory pair. No catalog
-row or opcode handler was added during W31B1.
+specified below but paused until P2-W31P's structural and performance gate is
+green. No catalog row or opcode handler was added during W31B1.
 
 The public boundary is deliberately small and vendorable:
 

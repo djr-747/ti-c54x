@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "audit_id": "P2-W31P-BASELINE-2026-09-07",
+  "module_contract": {
+    "owns": "machine-readable hosted throughput observations that triggered the P2-W31P architecture freeze",
+    "does_not_own": "TI timing, CI thresholds, opcode semantics, or production configuration"
+  },
+  "source": {
+    "git_sha": "26b28f00e3c56d1c5ea820be7f3beccb5592633a",
+    "production_source_tree": "commit-exact",
+    "catalog_instruction_count": 22,
+    "benchmark_source_sha256": "0676782d9d94f1ac302948ce9a4d79c8acf309ff6d80a5a65b83a0c2dc4a97d2",
+    "scenario_semantic_hash": "5ca43b0d88c05aa624b6516d454425922ac26464e0399857770eb52dadb3b84c"
+  },
+  "host": {
+    "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.43",
+    "platform_machine": "x86_64",
+    "cpu": "12th Gen Intel(R) Core(TM) i7-1255U",
+    "affinity": "unconstrained"
+  },
+  "profiles": [
+    {
+      "id": "portable-o2-no-lto-a",
+      "captured_utc": "2026-09-07T09:51:01.720009+00:00",
+      "source_vcs_state": "clean",
+      "command": "make bench",
+      "build_flags": "-Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0 -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror",
+      "binary_sha256": "32428a03b8c07a5602261e4645e67ae68843f08261d8e155c035dddb4f520eb5",
+      "results": [
+        {"scenario": "nop", "semantic_hash": "856a941d29b43c43", "retired_count": 800000, "ns_per_instruction": 75.475, "min_elapsed_ns": 52913553, "median_elapsed_ns": 60379981, "max_elapsed_ns": 72954921},
+        {"scenario": "ld-dp", "semantic_hash": "72a5067b3a02489f", "retired_count": 800000, "ns_per_instruction": 134.411, "min_elapsed_ns": 95775015, "median_elapsed_ns": 107529078, "max_elapsed_ns": 113474588},
+        {"scenario": "ld-asm", "semantic_hash": "731a51f47ad7e422", "retired_count": 800000, "ns_per_instruction": 134.614, "min_elapsed_ns": 102778080, "median_elapsed_ns": 107690980, "max_elapsed_ns": 162349845},
+        {"scenario": "ld-arp", "semantic_hash": "5d08d163159be334", "retired_count": 800000, "ns_per_instruction": 181.788, "min_elapsed_ns": 100279392, "median_elapsed_ns": 145430114, "max_elapsed_ns": 160109573},
+        {"scenario": "mixed-current", "semantic_hash": "f59db4e45ad10a06", "retired_count": 800000, "ns_per_instruction": 125.770, "min_elapsed_ns": 91506360, "median_elapsed_ns": 100616330, "max_elapsed_ns": 142571215}
+      ]
+    },
+    {
+      "id": "portable-o2-no-lto-b",
+      "captured_utc": "2026-09-07T10:23:30.008899+00:00",
+      "source_vcs_state": "documentation-dirty-production-exact",
+      "command": "python3 tools/perf/capture.py --benchmark build-bench/ti_c54x_bench --root . --allow-dirty --compiler cc --build-flags <recorded-build-flags>",
+      "build_flags": "-Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0 -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror",
+      "binary_sha256": "32428a03b8c07a5602261e4645e67ae68843f08261d8e155c035dddb4f520eb5",
+      "results": [
+        {"scenario": "nop", "semantic_hash": "856a941d29b43c43", "retired_count": 800000, "ns_per_instruction": 111.626, "min_elapsed_ns": 84325601, "median_elapsed_ns": 89300853, "max_elapsed_ns": 101447568},
+        {"scenario": "ld-dp", "semantic_hash": "72a5067b3a02489f", "retired_count": 800000, "ns_per_instruction": 124.096, "min_elapsed_ns": 93337304, "median_elapsed_ns": 99276498, "max_elapsed_ns": 153554535},
+        {"scenario": "ld-asm", "semantic_hash": "731a51f47ad7e422", "retired_count": 800000, "ns_per_instruction": 121.174, "min_elapsed_ns": 92809410, "median_elapsed_ns": 96938946, "max_elapsed_ns": 114109460},
+        {"scenario": "ld-arp", "semantic_hash": "5d08d163159be334", "retired_count": 800000, "ns_per_instruction": 121.829, "min_elapsed_ns": 93522428, "median_elapsed_ns": 97462906, "max_elapsed_ns": 99940640},
+        {"scenario": "mixed-current", "semantic_hash": "f59db4e45ad10a06", "retired_count": 800000, "ns_per_instruction": 108.691, "min_elapsed_ns": 84131593, "median_elapsed_ns": 86952911, "max_elapsed_ns": 87808421}
+      ]
+    },
+    {
+      "id": "portable-o3-lto-a",
+      "captured_utc": "2026-09-07T10:22:50.026744+00:00",
+      "source_vcs_state": "documentation-dirty-production-exact",
+      "command": "make -B BENCH_BUILD_DIR=<temporary> BENCH_CFLAGS='<recorded-build-flags>' <temporary>/ti_c54x_bench; python3 tools/perf/capture.py --benchmark <temporary>/ti_c54x_bench --root . --allow-dirty --compiler cc --build-flags <recorded-build-flags>",
+      "build_flags": "-Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0 -O3 -flto -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror",
+      "binary_sha256": "3c103e8aec300d167a9d1e3c10b57730c5b3615ed462eb8947644b0162528960",
+      "results": [
+        {"scenario": "nop", "semantic_hash": "856a941d29b43c43", "retired_count": 800000, "ns_per_instruction": 31.476, "min_elapsed_ns": 24697198, "median_elapsed_ns": 25180809, "max_elapsed_ns": 28057974},
+        {"scenario": "ld-dp", "semantic_hash": "72a5067b3a02489f", "retired_count": 800000, "ns_per_instruction": 51.368, "min_elapsed_ns": 40407298, "median_elapsed_ns": 41094720, "max_elapsed_ns": 41652552},
+        {"scenario": "ld-asm", "semantic_hash": "731a51f47ad7e422", "retired_count": 800000, "ns_per_instruction": 50.925, "min_elapsed_ns": 38998699, "median_elapsed_ns": 40740125, "max_elapsed_ns": 43073339},
+        {"scenario": "ld-arp", "semantic_hash": "5d08d163159be334", "retired_count": 800000, "ns_per_instruction": 49.440, "min_elapsed_ns": 37835221, "median_elapsed_ns": 39551957, "max_elapsed_ns": 41245269},
+        {"scenario": "mixed-current", "semantic_hash": "f59db4e45ad10a06", "retired_count": 800000, "ns_per_instruction": 44.582, "min_elapsed_ns": 33337280, "median_elapsed_ns": 35665353, "max_elapsed_ns": 42779391}
+      ]
+    }
+  ],
+  "acceptance_policy": {
+    "target_ns_per_instruction_exclusive": 60.0,
+    "target_scenarios": ["nop", "ld-dp", "ld-asm", "ld-arp"],
+    "profiles": ["portable-o2-no-lto", "portable-o3-lto"],
+    "capture_set_size": 3,
+    "same_binary_and_scenario_hashes_required": true,
+    "max_within_capture_range_over_median": 0.15,
+    "rule": "Every target scenario in every capture must be below the target and at or below the stability ratio. A failing set is retained as INCONCLUSIVE; it is never silently discarded or selectively averaged. A replacement uses a new set ID and records the external-condition change."
+  },
+  "non_claims": [
+    "No TI machine-cycle or silicon timing claim",
+    "No hard cross-host CI threshold",
+    "No W31B2 data-memory READY performance result"
+  ]
+}

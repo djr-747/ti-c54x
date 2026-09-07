@@ -2076,6 +2076,34 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"chapter": "4", "section": "STL", "printed_page_start": "4-172", "printed_page_end": "4-173"},
       "assertion": "The STL instruction description supplies the fixed single-word indirect encoding used by this slice: value 0x8090, mask 0xFEF8, S in bit 8, ARF in bits 2-0, and fixed I=1/MOD2, yielding 16 first-word encodings. It stores the low 16 bits of the selected source accumulator to the data-memory operand; this unshifted form has no encoded shift and no SXM-dependent transform claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W31P: trusted execution hot path and release-performance contract (planned)"
+      },
+      "assertion": "P2-W31P freezes a private trusted execution path whose catalog-derived per-ID binding, value-owned execution packet, semantic dispatch, CPU orchestration, and single-plan PC commit are prevalidated once and retain checked bridge/wrapper APIs for boundary and fault paths. The fast family path must not repeat catalog metadata, operand-layout, or one-word extension-helper work; it must preserve generic resource collection, atomic architectural effects, and compile-time observer behavior. Hosted O2/no-LTO and O3/LTO measurements are an advisory same-host performance contract with fixed scenario identity and recorded toolchain context, not machine-cycle timing, a hard cross-host CI threshold, or a claim about W31B2 memory READY performance. W31B2 opcode implementation remains paused behind this contract. No runtime/config knob, environment read, diagnostic surface, or emulator dependency is introduced."
+    },
+    {
+      "id": "E-PROJECT-P2-W31P-HOSTED-BASELINE-AUDIT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "bench/audits/p2-w31p-baseline.json",
+        "anchor": "P2-W31P-BASELINE-2026-09-07"
+      },
+      "assertion": "The committed P2-W31P baseline audit records the exact source and binary hashes, commands, compiler flags, host/toolchain identity, scenario identities, medians, and observed ranges for two portable O2/no-LTO captures and one portable O3/LTO capture. It freezes a 60-nanosecond exclusive target and an objective three-capture stability rule while explicitly showing that the triggering observations themselves are not an acceptance set or a TI timing claim."
     }
   ],
   "requirements": [
@@ -4152,6 +4180,66 @@
       "claim": "Retire fixed-MOD2 LD and STL through the generic decode, input, memory endpoint, continuation, address, effect, and PC transaction seams. A READY read or write commits the prevalidated PC, selected AR postincrement, and opcode result atomically; WAIT, FAULT, cancellation, invalid SXM, and rejected boundary candidates leave architectural state and counters unchanged except for the specified attempt/retirement phase.",
       "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-FIXED-MOD2-LD-RETIREMENT", "T-PROJECT-CPU-FIXED-MOD2-STL-RETIREMENT"]
+    },
+    {
+      "id": "REQ-PROJECT-TRUSTED-OPCODE-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Derive an immutable per-ID opcode binding from the canonical catalog, including a canonical unknown binding for every unregistered ID. Exhaustive 16-bit comparison against the compact checked direct-ID lookup must prove identical binding identity, unknown behavior, catalog metadata, and semantic-handler presence for every first word; generation and validation own the proof, while the execution path performs no runtime table construction or mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-TRUSTED-EXECUTION-PACKET",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Define a private value-owned trusted execution packet prepared once by consuming the selected immutable binding and prevalidated operand plan. The packet copies decoded facts, a process-lifetime code pointer, and extracted operand values, retains no data pointer or caller-owned storage, and reaches a trusted family only through the private constructor. Valid packets must be effect-equivalent to the checked path without re-resolving layout or extraction metadata; forged inputs remain covered by the retained checked APIs.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-EXECUTION-PACKET"]
+    },
+    {
+      "id": "REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/",
+      "claim": "Retain checked semantic dispatch wrappers for boundary and forged-input tests while allowing the trusted family path to dispatch through the immutable binding and packet without metadata or operand-layout revalidation. For every validated instruction input, checked and trusted dispatch must produce equivalent value-owned effects and resource consumption; checked wrappers retain their existing rejection and output-preservation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-SEMANTIC-DISPATCH"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/execution/",
+      "claim": "Provide a CPU trusted-instruction path with one catalog binding lookup per attempted instruction, no one-word extension helper on the already-complete fast path, generic resource collection, and atomic effect/observer behavior equivalent to the checked path. Unknown, malformed, stopped, and checked-bridge failures retain their existing status and mutation boundaries rather than entering the trusted family path.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH"]
+    },
+    {
+      "id": "REQ-PROJECT-TRUSTED-PC-COMMIT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Commit sequential PC advancement through one precomputed trusted plan while retaining the checked public/private program-PC bridge API for validation and faults. Checked and trusted plans must agree on width, carrier range, overflow rejection, candidate PC, and no-mutation-on-rejection behavior; the trusted commit must not recompute extension or width decisions.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-PC-COMMIT"]
+    },
+    {
+      "id": "REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Enforce hosted portable O2/no-LTO and O3/LTO benchmark profiles with fixed scenario names and semantic identity, warmup and measurement rules, recorded compiler/platform/build context, and append-only comparison data while bench owns scenario construction. On one reference host, three stable observer-off captures of both profiles must place every fixed scenario below 60 nanoseconds per retired instruction. The contract reports spread and missing coverage and explicitly does not impose a hard cross-host CI threshold, machine-cycle timing claim, or W31B2 memory READY performance claim.",
+      "evidence_ids": ["E-PROJECT-P2-W31P-TRUSTED-HOT-PATH-CONTRACT", "E-PROJECT-P2-W31P-HOSTED-BASELINE-AUDIT"],
+      "test_ids": ["T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT"]
     }
   ],
   "tests": [
@@ -5401,6 +5489,54 @@
       "path": "tests/unit/cpu/isa/store/test_cpu_stl_smem.c",
       "runner": null,
       "requirement_ids": ["REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-TRUSTED-OPCODE-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_trusted_execution_packet.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-EXECUTION-PACKET"]
+    },
+    {
+      "id": "T-PROJECT-TRUSTED-SEMANTIC-DISPATCH",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/dispatch/test_trusted_semantic_dispatch.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH"]
+    },
+    {
+      "id": "T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/execution/test_trusted_instruction_path.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH"]
+    },
+    {
+      "id": "T-PROJECT-TRUSTED-PC-COMMIT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/pc/test_trusted_pc_commit.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-PC-COMMIT"]
+    },
+    {
+      "id": "T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_release_lto_benchmark_contract.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT"]
     }
   ]
 }

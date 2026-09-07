@@ -60,6 +60,66 @@ rather than a regression percentage. There is intentionally no flaky CI throughp
 history is for trend review, while correctness and architectural claims remain
 test/evidence work.
 
+## P2-W31P performance architecture freeze
+
+The current hosted numbers are high enough to pause W31B2 and optimize the
+common retired-instruction path first. They are implementation-throughput
+observations only: host scheduling, frequency scaling, compiler choices, and
+linker decisions are visible in the measurement, and none is a TI machine-cycle
+or silicon timing claim.
+
+The frozen audit (median nanoseconds per retired instruction) is committed in
+`bench/audits/p2-w31p-baseline.json` with exact commands, source/binary hashes,
+host/toolchain metadata, ranges, and semantic hashes:
+
+| Build/profile | `nop` | `ld-dp` | `ld-asm` | `ld-arp` | `mixed-current` |
+|---|---:|---:|---:|---:|---:|
+| Portable O2, no LTO, capture A | 75.475 | 134.411 | 134.614 | 181.788 | 125.770 |
+| Portable O2, no LTO, capture B | 111.626 | 124.096 | 121.174 | 121.829 | 108.691 |
+| Portable O3 + LTO, capture A | 31.476 | 51.368 | 50.925 | 49.440 | 44.582 |
+
+The two identical-binary O2 observations also demonstrate why a single hosted
+run cannot establish a performance conclusion. The mixed workload is evolving
+and is never substituted for a fixed scenario. These baseline observations
+freeze the problem only; none is the later acceptance set.
+
+The corresponding architecture decision is one catalog-derived binding and one
+private value-owned trusted execution packet per instruction. The packet is
+prepared once from the checked decode boundary by consuming a generated/static
+operand plan; it carries copied decode facts, the selected process-lifetime code
+pointer, and copied operand values, but retains no data pointer or caller-owned
+storage. The fast CPU path performs one first-word ID lookup and one binding
+selection; it does not repeat metadata or layout validation or field extraction.
+Generic resource collection, one
+trusted PC plan/commit, effect atomicity, observer isolation, and the existing
+memory WAIT/RESUME path remain intact. Checked decode/dispatch APIs are retained
+for forged-input tests. The portable default rejects both a 65,536-entry pointer
+table and GNU computed goto; ordinary consumer IPO/LTO remains opt-in, while the
+benchmark profile may use portable O3+LTO and must record its flags.
+
+The performance gate is advisory and same-host: three stable observer-off captures
+of both the portable O2/no-LTO diagnostic profile and portable O3/LTO release
+profile must put every fixed scenario below 60 ns per retired instruction. Requiring
+the no-LTO profile to pass prevents IPO from hiding an unnecessarily expensive
+execution shape. There is no CI throughput threshold and no runtime knob for this
+work. Structural tests prove one lookup/one binding, one packet-preparation
+extraction pass, one PC plan, and the absence of opcode-specific CPU dispatch;
+the production core gains no test counters or diagnostic instrumentation.
+
+One acceptance set is exactly three consecutive captures with identical binary
+and scenario hashes. For every target scenario in every capture,
+`(max_elapsed_ns - min_elapsed_ns) / elapsed_ns` must be at most 0.15 and the
+median must be below 60 ns. A failing set is retained as `INCONCLUSIVE`; it is
+not silently discarded or selectively averaged. A replacement set has a new ID
+and records the external condition that changed.
+
+W31B2 remains paused until this gate is met. Its first two immediate-READY memory
+forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
+scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
+benchmark must not turn a WAIT-capable endpoint into an immediate-only semantic
+shortcut: memory WAIT, READY, FAULT, cancellation, and commit visibility continue
+to be tested through their existing contract.
+
 The intended command surface is:
 
 ```text
