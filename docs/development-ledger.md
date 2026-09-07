@@ -4425,3 +4425,40 @@ rewritten after publication.
   24 rows and from 1287 to 1319 populated first words. Broader data-memory
   families remain separate evidence-led slices rather than implicit claims of
   this foundation.
+
+## 2026-09-07 — P2-W31P trusted hot-path architecture and baseline freeze
+
+- State: active. The evidence, ownership, structural, and hosted-performance
+  contract landed as `bc06ac86f9aaf4caa76cc2c83ed4fa4540a04889`.
+  P2-W31B2 remains paused until W31P implementation and performance acceptance
+  are green.
+- The freeze selects one compact catalog first-word lookup, one immutable
+  catalog-derived per-ID binding, one private value-owned trusted execution
+  packet, one operand-extraction pass, and one precomputed PC plan. Checked
+  decode, dispatch, and PC APIs remain at forged-input and failure boundaries;
+  generic resource collection, atomic effects, observer isolation, and the
+  persistent memory WAIT/RESUME transaction remain unchanged contracts.
+- The committed `bench/audits/p2-w31p-baseline.json` records the exact W31B1
+  source identity, O2/no-LTO and O3/LTO commands and flags, compiler/host
+  identity, binary and semantic hashes, sample ranges, and medians. The
+  triggering O2 medians range from 75.475 to 181.788 ns per instruction across
+  the fixed scenarios; O3/LTO ranges from 31.476 to 51.368 ns. These are hosted
+  implementation observations, not TI timing evidence or an acceptance set.
+- Acceptance requires three consecutive same-binary, same-scenario-hash
+  captures for each profile. Every fixed-scenario capture must be below 60 ns
+  per retired instruction with range/median at most 0.15. Failures are retained
+  as `INCONCLUSIVE`; there is no cross-host CI threshold, runtime knob, test
+  instrumentation, environment read, or production diagnostic path.
+- Validation: the complete standalone `make test` gate passed after the freeze
+  was made coherent: 176 Python tests, all C executables, evidence/knob/source/
+  manifest checks, and the observer-disabled artifact check. JSON parsing and
+  `git diff --check` also passed. Validation corrected an unrelated NOP owner
+  drift and two omitted evidence-index links before commit.
+- Registry: 130 evidence records, 197 requirements (155 implemented, 19
+  planned, 23 unresolved), and 157 tests (137 passing, 20 planned). No knob,
+  production source, public ABI, ISA behavior, memory behavior, timing model,
+  firmware, device, or emulator dependency changed.
+- Follow-up: begin W31P RED with the six registered owner-mirrored tests. First
+  prove the release-profile/audit contract and exhaustive trusted binding;
+  then add packet, trusted dispatch, CPU path, and PC-plan tests before their
+  production implementations.
