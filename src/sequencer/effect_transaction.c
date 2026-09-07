@@ -14,6 +14,7 @@
 #include "effect_transaction.h"
 
 #include "accumulator/effect_apply.h"
+#include "status/bit_effect_apply.h"
 #include "status/field_effect_apply.h"
 #include "temporary/effect_apply.h"
 
@@ -29,6 +30,22 @@ static ti_c54x_effect_transaction_status map_status_effect(
     case TI_C54X_STATUS_FIELD_EFFECT_UNSUPPORTED:
         return TI_C54X_EFFECT_TRANSACTION_UNSUPPORTED;
     case TI_C54X_STATUS_FIELD_EFFECT_INVALID_EFFECT:
+    default:
+        return TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT;
+    }
+}
+
+static ti_c54x_effect_transaction_status map_status_bit_effect(
+    ti_c54x_status_bit_effect_status status)
+{
+    switch (status) {
+    case TI_C54X_STATUS_BIT_EFFECT_OK:
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    case TI_C54X_STATUS_BIT_EFFECT_INVALID_ARGUMENT:
+        return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+    case TI_C54X_STATUS_BIT_EFFECT_UNSUPPORTED:
+        return TI_C54X_EFFECT_TRANSACTION_UNSUPPORTED;
+    case TI_C54X_STATUS_BIT_EFFECT_INVALID_EFFECT:
     default:
         return TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT;
     }
@@ -103,6 +120,24 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
         return TI_C54X_EFFECT_TRANSACTION_OK;
     }
 
+    case TI_C54X_OP_EFFECT_STATUS_BIT_WRITE:
+    {
+        ti_c54x_status_register_state candidate;
+
+        if (status == NULL) {
+            return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+        }
+        candidate = *status;
+        result = map_status_bit_effect(ti_c54x_status_bit_effect_apply(
+            effect, &candidate));
+        if (result != TI_C54X_EFFECT_TRANSACTION_OK) {
+            return result;
+        }
+        out->candidate.status_bit = candidate;
+        out->target = TI_C54X_EFFECT_TRANSACTION_STATUS_BIT;
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    }
+
     case TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE:
     {
         ti_c54x_effect_transaction_accumulator_candidate candidate;
@@ -164,6 +199,12 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_commit(
             return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
         }
         *status = transaction->candidate.status_field;
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    case TI_C54X_EFFECT_TRANSACTION_STATUS_BIT:
+        if (status == NULL) {
+            return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+        }
+        *status = transaction->candidate.status_bit;
         return TI_C54X_EFFECT_TRANSACTION_OK;
     case TI_C54X_EFFECT_TRANSACTION_ACCUMULATOR:
         if (status == NULL || accumulators == NULL) {

@@ -12,7 +12,9 @@
  * copied uint16_t immediate operand only; repeat cardinality, state, PC,
  * timing, and interrupt policy belong to later owners. STATUS_FIELD_WRITE
  * carries a copied field target/value only; mutation belongs to the status
- * sequencer. ACCUMULATOR_WRITE carries only a canonical destination value
+ * sequencer. STATUS_BIT_WRITE carries a copied ST0/ST1 target, bit index, and
+ * binary value; mutation belongs to the status sequencer. ACCUMULATOR_WRITE
+ * carries only a canonical destination value
  * and explicit C/TC status disposition; mutation belongs to its sequencer.
  * T_REGISTER_WRITE carries one copied 16-bit T value; mutation belongs to
  * the temporary-register sequencer.
@@ -34,7 +36,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE = 2,
     TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE = 3,
     TI_C54X_OP_EFFECT_T_REGISTER_WRITE = 4,
-    TI_C54X_OP_EFFECT_MEMORY = 5
+    TI_C54X_OP_EFFECT_MEMORY = 5,
+    TI_C54X_OP_EFFECT_STATUS_BIT_WRITE = 6
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -52,6 +55,18 @@ typedef struct ti_c54x_op_status_field_write_effect {
     ti_c54x_op_status_field_target target;
     uint16_t raw_value;
 } ti_c54x_op_status_field_write_effect;
+
+typedef enum ti_c54x_op_status_register {
+    TI_C54X_OP_STATUS_REGISTER_INVALID = 0,
+    TI_C54X_OP_STATUS_REGISTER_ST0 = 1,
+    TI_C54X_OP_STATUS_REGISTER_ST1 = 2
+} ti_c54x_op_status_register;
+
+typedef struct ti_c54x_op_status_bit_write_effect {
+    ti_c54x_op_status_register target_register;
+    uint8_t bit_index;
+    uint8_t raw_value;
+} ti_c54x_op_status_bit_write_effect;
 
 typedef enum ti_c54x_op_status_bit_action {
     TI_C54X_OP_STATUS_BIT_PRESERVE = 0,
@@ -78,6 +93,7 @@ typedef struct ti_c54x_op_t_register_write_effect {
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
     ti_c54x_op_status_field_write_effect status_field_write;
+    ti_c54x_op_status_bit_write_effect status_bit_write;
     ti_c54x_op_accumulator_write_effect accumulator_write;
     ti_c54x_op_t_register_write_effect t_register_write;
     ti_c54x_op_memory_effect memory;

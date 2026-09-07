@@ -4,15 +4,17 @@
  * Owns: the sole declarative first-word opcode inventory for the standalone
  * TI C54x core. The source schema supports EXACT and MASKED rows; this
  * production inventory contains the exact NOP row plus masked status-load,
- * fixed-MOD2 memory load/store, compare, complement, exponent, rotate, shift,
- * and one- or two-word logical-accumulator rows. Every consumer derives its
- * own view from this same file.
+ * status-bit set/clear, fixed-MOD2 memory load/store, compare, complement,
+ * exponent, rotate, shift, and one- or two-word logical-accumulator rows.
+ * Every consumer derives its own view from this same file.
  * Does not own: opcode strings, timing, bus/state behavior, or a second
  * handwritten instruction table. The handler token is an operation binding
  * token owned by the ISA operations module.
  */
 
 TI_C54X_OPCODE_EXACT(NOP, nop, 0xF495, 1, TI_C54X_OPERAND_LAYOUT_NONE, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
+TI_C54X_OPCODE_MASKED(SSBX_STATUS, ssbx_status, 0xF5B0, 0xFDF0, 1, TI_C54X_OPERAND_LAYOUT_STATUS_BIT, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+TI_C54X_OPCODE_MASKED(RSBX_STATUS, rsbx_status, 0xF4B0, 0xFDF0, 1, TI_C54X_OPERAND_LAYOUT_STATUS_BIT, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(LD_IMMEDIATE_DP, ld_immediate_dp, 0xEA00, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(LD_IMMEDIATE_ASM, ld_immediate_asm, 0xED00, 0xFFE0, 1, TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(LD_IMMEDIATE_ARP, ld_immediate_arp, 0xF4A0, 0xFFF8, 1, TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)

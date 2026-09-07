@@ -5,10 +5,11 @@ are the active track. P2-W31B1 now implements the transactional DATA endpoint an
 persistent memory-instruction root. P2-W31P remains open with structural and
 correctness gates green; optimized hosted cohorts are below the 60 ns median
 target, while exact three-capture stability acceptance is pending/deferred.
-That hosted follow-up no longer blocks P2-W32, which is now the active ISA
-slice. W31B2 catalog/decode metadata, pure generic MEMORY effects, CPU
-end-to-end retirement, focused/full/sanitizer validation, and independent
-review are complete; its immediate-READY benchmark follow-up remains pending.
+That hosted follow-up did not block P2-W32, which is now implementation-complete
+with its local gates green. W31B2 catalog/decode metadata, pure generic MEMORY
+effects, CPU end-to-end retirement, focused/full/sanitizer validation, and
+independent review are complete; its immediate-READY benchmark follow-up
+remains pending.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -75,7 +76,7 @@ function-pointer dispatch tables.
 | P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
 | P2-W31P performance architecture freeze | Implemented — structural/correctness gates green; hosted acceptance pending/deferred | The common CPU path now uses one catalog-derived opcode binding, one trusted value-owned execution packet with a static operand plan, and one trusted PC plan. Checked boundaries, generic resources, effect atomicity, observers, and memory WAIT/RESUME remain intact. Optimized hosted cohorts are below the 60 ns median target; exact three-capture stability remains open and does not block W31B2. |
 | P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | Implemented — focused/full/sanitizer gates and two independent reviews green; immediate-READY benchmark follow-up pending | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 registers and decodes `LD *ARx+,dst` plus `STL src,*ARx+`, implements their pure generic MEMORY effects, and proves CPU end-to-end retirement. Catalog coverage is 24 rows/1319 populated first words (4/24 reset-runnable); the immediate-READY benchmark follow-up remains pending. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
-| P2-W32 SSBX/RSBX status-bit vertical slice | Planned — evidence and ownership activation | Add the TI SPRU172C SSBX/RSBX catalog/decode rows (`0xF5B0`/`0xF4B0`, mask `0xFDF0`), a generalized private status-bit write/application seam, pure set/clear handlers, and generic CPU retirement. Accept all encoded SBIT values, including ST1 reserved bit 10, while changing and marking known only the selected raw status bit. The planned slice is one word, has no input resources, is repeatability INELIGIBLE, and adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI. Expected post-slice coverage is 26 rows/1383 populated first words (likely 6/26 reset-runnable). |
+| P2-W32 SSBX/RSBX status-bit vertical slice | Implemented — focused tests, independent review, quality gate, focused ASan/UBSan, and full standalone gate green | The TI SPRU172C SSBX/RSBX catalog/decode rows (`0xF5B0`/`0xF4B0`, mask `0xFDF0`), generalized private status-bit write/application seam, pure set/clear handlers, and generic CPU retirement are implemented. All encoded SBIT values, including ST1 reserved bit 10, change and mark known only the selected raw status bit. The slice is one word, has no input resources, is repeatability INELIGIBLE, and adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI. Catalog coverage is 26 rows/1383 populated first words with 6/26 reset-runnable. |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -410,14 +411,12 @@ they do not constitute the later three-capture acceptance set.
 
 ### P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)
 
-State: W31B1 is implemented with focused strict and ASan/UBSan tests, an
-independent combined review, and the full standalone local gate green. W31B2 is
-the active slice; P2-W31P's exact hosted stability follow-up remains open but is
-no longer a prerequisite. W31B2 has added the two catalog/decode rows, pure
-generic MEMORY effects, and CPU end-to-end retirement. The implementation and
-retirement tests are green; focused/full/sanitizer review closure and the
-immediate-READY benchmark follow-up remain pending. No catalog row or opcode
-handler was added during W31B1.
+State: W31B1 and W31B2 are implemented with focused strict and ASan/UBSan
+tests, independent review, and the full standalone local gate green. P2-W31P's
+exact hosted stability follow-up remains open but is no longer a prerequisite.
+W31B2 added the two catalog/decode rows, pure generic MEMORY effects, and CPU
+end-to-end retirement. Only the immediate-READY benchmark follow-up remains
+pending. No catalog row or opcode handler was added during W31B1.
 
 The public boundary is deliberately small and vendorable:
 
@@ -547,15 +546,17 @@ Those remain explicit GAP or UNRESOLVED work for later evidence freezes.
 
 ### P2-W32: SSBX/RSBX status-bit vertical slice (planned)
 
-This is the next non-memory ISA slice. Its evidence boundary is limited to the
-registered TI `SPRU172C` SSBX entry (printed p. 4-166) and RSBX entry (printed
-p. 4-151); no emulator, device profile, timing table, or inferred status
-policy is an authority. The rows are one-word forms with values `0xF5B0`
+State: implementation, focused tests, independent no-P0/P1 review, quality
+gate, focused ASan/UBSan validation, and the full standalone `make test` gate
+are green. The completed non-memory ISA slice is limited to the registered TI
+`SPRU172C` SSBX entry (printed p. 4-166) and RSBX entry (printed p. 4-151); no
+emulator, device profile, timing table, or inferred status policy is an
+authority. The rows are one-word forms with values `0xF5B0`
 (SSBX) and `0xF4B0` (RSBX), shared mask `0xFDF0`, `N` at bit 9, and `SBIT` at
 bits 3:0. They have no input resources and are marked repeatability
 `INELIGIBLE` from the registered instruction boundary.
 
-The slice adds five independently testable ownership pieces:
+The slice adds five independently tested ownership pieces:
 
 1. `src/isa/catalog/` registers the two rows and their 32 encodings each;
    `src/isa/decode/` owns the value-owned `N` and `SBIT` extraction.
@@ -578,7 +579,8 @@ for status-register policy, reserved-bit behavior, memory, interrupts,
 repeat, parallel issue, timing, or public state is a GAP report, not a family
 workaround. The expected post-slice catalog is 26 rows and 1383 populated
 first words, with reset-runnable coverage likely 6/26; these are lookup
-population counts, not a distinct-instruction or timing claim.
+population counts, not a distinct-instruction or timing claim. W31P hosted
+stability and W31B2 immediate-READY benchmark follow-ups remain open.
 
 ### P2-W16: NOP-seeded opcode architecture
 

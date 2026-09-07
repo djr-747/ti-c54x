@@ -2,3 +2,4 @@
 add_subdirectory(logical)
 add_subdirectory(load)
 add_subdirectory(store)
+add_subdirectory(status)

@@ -4289,7 +4289,7 @@
     },
     {
       "id": "REQ-COMMON-SSBX-RSBX-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -4299,7 +4299,7 @@
     },
     {
       "id": "REQ-COMMON-SSBX-RSBX-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4309,7 +4309,7 @@
     },
     {
       "id": "REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/status/",
@@ -4319,7 +4319,7 @@
     },
     {
       "id": "REQ-COMMON-SSBX-RSBX-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/status/",
@@ -4329,7 +4329,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -5636,42 +5636,42 @@
     },
     {
       "id": "T-COMMON-SSBX-RSBX-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_ssbx_rsbx_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ssbx_rsbx_metadata"},
       "requirement_ids": ["REQ-COMMON-SSBX-RSBX-CATALOG"]
     },
     {
       "id": "T-COMMON-SSBX-RSBX-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_ssbx_rsbx_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ssbx_rsbx_decode"},
       "requirement_ids": ["REQ-COMMON-SSBX-RSBX-DECODE"]
     },
     {
       "id": "T-PROJECT-STATUS-BIT-WRITE-APPLICATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/status/test_status_bit_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.status_bit_effect"},
       "requirement_ids": ["REQ-PROJECT-STATUS-BIT-WRITE-APPLICATION"]
     },
     {
       "id": "T-COMMON-SSBX-RSBX-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/status/test_ssbx_rsbx.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ssbx_rsbx_ops"},
       "requirement_ids": ["REQ-COMMON-SSBX-RSBX-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-SSBX-RSBX-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/status/test_cpu_ssbx_rsbx.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ssbx_rsbx"},
       "requirement_ids": ["REQ-PROJECT-CPU-SSBX-RSBX-RETIREMENT"]
     }
   ]

@@ -6,6 +6,7 @@ include src/isa/ops/dispatch/sources.mk
 include src/isa/ops/repeat/sources.mk
 include src/isa/ops/load/sources.mk
 include src/isa/ops/store/sources.mk
+include src/isa/ops/status/sources.mk
 include src/isa/ops/compare/sources.mk
 include src/isa/ops/accumulator/sources.mk
 include src/isa/ops/rotate/sources.mk

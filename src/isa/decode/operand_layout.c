@@ -32,6 +32,16 @@ static const ti_c54x_operand_field_layout ti_c54x_rpt_lk_operand = {
 static const ti_c54x_operand_layout_set ti_c54x_rpt_lk_set = {
     &ti_c54x_rpt_lk_operand, UINT8_C(1)};
 
+static const ti_c54x_operand_field_piece ti_c54x_status_bit_n_piece = {
+    UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece ti_c54x_status_bit_sbit_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_status_bit_operands[2] = {
+    {&ti_c54x_status_bit_n_piece, UINT8_C(1), UINT8_C(1)},
+    {&ti_c54x_status_bit_sbit_piece, UINT8_C(1), UINT8_C(4)}};
+static const ti_c54x_operand_layout_set ti_c54x_status_bit_set = {
+    ti_c54x_status_bit_operands, UINT8_C(2)};
+
 static const ti_c54x_operand_field_piece ti_c54x_ld_dp_piece = {
     UINT8_C(0), UINT8_C(0), UINT8_C(9), UINT8_C(0)};
 static const ti_c54x_operand_field_layout ti_c54x_ld_dp_operand = {
@@ -184,6 +194,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK] = {
             TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK, UINT8_C(2),
             &ti_c54x_rpt_lk_set},
+        [TI_C54X_OPERAND_LAYOUT_STATUS_BIT] = {
+            TI_C54X_OPERAND_LAYOUT_STATUS_BIT, UINT8_C(1),
+            &ti_c54x_status_bit_set},
         [TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP] = {
             TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP, UINT8_C(1),
             &ti_c54x_ld_dp_set},
@@ -291,6 +304,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_rpt_lk_set;
+    case TI_C54X_OPERAND_LAYOUT_STATUS_BIT:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_status_bit_set;
     case TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_ld_dp_set;

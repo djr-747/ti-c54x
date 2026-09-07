@@ -27,6 +27,12 @@ typedef enum ti_c54x_status_register_status {
     TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT = 2
 } ti_c54x_status_register_status;
 
+typedef enum ti_c54x_status_register_target {
+    TI_C54X_STATUS_REGISTER_TARGET_INVALID = 0,
+    TI_C54X_STATUS_REGISTER_TARGET_ST0 = 1,
+    TI_C54X_STATUS_REGISTER_TARGET_ST1 = 2
+} ti_c54x_status_register_target;
+
 typedef struct ti_c54x_status_register_field_result {
     ti_c54x_status_register_status status;
     uint16_t raw_value;
@@ -83,6 +89,12 @@ ti_c54x_status_register_write_cmpt(ti_c54x_status_register_state *state,
 ti_c54x_status_register_status
 ti_c54x_status_register_write_c(ti_c54x_status_register_state *state,
                                  uint8_t raw_value);
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_bit(ti_c54x_status_register_state *state,
+                                   ti_c54x_status_register_target target,
+                                   uint8_t bit_index,
+                                   uint8_t raw_value);
 
 #ifdef __cplusplus
 }

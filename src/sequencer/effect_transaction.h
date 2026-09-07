@@ -34,7 +34,8 @@ typedef enum ti_c54x_effect_transaction_target {
     TI_C54X_EFFECT_TRANSACTION_NONE = 0,
     TI_C54X_EFFECT_TRANSACTION_STATUS_FIELD = 1,
     TI_C54X_EFFECT_TRANSACTION_ACCUMULATOR = 2,
-    TI_C54X_EFFECT_TRANSACTION_T_REGISTER = 3
+    TI_C54X_EFFECT_TRANSACTION_T_REGISTER = 3,
+    TI_C54X_EFFECT_TRANSACTION_STATUS_BIT = 4
 } ti_c54x_effect_transaction_target;
 
 typedef struct ti_c54x_effect_transaction_accumulator_candidate {
@@ -44,6 +45,7 @@ typedef struct ti_c54x_effect_transaction_accumulator_candidate {
 
 typedef union ti_c54x_effect_transaction_candidate {
     ti_c54x_status_register_state status_field;
+    ti_c54x_status_register_state status_bit;
     ti_c54x_effect_transaction_accumulator_candidate accumulator;
     ti_c54x_t_register_state t_register;
 } ti_c54x_effect_transaction_candidate;

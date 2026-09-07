@@ -103,8 +103,9 @@ Current progress:
   visibility, pure MOD2 address resolution, persistent instruction work, and
   CPU resume-before-fetch. Observer-disabled builds compile the new trace sites
   out; focused sanitizer checks, independent review, and the full standalone
-  local gate are green. W31B2 is now the active next ISA slice: fixed-MOD2
-  `LD *ARx+,dst` and `STL src,*ARx+` will use the proven generic memory path.
+  local gate are green. W31B2 is implemented and W32 is now the active next ISA
+  slice; fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+` use the proven generic
+  memory path.
   Timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel,
   and posted writes remain out of scope.
 - P2-W31B2 registers the fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+`
@@ -114,14 +115,16 @@ Current progress:
   sanitizer validation, and independent review are green; the immediate-READY
   benchmark follow-up remains pending. The open W31P hosted stability
   follow-up remains separate.
-- P2-W32 is the active next non-memory ISA slice. It is evidence-activated for
-  SSBX (`0xF5B0`) and RSBX (`0xF4B0`) with mask `0xFDF0`, one-word `N`/`SBIT`
-  fields, and no input resources. Planned work covers catalog/decode, a
-  generalized private transactional status-bit write/application seam, pure
-  handlers, and generic CPU retirement. All encoded SBIT values, including
-  ST1 reserved bit 10, remain admitted without invented side effects; the
-  slice adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or
-  public ABI behavior.
+- P2-W32 completes the non-memory ISA slice for SSBX (`0xF5B0`) and
+  RSBX (`0xF4B0`) with mask `0xFDF0`, one-word `N`/`SBIT` fields, and no input
+  resources. Catalog/decode, the generalized private transactional status-bit
+  write/application seam, pure handlers, and generic CPU retirement are green
+  under focused tests, independent review, quality checks, and ASan/UBSan.
+  All encoded SBIT values, including ST1 reserved bit 10, remain admitted
+  without invented side effects. The full standalone gate is green; no
+  memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI
+  behavior was added. Catalog coverage is 26 rows and 1383 populated first
+  words, with 6/26 reset-runnable.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -131,8 +134,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 133 evidence items, 202 requirements (166 implemented,
-  13 planned, 23 unresolved), and 162 tests (149 passing, 13 planned). Hosted
+- The registry now records 133 evidence items, 202 requirements (171 implemented,
+  8 planned, 23 unresolved), and 162 tests (154 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -141,10 +144,10 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. The active track is the
-  evidence-backed P2-W32 SSBX/RSBX status-bit vertical slice while the P2-W31P
-  hosted stability and W31B2 immediate-READY benchmark follow-ups remain open.
-  Emulator integration remains deferred.
+- Speculative foundation expansion is frozen. P2-W32 is complete; selection of
+  the next ISA slice remains evidence-first while the P2-W31P hosted stability
+  and W31B2 immediate-READY benchmark follow-ups remain open. Emulator
+  integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.

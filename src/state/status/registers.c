@@ -235,3 +235,41 @@ ti_c54x_status_register_write_c(ti_c54x_status_register_state *state,
                        TI_C54X_ST0_C_MASK, TI_C54X_ST0_C_SHIFT, raw_value,
                        UINT8_C(1));
 }
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_bit(ti_c54x_status_register_state *state,
+                                   ti_c54x_status_register_target target,
+                                   uint8_t bit_index,
+                                   uint8_t raw_value)
+{
+    uint16_t *raw_register;
+    uint16_t *known_mask;
+    uint16_t bit_mask;
+
+    if (state == NULL || bit_index >= UINT8_C(16) || raw_value > UINT8_C(1)) {
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+    bit_mask = (uint16_t)(UINT32_C(1) << bit_index);
+
+    switch (target) {
+    case TI_C54X_STATUS_REGISTER_TARGET_ST0:
+        raw_register = &state->st0;
+        known_mask = &state->st0_known_mask;
+        break;
+    case TI_C54X_STATUS_REGISTER_TARGET_ST1:
+        raw_register = &state->st1;
+        known_mask = &state->st1_known_mask;
+        break;
+    case TI_C54X_STATUS_REGISTER_TARGET_INVALID:
+    default:
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+
+    if (raw_value == UINT8_C(0)) {
+        *raw_register = (uint16_t)(*raw_register & (uint16_t)~bit_mask);
+    } else {
+        *raw_register = (uint16_t)(*raw_register | bit_mask);
+    }
+    *known_mask = (uint16_t)(*known_mask | bit_mask);
+    return TI_C54X_STATUS_REGISTER_OK;
+}

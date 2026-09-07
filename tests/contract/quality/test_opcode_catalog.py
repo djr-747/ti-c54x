@@ -18,6 +18,7 @@ from tools.isa.catalog.opcode_catalog_schema import OpcodeRow, parse_catalog
 
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
+LAYOUT_STATUS_BIT = "TI_C54X_OPERAND_LAYOUT_STATUS_BIT"
 LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
@@ -29,6 +30,7 @@ LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16"
 )
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 RESOURCES_ACCUMULATORS_STATUS_C = (
@@ -116,8 +118,27 @@ class OpcodeCatalogContractTests(unittest.TestCase):
 
     def test_real_catalog_contains_current_catalog_rows(self) -> None:
         root = Path(__file__).resolve().parents[3]
-        rows = parse_catalog((root / "src/isa/catalog/opcode_catalog.def").read_text())
-        self.assertEqual(len(rows), 24)
+        catalog_rows = parse_catalog(
+            (root / "src/isa/catalog/opcode_catalog.def").read_text()
+        )
+        self.assertEqual(len(catalog_rows), 26)
+        for row, symbol, handler, value in (
+            (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
+            (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
+        ):
+            with self.subTest(symbol=symbol):
+                self.assertEqual(row.symbol, symbol)
+                self.assertEqual(row.handler, handler)
+                self.assertEqual(row.first_word_value, value)
+                self.assertEqual(row.first_word_mask, 0xFDF0)
+                self.assertEqual(row.program_word_count, 1)
+                self.assertEqual(row.operand_layout, LAYOUT_STATUS_BIT)
+                self.assertEqual(row.repeatability, REPEAT_INELIGIBLE)
+                self.assertEqual(row.input_resources, RESOURCES_NONE)
+
+        # Preserve the historical positional assertions below while the
+        # current catalog carries the two status rows immediately after NOP.
+        rows = [catalog_rows[0], *catalog_rows[3:]]
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
