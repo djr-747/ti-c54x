@@ -2334,6 +2334,52 @@
         "anchor": "P2-W36: fixed-MOD2 immediate-store vertical slice (planned)"
       },
       "assertion": "P2-W36 fits the two-word fixed-MOD2 immediate ST #lk,*ARx+ form into existing extension fetch, width-aware PC, generic MEMORY WRITE, and generic CPU WAIT/READY/FAULT retirement contracts. The planned private TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16 layout owns ARF plus copied raw lk; CMPT=0 and ARP=0 preserve old-AR write-before-postincrement, with write_value_word and complete=NULL. No public ABI, CPU opcode branch, new resource/effect/address kind, timing, IRQ/RPT, device/MMR, environment, diagnostics, allocation, or repeatability behavior is added. LD Smem,DP/ASM is deferred; ST T, STH, and ALU/control candidates remain blocked by their documented seams."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-STATUS-SMEM-P4-69-4-71",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "LD",
+        "printed_page_start": "4-69",
+        "printed_page_end": "4-71"
+      },
+      "assertion": "TI SPRU172C's §4.70 LD entry defines the one-word LD Smem,DP and LD Smem,ASM status-field forms and does not define an LD Smem,ARP syntax. Composed with the registered standard-indirect MOD2 rule for *ARx+, the DP row uses value 0x4690 and mask 0xFFF8, while the ASM row uses value 0x3290 and mask 0xFFF8; bit 8 is fixed zero, only ARF bits 2:0 vary, and each row has exactly eight encodings. The existing MEMORY WORD16 path reads data from the old selected-AR address before postincrement; DP consumes read&0x01ff and ASM consumes read&0x001f, with status-field writes and Status Bits None."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-LD-STATUS-SMEM-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "Table 2-28 makes the fixed-MOD2 LD Smem,DP form INELIGIBLE for single-repeat execution. It does not establish positive repeatability for the fixed-MOD2 LD Smem,ASM form; the ASM requirement therefore remains UNRESOLVED without a timing or repeat-execution claim. The separately listed fixed long-offset and absolute forms are excluded from both this bounded slice and its repeatability inference."
+    },
+    {
+      "id": "E-PROJECT-P2-W37-LD-STATUS-SMEM-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W37: fixed-MOD2 memory-to-status vertical slice (planned)"
+      },
+      "assertion": "P2-W37 fits fixed-MOD2 LD Smem,DP and LD Smem,ASM into the existing MEMORY read/completion, status-field effect/writer, and generic CPU WAIT/READY/FAULT retirement paths. Both forms reuse the existing private TI_C54X_OPERAND_LAYOUT_ARF layout, have no input resources, and add no resource, effect, address kind, opcode-specific CPU branch, public API, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation behavior. CMPT=0 and ARP=0 preserve the old selected-AR address for the read before postincrement; the checked planner's AR=0xffff boundary and generic sequential-PC path remain in force. The DP form's repeatability is explicitly INELIGIBLE by Table 2-28; ASM repeatability remains UNRESOLVED."
     }
   ],
   "requirements": [
@@ -4741,6 +4787,63 @@
       "claim": "Resolve whether fixed-MOD2 two-word immediate ST #lk,*ARx+ is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute cases do not decide this form.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ST-IMMEDIATE-REPEATABILITY-BOUNDARY-P2-19-2-21"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-LD-STATUS-SMEM-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word fixed-MOD2 LD Smem,DP and LD Smem,ASM rows with values 0x4690 and 0x3290, mask 0xFFF8, fixed bit 8, ARF bits 2:0, exactly eight encodings each, the existing ARF operand layout, no input resources, and the documented DP INELIGIBLE versus ASM UNRESOLVED repeatability dispositions; do not register an LD Smem,ARP row.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-STATUS-SMEM-P4-69-4-71",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU172C-S2.5-T2-28-LD-STATUS-SMEM-REPEATABILITY-BOUNDARY-P2-19-2-21"
+      ],
+      "test_ids": ["T-COMMON-LD-STATUS-SMEM-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-LD-STATUS-SMEM-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode fixed-MOD2 LD Smem,DP and LD Smem,ASM through the existing private TI_C54X_OPERAND_LAYOUT_ARF layout, yielding eight ARF encodings per row, no additional input resource, and no accepted LD Smem,ARP form.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-STATUS-SMEM-P4-69-4-71"],
+      "test_ids": ["T-COMMON-LD-STATUS-SMEM-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-STATUS-SMEM-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Produce pure fixed-MOD2 LD Smem,DP and LD Smem,ASM MEMORY read effects and completions that read a WORD16 from the old selected-AR address before postincrement, mask the completed read to 0x01ff for DP or 0x001f for ASM, and route the result through the existing STATUS_FIELD_WRITE path with no other status effects.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-STATUS-SMEM-P4-69-4-71",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-LD-STATUS-SMEM-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-LD-STATUS-SMEM-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire fixed-MOD2 LD Smem,DP and LD Smem,ASM through generic decode, MEMORY read/completion, STATUS_FIELD_WRITE application, old-AR-address reads, postincrement, sequential-PC, and WAIT/READY/FAULT paths under CMPT=0/ARP=0 without an opcode-specific CPU branch or new public ABI, resource, effect, address kind, timing, IRQ/RPT, device/MMR, environment, diagnostic, or allocation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W37-LD-STATUS-SMEM-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-LD-STATUS-SMEM-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-LD-SMEM-ASM-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Resolve whether fixed-MOD2 LD Smem,ASM is eligible for single-repeat execution; the registered Table 2-28 boundary does not establish eligibility for ASM from absence and does not permit inference from the separately forbidden long-offset or absolute forms.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LD-STATUS-SMEM-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -6214,6 +6317,38 @@
       "path": "tests/unit/cpu/isa/store/test_cpu_st_immediate_smem.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_st_immediate_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-ST-IMMEDIATE-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-LD-STATUS-SMEM-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ld_status_smem_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-STATUS-SMEM-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-LD-STATUS-SMEM-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ld_status_smem_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-STATUS-SMEM-DECODE"]
+    },
+    {
+      "id": "T-COMMON-LD-STATUS-SMEM-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_status_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-STATUS-SMEM-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-LD-STATUS-SMEM-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ld_status_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-LD-STATUS-SMEM-RETIREMENT"]
     }
   ]
 }
