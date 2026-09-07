@@ -4562,3 +4562,30 @@ rewritten after publication.
   quiescent, and evaluate them under new set IDs. Use fixed P-core affinity only
   as an explicitly recorded external-condition change if the unpinned sets remain
   scheduler-noisy; retain every inconclusive set.
+
+## 2026-09-07 — P2-W31P optimized hosted acceptance attempt
+
+- State: throughput target met in every fixed measurement, but both SET2 cohorts
+  remain `INCONCLUSIVE` on stability; W31P acceptance and W31B2 remain paused.
+  The twelve-profile-history update through SET2 landed as
+  `78bd2607d496a6c3531bbfc6fc740c4d8ac53446`.
+- `P2-W31P-O2-5613EB3-CPU2-SET2` used one clean O2/no-LTO binary and
+  `P2-W31P-O3-LTO-5613EB3-CPU2-SET2` used one clean O3/LTO binary, both from
+  `5613eb3dad890e091c86adfebddc1122f230f7d9`. All 24 fixed-scenario medians
+  were below 60 ns: O2 ranged from 26.970 to 47.938 ns and O3 from 19.310 to
+  30.221 ns.
+- The exact checker failures are retained with all six raw records. O2 failed
+  only three isolated stability checks (LD-DP at 0.300377 and 0.253300, LD-ASM
+  at 0.428192). O3 remained broadly noisy, with fixed-scenario ratios between
+  0.158979 and 0.773938. No capture was discarded, averaged, or promoted.
+- The replacement condition was explicit CPU2 affinity with this thread's agent
+  and build activity quiesced. Contemporaneous read-only `mpstat` and `ps`
+  snapshots still showed substantial unrelated host load, including heavy work
+  on CPU2's SMT sibling CPU3 and an external compiler consuming a full core.
+  This explains deferring another acceptance attempt until a genuinely quiet
+  pair is observed; it does not relax or change the frozen threshold.
+- No knob, benchmark semantic, production instrumentation, governor, priority,
+  public ABI, core behavior, or TI timing claim changed. Follow-up: use a new
+  SET3 ID only after the external load condition materially changes, rebuild the
+  same two frozen profiles from a clean commit, and retain/evaluate three new
+  consecutive captures per unchanged binary.
