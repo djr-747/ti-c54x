@@ -2472,6 +2472,36 @@
         "anchor": "P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)"
       },
       "assertion": "P2-W39 adds the project-contract T_REGISTER input resource as a copied raw 16-bit T snapshot with knownness, sourced from the private T state; unrequested T is not read, malformed or unknown input rejects transactionally, and unknown T produces UNKNOWN_INPUT without a MEMORY effect. The fixed-MOD2 ST T, *ARx+ handler is a pure MEMORY WORD16 WRITE with exact copied T, complete=NULL, and no status-bit effects, while generic fixed-MOD2 address resolution and CPU WAIT/READY/FAULT/sequential-PC retirement are reused. No new layout, effect, address, architectural-state, public-API, source-manifest, timing, or opcode-specific CPU branch seam is admitted; STH, LDR, LD#K, and TS remain deferred for their recorded gaps."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-1-S2-4-T2-1-T2-26-ISA-INSTRUCTION-INVENTORY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.1–2.4",
+        "printed_page_start": "2-2",
+        "printed_page_end": "2-18"
+      },
+      "assertion": "TI SPRU172C's instruction summary tables 2-1 through 2-26 enumerate 205 syntax forms, 126 normalized mnemonic tokens, and 13 parallel bundles; the audit vector by table is [13,13,10,22,6,15,5,5,5,6,5,6,5,2,6,5,5,7,21,14,4,2,4,2,5,12]. This is the authoritative SPRU172C summary/source-universe checkpoint for the inventory audit, not yet a claim that every form belongs to the common target; device, profile, and addressing scope remain explicit unresolved decisions."
+    },
+    {
+      "id": "E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W40: authoritative ISA instruction-form inventory (planned)"
+      },
+      "assertion": "The P2-W40 contract defines config/isa/inventory.json as audit metadata rather than production decode, keeps opcode_catalog.def as the sole opcode value/mask source, requires COMPLETE/SUBSET/UNIMPLEMENTED coverage and COMMON_CANDIDATE/PROFILE_ONLY/OUT_OF_SCOPE/UNRESOLVED scope states, and reports the provisional 34/205 catalog-family progress and strict 25/205 complete-form lower bound without treating 1487/65536 as ISA coverage."
     }
   ],
   "requirements": [
@@ -5059,6 +5089,46 @@
       "claim": "Resolve whether fixed-MOD2 ST T,*ARx+ is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute forms do not decide this *ARx+ form.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-ISA-INVENTORY-SCHEMA",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "config/isa/",
+      "claim": "Define config/isa/inventory.json as versioned audit metadata with one record per authoritative syntax form, normalized mnemonic and parallel-bundle metadata, explicit coverage states COMPLETE/SUBSET/UNIMPLEMENTED, explicit scope states COMMON_CANDIDATE/PROFILE_ONLY/OUT_OF_SCOPE/UNRESOLVED, and no production opcode values or masks.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-SCHEMA"]
+    },
+    {
+      "id": "REQ-PROJECT-ISA-INVENTORY-COUNT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Validate the authoritative SPRU172C summary/source-universe checkpoint as 205 syntax forms, 126 normalized mnemonic tokens, and 13 parallel bundles using the pinned Table 2-1 through Table 2-26 vector [13,13,10,22,6,15,5,5,5,6,5,6,5,2,6,5,5,7,21,14,4,2,4,2,5,12], while retaining unresolved common/profile/addressing scope forms in the provisional denominator until explicit scope evidence exists.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-COUNT"]
+    },
+    {
+      "id": "REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind inventory coverage to the production catalog by mnemonic/form identity and verify the current audit snapshot of 34 catalog-family rows, 25 complete summary forms, and 9 fixed-MOD2 subset rows without duplicating opcode value/mask authority outside opcode_catalog.def.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-ISA-INVENTORY-REPORT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Report provisional semantic progress as 34/205 = 16.585% catalog-family progress and a strict 25/205 = 12.195% complete-form lower bound, with scope exclusions justified by evidence; never report 1487/65536 as ISA coverage.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-REPORT"]
     }
   ],
   "tests": [
@@ -6636,6 +6706,38 @@
       "path": "tests/unit/cpu/isa/store/test_cpu_st_t_smem.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_st_t_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-ISA-INVENTORY-SCHEMA",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_schema.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-SCHEMA"]
+    },
+    {
+      "id": "T-PROJECT-ISA-INVENTORY-COUNT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_count.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-COUNT"]
+    },
+    {
+      "id": "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "T-PROJECT-ISA-INVENTORY-REPORT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_report.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-REPORT"]
     }
   ]
 }

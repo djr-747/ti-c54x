@@ -29,6 +29,12 @@ corrections, and validation evidence are recorded below.
 P2-W39 is implementation-complete as the generic T-input prerequisite plus
 bounded fixed-MOD2 `ST T,*ARx+` slice; its catalog, decode, pure effect, generic
 CPU retirement, validation, and closure evidence are recorded below.
+P2-W40 is now active as the authoritative ISA instruction-form inventory and
+coverage-reporting contract. Its audit metadata is deliberately separate from
+production decode: TI SPRU172C Chapter 2 Tables 2-1 through 2-26 establish a
+205-form summary/source-universe checkpoint, while common/profile/addressing
+scope remains explicit and unresolved; the current catalog reports only the
+provisional 34/205 family progress and strict 25/205 complete-form lower bound.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -95,6 +101,34 @@ evidence. STH, LDR, LD#K, and TS remain deferred for their recorded gaps;
 W31P/W31B performance follow-ups remain open and nonblocking.
 
 
+### P2-W40: authoritative ISA instruction-form inventory (planned)
+
+This heading is the immutable FIT/ownership anchor for the inventory audit. The
+authoritative SPRU172C summary/source-universe checkpoint is §§2.1–2.4, Tables
+2-1 through 2-26 (printed pp. 2-2–2-18): 205 syntax forms, 126 normalized
+mnemonic tokens, and 13 parallel bundles, with the pinned per-table vector
+`[13,13,10,22,6,15,5,5,5,6,5,6,5,2,6,5,5,7,21,14,4,2,4,2,5,12]`.
+
+W40 adds only audit metadata and quality contracts. `config/isa/inventory.json`
+will describe one record per syntax form, normalized mnemonic and parallel
+bundle metadata, explicit `COMPLETE`/`SUBSET`/`UNIMPLEMENTED` coverage, and
+explicit `COMMON_CANDIDATE`/`PROFILE_ONLY`/`OUT_OF_SCOPE`/`UNRESOLVED` scope;
+205 is not yet an exact common-ISA denominator until those scope decisions are
+evidenced.
+
+`opcode_catalog.def` remains the sole production opcode value/mask source;
+inventory records must bind to catalog identity rather than duplicate opcode
+authority. Unresolved candidate forms remain in the provisional denominator,
+and any exclusion needs explicit evidence. The report is provisional and must
+state 34/205 = 16.585%
+catalog-family progress and the strict 25/205 = 12.195% complete-form lower
+bound; 1487/65536 is not ISA coverage.
+
+The planned implementation owns `tools/isa/inventory/schema.py` and
+`tools/quality/check_isa_inventory.py`, with RED-first contract tests under
+`tests/contract/quality/isa/inventory/`. This work has no runtime, hot-path, or
+public-ABI change; timing and profile-specific forms remain outside this slice.
+
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
 history.
@@ -138,6 +172,7 @@ function-pointer dispatch tables.
 | Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
+| ISA instruction-form inventory (P2-W40) | Active — planned RED contracts | Freeze the authoritative 205-form TI summary denominator and separate audit metadata from production decode; schema/count/catalog-binding/report contracts preserve explicit coverage and scope states, keep unresolved forms in the denominator, and report only the provisional 34/205 and 25/205 progress measures |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
