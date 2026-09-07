@@ -4377,3 +4377,51 @@ rewritten after publication.
   commit-at-READY shared visibility, and a persistent root instruction
   transaction; only then freeze and implement fixed-MOD2 `LD *ARx+,dst` /
   `STL src,*ARx+`.
+
+## 2026-09-07 — P2-W31B1 transactional data-memory foundation closeout
+
+- State: complete. The plan/evidence freeze landed as `7fbd6ec`; the
+  implementation landed as `cbb428b`. Its GitHub Actions run
+  [34077005133](https://github.com/djr-747/ti-c54x/actions/runs/34077005133)
+  was still in progress when this ledger record was written.
+- TDD evidence is RED/GREEN. Focused strict and ASan/UBSan bus, sequencer, and
+  CPU tests passed, followed by an independent combined review. Full standalone
+  local `make test` is green: 176 Python tests plus all C tests, evidence and
+  build-manifest checks, observer-off checks, and source-boundary checks over
+  273 files. This repository has no `make guard` target, so `make test` remains
+  its authoritative local gate.
+- The additive public endpoint contract owns copied, value-only requests,
+  BEGIN/RESUME access, WAIT/READY/FAULT outcomes, cancellation, stable 64-bit
+  transaction IDs, and a canonical absent endpoint. The private 16-bit bus
+  adapter and reducer own exactly-once external access and terminal publication.
+  Shared DATA-memory visibility occurs only at READY; WAIT never publishes
+  architectural state.
+- The sequencer owns a persistent root memory-instruction transaction, pure
+  MOD2 address resolution, candidate AR/PC state, and phase-safe
+  commit/cancel/reset behavior. The CPU services pending work before fetch,
+  never refetches or redispatches a waiting instruction, emits no false STOP on
+  WAIT, guards reset/deinit cancellation against re-entry, and preserves the
+  monotonic transaction-ID sequence across reset.
+- Review and validation corrected five structural hazards before closure:
+  RESUME no longer reruns resolver/planner validation; transaction phase and
+  reducer state are cross-checked; reset/cancel cannot raw-clear an active
+  transaction; observer-off builds compile trace call sites out; and CPU
+  cancellation rejects callback re-entry. CPU execution, pending-work, and
+  trace ownership were split from lifecycle code, while large tests were split
+  by behavior. The 482-line root transaction owner remains a cohesive stable
+  boundary and must not grow during P2-W31B2.
+- The registry closes at 128 evidence records, 191 requirements (155
+  implemented, 13 planned, 23 unresolved), and 151 tests (137 passing, 14
+  planned). No knobs were added or changed. No environment access,
+  diagnostics, timing model, opcode implementation, repeat/IRQ policy, device
+  model, MMR/program/I/O space, dual access, parallel issue, or posted-write
+  claim was introduced.
+- No meaningful hosted performance record is available yet: the existing
+  reset-runnable benchmark scenarios do not exercise this new memory path, and
+  this milestone adds no opcode rows. Capture the first relevant performance
+  baseline after P2-W31B2 makes the path executable.
+- Follow-up P2-W31B2: add catalog, decode, operation, and end-to-end proofs for
+  `LD *ARx+,dst` and `STL src,*ARx+`. This should move the catalog from 22 to
+  24 rows and from 1287 to 1319 populated first words. Broader data-memory
+  families remain separate evidence-led slices rather than implicit claims of
+  this foundation.
