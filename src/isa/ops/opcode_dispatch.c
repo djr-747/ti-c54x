@@ -112,3 +112,24 @@ ti_c54x_dispatch_decoded_with_input_snapshot(
     *effect = staged;
     return TI_C54X_OP_STATUS_OK;
 }
+
+ti_c54x_op_status ti_c54x_dispatch_trusted(
+    const ti_c54x_trusted_execution_packet *packet,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_op_status status;
+
+    if (packet == NULL || packet->handler == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = packet->handler(&packet->instruction, &packet->operands, input,
+                             &staged);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}

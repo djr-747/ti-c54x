@@ -1,4 +1,4 @@
-.PHONY: all build test quality-test bench bench-smoke bench-record bench-compare cmake-build install clean format
+.PHONY: all build test quality-test bench bench-release bench-smoke bench-record bench-compare cmake-build install clean format
 
 # Root policy: compiler flags, artifacts, orchestration, and packaging. Source
 # and test ownership manifests live beside the files they register.
@@ -33,8 +33,11 @@ BENCH_BUILD_DIR := build-bench
 BENCH_LIB := $(BENCH_BUILD_DIR)/libti_c54x.a
 BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_bench
 BENCH_CPPFLAGS := -Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0
-BENCH_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
+BENCH_DIAGNOSTIC_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
 	-Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
+BENCH_RELEASE_CFLAGS := -O3 -flto -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic \
+	-Wconversion -Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
+BENCH_CFLAGS ?= $(BENCH_DIAGNOSTIC_CFLAGS)
 BENCH_OBJECTS = $(patsubst src/%.c,$(BENCH_BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
 
 # Each owner appends its source files; this is the sole source inventory used
@@ -64,6 +67,10 @@ all: test
 bench: $(BENCH_EXE)
 	$(PYTHON) tools/perf/capture.py --benchmark $(BENCH_EXE) --root . --allow-dirty \
 		--compiler "$(CC)" --build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
+
+bench-release:
+	$(MAKE) -B BENCH_BUILD_DIR=build-bench-release \
+		BENCH_CFLAGS='$(BENCH_RELEASE_CFLAGS)' bench
 
 bench-smoke: bench
 
@@ -180,7 +187,7 @@ format:
 		tests/unit/isa/decode/*.c tests/unit/isa/ops/*.c examples/*.c
 
 clean:
-	@rm -rf -- build-fast build-bench build-cmake build-bench-cmake
+	@rm -rf -- build-fast build-bench build-bench-release build-cmake build-bench-cmake
 
 -include $(LIB_OBJECTS:.o=.d) $(OBSERVER_ON_OBJECTS:.o=.d) \
 	$(OBSERVER_OFF_OBJECTS:.o=.d) $(BENCH_OBJECTS:.o=.d) \

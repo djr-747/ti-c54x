@@ -13,12 +13,93 @@
 #include "foundation/arithmetic40.h"
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
+#include "isa/ops/dispatch/trusted_semantics.h"
 
 typedef enum ti_c54x_logical_kind {
     TI_C54X_LOGICAL_AND = 0,
     TI_C54X_LOGICAL_OR = 1,
     TI_C54X_LOGICAL_XOR = 2
 } ti_c54x_logical_kind;
+
+static ti_c54x_op_status logical_values(
+    uint8_t source,
+    uint8_t destination,
+    uint8_t raw_shift,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect,
+    ti_c54x_logical_kind kind)
+{
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_u40_t source_raw40;
+    ti_c54x_u40_t destination_raw40;
+    int shift;
+    uint64_t shifted_source;
+    uint64_t result;
+
+    if (source == UINT8_C(0)) {
+        source_raw40 = input->accumulator_a_raw40;
+        if (!input->accumulator_a_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    } else {
+        source_raw40 = input->accumulator_b_raw40;
+        if (!input->accumulator_b_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    }
+    if (destination == UINT8_C(0)) {
+        destination_raw40 = input->accumulator_a_raw40;
+        if (source != destination && !input->accumulator_a_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    } else {
+        destination_raw40 = input->accumulator_b_raw40;
+        if (source != destination && !input->accumulator_b_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    }
+    if (source_raw40 > TI_C54X_U40_MASK ||
+        (source != destination && destination_raw40 > TI_C54X_U40_MASK)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+
+    shift = (int)raw_shift;
+    if ((shift & 0x10) != 0) {
+        shift -= 32;
+    }
+    if (shift < 0) {
+        shifted_source = source_raw40 >> (unsigned)(-shift);
+    } else if (shift == 0) {
+        shifted_source = source_raw40;
+    } else {
+        shifted_source =
+            (source_raw40 << (unsigned)shift) & TI_C54X_U40_MASK;
+    }
+
+    switch (kind) {
+    case TI_C54X_LOGICAL_AND:
+        result = destination_raw40 & shifted_source;
+        break;
+    case TI_C54X_LOGICAL_OR:
+        result = destination_raw40 | shifted_source;
+        break;
+    case TI_C54X_LOGICAL_XOR:
+        result = destination_raw40 ^ shifted_source;
+        break;
+    default:
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+
+    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
+    staged.payload.accumulator_write.destination = destination;
+    staged.payload.accumulator_write.value_raw40 = ti_c54x_u40_mask(result);
+    staged.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    staged.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
 
 static ti_c54x_op_status logical_common(
     const ti_c54x_decoded_instruction *instruction,
@@ -33,14 +114,6 @@ static ti_c54x_op_status logical_common(
     ti_c54x_operand_field_value source_field = {0U, 0U};
     ti_c54x_operand_field_value destination_field = {0U, 0U};
     ti_c54x_operand_field_value shift_field = {0U, 0U};
-    ti_c54x_op_effect staged = {0};
-    ti_c54x_u40_t source_raw40;
-    ti_c54x_u40_t destination_raw40;
-    uint8_t source;
-    uint8_t destination;
-    int shift;
-    uint64_t shifted_source;
-    uint64_t result;
 
     if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
@@ -97,72 +170,10 @@ static ti_c54x_op_status logical_common(
         }
     }
 
-    source = (uint8_t)source_field.raw_value;
-    destination = (uint8_t)destination_field.raw_value;
-    if (source == UINT8_C(0)) {
-        source_raw40 = input->accumulator_a_raw40;
-        if (!input->accumulator_a_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    } else {
-        source_raw40 = input->accumulator_b_raw40;
-        if (!input->accumulator_b_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    }
-
-    if (destination == UINT8_C(0)) {
-        destination_raw40 = input->accumulator_a_raw40;
-        if (source != destination && !input->accumulator_a_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    } else {
-        destination_raw40 = input->accumulator_b_raw40;
-        if (source != destination && !input->accumulator_b_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    }
-    if (source_raw40 > TI_C54X_U40_MASK ||
-        (source != destination && destination_raw40 > TI_C54X_U40_MASK)) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
-
-    shift = (int)shift_field.raw_value;
-    if ((shift & 0x10) != 0) {
-        shift -= 32;
-    }
-    if (shift < 0) {
-        shifted_source = source_raw40 >> (unsigned)(-shift);
-    } else if (shift == 0) {
-        shifted_source = source_raw40;
-    } else {
-        shifted_source =
-            (source_raw40 << (unsigned)shift) & TI_C54X_U40_MASK;
-    }
-
-    switch (kind) {
-    case TI_C54X_LOGICAL_AND:
-        result = destination_raw40 & shifted_source;
-        break;
-    case TI_C54X_LOGICAL_OR:
-        result = destination_raw40 | shifted_source;
-        break;
-    case TI_C54X_LOGICAL_XOR:
-        result = destination_raw40 ^ shifted_source;
-        break;
-    default:
-        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-
-    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
-    staged.payload.accumulator_write.destination = destination;
-    staged.payload.accumulator_write.value_raw40 = ti_c54x_u40_mask(result);
-    staged.payload.accumulator_write.status_delta.c_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    staged.payload.accumulator_write.status_delta.tc_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
+    return logical_values((uint8_t)source_field.raw_value,
+                          (uint8_t)destination_field.raw_value,
+                          (uint8_t)shift_field.raw_value,
+                          input, effect, kind);
 }
 
 ti_c54x_op_status ti_c54x_op_and_acc_shift(
@@ -194,3 +205,22 @@ ti_c54x_op_status ti_c54x_op_xor_acc_shift(
                           TI_C54X_OPCODE_ID_XOR_ACC_SHIFT,
                           UINT16_C(0xF0C0), TI_C54X_LOGICAL_XOR);
 }
+
+#define TI_C54X_DEFINE_TRUSTED_LOGICAL(name, kind) \
+    ti_c54x_op_status ti_c54x_trusted_op_##name( \
+        const ti_c54x_decoded_instruction *instruction, \
+        const ti_c54x_trusted_operand_values *operands, \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect) \
+    { \
+        (void)instruction; \
+        return logical_values( \
+            (uint8_t)operands->values[0].raw_value, \
+            (uint8_t)operands->values[1].raw_value, \
+            (uint8_t)operands->values[2].raw_value, input, effect, kind); \
+    }
+
+TI_C54X_DEFINE_TRUSTED_LOGICAL(and_acc_shift, TI_C54X_LOGICAL_AND)
+TI_C54X_DEFINE_TRUSTED_LOGICAL(or_acc_shift, TI_C54X_LOGICAL_OR)
+TI_C54X_DEFINE_TRUSTED_LOGICAL(xor_acc_shift, TI_C54X_LOGICAL_XOR)
+
+#undef TI_C54X_DEFINE_TRUSTED_LOGICAL

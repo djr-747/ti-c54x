@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "isa/catalog/opcode_catalog.h"
+#include "isa/ops/dispatch/trusted_semantics.h"
 
 ti_c54x_op_status
 ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
@@ -54,5 +55,18 @@ ti_c54x_op_nop(const ti_c54x_decoded_instruction *instruction,
 
     staged.kind = TI_C54X_OP_EFFECT_NONE;
     *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_nop(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    (void)instruction;
+    (void)operands;
+    (void)input;
+    effect->kind = TI_C54X_OP_EFFECT_NONE;
     return TI_C54X_OP_STATUS_OK;
 }

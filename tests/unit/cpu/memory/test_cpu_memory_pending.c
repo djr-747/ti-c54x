@@ -160,6 +160,65 @@ static void test_prepared_and_pending_work_resume_before_fetch(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
 }
 
+static void test_pending_ready_resume_uses_remaining_budget_for_fetch(void)
+{
+    cpu_memory_fixture fixture = {
+        .mode = CPU_ENDPOINT_WAIT,
+        .read_value_word = UINT16_C(0xbeef),
+        .fault_status = TI_C54X_BUS_FAULT,
+        .cancel_result = TI_C54X_BUS_WORD16_CANCEL_RESULT_CANCELLED};
+    ti_c54x_bus_word16_endpoint endpoint = make_endpoint(&fixture);
+    ti_c54x_error status;
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_cpu *cpu = init_cpu(storage, &fixture, &endpoint, NULL, &status);
+    ti_c54x_run_result result;
+    ti_c54x_state state;
+
+    TI_C54X_TEST_CHECK(status == TI_C54X_ERROR_OK);
+    seed_pending_memory(cpu, &fixture,
+                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    fixture.mode = CPU_ENDPOINT_READY;
+
+    result = ti_c54x_cpu_run(cpu, UINT64_C(2));
+
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+    TI_C54X_TEST_CHECK(result.instructions_attempted == UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(2));
+    TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(2));
+    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0xf495));
+    TI_C54X_TEST_CHECK(result.opcode_valid);
+    TI_C54X_TEST_CHECK(fixture.advance_calls == 2U);
+    TI_C54X_TEST_CHECK(fixture.begin_calls == 1U);
+    TI_C54X_TEST_CHECK(fixture.resume_calls == 1U);
+    TI_C54X_TEST_CHECK(fixture.fetch_calls == 1U);
+    TI_C54X_TEST_CHECK(fixture.stop_events == 0U);
+    TI_C54X_TEST_CHECK(fixture.ids[0] != UINT64_C(0));
+    TI_C54X_TEST_CHECK(fixture.ids[1] == fixture.ids[0]);
+    TI_C54X_TEST_CHECK(fixture.requests[0].space ==
+                       TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA);
+    TI_C54X_TEST_CHECK(fixture.requests[0].access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(fixture.requests[0].address_word == UINT32_C(0x2110));
+    TI_C54X_TEST_CHECK(fixture.requests[1].space ==
+                       TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA);
+    TI_C54X_TEST_CHECK(fixture.requests[1].access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(fixture.requests[1].address_word == UINT32_C(0x2110));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
+    TI_C54X_TEST_CHECK(state.pc_word == UINT32_C(2));
+    TI_C54X_TEST_CHECK(state.last_fetched_word == UINT16_C(0xf495));
+    TI_C54X_TEST_CHECK(state.last_fetch_valid);
+    TI_C54X_TEST_CHECK(state.accumulator_a_raw40 == UINT64_C(0xbeef));
+    TI_C54X_TEST_CHECK(state.accumulator_a_known);
+    TI_C54X_TEST_CHECK(state.instructions_attempted_total == UINT64_C(2));
+    TI_C54X_TEST_CHECK(state.instructions_retired_total == UINT64_C(2));
+    TI_C54X_TEST_CHECK(cpu->arch_state.ar[2] == UINT16_C(0x2111));
+    TI_C54X_TEST_CHECK(cpu->instructions_attempted == UINT64_C(2));
+    TI_C54X_TEST_CHECK(cpu->instructions_retired == UINT64_C(2));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
 static void test_reset_and_deinit_cancel_pending_with_same_id_and_retry(void)
 {
     cpu_memory_fixture fixture = {
@@ -266,6 +325,7 @@ static void test_missing_data_endpoint_faults_before_external_issue(void)
 int main(void)
 {
     test_prepared_and_pending_work_resume_before_fetch();
+    test_pending_ready_resume_uses_remaining_budget_for_fetch();
     test_reset_and_deinit_cancel_pending_with_same_id_and_retry();
     test_pending_fault_does_not_commit_architecture();
     test_missing_data_endpoint_faults_before_external_issue();

@@ -70,6 +70,49 @@ static uint64_t ti_c54x_logical_immediate_apply(
     }
 }
 
+ti_c54x_op_status ti_c54x_op_logical_immediate_values(
+    ti_c54x_logical_immediate_kind kind,
+    uint8_t source,
+    uint8_t destination,
+    uint8_t shift,
+    uint16_t immediate,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_u40_t source_raw40;
+    uint64_t shifted_immediate;
+
+    if (source == UINT8_C(0)) {
+        source_raw40 = input->accumulator_a_raw40;
+        if (!input->accumulator_a_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    } else {
+        source_raw40 = input->accumulator_b_raw40;
+        if (!input->accumulator_b_known) {
+            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+        }
+    }
+    if (source_raw40 > TI_C54X_U40_MASK) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+
+    shifted_immediate =
+        ((uint64_t)immediate << shift) & TI_C54X_U40_MASK;
+    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
+    staged.payload.accumulator_write.destination = destination;
+    staged.payload.accumulator_write.value_raw40 = ti_c54x_u40_mask(
+        ti_c54x_logical_immediate_apply(kind, source_raw40,
+                                        shifted_immediate));
+    staged.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    staged.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
+
 ti_c54x_op_status ti_c54x_op_logical_immediate(
     ti_c54x_logical_immediate_kind kind,
     const ti_c54x_decoded_instruction *instruction,
@@ -83,14 +126,9 @@ ti_c54x_op_status ti_c54x_op_logical_immediate(
     ti_c54x_operand_field_value destination_field = {0U, 0U};
     ti_c54x_operand_field_value shift_field = {0U, 0U};
     ti_c54x_operand_field_value immediate_field = {0U, 0U};
-    ti_c54x_op_effect staged = {0};
-    ti_c54x_u40_t source_raw40;
     ti_c54x_opcode_id expected_id;
     ti_c54x_operand_layout_id expected_layout;
-    uint8_t source;
-    uint8_t destination;
     uint8_t shift;
-    uint64_t shifted_immediate;
 
     if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
@@ -184,34 +222,8 @@ ti_c54x_op_status ti_c54x_op_logical_immediate(
         shift = UINT8_C(16);
     }
 
-    source = (uint8_t)source_field.raw_value;
-    destination = (uint8_t)destination_field.raw_value;
-    if (source == UINT8_C(0)) {
-        source_raw40 = input->accumulator_a_raw40;
-        if (!input->accumulator_a_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    } else {
-        source_raw40 = input->accumulator_b_raw40;
-        if (!input->accumulator_b_known) {
-            return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-        }
-    }
-    if (source_raw40 > TI_C54X_U40_MASK) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
-
-    shifted_immediate =
-        (((uint64_t)immediate_field.raw_value) << shift) & TI_C54X_U40_MASK;
-    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
-    staged.payload.accumulator_write.destination = destination;
-    staged.payload.accumulator_write.value_raw40 = ti_c54x_u40_mask(
-        ti_c54x_logical_immediate_apply(kind, source_raw40,
-                                        shifted_immediate));
-    staged.payload.accumulator_write.status_delta.c_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    staged.payload.accumulator_write.status_delta.tc_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
+    return ti_c54x_op_logical_immediate_values(
+        kind, (uint8_t)source_field.raw_value,
+        (uint8_t)destination_field.raw_value, shift,
+        (uint16_t)immediate_field.raw_value, input, effect);
 }

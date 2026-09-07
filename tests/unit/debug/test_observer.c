@@ -148,8 +148,8 @@ test_instances_have_independent_masks(void)
 static void
 test_observation_does_not_change_architectural_result(void)
 {
-    observer_fixture first_fixture = {UINT16_C(0xF495), 0U};
-    observer_fixture second_fixture = {UINT16_C(0xF495), 0U};
+    observer_fixture first_fixture = {UINT16_C(0xEBAB), 0U};
+    observer_fixture second_fixture = {UINT16_C(0xEBAB), 0U};
     event_log first_log = {0};
     event_log second_log = {0};
     ti_c54x_state first_state;
@@ -165,9 +165,24 @@ test_observation_does_not_change_architectural_result(void)
 
     TI_C54X_TEST_CHECK(first_result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
     TI_C54X_TEST_CHECK(first_result.reason == second_result.reason);
+    TI_C54X_TEST_CHECK(first_result.bus_status == second_result.bus_status);
+    TI_C54X_TEST_CHECK(first_result.bus_status == TI_C54X_BUS_OK);
     TI_C54X_TEST_CHECK(first_result.pc_word == second_result.pc_word);
+    TI_C54X_TEST_CHECK(first_result.pc_word == UINT32_C(1));
     TI_C54X_TEST_CHECK(first_result.opcode_word == second_result.opcode_word);
+    TI_C54X_TEST_CHECK(first_result.opcode_word == UINT16_C(0xEBAB));
     TI_C54X_TEST_CHECK(first_result.opcode_valid == second_result.opcode_valid);
+    TI_C54X_TEST_CHECK(first_result.opcode_valid);
+    TI_C54X_TEST_CHECK(first_result.instructions_attempted ==
+                       second_result.instructions_attempted);
+    TI_C54X_TEST_CHECK(first_result.instructions_attempted == UINT64_C(1));
+    TI_C54X_TEST_CHECK(first_result.instructions_retired ==
+                       second_result.instructions_retired);
+    TI_C54X_TEST_CHECK(first_result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(first_log.count == 2U);
+    TI_C54X_TEST_CHECK(first_log.kinds[0] == TI_C54X_TRACE_RESET);
+    TI_C54X_TEST_CHECK(first_log.kinds[1] == TI_C54X_TRACE_FETCH);
+    TI_C54X_TEST_CHECK(second_log.count == 0U);
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(first, &first_state) ==
                        TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(second, &second_state) ==
@@ -176,11 +191,35 @@ test_observation_does_not_change_architectural_result(void)
     TI_C54X_TEST_CHECK(first_state.pc_word == UINT32_C(1));
     TI_C54X_TEST_CHECK(first_state.last_fetched_word ==
                        second_state.last_fetched_word);
+    TI_C54X_TEST_CHECK(first_state.last_fetched_word == UINT16_C(0xEBAB));
+    TI_C54X_TEST_CHECK(first_state.last_fetch_valid ==
+                       second_state.last_fetch_valid);
+    TI_C54X_TEST_CHECK(first_state.last_fetch_valid);
     TI_C54X_TEST_CHECK(first_state.instructions_attempted_total ==
                        second_state.instructions_attempted_total);
+    TI_C54X_TEST_CHECK(first_state.instructions_attempted_total ==
+                       UINT64_C(1));
     TI_C54X_TEST_CHECK(first_state.instructions_retired_total ==
                        second_state.instructions_retired_total);
     TI_C54X_TEST_CHECK(first_state.instructions_retired_total == UINT64_C(1));
+    TI_C54X_TEST_CHECK(first_state.dp == second_state.dp);
+    TI_C54X_TEST_CHECK(first_state.dp == UINT16_C(0x01AB));
+    TI_C54X_TEST_CHECK(first_state.dp_known == second_state.dp_known);
+    TI_C54X_TEST_CHECK(first_state.dp_known);
+    TI_C54X_TEST_CHECK(first_state.asm_raw == second_state.asm_raw);
+    TI_C54X_TEST_CHECK(first_state.asm_known == second_state.asm_known);
+    TI_C54X_TEST_CHECK(first_state.arp == second_state.arp);
+    TI_C54X_TEST_CHECK(first_state.arp_known == second_state.arp_known);
+    TI_C54X_TEST_CHECK(first_state.accumulator_a_raw40 ==
+                       second_state.accumulator_a_raw40);
+    TI_C54X_TEST_CHECK(first_state.accumulator_a_known ==
+                       second_state.accumulator_a_known);
+    TI_C54X_TEST_CHECK(first_state.accumulator_b_raw40 ==
+                       second_state.accumulator_b_raw40);
+    TI_C54X_TEST_CHECK(first_state.accumulator_b_known ==
+                       second_state.accumulator_b_known);
+    TI_C54X_TEST_CHECK(first_state.c == second_state.c);
+    TI_C54X_TEST_CHECK(first_state.c_known == second_state.c_known);
     ti_c54x_cpu_deinit(first);
     ti_c54x_cpu_deinit(second);
     free(first_storage);

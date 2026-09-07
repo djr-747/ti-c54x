@@ -14,6 +14,58 @@
 #include "foundation/arithmetic40.h"
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
+#include "isa/ops/dispatch/trusted_semantics.h"
+
+static ti_c54x_op_status sftc_values(
+    uint8_t source,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_u40_t source_raw40;
+    uint64_t low32;
+    uint64_t result_raw40;
+    ti_c54x_op_status_bit_action tc_action;
+    bool source_known;
+
+    if (source == UINT8_C(0)) {
+        source_raw40 = input->accumulator_a_raw40;
+        source_known = input->accumulator_a_known;
+    } else {
+        source_raw40 = input->accumulator_b_raw40;
+        source_known = input->accumulator_b_known;
+    }
+    if (!source_known) {
+        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+    }
+    if (source_raw40 > TI_C54X_U40_MASK) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+
+    low32 = source_raw40 & UINT64_C(0xFFFFFFFF);
+    if (low32 == UINT64_C(0)) {
+        result_raw40 = source_raw40;
+        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_1;
+    } else if ((((low32 >> 31U) ^ (low32 >> 30U)) & UINT64_C(1)) ==
+               UINT64_C(0)) {
+        result_raw40 = (source_raw40 & UINT64_C(0xFF00000000)) |
+                       ((low32 << 1U) & UINT64_C(0xFFFFFFFF));
+        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_0;
+    } else {
+        result_raw40 = source_raw40;
+        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_1;
+    }
+
+    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
+    staged.payload.accumulator_write.destination = source;
+    staged.payload.accumulator_write.value_raw40 =
+        ti_c54x_u40_mask(result_raw40);
+    staged.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    staged.payload.accumulator_write.status_delta.tc_action = tc_action;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
 
 ti_c54x_op_status ti_c54x_op_sftc_acc(
     const ti_c54x_decoded_instruction *instruction,
@@ -23,12 +75,6 @@ ti_c54x_op_status ti_c54x_op_sftc_acc(
     const ti_c54x_opcode_metadata *metadata;
     ti_c54x_operand_layout_set_view layout_view;
     ti_c54x_operand_field_value source_field = {0U, 0U};
-    ti_c54x_op_effect staged = {0};
-    ti_c54x_u40_t source_raw40;
-    uint64_t low32;
-    uint64_t result_raw40;
-    ti_c54x_op_status_bit_action tc_action;
-    bool source_known;
 
     if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
@@ -79,42 +125,16 @@ ti_c54x_op_status ti_c54x_op_sftc_acc(
         }
     }
 
-    if (source_field.raw_value == UINT64_C(0)) {
-        source_raw40 = input->accumulator_a_raw40;
-        source_known = input->accumulator_a_known;
-    } else {
-        source_raw40 = input->accumulator_b_raw40;
-        source_known = input->accumulator_b_known;
-    }
-    if (!source_known) {
-        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-    }
-    if (source_raw40 > TI_C54X_U40_MASK) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
+    return sftc_values((uint8_t)source_field.raw_value, input, effect);
+}
 
-    low32 = source_raw40 & UINT64_C(0xFFFFFFFF);
-    if (low32 == UINT64_C(0)) {
-        result_raw40 = source_raw40;
-        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_1;
-    } else if ((((low32 >> 31U) ^ (low32 >> 30U)) & UINT64_C(1)) ==
-               UINT64_C(0)) {
-        result_raw40 = (source_raw40 & UINT64_C(0xFF00000000)) |
-                       ((low32 << 1U) & UINT64_C(0xFFFFFFFF));
-        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_0;
-    } else {
-        result_raw40 = source_raw40;
-        tc_action = TI_C54X_OP_STATUS_BIT_WRITE_1;
-    }
-
-    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
-    staged.payload.accumulator_write.destination =
-        (uint8_t)source_field.raw_value;
-    staged.payload.accumulator_write.value_raw40 =
-        ti_c54x_u40_mask(result_raw40);
-    staged.payload.accumulator_write.status_delta.c_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    staged.payload.accumulator_write.status_delta.tc_action = tc_action;
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
+ti_c54x_op_status ti_c54x_trusted_op_sftc_acc(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    (void)instruction;
+    return sftc_values((uint8_t)operands->values[0].raw_value,
+                       input, effect);
 }

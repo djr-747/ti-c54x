@@ -14,9 +14,10 @@
 #include "../input/collect.h"
 #include "../memory/pending_work.h"
 #include "../trace/emit.h"
-#include "isa/decode/opcode_decode.h"
+#include "isa/decode/trusted_execution_packet.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/opcode_dispatch.h"
+#include "isa/ops/dispatch/trusted_opcode_binding.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_bridge.h"
 
@@ -129,10 +130,9 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
     while (instructions_retired < instruction_budget) {
         uint16_t opcode_word = 0U;
         ti_c54x_bus_status bus_status;
-        ti_c54x_decode_result first_word_result;
+        const ti_c54x_trusted_opcode_binding *binding;
         ti_c54x_instruction_extension_fetch_result fetched;
-        ti_c54x_decoded_instruction instruction;
-        ti_c54x_instruction_completion_status completion_status;
+        ti_c54x_trusted_execution_packet packet;
         ti_c54x_op_effect effect = {0};
         ti_c54x_effect_transaction transaction;
         ti_c54x_program_pc_bridge_effect pc_effect;
@@ -260,16 +260,24 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         cpu->last_fetched_word = opcode_word;
         cpu->last_fetch_valid = true;
         TI_C54X_CPU_EMIT_TRACE(cpu, TI_C54X_TRACE_FETCH);
-        first_word_result = ti_c54x_decode_first_word(opcode_word);
-        if (first_word_result.status != TI_C54X_DECODE_STATUS_OK) {
+        binding = ti_c54x_trusted_opcode_binding_for_first_word(opcode_word);
+        if (binding == NULL ||
+            binding->metadata.id == TI_C54X_OPCODE_ID_UNKNOWN) {
             return stop_result(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
 
-        fetched = ti_c54x_instruction_extension_fetch(
-            &cpu->bus, cpu->arch_state.pc_word, opcode_word,
-            first_word_result.program_word_count);
+        if (binding->metadata.program_word_count == UINT8_C(1)) {
+            fetched = (ti_c54x_instruction_extension_fetch_result){
+                .status = TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_OK,
+                .bus_status = TI_C54X_BUS_OK,
+                .bundle = {{opcode_word, UINT16_C(0)}, UINT8_C(1)}};
+        } else {
+            fetched = ti_c54x_instruction_extension_fetch(
+                &cpu->bus, cpu->arch_state.pc_word, opcode_word,
+                binding->metadata.program_word_count);
+        }
         if (fetched.status ==
             TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_BUS_FAULT) {
             return stop_result(cpu, TI_C54X_STOP_BUS_FAULT,
@@ -282,17 +290,18 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
-        completion_status = ti_c54x_decode_complete_instruction(
-            &first_word_result, &fetched.bundle, &instruction);
-        if (completion_status !=
-            TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK) {
+        if (ti_c54x_trusted_execution_packet_prepare_fast(
+                binding, &fetched.bundle, &packet) !=
+            TI_C54X_TRUSTED_EXECUTION_PACKET_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
 
-        if (ti_c54x_input_collect(
-                instruction.input_resources,
+        if (packet.instruction.input_resources !=
+                TI_C54X_INPUT_RESOURCES_NONE &&
+            ti_c54x_input_collect(
+                packet.instruction.input_resources,
                 &(ti_c54x_input_sources){&cpu->accumulators,
                                          &cpu->arch_state.status},
                 &op_input) != TI_C54X_INPUT_COLLECT_OK) {
@@ -300,8 +309,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
-        op_status = ti_c54x_dispatch_decoded_with_input_snapshot(
-            &instruction, &op_input, &effect);
+        op_status = ti_c54x_dispatch_trusted(&packet, &op_input, &effect);
         if (op_status != TI_C54X_OP_STATUS_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
@@ -318,16 +326,17 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         }
         candidate_pc = cpu->arch_state.pc_word;
 
-        bridge_status = ti_c54x_program_pc_bridge_plan(
-            cpu->arch_state.pc_word, instruction.bundle.program_word_count,
+        bridge_status = ti_c54x_program_pc_bridge_plan_trusted(
+            cpu->arch_state.pc_word,
+            packet.instruction.bundle.program_word_count,
             &pc_effect);
         if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return stop_result(cpu, bridge_status_to_stop(bridge_status),
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
-        bridge_status = ti_c54x_program_pc_bridge_apply(&candidate_pc,
-                                                        &pc_effect);
+        bridge_status = ti_c54x_program_pc_bridge_apply_trusted(
+            &candidate_pc, &pc_effect);
         if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,

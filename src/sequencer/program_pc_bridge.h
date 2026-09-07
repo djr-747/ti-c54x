@@ -48,10 +48,26 @@ ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_plan(
     uint8_t program_word_count,
     ti_c54x_program_pc_bridge_effect *effect);
 
+/* Build the same checked plan for the trusted CPU path. Rejections preserve
+ * output; the implementation and boundary arithmetic are shared with plan(). */
+ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_plan_trusted(
+    uint32_t public_pc_word_before,
+    uint8_t program_word_count,
+    ti_c54x_program_pc_bridge_effect *effect);
+
 /* Validate and commit a staged successor transactionally to a live carrier. */
 ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_apply(
     uint32_t *public_pc_word,
     const ti_c54x_program_pc_bridge_effect *effect);
+
+/* Commit an effect returned by a successful plan without recomputing it.
+ * Private caller precondition: planned_effect is the untouched value-owned
+ * result of plan() or plan_trusted(), and the live carrier is its source.
+ * The C type cannot encode that provenance, so this seam intentionally checks
+ * only the live source and performs no effect validation or arithmetic. */
+ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_apply_trusted(
+    uint32_t *public_pc_word,
+    const ti_c54x_program_pc_bridge_effect *planned_effect);
 
 #ifdef __cplusplus
 }

@@ -4183,7 +4183,7 @@
     },
     {
       "id": "REQ-PROJECT-TRUSTED-OPCODE-BINDING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/dispatch/",
@@ -4193,7 +4193,7 @@
     },
     {
       "id": "REQ-PROJECT-TRUSTED-EXECUTION-PACKET",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/decode/",
@@ -4203,7 +4203,7 @@
     },
     {
       "id": "REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/",
@@ -4213,7 +4213,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/execution/",
@@ -4223,7 +4223,7 @@
     },
     {
       "id": "REQ-PROJECT-TRUSTED-PC-COMMIT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/",
@@ -4233,7 +4233,7 @@
     },
     {
       "id": "REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -5492,50 +5492,50 @@
     },
     {
       "id": "T-PROJECT-TRUSTED-OPCODE-BINDING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
       "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/decode/test_trusted_execution_packet.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_execution_packet"},
       "requirement_ids": ["REQ-PROJECT-TRUSTED-EXECUTION-PACKET"]
     },
     {
       "id": "T-PROJECT-TRUSTED-SEMANTIC-DISPATCH",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_semantic_dispatch.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_semantic_dispatch"},
       "requirement_ids": ["REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH"]
     },
     {
       "id": "T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/execution/test_trusted_instruction_path.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_instruction_path"},
       "requirement_ids": ["REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH"]
     },
     {
       "id": "T-PROJECT-TRUSTED-PC-COMMIT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/pc/test_trusted_pc_commit.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_pc_commit"},
       "requirement_ids": ["REQ-PROJECT-TRUSTED-PC-COMMIT"]
     },
     {
       "id": "T-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/perf/test_release_lto_benchmark_contract.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-RELEASE-LTO-PERFORMANCE-CONTRACT"]
     }
   ]

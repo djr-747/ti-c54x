@@ -13,6 +13,7 @@
  */
 
 #include "isa/decode/opcode_decode.h"
+#include "isa/decode/trusted_execution_packet.h"
 
 #include "op_effect.h"
 #include "op_input.h"
@@ -33,6 +34,14 @@ ti_c54x_op_status ti_c54x_dispatch_decoded(
 
 ti_c54x_op_status ti_c54x_dispatch_decoded_with_input_snapshot(
     const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+/* Dispatch a constructor-validated packet without catalog/layout rechecks.
+ * The packet is the sole trusted semantic input; raw handler pointers and
+ * extracted operand storage remain private to the packet/dispatch internals. */
+ti_c54x_op_status ti_c54x_dispatch_trusted(
+    const ti_c54x_trusted_execution_packet *packet,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 

@@ -16,6 +16,21 @@
 
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
+#include "isa/ops/dispatch/trusted_semantics.h"
+
+static ti_c54x_op_status ld_status_field_value(
+    uint16_t raw_value,
+    ti_c54x_op_status_field_target target,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+
+    staged.kind = TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE;
+    staged.payload.status_field_write.target = target;
+    staged.payload.status_field_write.raw_value = raw_value;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
 
 static ti_c54x_op_status
 ti_c54x_op_ld_status_field_common(
@@ -29,7 +44,6 @@ ti_c54x_op_ld_status_field_common(
     const ti_c54x_opcode_metadata *metadata;
     ti_c54x_operand_layout_set_view view;
     ti_c54x_operand_field_value field = {0U, 0U};
-    ti_c54x_op_effect staged = {0};
 
     if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
@@ -79,11 +93,7 @@ ti_c54x_op_ld_status_field_common(
         }
     }
 
-    staged.kind = TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE;
-    staged.payload.status_field_write.target = target;
-    staged.payload.status_field_write.raw_value = (uint16_t)field.raw_value;
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
+    return ld_status_field_value((uint16_t)field.raw_value, target, effect);
 }
 
 ti_c54x_op_status
@@ -115,3 +125,24 @@ ti_c54x_op_ld_immediate_arp(const ti_c54x_decoded_instruction *instruction,
         instruction, input, effect, TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,
         UINT8_C(3), TI_C54X_OP_STATUS_FIELD_TARGET_ARP);
 }
+
+#define TI_C54X_DEFINE_TRUSTED_LD(name, target) \
+    ti_c54x_op_status ti_c54x_trusted_op_##name( \
+        const ti_c54x_decoded_instruction *instruction, \
+        const ti_c54x_trusted_operand_values *operands, \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect) \
+    { \
+        (void)instruction; \
+        (void)input; \
+        return ld_status_field_value( \
+            (uint16_t)operands->values[0].raw_value, target, effect); \
+    }
+
+TI_C54X_DEFINE_TRUSTED_LD(ld_immediate_dp,
+                          TI_C54X_OP_STATUS_FIELD_TARGET_DP)
+TI_C54X_DEFINE_TRUSTED_LD(ld_immediate_asm,
+                          TI_C54X_OP_STATUS_FIELD_TARGET_ASM)
+TI_C54X_DEFINE_TRUSTED_LD(ld_immediate_arp,
+                          TI_C54X_OP_STATUS_FIELD_TARGET_ARP)
+
+#undef TI_C54X_DEFINE_TRUSTED_LD

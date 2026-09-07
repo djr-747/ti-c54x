@@ -13,38 +13,13 @@
 
 #include "sequential_pc.h"
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
-static bool
-ti_c54x_program_pc_bridge_effect_is_valid(
-    const ti_c54x_program_pc_bridge_effect *effect)
-{
-    ti_c54x_sequential_pc_effect sequential;
-
-    if (effect == NULL ||
-        effect->program_word_count == UINT8_C(0) ||
-        effect->public_pc_word_before > (uint32_t)UINT16_MAX ||
-        effect->public_pc_word_after > (uint32_t)UINT16_MAX ||
-        effect->public_pc_word_before !=
-            (uint32_t)effect->common_pc_word_before ||
-        effect->public_pc_word_after !=
-            (uint32_t)effect->common_pc_word_after) {
-        return false;
-    }
-
-    if (ti_c54x_sequencer_plan_sequential_pc(
-            effect->common_pc_word_before, effect->program_word_count,
-            &sequential) !=
-        TI_C54X_SEQUENTIAL_PC_OK) {
-        return false;
-    }
-    return effect->common_pc_word_after == sequential.pc_word_after;
-}
-
-ti_c54x_program_pc_bridge_status
-ti_c54x_program_pc_bridge_plan(
+static ti_c54x_program_pc_bridge_status
+ti_c54x_program_pc_bridge_plan_impl(
     uint32_t public_pc_word_before,
     uint8_t program_word_count,
     ti_c54x_program_pc_bridge_effect *effect)
@@ -82,14 +57,59 @@ ti_c54x_program_pc_bridge_plan(
     return TI_C54X_PROGRAM_PC_BRIDGE_OK;
 }
 
+static bool
+ti_c54x_program_pc_bridge_effect_is_valid(
+    const ti_c54x_program_pc_bridge_effect *effect)
+{
+    ti_c54x_sequential_pc_effect sequential;
+
+    if (effect == NULL ||
+        effect->program_word_count == UINT8_C(0) ||
+        effect->public_pc_word_before > (uint32_t)UINT16_MAX ||
+        effect->public_pc_word_after > (uint32_t)UINT16_MAX ||
+        effect->public_pc_word_before !=
+            (uint32_t)effect->common_pc_word_before ||
+        effect->public_pc_word_after !=
+            (uint32_t)effect->common_pc_word_after) {
+        return false;
+    }
+
+    sequential.pc_word_before = effect->common_pc_word_before;
+    sequential.pc_word_after = effect->common_pc_word_after;
+    sequential.program_word_count = effect->program_word_count;
+    {
+        uint16_t common_pc_word = effect->common_pc_word_before;
+
+        return ti_c54x_sequencer_apply_sequential_pc(
+                   &common_pc_word, &sequential) ==
+               TI_C54X_SEQUENTIAL_PC_OK;
+    }
+}
+
+ti_c54x_program_pc_bridge_status
+ti_c54x_program_pc_bridge_plan(
+    uint32_t public_pc_word_before,
+    uint8_t program_word_count,
+    ti_c54x_program_pc_bridge_effect *effect)
+{
+    return ti_c54x_program_pc_bridge_plan_impl(
+        public_pc_word_before, program_word_count, effect);
+}
+
+ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_plan_trusted(
+    uint32_t public_pc_word_before,
+    uint8_t program_word_count,
+    ti_c54x_program_pc_bridge_effect *effect)
+{
+    return ti_c54x_program_pc_bridge_plan_impl(
+        public_pc_word_before, program_word_count, effect);
+}
+
 ti_c54x_program_pc_bridge_status
 ti_c54x_program_pc_bridge_apply(
     uint32_t *public_pc_word,
     const ti_c54x_program_pc_bridge_effect *effect)
 {
-    ti_c54x_sequential_pc_effect sequential;
-    uint16_t common_pc_word;
-
     if (public_pc_word == NULL || effect == NULL) {
         return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT;
     }
@@ -100,15 +120,20 @@ ti_c54x_program_pc_bridge_apply(
         return TI_C54X_PROGRAM_PC_BRIDGE_STALE_SOURCE;
     }
 
-    sequential.pc_word_before = effect->common_pc_word_before;
-    sequential.pc_word_after = effect->common_pc_word_after;
-    sequential.program_word_count = effect->program_word_count;
-    common_pc_word = effect->common_pc_word_before;
-    if (ti_c54x_sequencer_apply_sequential_pc(
-            &common_pc_word, &sequential) != TI_C54X_SEQUENTIAL_PC_OK) {
-        return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_EFFECT;
-    }
-
     *public_pc_word = effect->public_pc_word_after;
+    return TI_C54X_PROGRAM_PC_BRIDGE_OK;
+}
+
+ti_c54x_program_pc_bridge_status ti_c54x_program_pc_bridge_apply_trusted(
+    uint32_t *public_pc_word,
+    const ti_c54x_program_pc_bridge_effect *planned_effect)
+{
+    if (public_pc_word == NULL || planned_effect == NULL) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT;
+    }
+    if (*public_pc_word != planned_effect->public_pc_word_before) {
+        return TI_C54X_PROGRAM_PC_BRIDGE_STALE_SOURCE;
+    }
+    *public_pc_word = planned_effect->public_pc_word_after;
     return TI_C54X_PROGRAM_PC_BRIDGE_OK;
 }

@@ -13,6 +13,43 @@
 #include "foundation/arithmetic40.h"
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
+#include "isa/ops/dispatch/trusted_semantics.h"
+
+static ti_c54x_op_status cmpl_values(
+    uint8_t source,
+    uint8_t destination,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_u40_t source_raw40;
+    bool source_known;
+
+    if (source == UINT8_C(0)) {
+        source_raw40 = input->accumulator_a_raw40;
+        source_known = input->accumulator_a_known;
+    } else {
+        source_raw40 = input->accumulator_b_raw40;
+        source_known = input->accumulator_b_known;
+    }
+    if (!source_known) {
+        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+    }
+    if (source_raw40 > TI_C54X_U40_MASK) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+
+    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
+    staged.payload.accumulator_write.destination = destination;
+    staged.payload.accumulator_write.value_raw40 =
+        ti_c54x_u40_mask(~source_raw40);
+    staged.payload.accumulator_write.status_delta.c_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    staged.payload.accumulator_write.status_delta.tc_action =
+        TI_C54X_OP_STATUS_BIT_PRESERVE;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
 
 ti_c54x_op_status ti_c54x_op_cmpl_acc(
     const ti_c54x_decoded_instruction *instruction,
@@ -23,9 +60,6 @@ ti_c54x_op_status ti_c54x_op_cmpl_acc(
     ti_c54x_operand_layout_set_view layout_view;
     ti_c54x_operand_field_value source_field = {0U, 0U};
     ti_c54x_operand_field_value destination_field = {0U, 0U};
-    ti_c54x_op_effect staged = {0};
-    ti_c54x_u40_t source_raw40;
-    bool source_known;
 
     if (instruction == NULL || input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
@@ -81,29 +115,19 @@ ti_c54x_op_status ti_c54x_op_cmpl_acc(
         }
     }
 
-    if (source_field.raw_value == UINT64_C(0)) {
-        source_raw40 = input->accumulator_a_raw40;
-        source_known = input->accumulator_a_known;
-    } else {
-        source_raw40 = input->accumulator_b_raw40;
-        source_known = input->accumulator_b_known;
-    }
-    if (!source_known) {
-        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-    }
-    if (source_raw40 > TI_C54X_U40_MASK) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
+    return cmpl_values((uint8_t)source_field.raw_value,
+                       (uint8_t)destination_field.raw_value,
+                       input, effect);
+}
 
-    staged.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
-    staged.payload.accumulator_write.destination =
-        (uint8_t)destination_field.raw_value;
-    staged.payload.accumulator_write.value_raw40 =
-        ti_c54x_u40_mask(~source_raw40);
-    staged.payload.accumulator_write.status_delta.c_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    staged.payload.accumulator_write.status_delta.tc_action =
-        TI_C54X_OP_STATUS_BIT_PRESERVE;
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
+ti_c54x_op_status ti_c54x_trusted_op_cmpl_acc(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    (void)instruction;
+    return cmpl_values((uint8_t)operands->values[0].raw_value,
+                       (uint8_t)operands->values[1].raw_value,
+                       input, effect);
 }

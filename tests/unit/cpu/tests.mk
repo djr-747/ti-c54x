@@ -13,6 +13,7 @@ $(eval $(call ti_c54x_add_test,cpu_logical_accumulator,cpu,test_cpu_logical_accu
 $(eval $(call ti_c54x_add_test,cpu_roltc,cpu,test_cpu_roltc.c))
 $(eval $(call ti_c54x_add_test,cpu_sftc,cpu,test_cpu_sftc.c))
 $(eval $(call ti_c54x_add_test,cpu_exp,cpu,test_cpu_exp.c))
+include tests/unit/cpu/execution/tests.mk
 include tests/unit/cpu/input/tests.mk
 include tests/unit/cpu/isa/tests.mk
 include tests/unit/cpu/state/tests.mk

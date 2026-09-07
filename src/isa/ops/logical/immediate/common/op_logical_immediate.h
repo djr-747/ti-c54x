@@ -35,6 +35,16 @@ ti_c54x_op_status ti_c54x_op_logical_immediate(
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 
+/* Apply one constructor-validated normalized operand set. */
+ti_c54x_op_status ti_c54x_op_logical_immediate_values(
+    ti_c54x_logical_immediate_kind kind,
+    uint8_t source,
+    uint8_t destination,
+    uint8_t shift,
+    uint16_t immediate,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
 #ifdef __cplusplus
 }
 #endif

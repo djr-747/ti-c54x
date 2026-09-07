@@ -9,6 +9,8 @@
 
 #include "operand_layout.h"
 
+#include "operand_layout_internal.h"
+
 #include "instruction_bundle.h"
 
 #include <stddef.h>
@@ -156,6 +158,58 @@ static const ti_c54x_operand_layout_set
     ti_c54x_accumulator_source_destination_extension16_shift16_set = {
         ti_c54x_accumulator_source_destination_extension16_shift16_operands,
         UINT8_C(3)};
+
+const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
+    TI_C54X_OPERAND_LAYOUT_COUNT] = {
+        [TI_C54X_OPERAND_LAYOUT_UNKNOWN] = {
+            TI_C54X_OPERAND_LAYOUT_UNKNOWN, UINT8_C(0), NULL},
+        [TI_C54X_OPERAND_LAYOUT_NONE] = {
+            TI_C54X_OPERAND_LAYOUT_NONE, UINT8_C(1),
+            &ti_c54x_operand_layout_none},
+        [TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K] = {
+            TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K, UINT8_C(1),
+            &ti_c54x_rpt_k_set},
+        [TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK] = {
+            TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK, UINT8_C(2),
+            &ti_c54x_rpt_lk_set},
+        [TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP] = {
+            TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP, UINT8_C(1),
+            &ti_c54x_ld_dp_set},
+        [TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM] = {
+            TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM, UINT8_C(1),
+            &ti_c54x_ld_asm_set},
+        [TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP] = {
+            TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP, UINT8_C(1),
+            &ti_c54x_ld_arp_set},
+        [TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC] = {
+            TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC, UINT8_C(1),
+            &ti_c54x_max_min_destination_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE, UINT8_C(1),
+            &ti_c54x_accumulator_source_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION, UINT8_C(1),
+            &ti_c54x_accumulator_source_destination_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5,
+            UINT8_C(1), &ti_c54x_accumulator_source_destination_shift5_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
+            UINT8_C(2), &ti_c54x_accumulator_source_destination_shift4_extension16_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
+            UINT8_C(2), &ti_c54x_accumulator_source_destination_extension16_shift16_set}
+};
+
+const ti_c54x_operand_layout_plan *
+ti_c54x_operand_layout_plan_for_id(ti_c54x_operand_layout_id id)
+{
+    if (id <= TI_C54X_OPERAND_LAYOUT_UNKNOWN ||
+        id >= TI_C54X_OPERAND_LAYOUT_COUNT) {
+        return NULL;
+    }
+    return &ti_c54x_operand_layout_plans[(size_t)id];
+}
 
 static ti_c54x_operand_layout_status
 ti_c54x_operand_layout_map_field_status(
@@ -354,4 +408,49 @@ ti_c54x_operand_layout_set_extract_operand(
                 word_view, &view->descriptor->operands[operand_index], value);
         return ti_c54x_operand_layout_map_field_status(field_status);
     }
+}
+
+bool ti_c54x_operand_layout_extract_all_trusted(
+    const ti_c54x_operand_layout_plan *plan,
+    const ti_c54x_instruction_word_bundle *bundle,
+    ti_c54x_operand_field_value values[TI_C54X_TRUSTED_OPERAND_CAPACITY],
+    uint8_t *value_count)
+{
+    const ti_c54x_operand_layout_set *descriptor;
+    uint8_t operand_index;
+
+    if (plan == NULL || bundle == NULL || values == NULL || value_count == NULL) {
+        return false;
+    }
+    descriptor = plan->descriptor;
+    if (descriptor == NULL ||
+        descriptor->operand_count >
+            (uint8_t)TI_C54X_TRUSTED_OPERAND_CAPACITY) {
+        return false;
+    }
+
+    for (operand_index = UINT8_C(0);
+         operand_index < descriptor->operand_count; ++operand_index) {
+        const ti_c54x_operand_field_layout *field =
+            &descriptor->operands[operand_index];
+        uint64_t raw_value = UINT64_C(0);
+        uint8_t piece_index;
+
+        for (piece_index = UINT8_C(0); piece_index < field->piece_count;
+             ++piece_index) {
+            const ti_c54x_operand_field_piece *piece =
+                &field->pieces[piece_index];
+            const uint32_t source_mask =
+                (UINT32_C(1) << piece->width_bits) - UINT32_C(1);
+            const uint16_t source_value = (uint16_t)(
+                (bundle->program_words[piece->program_word_index] >>
+                 piece->source_lsb) & source_mask);
+
+            raw_value |= (uint64_t)source_value << piece->value_lsb;
+        }
+        values[operand_index].raw_value = raw_value;
+        values[operand_index].width_bits = field->value_width_bits;
+    }
+    *value_count = descriptor->operand_count;
+    return true;
 }
