@@ -113,6 +113,37 @@ median must be below 60 ns. A failing set is retained as `INCONCLUSIVE`; it is
 not silently discarded or selectively averaged. A replacement set has a new ID
 and records the external condition that changed.
 
+### P2-W31P acceptance capture sets
+
+The first post-freeze three-capture sets are retained as inconclusive evidence.
+They are not averaged, discarded, or treated as an acceptance result. Both sets
+used one clean source commit (`0d4f333f58208e7ed0d749aec8eec39898c1342b`) and
+identical binaries within the set; the complete raw records remain appended to
+`bench/history/hosted-v1.jsonl`.
+
+Set `P2-W31P-O2-0D4F333-SET1` (`portable-o2-no-lto`) used binary
+`e5bb3ea8bd86cda00fa5b98aac90958d62beb9f6857c1a6f86e616ba6e325362`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Within-capture ranges (%) in same order | Checker result |
+|---|---|---|---|
+| 2026-09-07T12:04:56.602516+00:00 | 47.526, 62.364, 62.170, 62.382 | 18.111, 5.748, 2.064, 3.383 | `nop` stability and LD medians failed |
+| 2026-09-07T12:05:11.139467+00:00 | 45.956, 63.241, 65.017, 65.721 | 9.123, 20.231, 34.394, 3.755 | LD medians/stability failed |
+| 2026-09-07T12:05:23.662102+00:00 | 46.539, 64.027, 63.916, 59.520 | 8.463, 21.673, 22.469, 37.852 | LD medians/stability failed |
+
+Set `P2-W31P-O3-LTO-0D4F333-SET1` (`portable-o3-lto`) used binary
+`356e780749de36e7de1ae3bc2bc43b552128bd79b1f5bbb7aba593ec54857285`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Within-capture ranges (%) in same order | Checker result |
+|---|---|---|---|
+| 2026-09-07T12:05:39.050401+00:00 | 41.604, 46.251, 45.624, 46.989 | 16.894, 11.077, 6.944, 23.555 | `nop`/`ld-arp` stability failed |
+| 2026-09-07T12:05:51.674315+00:00 | 45.790, 49.198, 49.232, 47.205 | 52.454, 42.901, 32.959, 8.859 | `nop`/LD stability failed |
+| 2026-09-07T12:06:05.168771+00:00 | 46.880, 55.415, 62.579, 66.884 | 82.219, 74.285, 32.160, 85.569 | `nop`/LD medians and stability failed |
+
+The acceptance status of both sets is `INCONCLUSIVE`; current W31P acceptance
+remains pending. These are hosted implementation-throughput observations only,
+with no TI machine-cycle, DSP, or silicon timing claim. Any replacement must use
+a new set ID and document the external-condition change that motivated it.
+
 W31B2 remains paused until this gate is met. Its first two immediate-READY memory
 forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
 scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
