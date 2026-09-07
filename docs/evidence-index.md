@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 139 immutable evidence records,
-212 requirements (180 `IMPLEMENTED`, 8 `PLANNED`, 24 `UNRESOLVED`), and 171 tests
-(163 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 142 immutable evidence records,
+217 requirements (180 `IMPLEMENTED`, 12 `PLANNED`, 25 `UNRESOLVED`), and 175 tests
+(163 `PASSING`, 12 `PLANNED`).
 
 ## Targets
 
@@ -183,6 +183,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-LDU-P4-79` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LDU, `4-79` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W34: fixed-MOD2 LDU vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LD, `4-70`–`4-71` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -497,6 +500,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-LDU-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-LDU-P4-79` | `T-COMMON-LDU-DECODE` |
 | `REQ-COMMON-LDU-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-LDU-P4-79`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-LDU-EFFECTS` |
 | `REQ-PROJECT-CPU-LDU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LDU-RETIREMENT` |
+| `REQ-COMMON-LD-T-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-LD-T-CATALOG` |
+| `REQ-COMMON-LD-T-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71` | `T-COMMON-LD-T-DECODE` |
+| `REQ-COMMON-LD-T-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-LD-T-EFFECTS` |
+| `REQ-PROJECT-CPU-LD-T-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LD-T-RETIREMENT` |
+| `REQ-COMMON-LD-T-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 | `REQ-COMMON-LDU-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 
 ## Tests
@@ -678,6 +686,10 @@ exist in the repository.
 | `T-COMMON-LDU-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_ldu_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ldu_smem_decode"}` | `REQ-COMMON-LDU-DECODE` |
 | `T-COMMON-LDU-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_ldu_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ldu_smem_ops"}` | `REQ-COMMON-LDU-EFFECTS` |
 | `T-PROJECT-CPU-LDU-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ldu_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ldu_smem"}` | `REQ-PROJECT-CPU-LDU-RETIREMENT` |
+| `T-COMMON-LD-T-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_ld_t_smem_metadata.c` | — | `REQ-COMMON-LD-T-CATALOG` |
+| `T-COMMON-LD-T-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_ld_t_smem_decode.c` | — | `REQ-COMMON-LD-T-DECODE` |
+| `T-COMMON-LD-T-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/load/test_ld_t_smem.c` | — | `REQ-COMMON-LD-T-EFFECTS` |
+| `T-PROJECT-CPU-LD-T-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_t_smem.c` | — | `REQ-PROJECT-CPU-LD-T-RETIREMENT` |
 
 ## Correction and tombstone policy
 

@@ -11,6 +11,9 @@ review, sanitizer, quality, and final full-gate validation green.
 P2-W34 is the implemented evidence-fit slice for fixed-MOD2 LDU. W31P hosted
 stability and W31B immediate-READY benchmark captures remain open and
 nonblocking.
+P2-W35 is now activated as the evidence-fit fixed-MOD2 LD-to-T slice; its
+catalog, decode, pure effect, and generic CPU contracts are planned and remain
+unimplemented until the RED tests are in place.
 W31B2 catalog/decode metadata, pure generic MEMORY effects, CPU end-to-end
 retirement, focused/full/sanitizer validation, and independent review are
 complete; its immediate-READY benchmark follow-up remains pending.
@@ -83,6 +86,7 @@ function-pointer dispatch tables.
 | P2-W32 SSBX/RSBX status-bit vertical slice | Implemented — focused tests, independent review, quality gate, focused ASan/UBSan, and full standalone gate green | The TI SPRU172C SSBX/RSBX catalog/decode rows (`0xF5B0`/`0xF4B0`, mask `0xFDF0`), generalized private status-bit write/application seam, pure set/clear handlers, and generic CPU retirement are implemented. All encoded SBIT values, including ST1 reserved bit 10, change and mark known only the selected raw status bit. The slice is one word, has no input resources, is repeatability INELIGIBLE, and adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI. Catalog coverage is 26 rows/1383 populated first words with 6/26 reset-runnable. |
 | P2-W33 CMPR CC,ARx status-compare vertical slice | Implemented — focused strict, seven focused ASan/UBSan, quality 186 Python, two independent no-P0/P1/P2 reviews, and final full `make test` green | The TI SPRU172C CMPR CC,ARx row (`0xF4A8`, mask `0xFCF8`) has 32 one-word encodings, copied generic AUXILIARY_REGISTERS input, pure unsigned EQ/LT/GT/NEQ comparison against AR0, TC result through STATUS_BIT_WRITE at ST0 bit 12, and generic CPU retirement. Full integration caught and corrected two stale UNKNOWN near-miss fixtures. The selected ARx and AR0 must be known or the handler returns UNKNOWN_INPUT; all other raw/known state is preserved. CMPR is explicitly nonrepeatable. No public API, memory, timing, IRQ/RPT, device, or opcode-specific CPU branch is added. Catalog coverage is 27 rows/1415 populated first words with 6/27 reset-runnable. |
 | P2-W34 fixed-MOD2 LDU vertical slice | Implemented — focused catalog/decode/effects/CPU contracts passing; performance follow-ups remain open and nonblocking | Add the TI SPRU172C one-word `LDU *ARx+,dst` row derived from opcode diagram `0001_001D_IAAAAAAA`: value `0x1290`, mask `0xFEF8`, D bit 8, ARF bits 2:0, 16 encodings, `ACCUMULATOR_ARF` layout, no input resources, and repeatability `UNRESOLVED`. Reuse the W31B fixed-MOD2 MEMORY effect/completion and CPU contract: CMPT=0, ARP=0, old-AR transfer before postincrement, and AR=0xffff rejection by the checked planner. LDU loads Smem into dst15:0, clears dst39:16, ignores SXM, and reports no status-bit effects. No new resource/effect/address kind, public ABI, CPU opcode branch, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation is added. Realized coverage is 28 rows/1431 populated first words with 6/28 reset-runnable. |
+| P2-W35 fixed-MOD2 LD-to-T vertical slice | Activated — evidence and ownership contract pinned; TDD RED tests planned | Add the TI SPRU172C §4.70 one-word `LD Smem,T` fixed-MOD2 row derived from `0011_0000_IAAAAAAA`: value `0x3090`, mask `0xFFF8` (bit 8 fixed zero), ARF bits 2:0, eight encodings, and a private generic `TI_C54X_OPERAND_LAYOUT_ARF` layout. Reuse the W31B MEMORY effect/completion and existing `T_REGISTER_WRITE`: transfer the old selected AR WORD16 into T before postincrement, with CMPT=0/ARP=0 and the checked AR=0xffff boundary. Repeatability is `UNRESOLVED`; no timing claim. `operand_layout.c` is 506 lines and remains cohesive; any W35 layout growth requires a recorded split review and remains well below the 800-line threshold. No new public T/MMR API, CPU branch, resource, address kind, IRQ/RPT, device, environment, diagnostics, or allocation behavior is authorized. Expected post-slice coverage is 29 rows/1439 populated first words with 6/29 reset-runnable. |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -650,6 +654,38 @@ need for an SXM read, a new memory/address seam, or a repeatability decision is
 a GAP report rather than an LDU workaround. Catalog coverage is now 28 rows,
 1431 populated first words, and 6/28 reset-runnable. Repeatability remains
 unresolved.
+
+### P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)
+
+This activated evidence-fit slice is bounded by the TI `SPRU172C` §4.70 LD
+entry (printed pp. 4-70–4-71), the registered standard-indirect MOD2 rule in
+`SPRU131G` §5.5.3 (printed p. 5-13), and the registered Table 2-28
+repeatability boundary (printed pp. 2-19–2-21). The one-word `LD Smem,T` form
+uses opcode diagram `0011_0000_IAAAAAAA`; after fixed-MOD2 composition its row
+is value `0x3090`, mask `0xFFF8`, with bit 8 fixed zero, ARF bits 2:0, and
+exactly eight encodings. It requires a private generic
+`TI_C54X_OPERAND_LAYOUT_ARF` decode layout and no input resources. Repeatability
+is `UNRESOLVED`: absence from Table 2-28's forbidden list is not positive
+eligibility evidence, and the separately forbidden fixed long-offset or
+absolute forms are excluded.
+
+The project fit reuses the W31B fixed-MOD2 MEMORY effect/completion and the
+existing `T_REGISTER_WRITE` effect. Under CMPT=0 and ARP=0, the old selected AR
+WORD16 is transferred into T before its postincrement; the checked planner's
+AR=0xffff boundary remains in force. The `*AR3+` example transfers data
+`0xFEDC` from the old AR3 address `0x0300`, then advances AR3 to `0x0301`. No
+public T/MMR API, new resource,
+address kind, CPU opcode branch, timing, IRQ/RPT, device, environment,
+diagnostic, or allocation behavior is claimed.
+
+TDD ownership is split across catalog, decode, pure load MEMORY completion, and
+generic CPU retirement tests under mirrored paths. `src/isa/decode/` owns the
+new private layout contract; no family workaround may hide a shared seam. The
+current `operand_layout.c` is 506 lines and remains cohesive; W35 layout growth
+requires a recorded split review and remains far below the 800-line threshold.
+Expected post-slice coverage is 29 rows, 1439 populated first words, and 6/29
+reset-runnable. W31P hosted stability and W31B immediate-READY benchmark
+follow-ups remain open and nonblocking.
 
 ### P2-W16: NOP-seeded opcode architecture
 

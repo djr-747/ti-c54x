@@ -2242,6 +2242,52 @@
         "anchor": "P2-W34: fixed-MOD2 LDU vertical slice (planned)"
       },
       "assertion": "P2-W34 fits LDU into the existing fixed-MOD2 MEMORY effect/completion and generic CPU retirement paths. CMPT=0 and ARP=0 are inherited from the W31B project contract; old selected AR transfer precedes postincrement, and AR=0xffff remains rejected by the checked planner. No SXM read, new resource/effect/address kind, public ABI, opcode-specific CPU branch, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation is added."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "LD",
+        "printed_page_start": "4-70",
+        "printed_page_end": "4-71"
+      },
+      "assertion": "TI SPRU172C §4.70 defines the one-word LD Smem,T form with syntax LD Smem,T and opcode diagram 0011_0000_IAAAAAAA. Composed with the registered standard-indirect MOD2 rule, this slice uses value 0x3090 and mask 0xFFF8: bit 8 is fixed zero and only ARF bits 2:0 vary, yielding exactly eight encodings. The operation transfers the Smem WORD16 to T and reports Status Bits None; the *AR3+ example transfers data 0xFEDC from the old AR3 address 0x0300 before AR3 becomes 0x0301."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "LD-to-T is absent from Table 2-28's explicitly forbidden repeatability list, but that absence is not positive eligibility evidence. The separately listed fixed long-offset and absolute single-data cases are excluded from this fixed-MOD2 slice; repeatability therefore remains UNRESOLVED without a timing or repeat-execution claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)"
+      },
+      "assertion": "P2-W35 fits fixed-MOD2 LD-to-T into the existing MEMORY effect/completion and generic CPU retirement paths, adding only the private generic ARF operand layout and reusing the existing T_REGISTER_WRITE effect. CMPT=0 and ARP=0 are inherited from the W31B contract; the old selected AR transfer precedes postincrement, and the checked planner's AR=0xffff boundary remains in force. No new public T/MMR API, resource, address kind, CPU opcode branch, timing, IRQ/RPT, device, environment, diagnostics, allocation, or repeatability behavior is added."
     }
   ],
   "requirements": [
@@ -4535,6 +4581,63 @@
       "claim": "Resolve whether fixed-MOD2 LDU is eligible for single-repeat execution; the registered Table 2-28 boundary does not establish eligibility from LDU's absence and does not permit inference from the separately forbidden long-offset or absolute cases.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-LD-T-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word fixed-MOD2 LD Smem,T row with value 0x3090, mask 0xFFF8, ARF bits 2:0, exactly eight encodings, the private ARF operand layout, no input resources, and repeatability UNRESOLVED.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21"
+      ],
+      "test_ids": ["T-COMMON-LD-T-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-LD-T-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode fixed-MOD2 LD Smem,T through value-owned ARF bits 2:0 using a new private generic TI_C54X_OPERAND_LAYOUT_ARF layout, yielding eight encodings and no additional input resource.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71"],
+      "test_ids": ["T-COMMON-LD-T-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LD-T-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Produce a pure fixed-MOD2 LD-to-T MEMORY effect and completion that transfers the old selected AR WORD16 into the existing T_REGISTER_WRITE effect, stages postincrement after the transfer, and reports no status-bit effects.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-LD-T-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-LD-T-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire fixed-MOD2 LD-to-T through generic decode, MEMORY effect/completion, existing T_REGISTER_WRITE application, old-AR transfer, postincrement, and sequential-PC paths under CMPT=0/ARP=0 without an opcode-specific CPU branch or new public ABI, timing, IRQ/RPT, device/MMR, environment, diagnostic, or allocation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-LD-T-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-LD-T-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Resolve whether fixed-MOD2 LD-to-T is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute cases do not decide this form.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -5944,6 +6047,38 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ldu_smem.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ldu_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-LDU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-LD-T-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ld_t_smem_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-T-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-LD-T-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ld_t_smem_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-T-DECODE"]
+    },
+    {
+      "id": "T-COMMON-LD-T-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_t_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LD-T-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-LD-T-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ld_t_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-LD-T-RETIREMENT"]
     }
   ]
 }
