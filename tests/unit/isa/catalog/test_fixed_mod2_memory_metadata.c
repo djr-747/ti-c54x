@@ -20,16 +20,23 @@ typedef struct fixed_mod2_row {
     ti_c54x_opcode_id id;
     uint16_t value;
     uint16_t mask;
+    ti_c54x_operand_layout_id operand_layout;
     ti_c54x_input_resource_mask input_resources;
 } fixed_mod2_row;
 
 static const fixed_mod2_row rows[] = {
     {TI_C54X_OPCODE_ID_LD_SMEM_MOD2, UINT16_C(0x1090), UINT16_C(0xFEF8),
+     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF,
      TI_C54X_INPUT_RESOURCES_STATUS_SXM},
     {TI_C54X_OPCODE_ID_STL_SMEM_MOD2, UINT16_C(0x8090), UINT16_C(0xFEF8),
+     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF,
      TI_C54X_INPUT_RESOURCES_ACCUMULATORS},
     {TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2, UINT16_C(0x4490),
-     UINT16_C(0xFEF8), TI_C54X_INPUT_RESOURCES_STATUS_SXM},
+     UINT16_C(0xFEF8), TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF,
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM},
+    {TI_C54X_OPCODE_ID_ST_T_SMEM_MOD2, UINT16_C(0x8C90), UINT16_C(0xFFF8),
+     TI_C54X_OPERAND_LAYOUT_ARF,
+     TI_C54X_INPUT_RESOURCES_T_REGISTER},
 };
 
 static bool
@@ -43,9 +50,9 @@ test_metadata_rows(void)
 {
     const size_t row_count = sizeof(rows) / sizeof(rows[0]);
 
-    TI_C54X_TEST_CHECK(row_count == 3U);
-    /* Unknown plus the 33 catalog rows is the complete generated identity. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 34);
+    TI_C54X_TEST_CHECK(row_count == 4U);
+    /* Unknown plus the 34 catalog rows is the complete generated identity. */
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 35);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];
@@ -57,14 +64,16 @@ test_metadata_rows(void)
         TI_C54X_TEST_CHECK(metadata->first_word_value == row->value);
         TI_C54X_TEST_CHECK(metadata->first_word_mask == row->mask);
         TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
-        TI_C54X_TEST_CHECK(metadata->operand_layout ==
-                           TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+        TI_C54X_TEST_CHECK(metadata->operand_layout == row->operand_layout);
         TI_C54X_TEST_CHECK(metadata->input_resources == row->input_resources);
         TI_C54X_TEST_CHECK(metadata->repeatability ==
                            TI_C54X_REPEATABILITY_UNRESOLVED);
 
-        /* Only D/S (bit 8) and ARF (bits 2:0) vary; there is no shift field. */
-        TI_C54X_TEST_CHECK((uint16_t)~row->mask == UINT16_C(0x0107));
+        /* Accumulator rows vary D/S and ARF; ST T varies only ARF. */
+        TI_C54X_TEST_CHECK((uint16_t)~row->mask ==
+                           (row->id == TI_C54X_OPCODE_ID_ST_T_SMEM_MOD2
+                                ? UINT16_C(0x0007)
+                                : UINT16_C(0x0107)));
     }
 }
 
@@ -84,7 +93,7 @@ test_fixed_patterns_are_disjoint(void)
 }
 
 static void
-test_each_row_has_exactly_sixteen_encodings_and_population(void)
+test_each_row_has_expected_encodings_and_population(void)
 {
     unsigned populated_first_words = 0U;
     const size_t row_count = sizeof(rows) / sizeof(rows[0]);
@@ -98,7 +107,7 @@ test_each_row_has_exactly_sixteen_encodings_and_population(void)
             ++populated_first_words;
         }
     }
-    TI_C54X_TEST_CHECK(populated_first_words == 1479U);
+    TI_C54X_TEST_CHECK(populated_first_words == 1487U);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];
@@ -112,7 +121,9 @@ test_each_row_has_exactly_sixteen_encodings_and_population(void)
                     ti_c54x_opcode_catalog_lookup_first_word(word) == row->id);
             }
         }
-        TI_C54X_TEST_CHECK(encoded_count == 16U);
+        TI_C54X_TEST_CHECK(
+            encoded_count ==
+            (row->id == TI_C54X_OPCODE_ID_ST_T_SMEM_MOD2 ? 8U : 16U));
     }
 }
 
@@ -121,6 +132,6 @@ main(void)
 {
     test_metadata_rows();
     test_fixed_patterns_are_disjoint();
-    test_each_row_has_exactly_sixteen_encodings_and_population();
+    test_each_row_has_expected_encodings_and_population();
     return 0;
 }

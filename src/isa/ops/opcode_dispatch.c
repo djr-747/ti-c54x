@@ -29,6 +29,7 @@
 #include "shift/op_sftc.h"
 #include "store/op_stl_smem.h"
 #include "store/op_st_immediate_smem.h"
+#include "store/op_st_t_smem.h"
 #include "status/op_status_bits.h"
 #include "logical/op_logical.h"
 #include "logical/immediate/and/op_and.h"

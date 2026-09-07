@@ -201,15 +201,23 @@ Current progress:
   is 33 rows/1479 populated first
   words with 6 reset-runnable. W31P/W31B performance follow-ups remain open and
   nonblocking.
-- P2-W39 is activated as a planned, evidence-fit generic T input and fixed-MOD2
-  `ST T,*ARx+` vertical slice. The frozen row is one word at `0x8C90`/`0xFFF8`
-  with fixed bit 8, ARF bits 2:0, eight encodings, existing `OPERAND_LAYOUT_ARF`,
-  a copied knownness-aware `T_REGISTER` input, and a pure MEMORY WORD16 WRITE
-  with `complete=NULL`. Generic fixed-MOD2 addressing and CPU WAIT/READY/FAULT
-  retirement are planned for reuse; unknown T must reject transactionally
-  without a memory effect. Repeatability remains unresolved, and no timing,
-  public API, new layout/effect/address/state/source-manifest seam, or CPU
-  opcode branch is claimed. Implementation has not started.
+- P2-W39 is implementation-complete as the evidence-fit generic T input and
+  fixed-MOD2 `ST T,*ARx+` vertical slice. The one-word row is `0x8C90`/`0xFFF8`
+  with fixed bit 8, ARF bits 2:0, eight encodings, and the existing
+  `OPERAND_LAYOUT_ARF`. Its copied knownness-aware `T_REGISTER` input snapshots
+  raw T only when requested (input bit 32); unknown T rejects transactionally
+  without a memory effect. The pure effect is a MEMORY WORD16 WRITE with
+  `complete=NULL`, exact copied T, old-AR addressing before postincrement, and
+  no status-bit effects. Generic fixed-MOD2 addressing and CPU
+  WAIT/READY/FAULT/sequential-PC retirement are reused. Five RED lanes, focused
+  strict plus legacy input/store regressions, focused ASan/UBSan, quality-186,
+  semantic review, integration review, independent fresh CMake CTest 183/183,
+  and authoritative clean `make test` gates are green; integration corrected
+  two stale ID_COUNT34 fixtures to 35. No new layout, effect, address, state,
+  public API, source-manifest, timing, or opcode-specific CPU branch seam was
+  added. Realized coverage is 34 rows/1487 populated first words with 6 reset-
+  runnable and four fixed-MOD2 memory rows. Repeatability remains unresolved;
+  W31P/W31B performance follow-ups remain open and nonblocking.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -219,8 +227,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 154 evidence items, 238 requirements (196 implemented,
-  13 planned, 29 unresolved), and 192 tests (179 passing, 13 planned). Hosted
+- The registry now records 154 evidence items, 238 requirements (201 implemented,
+  8 planned, 29 unresolved), and 192 tests (184 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -230,8 +238,7 @@ Current progress:
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
 - Speculative foundation expansion is frozen. P2-W33, P2-W34, P2-W35, P2-W36,
-  P2-W37, and P2-W38 are implementation-complete; P2-W39 is planned and
-  evidence-activated only. The
+  P2-W37, P2-W38, and P2-W39 are implementation-complete. The
   P2-W31P hosted stability and W31B2 immediate-READY benchmark follow-ups
   remain open and nonblocking.
   Emulator integration remains deferred.
