@@ -4806,3 +4806,56 @@ rewritten after publication.
   read, diagnostic path, allocator, mutable global, device behavior, or
   emulator dependency changed. TDD proceeds with owner-local RED tests before
   the catalog row or handler is added.
+
+## 2026-09-08 — P2-W33 CMPR implementation
+
+- State: implementation commit
+  `a0789263818f908708ccfd20df6ee2b479b598ab` completes the bounded
+  `CMPR CC,ARx` vertical slice. The catalog now contains 27 rows and 1,415
+  populated first words, with reset-runnable coverage unchanged at 6/27.
+  P2-W31P hosted stability and the W31B2 immediate-READY benchmark follow-ups
+  remain open.
+- TDD RED was captured independently by owner. Catalog/decode tests failed on
+  the absent CMPR ID, CC/ARx layout, and auxiliary-register resource. Input
+  tests failed on the absent copied raw16 values, knownness mask, and
+  architectural source. Pure-operation and CPU tests failed on the absent
+  handler and catalog identity. No production row or behavior preceded those
+  failures.
+- GREEN registers `CMPR_AR` at `0xF4A8/0xFCF8`, with CC in bits 9:8, ARx in
+  bits 2:0, one program word, and repeatability INELIGIBLE. The pure checked
+  and trusted handler compares the selected 16-bit AR against AR0 as unsigned
+  for EQ, LT, GT, or NEQ and emits only a `STATUS_BIT_WRITE` for TC at ST0 bit
+  12. ARx=AR0 aliases correctly; unknown AR0 or selected ARx rejects without
+  publishing a partial effect.
+- The shared prerequisite is one private `AUXILIARY_REGISTERS` resource. The
+  collector copies all eight raw16 AR values and a knownness mask through
+  checked architectural reads, canonicalizes unknown values to zero, and
+  commits the snapshot only after every requested resource succeeds. The CPU
+  supplies its existing instance-owned architectural state through a
+  designated source initializer; unrelated opcodes skip the new collection
+  branch, and no opcode-specific CPU path or new effect kind was added.
+- Integration exposed two stale tests that asserted UNKNOWN for words newly
+  admitted by CMPR: one LD-status near miss and one MAX/MIN invalid vector.
+  Both were replaced with genuinely unassigned fixed-bit misses, followed by
+  a catalog-wide search for other hard-coded CMPR-range UNKNOWN vectors. Older
+  input-test source helpers were also zero-initialized after the private source
+  and snapshot carriers grew.
+- Validation: all focused catalog, decode, input, pure-operation, CPU, status
+  bit, and effect-transaction targets passed under strict warnings. The same
+  seven focused targets passed from a clean ASan/UBSan build. `make
+  quality-test` passed all 186 Python tests plus evidence, knob,
+  source-boundary, manifest, and observer-disabled artifact checks. Two
+  independent Luna reviews found no P0/P1/P2 blocker. After the two stale
+  vectors were corrected, the authoritative final standalone `make test`
+  completed successfully.
+- Size decision: `src/isa/decode/operand_layout.c` is 506 lines after the new
+  two-field descriptor and emits the expected review warning. It remains one
+  cohesive layout-data/resolver owner for this slice; future growth must
+  review decomposition, and the file must split before approaching 800 lines.
+- Evidence accounting is now 136 evidence records; 207 requirements (176
+  IMPLEMENTED, 8 PLANNED, 23 UNRESOLVED); 167 tests (159 PASSING, 8 PLANNED);
+  and 7 source records.
+- No public ABI, memory behavior, RPT/IRQ policy, machine-cycle API, timing or
+  performance claim, knob, environment read, logging, diagnostic fanout,
+  allocator, mutable global, device/MMR behavior, or emulator dependency was
+  added. Selection of the next ISA slice remains evidence-first.
