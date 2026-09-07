@@ -5444,3 +5444,42 @@ rewritten after publication.
   claim, machine-cycle API, IRQ/RPT policy, device/MMR behavior, knob,
   environment read, logging, diagnostic fanout, allocator, mutable global, or
   emulator dependency was added.
+
+## 2026-09-08 — P2-W40 authoritative ISA inventory activation
+
+- State: evidence and ownership activation landed as
+  `a322d824e0b48432452a1beba01669ae647bfcaa`. P2-W40 is the active
+  quality/inventory work piece; no production decode or execution behavior
+  changed.
+- Two independent Luna audits of TI SPRU172C §§2.1–2.4, Tables 2-1 through
+  2-26 (printed pp. 2-2–2-18), converged after correcting wrapped-row
+  undercounts on the exact vector
+  `[13,13,10,22,6,15,5,5,5,6,5,6,5,2,6,5,5,7,21,14,4,2,4,2,5,12]`:
+  205 syntax forms, 126 normalized mnemonic tokens, and 13 parallel bundles.
+- The 205 forms are an authoritative SPRU172C summary/source-universe
+  checkpoint, not yet an exact common-core denominator. Common/profile,
+  optional-operand, and addressing scope remain explicit decisions;
+  unresolved candidate forms stay in the provisional denominator and an
+  exclusion requires evidence.
+- The planned inventory is audit metadata under `config/isa/`, with schema,
+  exact-count, catalog-binding, and report contracts. It records
+  `COMPLETE`, `SUBSET`, and `UNIMPLEMENTED` coverage separately from
+  `COMMON_CANDIDATE`, `PROFILE_ONLY`, `OUT_OF_SCOPE`, and `UNRESOLVED`
+  scope. `opcode_catalog.def` remains the sole opcode value/mask authority.
+- The current checkpoint is 34/205 = 16.585% catalog-family progress. Nine
+  catalog rows are fixed-MOD2 subsets of broader Smem forms, leaving the
+  strict complete-form lower bound at 25/205 = 12.195%. The historical
+  1,487/65,536 lookup-population ratio is not ISA coverage and will not be
+  reported as such.
+- Activation accounting is 156 evidence records; 242 requirements (201
+  IMPLEMENTED, 12 PLANNED, 29 UNRESOLVED); 196 tests (184 PASSING, 12
+  PLANNED); and 7 sources.
+- Validation: `make quality-test` passed all 186 Python tests plus evidence,
+  knob, source-boundary, build-manifest, and observer-disabled artifact
+  checks; the known 535-line operand-layout size-review warning remains
+  unchanged. A subsequent evidence-parity check and `git diff --check` also
+  passed.
+- No runtime source, generated decode, public ABI, timing, machine-cycle,
+  IRQ/RPT, device/MMR, knob, environment, diagnostic, allocation, mutable
+  global, or emulator dependency changed. Implementation begins with the four
+  owner-local RED quality contracts.
