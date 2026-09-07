@@ -25,6 +25,29 @@ fixed-MOD2 memory-to-status slice for `LD Smem,DP` and `LD Smem,ASM`; its
 repeatability boundary and generic MEMORY/status-field ownership are recorded
 below.
 
+### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the next
+evidence freeze. The bounded candidate is the one-word `LD Smem,16,dst` form
+from TI SPRU172C §4.66 (printed pp. 4-65–4-69): row
+`LD_SMEM_SHIFT16_MOD2` with handler token `ld_smem_shift16`, value `0x4490`,
+mask `0xFEF8`, D bit 8, ARF bits 2:0, sixteen encodings, the existing
+`ACCUMULATOR_ARF` layout, `STATUS_SXM` input, and repeatability `UNRESOLVED`.
+WORD16 data is zero-extended when SXM=0 or sign-extended when SXM=1 to the
+canonical 40-bit accumulator, then logically shifted left 16 within 40 bits;
+`0000` is zero for both modes, `7fff` is `0x007fff0000`, `8000` is
+`0x0080000000`/`0xff80000000`, `ffff` is `0x00ffff0000`/`0xffffff0000`, and
+the printed `FEDC`/SXM=1 example is `0xfffedc0000`. C, TC, OV, and unrelated
+state remain unchanged. Existing MEMORY read/completion, ACCUMULATOR_WRITE,
+fixed-MOD2 addressing, and generic CPU WAIT/READY/FAULT sequential-PC paths are
+reused under CMPT=0/ARP=0; no new layout, resource, effect, address, state,
+CPU, public API, or source-manifest seam is planned. STH, LDR, LD#K, ST T, and
+TS remain deferred for their recorded gaps. The planned catalog target is 33
+rows and 1479 populated first-word encodings with 6 reset-runnable; the
+`op_ld_smem.c` leaf remains below 500 lines and `operand_layout.c` remains 535
+lines with no split. W31P/W31B performance follow-ups remain open and
+nonblocking.
+
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
 history.
@@ -96,6 +119,7 @@ function-pointer dispatch tables.
 | P2-W35 fixed-MOD2 LD-to-T vertical slice | Implemented — focused catalog/decode/effects/CPU contracts, sanitizers, quality, review, and full gate green; performance follow-ups remain open and nonblocking | Add the TI SPRU172C §4.70 one-word `LD Smem,T` fixed-MOD2 row derived from `0011_0000_IAAAAAAA`: value `0x3090`, mask `0xFFF8` (bit 8 fixed zero), ARF bits 2:0, eight encodings, and a private generic `TI_C54X_OPERAND_LAYOUT_ARF` layout. Reuse the W31B MEMORY effect/completion and existing `T_REGISTER_WRITE`: transfer the old selected AR WORD16 into T before postincrement, with CMPT=0/ARP=0 and the checked AR=0xffff boundary. Repeatability is `UNRESOLVED`; no timing claim. `operand_layout.c` is 518 lines, remains cohesive, and is well below the 800-line threshold; the no-split decision is recorded. No new public T/MMR API, CPU branch, resource, address kind, IRQ/RPT, device, environment, diagnostics, or allocation behavior was added. Realized coverage is 29 rows/1439 populated first words with 6/29 reset-runnable. |
 | P2-W36 fixed-MOD2 immediate-store vertical slice | Implemented — focused catalog/decode/effects/CPU contracts passing; sanitizer, quality, review, and full gate green | Add the TI SPRU172C Store T/TRN/immediate `ST #lk,*ARx+` two-word row (printed pp. 4-166–4-167), composed from syntax-3 `0111_0110_IAAAAAAA` and registered MOD2: value `0x7690`, mask `0xFFF8`, bit 8 fixed zero, ARF bits 2:0, eight encodings, `program_word_count=2`, and private `TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16`. Copy word 1 as raw `lk`; reuse existing extension fetch, width-aware PC, generic MEMORY WRITE with `write_value_word` and `complete=NULL`, and the checked CMPT=0/ARP=0 old-AR transfer then postincrement route. Status Bits are None. Repeatability is `UNRESOLVED`; no timing claim. Candidate `LD Smem,DP/ASM` also fits but is deferred; `ST T` is blocked on T input, `STH` on saturation, and ALU/control forms on shared seams. No public ABI, CPU production change or opcode branch, new resource/effect/address kind, IRQ/RPT, device/MMR, environment, diagnostics, allocation, or repeatability behavior is claimed. Realized coverage is 30 rows/1447 populated first words with 6/30 reset-runnable. |
 | P2-W37 fixed-MOD2 memory-to-status vertical slice | Implemented — focused strict/sanitizer tests, quality, clean dual review, and full clean gate green | Add the TI SPRU172C §4.70 one-word `LD Smem,DP` and `LD Smem,ASM` fixed-MOD2 rows (printed pp. 4-69–4-71): values `0x4690` and `0x3290`, mask `0xFFF8` (bit 8 fixed zero), ARF bits 2:0, eight encodings each, and the existing private `TI_C54X_OPERAND_LAYOUT_ARF` layout with no input resources. Reuse the W31B MEMORY read/completion and status-field effect/writer: read data from the old selected-AR address, mask it to `0x01ff` for DP or `0x001f` for ASM, then postincrement and retire through generic WAIT/READY/FAULT and sequential-PC paths under CMPT=0/ARP=0. Table 2-28 marks DP repeatability `INELIGIBLE`; ASM repeatability remains `UNRESOLVED`. No `LD Smem,ARP` row, new resource/effect/address kind, CPU opcode branch, public API, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation behavior was added. The catalog preserves unique handler tokens through thin DP/ASM wrappers over one shared internal core. The pure leaf is 283 lines; `operand_layout.c` remains 535 lines and unchanged, with the reviewed no-split decision in force. Realized coverage is 32 rows/1463 populated first words with 6/32 reset-runnable. |
+| P2-W38 fixed-MOD2 LD Smem,16 vertical slice | Planned — evidence and ownership frozen; implementation not started | Add one TI SPRU172C §4.66 syntax-3 fixed-MOD2 `LD Smem,16,dst` row: `0x4490`/`0xFEF8`, D bit 8, ARF bits 2:0, sixteen encodings, `ACCUMULATOR_ARF`, `STATUS_SXM`, and repeatability `UNRESOLVED`. Reuse MEMORY read/completion, ACCUMULATOR_WRITE, fixed-MOD2 addressing, and generic CPU WAIT/READY/FAULT sequential-PC retirement. Semantics are SXM-controlled sign/zero extension followed by logical left shift 16 in canonical 40-bit space, preserving C/TC/OV and unrelated state. No new layout, resource, effect, address, state, CPU, public API, or source-manifest seam is admitted; STH, LDR, LD#K, ST T, and TS remain deferred for recorded gaps. Planned coverage is 33 rows/1479 populated first words with 6 reset-runnable; W31P/W31B performance follow-ups remain open and nonblocking. |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |

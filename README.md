@@ -187,6 +187,18 @@ Current progress:
   283 lines and `operand_layout.c` remains 535 lines with its reviewed no-split
   decision. Catalog coverage is now 32 rows/1463 populated first words with
   6/32 reset-runnable.
+- P2-W38 is the next planned bounded fixed-MOD2 `LD Smem,16,dst` slice from TI
+  `SPRU172C` §4.66 (printed pp. 4-65–4-69): row `0x4490`/`0xFEF8`, D bit 8,
+  ARF bits 2:0, sixteen encodings, existing `ACCUMULATOR_ARF` and `STATUS_SXM`
+  inputs, and unresolved repeatability. It will reuse MEMORY read/completion,
+  ACCUMULATOR_WRITE, fixed-MOD2 addressing, and generic WAIT/READY/FAULT
+  sequential-PC retirement. WORD16 data is SXM-controlled sign/zero extended
+  to 40 bits then logically shifted left 16, preserving C/TC/OV and unrelated
+  state. No new layout, resource, effect, address, state, CPU, public API, or
+  source-manifest seam is planned; STH, LDR, LD#K, ST T, and TS remain deferred
+  for recorded gaps. Planned coverage is 33 rows/1479 populated first words
+  with 6 reset-runnable; W31P/W31B performance follow-ups remain open and
+  nonblocking.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -196,8 +208,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 148 evidence items, 227 requirements (192 implemented,
-  8 planned, 27 unresolved), and 183 tests (175 passing, 8 planned). Hosted
+- The registry now records 151 evidence items, 232 requirements (192 implemented,
+  12 planned, 28 unresolved), and 187 tests (175 passing, 12 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -207,7 +219,8 @@ Current progress:
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
 - Speculative foundation expansion is frozen. P2-W33, P2-W34, P2-W35, P2-W36,
-  and P2-W37 are implementation-complete. The
+  and P2-W37 are implementation-complete; P2-W38 is the next planned evidence
+  freeze. The
   P2-W31P hosted stability and W31B2 immediate-READY benchmark follow-ups
   remain open and nonblocking.
   Emulator integration remains deferred.
