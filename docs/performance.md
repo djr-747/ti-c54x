@@ -62,11 +62,15 @@ test/evidence work.
 
 ## P2-W31P performance architecture freeze
 
-The current hosted numbers are high enough to pause W31B2 and optimize the
-common retired-instruction path first. They are implementation-throughput
-observations only: host scheduling, frequency scaling, compiler choices, and
-linker decisions are visible in the measurement, and none is a TI machine-cycle
-or silicon timing claim.
+The common retired-instruction path has now received the P2-W31P optimization.
+Structural and correctness gates are green, and the optimized SET2–SET4 cohorts
+all place the fixed scenarios below the 60 ns median target. Exact hosted
+three-capture stability acceptance remains pending/deferred because host
+scheduling and other external conditions still perturb the required consecutive
+captures. These are implementation-throughput observations only: host
+scheduling, frequency scaling, compiler choices, and linker decisions are
+visible in the measurement, and none is a TI machine-cycle or silicon timing
+claim. P2-W31B2 is active while this hosted follow-up remains open.
 
 The frozen audit (median nanoseconds per retired instruction) is committed in
 `bench/audits/p2-w31p-baseline.json` with exact commands, source/binary hashes,
@@ -242,12 +246,13 @@ cherry-picking individual captures. Records remain retained without averaging
 or discarding, with no TI machine-cycle, DSP, or silicon timing claim. Any next
 replacement requires a new set ID and a documented changed condition.
 
-W31B2 remains paused until this gate is met. Its first two immediate-READY memory
-forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
-scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
-benchmark must not turn a WAIT-capable endpoint into an immediate-only semantic
-shortcut: memory WAIT, READY, FAULT, cancellation, and commit visibility continue
-to be tested through their existing contract.
+W31B2 is now active while this exact hosted stability gate remains pending. Its
+first two immediate-READY memory forms, `LD *ARx+,dst` and `STL src,*ARx+`, must
+each receive dedicated benchmark scenarios and meet the same fixed-scenario
+target as a follow-up requirement before later memory fanout. The benchmark must
+not turn a WAIT-capable endpoint into an immediate-only semantic shortcut: memory
+WAIT, READY, FAULT, cancellation, and commit visibility continue to be tested
+through their existing contract.
 
 The intended command surface is:
 

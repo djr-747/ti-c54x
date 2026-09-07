@@ -103,19 +103,19 @@ Current progress:
   visibility, pure MOD2 address resolution, persistent instruction work, and
   CPU resume-before-fetch. Observer-disabled builds compile the new trace sites
   out; focused sanitizer checks, independent review, and the full standalone
-  local gate are green. W31B2 remains specified but is paused behind the
-  P2-W31P performance gate: fixed-MOD2 `LD *ARx+,dst` and
-  `STL src,*ARx+` will use the proven generic memory path. Timing,
-  repeatability, AR-boundary wrap,
-  device/MMR/program/IO, dual/parallel, and posted writes remain out of scope.
-- P2-W31P is the active performance architecture freeze. It replaces repeated
-  hot-path metadata/layout validation with one catalog-derived per-ID binding,
-  one private value-owned trusted execution packet, one operand-extraction pass,
-  and one PC plan while retaining checked forged-input APIs and transaction
-  atomicity. Both portable O2/no-LTO and O3/LTO same-host profiles must place
-  every fixed scenario below 60 ns per retired instruction in three stable
-  captures; this is advisory hosted throughput evidence, not a CI or DSP timing
-  claim.
+  local gate are green. W31B2 is now the active next ISA slice: fixed-MOD2
+  `LD *ARx+,dst` and `STL src,*ARx+` will use the proven generic memory path.
+  Timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel,
+  and posted writes remain out of scope.
+- P2-W31P remains open as the performance architecture freeze. It replaces
+  repeated hot-path metadata/layout validation with one catalog-derived per-ID
+  binding, one private value-owned trusted execution packet, one
+  operand-extraction pass, and one PC plan while retaining checked forged-input
+  APIs and transaction atomicity. Structural/correctness gates are green and
+  optimized hosted cohorts are below 60 ns per retired instruction, but exact
+  three-capture stability acceptance remains pending/deferred; this is advisory
+  hosted throughput evidence, not a CI or DSP timing claim. The open hosted
+  follow-up no longer blocks W31B2.
 - The registry now records 130 evidence items, 197 requirements (155 implemented,
   19 planned, 23 unresolved), and 157 tests (137 passing, 20 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
@@ -126,9 +126,9 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. The active track is the bounded
-  P2-W31P hot-path correction, then evidence-backed end-to-end ISA vertical
-  slices. Emulator integration remains deferred.
+- Speculative foundation expansion is frozen. The active track is the
+  evidence-backed P2-W31B2 memory vertical slice while the P2-W31P hosted
+  stability follow-up remains open. Emulator integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.
