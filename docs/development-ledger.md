@@ -4651,3 +4651,39 @@ rewritten after publication.
   knob, benchmark semantic, runtime behavior, timing model, or TI silicon claim
   changed. Follow-up begins with RED catalog/decode tests for the two pinned
   masked rows, then proceeds by owner through pure effects and CPU retirement.
+
+## 2026-09-08 — P2-W31B2 fixed-MOD2 LD/STL implementation
+
+- State: implementation commit
+  `b99c638cab33a7ee326570bc509b8bf13e766705` completes the bounded
+  fixed-MOD2 pair `LD *ARx+,dst` and `STL src,*ARx+`. The catalog now contains
+  24 rows and 1,319 populated first words, with 4 of 24 rows reset-runnable.
+  P2-W31P remains open, and the dedicated immediate-READY LD/STL hosted
+  benchmark follow-up remains pending before later memory-family fanout.
+- TDD evidence: catalog/decode RED first failed on the absent opcode IDs and
+  operand layout; operation RED failed on absent LD/STL handler symbols; CPU
+  RED reached the old generic execution path and stopped invalid-state because
+  MEMORY effects had no endpoint. GREEN adds the pinned `0x1090/0xFEF8` LD and
+  `0x8090/0xFEF8` STL rows, the shared accumulator/ARF operand layout, pure
+  checked and trusted handlers, dispatch bindings, and generic CPU MEMORY
+  routing through the existing transaction root.
+- Semantics: LD reads the old auxiliary-register address, applies SXM
+  zero/sign extension of WORD16 into the selected 40-bit accumulator, then
+  postincrements the selected AR. STL writes the selected accumulator's low
+  WORD16 to the old AR address, then postincrements it. Both preserve C/TC,
+  require CMPT=0 and ARP=0, and reject AR=0xffff. The CPU owns fetch/attempt and
+  retirement accounting exactly once across READY, WAIT/retry, and FAULT.
+- Validation: focused catalog, decode, pure-operation, CPU ISA, and existing
+  memory lifecycle/pending tests passed; 27 relevant Python contract tests
+  passed; the eight focused C targets passed from a clean ASan/UBSan build; and
+  the authoritative clean `make test` passed, including all 186 Python tests.
+  Independent Luna reviews found no P0/P1 correctness blocker.
+- Evidence accounting is now 166 IMPLEMENTED, 8 PLANNED, and 23 UNRESOLVED
+  requirements; 149 PASSING and 8 PLANNED tests; 130 evidence records; and 7
+  source records. Lower-risk follow-up coverage remains for malformed observer
+  retry and cancel-failed retry at the concrete opcode level, counter overflow,
+  and mixed multi-instruction memory sequences; existing generic transaction
+  tests cover the underlying contracts.
+- No knob, public ABI, environment read, logging, allocation, mutable global,
+  machine-cycle API, repeat behavior, device/MMR behavior, timing model, or TI
+  silicon claim changed.
