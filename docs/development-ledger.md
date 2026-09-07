@@ -4895,3 +4895,51 @@ rewritten after publication.
   ABI, timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy,
   environment read, diagnostic path, allocator, mutable global, or emulator
   dependency was added. Implementation begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W34 fixed-MOD2 LDU implementation
+
+- State: implementation commit
+  `cb5afb72a183678492c00d95de0fd8443b73df9c` completes the bounded
+  fixed-MOD2 `LDU *ARx+,dst` vertical slice. The catalog now contains 28 rows
+  and 1,431 populated first words, with reset-runnable coverage unchanged at
+  6/28. P2-W31P hosted stability and the W31B immediate-READY benchmark
+  follow-ups remain open and nonblocking.
+- TDD RED was captured in three independent owner lanes. Catalog/decode tests
+  failed on the absent LDU identity; the pure-operation test failed on the
+  absent handler contract; and the public-CPU test reached
+  `STOP_UNIMPLEMENTED_OPCODE` instead of retirement. No production row or
+  handler preceded those failures.
+- GREEN registers `LDU_SMEM_MOD2` at `0x1290/0xFEF8`, with D in bit 8, ARF in
+  bits 2:0, one program word, `ACCUMULATOR_ARF`, no input resources, and
+  repeatability UNRESOLVED. The checked and trusted pure leaves stage the
+  existing generic fixed-MOD2 WORD16 read. Completion zero-extends the returned
+  word into the selected canonical 40-bit accumulator, preserves C and TC,
+  and never reads or interprets SXM.
+- Generic W31B transaction and CPU paths provide the old-AR request,
+  postincrement only after READY, WAIT resume with the same transaction ID and
+  no refetch, FAULT rollback, sequential PC retirement, dependency rejection,
+  and checked AR=0xffff rejection. No opcode-specific CPU branch, new input
+  resource, effect kind, address kind, or memory lifecycle was added.
+- Integration corrected one RED test that forged an instruction by flipping
+  ARF bit 0, which is a valid operand field; the rejection now flips fixed bit
+  3. Catalog fixtures were advanced to 28 rows, 1,431 populated words, and 29
+  generated identities, while the quality contract gained an explicit LDU row
+  assertion and retained its CMPR assertion at the preceding row. A search
+  found no pre-existing UNKNOWN vector in the newly claimed LDU words.
+- Validation: all four focused catalog, decode, pure-operation, and public-CPU
+  targets passed under strict warnings and again in a forced ASan/UBSan build.
+  `make quality-test` passed all 186 Python tests plus evidence, knob,
+  source-boundary, build-manifest, and observer-disabled artifact checks. Two
+  independent Luna reviews found no remaining P0/P1/P2 finding. The
+  authoritative clean, unsanitized standalone `make test` completed
+  successfully.
+- Size decision: the new production files are bounded leaf owners. The existing
+  506-line `src/isa/decode/operand_layout.c` emitted its previously reviewed
+  warning and did not change in this slice.
+- Evidence accounting is now 139 evidence records; 212 requirements (180
+  IMPLEMENTED, 8 PLANNED, 24 UNRESOLVED); 171 tests (163 PASSING, 8 PLANNED);
+  and 7 source records. LDU repeatability remains unresolved by design.
+- No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
+  policy, device/MMR behavior, knob, environment read, logging, diagnostic
+  fanout, allocator, mutable global, or emulator dependency was added.
+  Selection of the next ISA slice remains evidence-first.
