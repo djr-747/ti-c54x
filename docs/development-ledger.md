@@ -4326,3 +4326,54 @@ rewritten after publication.
   atomic AR/PC/effect commit. Keep the nonblocking performance note that
   generic operand extraction currently revalidates immutable layouts three to
   four times; measure and address it only with representative memory paths.
+
+## 2026-09-07 — P2-W31A fixed-MOD2 memory prerequisites closeout
+
+- State: complete. The plan/evidence freeze landed as `1e371f9`; its GitHub
+  Actions run [34067894773](https://github.com/djr-747/ti-c54x/actions/runs/34067894773)
+  is green. The implementation landed as `66ef384`; full standalone local
+  `make test` is green and its run
+  [34069533137](https://github.com/djr-747/ti-c54x/actions/runs/34069533137)
+  is green. The performance record landed as `31d4eb9`; its CI run
+  [34070099277](https://github.com/djr-747/ti-c54x/actions/runs/34070099277)
+  completed with conclusion `success`.
+- TDD evidence is RED/GREEN: the initial contracts failed for the three
+  prerequisites, then focused strict and ASan/UBSan tests passed with two
+  independent reviews. The first full gate caught five positional snapshot
+  initializers in `tests/unit/isa/ops/logical/immediate/and/test_and.c`;
+  they were converted to future-proof designated fields before the successful
+  rerun. This standalone repository has no `make guard` target, so the
+  authoritative local gate is `make test`.
+- The exact three implemented requirements and passing tests are
+  `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` /
+  `T-PROJECT-CPU-ARCH-STATE-COMPOSITION`,
+  `REQ-PROJECT-SXM-CHECKED-ACCESS` / `T-PROJECT-SXM-FIELD`, and
+  `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` / `T-PROJECT-OP-INPUT-SXM`. The registry
+  closes at 125 evidence records, 181 requirements (149 implemented, 9
+  planned, 23 unresolved), and 138 tests (129 passing, 9 planned).
+- Architecture ownership is now explicit: `src/cpu/` embeds the canonical
+  `ti_c54x_arch_state` as the sole owner of PC, status, AR0–AR7, SP, DP, CPL,
+  and CMPT; its private `pc_word` uses the 32-bit program-word carrier while
+  the existing private program-PC bridge retains the common 16-bit validity
+  contract.
+  `src/state/status/` owns the private checked SXM read and knownness derived
+  from ST1, and `src/cpu/input/` generically collects `STATUS_SXM` plus its
+  knownness into operation input. Reset seeds common architectural state before
+  applying the configured carrier; accumulators, T, counters, bus descriptors,
+  and observers remain separate owners.
+- No opcode or catalog rows, public memory ABI or effects, WAIT/resume behavior,
+  shared-memory visibility, byte order, fault or wrap policy, timing,
+  diagnostics, environment reads, or knobs changed. P2-W31A makes no memory
+  instruction claim and leaves those seams to later evidence freezes.
+- Performance closure is hosted POSIX observer-off throughput only. The clean
+  same-catalog-22 `66ef384` record (captured by `31d4eb9`, binary hash prefix
+  `b0c7d039`) measured NOP 111.770 ns / 8.947 MIPS, LD-DP 116.084 / 8.614,
+  LD-ASM 117.836 / 8.486, LD-ARP 159.492 / 6.270, and `mixed-current`
+  170.433 / 5.867. An identical-binary diagnostic measured 76.978, 119.232,
+  158.135, 173.612, and 108.285 ns in that scenario order. The wide spreads
+  and same-binary variation establish no confirmed regression or improvement;
+  these are not DSP or silicon timing claims.
+- Follow-up P2-W31B: freeze an additive data endpoint, WAIT/resume semantics,
+  commit-at-READY shared visibility, and a persistent root instruction
+  transaction; only then freeze and implement fixed-MOD2 `LD *ARx+,dst` /
+  `STL src,*ARx+`.
