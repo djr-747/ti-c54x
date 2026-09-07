@@ -4982,3 +4982,58 @@ rewritten after publication.
   machine-cycle claim, IRQ/RPT behavior, device policy, knob, environment read,
   diagnostic path, allocator, mutable global, or emulator dependency was
   added. TDD begins with owner-local RED tests.
+
+## 2026-09-08 — P2-W35 fixed-MOD2 LD-to-T implementation
+
+- State: implementation commit
+  `264c3f8047b9dd1860020c0a461a4ab8acbc3ce6` completes the bounded
+  fixed-MOD2 `LD *ARx+,T` vertical slice. The catalog now contains 29 rows
+  and 1,439 populated first words, with reset-runnable coverage unchanged at
+  6/29. P2-W31P hosted stability and the W31B immediate-READY benchmark
+  follow-ups remain open and nonblocking.
+- TDD RED was captured in three independent owner lanes. Catalog/decode tests
+  failed on the absent LD-to-T identity and ARF layout; the pure-operation test
+  failed on the absent handler contract; and the public-CPU test reached
+  `STOP_UNIMPLEMENTED_OPCODE` instead of retirement. No production row,
+  layout, or handler preceded those failures.
+- GREEN registers `LD_T_SMEM_MOD2` at `0x3090/0xFFF8`, with fixed bit 8,
+  ARF in bits 2:0, one program word, the private generic `ARF` layout, no
+  input resources, and repeatability UNRESOLVED. All eight words
+  `0x3090..0x3097` are generated; the tests also prove that bit 8 is not an
+  operand. The checked and trusted pure leaves stage the existing generic
+  fixed-MOD2 WORD16 read, and completion writes the raw returned word through
+  the existing `T_REGISTER_WRITE` effect without reading SXM or status input.
+- Generic W31B transaction and CPU paths provide the old-AR request,
+  postincrement only after READY, WAIT resume with the same transaction ID and
+  no refetch, FAULT rollback, sequential PC retirement, dependency rejection,
+  and checked AR=0xffff rejection. Tests cover all eight ARFs, raw values
+  `0x0000`, `0x8000`, and `0xffff`, replacement of an unknown T value,
+  CMPT/ARP/AR knownness failures, status and accumulator preservation, and
+  transactional checked/trusted/completion rejection. No opcode-specific CPU
+  branch or new resource, effect kind, address kind, or memory lifecycle was
+  added.
+- Integration standardized the exact catalog/handler identity as
+  `LD_T_SMEM_MOD2`/`ld_t_smem` and removed one unused local from a RED trusted
+  rejection test so strict `-Werror` remained meaningful. Catalog fixtures
+  advanced to 29 rows, 1,439 populated words, and 30 generated identities; a
+  search and focused near-miss tests found no stale UNKNOWN vector in the newly
+  claimed range.
+- Validation: all four focused catalog, decode, pure-operation, and public-CPU
+  targets passed under strict warnings and again in a forced ASan/UBSan build.
+  `make quality-test` passed all 186 Python tests plus evidence, knob,
+  source-boundary, build-manifest, and observer-disabled artifact checks. Two
+  independent Luna reviews found no P0/P1/P2 finding. After removing the
+  sanitizer-instrumented build artifacts, the authoritative clean,
+  unsanitized standalone `make test` completed successfully.
+- Size decision: the new production files are bounded leaf owners. The private
+  three-bit ARF descriptor leaves `src/isa/decode/operand_layout.c` at 518
+  lines. It remains the cohesive layout-data/resolver owner, is well below the
+  800-line split threshold, and the reviewed decision is not to split it in
+  this slice.
+- Evidence accounting is now 142 evidence records; 217 requirements (184
+  IMPLEMENTED, 8 PLANNED, 25 UNRESOLVED); 175 tests (167 PASSING, 8 PLANNED);
+  and 7 source records. LD-to-T repeatability remains unresolved by design.
+- No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
+  policy, device/MMR behavior, knob, environment read, logging, diagnostic
+  fanout, allocator, mutable global, or emulator dependency was added.
+  Selection of the next ISA slice remains evidence-first.
