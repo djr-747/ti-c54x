@@ -4610,3 +4610,22 @@ rewritten after publication.
 - Follow-up: attempt a new set only when the quiet-core observation is sustained;
   keep CPU affinity and warm-up explicit, use a new set ID, and never substitute
   the individually green records for a consecutive three-capture result.
+
+## 2026-09-07 — P2-W31P weighted CPU1 acceptance attempt
+
+- State: SET4 remains `INCONCLUSIVE` solely on four isolated stability checks;
+  all fixed medians remain below target. The raw records and audit summary landed
+  as `50396cc557ad60422ed49e1d5caf921dd321212b`.
+- The changed host condition retained CPU1 affinity, extended the same-core
+  warm-up to five seconds, and ran each capture in a transient user scope with
+  `CPUWeight=10000`. O2 missed only capture 3 LD-ARP at 0.442131. O3 missed
+  capture 1 NOP at 0.401510 and LD-DP in captures 2 and 3 at 0.198382 and
+  0.429899. All other fixed checks passed.
+- Every fixed median remained below 60 ns. The O2 cohort ranged from 25.877 to
+  46.112 ns; O3 ranged from 19.371 to 33.315 ns. No record was discarded or
+  promoted from another set, and no governor, realtime priority, benchmark
+  policy, production code, knob, instrumentation, or TI timing claim changed.
+- Follow-up: require a sustained idle-core observation before SET5, retain the
+  same explicit affinity/warm-up/weight controls, use a new set ID, and continue
+  treating any preempted capture as evidence rather than selectively retrying a
+  single member.
