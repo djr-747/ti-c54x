@@ -5,7 +5,10 @@ are the active track. P2-W31B1 now implements the transactional DATA endpoint an
 persistent memory-instruction root. P2-W31P remains open with structural and
 correctness gates green; optimized hosted cohorts are below the 60 ns median
 target, while exact three-capture stability acceptance is pending/deferred.
-That hosted follow-up no longer blocks P2-W31B2, which is now the active ISA slice.
+That hosted follow-up no longer blocks P2-W31B2, which is now the active ISA
+slice. W31B2 catalog/decode metadata and pure generic MEMORY effects are
+implemented, and CPU end-to-end retirement is green; focused/full/sanitizer
+review closure and immediate-READY benchmark follow-up remain pending.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -71,7 +74,7 @@ function-pointer dispatch tables.
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
 | P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
 | P2-W31P performance architecture freeze | Implemented — structural/correctness gates green; hosted acceptance pending/deferred | The common CPU path now uses one catalog-derived opcode binding, one trusted value-owned execution packet with a static operand plan, and one trusted PC plan. Checked boundaries, generic resources, effect atomicity, observers, and memory WAIT/RESUME remain intact. Optimized hosted cohorts are below the 60 ns median target; exact three-capture stability remains open and does not block W31B2. |
-| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 active | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 will register and retire `LD *ARx+,dst` plus `STL src,*ARx+` through the proven generic memory path. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
+| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 implementation and retirement green, review closure pending | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 now registers and decodes `LD *ARx+,dst` plus `STL src,*ARx+`, implements their pure generic MEMORY effects, and proves CPU end-to-end retirement. Catalog coverage is 24 rows/1319 populated first words (4/24 reset-runnable); focused/full/sanitizer review closure and immediate-READY benchmark follow-up remain pending. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -408,9 +411,12 @@ they do not constitute the later three-capture acceptance set.
 
 State: W31B1 is implemented with focused strict and ASan/UBSan tests, an
 independent combined review, and the full standalone local gate green. W31B2 is
-the active next slice; P2-W31P's exact hosted stability follow-up remains open
-but is no longer a prerequisite. No catalog row or opcode handler was added
-during W31B1.
+the active slice; P2-W31P's exact hosted stability follow-up remains open but is
+no longer a prerequisite. W31B2 has added the two catalog/decode rows, pure
+generic MEMORY effects, and CPU end-to-end retirement. The implementation and
+retirement tests are green; focused/full/sanitizer review closure and the
+immediate-READY benchmark follow-up remain pending. No catalog row or opcode
+handler was added during W31B1.
 
 The public boundary is deliberately small and vendorable:
 

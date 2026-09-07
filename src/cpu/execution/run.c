@@ -142,11 +142,10 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_op_input_snapshot op_input = {0};
         ti_c54x_memory_instruction_result memory_result = {0};
         ti_c54x_memory_instruction_status memory_status;
+        ti_c54x_cpu_memory_resume_result memory_resume;
 
         /* A prepared or pending root transaction owns the current work unit.
-         * Resume it before fetching any new program word. W31B1 deliberately
-         * does not dispatch ordinary MEMORY effects; W31B2 will prepare this
-         * root from an opcode-family handler. */
+         * Resume it before fetching any new program word. */
         if (ti_c54x_cpu_memory_is_pending(
                 &cpu->instruction_transaction)) {
             const ti_c54x_cpu_memory_resume_result resume =
@@ -314,6 +313,89 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
+        }
+
+        /* MEMORY effects own the persistent root transaction. The fetch-side
+         * attempt was accounted immediately before the program read, so the
+         * root receives the pre-attempt totals and publishes only its READY
+         * retirement delta. Routing is by effect kind; opcode identity stays
+         * inside the trusted semantic handler and completion callback. */
+        if (effect.kind == TI_C54X_OP_EFFECT_MEMORY) {
+            if (cpu->instructions_attempted == UINT64_C(0)) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            memory_status = ti_c54x_memory_instruction_transaction_prepare(
+                &cpu->instruction_transaction, &packet.instruction, &op_input,
+                &effect, &cpu->arch_state,
+                cpu->instructions_attempted - UINT64_C(1),
+                cpu->instructions_retired);
+            if (!memory_status_ok(memory_status)) {
+                if (memory_status ==
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_COUNTER_OVERFLOW ||
+                    memory_status ==
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_ID_EXHAUSTED) {
+                    return stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+
+            memory_resume = ti_c54x_cpu_memory_resume(
+                &cpu->instruction_transaction, &cpu->bus.data_endpoint,
+                &cpu->arch_state, &cpu->accumulators, &cpu->t_register);
+            if (!memory_status_ok(memory_resume.transaction_status)) {
+                if (memory_resume.transaction_status ==
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_COUNTER_OVERFLOW ||
+                    memory_resume.transaction_status ==
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_ID_EXHAUSTED) {
+                    return stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            memory_result = memory_resume.result;
+            if (memory_result.status ==
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_WAIT) {
+                return wait_result(cpu, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (memory_result.status ==
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_FAULT) {
+                return stop_result(cpu, TI_C54X_STOP_BUS_FAULT,
+                                   memory_result.bus_status,
+                                   instructions_attempted,
+                                   instructions_retired);
+            }
+            if (memory_result.status !=
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (memory_result.instructions_retired != UINT64_C(1) ||
+                cpu->instructions_retired == UINT64_MAX) {
+                return stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            cpu->instructions_retired++;
+            instructions_retired++;
+            if (!memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
+                    &cpu->instruction_transaction,
+                    &cpu->bus.data_endpoint))) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            continue;
         }
 
         if (ti_c54x_effect_transaction_stage(

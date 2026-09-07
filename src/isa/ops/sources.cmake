@@ -6,6 +6,7 @@ list(APPEND ti_c54x_core_sources
 include(${CMAKE_CURRENT_LIST_DIR}/dispatch/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/repeat/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/load/sources.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/store/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/compare/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/accumulator/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/rotate/sources.cmake)

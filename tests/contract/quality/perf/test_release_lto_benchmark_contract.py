@@ -36,7 +36,7 @@ AUDIT_PATH = ROOT / "bench" / "audits" / "p2-w31p-baseline.json"
 CHECKER_PATH = ROOT / "tools" / "quality" / "check_perf_acceptance.py"
 MAKEFILE_PATH = ROOT / "Makefile"
 MIXED_SEMANTIC_HASH = "f59db4e45ad10a06"
-CATALOG_COUNT = 22
+CATALOG_COUNT = 24
 RETIRED_COUNT = 800_000
 BASE_FLAGS = "-Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0"
 COMMON_FLAGS = (

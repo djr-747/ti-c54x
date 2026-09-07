@@ -107,6 +107,13 @@ Current progress:
   `LD *ARx+,dst` and `STL src,*ARx+` will use the proven generic memory path.
   Timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel,
   and posted writes remain out of scope.
+- P2-W31B2 now registers the fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+`
+  catalog/decode rows and their pure generic MEMORY effects. Catalog coverage
+  is now 24 rows and 1319 populated first words, with reset-runnable coverage
+  still 4/24. The implementation and CPU end-to-end retirement are green;
+  focused/full/sanitizer review closure and the immediate-READY benchmark
+  follow-up remain pending. The open W31P hosted stability follow-up remains
+  separate.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -116,8 +123,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 130 evidence items, 197 requirements (155 implemented,
-  19 planned, 23 unresolved), and 157 tests (137 passing, 20 planned). Hosted
+- The registry now records 130 evidence items, 197 requirements (166 implemented,
+  8 planned, 23 unresolved), and 157 tests (149 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
