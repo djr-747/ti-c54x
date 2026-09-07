@@ -4942,6 +4942,7 @@ rewritten after publication.
 - No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
   policy, device/MMR behavior, knob, environment read, logging, diagnostic
   fanout, allocator, mutable global, or emulator dependency was added.
+
   Selection of the next ISA slice remains evidence-first.
 
 ## 2026-09-08 — P2-W35 fixed-MOD2 LD-to-T evidence activation
@@ -5341,3 +5342,48 @@ rewritten after publication.
 - No public ABI, timing or performance claim, machine-cycle API, IRQ/RPT
   policy, device/MMR behavior, knob, environment read, logging, diagnostic
   fanout, allocator, mutable global, or emulator dependency was added.
+
+## 2026-09-08 — P2-W39 generic T input and fixed-MOD2 ST T activation
+
+- State: evidence and ownership activation landed as
+  `2a6790e2b219ef98fcd616570c37d7169a5f534b`. P2-W39 is the active bounded
+  ISA slice. P2-W31P hosted stability and the W31B immediate-READY benchmark
+  follow-ups remain open and nonblocking.
+- TI `SPRU172C` Store T/TRN/immediate (printed pp. 4-166–4-168) defines
+  one-word `ST T,Smem` with opcode diagram `1000_1100_IAAAAAAA`, execution
+  `(T) -> Smem`, and no status-bit effects. Composing the registered standard
+  indirect MOD2 `*ARx+` rule produces row `0x8C90/0xFFF8`: bit 8 is fixed,
+  ARF occupies bits 2:0, and exactly eight first words are admitted. The
+  printed decrement example independently confirms that the old T value is
+  stored at the old selected-AR address before the address update.
+- The architecture-fit audit selected the smallest missing shared prerequisite:
+  a generic catalog-declared `T_REGISTER` input resource. It will copy raw16 T
+  plus explicit knownness from the existing private T owner only when requested.
+  Unknown T remains representable in the input snapshot and must cause the pure
+  store handler to reject without publishing an effect or starting a bus write.
+- The planned `st_t_smem` leaf reuses the existing ARF-only layout, generic
+  MEMORY WORD16 WRITE with `complete=NULL`, fixed-MOD2 address resolution, and
+  generic CPU WAIT/READY/FAULT and sequential-PC retirement. No new layout,
+  effect, address, architectural-state, public-API, or CPU opcode branch seam is
+  authorized. Repeatability remains UNRESOLVED because absence from Table 2-28
+  is not positive eligibility evidence; no timing claim is adopted.
+- Candidate review keeps STH and LDR deferred on saturation/guard/rounding
+  policy, `LD #K,dst` on short-immediate widening, and `LD Smem,TS,dst` on the
+  additional shift-count contract. Production RPT activation remains gated by
+  unresolved RC progression, repeated-body PC flow, and predecode IRQ
+  arbitration; no existing pure RPT proof was mistaken for executable CPU
+  coverage.
+- TDD ownership is frozen into five RED contracts: generic T input collection,
+  catalog registration, decode through the existing ARF layout, pure store
+  effect, and public-CPU retirement. Expected completed coverage is 34 catalog
+  rows, 1,487 populated first words, enum ID_COUNT 35, four aggregate fixed-MOD2
+  memory rows, and reset-runnable coverage unchanged at 6/34.
+- Activation accounting is 154 evidence records; 238 requirements (196
+  IMPLEMENTED, 13 PLANNED, 29 UNRESOLVED); 192 tests (179 PASSING, 13 PLANNED);
+  and 7 sources. `make quality-test` passed all 186 Python tests plus evidence,
+  knob, source-boundary, build-manifest, and observer-disabled artifact checks;
+  `git diff --check` passed.
+- No production, generated, or executable-test file changed. No public ABI,
+  timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
+  environment read, diagnostic path, allocator, mutable global, or emulator
+  dependency was added. Implementation begins with owner-local RED tests.
