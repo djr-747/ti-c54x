@@ -144,6 +144,41 @@ remains pending. These are hosted implementation-throughput observations only,
 with no TI machine-cycle, DSP, or silicon timing claim. Any replacement must use
 a new set ID and document the external-condition change that motivated it.
 
+#### SET2 replacement attempt (CPU2)
+
+The next clean-commit replacement attempt used `taskset` CPU2 with agents and
+build activity from this thread quiesced. Read-only `mpstat`/`ps` snapshots at
+capture time nevertheless showed substantial unrelated host load, including
+heavy work on SMT-sibling CPU3. This external condition explains deferring the
+replacement decision; it does not change the acceptance rule.
+
+Set `P2-W31P-O2-5613EB3-CPU2-SET2` (`portable-o2-no-lto`) used clean commit
+`5613eb3dad890e091c86adfebddc1122f230f7d9` and binary
+`3471856af42d10128572be44038e323d4e15b23321032c7b32f70548e4363a58`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T12:28:03.331306+00:00 | 26.970, 42.074, 40.214, 42.450 | 13.973, 30.038, 9.350, 3.791 | `ld-dp` 30.038% > 15% |
+| 2026-09-07T12:28:24.242092+00:00 | 36.456, 47.938, 45.216, 44.283 | 8.081, 25.330, 5.127, 4.900 | `ld-dp` 25.330% > 15% |
+| 2026-09-07T12:28:36.450514+00:00 | 35.104, 43.390, 43.643, 43.788 | 6.685, 12.853, 42.819, 12.210 | `ld-asm` 42.819% > 15% |
+
+Set `P2-W31P-O3-LTO-5613EB3-CPU2-SET2` (`portable-o3-lto`) used the same clean
+commit and binary
+`2f36515659092aa944fede68b4333a485bcab1e75c78938168af9aeacbb1635e`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T12:28:52.571417+00:00 | 19.310, 27.085, 26.733, 25.227 | 71.814, 21.306, 15.944, 47.219 | all four stability ranges > 15% |
+| 2026-09-07T12:29:04.340243+00:00 | 20.452, 25.198, 27.075, 30.221 | 62.047, 58.279, 49.250, 77.394 | all four stability ranges > 15% |
+| 2026-09-07T12:29:18.697893+00:00 | 21.386, 27.869, 27.762, 27.605 | 25.687, 33.391, 15.898, 22.598 | all four stability ranges > 15% |
+
+Every fixed-scenario median in SET2 is below the 60 ns target, but both sets are
+`INCONCLUSIVE` solely because stability exceeded 15%; no timing target is
+claimed as accepted. The six raw records are retained without averaging or
+discarding, and no TI machine-cycle, DSP, or silicon timing claim is implied.
+The next replacement requires a new set ID and a documented external-condition
+change.
+
 W31B2 remains paused until this gate is met. Its first two immediate-READY memory
 forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
 scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
