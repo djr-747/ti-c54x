@@ -36,6 +36,7 @@ LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16 = (
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
+RESOURCES_STATUS_SXM = "TI_C54X_INPUT_RESOURCES_STATUS_SXM"
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 RESOURCES_ACCUMULATORS_STATUS_C = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
@@ -128,7 +129,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 32)
+        self.assertEqual(len(catalog_rows), 33)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -279,7 +280,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
 
-        cmpr = catalog_rows[-6]
+        cmpr = catalog_rows[-7]
         self.assertEqual(cmpr.symbol, "CMPR_AR")
         self.assertEqual(cmpr.handler, "cmpr")
         self.assertEqual(cmpr.first_word_value, 0xF4A8)
@@ -289,7 +290,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(cmpr.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(cmpr.input_resources, RESOURCES_AUXILIARY_REGISTERS)
 
-        ldu = catalog_rows[-5]
+        ldu = catalog_rows[-6]
         self.assertEqual(ldu.symbol, "LDU_SMEM_MOD2")
         self.assertEqual(ldu.handler, "ldu_smem")
         self.assertEqual(ldu.first_word_value, 0x1290)
@@ -299,7 +300,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ldu.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ldu.input_resources, RESOURCES_NONE)
 
-        ld_t = catalog_rows[-4]
+        ld_t = catalog_rows[-5]
         self.assertEqual(ld_t.symbol, "LD_T_SMEM_MOD2")
         self.assertEqual(ld_t.handler, "ld_t_smem")
         self.assertEqual(ld_t.first_word_value, 0x3090)
@@ -309,7 +310,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_t.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_t.input_resources, RESOURCES_NONE)
 
-        st_immediate = catalog_rows[-3]
+        st_immediate = catalog_rows[-4]
         self.assertEqual(st_immediate.symbol, "ST_IMMEDIATE_SMEM_MOD2")
         self.assertEqual(st_immediate.handler, "st_immediate_smem")
         self.assertEqual(st_immediate.first_word_value, 0x7690)
@@ -319,7 +320,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(st_immediate.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(st_immediate.input_resources, RESOURCES_NONE)
 
-        ld_dp = catalog_rows[-2]
+        ld_dp = catalog_rows[-3]
         self.assertEqual(ld_dp.symbol, "LD_DP_SMEM_MOD2")
         self.assertEqual(ld_dp.handler, "ld_dp_smem")
         self.assertEqual(ld_dp.first_word_value, 0x4690)
@@ -329,7 +330,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_dp.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(ld_dp.input_resources, RESOURCES_NONE)
 
-        ld_asm = catalog_rows[-1]
+        ld_asm = catalog_rows[-2]
         self.assertEqual(ld_asm.symbol, "LD_ASM_SMEM_MOD2")
         self.assertEqual(ld_asm.handler, "ld_asm_smem")
         self.assertEqual(ld_asm.first_word_value, 0x3290)
@@ -338,6 +339,17 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_asm.operand_layout, LAYOUT_ARF)
         self.assertEqual(ld_asm.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_asm.input_resources, RESOURCES_NONE)
+
+        ld_smem_shift16 = catalog_rows[-1]
+        self.assertEqual(ld_smem_shift16.symbol, "LD_SMEM_SHIFT16_MOD2")
+        self.assertEqual(ld_smem_shift16.handler, "ld_smem_shift16")
+        self.assertEqual(ld_smem_shift16.first_word_value, 0x4490)
+        self.assertEqual(ld_smem_shift16.first_word_mask, 0xFEF8)
+        self.assertEqual(ld_smem_shift16.program_word_count, 1)
+        self.assertEqual(ld_smem_shift16.operand_layout,
+                         LAYOUT_ACCUMULATOR_ARF)
+        self.assertEqual(ld_smem_shift16.repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(ld_smem_shift16.input_resources, RESOURCES_STATUS_SXM)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

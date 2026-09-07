@@ -106,7 +106,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 1463)
+        self.assertEqual(actual.count("= (uint16_t)"), 1479)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn(
             "[0xF5B0] = (uint16_t)TI_C54X_OPCODE_ID_SSBX_STATUS,", actual
@@ -157,6 +157,15 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
             with self.subTest(symbol="LD_ASM_SMEM_MOD2", word=word):
                 self.assertIn(
                     f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD2,",
+                    actual,
+                )
+        for word in (
+            "4490", "4491", "4492", "4493", "4494", "4495", "4496", "4497",
+            "4590", "4591", "4592", "4593", "4594", "4595", "4596", "4597",
+        ):
+            with self.subTest(symbol="LD_SMEM_SHIFT16_MOD2", word=word):
+                self.assertIn(
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2,",
                     actual,
                 )
         for word in ("F4A8", "F4AF", "F5A8", "F5AF", "F6A8", "F6AF",

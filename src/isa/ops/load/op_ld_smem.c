@@ -2,11 +2,12 @@
  * Module contract
  *
  * Owns: checked and trusted pure semantic leaves for fixed-MOD2 WORD16
- * indirect loads into accumulator A or B, including SXM-dependent completion.
- * The checked leaf validates the catalog/decode contract and stages a generic
- * memory-read effect; its static completion validates the copied instruction
- * and input before staging the accumulator write. The trusted leaf consumes
- * constructor-validated operands while retaining SXM input validation.
+ * indirect loads into accumulator A or B, including the unshifted and
+ * SXM-dependent logical-left-shift-16 forms. Each checked leaf validates its
+ * catalog/decode contract and stages a generic memory-read effect; its static
+ * completion validates the copied instruction and input before staging the
+ * accumulator write. The trusted leaves consume constructor-validated
+ * operands while retaining SXM input validation.
  * Does not own: opcode inventory, generic decode, AR resolution or mutation,
  * buses, CPU/state mutation, sequencing, timing, observers, allocation,
  * logging, environment, or diagnostics. Borrowed instruction/input/effect
@@ -29,6 +30,12 @@ static ti_c54x_op_status ld_smem_complete(
     uint16_t read_value_word,
     ti_c54x_op_effect *next_effect);
 
+static ti_c54x_op_status ld_smem_shift16_complete(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect);
+
 static ti_c54x_op_status ld_smem_validate_sxm(
     const ti_c54x_op_input_snapshot *input)
 {
@@ -41,8 +48,9 @@ static ti_c54x_op_status ld_smem_validate_sxm(
     return TI_C54X_OP_STATUS_OK;
 }
 
-static ti_c54x_op_status ld_smem_validate_instruction(
+static ti_c54x_op_status ld_smem_validate_instruction_for_id(
     const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_opcode_id expected_id,
     uint8_t *destination,
     uint8_t *arf)
 {
@@ -55,9 +63,8 @@ static ti_c54x_op_status ld_smem_validate_instruction(
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
 
-    metadata = ti_c54x_opcode_metadata_for_id(
-        TI_C54X_OPCODE_ID_LD_SMEM_MOD2);
-    if (metadata == NULL || metadata->id != TI_C54X_OPCODE_ID_LD_SMEM_MOD2 ||
+    metadata = ti_c54x_opcode_metadata_for_id(expected_id);
+    if (metadata == NULL || metadata->id != expected_id ||
         metadata->first_word_mask == UINT16_C(0) ||
         (metadata->first_word_value & (uint16_t)~metadata->first_word_mask) !=
             UINT16_C(0) ||
@@ -71,7 +78,7 @@ static ti_c54x_op_status ld_smem_validate_instruction(
          (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
             TI_C54X_INPUT_RESOURCES_NONE ||
         metadata->input_resources != TI_C54X_INPUT_RESOURCES_STATUS_SXM ||
-        instruction->id != TI_C54X_OPCODE_ID_LD_SMEM_MOD2 ||
+        instruction->id != expected_id ||
         instruction->operand_layout != metadata->operand_layout ||
         instruction->repeatability != metadata->repeatability ||
         instruction->input_resources != metadata->input_resources ||
@@ -112,7 +119,28 @@ static ti_c54x_op_status ld_smem_validate_instruction(
     return TI_C54X_OP_STATUS_OK;
 }
 
-static void ld_smem_memory_read(uint8_t arf, ti_c54x_op_effect *effect)
+static ti_c54x_op_status ld_smem_validate_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    uint8_t *destination,
+    uint8_t *arf)
+{
+    return ld_smem_validate_instruction_for_id(
+        instruction, TI_C54X_OPCODE_ID_LD_SMEM_MOD2, destination, arf);
+}
+
+static ti_c54x_op_status ld_smem_shift16_validate_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    uint8_t *destination,
+    uint8_t *arf)
+{
+    return ld_smem_validate_instruction_for_id(
+        instruction, TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2, destination, arf);
+}
+
+static void ld_smem_memory_read(
+    uint8_t arf,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
 {
     *effect = (ti_c54x_op_effect){
         .kind = TI_C54X_OP_EFFECT_MEMORY,
@@ -123,13 +151,14 @@ static void ld_smem_memory_read(uint8_t arf, ti_c54x_op_effect *effect)
                 .arf = arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
             .write_value_word = UINT16_C(0),
-            .complete = ld_smem_complete}};
+            .complete = complete}};
 }
 
 static ti_c54x_op_status ld_smem_complete_values(
     uint8_t destination,
     const ti_c54x_op_input_snapshot *input,
     uint16_t read_value_word,
+    uint8_t shift,
     ti_c54x_op_effect *next_effect)
 {
     ti_c54x_op_status input_status = ld_smem_validate_sxm(input);
@@ -140,12 +169,13 @@ static ti_c54x_op_status ld_smem_complete_values(
         return input_status;
     }
 
-    value_raw40 = (uint64_t)read_value_word;
+    value_raw40 = ti_c54x_u40_from_unsigned(read_value_word);
     if (input->status_sxm != UINT8_C(0) &&
         (read_value_word & UINT16_C(0x8000)) != UINT16_C(0)) {
         value_raw40 = (TI_C54X_U40_MASK & ~UINT64_C(0xFFFF)) |
                       (uint64_t)read_value_word;
     }
+    value_raw40 = ti_c54x_u40_logical_left_shift(value_raw40, shift);
     staged = (ti_c54x_op_effect){
         .kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE,
         .payload.accumulator_write = {
@@ -176,8 +206,31 @@ static ti_c54x_op_status ld_smem_complete(
         return status;
     }
     (void)arf;
-    return ld_smem_complete_values(destination, input, read_value_word,
+    return ld_smem_complete_values(destination, input, read_value_word, 0U,
                                    next_effect);
+}
+
+static ti_c54x_op_status ld_smem_shift16_complete(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    uint8_t destination;
+    uint8_t arf;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || next_effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ld_smem_shift16_validate_instruction(instruction, &destination,
+                                                   &arf);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    (void)arf;
+    return ld_smem_complete_values(destination, input, read_value_word, 16U,
+                                    next_effect);
 }
 
 ti_c54x_op_status ti_c54x_op_ld_smem(
@@ -203,7 +256,7 @@ ti_c54x_op_status ti_c54x_op_ld_smem(
     }
     {
         ti_c54x_op_effect staged = {0};
-        ld_smem_memory_read(arf, &staged);
+        ld_smem_memory_read(arf, ld_smem_complete, &staged);
         *effect = staged;
     }
     return TI_C54X_OP_STATUS_OK;
@@ -234,7 +287,70 @@ ti_c54x_op_status ti_c54x_trusted_op_ld_smem(
     }
     {
         ti_c54x_op_effect staged = {0};
-        ld_smem_memory_read((uint8_t)operands->values[1].raw_value, &staged);
+        ld_smem_memory_read((uint8_t)operands->values[1].raw_value,
+                            ld_smem_complete, &staged);
+        *effect = staged;
+    }
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_op_ld_smem_shift16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    uint8_t destination;
+    uint8_t arf;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ld_smem_shift16_validate_instruction(instruction, &destination,
+                                                   &arf);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    (void)destination;
+    status = ld_smem_validate_sxm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    {
+        ti_c54x_op_effect staged = {0};
+        ld_smem_memory_read(arf, ld_smem_shift16_complete, &staged);
+        *effect = staged;
+    }
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_status status;
+
+    (void)instruction;
+    if (operands == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count < UINT8_C(2) ||
+        operands->values[0].width_bits != UINT8_C(1) ||
+        operands->values[0].raw_value > UINT64_C(1) ||
+        operands->values[1].width_bits != UINT8_C(3) ||
+        operands->values[1].raw_value > UINT64_C(7)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    status = ld_smem_validate_sxm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    {
+        ti_c54x_op_effect staged = {0};
+        ld_smem_memory_read((uint8_t)operands->values[1].raw_value,
+                            ld_smem_shift16_complete, &staged);
         *effect = staged;
     }
     return TI_C54X_OP_STATUS_OK;

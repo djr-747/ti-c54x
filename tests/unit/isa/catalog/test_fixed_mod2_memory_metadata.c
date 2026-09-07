@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof of the two fixed-MOD2 WORD16 memory catalog rows,
+ * Owns: executable proof of the three fixed-MOD2 WORD16 memory catalog rows,
  * their exact masked identity, operand/resource metadata, row cardinality,
  * and direct first-word population. Does not own: decode extraction,
  * address resolution, memory effects, CPU/state mutation, sequencing,
@@ -28,6 +28,8 @@ static const fixed_mod2_row rows[] = {
      TI_C54X_INPUT_RESOURCES_STATUS_SXM},
     {TI_C54X_OPCODE_ID_STL_SMEM_MOD2, UINT16_C(0x8090), UINT16_C(0xFEF8),
      TI_C54X_INPUT_RESOURCES_ACCUMULATORS},
+    {TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2, UINT16_C(0x4490),
+     UINT16_C(0xFEF8), TI_C54X_INPUT_RESOURCES_STATUS_SXM},
 };
 
 static bool
@@ -41,9 +43,9 @@ test_metadata_rows(void)
 {
     const size_t row_count = sizeof(rows) / sizeof(rows[0]);
 
-    TI_C54X_TEST_CHECK(row_count == 2U);
-    /* Unknown plus the 32 catalog rows is the complete generated identity. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 33);
+    TI_C54X_TEST_CHECK(row_count == 3U);
+    /* Unknown plus the 33 catalog rows is the complete generated identity. */
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 34);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];
@@ -96,7 +98,7 @@ test_each_row_has_exactly_sixteen_encodings_and_population(void)
             ++populated_first_words;
         }
     }
-    TI_C54X_TEST_CHECK(populated_first_words == 1463U);
+    TI_C54X_TEST_CHECK(populated_first_words == 1479U);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const fixed_mod2_row *row = &rows[index];

@@ -4893,7 +4893,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-SHIFT16-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -4907,7 +4907,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-SHIFT16-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4917,7 +4917,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-SHIFT16-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/load/",
@@ -4929,7 +4929,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -6454,34 +6454,34 @@
     },
     {
       "id": "T-COMMON-LD-SMEM-SHIFT16-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_ld_smem_shift16_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_shift16_metadata"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-SHIFT16-CATALOG"]
     },
     {
       "id": "T-COMMON-LD-SMEM-SHIFT16-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_ld_smem_shift16_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_shift16_decode"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-SHIFT16-DECODE"]
     },
     {
       "id": "T-COMMON-LD-SMEM-SHIFT16-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/load/test_ld_smem_shift16.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_shift16_ops"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-SHIFT16-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_smem_shift16.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_smem_shift16"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT"]
     }
   ]
