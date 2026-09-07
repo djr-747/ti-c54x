@@ -4589,3 +4589,24 @@ rewritten after publication.
   SET3 ID only after the external load condition materially changes, rebuild the
   same two frozen profiles from a clean commit, and retain/evaluate three new
   consecutive captures per unchanged binary.
+
+## 2026-09-07 — P2-W31P warmed CPU1 acceptance attempt
+
+- State: SET3 remains `INCONCLUSIVE` solely on isolated stability excursions;
+  all fixed medians remain below target and W31P/W31B2 stay paused. The six raw
+  records and audit summary landed as
+  `699e36d2a6aac99587535eea2bf2f2b86c1b48b7`.
+- The changed host condition used CPU1 affinity plus a two-second same-core
+  `sha256sum /dev/zero` warm-up before every capture, from clean
+  `f6713e19b9516e89015b1163fa95eea3f0da46e5`. O2 fixed medians ranged from
+  25.409 to 42.935 ns; O3 fixed medians ranged from 20.189 to 29.807 ns.
+- O2 capture 3 and O3 capture 1 each independently met every threshold and
+  stability check. They were not cherry-picked: the required consecutive sets
+  also contain isolated ratios of 0.481695 and 0.563306 in O2, and 0.159742 to
+  0.368087 in O3, so both complete cohorts remain inconclusive and retained.
+- The threshold, sample/window counts, scenario semantics, clean-tree rule, and
+  exact-three policy were not changed. No governor, scheduler priority, knob,
+  production code, instrumentation, or TI timing claim changed.
+- Follow-up: attempt a new set only when the quiet-core observation is sustained;
+  keep CPU affinity and warm-up explicit, use a new set ID, and never substitute
+  the individually green records for a consecutive three-capture result.
