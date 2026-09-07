@@ -2043,6 +2043,39 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W31A: fixed-MOD2 memory prerequisites (planned)"},
       "assertion": "P2-W31A freezes only three prerequisites for a later fixed-MOD2 LD/STL memory slice: CPU ownership of one canonical ti_c54x_arch_state with the 32-bit public program-word carrier preserved through the existing common 16-bit PC bridge; a private checked SXM read and knownness seam under src/state/status/; and a generic STATUS_SXM input resource copied into op-input state. Accumulators, T, counters, bus, and observers remain separate owners. No memory effect, WAIT/public ABI, shared visibility, byte order, fault, AR wrap, repeatability, timing, or opcode row is admitted; those require later evidence-first freezes."
+    },
+    {
+      "id": "E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)"},
+      "assertion": "P2-W31B freezes two atomic implementation subphases. W31B1 owns a copied public DATA WORD16 endpoint descriptor with a borrowed caller-owned context, paired advance/cancel callbacks, BEGIN/RESUME phases, stable nonzero uint64 transaction IDs, canonical INVALID/WAIT/READY/FAULT observations, commit-at-READY store visibility, explicit cancellation failure, and a persistent root instruction transaction that resumes before fetch. W31B2 owns only fixed-MOD2 LD *ARx+,dst and STL src,*ARx+ semantics. One tagged MEMORY arm remains the sole opcode-effect channel. Architectural state changes are committed from prevalidated candidates; WAIT, FAULT, and cancellation do not mutate them. The endpoint adapter owns storage mapping, arbitration, and byte-lane conversion but not the borrowed storage itself. Device/MMR/program/IO, posted writes, dual/parallel issue, timing, repeatability, and AR-boundary wrap remain outside this contract."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-SMEM-MOD2-P4-66-4-69",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-69"},
+      "assertion": "The LD instruction description supplies the fixed single-word indirect encoding used by this slice: value 0x1090, mask 0xFEF8, D in bit 8, ARF in bits 2-0, and fixed I=1/MOD2, yielding 16 first-word encodings. It defines loading a 16-bit data word into the selected destination accumulator and the SXM-dependent zero or sign extension; no encoded shift is asserted here."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-STL-SMEM-MOD2-P4-172-4-173",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "STL", "printed_page_start": "4-172", "printed_page_end": "4-173"},
+      "assertion": "The STL instruction description supplies the fixed single-word indirect encoding used by this slice: value 0x8090, mask 0xFEF8, S in bit 8, ARF in bits 2-0, and fixed I=1/MOD2, yielding 16 first-word encodings. It stores the low 16 bits of the selected source accumulator to the data-memory operand; this unshifted form has no encoded shift and no SXM-dependent transform claim."
     }
   ],
   "requirements": [
@@ -3356,8 +3389,8 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/adapter/",
-      "claim": "A future external adapter must prove actual callback/MMIO/RAM issue and completion counts, physical visibility across wait-state suspension, and exactly-once read/write effects when it consumes the private WORD16 transaction protocol; the W21C reducer does not fabricate or claim those effects. Deterministic multi-master arbitration remains a separate later proof.",
-      "evidence_ids": ["E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT"],
+      "claim": "The W31B adapter proof must demonstrate actual endpoint issue and completion counts, commit-at-READY physical visibility across WAIT suspension, and exactly-once read/write effects when consuming the public copied DATA WORD16 protocol. The W21C reducer does not fabricate those effects; deterministic arbitration, device profiles, and posted writes remain separate later proofs.",
+      "evidence_ids": ["E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT", "E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
       "test_ids": ["T-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE"]
     },
     {
@@ -4019,6 +4052,106 @@
       "claim": "Add STATUS_SXM as a catalog input resource and copy status_sxm plus status_sxm_known into op-input state through the generic resource collector. The resource is collection-only in this freeze: no opcode consumes it, no opcode-specific CPU branch is added, and no status write or memory behavior is implied.",
       "evidence_ids": ["E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-OP-INPUT-SXM"]
+    },
+    {
+      "id": "REQ-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "include/ti_c54x/",
+      "claim": "Define the copied public WORD16 endpoint protocol in include/ti_c54x/bus_endpoint.h: value-owned PROGRAM/DATA/IO plus READ/WRITE request vocabulary, uint32_t word addresses with DATA and IO limited to UINT16_MAX, canonical read write_value=0, paired advance/cancel callbacks, BEGIN/RESUME phases, stable nonzero transaction IDs, and INVALID/WAIT/READY/FAULT observations. The void advance callback receives context, phase, ID, immutable request, and a zero-initialized caller-owned observation output; INVALID is a forbidden callback sentinel. ti_c54x_bus exposes only a copied data_endpoint for this slice and enforces DATA requests; a canonical absent endpoint maps a memory instruction to BUS_FAULT plus TI_C54X_BUS_NO_CALLBACK before ID allocation, and no attach/detach API is added.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT"]
+    },
+    {
+      "id": "REQ-PROJECT-BUS-WORD16-TRANSACTION-CANCEL",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/bus/transaction/",
+      "claim": "Add an explicit cancellation transition for a pending WORD16 transaction and connect it to reset/deinit lifecycle. The core calls the endpoint cancel callback only for its active transaction ID and immutable request. TI_C54X_BUS_WORD16_CANCEL_RESULT_CANCELLED clears that transaction and never publishes a store; TI_C54X_BUS_WORD16_CANCEL_RESULT_FAILED or the malformed all-zero INVALID result maps to TI_C54X_ERROR_BUS_CANCEL_FAILED, preserves CPU and transaction state, and permits a later reset/deinit retry. Reset preserves the per-CPU transaction-ID sequence.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT", "E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-BUS-WORD16-TRANSACTION-CANCEL"]
+    },
+    {
+      "id": "REQ-PROJECT-MEMORY-INSTRUCTION-TRANSACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Compose a persistent root instruction transaction that owns copied decode/input/effect values, a generic memory request, bus transaction ID, continuation result, and staged architectural candidates. It resumes WAIT before fetch, never refetches or reissues, invokes a static completion callback only at READY, and leaves all architectural state unchanged on WAIT, FAULT, or cancellation.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-MEMORY-INSTRUCTION-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-MEMORY-ADDRESS-RESOLUTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve the generic SINGLE_INDIRECT_WORD16 MOD2 plus ARF address specification from the embedded architectural state, enforce the existing CMPT=0 ARP=0 policy, read the old selected AR, and stage exactly one post-access AR+1 result. The resolver owns no bus issue, opcode identity, or architectural mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT", "E-PROJECT-ADDRESS-EFFECT-VALIDATION-SEAM"],
+      "test_ids": ["T-PROJECT-MEMORY-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-MEMORY-LIFECYCLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Copy the data endpoint during CPU initialization and orchestrate pending memory work before any new fetch. Initial dispatch that waits reports attempted=1 and retired=0; WAIT resume reports 0/0; READY resume reports 0/1. run(0) does not begin or poll, TI_C54X_STOP_BUS_WAIT is distinct, FETCH is observed once, BUS_WAIT has no terminal STOP observer, and a bus fault commits no PC, AR, accumulator, or status. Initialization requires fresh or deinitialized storage; deinit returns ti_c54x_error and preserves state when cancellation fails.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT", "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-MEMORY-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-COMMON-FIXED-MOD2-LD-STL-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word fixed-MOD2 first-word patterns for LD *ARx+,dst (value 0x1090, mask 0xFEF8, D bit 8, ARF bits 2-0) and STL src,*ARx+ (value 0x8090, mask 0xFEF8, S bit 8, ARF bits 2-0), each with exactly 16 non-overlapping first-word encodings.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SMEM-MOD2-P4-66-4-69", "E-TI-C54X-SPRU172C-S4-STL-SMEM-MOD2-P4-172-4-173"],
+      "test_ids": ["T-COMMON-FIXED-MOD2-LD-STL-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-FIXED-MOD2-LD-STL-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the fixed-MOD2 LD and STL rows through value-owned field layouts: one program word, selected accumulator bit, ARF bits 2-0, and no implicit shift field. Malformed or overlapping row bindings are rejected before dispatch.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SMEM-MOD2-P4-66-4-69", "E-TI-C54X-SPRU172C-S4-STL-SMEM-MOD2-P4-172-4-173"],
+      "test_ids": ["T-COMMON-FIXED-MOD2-LD-STL-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-FIXED-MOD2-LD-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Implement the pure fixed-MOD2 LD memory effect and READY completion. The handler emits a generic DATA READ without resolving AR state or performing bus I/O; its static completion consumes the READY 16-bit word and captured SXM to zero-extend or sign-extend into the selected 40-bit accumulator.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-ACCUMULATOR-SXM-P4-66-4-69"],
+      "test_ids": ["T-COMMON-FIXED-MOD2-LD-EFFECT"]
+    },
+    {
+      "id": "REQ-COMMON-FIXED-MOD2-STL-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Implement the pure fixed-MOD2 STL memory effect. The handler prepares the selected source accumulator low 16 bits as a generic DATA WRITE, performs no AR resolution or bus I/O, has no completion callback, and applies no SXM-dependent transform.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-STL-ACCUMULATOR-LOW-P4-172-4-173"],
+      "test_ids": ["T-COMMON-FIXED-MOD2-STL-EFFECT"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire fixed-MOD2 LD and STL through the generic decode, input, memory endpoint, continuation, address, effect, and PC transaction seams. A READY read or write commits the prevalidated PC, selected AR postincrement, and opcode result atomically; WAIT, FAULT, cancellation, invalid SXM, and rejected boundary candidates leave architectural state and counters unchanged except for the specified attempt/retirement phase.",
+      "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-FIXED-MOD2-LD-RETIREMENT", "T-PROJECT-CPU-FIXED-MOD2-STL-RETIREMENT"]
     }
   ],
   "tests": [
@@ -5164,6 +5297,94 @@
       "path": "tests/unit/cpu/input/test_collect_sxm.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_sxm"},
       "requirement_ids": ["REQ-PROJECT-OP-INPUT-SXM-RESOURCE"]
+    },
+    {
+      "id": "T-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/bus/adapter/test_word16_endpoint_contract.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT"]
+    },
+    {
+      "id": "T-PROJECT-BUS-WORD16-TRANSACTION-CANCEL",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/bus/transaction/test_word16_transaction_cancel.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-BUS-WORD16-TRANSACTION-CANCEL"]
+    },
+    {
+      "id": "T-PROJECT-MEMORY-INSTRUCTION-TRANSACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_memory_instruction_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MEMORY-INSTRUCTION-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-MEMORY-ADDRESS-RESOLUTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_memory_address_resolution.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-MEMORY-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "T-PROJECT-CPU-MEMORY-LIFECYCLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_memory_lifecycle.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-MEMORY-LIFECYCLE"]
+    },
+    {
+      "id": "T-COMMON-FIXED-MOD2-LD-STL-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_fixed_mod2_memory_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-FIXED-MOD2-LD-STL-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-FIXED-MOD2-LD-STL-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_fixed_mod2_memory_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-FIXED-MOD2-LD-STL-DECODE"]
+    },
+    {
+      "id": "T-COMMON-FIXED-MOD2-LD-EFFECT",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-FIXED-MOD2-LD-EFFECTS"]
+    },
+    {
+      "id": "T-COMMON-FIXED-MOD2-STL-EFFECT",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_stl_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-FIXED-MOD2-STL-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-FIXED-MOD2-LD-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ld_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-CPU-FIXED-MOD2-STL-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/store/test_cpu_stl_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT"]
     }
   ]
 }

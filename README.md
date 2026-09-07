@@ -98,8 +98,16 @@ Current progress:
   record is captured at `66ef384`. No opcode/catalog changes, memory effects,
   or memory/public-ABI behavior are claimed; those remain separate P2-W31B+
   evidence freezes.
-- The registry now records 125 evidence items, 181 requirements (149 implemented,
-  9 planned, 23 unresolved), and 138 tests (129 passing, 9 planned). Hosted
+- P2-W31B is now frozen as the next two-subphase work piece: first a copied
+  public DATA WORD16 endpoint and resumable root instruction transaction, then
+  fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+`. The plan keeps endpoint,
+  cancellation, commit-at-READY visibility, monotonic transaction IDs, and
+  resume-before-fetch explicit; LD/STL semantics stay in their family leaves.
+  Implementation has not started. Timing, repeatability, AR-boundary wrap,
+  device/MMR/program/IO, dual/parallel, and posted-write behavior remain out of
+  scope.
+- The registry now records 128 evidence items, 191 requirements (149 implemented,
+  19 planned, 23 unresolved), and 149 tests (129 passing, 20 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
