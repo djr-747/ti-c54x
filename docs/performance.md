@@ -211,6 +211,37 @@ consecutive captures in one set. Records are retained without averaging or
 discarding, and no TI machine-cycle, DSP, or silicon timing claim is made. Any
 next replacement requires a new set ID and a documented changed condition.
 
+#### SET4 replacement attempt (CPU1 warm-up with transient CPU weight)
+
+Each capture used CPU1 affinity, a five-second same-core warm-up with
+`taskset -c 1 sha256sum /dev/zero`, and transient
+`systemd-run --user --scope -p CPUWeight=10000` execution. The clean source
+commit was `cbc62d4e3d9e28c31fdae024426ed315abc83b94` for all six records.
+
+Set `P2-W31P-O2-CBC62D4-CPU1-WARM5-WEIGHT-SET4` (`portable-o2-no-lto`) used
+binary `3471856af42d10128572be44038e323d4e15b23321032c7b32f70548e4363a58`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T12:44:13.777100+00:00 | 28.304, 39.588, 39.640, 40.816 | 14.538, 4.405, 14.522, 7.121 | none |
+| 2026-09-07T13:07:28.167435+00:00 | 25.877, 37.505, 37.147, 37.878 | 8.868, 13.517, 2.420, 5.764 | none |
+| 2026-09-07T13:07:58.672466+00:00 | 33.030, 44.124, 46.112, 45.768 | 12.036, 4.896, 13.117, 44.213 | `ld-arp` 44.2131% > 15% |
+
+Set `P2-W31P-O3-LTO-CBC62D4-CPU1-WARM5-WEIGHT-SET4` (`portable-o3-lto`) used
+binary `2f36515659092aa944fede68b4333a485bcab1e75c78938168af9aeacbb1635e`:
+
+| Capture (UTC) | Fixed medians ns/instruction (`nop`, `ld-dp`, `ld-asm`, `ld-arp`) | Stability ranges (%) in same order | Checker failure |
+|---|---|---|---|
+| 2026-09-07T13:08:28.845269+00:00 | 19.371, 25.197, 25.859, 25.883 | 40.151, 3.118, 6.049, 4.753 | `nop` 40.1510% > 15% |
+| 2026-09-07T13:08:57.583995+00:00 | 23.665, 33.315, 31.357, 30.794 | 11.201, 19.838, 8.710, 7.333 | `ld-dp` 19.8382% > 15% |
+| 2026-09-07T13:09:27.692673+00:00 | 20.428, 27.285, 26.646, 27.143 | 10.001, 42.990, 7.759, 3.659 | `ld-dp` 42.9899% > 15% |
+
+All SET4 fixed-scenario medians are below 60 ns; both cohorts are
+`INCONCLUSIVE` solely on stability. The exact consecutive-three rule forbids
+cherry-picking individual captures. Records remain retained without averaging
+or discarding, with no TI machine-cycle, DSP, or silicon timing claim. Any next
+replacement requires a new set ID and a documented changed condition.
+
 W31B2 remains paused until this gate is met. Its first two immediate-READY memory
 forms, `LD *ARx+,dst` and `STL src,*ARx+`, must each receive dedicated benchmark
 scenarios and meet the same fixed-scenario target before ISA fanout resumes. The
