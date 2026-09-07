@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 136 immutable evidence records,
-207 requirements (176 `IMPLEMENTED`, 8 `PLANNED`, 23 `UNRESOLVED`), and 167 tests
-(159 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 139 immutable evidence records,
+212 requirements (176 `IMPLEMENTED`, 12 `PLANNED`, 24 `UNRESOLVED`), and 171 tests
+(159 `PASSING`, 12 `PLANNED`).
 
 ## Targets
 
@@ -180,6 +180,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-CMPR-P4-34` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CMPR, `4-34` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-CMPR-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5, `2-19`–`2-21` |
 | `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W33: CMPR CC,ARx vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-LDU-P4-79` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LDU, `4-79` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W34: fixed-MOD2 LDU vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -490,6 +493,11 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CMPR-AR-INPUT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CMPR-AR-INPUT` |
 | `REQ-COMMON-CMPR-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-CMPR-P4-34` | `T-COMMON-CMPR-EFFECTS` |
 | `REQ-PROJECT-CPU-CMPR-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-CMPR-RETIREMENT` |
+| `REQ-COMMON-LDU-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-LDU-P4-79`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-LDU-CATALOG` |
+| `REQ-COMMON-LDU-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-LDU-P4-79` | `T-COMMON-LDU-DECODE` |
+| `REQ-COMMON-LDU-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-LDU-P4-79`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-LDU-EFFECTS` |
+| `REQ-PROJECT-CPU-LDU-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LDU-RETIREMENT` |
+| `REQ-COMMON-LDU-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 
 ## Tests
 
@@ -666,6 +674,10 @@ exist in the repository.
 | `T-PROJECT-CMPR-AR-INPUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_auxiliary_registers.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_input_collect_auxiliary_registers"}` | `REQ-PROJECT-CMPR-AR-INPUT` |
 | `T-COMMON-CMPR-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/compare/test_cmpr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpr_compare"}` | `REQ-COMMON-CMPR-EFFECTS` |
 | `T-PROJECT-CPU-CMPR-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/compare/test_cpu_cmpr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_cmpr"}` | `REQ-PROJECT-CPU-CMPR-RETIREMENT` |
+| `T-COMMON-LDU-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_ldu_smem_metadata.c` | `null` | `REQ-COMMON-LDU-CATALOG` |
+| `T-COMMON-LDU-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_ldu_smem_decode.c` | `null` | `REQ-COMMON-LDU-DECODE` |
+| `T-COMMON-LDU-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/load/test_ldu_smem.c` | `null` | `REQ-COMMON-LDU-EFFECTS` |
+| `T-PROJECT-CPU-LDU-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ldu_smem.c` | `null` | `REQ-PROJECT-CPU-LDU-RETIREMENT` |
 
 ## Correction and tombstone policy
 

@@ -2196,6 +2196,52 @@
         "anchor": "P2-W33: CMPR CC,ARx vertical slice (planned)"
       },
       "assertion": "P2-W33 freezes CMPR as a bounded fit for a copied generic AUXILIARY_REGISTERS input snapshot containing all eight AR values and knownness, existing checked architectural-state reads, the STATUS_BIT_WRITE route targeting ST0 bit 12, and generic CPU retirement. The handler reports UNKNOWN_INPUT unless AR0 and selected ARx are known; no opcode-specific CPU branch, public API, memory, timing, interrupt/repeat, device, or environment seam is introduced."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LDU-P4-79",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "LDU",
+        "printed_page_start": "4-79",
+        "printed_page_end": "4-79"
+      },
+      "assertion": "The TI LDU entry defines opcode diagram 0001_001D_IAAAAAAA as a one-word form. LDU loads Smem into dst15:0, clears dst39:16, ignores SXM, and reports Status Bits None."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "LDU is absent from Table 2-28's explicitly forbidden repeatability list, and fixed MOD2 is not the separately listed long-offset or absolute single-data case. The source therefore does not establish LDU eligibility; this slice records repeatability as UNRESOLVED rather than inferring repeatability."
+    },
+    {
+      "id": "E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W34: fixed-MOD2 LDU vertical slice (planned)"
+      },
+      "assertion": "P2-W34 fits LDU into the existing fixed-MOD2 MEMORY effect/completion and generic CPU retirement paths. CMPT=0 and ARP=0 are inherited from the W31B project contract; old selected AR transfer precedes postincrement, and AR=0xffff remains rejected by the checked planner. No SXM read, new resource/effect/address kind, public ABI, opcode-specific CPU branch, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation is added."
     }
   ],
   "requirements": [
@@ -4432,6 +4478,63 @@
       "claim": "Retire CMPR through generic decode, AUXILIARY_REGISTERS input collection, STATUS_BIT_WRITE targeting ST0 bit 12, and sequential-PC paths with one instruction attempt and retirement. The CPU adds no opcode-specific branch, public API, memory, timing, interrupt/repeat, device, or environment behavior.",
       "evidence_ids": ["E-PROJECT-P2-W33-CMPR-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-CPU-CMPR-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-LDU-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word fixed-MOD2 LDU *ARx+,dst row with value 0x1290, mask 0xFEF8, D bit 8, ARF bits 2:0, 16 encodings, ACCUMULATOR_ARF layout, no input resources, and repeatability UNRESOLVED.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LDU-P4-79",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21"
+      ],
+      "test_ids": ["T-COMMON-LDU-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-LDU-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the one-word fixed-MOD2 LDU row through value-owned D and ARF fields, yielding the ACCUMULATOR_ARF layout and 16 encodings with no additional input resource.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LDU-P4-79"],
+      "test_ids": ["T-COMMON-LDU-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-LDU-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Produce a pure fixed-MOD2 LDU MEMORY effect and completion that transfers the old selected AR word into dst15:0, clears dst39:16, ignores SXM, and stages the postincrement without adding a resource, effect, or address kind.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LDU-P4-79",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-LDU-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-LDU-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LDU through generic decode, fixed-MOD2 MEMORY effect/completion, old-AR transfer, postincrement, and sequential-PC paths under CMPT=0/ARP=0 without an opcode-specific CPU branch or new public ABI, timing, IRQ/RPT, device/MMR, environment, diagnostic, or allocation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-LDU-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-LDU-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Resolve whether fixed-MOD2 LDU is eligible for single-repeat execution; the registered Table 2-28 boundary does not establish eligibility from LDU's absence and does not permit inference from the separately forbidden long-offset or absolute cases.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LDU-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -5809,6 +5912,38 @@
       "path": "tests/unit/cpu/isa/compare/test_cpu_cmpr.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_cmpr"},
       "requirement_ids": ["REQ-PROJECT-CPU-CMPR-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-LDU-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ldu_smem_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LDU-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-LDU-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ldu_smem_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LDU-DECODE"]
+    },
+    {
+      "id": "T-COMMON-LDU-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ldu_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-LDU-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-LDU-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ldu_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-LDU-RETIREMENT"]
     }
   ]
 }

@@ -8,6 +8,9 @@ target, while exact three-capture stability acceptance is pending/deferred.
 That hosted follow-up did not block P2-W32, which is implementation-complete
 with its local gates green. P2-W33 is implementation-complete with focused,
 review, sanitizer, quality, and final full-gate validation green.
+P2-W34 is the active evidence-fit slice for fixed-MOD2 LDU; implementation
+remains planned while W31P hosted stability and W31B immediate-READY benchmark
+captures remain open and nonblocking.
 W31B2 catalog/decode metadata, pure generic MEMORY effects, CPU end-to-end
 retirement, focused/full/sanitizer validation, and independent review are
 complete; its immediate-READY benchmark follow-up remains pending.
@@ -79,6 +82,7 @@ function-pointer dispatch tables.
 | P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | Implemented — focused/full/sanitizer gates and two independent reviews green; immediate-READY benchmark follow-up pending | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 registers and decodes `LD *ARx+,dst` plus `STL src,*ARx+`, implements their pure generic MEMORY effects, and proves CPU end-to-end retirement. Catalog coverage is 24 rows/1319 populated first words (4/24 reset-runnable); the immediate-READY benchmark follow-up remains pending. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
 | P2-W32 SSBX/RSBX status-bit vertical slice | Implemented — focused tests, independent review, quality gate, focused ASan/UBSan, and full standalone gate green | The TI SPRU172C SSBX/RSBX catalog/decode rows (`0xF5B0`/`0xF4B0`, mask `0xFDF0`), generalized private status-bit write/application seam, pure set/clear handlers, and generic CPU retirement are implemented. All encoded SBIT values, including ST1 reserved bit 10, change and mark known only the selected raw status bit. The slice is one word, has no input resources, is repeatability INELIGIBLE, and adds no memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI. Catalog coverage is 26 rows/1383 populated first words with 6/26 reset-runnable. |
 | P2-W33 CMPR CC,ARx status-compare vertical slice | Implemented — focused strict, seven focused ASan/UBSan, quality 186 Python, two independent no-P0/P1/P2 reviews, and final full `make test` green | The TI SPRU172C CMPR CC,ARx row (`0xF4A8`, mask `0xFCF8`) has 32 one-word encodings, copied generic AUXILIARY_REGISTERS input, pure unsigned EQ/LT/GT/NEQ comparison against AR0, TC result through STATUS_BIT_WRITE at ST0 bit 12, and generic CPU retirement. Full integration caught and corrected two stale UNKNOWN near-miss fixtures. The selected ARx and AR0 must be known or the handler returns UNKNOWN_INPUT; all other raw/known state is preserved. CMPR is explicitly nonrepeatable. No public API, memory, timing, IRQ/RPT, device, or opcode-specific CPU branch is added. Catalog coverage is 27 rows/1415 populated first words with 6/27 reset-runnable. |
+| P2-W34 fixed-MOD2 LDU vertical slice | Planned — evidence-fit activation; performance follow-ups remain open and nonblocking | Add the TI SPRU172C one-word `LDU *ARx+,dst` row derived from opcode diagram `0001_001D_IAAAAAAA`: value `0x1290`, mask `0xFEF8`, D bit 8, ARF bits 2:0, 16 encodings, `ACCUMULATOR_ARF` layout, no input resources, and repeatability `UNRESOLVED`. Reuse the W31B fixed-MOD2 MEMORY effect/completion and CPU contract: CMPT=0, ARP=0, old-AR transfer before postincrement, and AR=0xffff rejection by the checked planner. LDU loads Smem into dst15:0, clears dst39:16, ignores SXM, and reports no status-bit effects. No new resource/effect/address kind, public ABI, CPU opcode branch, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation is added. Expected post-implementation coverage is 28 rows/1431 populated first words with 6/28 reset-runnable. |
 | Hosted performance history | Implemented — append-only cohorts retained; exact W31P stability acceptance pending/deferred | Observer-off end-to-end CPU throughput with fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core; optimized cohorts remain below the 60 ns median target. |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -617,6 +621,33 @@ report rather than a CMPR workaround. Expected post-slice coverage is 27 rows,
 1415 populated first words, and 6/27 reset-runnable; those counts are now
 realized. W31P hosted stability and W31B2 immediate-READY benchmark follow-ups
 remain open.
+
+### P2-W34: fixed-MOD2 LDU vertical slice (planned)
+
+This is the active bounded memory ISA slice. Its evidence boundary is the
+registered TI `SPRU172C` LDU entry (printed p. 4-79), the registered standard
+indirect MOD2 rule in `SPRU131G` §5.5.3 (printed p. 5-13), and the registered
+Table 2-28 repeatability boundary (printed pp. 2-19–2-21). LDU is a one-word
+`*ARx+,dst` form derived from opcode diagram `0001_001D_IAAAAAAA`, with value
+`0x1290`, mask `0xFEF8`, `D` at bit 8, `ARF` at bits 2:0, 16 encodings, and
+the `ACCUMULATOR_ARF` layout. It has no input resources. Repeatability remains
+`UNRESOLVED`: absence from the forbidden list does not establish eligibility.
+
+The project fit reuses the W31B fixed-MOD2 MEMORY effect/completion and generic
+CPU retirement contract. CMPT=0 and ARP=0 are frozen; the old selected AR is
+used for transfer before its postincrement, and the checked planner continues
+to reject AR=0xffff. LDU loads Smem into destination bits 15:0, clears bits
+39:16, ignores SXM, and reports no status-bit effects. No new resource, effect,
+or address kind is introduced, and no public ABI, opcode-specific CPU branch,
+timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation behavior
+is claimed. The open W31P hosted stability and W31B immediate-READY benchmark
+captures remain nonblocking follow-ups.
+
+TDD ownership is split across catalog, decode, pure LDU MEMORY
+effect/completion, and generic CPU retirement tests under mirrored paths. Any
+need for an SXM read, a new memory/address seam, or a repeatability decision is
+a GAP report rather than an LDU workaround. Expected post-implementation
+coverage is 28 rows, 1431 populated first words, and 6/28 reset-runnable.
 
 ### P2-W16: NOP-seeded opcode architecture
 
