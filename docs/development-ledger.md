@@ -5037,3 +5037,47 @@ rewritten after publication.
   policy, device/MMR behavior, knob, environment read, logging, diagnostic
   fanout, allocator, mutable global, or emulator dependency was added.
   Selection of the next ISA slice remains evidence-first.
+
+## 2026-09-08 — P2-W36 fixed-MOD2 immediate-store evidence activation
+
+- State: evidence and ownership activation landed as
+  `38ea7bb6bc906a36bf1ff3c280742958b746c852`. P2-W36 is the active
+  bounded ISA slice. P2-W31P hosted stability and the W31B immediate-READY
+  benchmark follow-ups remain open and nonblocking.
+- TI `SPRU172C` Store T/TRN/immediate printed pp. 4-166–4-167 defines the
+  two-word `ST #lk,Smem` syntax with first-word diagram
+  `0111_0110_IAAAAAAA`, raw 16-bit `lk` in word 1, no status-bit effect, and
+  a memory write of that immediate. Composed with the registered standard
+  indirect MOD2 rule, the selected row is `0x7690/0xFFF8`: bit 8 is fixed,
+  ARF occupies bits 2:0, and exactly eight first words are admitted.
+- Four planned contracts separate catalog registration, a private two-field
+  `ARF_EXTENSION16` layout, a pure generic MEMORY WRITE effect, and generic CPU
+  retirement. Existing extension fetch and width-aware PC staging supply the
+  two-word instruction; W31B supplies old-AR addressing, postincrement after
+  READY, WAIT resume without refetch, FAULT rollback, CMPT=0/ARP=0 validation,
+  and checked AR=0xffff rejection. The store uses `write_value_word=lk` and
+  `complete=NULL`, with no input resource or new CPU/effect/address seam.
+- Repeatability remains explicitly UNRESOLVED. Immediate ST is absent from
+  Table 2-28, but absence from its negative list is not positive eligibility
+  evidence; the separately forbidden long-offset and absolute forms do not
+  decide this fixed-MOD2 form.
+- Candidate review retained `LD Smem,DP/ASM` as a later strict fit. `ST T`
+  needs a currently absent T input resource; STH needs saturation/OVM/guard
+  policy; and the audited ABS, NEG, RND, SAT, NORM, SFTA, ADD, SUB, and control
+  forms need shared OVM/OV/T, composite-effect, PC, SP, IRQ, or timing seams.
+  Those gaps were not hidden behind family-local behavior.
+- Expected completed coverage is 30 catalog rows and 1,447 populated first
+  words, with reset-runnable coverage unchanged at 6/30. Activation accounting
+  is 145 evidence records; 222 requirements (184 IMPLEMENTED, 12 PLANNED,
+  26 UNRESOLVED); and 179 tests (167 PASSING, 12 PLANNED).
+- Validation: the evidence checker passed with 2 targets, 7 sources, 222
+  requirements, and 179 tests. `make quality-test` passed all 186 Python tests
+  plus evidence, knob, source-boundary, build-manifest, and observer-disabled
+  artifact checks; `git diff --check` passed. The current 518-line
+  operand-layout owner emitted its reviewed size warning; W36 requires another
+  explicit no-split decision after adding the cohesive two-field descriptor.
+- No production, generated, or executable-test file changed. No public ABI,
+  CPU opcode branch, new resource/effect/address kind, timing or machine-cycle
+  claim, IRQ/RPT behavior, device/MMR policy, knob, environment read,
+  diagnostic path, allocator, mutable global, or emulator dependency was
+  added. TDD begins with owner-local RED tests.
