@@ -22,14 +22,17 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover 24 declarative opcode rows:
+- Production decode and CPU execution now cover 27 declarative opcode rows:
   evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
-  `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, `SFTC`, and `EXP`. The logical
+  `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, `SFTC`, `EXP`, `SSBX`, `RSBX`,
+  and `CMPR`. The logical
   families add 384
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
   preserve C and all other status. Six two-word immediate AND/OR/XOR forms now
-  add 204 populated first-word encodings, for 1287 total; that is a
+  add 204 populated first-word encodings; fixed-MOD2 `LD`/`STL`, SSBX/RSBX,
+  and CMPR bring the current catalog to 1415 populated first-word encodings;
+  that is a
   lookup-population count, not an instruction count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are covered by the standalone
@@ -103,9 +106,9 @@ Current progress:
   visibility, pure MOD2 address resolution, persistent instruction work, and
   CPU resume-before-fetch. Observer-disabled builds compile the new trace sites
   out; focused sanitizer checks, independent review, and the full standalone
-  local gate are green. W31B2 is implemented and W33 is now the active next ISA
-  slice; fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+` use the proven generic
-  memory path.
+  local gate are green. W31B2 and W33 are implemented; the next ISA slice
+  remains evidence-first. Fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+` use the
+  proven generic memory path.
   Timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel,
   and posted writes remain out of scope.
 - P2-W31B2 registers the fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+`
@@ -155,9 +158,10 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. P2-W33 is implementation-complete
-  while the P2-W31P hosted stability and W31B2 immediate-READY benchmark
-  follow-ups remain open. Emulator integration remains deferred.
+- Speculative foundation expansion is frozen. P2-W33 is implementation-complete;
+  the next ISA slice remains evidence-first while the P2-W31P hosted stability
+  and W31B2 immediate-READY benchmark follow-ups remain open. Emulator
+  integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.
