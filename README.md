@@ -125,14 +125,17 @@ Current progress:
   memory, timing, RPT/IRQ, knob, environment, diagnostics, or public ABI
   behavior was added. Catalog coverage is 26 rows and 1383 populated first
   words, with 6/26 reset-runnable.
-- P2-W33 activates the bounded `CMPR CC,ARx` slice: value `0xF4A8`, mask
+- P2-W33 implements the bounded `CMPR CC,ARx` slice: value `0xF4A8`, mask
   `0xFCF8`, 32 one-word encodings, unsigned EQ/LT/GT/NEQ comparison against
   AR0, and TC-only result publication through the existing status-bit route.
   The copied generic AUXILIARY_REGISTERS input includes all eight AR values and
   knownness; unknown AR0 or selected ARx yields UNKNOWN_INPUT. CMPR is
   explicitly nonrepeatable. No public API, memory, timing, IRQ/RPT, device, or
-  opcode-specific CPU branch is added. Expected coverage is 27 rows/1415
-  populated words with 6/27 reset-runnable.
+  opcode-specific CPU branch is added. Focused strict tests, seven focused
+  ASan/UBSan runs, the quality 186-Python gate, two independent no-P0/P1/P2
+  reviews, and the final full `make test` are green; full integration caught and
+  corrected two stale UNKNOWN near-miss fixtures. Catalog coverage is 27 rows/
+  1415 populated words with 6/27 reset-runnable.
 - P2-W31P remains open as the performance architecture freeze. It replaces
   repeated hot-path metadata/layout validation with one catalog-derived per-ID
   binding, one private value-owned trusted execution packet, one
@@ -142,8 +145,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 136 evidence items, 207 requirements (171 implemented,
-  13 planned, 23 unresolved), and 167 tests (154 passing, 13 planned). Hosted
+- The registry now records 136 evidence items, 207 requirements (176 implemented,
+  8 planned, 23 unresolved), and 167 tests (159 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -152,9 +155,9 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. P2-W33 is the active evidence-
-  first slice while the P2-W31P hosted stability and W31B2 immediate-READY
-  benchmark follow-ups remain open. Emulator integration remains deferred.
+- Speculative foundation expansion is frozen. P2-W33 is implementation-complete
+  while the P2-W31P hosted stability and W31B2 immediate-READY benchmark
+  follow-ups remain open. Emulator integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields
   are not a raw snapshot or persistence ABI, and no stable persistence guarantee
   is made.

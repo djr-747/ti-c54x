@@ -20,7 +20,7 @@ static ti_c54x_input_sources sources_for(
     const ti_c54x_accumulator_state *accumulators,
     const ti_c54x_status_register_state *status)
 {
-    ti_c54x_input_sources sources;
+    ti_c54x_input_sources sources = {0};
 
     sources.accumulators = accumulators;
     sources.status = status;

@@ -83,7 +83,7 @@ test_masks_do_not_accept_near_misses(void)
     const uint16_t near_misses[] = {
         UINT16_C(0xE800), /* unregistered short accumulator load */
         UINT16_C(0xED20), /* ASM fixed bit 5 differs */
-        UINT16_C(0xF4A8), /* ARP fixed bit 3 differs */
+        UINT16_C(0xF480), /* ARP fixed bit 5 differs */
         UINT16_C(0xE900), /* DP fixed bit differs */
     };
     size_t index;

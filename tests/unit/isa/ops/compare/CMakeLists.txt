@@ -1,1 +1,2 @@
 ti_c54x_add_unit_test(max_min_compare test_max_min.c)
+ti_c54x_add_unit_test(cmpr_compare test_cmpr.c)

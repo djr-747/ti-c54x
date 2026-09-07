@@ -19,6 +19,7 @@ from tools.isa.catalog.opcode_catalog_schema import OpcodeRow, parse_catalog
 
 LAYOUT_NONE = "TI_C54X_OPERAND_LAYOUT_NONE"
 LAYOUT_STATUS_BIT = "TI_C54X_OPERAND_LAYOUT_STATUS_BIT"
+LAYOUT_CONDITION_ARF = "TI_C54X_OPERAND_LAYOUT_CONDITION_ARF"
 LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
@@ -38,6 +39,9 @@ RESOURCES_ACCUMULATORS_STATUS_C = (
 )
 RESOURCES_ACCUMULATORS_STATUS_TC = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC"
+)
+RESOURCES_AUXILIARY_REGISTERS = (
+    "TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS"
 )
 
 
@@ -121,7 +125,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 26)
+        self.assertEqual(len(catalog_rows), 27)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -271,6 +275,16 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.operand_layout, layout)
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
+
+        cmpr = catalog_rows[-1]
+        self.assertEqual(cmpr.symbol, "CMPR_AR")
+        self.assertEqual(cmpr.handler, "cmpr")
+        self.assertEqual(cmpr.first_word_value, 0xF4A8)
+        self.assertEqual(cmpr.first_word_mask, 0xFCF8)
+        self.assertEqual(cmpr.program_word_count, 1)
+        self.assertEqual(cmpr.operand_layout, LAYOUT_CONDITION_ARF)
+        self.assertEqual(cmpr.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(cmpr.input_resources, RESOURCES_AUXILIARY_REGISTERS)
 
     def test_catalog_has_distinct_x_macro_consumers_and_generated_lookup(self) -> None:
         root = Path(__file__).resolve().parents[3]

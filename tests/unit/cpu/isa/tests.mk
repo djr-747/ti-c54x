@@ -3,3 +3,4 @@ include tests/unit/cpu/isa/logical/tests.mk
 include tests/unit/cpu/isa/load/tests.mk
 include tests/unit/cpu/isa/store/tests.mk
 include tests/unit/cpu/isa/status/tests.mk
+include tests/unit/cpu/isa/compare/tests.mk

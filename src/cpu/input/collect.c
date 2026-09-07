@@ -1,6 +1,6 @@
 /* Module contract
- * Owns: transactional collection of catalog-declared accumulator and status C,
- * TC, or SXM resources into a copied opcode input snapshot.
+ * Owns: transactional collection of catalog-declared accumulator, auxiliary,
+ * and status C, TC, or SXM resources into a copied opcode input snapshot.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, sequencing,
  * timing, buses, diagnostics, allocation, or global state.
  */
@@ -102,6 +102,30 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
         staged.status_sxm = (uint8_t)sxm_result.raw_value;
         staged.status_sxm_known =
             sxm_result.status == TI_C54X_STATUS_REGISTER_OK;
+    }
+
+    if ((resources & TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        uint8_t index;
+
+        if (sources == NULL || sources->arch_state == NULL) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        for (index = 0U; index < UINT8_C(8); ++index) {
+            uint16_t raw_value = 0U;
+            const ti_c54x_arch_state_status status =
+                ti_c54x_arch_state_read_ar(sources->arch_state, index,
+                                            &raw_value);
+
+            if (status == TI_C54X_ARCH_STATE_OK) {
+                staged.auxiliary_registers_raw16[index] = raw_value;
+                staged.auxiliary_registers_known_mask = (uint8_t)(
+                    staged.auxiliary_registers_known_mask |
+                    (uint8_t)(UINT8_C(1) << index));
+            } else if (status != TI_C54X_ARCH_STATE_UNKNOWN) {
+                return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+            }
+        }
     }
 
     *output = staged;

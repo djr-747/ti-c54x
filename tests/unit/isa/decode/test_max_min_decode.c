@@ -81,7 +81,7 @@ int main(void)
 
     {
         const uint16_t invalid[] = {UINT16_C(0xF406), UINT16_C(0xF4C6),
-                                    UINT16_C(0xF4A8), UINT16_C(0xF487) ^
+                                    UINT16_C(0xF4C8), UINT16_C(0xF487) ^
                                         UINT16_C(0x0200)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==

@@ -3,9 +3,9 @@
 
 /* Module contract
  * Owns: transactional collection of the catalog-declared input resources
- * needed by one opcode handler into a copied input snapshot. Status C, TC, and
- * SXM are independently selectable resources; unrequested sources are not
- * read.
+ * needed by one opcode handler into a copied input snapshot. Status C, TC, SXM,
+ * and auxiliary registers are independently selectable resources; unrequested
+ * sources are not read.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, mutation,
  * timing, buses, diagnostics, allocation, or global state. Source pointers
  * are borrowed for one call and the caller owns the output snapshot.
@@ -14,11 +14,13 @@
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/ops/op_input.h"
 #include "state/accumulator/accumulator.h"
+#include "state/arch_state.h"
 #include "state/status/registers.h"
 
 typedef struct ti_c54x_input_sources {
     const ti_c54x_accumulator_state *accumulators;
     const ti_c54x_status_register_state *status;
+    const ti_c54x_arch_state *arch_state;
 } ti_c54x_input_sources;
 
 typedef enum ti_c54x_input_collect_status {

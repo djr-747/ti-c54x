@@ -4385,7 +4385,7 @@
     },
     {
       "id": "REQ-COMMON-CMPR-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -4395,7 +4395,7 @@
     },
     {
       "id": "REQ-COMMON-CMPR-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4405,7 +4405,7 @@
     },
     {
       "id": "REQ-PROJECT-CMPR-AR-INPUT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/input/",
@@ -4415,7 +4415,7 @@
     },
     {
       "id": "REQ-COMMON-CMPR-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/compare/",
@@ -4425,7 +4425,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-CMPR-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -5772,42 +5772,42 @@
     },
     {
       "id": "T-COMMON-CMPR-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_cmpr_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cmpr_metadata"},
       "requirement_ids": ["REQ-COMMON-CMPR-CATALOG"]
     },
     {
       "id": "T-COMMON-CMPR-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_cmpr_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cmpr_decode"},
       "requirement_ids": ["REQ-COMMON-CMPR-DECODE"]
     },
     {
       "id": "T-PROJECT-CMPR-AR-INPUT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/input/test_collect_auxiliary_registers.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_auxiliary_registers"},
       "requirement_ids": ["REQ-PROJECT-CMPR-AR-INPUT"]
     },
     {
       "id": "T-COMMON-CMPR-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/compare/test_cmpr.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cmpr_compare"},
       "requirement_ids": ["REQ-COMMON-CMPR-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-CMPR-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/compare/test_cpu_cmpr.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_cmpr"},
       "requirement_ids": ["REQ-PROJECT-CPU-CMPR-RETIREMENT"]
     }
   ]

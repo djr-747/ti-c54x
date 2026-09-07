@@ -20,7 +20,7 @@ static ti_c54x_input_sources sources_for(
     const ti_c54x_accumulator_state *accumulators,
     const ti_c54x_status_register_state *status)
 {
-    ti_c54x_input_sources sources;
+    ti_c54x_input_sources sources = {0};
 
     sources.accumulators = accumulators;
     sources.status = status;
@@ -29,7 +29,7 @@ static ti_c54x_input_sources sources_for(
 
 static ti_c54x_op_input_snapshot sentinel(void)
 {
-    ti_c54x_op_input_snapshot output;
+    ti_c54x_op_input_snapshot output = {0};
 
     output.accumulator_a_raw40 = UINT64_C(0x123456789A);
     output.accumulator_b_raw40 = UINT64_C(0x0ABCDEFFF0);

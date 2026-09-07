@@ -43,6 +43,7 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K,
     TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK,
     TI_C54X_OPERAND_LAYOUT_STATUS_BIT,
+    TI_C54X_OPERAND_LAYOUT_CONDITION_ARF,
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_DP,
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ASM,
     TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP,
@@ -69,6 +70,8 @@ typedef uint8_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_TC ((ti_c54x_input_resource_mask)4U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_SXM ((ti_c54x_input_resource_mask)8U)
+#define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS \
+    ((ti_c54x_input_resource_mask)16U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
@@ -79,7 +82,8 @@ typedef uint8_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_TC | \
-                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM))
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;
