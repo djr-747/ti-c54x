@@ -66,7 +66,7 @@ function-pointer dispatch tables.
 | P2-W28B ROLTC/SFTC vertical slice | Implemented — targeted checks, independent review, and full local `make test` green; clean performance record captured at `7164ace` (remote CI green) | Register two one-word TC-aware accumulator families through the existing ACCUMULATOR_SOURCE layout and generic retirement path; catalog now has 15 rows and 1081 populated first-word encodings, with reset-runnable coverage still 4/15. No `cpu.c` change, public API, memory, RPT/IRQ, timing, knob, diagnostic, or environment change; repeatability remains unresolved. A minimal catalog-generator schema gap for TC resource tokens was closed centrally. |
 | P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
-| P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, and the full local gate are green; remote CI pending | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
+| P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, catalog-sixteen, and catalog-twenty-two clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -249,10 +249,10 @@ assigned to post-push CI.
 
 This immutable `(planned)` heading remains the FIT/ownership anchor for the
 memory-oriented slice. P2-W31A is implemented: focused strict and ASan/UBSan
-tests, two independent reviews, and the full standalone local gate are green.
-Remote CI remains pending until the orchestrator commits and pushes. This work
-piece closes only three prerequisites; it makes no opcode, catalog, or memory
-ABI claim.
+tests, two independent reviews, the full standalone local gate, and remote CI
+(`34069533137`) are green. The clean same-catalog-22 performance record is
+captured at `66ef384`. This work piece closes only three prerequisites; it makes
+no opcode, catalog, or memory ABI claim.
 
 The first prerequisite is canonical CPU state composition. `src/cpu/` must own
 one embedded `ti_c54x_arch_state`, which is the sole owner of PC, status, AR0–AR7,
@@ -1590,7 +1590,7 @@ because history was appended) normalized to NOP 66.571 ns/15.022 MIPS,
 mixed 86.448/11.568. It corroborates host noise only, not a history baseline or
 performance claim.
 
-The latest clean catalog-sixteen record at `fedbd6a` measures 124.251 ns/8.048
+The clean catalog-sixteen record at `fedbd6a` measures 124.251 ns/8.048
 MIPS for NOP, 205.652 ns/4.863 MIPS for `ld-dp`, 209.142 ns/4.781 MIPS for
 `ld-asm`, 222.837 ns/4.488 MIPS for `ld-arp`, and 206.376 ns/4.846 MIPS for
 `mixed-current`, with reset-runnable coverage of four of 16 catalog rows. CI is
@@ -1608,6 +1608,23 @@ ns/14.586 MIPS, `ld-dp` 101.587/9.844, `ld-asm` 104.687/9.552, `ld-arp`
 between the captures. The clean catalog-sixteen deltas therefore remain hosted
 noise/trend observations and do not establish a confirmed implementation,
 architectural, or silicon regression.
+
+The prior clean catalog-twenty-two record at `9c22a33` measured 131.883 ns / 7.582
+MIPS (`nop`), 233.294 / 4.286 (`ld-dp`), 240.304 / 4.161 (`ld-asm`), 206.770 /
+4.836 (`ld-arp`), and 109.273 / 9.151 (`mixed-current`), with reset-runnable
+coverage of 4/22. The clean same-catalog-22 record at `66ef384` has binary hash
+prefix `b0c7d039`, the same semantic hashes, and measures 111.770 / 8.947,
+116.084 / 8.614, 117.836 / 8.486, 159.492 / 6.270, and 170.433 / 5.867 in
+that scenario order. Relative to `9c22a33`, median-cost deltas are -15.25%,
+-50.24%, -50.96%, -22.87%, and +55.97%; current spreads are 42.40%, 29.18%,
+5.14%, 49.67%, and 48.57%. An identical-binary diagnostic measured 76.978,
+119.232, 158.135, 173.612, and 108.285 ns. The unchanged catalog/workloads,
+recorded spreads, and same-binary variation establish no confirmed regression or
+improvement. The architectural change adds canonical state ownership and one
+additional normally-not-taken SXM resource-mask check in the generic collector;
+it is not DSP timing.
+Remote CI is green at
+<https://github.com/djr-747/ti-c54x/actions/runs/34069533137>.
 
 The current `mixed-current` benchmark stream contains only one-word forms. Before
 the first multiword instruction is added, its per-window retirement count and

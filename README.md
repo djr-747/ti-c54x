@@ -93,10 +93,11 @@ Current progress:
   and timing remain unresolved, and any new shared seam is a reported GAP.
 - P2-W31A implements the canonical CPU-owned `ti_c54x_arch_state`, private
   checked SXM read/knownness, and generic `STATUS_SXM` input collection. Focused
-  strict and sanitizer tests, two independent reviews, and the full standalone
-  local gate are green; remote CI follows the implementation commit. No
-  opcode/catalog changes, memory effects, or memory/public-ABI behavior are
-  claimed; those remain separate P2-W31B+ evidence freezes.
+  strict and sanitizer tests, two independent reviews, the full standalone
+  local gate, and remote CI are green; its clean same-catalog-22 performance
+  record is captured at `66ef384`. No opcode/catalog changes, memory effects,
+  or memory/public-ABI behavior are claimed; those remain separate P2-W31B+
+  evidence freezes.
 - The registry now records 125 evidence items, 181 requirements (149 implemented,
   9 planned, 23 unresolved), and 138 tests (129 passing, 9 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
@@ -122,14 +123,16 @@ Current progress:
   `mixed-current`. The catalog-six `a14d331` record retains 15.26 MIPS for NOP;
   the catalog-seven `7cad341`, catalog-nine `705ac7b`, catalog-ten `cd88596`,
   catalog-thirteen `ef87c94`, catalog-fifteen `7164ace`, and catalog-sixteen
-  `fedbd6a` records remain as prior cohorts. The latest clean catalog-twenty-two
-  record at `9c22a33` measures NOP 131.883 ns / 7.582 MIPS, LD-DP 233.294 ns /
+  `fedbd6a` records remain as prior cohorts. The prior clean catalog-twenty-two
+  record at `9c22a33` measured NOP 131.883 ns / 7.582 MIPS, LD-DP 233.294 ns /
   4.286 MIPS, LD-ASM 240.304 ns / 4.161 MIPS, LD-ARP 206.770 ns / 4.836 MIPS,
   and mixed-current 109.273 ns / 9.151 MIPS with reset-runnable coverage of
-  4/22. The six new immediate rows are not benchmark-exercised because the
-  public API has no initialized-accumulator bootstrap; an identical-binary
-  diagnostic (80.803 ns NOP, 114.568–127.581 ns fixed LD, 108.974 ns mixed)
-  exposes host noise, so no confirmed regression claim is made. See [hosted
+  4/22. The current clean same-catalog record at `66ef384` measures NOP 111.770
+  ns / 8.947 MIPS, LD-DP 116.084 ns / 8.614 MIPS, LD-ASM 117.836 ns / 8.486
+  MIPS, LD-ARP 159.492 ns / 6.270 MIPS, and mixed-current 170.433 ns / 5.867
+  MIPS, with the same semantic hashes and binary hash prefix `b0c7d039`.
+  The workloads/catalog are unchanged; recorded spreads and an identical-binary
+  diagnostic show no confirmed regression or improvement. See [hosted
   performance history](docs/performance.md).
 
 See the [implementation plan](docs/implementation-plan.md) and

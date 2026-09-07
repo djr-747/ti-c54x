@@ -211,8 +211,8 @@ without a code or binary change. The clean catalog-sixteen deltas therefore do
 not establish a confirmed regression; they remain hosted noise/trend
 observations and make no architectural or silicon timing claim.
 
-The latest clean catalog-twenty-two record at `9c22a33` is the current hosted
-cohort. CI is green at
+The prior clean catalog-twenty-two record at `9c22a33` remains a hosted cohort.
+CI is green at
 <https://github.com/djr-747/ti-c54x/actions/runs/34067048536>.
 
 | Scenario | Median cost | Throughput |
@@ -234,6 +234,32 @@ dirty only because history was appended) measured NOP 80.803 ns, LD-DP
 The host spread and unchanged workloads mean this cohort establishes no
 confirmed regression or improvement; it is a hosted throughput observation,
 not a DSP or silicon timing claim.
+
+The clean same-catalog-twenty-two record at `66ef384` is the current hosted
+cohort. Full local and remote CI are green at
+<https://github.com/djr-747/ti-c54x/actions/runs/34069533137>; its binary hash
+starts `b0c7d039`, and its scenario semantic hashes match the prior record.
+
+| Scenario | Median cost | Throughput |
+|---|---:|---:|
+| `nop` | 111.770 ns | 8.947 MIPS |
+| `ld-dp` | 116.084 ns | 8.614 MIPS |
+| `ld-asm` | 117.836 ns | 8.486 MIPS |
+| `ld-arp` | 159.492 ns | 6.270 MIPS |
+| `mixed-current` | 170.433 ns | 5.867 MIPS |
+
+Reset-runnable coverage remains four of 22, and the benchmark workloads and
+catalog are unchanged. Relative to the prior clean `9c22a33` record, the
+same-catalog deltas in median cost are -15.25% (`nop`), -50.24% (`ld-dp`),
+-50.96% (`ld-asm`), -22.87% (`ld-arp`), and +55.97% (`mixed-current`). The
+current within-capture spreads are 42.40%, 29.18%, 5.14%, 49.67%, and 48.57%,
+respectively (the prior record's corresponding spreads were 50.40%, 10.02%,
+6.80%, 69.92%, and 14.95%). An identical-binary diagnostic measured 76.978,
+119.232, 158.135, 173.612, and 108.285 ns in that scenario order. These
+spreads and same-binary variation establish no confirmed regression or
+improvement. The architectural change adds canonical state ownership and one
+additional normally-not-taken SXM resource-mask check in the generic collector;
+it does not change the workloads or catalog and is not a DSP-timing result.
 
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
