@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 #include "../request/word16_request.h"
-#include <ti_c54x/bus.h>
+#include <ti_c54x/bus_endpoint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,20 +44,6 @@ typedef enum ti_c54x_bus_word16_transaction_state {
     TI_C54X_BUS_WORD16_TRANSACTION_STATE_COMPLETE = 4,
     TI_C54X_BUS_WORD16_TRANSACTION_STATE_FAULT = 5
 } ti_c54x_bus_word16_transaction_state;
-
-typedef enum ti_c54x_bus_word16_transaction_observation_kind {
-    TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_INVALID = 0,
-    TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT = 1,
-    TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY = 2,
-    TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT = 3
-} ti_c54x_bus_word16_transaction_observation_kind;
-
-typedef struct ti_c54x_bus_word16_transaction_observation {
-    uint64_t transaction_id;
-    ti_c54x_bus_word16_transaction_observation_kind kind;
-    uint16_t read_value_word;
-    ti_c54x_bus_status bus_status;
-} ti_c54x_bus_word16_transaction_observation;
 
 typedef struct ti_c54x_bus_word16_transaction {
     ti_c54x_bus_word16_transaction_state state;
@@ -95,7 +81,13 @@ ti_c54x_bus_word16_transaction_begin(
 ti_c54x_bus_word16_transaction_status
 ti_c54x_bus_word16_transaction_poll(
     ti_c54x_bus_word16_transaction *transaction,
-    const ti_c54x_bus_word16_transaction_observation *observation);
+    const ti_c54x_bus_word16_observation *observation);
+
+/* Cancel one matching active transaction and clear its copied request. */
+ti_c54x_bus_word16_transaction_status
+ti_c54x_bus_word16_transaction_cancel(
+    ti_c54x_bus_word16_transaction *transaction,
+    uint64_t transaction_id);
 
 /* Publish one staged completion, or WAIT while an issue remains in flight. */
 ti_c54x_bus_word16_transaction_completion_result

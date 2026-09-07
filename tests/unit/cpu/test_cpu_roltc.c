@@ -69,7 +69,7 @@ static void run_case(uint16_t word, uint64_t a, uint64_t b, uint8_t initial_tc,
     cpu_fixture fixture = {word, 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -136,7 +136,7 @@ static void run_unknown_selected(uint8_t source)
     cpu_fixture fixture = {word, 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -171,7 +171,7 @@ static void run_unknown_tc(void)
     cpu_fixture fixture = {UINT16_C(0xF492), 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -209,7 +209,7 @@ static void run_unselected_unknown(uint8_t source)
     cpu_fixture fixture = {word, 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -248,7 +248,7 @@ static void run_program_boundary(void)
     cpu_fixture fixture = {UINT16_C(0xF492), UINT32_C(0xFFFF)};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {UINT32_C(0xFFFF), {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;

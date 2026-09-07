@@ -51,7 +51,7 @@ check_zero_bundle(const ti_c54x_instruction_word_bundle *bundle)
 static void
 test_count_one_publishes_supplied_word_without_callback(void)
 {
-    const ti_c54x_bus bus = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    const ti_c54x_bus bus = {0};
     ti_c54x_instruction_extension_fetch_result result;
 
     result = ti_c54x_instruction_extension_fetch(
@@ -77,7 +77,9 @@ test_count_two_reads_exact_low_and_high_successors(void)
         extension_bus_fixture fixture = {
             TI_C54X_BUS_OK, UINT16_C(0xBEEF), {0U, 0U}, 0U, false};
         const ti_c54x_bus bus = {
-            &fixture, read_extension, NULL, NULL, NULL, NULL, NULL};
+            .context = &fixture,
+            .program_read_word = read_extension,
+        };
         ti_c54x_instruction_extension_fetch_result result;
 
         result = ti_c54x_instruction_extension_fetch(
@@ -99,8 +101,10 @@ test_count_two_rejects_address_overflow_before_io(void)
 {
     extension_bus_fixture fixture = {TI_C54X_BUS_OK, UINT16_C(0xBEEF),
                                       {0U, 0U}, 0U, false};
-    const ti_c54x_bus bus = {&fixture, read_extension, NULL, NULL, NULL, NULL,
-                             NULL};
+    const ti_c54x_bus bus = {
+        .context = &fixture,
+        .program_read_word = read_extension,
+    };
     ti_c54x_instruction_extension_fetch_result result;
 
     result = ti_c54x_instruction_extension_fetch(
@@ -118,8 +122,10 @@ test_invalid_counts_and_null_bus_do_not_io(void)
 {
     extension_bus_fixture fixture = {TI_C54X_BUS_OK, UINT16_C(0xBEEF),
                                       {0U, 0U}, 0U, false};
-    const ti_c54x_bus bus = {&fixture, read_extension, NULL, NULL, NULL, NULL,
-                             NULL};
+    const ti_c54x_bus bus = {
+        .context = &fixture,
+        .program_read_word = read_extension,
+    };
     const uint8_t invalid_counts[] = {0U, 3U, UINT8_MAX};
     size_t index;
 
@@ -153,7 +159,7 @@ test_invalid_counts_and_null_bus_do_not_io(void)
 static void
 test_missing_callback_is_bus_fault_and_failure_is_zero(void)
 {
-    const ti_c54x_bus bus = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    const ti_c54x_bus bus = {0};
     ti_c54x_instruction_extension_fetch_result result =
         ti_c54x_instruction_extension_fetch(
             &bus, UINT32_C(0x10042), UINT16_C(0xCAFE), UINT8_C(2));
@@ -175,8 +181,10 @@ test_callback_statuses_are_preserved_without_retry_or_partial_publish(void)
     for (index = 0U; index < sizeof(statuses) / sizeof(statuses[0]); ++index) {
         extension_bus_fixture fixture = {statuses[index], UINT16_C(0xBEEF),
                                           {0U, 0U}, 0U, true};
-        const ti_c54x_bus bus = {&fixture, read_extension, NULL, NULL, NULL,
-                                 NULL, NULL};
+        const ti_c54x_bus bus = {
+            .context = &fixture,
+            .program_read_word = read_extension,
+        };
         ti_c54x_instruction_extension_fetch_result result =
             ti_c54x_instruction_extension_fetch(
                 &bus, UINT32_C(0x10042), UINT16_C(0xCAFE), UINT8_C(2));

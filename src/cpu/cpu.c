@@ -14,104 +14,19 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "instruction_fetch.h"
-#include "input/collect.h"
-#include "isa/decode/opcode_decode.h"
-#include "isa/ops/op_effect.h"
-#include "isa/ops/opcode_dispatch.h"
-#include "sequencer/effect_transaction.h"
-#include "sequencer/program_pc_bridge.h"
+#include "memory/pending_work.h"
+#include "trace/emit.h"
 
-#if TI_C54X_ENABLE_OBSERVERS
-static void emit_trace(ti_c54x_cpu *cpu, ti_c54x_trace_kind kind)
+static ti_c54x_error
+memory_status_to_error(ti_c54x_memory_instruction_status status)
 {
-    const uint64_t event_mask = ti_c54x_trace_mask_for_kind(kind);
-    ti_c54x_trace_event event;
-
-    if (!TI_C54X_OBSERVE_ENABLED(&cpu->observer, event_mask)) {
-        return;
+    if (status == TI_C54X_MEMORY_INSTRUCTION_STATUS_CANCEL_FAILED) {
+        return TI_C54X_ERROR_BUS_CANCEL_FAILED;
     }
-
-    event.kind = kind;
-    event.pc_word = cpu->arch_state.pc_word;
-    event.opcode_word = cpu->last_fetched_word;
-    event.opcode_valid = cpu->last_fetch_valid;
-    event.instructions_attempted_total = cpu->instructions_attempted;
-    event.instructions_retired_total = cpu->instructions_retired;
-    ti_c54x_observer_emit(&cpu->observer, &event);
-}
-#else
-#define emit_trace(cpu, kind)                                                     \
-    do {                                                                          \
-        (void)(cpu);                                                              \
-        (void)(kind);                                                             \
-    } while (0)
-#endif
-
-static ti_c54x_run_result result_from_cpu(const ti_c54x_cpu *cpu,
-                                          ti_c54x_stop_reason reason,
-                                          ti_c54x_bus_status bus_status,
-                                          uint64_t instructions_attempted,
-                                          uint64_t instructions_retired)
-{
-    ti_c54x_run_result result;
-
-    result.reason = reason;
-    result.bus_status = bus_status;
-    result.pc_word = cpu->arch_state.pc_word;
-    result.opcode_word = cpu->last_fetched_word;
-    result.opcode_valid = cpu->last_fetch_valid;
-    result.instructions_attempted = instructions_attempted;
-    result.instructions_retired = instructions_retired;
-    return result;
-}
-
-static ti_c54x_run_result invalid_result(void)
-{
-    ti_c54x_run_result result;
-
-    result.reason = TI_C54X_STOP_INVALID_STATE;
-    result.bus_status = TI_C54X_BUS_NO_CALLBACK;
-    result.pc_word = 0U;
-    result.opcode_word = 0U;
-    result.opcode_valid = false;
-    result.instructions_attempted = 0U;
-    result.instructions_retired = 0U;
-    return result;
-}
-
-static ti_c54x_run_result
-stop_result(ti_c54x_cpu *cpu,
-            ti_c54x_stop_reason reason,
-            ti_c54x_bus_status bus_status,
-            uint64_t instructions_attempted,
-            uint64_t instructions_retired)
-{
-    ti_c54x_run_result result;
-
-    emit_trace(cpu, TI_C54X_TRACE_STOP);
-    result = result_from_cpu(cpu, reason, bus_status,
-                             instructions_attempted, instructions_retired);
-    cpu->execution_active = false;
-    return result;
-}
-
-static ti_c54x_stop_reason
-bridge_status_to_stop(ti_c54x_program_pc_bridge_status status)
-{
-    switch (status) {
-    case TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_CARRIER:
-        return TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS;
-    case TI_C54X_PROGRAM_PC_BRIDGE_UNRESOLVED_BOUNDARY:
-        return TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY;
-    case TI_C54X_PROGRAM_PC_BRIDGE_OK:
-    case TI_C54X_PROGRAM_PC_BRIDGE_INVALID_ARGUMENT:
-    case TI_C54X_PROGRAM_PC_BRIDGE_UNSUPPORTED_PROGRAM_WORD_COUNT:
-    case TI_C54X_PROGRAM_PC_BRIDGE_INVALID_EFFECT:
-    case TI_C54X_PROGRAM_PC_BRIDGE_STALE_SOURCE:
-    default:
-        return TI_C54X_STOP_INVALID_STATE;
-    }
+    return status == TI_C54X_MEMORY_INSTRUCTION_STATUS_OK ||
+                   status == TI_C54X_MEMORY_INSTRUCTION_STATUS_CANCELLED
+               ? TI_C54X_ERROR_OK
+               : TI_C54X_ERROR_INVALID_ARGUMENT;
 }
 
 size_t ti_c54x_cpu_size(void)
@@ -131,12 +46,19 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
                                 ti_c54x_cpu **out_cpu)
 {
     ti_c54x_cpu *cpu;
+    ti_c54x_bus_word16_adapter_status endpoint_status;
 
     if (out_cpu == NULL) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;
     }
     *out_cpu = NULL;
     if (storage == NULL || bus == NULL) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    endpoint_status = ti_c54x_cpu_memory_validate_endpoint(
+        &bus->data_endpoint);
+    if (endpoint_status == TI_C54X_BUS_WORD16_ADAPTER_STATUS_INVALID_ENDPOINT ||
+        endpoint_status == TI_C54X_BUS_WORD16_ADAPTER_STATUS_INVALID_ARGUMENT) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;
     }
     if (storage_size < sizeof(ti_c54x_cpu)) {
@@ -147,10 +69,9 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
     }
 
     cpu = (ti_c54x_cpu *)storage;
-    /* Initialization is deliberately a deterministic overwrite.  The caller
-     * may provide fresh, indeterminate storage, so no field is inspected
-     * before this memset.  Reinitializing an existing instance is permitted
-     * and releases no resources because the shell owns none. */
+    /* The caller owns the fresh/deinitialized-storage precondition.  The
+     * object is therefore safe to initialize without probing indeterminate
+     * bytes or trying to discover a live instance. */
     memset(cpu, 0, sizeof(*cpu));
     if (ti_c54x_arch_state_reset_common(&cpu->arch_state) !=
         TI_C54X_ARCH_STATE_OK) {
@@ -171,23 +92,48 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
     cpu->arch_state.pc_word = cpu->reset_pc_word;
     *out_cpu = cpu;
     cpu->execution_active = true;
-    emit_trace(cpu, TI_C54X_TRACE_RESET);
+    TI_C54X_CPU_EMIT_TRACE(cpu, TI_C54X_TRACE_RESET);
     cpu->execution_active = false;
     return TI_C54X_ERROR_OK;
 }
 
-void ti_c54x_cpu_deinit(ti_c54x_cpu *cpu)
+ti_c54x_error ti_c54x_cpu_deinit(ti_c54x_cpu *cpu)
 {
-    if (cpu == NULL || cpu->execution_active) {
-        return;
+    ti_c54x_error status;
+
+    if (cpu == NULL) {
+        return TI_C54X_ERROR_OK;
+    }
+    if (cpu->execution_active) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    cpu->execution_active = true;
+    status = memory_status_to_error(
+        ti_c54x_cpu_memory_reset_transaction(
+            &cpu->instruction_transaction, &cpu->bus.data_endpoint));
+    cpu->execution_active = false;
+    if (status != TI_C54X_ERROR_OK) {
+        return status;
     }
     memset(cpu, 0, sizeof(*cpu));
+    return TI_C54X_ERROR_OK;
 }
 
 ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
 {
+    ti_c54x_error root_status;
+
     if (cpu == NULL || cpu->execution_active) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+
+    cpu->execution_active = true;
+    root_status = memory_status_to_error(
+        ti_c54x_cpu_memory_reset_transaction(
+            &cpu->instruction_transaction, &cpu->bus.data_endpoint));
+    cpu->execution_active = false;
+    if (root_status != TI_C54X_ERROR_OK) {
+        return root_status;
     }
 
     if (ti_c54x_arch_state_reset_common(&cpu->arch_state) !=
@@ -208,7 +154,7 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
         return TI_C54X_ERROR_INVALID_ARGUMENT;
     }
     cpu->execution_active = true;
-    emit_trace(cpu, TI_C54X_TRACE_RESET);
+    TI_C54X_CPU_EMIT_TRACE(cpu, TI_C54X_TRACE_RESET);
     cpu->execution_active = false;
     return TI_C54X_ERROR_OK;
 }
@@ -259,166 +205,4 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
         state->accumulator_b_known = accumulators.b_known;
     }
     return TI_C54X_ERROR_OK;
-}
-
-ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu)
-{
-    return ti_c54x_cpu_run(cpu, 1U);
-}
-
-ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
-                                   uint64_t instruction_budget)
-{
-    uint64_t instructions_attempted = 0U;
-    uint64_t instructions_retired = 0U;
-
-    if (cpu == NULL || cpu->execution_active) {
-        return invalid_result();
-    }
-
-    if (instruction_budget == 0U) {
-        return result_from_cpu(cpu, TI_C54X_STOP_BUDGET_EXHAUSTED,
-                               TI_C54X_BUS_OK, 0U, 0U);
-    }
-
-    cpu->execution_active = true;
-    while (instructions_retired < instruction_budget) {
-        uint16_t opcode_word = 0U;
-        ti_c54x_bus_status bus_status;
-        ti_c54x_decode_result first_word_result;
-        ti_c54x_instruction_extension_fetch_result fetched;
-        ti_c54x_decoded_instruction instruction;
-        ti_c54x_instruction_completion_status completion_status;
-        ti_c54x_op_effect effect = {0};
-        ti_c54x_effect_transaction transaction;
-        ti_c54x_program_pc_bridge_effect pc_effect;
-        ti_c54x_program_pc_bridge_status bridge_status;
-        ti_c54x_op_status op_status;
-        ti_c54x_program_word_address candidate_pc;
-        ti_c54x_op_input_snapshot op_input = {0};
-
-        /* Per-call deltas start at zero and never exceed their cumulative
-         * counterparts, so this preflight also proves the local increments
-         * below are representable. */
-        if (cpu->instructions_attempted == UINT64_MAX ||
-            cpu->instructions_retired == UINT64_MAX) {
-            return stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        /* The attempt is accounted for immediately before the first bus read.
-         * This keeps failed reads observable as attempts without ever making
-         * them retirements. */
-        cpu->instructions_attempted++;
-        instructions_attempted++;
-        if (cpu->bus.program_read_word == NULL) {
-            bus_status = TI_C54X_BUS_NO_CALLBACK;
-        } else {
-            bus_status = cpu->bus.program_read_word(cpu->bus.context,
-                                                    cpu->arch_state.pc_word,
-                                                    &opcode_word);
-        }
-        if (bus_status != TI_C54X_BUS_OK) {
-            cpu->last_fetched_word = 0U;
-            cpu->last_fetch_valid = false;
-            return stop_result(cpu, TI_C54X_STOP_BUS_FAULT, bus_status,
-                               instructions_attempted,
-                               instructions_retired);
-        }
-
-        cpu->last_fetched_word = opcode_word;
-        cpu->last_fetch_valid = true;
-        emit_trace(cpu, TI_C54X_TRACE_FETCH);
-        first_word_result = ti_c54x_decode_first_word(opcode_word);
-        if (first_word_result.status != TI_C54X_DECODE_STATUS_OK) {
-            return stop_result(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        fetched = ti_c54x_instruction_extension_fetch(
-            &cpu->bus, cpu->arch_state.pc_word, opcode_word,
-            first_word_result.program_word_count);
-        if (fetched.status ==
-            TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_BUS_FAULT) {
-            return stop_result(cpu, TI_C54X_STOP_BUS_FAULT,
-                               fetched.bus_status, instructions_attempted,
-                               instructions_retired);
-        }
-        if (fetched.status != TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        completion_status = ti_c54x_decode_complete_instruction(
-            &first_word_result, &fetched.bundle, &instruction);
-        if (completion_status !=
-            TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        if (ti_c54x_input_collect(
-                instruction.input_resources,
-                &(ti_c54x_input_sources){&cpu->accumulators,
-                                         &cpu->arch_state.status},
-                &op_input) != TI_C54X_INPUT_COLLECT_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-        op_status = ti_c54x_dispatch_decoded_with_input_snapshot(
-            &instruction, &op_input, &effect);
-        if (op_status != TI_C54X_OP_STATUS_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        if (ti_c54x_effect_transaction_stage(
-                &effect, &cpu->arch_state.status, &cpu->accumulators,
-                &cpu->t_register, &transaction) !=
-            TI_C54X_EFFECT_TRANSACTION_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-        candidate_pc = cpu->arch_state.pc_word;
-
-        bridge_status = ti_c54x_program_pc_bridge_plan(
-            cpu->arch_state.pc_word, instruction.bundle.program_word_count,
-            &pc_effect);
-        if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-            return stop_result(cpu, bridge_status_to_stop(bridge_status),
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-        bridge_status = ti_c54x_program_pc_bridge_apply(&candidate_pc,
-                                                        &pc_effect);
-        if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-
-        if (ti_c54x_effect_transaction_commit(
-                &transaction, &cpu->arch_state.status, &cpu->accumulators,
-                &cpu->t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-        cpu->arch_state.pc_word = candidate_pc;
-
-        cpu->instructions_retired++;
-        instructions_retired++;
-    }
-
-    cpu->execution_active = false;
-    return result_from_cpu(cpu, TI_C54X_STOP_BUDGET_EXHAUSTED,
-                           TI_C54X_BUS_OK, instructions_attempted,
-                           instructions_retired);
 }

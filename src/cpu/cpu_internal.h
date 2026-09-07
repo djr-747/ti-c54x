@@ -4,7 +4,9 @@
 /* Module contract
  * Owns: the private representation used by src/cpu/cpu.c.  The embedded
  * arch_state is the sole live owner of the program counter and status
- * registers; reset_pc_word is only the copied configured reset carrier.
+ * registers; reset_pc_word is only the copied configured reset carrier.  The
+ * embedded root transaction is the sole owner of resumable data-memory work
+ * and its transaction-ID sequence.
  * Does not own: the storage containing this object, callback contexts, or bus
  * memory referenced by the copied public descriptors.
  */
@@ -15,6 +17,7 @@
 #include <ti_c54x/cpu.h>
 
 #include "../debug/observer.h"
+#include "../sequencer/instruction/memory_instruction_transaction.h"
 #include "../state/arch_state.h"
 #include "../state/accumulator/accumulator.h"
 #include "../state/temporary/t_register.h"
@@ -29,6 +32,7 @@ struct ti_c54x_cpu {
     ti_c54x_accumulator_state accumulators;
     ti_c54x_t_register_state t_register;
     ti_c54x_bus bus;
+    ti_c54x_memory_instruction_transaction instruction_transaction;
     ti_c54x_observer_state observer;
     bool execution_active;
 };

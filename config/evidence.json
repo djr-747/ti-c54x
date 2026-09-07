@@ -3385,7 +3385,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/adapter/",
@@ -4055,7 +4055,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "include/ti_c54x/",
@@ -4065,7 +4065,7 @@
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-TRANSACTION-CANCEL",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/bus/transaction/",
@@ -4075,17 +4075,17 @@
     },
     {
       "id": "REQ-PROJECT-MEMORY-INSTRUCTION-TRANSACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
       "claim": "Compose a persistent root instruction transaction that owns copied decode/input/effect values, a generic memory request, bus transaction ID, continuation result, and staged architectural candidates. It resumes WAIT before fetch, never refetches or reissues, invokes a static completion callback only at READY, and leaves all architectural state unchanged on WAIT, FAULT, or cancellation.",
       "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT"],
-      "test_ids": ["T-PROJECT-MEMORY-INSTRUCTION-TRANSACTION"]
+      "test_ids": ["T-PROJECT-MEMORY-INSTRUCTION-TRANSACTION", "T-PROJECT-MEMORY-INSTRUCTION-COMMIT"]
     },
     {
       "id": "REQ-PROJECT-MEMORY-ADDRESS-RESOLUTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/memory/",
@@ -4095,13 +4095,13 @@
     },
     {
       "id": "REQ-PROJECT-CPU-MEMORY-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
       "claim": "Copy the data endpoint during CPU initialization and orchestrate pending memory work before any new fetch. Initial dispatch that waits reports attempted=1 and retired=0; WAIT resume reports 0/0; READY resume reports 0/1. run(0) does not begin or poll, TI_C54X_STOP_BUS_WAIT is distinct, FETCH is observed once, BUS_WAIT has no terminal STOP observer, and a bus fault commits no PC, AR, accumulator, or status. Initialization requires fresh or deinitialized storage; deinit returns ti_c54x_error and preserves state when cancellation fails.",
       "evidence_ids": ["E-PROJECT-P2-W31B-TRANSACTIONAL-MEMORY-CONTRACT", "E-PROJECT-P2-W18-CPU-EXECUTION-CONTRACT"],
-      "test_ids": ["T-PROJECT-CPU-MEMORY-LIFECYCLE"]
+      "test_ids": ["T-PROJECT-CPU-MEMORY-LIFECYCLE", "T-PROJECT-CPU-MEMORY-PENDING"]
     },
     {
       "id": "REQ-COMMON-FIXED-MOD2-LD-STL-CATALOG",
@@ -4844,10 +4844,10 @@
     },
     {
       "id": "T-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/adapter/test_word16_exactly_once.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_exactly_once"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-EXTERNAL-EXACTLY-ONCE"]
     },
     {
@@ -5300,42 +5300,58 @@
     },
     {
       "id": "T-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/adapter/test_word16_endpoint_contract.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_endpoint_contract"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-ENDPOINT-CONTRACT"]
     },
     {
       "id": "T-PROJECT-BUS-WORD16-TRANSACTION-CANCEL",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/bus/transaction/test_word16_transaction_cancel.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bus_word16_transaction_cancel"},
       "requirement_ids": ["REQ-PROJECT-BUS-WORD16-TRANSACTION-CANCEL"]
     },
     {
       "id": "T-PROJECT-MEMORY-INSTRUCTION-TRANSACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
-      "path": "tests/unit/sequencer/instruction/test_memory_instruction_transaction.c",
-      "runner": null,
+      "path": "tests/unit/sequencer/instruction/test_memory_instruction_lifecycle.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_instruction_lifecycle"},
+      "requirement_ids": ["REQ-PROJECT-MEMORY-INSTRUCTION-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-MEMORY-INSTRUCTION-COMMIT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_memory_instruction_commit.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_instruction_commit"},
       "requirement_ids": ["REQ-PROJECT-MEMORY-INSTRUCTION-TRANSACTION"]
     },
     {
       "id": "T-PROJECT-MEMORY-ADDRESS-RESOLUTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/memory/test_memory_address_resolution.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_address_resolution"},
       "requirement_ids": ["REQ-PROJECT-MEMORY-ADDRESS-RESOLUTION"]
     },
     {
       "id": "T-PROJECT-CPU-MEMORY-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/memory/test_cpu_memory_lifecycle.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_memory_lifecycle"},
+      "requirement_ids": ["REQ-PROJECT-CPU-MEMORY-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-CPU-MEMORY-PENDING",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_memory_pending.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_memory_pending"},
       "requirement_ids": ["REQ-PROJECT-CPU-MEMORY-LIFECYCLE"]
     },
     {

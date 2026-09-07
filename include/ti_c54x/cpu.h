@@ -26,7 +26,8 @@ typedef enum ti_c54x_error {
     TI_C54X_ERROR_OK = 0,
     TI_C54X_ERROR_INVALID_ARGUMENT = 1,
     TI_C54X_ERROR_STORAGE_TOO_SMALL = 2,
-    TI_C54X_ERROR_STORAGE_MISALIGNED = 3
+    TI_C54X_ERROR_STORAGE_MISALIGNED = 3,
+    TI_C54X_ERROR_BUS_CANCEL_FAILED = 4
 } ti_c54x_error;
 
 typedef enum ti_c54x_stop_reason {
@@ -42,8 +43,11 @@ typedef enum ti_c54x_stop_reason {
     TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS = 6,
     /* A known instruction reached the unresolved common-word boundary. */
     TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY = 7,
-    /* A cumulative attempt or retirement counter could not be incremented. */
-    TI_C54X_STOP_COUNTER_OVERFLOW = 8
+    /* A cumulative instruction or transaction-ID counter could not be
+     * incremented. */
+    TI_C54X_STOP_COUNTER_OVERFLOW = 8,
+    /* A resumable data-memory work unit remains externally pending. */
+    TI_C54X_STOP_BUS_WAIT = 9
 } ti_c54x_stop_reason;
 
 typedef struct ti_c54x_config {
@@ -56,8 +60,8 @@ typedef struct ti_c54x_config {
  * opaque handle through out_cpu; callers must not cast storage to obtain it.
  * The caller retains ownership of storage, callback functions, callback
  * contexts, and memory reachable through those contexts; they must remain
- * valid through the CPU lifetime.  Reinitialization overwrites the instance
- * in place. */
+ * valid through the CPU lifetime.  Storage must be fresh or successfully
+ * deinitialized; live-instance overwrite is not a supported operation. */
 
 typedef struct ti_c54x_run_result {
     ti_c54x_stop_reason reason;
@@ -86,8 +90,10 @@ ti_c54x_error ti_c54x_cpu_init(void *storage,
 /* A non-NULL CPU handle passed to reset/inspect/step/run/deinit must have
  * come from a successful init and remain live.  NULL is accepted as a
  * deterministic invalid argument (or invalid stop result); deinit(NULL) is a
- * no-op.  Deinit invalidates the handle and does not release caller storage. */
-void ti_c54x_cpu_deinit(ti_c54x_cpu *cpu);
+ * successful no-op. Deinit invalidates the handle and does not release caller
+ * storage. A pending external transaction must cancel successfully; a failed
+ * cancellation preserves the live CPU for a later retry. */
+ti_c54x_error ti_c54x_cpu_deinit(ti_c54x_cpu *cpu);
 
 ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu);
 ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,

@@ -11,3 +11,5 @@ include src/sequencer/repeat/sources.mk
 include src/sequencer/status/sources.mk
 include src/sequencer/accumulator/sources.mk
 include src/sequencer/temporary/sources.mk
+include src/sequencer/memory/sources.mk
+include src/sequencer/instruction/sources.mk

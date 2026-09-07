@@ -27,8 +27,8 @@ bool ti_c54x_bus_word16_transaction_is_canonical(
 bool ti_c54x_bus_word16_transaction_request_is_valid(
     const ti_c54x_bus_word16_request *request);
 
-bool ti_c54x_bus_word16_transaction_observation_is_valid(
-    const ti_c54x_bus_word16_transaction_observation *observation);
+bool ti_c54x_bus_word16_observation_is_valid(
+    const ti_c54x_bus_word16_observation *observation);
 
 bool ti_c54x_bus_word16_transaction_fault_status_is_valid(
     ti_c54x_bus_status status);

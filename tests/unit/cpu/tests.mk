@@ -16,3 +16,4 @@ $(eval $(call ti_c54x_add_test,cpu_exp,cpu,test_cpu_exp.c))
 include tests/unit/cpu/input/tests.mk
 include tests/unit/cpu/isa/tests.mk
 include tests/unit/cpu/state/tests.mk
+include tests/unit/cpu/memory/tests.mk

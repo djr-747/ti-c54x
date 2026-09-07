@@ -78,7 +78,7 @@ static void test_prepare_begin_and_repeated_wait(void)
     const uint64_t id = UINT64_C(1);
     ti_c54x_bus_word16_request mutable_request = request;
     ti_c54x_bus_word16_transaction_issue_result issue;
-    ti_c54x_bus_word16_transaction_observation observation = {0};
+    ti_c54x_bus_word16_observation observation = {0};
     ti_c54x_bus_word16_transaction_completion_result completion;
     ti_c54x_bus_word16_transaction before;
     ti_c54x_bus_word16_transaction terminal_before;
@@ -108,7 +108,7 @@ static void test_prepare_begin_and_repeated_wait(void)
     check_transaction_fields(&transaction, &before);
 
     observation.transaction_id = id;
-    observation.kind = TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT;
+    observation.kind = TI_C54X_BUS_WORD16_OBSERVATION_WAIT;
     observation.bus_status = TI_C54X_BUS_OK;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
                            &transaction, &observation) ==
@@ -145,7 +145,7 @@ static void test_prepare_begin_and_repeated_wait(void)
              read_index < sizeof(read_values) / sizeof(read_values[0]);
              ++read_index) {
             observation.kind =
-                TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY;
+                TI_C54X_BUS_WORD16_OBSERVATION_READY;
             observation.read_value_word = read_values[read_index];
             TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
                                    &transaction, &observation) ==
@@ -193,14 +193,14 @@ static void test_prepare_begin_and_repeated_wait(void)
 
     {
         ti_c54x_bus_word16_transaction reused = {0};
-        ti_c54x_bus_word16_transaction_observation old_observation = {
+        ti_c54x_bus_word16_observation old_observation = {
             UINT64_C(1),
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT,
+            TI_C54X_BUS_WORD16_OBSERVATION_WAIT,
             UINT16_C(0),
             TI_C54X_BUS_OK};
-        ti_c54x_bus_word16_transaction_observation new_observation = {
+        ti_c54x_bus_word16_observation new_observation = {
             UINT64_C(2),
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+            TI_C54X_BUS_WORD16_OBSERVATION_READY,
             UINT16_C(0),
             TI_C54X_BUS_OK};
         const ti_c54x_bus_word16_request loop_request = make_request(
@@ -258,9 +258,9 @@ static void test_all_spaces_accesses_and_write_payload_canonicalization(void)
             ti_c54x_bus_word16_transaction transaction = {0};
             const ti_c54x_bus_word16_request request =
                 make_request(spaces[space_index], accesses[access_index]);
-            ti_c54x_bus_word16_transaction_observation observation = {
+            ti_c54x_bus_word16_observation observation = {
                 id,
-                TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+                TI_C54X_BUS_WORD16_OBSERVATION_READY,
                 UINT16_C(0),
                 TI_C54X_BUS_OK};
             ti_c54x_bus_word16_transaction_completion_result result;
@@ -298,9 +298,9 @@ static void test_write_ready_and_fault_paths(void)
         TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
     ti_c54x_bus_word16_transaction transaction = {0};
-    ti_c54x_bus_word16_transaction_observation observation = {
+    ti_c54x_bus_word16_observation observation = {
         UINT64_C(50),
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+        TI_C54X_BUS_WORD16_OBSERVATION_READY,
         UINT16_C(1),
         TI_C54X_BUS_OK};
     ti_c54x_bus_word16_transaction before;
@@ -335,7 +335,7 @@ static void test_write_ready_and_fault_paths(void)
     TI_C54X_TEST_CHECK(completion.bus_status == TI_C54X_BUS_OK);
 
     transaction = (ti_c54x_bus_word16_transaction){0};
-    observation.kind = TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT;
+    observation.kind = TI_C54X_BUS_WORD16_OBSERVATION_FAULT;
     observation.bus_status = TI_C54X_BUS_NO_CALLBACK;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_prepare(
                            &transaction, &write_request,
@@ -369,9 +369,9 @@ static void test_faults_and_reset_reuse_reject_old_observation(void)
         const ti_c54x_bus_word16_request request = make_request(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM,
             TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
-        ti_c54x_bus_word16_transaction_observation observation = {
+        ti_c54x_bus_word16_observation observation = {
             UINT64_C(100) + index,
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT,
+            TI_C54X_BUS_WORD16_OBSERVATION_FAULT,
             UINT16_C(0),
             faults[index]};
         ti_c54x_bus_word16_transaction_completion_result result;
@@ -413,14 +413,14 @@ static void test_faults_and_reset_reuse_reject_old_observation(void)
         const ti_c54x_bus_word16_request request = make_request(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
             TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
-        ti_c54x_bus_word16_transaction_observation old_observation = {
+        ti_c54x_bus_word16_observation old_observation = {
             UINT64_C(200),
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT,
+            TI_C54X_BUS_WORD16_OBSERVATION_WAIT,
             UINT16_C(0),
             TI_C54X_BUS_OK};
-        ti_c54x_bus_word16_transaction_observation ready_observation = {
+        ti_c54x_bus_word16_observation ready_observation = {
             UINT64_C(201),
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+            TI_C54X_BUS_WORD16_OBSERVATION_READY,
             UINT16_C(0xbeef),
             TI_C54X_BUS_OK};
 

@@ -39,8 +39,8 @@ static void check_transaction_fields(
 }
 
 static void check_observation_fields(
-    const ti_c54x_bus_word16_transaction_observation *actual,
-    const ti_c54x_bus_word16_transaction_observation *expected)
+    const ti_c54x_bus_word16_observation *actual,
+    const ti_c54x_bus_word16_observation *expected)
 {
     TI_C54X_TEST_CHECK(actual->transaction_id == expected->transaction_id);
     TI_C54X_TEST_CHECK(actual->kind == expected->kind);
@@ -73,7 +73,7 @@ static void check_zero_completion_result(
 
 static void test_validator_rejects_forged_shapes(void)
 {
-    ti_c54x_bus_word16_transaction_observation observation = {0};
+    ti_c54x_bus_word16_observation observation = {0};
     ti_c54x_bus_word16_request request = valid_request();
     TI_C54X_TEST_CHECK(
         ti_c54x_bus_word16_transaction_state_is_valid(
@@ -90,13 +90,13 @@ static void test_validator_rejects_forged_shapes(void)
         &request));
     TI_C54X_TEST_CHECK(!ti_c54x_bus_word16_transaction_request_is_valid(NULL));
     TI_C54X_TEST_CHECK(
-        ti_c54x_bus_word16_transaction_observation_is_valid(&observation) ==
+        ti_c54x_bus_word16_observation_is_valid(&observation) ==
         false);
     observation.kind =
-        (ti_c54x_bus_word16_transaction_observation_kind)UINT8_C(0x7f);
-    TI_C54X_TEST_CHECK(!ti_c54x_bus_word16_transaction_observation_is_valid(
+        (ti_c54x_bus_word16_observation_kind)UINT8_C(0x7f);
+    TI_C54X_TEST_CHECK(!ti_c54x_bus_word16_observation_is_valid(
         &observation));
-    TI_C54X_TEST_CHECK(!ti_c54x_bus_word16_transaction_observation_is_valid(
+    TI_C54X_TEST_CHECK(!ti_c54x_bus_word16_observation_is_valid(
         NULL));
 }
 
@@ -104,14 +104,14 @@ static void test_observation_payload_validation_and_precedence(void)
 {
     ti_c54x_bus_word16_transaction transaction = {0};
     const ti_c54x_bus_word16_request request = valid_request();
-    const ti_c54x_bus_word16_transaction_observation baseline = {
+    const ti_c54x_bus_word16_observation baseline = {
         UINT64_C(9),
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT,
+        TI_C54X_BUS_WORD16_OBSERVATION_WAIT,
         UINT16_C(0),
         TI_C54X_BUS_OK};
-    ti_c54x_bus_word16_transaction_observation observation = baseline;
+    ti_c54x_bus_word16_observation observation = baseline;
     ti_c54x_bus_word16_transaction before;
-    ti_c54x_bus_word16_transaction_observation borrowed_before;
+    ti_c54x_bus_word16_observation borrowed_before;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_prepare(
                            &transaction, &request, UINT64_C(9)) ==
                        TI_C54X_BUS_WORD16_TRANSACTION_STATUS_OK);
@@ -143,7 +143,7 @@ static void test_observation_payload_validation_and_precedence(void)
     check_transaction_fields(&transaction, &before);
     check_observation_fields(&observation, &borrowed_before);
     observation = baseline;
-    observation.kind = TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT;
+    observation.kind = TI_C54X_BUS_WORD16_OBSERVATION_FAULT;
     observation.bus_status = TI_C54X_BUS_OK;
     borrowed_before = observation;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
@@ -152,7 +152,7 @@ static void test_observation_payload_validation_and_precedence(void)
     check_transaction_fields(&transaction, &before);
     check_observation_fields(&observation, &borrowed_before);
     observation = baseline;
-    observation.kind = TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY;
+    observation.kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
     observation.read_value_word = UINT16_C(1);
     observation.bus_status = TI_C54X_BUS_OK;
     borrowed_before = observation;
@@ -169,7 +169,7 @@ static void test_observation_payload_validation_and_precedence(void)
         ti_c54x_bus_word16_transaction_begin(&transaction).status ==
         TI_C54X_BUS_WORD16_TRANSACTION_STATUS_OK);
     observation = baseline;
-    observation.kind = TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_INVALID;
+    observation.kind = TI_C54X_BUS_WORD16_OBSERVATION_INVALID;
     borrowed_before = observation;
     before = transaction;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
@@ -178,7 +178,7 @@ static void test_observation_payload_validation_and_precedence(void)
     check_transaction_fields(&transaction, &before);
     check_observation_fields(&observation, &borrowed_before);
     observation.kind =
-        (ti_c54x_bus_word16_transaction_observation_kind)UINT8_C(0x7f);
+        (ti_c54x_bus_word16_observation_kind)UINT8_C(0x7f);
     borrowed_before = observation;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
                            &transaction, &observation) ==
@@ -216,14 +216,14 @@ static void test_observation_payload_validation_and_precedence(void)
     }
 
     {
-        const ti_c54x_bus_word16_transaction_observation invalid_payloads[] = {
-            {UINT64_C(9), TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT,
+        const ti_c54x_bus_word16_observation invalid_payloads[] = {
+            {UINT64_C(9), TI_C54X_BUS_WORD16_OBSERVATION_WAIT,
              UINT16_C(1), TI_C54X_BUS_OK},
-            {UINT64_C(9), TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+            {UINT64_C(9), TI_C54X_BUS_WORD16_OBSERVATION_READY,
              UINT16_C(0), TI_C54X_BUS_FAULT},
-            {UINT64_C(9), TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT,
+            {UINT64_C(9), TI_C54X_BUS_WORD16_OBSERVATION_FAULT,
              UINT16_C(1), TI_C54X_BUS_FAULT},
-            {UINT64_C(9), TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT,
+            {UINT64_C(9), TI_C54X_BUS_WORD16_OBSERVATION_FAULT,
              UINT16_C(0), (ti_c54x_bus_status)UINT8_C(0x7f)}};
         size_t index;
 
@@ -243,7 +243,7 @@ static void test_observation_payload_validation_and_precedence(void)
     observation = baseline;
     observation.transaction_id = UINT64_C(8);
     observation.kind =
-        (ti_c54x_bus_word16_transaction_observation_kind)UINT8_C(0x7f);
+        (ti_c54x_bus_word16_observation_kind)UINT8_C(0x7f);
     observation.bus_status = (ti_c54x_bus_status)UINT8_C(0x7f);
     borrowed_before = observation;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(
@@ -268,14 +268,14 @@ static void test_state_shape_validation_is_transactional(void)
     ti_c54x_bus_word16_transaction expected;
     ti_c54x_bus_word16_transaction_issue_result issue;
     ti_c54x_bus_word16_transaction_completion_result completion;
-    ti_c54x_bus_word16_transaction_observation ready = {
+    ti_c54x_bus_word16_observation ready = {
         UINT64_C(7),
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+        TI_C54X_BUS_WORD16_OBSERVATION_READY,
         UINT16_C(0x1234),
         TI_C54X_BUS_OK};
-    ti_c54x_bus_word16_transaction_observation fault = {
+    ti_c54x_bus_word16_observation fault = {
         UINT64_C(7),
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT,
+        TI_C54X_BUS_WORD16_OBSERVATION_FAULT,
         UINT16_C(0),
         TI_C54X_BUS_FAULT};
 
@@ -388,7 +388,7 @@ static void test_nulls_states_ids_and_failed_outputs(void)
     const ti_c54x_bus_word16_request request = valid_request();
     ti_c54x_bus_word16_request invalid_request = request;
     ti_c54x_bus_word16_transaction before;
-    ti_c54x_bus_word16_transaction_observation observation = {0};
+    ti_c54x_bus_word16_observation observation = {0};
     ti_c54x_bus_word16_transaction_issue_result issue;
     ti_c54x_bus_word16_transaction_completion_result completion;
     TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_prepare(
@@ -473,9 +473,9 @@ static void test_completion_precedence_and_nonmutation(void)
         ti_c54x_bus_word16_transaction_begin(&transaction).status ==
         TI_C54X_BUS_WORD16_TRANSACTION_STATUS_OK);
     {
-        const ti_c54x_bus_word16_transaction_observation ready = {
+        const ti_c54x_bus_word16_observation ready = {
             UINT64_C(31),
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY,
+            TI_C54X_BUS_WORD16_OBSERVATION_READY,
             UINT16_C(0),
             TI_C54X_BUS_OK};
         TI_C54X_TEST_CHECK(ti_c54x_bus_word16_transaction_poll(

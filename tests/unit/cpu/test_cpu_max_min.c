@@ -30,7 +30,7 @@ static void run_case(uint16_t word, uint64_t a, uint64_t b, uint64_t expected,
     fixture f = {word, 0U};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -79,7 +79,7 @@ int main(void)
         fixture f = {UINT16_C(0xF486), 0U};
         ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
         ti_c54x_config config = {0U, {0U, NULL, NULL}};
-        _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
         ti_c54x_cpu *cpu = NULL;
         ti_c54x_state state;
         ti_c54x_run_result result;
@@ -107,7 +107,7 @@ int main(void)
         fixture f = {UINT16_C(0x0000), 0U};
         ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
         ti_c54x_config config = {0U, {0U, NULL, NULL}};
-        _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
         ti_c54x_cpu *cpu = NULL;
         ti_c54x_state state;
         ti_c54x_run_result result;
@@ -132,7 +132,7 @@ int main(void)
         fixture f = {UINT16_C(0xF486), UINT32_C(0xFFFF)};
         ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
         ti_c54x_config config = {UINT32_C(0xFFFF), {0U, NULL, NULL}};
-        _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
         ti_c54x_cpu *cpu = NULL;
         ti_c54x_state state;
         ti_c54x_run_result result;

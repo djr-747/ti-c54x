@@ -31,8 +31,14 @@ int
 main(void)
 {
     example_memory memory = {0U};
-    ti_c54x_bus bus = {&memory, read_program_word, NULL, NULL, NULL, NULL, NULL};
-    ti_c54x_config config = {0U, {0U, NULL, NULL}};
+    ti_c54x_bus bus = {
+        .context = &memory,
+        .program_read_word = read_program_word,
+    };
+    ti_c54x_config config = {
+        .reset_pc_word = 0U,
+        .trace = {0U, NULL, NULL},
+    };
     ti_c54x_run_result result;
     void *storage;
     ti_c54x_cpu *cpu = NULL;

@@ -88,23 +88,23 @@ bool ti_c54x_bus_word16_transaction_fault_status_is_valid(
            status == TI_C54X_BUS_NO_CALLBACK;
 }
 
-bool ti_c54x_bus_word16_transaction_observation_is_valid(
-    const ti_c54x_bus_word16_transaction_observation *observation)
+bool ti_c54x_bus_word16_observation_is_valid(
+    const ti_c54x_bus_word16_observation *observation)
 {
     if (observation == NULL || observation->transaction_id == UINT64_C(0)) {
         return false;
     }
     if (observation->kind ==
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT) {
+            TI_C54X_BUS_WORD16_OBSERVATION_WAIT) {
         return observation->bus_status == TI_C54X_BUS_OK &&
                observation->read_value_word == UINT16_C(0);
     }
     if (observation->kind ==
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY) {
+            TI_C54X_BUS_WORD16_OBSERVATION_READY) {
         return observation->bus_status == TI_C54X_BUS_OK;
     }
     if (observation->kind ==
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT) {
+            TI_C54X_BUS_WORD16_OBSERVATION_FAULT) {
         return observation->read_value_word == UINT16_C(0) &&
                ti_c54x_bus_word16_transaction_fault_status_is_valid(
                    observation->bus_status);

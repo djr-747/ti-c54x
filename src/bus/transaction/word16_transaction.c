@@ -111,7 +111,7 @@ ti_c54x_bus_word16_transaction_begin(
 ti_c54x_bus_word16_transaction_status
 ti_c54x_bus_word16_transaction_poll(
     ti_c54x_bus_word16_transaction *transaction,
-    const ti_c54x_bus_word16_transaction_observation *observation)
+    const ti_c54x_bus_word16_observation *observation)
 {
     if (transaction == NULL || observation == NULL) {
         return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_ARGUMENT;
@@ -126,18 +126,18 @@ ti_c54x_bus_word16_transaction_poll(
     if (observation->transaction_id != transaction->transaction_id) {
         return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_STALE_TRANSACTION;
     }
-    if (!ti_c54x_bus_word16_transaction_observation_is_valid(observation)) {
+    if (!ti_c54x_bus_word16_observation_is_valid(observation)) {
         return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_ARGUMENT;
     }
     if (observation->kind ==
-            TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_READY &&
+            TI_C54X_BUS_WORD16_OBSERVATION_READY &&
         transaction->request.access ==
             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
         observation->read_value_word != UINT16_C(0)) {
         return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_ARGUMENT;
     }
     if (observation->kind ==
-        TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_WAIT) {
+        TI_C54X_BUS_WORD16_OBSERVATION_WAIT) {
         return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_WAIT;
     }
 
@@ -146,9 +146,35 @@ ti_c54x_bus_word16_transaction_poll(
     transaction->state =
         TI_C54X_BUS_WORD16_TRANSACTION_STATE_COMPLETION_READY;
     return observation->kind ==
-                   TI_C54X_BUS_WORD16_TRANSACTION_OBSERVATION_FAULT
+                   TI_C54X_BUS_WORD16_OBSERVATION_FAULT
                ? TI_C54X_BUS_WORD16_TRANSACTION_STATUS_FAULT
                : TI_C54X_BUS_WORD16_TRANSACTION_STATUS_OK;
+}
+
+ti_c54x_bus_word16_transaction_status
+ti_c54x_bus_word16_transaction_cancel(
+    ti_c54x_bus_word16_transaction *transaction,
+    uint64_t transaction_id)
+{
+    if (transaction == NULL) {
+        return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_ARGUMENT;
+    }
+    if (!ti_c54x_bus_word16_transaction_is_usable(transaction)) {
+        return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_STATE;
+    }
+    if (transaction->state !=
+        TI_C54X_BUS_WORD16_TRANSACTION_STATE_IN_FLIGHT) {
+        return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_STATE;
+    }
+    if (transaction_id == UINT64_C(0)) {
+        return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_INVALID_ARGUMENT;
+    }
+    if (transaction_id != transaction->transaction_id) {
+        return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_STALE_TRANSACTION;
+    }
+
+    ti_c54x_bus_word16_transaction_clear(transaction);
+    return TI_C54X_BUS_WORD16_TRANSACTION_STATUS_OK;
 }
 
 ti_c54x_bus_word16_transaction_completion_result

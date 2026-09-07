@@ -501,6 +501,35 @@ No knobs or integration behavior were added. Follow-up publish/remote
 verification precedes the next ISA slice; external adapter work stays deferred
 until a concrete memory opcode requires it.
 
+### Transactional DATA endpoint and instruction root (P2-W31B1 implemented)
+
+P2-W31B1 supplies that concrete integration without importing a device memory
+map. `include/ti_c54x/bus_endpoint.h` owns a copied public WORD16 endpoint with
+paired advance/cancel callbacks, stable nonzero transaction IDs, explicit
+BEGIN/RESUME phases, and canonical WAIT/READY/FAULT observations. The DATA
+adapter alone invokes those callbacks and composes the W21C reducer; it enforces
+DATA requests and commit-at-READY visibility while leaving backing storage,
+byte-lane choice, mapping, and arbitration with the host.
+
+One generic tagged MEMORY effect carries a value-owned DATA access and static
+read-completion function. `src/sequencer/memory/` resolves the first admitted
+address form—single-indirect WORD16 MOD2—against CMPT=0, ARP=0, and the selected
+old AR value, staging AR+1 without mutation. The persistent root under
+`src/sequencer/instruction/` copies decode/input/effect candidates, validates
+address and PC state once before BEGIN, and resumes an in-flight reducer without
+re-resolving or refetching. WAIT, FAULT, malformed observations, and cancellation
+do not publish architectural state; READY commits the prevalidated result.
+
+CPU integration is split by ownership across `src/cpu/execution/`,
+`src/cpu/memory/`, and `src/cpu/trace/`. Positive-budget execution resumes
+prepared or pending memory work before fetch; BUS_WAIT is a nonterminal public
+suspension with no STOP observer event. Reset and deinit cancel active work under
+the CPU re-entry guard, preserve state on cancellation failure, and retain the
+monotonic ID sequence across reset. Observer-disabled builds compile trace call
+sites out. W31B1 adds no opcode row: fixed-MOD2 LD/STL registration and semantics
+remain the W31B2 vertical slice, while timing, repeatability, AR wrap, device/MMR,
+PROGRAM/IO transactions, and dual/parallel issue remain unresolved.
+
 ## Single-indirect address-effect slice
 
 The first indirect-addressing slice is deliberately a private, checked planner

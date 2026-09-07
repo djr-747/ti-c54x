@@ -99,7 +99,7 @@ static void run_success(uint16_t base, uint8_t source, uint8_t destination,
         encode_logical(base, source, destination, raw_shift), 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -151,7 +151,7 @@ static void run_same_lane_with_unselected_unknown(uint16_t base,
     cpu_fixture fixture = {word, 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -195,7 +195,7 @@ static void run_invalid_participating(uint16_t word, uint8_t noncanonical_lane)
     cpu_fixture fixture = {word, 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+    _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -250,7 +250,7 @@ static void run_boundary(void)
     cpu_fixture fixture = {word, UINT32_C(0xFFFF)};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {UINT32_C(0xFFFF), {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[256];
+        _Alignas(max_align_t) unsigned char storage[512];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;

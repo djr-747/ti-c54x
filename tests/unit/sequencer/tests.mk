@@ -26,3 +26,5 @@ include tests/unit/sequencer/accumulator/tests.mk
 include tests/unit/sequencer/repeat/tests.mk
 include tests/unit/sequencer/status/tests.mk
 include tests/unit/sequencer/temporary/tests.mk
+include tests/unit/sequencer/instruction/tests.mk
+include tests/unit/sequencer/memory/tests.mk

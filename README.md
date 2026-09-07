@@ -98,24 +98,25 @@ Current progress:
   record is captured at `66ef384`. No opcode/catalog changes, memory effects,
   or memory/public-ABI behavior are claimed; those remain separate P2-W31B+
   evidence freezes.
-- P2-W31B is now frozen as the next two-subphase work piece: first a copied
-  public DATA WORD16 endpoint and resumable root instruction transaction, then
-  fixed-MOD2 `LD *ARx+,dst` and `STL src,*ARx+`. The plan keeps endpoint,
-  cancellation, commit-at-READY visibility, monotonic transaction IDs, and
-  resume-before-fetch explicit; LD/STL semantics stay in their family leaves.
-  Implementation has not started. Timing, repeatability, AR-boundary wrap,
-  device/MMR/program/IO, dual/parallel, and posted-write behavior remain out of
-  scope.
-- The registry now records 128 evidence items, 191 requirements (149 implemented,
-  19 planned, 23 unresolved), and 149 tests (129 passing, 20 planned). Hosted
+- P2-W31B1 implements the copied public DATA WORD16 endpoint, canonical
+  BEGIN/RESUME/WAIT/READY/FAULT protocol, cancellation retries, commit-at-READY
+  visibility, pure MOD2 address resolution, persistent instruction work, and
+  CPU resume-before-fetch. Observer-disabled builds compile the new trace sites
+  out; focused sanitizer checks, independent review, and the full standalone
+  local gate are green. W31B2 is next: fixed-MOD2 `LD *ARx+,dst` and
+  `STL src,*ARx+` through the proven generic memory path. Timing,
+  repeatability, AR-boundary wrap,
+  device/MMR/program/IO, dual/parallel, and posted writes remain out of scope.
+- The registry now records 128 evidence items, 191 requirements (155 implemented,
+  13 planned, 23 unresolved), and 151 tests (137 passing, 14 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
   unresolved RC/PC/IRQ details are not guessed.
 - The standalone DSP foundation includes checked 40-bit arithmetic and addressing,
-  explicit WORD16 requests and BIG/LITTLE conversion, and a callback-free resumable
-  transaction reducer. External memory visibility, arbitration, and timing remain
-  demand-driven work.
+  explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
+  host-owned transactional DATA endpoint with proven exactly-once READY
+  publication. Device mapping, arbitration, and timing remain demand-driven work.
 - Speculative foundation expansion is frozen. The active track is end-to-end ISA
   vertical slices, adding infrastructure only when a concrete opcode family needs
   it. Emulator integration remains deferred.

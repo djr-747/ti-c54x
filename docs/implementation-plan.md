@@ -1,8 +1,8 @@
 # ti-c54x implementation plan
 
 Status: the standalone foundation baseline is established and ISA vertical slices
-are the active track. P2-W21C is implemented and green; external adapter visibility
-is deferred until a concrete memory opcode requires it.
+are the active track. P2-W31B1 now implements the transactional DATA endpoint and
+persistent memory-instruction root; the fixed-MOD2 LD/STL pair is next in W31B2.
 
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
@@ -43,7 +43,7 @@ function-pointer dispatch tables.
 | Sequencer address-effect decomposition | Complete | Pure effect validation and ordered dependency reads move behind a named sequencer seam before circular effects extend the transaction model |
 | Sequencer validation subownership | Complete | Intrinsic effect checks and ordered architectural dependency reads have separate private owners while the validator only orchestrates |
 | Circular MOD8/MOD10 WORD16 effects | Complete | Evidence-pinned fixed-step circular arithmetic, BK snapshots, and either one post-access AR update or the BK=0 no-op pass planner and transactional tests |
-| Shared-memory transaction semantics | Foundation complete (P2-W21C) | Word-native requests, explicit byte-lane adapters, and a pure resumable transaction reducer are proven; external visibility/arbitration remains adapter-owned and demand-driven by a concrete load/store slice |
+| Shared-memory transaction semantics | Endpoint integration complete (P2-W31B1) | Word-native requests, explicit byte-lane conversion, resumable reduction, copied DATA endpoints, cancellation, commit-at-READY visibility, and CPU suspension are proven; physical mapping and arbitration remain adapter-owned |
 | Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
@@ -67,7 +67,7 @@ function-pointer dispatch tables.
 | P2-W29A/B T-register foundation and EXP accumulator vertical slice | Implemented — all RED contracts, focused tests, two independent reviews, full local `make test`, and remote CI green; clean performance record captured at `fedbd6a` | Private 16-bit T ownership, candidate-only tagged effect transactions, and EXP_ACC/exp_acc are proven through the existing accumulator-source path. Architecture-needed changes remain serialized GAP reports, never family workarounds; repeatability and timing remain unresolved. |
 | P2-W30 two-word immediate AND/OR/XOR accumulator forms | Implemented — focused strict/sanitizer tests, two independent reviews, registry closure, full local gate, and remote CI `34067048536` green; clean catalog-twenty-two performance record captured at `9c22a33` | Six width-two rows add 204 populated first words, taking the catalog to 22 rows/1287 populated words (4/22 reset-runnable). The slice adds only two decode-owned layouts and reuses extension fetch, accumulator input/effect, tagged transaction, and CPU retirement. Common computation and family leaves have mirrored ownership; the new rows are not benchmark-exercised because the public API has no initialized-accumulator bootstrap; repeatability and timing remain unresolved. |
 | P2-W31A fixed-MOD2 memory prerequisites | Implemented — focused strict and ASan/UBSan tests, two independent reviews, full local gate, and remote CI `34069533137` green; clean same-catalog-22 performance record captured at `66ef384` | Canonical CPU architectural-state composition, private checked SXM read/knownness, and generic STATUS_SXM input collection are implemented. No opcode or catalog changes, memory effects, adapter/public-ABI guarantees, visibility, byte order, faults, wrap, repeatability, or timing are claimed; those remain later P2-W31B+ work. |
-| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | Evidence freeze complete — implementation not started | W31B1 proves the copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, and persistent root instruction transaction. W31B2 registers and retires `LD *ARx+,dst` plus `STL src,*ARx+`. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
+| P2-W31B transactional data-memory endpoint and fixed-MOD2 load/store pair | W31B1 implemented and focused gates green; W31B2 next | The copied public DATA WORD16 endpoint, adapter/reducer lifecycle, cancellation, persistent root transaction, CPU resume-before-fetch, and compile-time observer isolation are proven. W31B2 registers and retires `LD *ARx+,dst` plus `STL src,*ARx+`. The slice claims no timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel, or posted-write semantics. |
 | Hosted performance history | Implemented — full local and remote gates green; catalog-four, catalog-six, catalog-seven, catalog-nine, catalog-ten, catalog-thirteen, catalog-fifteen, catalog-sixteen, and catalog-twenty-two clean records captured | Observer-off end-to-end CPU throughput with stable fixed scenarios, catalog-aware mixed workload, clean-commit append-only history, and advisory same-cohort comparison outside the core |
 | Instruction timing and resource model | Planned after opcode inventory | Generated opcode metadata and the sequencer account for evidenced CPU cost while device profiles own memory/peripheral waits |
 | Emulator integration | Deferred | Provenance resolved and standalone API declared stable |
@@ -287,11 +287,10 @@ rather than broaden this prerequisite.
 
 ### P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)
 
-State: the evidence and ownership freeze is complete; implementation has not
-started. This work piece is one architectural freeze with two atomic
-implementation subphases. W31B1 proves the public endpoint and resumable root
-transaction. W31B2 then uses those seams for the first fixed-MOD2 data-memory
-pair. W31B1 must be green before W31B2 can add catalog rows or handlers.
+State: W31B1 is implemented with focused strict and ASan/UBSan tests, an
+independent combined review, and the full standalone local gate green. W31B2 is
+next and uses these seams for the first fixed-MOD2 data-memory pair. No catalog
+row or opcode handler was added during W31B1.
 
 The public boundary is deliberately small and vendorable:
 
@@ -396,12 +395,14 @@ owner goes GREEN without editing another owner’s files:
    `tests/unit/bus/adapter/test_word16_exactly_once.c` is activated for the
    external visibility/issue proof; `tests/unit/bus/transaction/` owns reducer
    cancellation.
-2. `tests/unit/sequencer/instruction/test_memory_instruction_transaction.c`
-   proves persistent WAIT/RESUME/READY/FAULT/cancel phases, while
+2. `tests/unit/sequencer/instruction/test_memory_instruction_lifecycle.c` and
+   `test_memory_instruction_commit.c` prove persistent
+   WAIT/RESUME/READY/FAULT/cancel and publication phases, while
    `tests/unit/sequencer/memory/test_memory_address_resolution.c` proves the
    generic MOD2 address dependency and staged AR result.
-3. `tests/unit/cpu/memory/test_cpu_memory_lifecycle.c` proves endpoint copy,
-   resume-before-fetch, counter phases, BUS_WAIT, reset/deinit cancellation,
+3. `tests/unit/cpu/memory/test_cpu_memory_lifecycle.c` and
+   `test_cpu_memory_pending.c` prove endpoint copy, resume-before-fetch,
+   counter phases, BUS_WAIT, reset/deinit cancellation, re-entry exclusion,
    and monotonic IDs.
 4. Catalog and decode owners prove the two rows in
    `tests/unit/isa/catalog/test_fixed_mod2_memory_metadata.c` and
