@@ -4527,3 +4527,38 @@ rewritten after publication.
   set must use a new ID and record the external-condition change; fixed P-core
   affinity with competing agent/build load removed is the first admissible host
   condition to evaluate after the optimization commit is clean.
+
+## 2026-09-07 — P2-W31P trusted direct-fill optimization
+
+- State: implementation complete and local gates green; clean hosted acceptance
+  capture remains pending. The bounded optimization landed as
+  `c07be534cc8313437463307a48f01f0702ba6ecf`.
+- Profile-guided work removed three avoidable staging costs without changing the
+  frozen architecture. Fast packet construction now stages only extracted
+  operand values and direct-fills the value-owned packet after the sole fallible
+  operation succeeds. Checked packet construction retains forged-input rejection
+  and byte-for-byte failure atomicity, and the structural proof still sees one
+  operand-extraction seam.
+- Sequential-PC remains the sole arithmetic owner. Its shared arithmetic helper
+  supports a private trusted bridge path that direct-fills the planned effect
+  after carrier, width, and boundary checks, while checked planning retains full
+  staged validation. Trusted DP/ASM/ARP semantic leaves now direct-fill a complete
+  deterministic status-field effect; checked handlers retain staged construction.
+- TDD evidence is GREEN. The exact combined tree passed standalone `make test`:
+  186 Python tests, the full C suite, evidence/knob/source/build-manifest checks,
+  and the observer-disabled artifact check. Focused trusted packet, trusted
+  semantic dispatch, LD-status, and PC tests passed; the PC test also passed an
+  ASan/UBSan build. `git diff --check` passed.
+- A dirty-tree diagnostic O2/no-LTO rebuild, used only to judge optimization
+  direction and never as acceptance evidence, measured fixed medians of 28.842,
+  45.396, 42.564, and 40.125 ns for NOP, LD-DP, LD-ASM, and LD-ARP on its second
+  run. This gives substantial margin versus the first inconclusive cohort, while
+  scheduler/frequency outliers still require a clean stable capture set.
+- No knob, public ABI, opcode inventory, observer behavior, memory WAIT path,
+  effect atomicity, benchmark semantic policy, environment read, logging, file
+  I/O, allocation, or timing-model claim changed.
+- Follow-up: rebuild both frozen profiles once from this clean ledgered commit,
+  run three consecutive captures per unchanged binary with the host otherwise
+  quiescent, and evaluate them under new set IDs. Use fixed P-core affinity only
+  as an explicitly recorded external-condition change if the unpinned sets remain
+  scheduler-noisy; retain every inconclusive set.
