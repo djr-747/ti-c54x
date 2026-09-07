@@ -4293,7 +4293,7 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
-      "claim": "Register the evidenced one-word SSBX and RSBX rows with values 0xF5B0 and 0xF4B0, shared mask 0xFDF0, N at bit 9, SBIT at bits 3:0, and no input resources. The catalog must expose 16 encodings per row and mark repeatability INELIGIBLE without claiming timing or reserved-bit side effects.",
+      "claim": "Register the evidenced one-word SSBX and RSBX rows with values 0xF5B0 and 0xF4B0, shared mask 0xFDF0, N at bit 9, SBIT at bits 3:0, and no input resources. The catalog must expose 32 encodings per row and mark repeatability INELIGIBLE without claiming timing or reserved-bit side effects.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S4-SSBX-P4-166", "E-TI-C54X-SPRU172C-S4-RSBX-P4-151"],
       "test_ids": ["T-COMMON-SSBX-RSBX-CATALOG"]
     },

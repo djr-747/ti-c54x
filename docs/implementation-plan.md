@@ -557,7 +557,7 @@ bits 3:0. They have no input resources and are marked repeatability
 
 The slice adds five independently testable ownership pieces:
 
-1. `src/isa/catalog/` registers the two rows and their 16 encodings each;
+1. `src/isa/catalog/` registers the two rows and their 32 encodings each;
    `src/isa/decode/` owns the value-owned `N` and `SBIT` extraction.
 2. `src/sequencer/status/` generalizes the private status-bit write/application
    route. A candidate changes and marks known only the selected raw ST0 or ST1
