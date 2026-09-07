@@ -4717,3 +4717,14 @@ rewritten after publication.
   RPT/IRQ behavior, timing claim, knob, environment read, diagnostic path,
   allocator, or mutable global changed. TDD proceeds with RED owner-local tests
   before any catalog row or status-bit implementation is added.
+
+## 2026-09-08 — P2-W32 encoding-population correction
+
+- Correction commit `81cbbecb3f13ffb714bc9b559c5ce1944a53a0a3`
+  fixes the activation prose from 16 to 32 encodings per row. Mask `0xFDF0`
+  leaves N at bit 9 plus SBIT at bits 3:0 variable, so each of SSBX and RSBX
+  covers 32 first words and the pair covers 64.
+- The already-recorded expected completed totals of 26 catalog rows and 1,383
+  populated first words remain correct. No encoding, evidence locator,
+  requirement/test state, production source, executable test, or behavior
+  changed. The standalone evidence checker remained green.
