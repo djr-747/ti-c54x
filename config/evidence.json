@@ -4481,7 +4481,7 @@
     },
     {
       "id": "REQ-COMMON-LDU-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -4495,7 +4495,7 @@
     },
     {
       "id": "REQ-COMMON-LDU-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4505,7 +4505,7 @@
     },
     {
       "id": "REQ-COMMON-LDU-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/load/",
@@ -4518,7 +4518,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-LDU-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -5915,34 +5915,34 @@
     },
     {
       "id": "T-COMMON-LDU-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_ldu_smem_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldu_smem_metadata"},
       "requirement_ids": ["REQ-COMMON-LDU-CATALOG"]
     },
     {
       "id": "T-COMMON-LDU-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_ldu_smem_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldu_smem_decode"},
       "requirement_ids": ["REQ-COMMON-LDU-DECODE"]
     },
     {
       "id": "T-COMMON-LDU-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/load/test_ldu_smem.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldu_smem_ops"},
       "requirement_ids": ["REQ-COMMON-LDU-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-LDU-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/load/test_cpu_ldu_smem.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ldu_smem"},
       "requirement_ids": ["REQ-PROJECT-CPU-LDU-RETIREMENT"]
     }
   ]

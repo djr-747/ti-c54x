@@ -22,7 +22,7 @@ the standalone Python quality gate.
 
 Current progress:
 
-- Production decode and CPU execution now cover 27 declarative opcode rows:
+- Production decode and CPU execution now cover 28 declarative opcode rows:
   evidence-backed `NOP`; the three immediate status-field forms
   `LD #k9,DP`, `LD #k5,ASM`, and `LD #k3,ARP`; and `MAX`, `MIN`, `CMPL`, `ROL`,
   `ROR`, `SFTL`, `AND`, `OR`, `XOR`, `ROLTC`, `SFTC`, `EXP`, `SSBX`, `RSBX`,
@@ -30,9 +30,9 @@ Current progress:
   families add 384
   register-accumulator encodings with full-40-bit Boolean/shift semantics and
   preserve C and all other status. Six two-word immediate AND/OR/XOR forms now
-  add 204 populated first-word encodings; fixed-MOD2 `LD`/`STL`, SSBX/RSBX,
-  and CMPR bring the current catalog to 1415 populated first-word encodings;
-  that is a
+  add 204 populated first-word encodings; fixed-MOD2 `LD`/`STL`/`LDU`,
+  SSBX/RSBX, and CMPR bring the current catalog to 1431 populated first-word
+  encodings; that is a
   lookup-population count, not an instruction count. Exact/masked
   catalog generation, complete instruction bundles, extension fetch, operand
   extraction, dispatch, PC staging, and retirement are covered by the standalone
@@ -106,7 +106,7 @@ Current progress:
   visibility, pure MOD2 address resolution, persistent instruction work, and
   CPU resume-before-fetch. Observer-disabled builds compile the new trace sites
   out; focused sanitizer checks, independent review, and the full standalone
-  local gate are green. W31B2 and W33 are implemented; W34 now activates the
+  local gate are green. W31B2, W33, and W34 are implemented; W34 adds the
   evidence-fit fixed-MOD2 `LDU *ARx+,dst` slice. Fixed-MOD2 `LD *ARx+,dst` and
   `STL src,*ARx+` use the proven generic memory path.
   Timing, repeatability, AR-boundary wrap, device/MMR/program/IO, dual/parallel,
@@ -139,13 +139,13 @@ Current progress:
   reviews, and the final full `make test` are green; full integration caught and
   corrected two stale UNKNOWN near-miss fixtures. Catalog coverage is 27 rows/
   1415 populated words with 6/27 reset-runnable.
-- P2-W34 activates the bounded fixed-MOD2 `LDU *ARx+,dst` slice from TI
+- P2-W34 implements the bounded fixed-MOD2 `LDU *ARx+,dst` slice from TI
   `SPRU172C` p. 4-79: one word, derived value `0x1290`, mask `0xFEF8`, D bit 8,
   ARF bits 2:0, 16 encodings, `ACCUMULATOR_ARF`, and no input resources. It
   reuses the W31B memory effect/completion and generic CPU path with CMPT=0,
   ARP=0, old-AR transfer before postincrement, and AR=0xffff rejection. LDU
   loads Smem into dst15:0, clears dst39:16, ignores SXM, and has no status-bit
-  effects; repeatability remains unresolved. Expected coverage is 28 rows/1431
+  effects; repeatability remains unresolved. Catalog coverage is 28 rows/1431
   populated words with 6/28 reset-runnable. W31P hosted stability and W31B
   immediate-READY performance follow-ups remain open and nonblocking.
 - P2-W31P remains open as the performance architecture freeze. It replaces
@@ -157,8 +157,8 @@ Current progress:
   three-capture stability acceptance remains pending/deferred; this is advisory
   hosted throughput evidence, not a CI or DSP timing claim. The open hosted
   follow-up no longer blocks W31B2.
-- The registry now records 139 evidence items, 212 requirements (176 implemented,
-  12 planned, 24 unresolved), and 171 tests (159 passing, 12 planned). Hosted
+- The registry now records 139 evidence items, 212 requirements (180 implemented,
+  8 planned, 24 unresolved), and 171 tests (163 passing, 8 planned). Hosted
   throughput history and its noise-qualified catalog-twenty-two baseline are
   summarized below; these measurements are not DSP or silicon timing claims.
 - Immediate `RPT` layouts, effects, and repeat policy are proved but remain inert;
@@ -167,8 +167,8 @@ Current progress:
   explicit WORD16 requests and BIG/LITTLE conversion, a resumable reducer, and a
   host-owned transactional DATA endpoint with proven exactly-once READY
   publication. Device mapping, arbitration, and timing remain demand-driven work.
-- Speculative foundation expansion is frozen. P2-W33 is implementation-complete;
-  P2-W34 is the active evidence-fit LDU slice while the P2-W31P hosted stability
+- Speculative foundation expansion is frozen. P2-W33 and P2-W34 are
+  implementation-complete; the P2-W31P hosted stability
   and W31B2 immediate-READY benchmark follow-ups remain open and nonblocking.
   Emulator integration remains deferred.
 - `ti_c54x_state` may grow observation fields before API stability; these fields

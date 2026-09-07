@@ -18,3 +18,4 @@ $(eval $(call ti_c54x_add_test,logical_immediate_decode,isa/decode,test_logical_
 $(eval $(call ti_c54x_add_test,fixed_mod2_memory_decode,isa/decode,test_fixed_mod2_memory_decode.c))
 $(eval $(call ti_c54x_add_test,ssbx_rsbx_decode,isa/decode,test_ssbx_rsbx_decode.c))
 $(eval $(call ti_c54x_add_test,cmpr_decode,isa/decode,test_cmpr_decode.c))
+$(eval $(call ti_c54x_add_test,ldu_smem_decode,isa/decode,test_ldu_smem_decode.c))
