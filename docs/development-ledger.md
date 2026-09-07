@@ -5142,3 +5142,45 @@ rewritten after publication.
   policy, device/MMR behavior, knob, environment read, logging, diagnostic
   fanout, allocator, mutable global, or emulator dependency was added.
   `LD Smem,DP/ASM` remains the next recorded strict-fit ISA candidate.
+
+## 2026-09-08 — P2-W37 fixed-MOD2 memory-to-status evidence activation
+
+- State: evidence and ownership activation landed as
+  `6f8d6b086582e11d009e604093e169457a67b062`. P2-W37 is the active
+  bounded ISA slice. P2-W31P hosted stability and the W31B immediate-READY
+  benchmark follow-ups remain open and nonblocking.
+- TI `SPRU172C` §4.70 printed pp. 4-69–4-71 defines exactly two memory-to-
+  status forms: `LD Smem,DP` and `LD Smem,ASM`. It defines no
+  `LD Smem,ARP`; ARP is immediate-only in this instruction entry. Composed
+  with the registered standard-indirect MOD2 rule, the DP row is
+  `0x4690/0xFFF8` and the ASM row is `0x3290/0xFFF8`. Bit 8 is fixed, ARF
+  occupies bits 2:0, and each row admits exactly eight first words.
+- DP consumes memory data bits 8:0 and ASM consumes bits 4:0. Both forms
+  report no status effect beyond writing the named field. Table 2-28 makes
+  `LD DP` repeatability INELIGIBLE; it does not positively establish ASM
+  eligibility, so ASM repeatability remains UNRESOLVED. Summary cycle values
+  are not adopted as a machine-timing contract.
+- Four planned contracts separate the two catalog rows, existing ARF decode,
+  pure MEMORY completions to the existing `STATUS_FIELD_WRITE` route, and
+  generic CPU retirement. W31B supplies the old selected-AR address for the
+  WORD16 read, postincrement only after READY, WAIT resume without refetch,
+  FAULT rollback, CMPT=0/ARP=0 validation, and checked AR=0xffff rejection.
+  No new layout, resource, effect, address kind, CPU branch, or public API is
+  required.
+- Candidate audit found no catalog collision or stale UNKNOWN vector in
+  `0x3290..0x3297` or `0x4690..0x4697`. Using mask `0xFEF8` would incorrectly
+  admit fixed-bit ranges `0x3390..0x3397` and `0x4790..0x4797`; the evidence
+  and planned tests require `0xFFF8`.
+- Expected completed coverage is 32 catalog rows and 1,463 populated first
+  words, with reset-runnable coverage unchanged at 6/32. Activation accounting
+  is 148 evidence records; 227 requirements (188 IMPLEMENTED, 12 PLANNED,
+  27 UNRESOLVED); and 183 tests (171 PASSING, 12 PLANNED).
+- Validation: the evidence checker passed with 2 targets, 7 sources, 227
+  requirements, and 183 tests. `make quality-test` passed all 186 Python tests
+  plus evidence, knob, source-boundary, build-manifest, and observer-disabled
+  artifact checks; `git diff --check` passed. The 535-line operand-layout
+  owner is unchanged and retains its reviewed no-split decision.
+- No production, generated, or executable-test file changed. No public ABI,
+  timing or machine-cycle claim, IRQ/RPT behavior, device/MMR policy, knob,
+  environment read, diagnostic path, allocator, mutable global, or emulator
+  dependency was added. TDD begins with owner-local RED tests.
