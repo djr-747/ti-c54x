@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 151 immutable evidence records,
-232 requirements (196 `IMPLEMENTED`, 8 `PLANNED`, 28 `UNRESOLVED`), and 187 tests
-(179 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 154 immutable evidence records,
+238 requirements (196 `IMPLEMENTED`, 13 `PLANNED`, 29 `UNRESOLVED`), and 192 tests
+(179 `PASSING`, 13 `PLANNED`).
 
 ## Targets
 
@@ -195,6 +195,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-LD-SMEM-SHIFT16-P4-65-4-69` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4.66, `4-65`–`4-69` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-SMEM-SHIFT16-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W38-LD-SMEM-SHIFT16-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)` |
+| `E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §Store T/TRN/immediate, `4-166`–`4-168` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -530,6 +533,12 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-LD-SMEM-SHIFT16-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-LD-SMEM-SHIFT16-P4-65-4-69` | `T-COMMON-LD-SMEM-SHIFT16-EFFECTS` |
 | `REQ-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W38-LD-SMEM-SHIFT16-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT` |
 | `REQ-COMMON-LD-SMEM-SHIFT16-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-SMEM-SHIFT16-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
+| `REQ-PROJECT-OP-INPUT-T-REGISTER` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-OP-INPUT-T-REGISTER` |
+| `REQ-COMMON-ST-T-SMEM-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-ST-T-SMEM-CATALOG` |
+| `REQ-COMMON-ST-T-SMEM-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168` | `T-COMMON-ST-T-SMEM-DECODE` |
+| `REQ-COMMON-ST-T-SMEM-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-ST-T-SMEM-EFFECTS` |
+| `REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ST-T-SMEM-RETIREMENT` |
+| `REQ-COMMON-ST-T-SMEM-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
 
 ## Tests
 
@@ -726,6 +735,11 @@ exist in the repository.
 | `T-COMMON-LD-SMEM-SHIFT16-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_ld_smem_shift16_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_smem_shift16_decode"}` | `REQ-COMMON-LD-SMEM-SHIFT16-DECODE` |
 | `T-COMMON-LD-SMEM-SHIFT16-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_ld_smem_shift16.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_smem_shift16_ops"}` | `REQ-COMMON-LD-SMEM-SHIFT16-EFFECTS` |
 | `T-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_smem_shift16.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ld_smem_shift16"}` | `REQ-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT` |
+| `T-PROJECT-OP-INPUT-T-REGISTER` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_t_register.c` | null | `REQ-PROJECT-OP-INPUT-T-REGISTER` |
+| `T-COMMON-ST-T-SMEM-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_st_t_smem_metadata.c` | null | `REQ-COMMON-ST-T-SMEM-CATALOG` |
+| `T-COMMON-ST-T-SMEM-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_st_t_smem_decode.c` | null | `REQ-COMMON-ST-T-SMEM-DECODE` |
+| `T-COMMON-ST-T-SMEM-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/store/test_st_t_smem.c` | null | `REQ-COMMON-ST-T-SMEM-EFFECTS` |
+| `T-PROJECT-CPU-ST-T-SMEM-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_st_t_smem.c` | null | `REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT` |
 
 ## Correction and tombstone policy
 

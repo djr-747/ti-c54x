@@ -2426,6 +2426,52 @@
         "anchor": "P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)"
       },
       "assertion": "P2-W38 fits fixed-MOD2 LD Smem,16,dst into existing MEMORY read/completion, ACCUMULATOR_WRITE, STATUS_SXM input, generic fixed-MOD2 address, and CPU WAIT/READY/FAULT sequential-PC retirement paths. The existing private accumulator-ARF layout, status-SXM collection, and generic effects own all inputs and state changes; no new layout, resource, effect, address, state, CPU, public API, source-manifest, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation seam is admitted. The bounded semantics are zero-extend when SXM=0 or sign-extend when SXM=1 to canonical 40 bits, then logical left shift 16 within 40 bits, preserving C, TC, OV, and unrelated state. STH, LDR, LD#K, ST T, and TS remain deferred for their recorded gaps."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "Store T/TRN/immediate",
+        "printed_page_start": "4-166",
+        "printed_page_end": "4-168"
+      },
+      "assertion": "TI SPRU172C's Store T/TRN/immediate entry defines the one-word ST T,Smem form with syntax-1 opcode diagram 1000_1100_IAAAAAAA. Composed with the registered standard-indirect MOD2 rule for *ARx+, this bounded row uses value 0x8C90 and mask 0xFFF8: bit 8 is fixed, only ARF bits 2:0 vary, and exactly eight encodings are admitted. Execution writes the old T register WORD16 to the old selected-AR address before postincrement and reports Status Bits None; the printed *AR7- example stores old T=0x4210 at old AR7=0x0321, then AR7 becomes 0x0320."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "ST T,Smem is absent from Table 2-28's explicitly forbidden repeatability list, but that absence is not positive single-repeat eligibility evidence. The separately listed fixed long-offset and absolute single-data cases do not decide this fixed-MOD2 *ARx+ form; repeatability therefore remains UNRESOLVED without a timing or repeat-execution claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)"
+      },
+      "assertion": "P2-W39 adds the project-contract T_REGISTER input resource as a copied raw 16-bit T snapshot with knownness, sourced from the private T state; unrequested T is not read, malformed or unknown input rejects transactionally, and unknown T produces UNKNOWN_INPUT without a MEMORY effect. The fixed-MOD2 ST T, *ARx+ handler is a pure MEMORY WORD16 WRITE with exact copied T, complete=NULL, and no status-bit effects, while generic fixed-MOD2 address resolution and CPU WAIT/READY/FAULT/sequential-PC retirement are reused. No new layout, effect, address, architectural-state, public-API, source-manifest, timing, or opcode-specific CPU branch seam is admitted; STH, LDR, LD#K, and TS remain deferred for their recorded gaps."
     }
   ],
   "requirements": [
@@ -4946,6 +4992,73 @@
       "claim": "Resolve whether fixed-MOD2 LD Smem,16,dst is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute forms do not decide this *ARx+ form.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-LD-SMEM-SHIFT16-REPEATABILITY-BOUNDARY-P2-19-2-21"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-PROJECT-OP-INPUT-T-REGISTER",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect T_REGISTER only when requested by the instruction input mask as a copied raw 16-bit T snapshot with explicit knownness from the private T state; malformed or unknown T input rejects transactionally, and an unknown T remains known=false for semantic rejection without reading unrequested T.",
+      "evidence_ids": ["E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-OP-INPUT-T-REGISTER"]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the evidenced one-word fixed-MOD2 ST T,*ARx+ row as ST_T_SMEM_MOD2 with handler token st_t_smem, value 0x8C90, mask 0xFFF8, fixed bit 8, ARF bits 2:0, exactly eight encodings, T_REGISTER input, MEMORY WRITE effect, and repeatability UNRESOLVED.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13",
+        "E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21"
+      ],
+      "test_ids": ["T-COMMON-ST-T-SMEM-CATALOG"]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the one-word fixed-MOD2 ST T,*ARx+ row through the existing private TI_C54X_OPERAND_LAYOUT_ARF layout, extracting fixed bit 8 and ARF bits 2:0 transactionally from the copied instruction with no additional layout or opcode-specific CPU branch.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168"],
+      "test_ids": ["T-COMMON-ST-T-SMEM-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Produce the pure fixed-MOD2 ST T,*ARx+ MEMORY WORD16 WRITE effect with exact copied T input, complete=NULL, old selected-AR address before postincrement, and no status-bit effects; malformed or unknown T input returns UNKNOWN_INPUT without a memory effect.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168",
+        "E-TI-C54X-SPRU131G-S5.5.3-P5-13"
+      ],
+      "test_ids": ["T-COMMON-ST-T-SMEM-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire fixed-MOD2 ST T,*ARx+ through generic decode, T_REGISTER input collection, MEMORY WRITE, fixed-MOD2 address resolution, old-AR transfer, postincrement, sequential-PC, and WAIT/READY/FAULT paths under CMPT=0/ARP=0 without an opcode-specific CPU branch or new public ABI, layout, effect, address, state, source-manifest, timing, IRQ/RPT, device/MMR, environment, diagnostic, or allocation behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-CPU-ST-T-SMEM-RETIREMENT"]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Resolve whether fixed-MOD2 ST T,*ARx+ is eligible for single-repeat execution; Table 2-28 absence does not establish eligibility and the separately forbidden fixed long-offset or absolute forms do not decide this *ARx+ form.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -6483,6 +6596,46 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_smem_shift16.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_smem_shift16"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-SMEM-SHIFT16-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-OP-INPUT-T-REGISTER",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_t_register.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-OP-INPUT-T-REGISTER"]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_t_smem_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-T-SMEM-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_st_t_smem_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-T-SMEM-DECODE"]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_st_t_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ST-T-SMEM-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-CPU-ST-T-SMEM-RETIREMENT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/store/test_cpu_st_t_smem.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT"]
     }
   ]
 }
