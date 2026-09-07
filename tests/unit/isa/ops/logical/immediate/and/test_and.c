@@ -202,14 +202,32 @@ static void check_unknown_and_noncanonical_inputs(void)
     const ti_c54x_decoded_instruction instruction =
         decode(shifted_word(0U, 1U, UINT8_C(1)), UINT16_C(7), 0U);
     const ti_c54x_op_input_snapshot good = {
-        UINT64_C(3), UINT64_C(5), true, true, UINT8_C(1), false, UINT8_C(0),
-        false};
+        .accumulator_a_raw40 = UINT64_C(3),
+        .accumulator_b_raw40 = UINT64_C(5),
+        .accumulator_a_known = true,
+        .accumulator_b_known = true,
+        .status_c = UINT8_C(1),
+        .status_c_known = false,
+        .status_tc = UINT8_C(0),
+        .status_tc_known = false};
     const ti_c54x_op_input_snapshot unknown_source = {
-        UINT64_C(3), UINT64_C(5), false, true, UINT8_C(1), true, UINT8_C(0),
-        true};
+        .accumulator_a_raw40 = UINT64_C(3),
+        .accumulator_b_raw40 = UINT64_C(5),
+        .accumulator_a_known = false,
+        .accumulator_b_known = true,
+        .status_c = UINT8_C(1),
+        .status_c_known = true,
+        .status_tc = UINT8_C(0),
+        .status_tc_known = true};
     const ti_c54x_op_input_snapshot noncanonical_source = {
-        TI_C54X_U40_MASK + UINT64_C(1), UINT64_C(5), true, true, UINT8_C(1),
-        true, UINT8_C(0), true};
+        .accumulator_a_raw40 = TI_C54X_U40_MASK + UINT64_C(1),
+        .accumulator_b_raw40 = UINT64_C(5),
+        .accumulator_a_known = true,
+        .accumulator_b_known = true,
+        .status_c = UINT8_C(1),
+        .status_c_known = true,
+        .status_tc = UINT8_C(0),
+        .status_tc_known = true};
     ti_c54x_op_effect effect = {
         .kind = TI_C54X_OP_EFFECT_REPEAT_START,
         .payload.repeat_start = {.operand = UINT16_C(0x55AA)}};
@@ -236,8 +254,14 @@ static void check_malformed_carriers_are_transactional(void)
     const ti_c54x_decoded_instruction valid =
         decode(shifted_word(0U, 1U, UINT8_C(1)), UINT16_C(7), 0U);
     const ti_c54x_op_input_snapshot input = {
-        UINT64_C(3), UINT64_C(5), true, true, UINT8_C(0), true, UINT8_C(1),
-        true};
+        .accumulator_a_raw40 = UINT64_C(3),
+        .accumulator_b_raw40 = UINT64_C(5),
+        .accumulator_a_known = true,
+        .accumulator_b_known = true,
+        .status_c = UINT8_C(0),
+        .status_c_known = true,
+        .status_tc = UINT8_C(1),
+        .status_tc_known = true};
     ti_c54x_decoded_instruction malformed = valid;
     ti_c54x_op_effect effect = {
         .kind = TI_C54X_OP_EFFECT_REPEAT_START,
@@ -273,8 +297,14 @@ static void check_catalog_bound_aliases(void)
     const ti_c54x_decoded_instruction fixed =
         decode(fixed_word(1U, 0U), UINT16_C(0x1234), 1U);
     const ti_c54x_op_input_snapshot input = {
-        UINT64_C(0x0FEDCBA987), UINT64_C(0x0012345678), true, true,
-        UINT8_C(0), true, UINT8_C(0), true};
+        .accumulator_a_raw40 = UINT64_C(0x0FEDCBA987),
+        .accumulator_b_raw40 = UINT64_C(0x0012345678),
+        .accumulator_a_known = true,
+        .accumulator_b_known = true,
+        .status_c = UINT8_C(0),
+        .status_c_known = true,
+        .status_tc = UINT8_C(0),
+        .status_tc_known = true};
     const ti_c54x_op_effect before = {
         .kind = TI_C54X_OP_EFFECT_REPEAT_START,
         .payload.repeat_start = {.operand = UINT16_C(0xA55A)}};

@@ -117,8 +117,8 @@ static void run_success(uint16_t base, uint8_t source, uint8_t destination,
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B, b) ==
                        TI_C54X_ACCUMULATOR_OK);
-    seed_status(&cpu->status);
-    before_status = cpu->status;
+    seed_status(&cpu->arch_state.status);
+    before_status = cpu->arch_state.status;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -137,7 +137,7 @@ static void run_success(uint16_t base, uint8_t source, uint8_t destination,
     TI_C54X_TEST_CHECK(destination == 0U ? state.accumulator_a_known
                                          : state.accumulator_b_known);
     TI_C54X_TEST_CHECK(state.c_known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -166,12 +166,12 @@ static void run_same_lane_with_unselected_unknown(uint16_t base,
                            lane == 0U ? TI_C54X_ACCUMULATOR_A
                                       : TI_C54X_ACCUMULATOR_B,
                            value) == TI_C54X_ACCUMULATOR_OK);
-    seed_status(&cpu->status);
+    seed_status(&cpu->arch_state.status);
     /* Logical operations do not consume C.  An unknown C must be copied,
      * not rejected or synthesized, while the accumulator lane is retired. */
-    cpu->status.st0_known_mask = (uint16_t)(
-        cpu->status.st0_known_mask & (uint16_t)~TI_C54X_ST0_C_MASK);
-    before_status = cpu->status;
+    cpu->arch_state.status.st0_known_mask = (uint16_t)(
+        cpu->arch_state.status.st0_known_mask & (uint16_t)~TI_C54X_ST0_C_MASK);
+    before_status = cpu->arch_state.status;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -185,7 +185,7 @@ static void run_same_lane_with_unselected_unknown(uint16_t base,
     TI_C54X_TEST_CHECK(lane == 0U ? !state.accumulator_b_known
                                   : !state.accumulator_a_known);
     TI_C54X_TEST_CHECK(!state.c_known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -204,7 +204,7 @@ static void run_invalid_participating(uint16_t word, uint8_t noncanonical_lane)
 
     TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, sizeof(storage), &config,
                                         &bus, &cpu) == TI_C54X_ERROR_OK);
-    seed_status(&cpu->status);
+    seed_status(&cpu->arch_state.status);
     if (noncanonical_lane <= 1U) {
         TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                                &cpu->accumulators, TI_C54X_ACCUMULATOR_A,
@@ -226,18 +226,18 @@ static void run_invalid_participating(uint16_t word, uint8_t noncanonical_lane)
                                UINT64_C(0x0123456789)) ==
                            TI_C54X_ACCUMULATOR_OK);
     }
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_INVALID_STATE);
     TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
-    TI_C54X_TEST_CHECK(cpu->pc_word == 0U);
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == 0U);
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(state.instructions_attempted_total == 1U);
     TI_C54X_TEST_CHECK(state.instructions_retired_total == 0U);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -265,8 +265,8 @@ static void run_boundary(void)
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(0x00ABCDEF12)) == TI_C54X_ACCUMULATOR_OK);
-    seed_status(&cpu->status);
-    before_status = cpu->status;
+    seed_status(&cpu->arch_state.status);
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -274,11 +274,11 @@ static void run_boundary(void)
                        TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY);
     TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
-    TI_C54X_TEST_CHECK(cpu->pc_word == UINT32_C(0xFFFF));
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0xFFFF));
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(state.instructions_attempted_total == 1U);
     TI_C54X_TEST_CHECK(state.instructions_retired_total == 0U);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);

@@ -50,10 +50,10 @@ static void run_case(uint16_t word, uint64_t a, uint64_t b,
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B, b) ==
                        TI_C54X_ACCUMULATOR_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status,
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status,
                                                        initial_c) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
     TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
@@ -67,7 +67,7 @@ static void run_case(uint16_t word, uint64_t a, uint64_t b,
                            expected);
     TI_C54X_TEST_CHECK(state.c_known);
     TI_C54X_TEST_CHECK(state.c == initial_c);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -90,7 +90,7 @@ static void run_unknown_unselected(uint16_t word, bool known_a,
                            known_a ? TI_C54X_ACCUMULATOR_A
                                    : TI_C54X_ACCUMULATOR_B,
                            known_value) == TI_C54X_ACCUMULATOR_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status, 1U) ==
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status, 1U) ==
                        TI_C54X_STATUS_REGISTER_OK);
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -133,11 +133,11 @@ int main(void)
 
         TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, sizeof(storage), &config,
                                             &bus, &cpu) == TI_C54X_ERROR_OK);
-        TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status, 1U) ==
+        TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status, 1U) ==
                            TI_C54X_STATUS_REGISTER_OK);
         TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &before) ==
                            TI_C54X_ERROR_OK);
-        before_status = cpu->status;
+        before_status = cpu->arch_state.status;
         before_accumulators = cpu->accumulators;
         result = ti_c54x_cpu_step(cpu);
         TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_INVALID_STATE);
@@ -150,7 +150,7 @@ int main(void)
         TI_C54X_TEST_CHECK(after.accumulator_b_known == before.accumulator_b_known);
         TI_C54X_TEST_CHECK(after.c == before.c);
         TI_C54X_TEST_CHECK(after.c_known == before.c_known);
-        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                                   sizeof(before_status)) == 0);
         TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                                   sizeof(before_accumulators)) == 0);
@@ -176,9 +176,9 @@ int main(void)
         TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                                &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                                3U) == TI_C54X_ACCUMULATOR_OK);
-        TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status, 1U) ==
+        TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status, 1U) ==
                            TI_C54X_STATUS_REGISTER_OK);
-        before_status = cpu->status;
+        before_status = cpu->arch_state.status;
         before_accumulators = cpu->accumulators;
         result = ti_c54x_cpu_step(cpu);
         TI_C54X_TEST_CHECK(result.reason ==
@@ -190,7 +190,7 @@ int main(void)
         TI_C54X_TEST_CHECK_U64(state.accumulator_a_raw40, 7U);
         TI_C54X_TEST_CHECK_U64(state.accumulator_b_raw40, 3U);
         TI_C54X_TEST_CHECK(state.c == 1U);
-        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                                   sizeof(before_status)) == 0);
         TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                                   sizeof(before_accumulators)) == 0);

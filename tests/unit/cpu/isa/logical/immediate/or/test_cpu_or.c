@@ -70,12 +70,12 @@ static void seed_cpu(ti_c54x_cpu *cpu, uint64_t accumulator_a,
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            accumulator_b) == TI_C54X_ACCUMULATOR_OK);
-    cpu->status.st0 = UINT16_C(0xA5C3);
-    cpu->status.st1 = UINT16_C(0x5A96);
-    cpu->status.pmst = UINT16_C(0xC35A);
-    cpu->status.st0_known_mask = UINT16_C(0xFFFF);
-    cpu->status.st1_known_mask = UINT16_C(0xFFFF);
-    cpu->status.pmst_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.st0 = UINT16_C(0xA5C3);
+    cpu->arch_state.status.st1 = UINT16_C(0x5A96);
+    cpu->arch_state.status.pmst = UINT16_C(0xC35A);
+    cpu->arch_state.status.st0_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.st1_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.pmst_known_mask = UINT16_C(0xFFFF);
 }
 
 static void run_success(uint16_t first_word, uint16_t extension_word,
@@ -102,7 +102,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
     seed_cpu(cpu, accumulator_a, accumulator_b);
     /* The destination is intentionally seeded differently; OR-immediate
      * reads only the selected source and overwrites D. */
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
     TI_C54X_TEST_CHECK(result.instructions_attempted == UINT64_C(1));
@@ -122,7 +122,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
                            destination == 0U ? accumulator_b : accumulator_a);
     TI_C54X_TEST_CHECK(destination == 0U ? state.accumulator_b_known
                                          : state.accumulator_a_known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -156,7 +156,7 @@ static void test_extension_failure_rolls_back_atomically(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, sizeof(storage), &config,
                                         &bus, &cpu) == TI_C54X_ERROR_OK);
     seed_cpu(cpu, UINT64_C(0x1234), UINT64_C(0x5678));
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &before_state) ==
                        TI_C54X_ERROR_OK);
@@ -171,7 +171,7 @@ static void test_extension_failure_rolls_back_atomically(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &after_state) ==
                        TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(after_state.pc_word == before_state.pc_word);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -205,7 +205,7 @@ static void test_fffd_succeeds_and_fffe_rejects_candidate_atomically(void)
         TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &before_state) ==
                            TI_C54X_ERROR_OK);
         before_accumulators = cpu->accumulators;
-        before_status = cpu->status;
+        before_status = cpu->arch_state.status;
         result = ti_c54x_cpu_step(cpu);
         TI_C54X_TEST_CHECK(fixture.calls == 2U);
         TI_C54X_TEST_CHECK(fixture.addresses[0] == start);
@@ -225,7 +225,7 @@ static void test_fffd_succeeds_and_fffe_rejects_candidate_atomically(void)
             TI_C54X_TEST_CHECK(after_state.pc_word == before_state.pc_word);
             TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                                       sizeof(before_accumulators)) == 0);
-            TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+            TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                                       sizeof(before_status)) == 0);
         }
         ti_c54x_cpu_deinit(cpu);

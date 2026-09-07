@@ -3992,7 +3992,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -4002,7 +4002,7 @@
     },
     {
       "id": "REQ-PROJECT-SXM-CHECKED-ACCESS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/state/status/",
@@ -4012,7 +4012,7 @@
     },
     {
       "id": "REQ-PROJECT-OP-INPUT-SXM-RESOURCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/input/",
@@ -5143,26 +5143,26 @@
     },
     {
       "id": "T-PROJECT-CPU-ARCH-STATE-COMPOSITION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/state/test_cpu_arch_state_composition.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_arch_state_composition"},
       "requirement_ids": ["REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION"]
     },
     {
       "id": "T-PROJECT-SXM-FIELD",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/state/status/test_sxm_field.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.sxm_field"},
       "requirement_ids": ["REQ-PROJECT-SXM-CHECKED-ACCESS"]
     },
     {
       "id": "T-PROJECT-OP-INPUT-SXM",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/input/test_collect_sxm.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_sxm"},
       "requirement_ids": ["REQ-PROJECT-OP-INPUT-SXM-RESOURCE"]
     }
   ]

@@ -187,7 +187,7 @@ test_attempt_counter_overflow_stops_without_fetch_or_mutation(void)
     TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(cpu->instructions_attempted == UINT64_MAX);
     TI_C54X_TEST_CHECK(cpu->instructions_retired == 0U);
-    TI_C54X_TEST_CHECK(cpu->pc_word == UINT32_C(0));
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0));
     TI_C54X_TEST_CHECK(!cpu->last_fetch_valid);
     TI_C54X_TEST_CHECK(cpu->last_fetched_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(!cpu->execution_active);
@@ -227,7 +227,7 @@ test_retired_counter_overflow_stops_without_fetch_or_mutation(void)
     TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(cpu->instructions_attempted == 0U);
     TI_C54X_TEST_CHECK(cpu->instructions_retired == UINT64_MAX);
-    TI_C54X_TEST_CHECK(cpu->pc_word == UINT32_C(0));
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0));
     TI_C54X_TEST_CHECK(!cpu->last_fetch_valid);
     TI_C54X_TEST_CHECK(cpu->last_fetched_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(!cpu->execution_active);

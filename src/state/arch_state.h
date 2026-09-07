@@ -2,11 +2,11 @@
 #define TI_C54X_STATE_ARCH_STATE_H
 
 /* Module contract
- * Owns: private, fixed-size architectural register storage, common TI reset
- * seeding, and checked knownness-aware AR/SP and ARP/CMPT status-field access,
- * knownness, and field-limited mutation for ARP, DP, CPL, and CMPT. Status
- * register storage is composed from the status owner; block_size_register.h
- * owns BK access.
+ * Owns: private architectural register storage, including the wide public
+ * program-word PC carrier, common TI reset seeding, and checked
+ * knownness-aware AR/SP and ARP/CMPT status-field access, knownness, and
+ * field-limited mutation for ARP, DP, CPL, and CMPT. Status register storage
+ * is composed from the status owner; block_size_register.h owns BK access.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -16,6 +16,8 @@
  */
 
 #include <stdint.h>
+
+#include <ti_c54x/address.h>
 
 #include "register_layout.h"
 #include "status/registers.h"
@@ -27,7 +29,7 @@ typedef enum ti_c54x_arch_state_status {
 } ti_c54x_arch_state_status;
 
 typedef struct ti_c54x_arch_state {
-    uint16_t pc_word;
+    ti_c54x_program_word_address pc_word;
     uint16_t ifr;
     uint16_t rc;
     uint16_t bk;

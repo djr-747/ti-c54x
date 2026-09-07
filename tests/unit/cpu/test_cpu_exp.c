@@ -100,7 +100,7 @@ static void run_success_case(uint16_t word,
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            accumulator_b) == TI_C54X_ACCUMULATOR_OK);
     seed_t(cpu, UINT16_C(0xA55A), true);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -114,7 +114,7 @@ static void run_success_case(uint16_t word,
 
     TI_C54X_TEST_CHECK(cpu->t_register.raw_value == expected_t);
     TI_C54X_TEST_CHECK(cpu->t_register.known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -149,7 +149,7 @@ static void run_unknown_selected_case(uint16_t word,
                                       : TI_C54X_ACCUMULATOR_A,
                            unselected_value) == TI_C54X_ACCUMULATOR_OK);
     seed_t(cpu, UINT16_C(0xA55A), true);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &before_state) ==
                        TI_C54X_ERROR_OK);
@@ -164,7 +164,7 @@ static void run_unknown_selected_case(uint16_t word,
     TI_C54X_TEST_CHECK(fixture.reads == 1U);
     TI_C54X_TEST_CHECK(cpu->t_register.raw_value == UINT16_C(0xA55A));
     TI_C54X_TEST_CHECK(cpu->t_register.known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -206,7 +206,7 @@ static void test_t_write_waits_for_candidate_pc_validation(void)
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(2)) == TI_C54X_ACCUMULATOR_OK);
     seed_t(cpu, UINT16_C(0xA55A), true);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -219,7 +219,7 @@ static void test_t_write_waits_for_candidate_pc_validation(void)
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(0xFFFF));
     TI_C54X_TEST_CHECK(cpu->t_register.raw_value == UINT16_C(0xA55A));
     TI_C54X_TEST_CHECK(cpu->t_register.known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);

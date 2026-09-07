@@ -1,6 +1,6 @@
 /* Module contract
- * Owns: transactional collection of catalog-declared accumulator and status C
- * or TC resources into a copied opcode input snapshot.
+ * Owns: transactional collection of catalog-declared accumulator and status C,
+ * TC, or SXM resources into a copied opcode input snapshot.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, sequencing,
  * timing, buses, diagnostics, allocation, or global state.
  */
@@ -85,6 +85,23 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
         }
         staged.status_tc = (uint8_t)tc_result.raw_value;
         staged.status_tc_known = tc_result.status == TI_C54X_STATUS_REGISTER_OK;
+    }
+
+    if ((resources & TI_C54X_INPUT_RESOURCES_STATUS_SXM) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        ti_c54x_status_register_field_result sxm_result;
+
+        if (sources == NULL || sources->status == NULL) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        sxm_result = ti_c54x_status_register_read_sxm(sources->status);
+        if (sxm_result.status != TI_C54X_STATUS_REGISTER_OK &&
+            sxm_result.status != TI_C54X_STATUS_REGISTER_UNKNOWN) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        staged.status_sxm = (uint8_t)sxm_result.raw_value;
+        staged.status_sxm_known =
+            sxm_result.status == TI_C54X_STATUS_REGISTER_OK;
     }
 
     *output = staged;

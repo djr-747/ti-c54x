@@ -76,12 +76,12 @@ static uint64_t expected_xor(uint64_t source, uint16_t immediate,
 
 static void seed_status(ti_c54x_cpu *cpu)
 {
-    cpu->status.st0 = UINT16_C(0xA5C3);
-    cpu->status.st1 = UINT16_C(0x5A96);
-    cpu->status.pmst = UINT16_C(0xC35A);
-    cpu->status.st0_known_mask = UINT16_C(0xFFFF);
-    cpu->status.st1_known_mask = UINT16_C(0xFFFF);
-    cpu->status.pmst_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.st0 = UINT16_C(0xA5C3);
+    cpu->arch_state.status.st1 = UINT16_C(0x5A96);
+    cpu->arch_state.status.pmst = UINT16_C(0xC35A);
+    cpu->arch_state.status.st0_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.st1_known_mask = UINT16_C(0xFFFF);
+    cpu->arch_state.status.pmst_known_mask = UINT16_C(0xFFFF);
 }
 
 static ti_c54x_cpu *init_cpu(xor_fixture *fixture,
@@ -131,7 +131,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B, b) ==
                        TI_C54X_ACCUMULATOR_OK);
     seed_status(cpu);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -143,7 +143,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
     TI_C54X_TEST_CHECK(fixture.calls == 2U);
     TI_C54X_TEST_CHECK(fixture.addresses[0] == start);
     TI_C54X_TEST_CHECK(fixture.addresses[1] == start + UINT32_C(1));
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK_U64(cpu->accumulators.a_raw40,
                            destination == 0U ? expected : a);
@@ -194,7 +194,7 @@ static void test_extension_failure_is_atomic(void)
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(0x00ABCDEF01)) == TI_C54X_ACCUMULATOR_OK);
     seed_status(cpu);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -206,7 +206,7 @@ static void test_extension_failure_is_atomic(void)
     TI_C54X_TEST_CHECK(fixture.calls == 2U);
     TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_C(0));
     TI_C54X_TEST_CHECK(fixture.addresses[1] == UINT32_C(1));
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -244,7 +244,7 @@ static void test_fffe_fetches_extension_then_rejects_candidate_pc(void)
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(0x00ABCDEF01)) == TI_C54X_ACCUMULATOR_OK);
     seed_status(cpu);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -256,7 +256,7 @@ static void test_fffe_fetches_extension_then_rejects_candidate_pc(void)
     TI_C54X_TEST_CHECK(fixture.calls == 2U);
     TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_C(0xFFFE));
     TI_C54X_TEST_CHECK(fixture.addresses[1] == UINT32_C(0xFFFF));
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -283,7 +283,7 @@ static void test_unknown_selected_source_rolls_back(void)
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(0x00ABCDEF01)) == TI_C54X_ACCUMULATOR_OK);
     seed_status(cpu);
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
@@ -292,7 +292,7 @@ static void test_unknown_selected_source_rolls_back(void)
     TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(0));
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(0));
     TI_C54X_TEST_CHECK(fixture.calls == 2U);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);

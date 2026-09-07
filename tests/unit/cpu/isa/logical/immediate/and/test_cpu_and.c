@@ -112,8 +112,8 @@ static void run_success(uint16_t first_word, uint16_t lk, uint8_t source,
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B, b) ==
                        TI_C54X_ACCUMULATOR_OK);
-    seed_status(&cpu->status);
-    before_status = cpu->status;
+    seed_status(&cpu->arch_state.status);
+    before_status = cpu->arch_state.status;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -137,7 +137,7 @@ static void run_success(uint16_t first_word, uint16_t lk, uint8_t source,
                            destination == 0U ? b : a);
     TI_C54X_TEST_CHECK(destination == 0U ? state.accumulator_a_known
                                          : state.accumulator_b_known);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -194,8 +194,8 @@ static void run_extension_failure(void)
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B,
                            UINT64_C(0x00ABCDEF01)) == TI_C54X_ACCUMULATOR_OK);
-    seed_status(&cpu->status);
-    before_status = cpu->status;
+    seed_status(&cpu->arch_state.status);
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUS_FAULT);
@@ -206,7 +206,7 @@ static void run_extension_failure(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(state.pc_word == 0U);
     TI_C54X_TEST_CHECK(state.instructions_retired_total == 0U);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);

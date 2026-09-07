@@ -1,8 +1,9 @@
 /* Module contract
- * Owns: deterministic construction of the private common reset state and
- * checked knownness-aware AR/SP and delegated ARP/DP/CPL/CMPT status-field
- * access and mutation. BK storage is part of the aggregate but its accessors
- * live in block_size_register.c.
+ * Owns: deterministic construction of the private common reset state,
+ * including its wide program-word PC carrier, and checked knownness-aware
+ * AR/SP plus delegated ARP/DP/CPL/CMPT status-field access and mutation. BK
+ * storage is part of the aggregate but its accessors live in
+ * block_size_register.c.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.

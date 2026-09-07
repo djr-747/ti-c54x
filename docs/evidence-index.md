@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 125 immutable evidence records,
-181 requirements (146 `IMPLEMENTED`, 12 `PLANNED`, 23 `UNRESOLVED`), and 138 tests
-(126 `PASSING`, 12 `PLANNED`).
+181 requirements (149 `IMPLEMENTED`, 9 `PLANNED`, 23 `UNRESOLVED`), and 138 tests
+(129 `PASSING`, 9 `PLANNED`).
 
 ## Targets
 
@@ -450,9 +450,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-AND-IMMEDIATE` |
 | `REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-OR-IMMEDIATE` |
 | `REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W30-LOGICAL-IMMEDIATE-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-XOR-IMMEDIATE` |
-| `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
-| `REQ-PROJECT-SXM-CHECKED-ACCESS` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/status/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-SXM-FIELD` |
-| `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-OP-INPUT-SXM` |
+| `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
+| `REQ-PROJECT-SXM-CHECKED-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/status/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-SXM-FIELD` |
+| `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W31A-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-OP-INPUT-SXM` |
 
 ## Tests
 
@@ -597,9 +597,9 @@ exist in the repository.
 | `T-PROJECT-CPU-AND-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/and/test_cpu_and.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_and_immediate"}` | `REQ-PROJECT-CPU-AND-IMMEDIATE-RETIREMENT` |
 | `T-PROJECT-CPU-OR-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/or/test_cpu_or.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_or_immediate"}` | `REQ-PROJECT-CPU-OR-IMMEDIATE-RETIREMENT` |
 | `T-PROJECT-CPU-XOR-IMMEDIATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/logical/immediate/xor/test_cpu_xor.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_xor_immediate"}` | `REQ-PROJECT-CPU-XOR-IMMEDIATE-RETIREMENT` |
-| `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/state/test_cpu_arch_state_composition.c` | `null` | `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
-| `T-PROJECT-SXM-FIELD` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/state/status/test_sxm_field.c` | `null` | `REQ-PROJECT-SXM-CHECKED-ACCESS` |
-| `T-PROJECT-OP-INPUT-SXM` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_sxm.c` | `null` | `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` |
+| `T-PROJECT-CPU-ARCH-STATE-COMPOSITION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/state/test_cpu_arch_state_composition.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_arch_state_composition"}` | `REQ-PROJECT-CPU-ARCH-STATE-COMPOSITION` |
+| `T-PROJECT-SXM-FIELD` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/status/test_sxm_field.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sxm_field"}` | `REQ-PROJECT-SXM-CHECKED-ACCESS` |
+| `T-PROJECT-OP-INPUT-SXM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_sxm.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_input_collect_sxm"}` | `REQ-PROJECT-OP-INPUT-SXM-RESOURCE` |
 
 ## Correction and tombstone policy
 

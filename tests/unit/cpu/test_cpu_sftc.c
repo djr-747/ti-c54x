@@ -117,22 +117,22 @@ static void run_case(uint8_t source, uint64_t a, uint64_t b, uint8_t initial_c,
     TI_C54X_TEST_CHECK(ti_c54x_accumulator_write(
                            &cpu->accumulators, TI_C54X_ACCUMULATOR_B, b) ==
                        TI_C54X_ACCUMULATOR_OK);
-    seed_non_c_status(&cpu->status);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status,
+    seed_non_c_status(&cpu->arch_state.status);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status,
                                                        initial_c) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->status,
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->arch_state.status,
                                                         initial_tc) ==
                        TI_C54X_STATUS_REGISTER_OK);
     if (!initial_c_known) {
-        cpu->status.st0_known_mask = (uint16_t)(
-            cpu->status.st0_known_mask & (uint16_t)~TI_C54X_ST0_C_MASK);
+        cpu->arch_state.status.st0_known_mask = (uint16_t)(
+            cpu->arch_state.status.st0_known_mask & (uint16_t)~TI_C54X_ST0_C_MASK);
     }
     if (!initial_tc_known) {
-        cpu->status.st0_known_mask = (uint16_t)(
-            cpu->status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
+        cpu->arch_state.status.st0_known_mask = (uint16_t)(
+            cpu->arch_state.status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
     }
-    before_status = cpu->status;
+    before_status = cpu->arch_state.status;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -151,8 +151,8 @@ static void run_case(uint8_t source, uint64_t a, uint64_t b, uint8_t initial_c,
                                                 : state.accumulator_a_raw40,
                            other);
 
-    c_result = ti_c54x_status_register_read_c(&cpu->status);
-    tc_result = ti_c54x_status_register_read_tc(&cpu->status);
+    c_result = ti_c54x_status_register_read_c(&cpu->arch_state.status);
+    tc_result = ti_c54x_status_register_read_tc(&cpu->arch_state.status);
     TI_C54X_TEST_CHECK(c_result.status == TI_C54X_STATUS_REGISTER_UNKNOWN ||
                        c_result.status == TI_C54X_STATUS_REGISTER_OK);
     TI_C54X_TEST_CHECK(c_result.known == initial_c_known);
@@ -164,10 +164,10 @@ static void run_case(uint8_t source, uint64_t a, uint64_t b, uint8_t initial_c,
     TI_C54X_TEST_CHECK(tc_result.raw_value == expected_tc(selected));
 
     clear_c_fields(&before_status);
-    clear_c_fields(&cpu->status);
+    clear_c_fields(&cpu->arch_state.status);
     clear_tc_fields(&before_status);
-    clear_tc_fields(&cpu->status);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    clear_tc_fields(&cpu->arch_state.status);
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -190,22 +190,22 @@ static void run_unknown_selected(uint8_t source)
                            source == UINT8_C(0) ? TI_C54X_ACCUMULATOR_B
                                                 : TI_C54X_ACCUMULATOR_A,
                            UINT64_C(0x123456789A)) == TI_C54X_ACCUMULATOR_OK);
-    seed_non_c_status(&cpu->status);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status, 1U) ==
+    seed_non_c_status(&cpu->arch_state.status);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status, 1U) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->status, 0U) ==
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->arch_state.status, 0U) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    cpu->status.st0_known_mask = (uint16_t)(
-        cpu->status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
-    before_status = cpu->status;
+    cpu->arch_state.status.st0_known_mask = (uint16_t)(
+        cpu->arch_state.status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
+    before_status = cpu->arch_state.status;
     before_accumulators = cpu->accumulators;
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_INVALID_STATE);
     TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
-    TI_C54X_TEST_CHECK(cpu->pc_word == 0U);
-    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == 0U);
+    TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                               sizeof(before_status)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                               sizeof(before_accumulators)) == 0);
@@ -230,12 +230,12 @@ static void run_unknown_unselected_allowed(uint8_t source)
                            source == UINT8_C(0) ? TI_C54X_ACCUMULATOR_A
                                                 : TI_C54X_ACCUMULATOR_B,
                            selected) == TI_C54X_ACCUMULATOR_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->status, 1U) ==
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&cpu->arch_state.status, 1U) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->status, 1U) ==
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_tc(&cpu->arch_state.status, 1U) ==
                        TI_C54X_STATUS_REGISTER_OK);
-    cpu->status.st0_known_mask = (uint16_t)(
-        cpu->status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
+    cpu->arch_state.status.st0_known_mask = (uint16_t)(
+        cpu->arch_state.status.st0_known_mask & (uint16_t)~TI_C54X_ST0_TC_MASK);
 
     result = ti_c54x_cpu_step(cpu);
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
@@ -248,8 +248,8 @@ static void run_unknown_unselected_allowed(uint8_t source)
     TI_C54X_TEST_CHECK(source == UINT8_C(0) ? !state.accumulator_b_known
                                             : !state.accumulator_a_known);
     TI_C54X_TEST_CHECK(state.pc_word == 1U);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_tc(&cpu->status).known);
-    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_tc(&cpu->status).raw_value ==
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_tc(&cpu->arch_state.status).known);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_tc(&cpu->arch_state.status).raw_value ==
                        0U);
     ti_c54x_cpu_deinit(cpu);
 }
@@ -314,15 +314,15 @@ int main(void)
                                &cpu->accumulators, TI_C54X_ACCUMULATOR_A,
                                UINT64_C(0x123456789A)) ==
                            TI_C54X_ACCUMULATOR_OK);
-        before_status = cpu->status;
+        before_status = cpu->arch_state.status;
         before_accumulators = cpu->accumulators;
         result = ti_c54x_cpu_step(cpu);
         TI_C54X_TEST_CHECK(result.reason ==
                            TI_C54X_STOP_UNRESOLVED_PROGRAM_BOUNDARY);
         TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
         TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
-        TI_C54X_TEST_CHECK(cpu->pc_word == UINT32_C(0xFFFF));
-        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->status,
+        TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0xFFFF));
+        TI_C54X_TEST_CHECK(memcmp(&before_status, &cpu->arch_state.status,
                                   sizeof(before_status)) == 0);
         TI_C54X_TEST_CHECK(memcmp(&before_accumulators, &cpu->accumulators,
                                   sizeof(before_accumulators)) == 0);

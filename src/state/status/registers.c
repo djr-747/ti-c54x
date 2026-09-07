@@ -142,6 +142,14 @@ ti_c54x_status_register_read_cmpt(const ti_c54x_status_register_state *state)
 }
 
 ti_c54x_status_register_field_result
+ti_c54x_status_register_read_sxm(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_SXM_MASK, TI_C54X_ST1_SXM_SHIFT);
+}
+
+ti_c54x_status_register_field_result
 ti_c54x_status_register_read_c(const ti_c54x_status_register_state *state)
 {
     return read_field(state, state == NULL ? 0U : state->st0,
