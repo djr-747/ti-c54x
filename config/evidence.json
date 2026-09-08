@@ -2652,6 +2652,36 @@
         "anchor": "P2-W44A: generic circular WORD16 MEMORY seam (planned)"
       },
       "assertion": "P2-W44A freezes a private CIRCULAR_WORD16 MEMORY specification for CMPT=0 WORD16 MOD8/MOD10 reads and writes, carrying only copied ARF and typed circular-mode inputs at the operation layer. Resolution orders CMPT, ARP, selected AR, then BK, and reuses the existing circular planner: BK=0 is a valid NONE/no-update result, while positive BK applies the documented circular wrap domain. The resolved address effect carries copied AR/BK snapshots; unknown or stale dependencies reject, selected AR0–AR7 are admitted, and WAIT, READY, FAULT, and cancel preserve transactional state with READY atomically committing selected AR, PC, and effect. No catalog row, opcode handler, public ABI, timing, MMR/device, IRQ/RPT, or new public architectural kind is admitted. W44B remains the subsequent twenty-row MOD8/MOD10 family fan-out projected at ID_COUNT=76, lookup=2343, and 75 bindings; those values are not activated by W44A."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5-MOD8-MOD10-FAMILY-COMPOSITION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.1–5.5.3",
+        "printed_page_start": "5-10",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Figure 5-7 and Table 5-3 establish the common single-indirect field composition used by the ten existing SPRU172C Smem diagrams: family opcode fields with D where present, ARF, and the fixed addressing-mode field under CMPT=0; Table 5-4 defines MOD8 as old ARx for the operand followed by circular ARx−1 and MOD10 as old ARx followed by circular ARx+1 for fixed WORD16 steps. Composing those registered fields and modes for exactly LD Smem,dst, LD Smem,TS,dst, STL src,Smem, LDU Smem,dst, LD T,Smem, ST immediate,Smem, LD Smem,DP, LD Smem,ASM, LD Smem,16,dst, and ST T,Smem yields exactly twenty private rows: LD_SMEM_MOD8/10 0x10C0/0x10D0 with 0xFEF8, LD_SMEM_TS_MOD8/10 0x14C0/0x14D0 with 0xFEF8, STL_SMEM_MOD8/10 0x80C0/0x80D0 with 0xFEF8, LDU_SMEM_MOD8/10 0x12C0/0x12D0 with 0xFEF8, LD_T_SMEM_MOD8/10 0x30C0/0x30D0 with 0xFFF8, ST_IMMEDIATE_SMEM_MOD8/10 0x76C0/0x76D0 with 0xFFF8, LD_DP_SMEM_MOD8/10 0x46C0/0x46D0 with 0xFFF8, LD_ASM_SMEM_MOD8/10 0x32C0/0x32D0 with 0xFFF8, LD_SMEM_SHIFT16_MOD8/10 0x44C0/0x44D0 with 0xFEF8, and ST_T_SMEM_MOD8/10 0x8CC0/0x8CD0 with 0xFFF8. This bounded composition does not infer MOD9/MOD11, MOD14, CMPT=1 or dual-indirect forms, LONG32 scaling, boundary policy beyond the registered circular contract, timing, repeatability, or device/MMR behavior."
+    },
+    {
+      "id": "E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W44B: circular MOD8/MOD10 per-family composition (planned)"
+      },
+      "assertion": "P2-W44B freezes exactly twenty private MOD8/MOD10 catalog identities and unique handler tokens suffixed _mod8/_mod10 over the ten existing Smem families, reusing the three existing private MOD4 decode layouts and the completed W44A CIRCULAR_WORD16 MEMORY effect, resolver, and transaction seams. The operation layer carries copied ARF and typed circular mode; CMPT=0 resolution admits AR0–AR7, reads CMPT then ARP then selected AR then BK, preserves BK=0 NONE/no-update, and stages the positive-BK post-access wrap update with copied live snapshots. Inventory remains audit metadata only and adds the combined addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10 to the ten stable form identities. The projection is ID_COUNT=76, lookup=2343, and 75 catalog bindings with family and strict coverage unchanged at 35/205 and 25/205. No operand_layout edit, public ABI, new architectural kind, timing, device/MMR, IRQ/RPT, unsupported circular mode, or boundary expansion is admitted."
     }
   ],
   "requirements": [
@@ -5530,6 +5560,66 @@
       "claim": "Integrate private CIRCULAR_WORD16 READ and WRITE candidates through the generic memory transaction with WAIT, READY, FAULT, and cancel transactionality; READY atomically commits selected AR, sequential PC, and MEMORY effect, while copied AR/BK snapshots reject stale state. No catalog row, opcode handler, public ABI, timing, MMR/device, IRQ/RPT, or opcode-specific CPU branch is added.",
       "evidence_ids": ["E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-INDIRECT-CIRCULAR-APPLICATION"],
       "test_ids": ["T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly twenty private MOD8/MOD10 standard-indirect catalog identities with unique _mod8/_mod10 handler tokens: LD_SMEM, LD_SMEM_TS, STL_SMEM, LDU_SMEM, LD_T_SMEM, ST_IMMEDIATE_SMEM, LD_DP_SMEM, LD_ASM_SMEM, LD_SMEM_SHIFT16, and ST_T_SMEM. Use the frozen base/mask pairs from the TI composition record, ID_COUNT=76, populated first-word lookup count 2343 (+240), and no duplicate or unrelated rows.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the twenty MOD8/MOD10 rows through the existing private ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4 layouts, preserving operand indices and carrying the explicit circular mode discriminator without editing operand_layout.c or parsing raw words in handlers.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Add unique MOD8/MOD10 wrappers for the seven load families that consume decoded circular operands, preserve each existing load transform and destination, and reuse the W44A CIRCULAR_WORD16 MEMORY READ seam with old-AR addressing and BK=0 NONE or positive-BK post-access update semantics.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Add unique MOD8/MOD10 wrappers for the three store families that consume decoded circular operands, preserve source and WORD16 semantics, and reuse the W44A CIRCULAR_WORD16 MEMORY WRITE seam without a new effect kind or raw-word mode parsing.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/memory/",
+      "claim": "Retire the twenty MOD8/MOD10 load/store rows through generic decode, W44A circular address resolution, and the existing MEMORY endpoint transaction, preserving WAIT/READY/FAULT/cancel and sequential-PC behavior without changing the root transaction source or adding an opcode-specific CPU branch, public ABI, timing, device/MMR, IRQ/RPT, or unsupported circular boundary scope.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Extend audit-only inventory bindings for the ten W44B forms using the combined token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10, retain one stable form identity per binding without opcode values or masks, and keep family and strict coverage percentages unchanged until complete-form evidence exists.",
+      "evidence_ids": ["E-PROJECT-P2-W44B-CIRCULAR-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING"]
     }
   ],
   "tests": [
@@ -7331,6 +7421,54 @@
       "path": "tests/unit/sequencer/instruction/test_circular_word16_memory_transaction.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_word16_memory_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-CATALOG",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_circular_standard_indirect_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-DECODE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_circular_standard_indirect_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/load/test_circular_standard_indirect_load_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/store/test_circular_standard_indirect_store_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_circular_standard_indirect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_circular_multi_binding.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING"]
     }
   ]
 }

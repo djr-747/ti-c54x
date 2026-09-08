@@ -58,9 +58,10 @@ The catalog projection is ID_COUNT=56 with 2,103 populated first-word lookup
 entries and 55 catalog bindings; inventory family progress remains 35/205
 (17.073%) and strict complete-form coverage remains 25/205 (12.195%).
 P2-W44A is implementation-complete as the generic circular WORD16 MEMORY
-seam; it adds no catalog rows or handlers. W44B remains the subsequent
-twenty-row MOD8/MOD10 family fan-out projection (ID_COUNT 76, lookup 2,343,
-75 bindings), not an activated implementation claim.
+seam; it adds no catalog rows or handlers. P2-W44B is now active as the
+evidence-first twenty-row MOD8/MOD10 family fan-out, projected at ID_COUNT 76,
+lookup 2,343, and 75 bindings; those values remain planned until its six
+owner-local RED contracts are implemented.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -468,6 +469,51 @@ first-word lookup entries and 55 bindings; inventory coverage remains 35/205 =
 17.073% catalog-family progress and 25/205 = 12.195% strict complete-form
 coverage.
 
+### P2-W44B: circular MOD8/MOD10 per-family composition (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the W44B
+activation. Figure 5-7 and Table 5-3 establish the common single-indirect
+field composition, while Table 5-4 fixes MOD8 as old ARx followed by circular
+ARx−1 and MOD10 as old ARx followed by circular ARx+1 for fixed WORD16 steps.
+Composed only with the ten existing SPRU172C Smem diagrams, the bounded rows
+are exactly:
+
+`LD_SMEM_MOD8/10` `0x10C0/0x10D0` mask `0xFEF8`;
+`LD_SMEM_TS_MOD8/10` `0x14C0/0x14D0` mask `0xFEF8`;
+`STL_SMEM_MOD8/10` `0x80C0/0x80D0` mask `0xFEF8`;
+`LDU_SMEM_MOD8/10` `0x12C0/0x12D0` mask `0xFEF8`;
+`LD_T_SMEM_MOD8/10` `0x30C0/0x30D0` mask `0xFFF8`;
+`ST_IMMEDIATE_SMEM_MOD8/10` `0x76C0/0x76D0` mask `0xFFF8`;
+`LD_DP_SMEM_MOD8/10` `0x46C0/0x46D0` mask `0xFFF8`;
+`LD_ASM_SMEM_MOD8/10` `0x32C0/0x32D0` mask `0xFFF8`;
+`LD_SMEM_SHIFT16_MOD8/10` `0x44C0/0x44D0` mask `0xFEF8`; and
+`ST_T_SMEM_MOD8/10` `0x8CC0/0x8CD0` mask `0xFFF8`. Handler tokens use the
+corresponding `_mod8`/`_mod10` suffixes.
+
+W44B reuses the existing `ACCUMULATOR_ARF_MOD4`, `ARF_MOD4`, and
+`ARF_EXTENSION16_MOD4` layouts and the completed W44A CIRCULAR_WORD16 MEMORY
+effect, resolver, and transaction seams. Selected AR0–AR7 remain admitted;
+resolution orders CMPT, ARP, selected AR, then BK, with BK=0 as NONE/no-update
+and BK>0 as the positive-BK POST-access wrap update. Inventory remains audit
+metadata only: the ten stable forms use
+`STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10`, with family and strict
+coverage unchanged at 35/205 (17.073%) and 25/205 (12.195%). No
+`operand_layout.c` edit is planned; a new status-load circular file and new
+store circular common file are preferred owner splits, while central catalog
+and inventory edits remain serialized.
+
+Unsupported and out of scope are MOD9/MOD11, MOD14, CMPT=1/dual-indirect,
+LONG32 circular scaling, initial-boundary policy beyond the registered planner,
+timing/repeatability, BK MMR/device routing, public ABI, new architectural
+kinds, IRQ/RPT, and broader catalog scope. Six planned project requirements
+and null-runner tests cover catalog, decode, seven load effects, three store
+effects, CPU integration, and inventory multi-binding.
+
+Activation accounting is 168 evidence records; 272 requirements (229
+IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 226 tests (212 PASSING, 14 PLANNED);
+and 7 sources. W44B remains evidence-first until all six RED lanes are
+implemented and their focused runners are GREEN.
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -512,6 +558,7 @@ function-pointer dispatch tables.
 | P2-W42A standard-indirect MOD0–MOD3 memory transaction seam | Implemented — focused CTest contracts, evidence checker, and diff validation green to date | Generalize the existing generic MEMORY effect, address resolver, and root memory-instruction transaction to MOD0–MOD3 without changing the catalog or opcode handlers. MOD3 read effects reject structurally before endpoint issue; MOD0 has no AR commit, MOD1/MOD2 are POST, and MOD3 writes are PRE metadata with commit-at-READY atomicity. |
 | P2-W43B indexed MOD5/MOD6 per-family composition | Implemented — five focused CTests, inventory Python 3/3, and independent ASan/UBSan gate green | Register 20 indexed catalog rows (ID_COUNT 56; lookup 2,103), append the three private MOD4 layouts, and add seven load plus three store MOD5/MOD6 wrappers through the W43A indexed MEMORY seam. Keep 55 catalog bindings, 35/205 family coverage, 25/205 strict complete coverage, and no ABI/effect/address/state/CPU/timing expansion. |
 | P2-W44A generic circular WORD16 MEMORY seam | Implemented — focused RED→GREEN C executable runners green; no catalog rows or handlers | Define typed CIRCULAR_WORD16 MOD8/MOD10 read/write effects, ordered CMPT→ARP→selected AR→BK resolution, existing circular planner reuse, BK=0 NONE/no-update, stale/unknown rejection, and atomic WAIT/READY/FAULT/cancel transactionality. Catalog remains ID_COUNT 56, lookup 2,103, and 55 bindings; coverage remains 35/205 family and 25/205 strict. W44B's 20-row fan-out remains projected at ID_COUNT 76, lookup 2,343, and 75 bindings. |
+| P2-W44B circular MOD8/MOD10 per-family composition | Active — evidence-first; six RED contracts planned; no catalog rows or handlers yet | Register twenty bounded MOD8/MOD10 rows over the ten existing Smem families, reuse private MOD4 layouts and the W44A CIRCULAR_WORD16 seam, and preserve the combined inventory token and unchanged coverage. Projected ID_COUNT 76, lookup 2,343, and 75 bindings; unsupported modes/boundaries remain excluded. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
