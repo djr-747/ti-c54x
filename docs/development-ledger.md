@@ -6117,3 +6117,36 @@ rewritten after publication.
   `ID_COUNT=96`, lookup 2,583, and 95 bindings; AR0 remains excluded and
   coverage is unchanged. `git diff --check` and append-only numstat are clean;
   no commit was created by this ledger update.
+
+## 2026-09-08 — P2-W45B reverse-carry MOD4/MOD7 per-family composition activation
+
+- State: activation commit
+  `2251fb03dfa9dad9d365555897bf94ce4ab98c77` records the evidence-first
+  twenty-row reverse-carry fan-out over the ten existing Smem families.
+- The exact rows and masks are: `LD_SMEM_MOD4/7` `0x10A0/0x10B8`
+  `0xFEF8`; `LD_SMEM_TS_MOD4/7` `0x14A0/0x14B8` `0xFEF8`;
+  `STL_SMEM_MOD4/7` `0x80A0/0x80B8` `0xFEF8`; `LDU_SMEM_MOD4/7`
+  `0x12A0/0x12B8` `0xFEF8`; `LD_SMEM_SHIFT16_MOD4/7` `0x44A0/0x44B8`
+  `0xFEF8`; `LD_T_SMEM_MOD4/7` `0x30A0/0x30B8` `0xFFF8`;
+  `ST_IMMEDIATE_SMEM_MOD4/7` `0x76A0/0x76B8` `0xFFF8` (two words);
+  `LD_DP_SMEM_MOD4/7` `0x46A0/0x46B8` `0xFFF8`; `LD_ASM_SMEM_MOD4/7`
+  `0x32A0/0x32B8` `0xFFF8`; and `ST_T_SMEM_MOD4/7` `0x8CA0/0x8CB8`
+  `0xFFF8`. Handler tokens use `_mod4`/`_mod7` suffixes.
+- W45B reuses the typed W45A reverse-carry seam: CMPT=0/ARP=0, known
+  nonzero one-hot AR0, old selected-AR address, and POST update to selected AR
+  only. ARF1..7 executes; ARF0 decodes but is transactionally rejected before
+  endpoint issue because alias semantics are unresolved. No BK or wrap
+  inference is admitted. Inventory uses
+  `STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10`; projected
+  rows are 95 with `ID_COUNT=96`, lookup 2,583, and 95 bindings. Coverage is
+  unchanged at 35/205 family and 25/205 strict.
+- Six RED paths are planned for catalog, decode, seven load effects, three
+  store effects, CPU integration, and inventory multi-binding. No operand
+  layout, root transaction, CPU branch, public ABI, timing, device, or RPT
+  change is admitted. Existing load/store family files are near their size
+  threshold, so implementation should prefer new reverse-carry owner files;
+  central catalog and inventory edits remain serialized.
+- Activation accounting is 170 evidence records; 281 requirements (238
+  IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 235 tests (221 PASSING, 14
+  PLANNED); and 7 sources. Evidence validation and the full authoritative
+  `rtk make test` gate are green. Follow-up remains evidence-first.
