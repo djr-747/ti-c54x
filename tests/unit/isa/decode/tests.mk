@@ -29,3 +29,4 @@ $(eval $(call ti_c54x_add_test,standard_indirect_memory_decode,isa/decode,test_s
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_decode,isa/decode,test_indexed_standard_indirect_decode.c))
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_decode,isa/decode,test_circular_standard_indirect_decode.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_decode,isa/decode,test_reverse_carry_standard_indirect_decode.c))
+$(eval $(call ti_c54x_add_test,atomic_logical_memory_decode,isa/decode,test_atomic_logical_memory_decode.c))

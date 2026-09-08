@@ -5826,7 +5826,7 @@
     },
     {
       "id": "REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -5836,7 +5836,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/decode/",
@@ -5846,7 +5846,7 @@
     },
     {
       "id": "REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/memory/",
@@ -5856,7 +5856,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/memory/",
@@ -5866,7 +5866,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -7831,49 +7831,49 @@
     },
     {
       "id": "T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_atomic_logical_memory_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.atomic_logical_memory_metadata"},
       "requirement_ids": ["REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG"]
     },
     {
       "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/decode/test_atomic_logical_memory_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.atomic_logical_memory_decode"},
       "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE"]
     },
     {
       "id": "T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/memory/test_atomic_logical_memory_effects.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.atomic_logical_memory_effects"},
       "requirement_ids": ["REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS"]
     },
     {
       "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/memory/test_cpu_atomic_logical_memory.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_atomic_logical_memory"},
       "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION"]
     },
     {
       "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_atomic_logical_multi_binding.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING"]
     },
     {
       "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK",
       "state": "PLANNED",
       "scope": "PROJECT_CONTRACT_ONLY",
-      "path": "tests/contract/performance/test_atomic_logical_rmw_benchmark.py",
+      "path": "tests/contract/quality/perf/test_atomic_logical_rmw_benchmark.py",
       "runner": null,
       "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK"]
     }

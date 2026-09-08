@@ -20,25 +20,23 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W46A):
+Current snapshot (P2-W46B):
 
-- 95 runnable catalog rows and 2,583 populated first-word lookup entries. The
-  inventory has touched 35/205 instruction families (17.073%); 25/205 forms are
+- 98 runnable catalog rows and 2,679 populated first-word lookup entries. The
+  inventory has touched 38/205 instruction families (18.537%); 25/205 forms are
   strict-complete (12.195%). These are separate counts: lookup entries are not
   instruction counts.
 - Standalone memory/addressing seams are proven through standard MOD0-3,
-  indexed MOD5/6, circular MOD8/10, and reverse-carry MOD4/7 modes. The generic
-  MEMORY route now also owns allocation-free same-address WORD16
-  read-modify-write with cached addressing, fresh READ/WRITE IDs, direct stale
-  validation, and AR/PC publication only after WRITE READY.
+  indexed MOD5/6, circular MOD8/10, reverse-carry MOD4/7, and same-address
+  WORD16 RMW modes. `ANDM`, `ORM`, and `XORM` now retire through the generic
+  decode/effect/CPU/inventory path; MOD3 remains a deliberate pre-endpoint
+  rejection.
 - Performance is a first-class constraint. The trusted per-ID execution packet,
-  single extraction pass, and hosted benchmark history are retained; every new
-  seam must preserve that hot-path budget. Measurements are advisory hosted
-  throughput only, not DSP or silicon timing claims; see [hosted performance
-  history](docs/performance.md).
-- Next forcing-function slice (P2-W46B): activate `ANDM`, `ORM`, and `XORM`
-  through the generic RMW route, then establish a separate observer-off RMW
-  benchmark cohort without altering the frozen five-scenario history.
+  single extraction pass, and hosted benchmark history are retained. A dedicated
+  observer-off RMW benchmark executable, capture, comparator, and quality contract
+  are green; a clean baseline artifact and comparison remain the next closure.
+- Next forcing-function slice (P2-W47A): build the generic LONG32 pair seam while
+  preserving the existing hot-path and memory transaction boundaries.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

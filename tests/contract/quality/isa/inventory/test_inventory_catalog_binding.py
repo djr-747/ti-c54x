@@ -31,6 +31,11 @@ STANDARD_INDIRECT_SUBSET = {
     "LD_SMEM_SHIFT16",
     "ST_T_SMEM",
 }
+ATOMIC_LOGICAL_SUBSET = {
+    "ANDM_SMEM_MOD0_3",
+    "ORM_SMEM_MOD0_3",
+    "XORM_SMEM_MOD0_3",
+}
 
 
 class InventoryCatalogBindingTests(unittest.TestCase):
@@ -45,20 +50,26 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 95)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 95)
+        self.assertEqual(len(bindings), 98)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 98)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 25)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 70)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 73)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
-            | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)},
+            | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)}
+            | ATOMIC_LOGICAL_SUBSET,
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
                 self.assertEqual(binding["addressing_subset"], "ALL")
             else:
-                self.assertEqual(binding["addressing_subset"], "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10")
+                expected = (
+                    "STANDARD_INDIRECT_MOD0_MOD3"
+                    if binding["catalog_symbol"] in ATOMIC_LOGICAL_SUBSET
+                    else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+                )
+                self.assertEqual(binding["addressing_subset"], expected)
         self.assertTrue(all(binding["form_id"].startswith("FORM-T2-") for binding in bindings))
 
     def test_unknown_form_binding_and_duplicate_are_rejected_by_schema(self) -> None:

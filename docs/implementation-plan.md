@@ -72,11 +72,15 @@ green.
 
 P2-W46A is implementation-complete as the private allocation-free WORD16
 same-address read-modify-write seam inside the existing MEMORY effect carrier.
-P2-W46B is the active next forcing-function slice and composes that seam across
-the three neutral MOD0–3 ANDM/ORM/XORM rows. Performance remains a first-class
-acceptance axis: W46A freezes carrier size and bounded hot-path structure;
-W46B owns the executable observer-off cohort without changing the five frozen
-history scenarios or implying TI timing.
+P2-W46B is semantic/framework-stage complete: the three neutral MOD0–3
+ANDM/ORM/XORM rows are composed through generic catalog, decode, effects, CPU,
+and inventory seams. Its dedicated observer-off benchmark executable, capture,
+comparator, and quality contract are green; the clean baseline artifact and
+baseline comparison remain pending, so W46B is not fully closed. Performance
+remains a first-class acceptance axis: W46A freezes carrier size and bounded
+hot-path structure, and W46B preserves the five frozen history scenarios without
+implying TI timing. P2-W47A is the recommended next forcing-function slice: a
+generic LONG32 pair seam.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -652,30 +656,36 @@ the address resolver, and AR/PC publish only after WRITE READY. The cohesive RMW
 transaction test is about 600 lines; it has been reviewed and remains unsplit
 for this single lifecycle contract, with a mandatory split before 800 lines.
 
-Closure accounting is 175 evidence records; 290 requirements (247
-IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 244 tests (230 PASSING, 14 PLANNED);
-and 7 sources. The two focused C runners and six-test structural performance
-lane are GREEN. No catalog row, opcode handler, CPU branch, public ABI, runtime
-knob, external-master exclusion, or TI timing claim is added by W46A.
+Closure accounting is 175 evidence records; 290 requirements (252
+IMPLEMENTED, 9 PLANNED, 29 UNRESOLVED); 244 tests (235 PASSING, 9 PLANNED);
+and 7 sources. W46A's two focused C runners and six-test structural performance
+lane are GREEN. W46B's five focused C/Python runners and dedicated benchmark
+quality contract are GREEN; its clean baseline artifact and baseline comparison
+remain pending. No external-master exclusion or TI timing claim is added.
 
 ### P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for W46B. The
-primary TI SPRU172C instruction pages are ANDM printed p4-13, ORM p4-125, and
-XORM p4-203. The bounded catalog rows are `ANDM_SMEM_MOD0_3` base `0x6880`,
-`ORM_SMEM_MOD0_3` base `0x6980`, and `XORM_SMEM_MOD0_3` base `0x6A80`, all
-mask `0xFFE0`, two program words, existing `ARF_EXTENSION16_MOD` layout, no
-input resources or status effects, and ineligible for repeatability.
+This immutable `(planned)` heading remains the FIT/ownership anchor for W46B.
+The primary TI SPRU172C instruction pages are ANDM printed p4-13, ORM p4-125,
+and XORM p4-203. The implemented catalog rows are
+`ANDM_SMEM_MOD0_3` base `0x6880`, `ORM_SMEM_MOD0_3` base `0x6980`, and
+`XORM_SMEM_MOD0_3` base `0x6A80`, all mask `0xFFE0`, two program words,
+existing `ARF_EXTENSION16_MOD` layout, no input resources or status effects,
+and ineligible for repeatability.
 
 MOD0/1/2 are admitted under the current safe boundary policy. MOD3 decodes for
 metadata but the handlers reject it before endpoint issue because these forms
 require a read and MOD3 is write-only. The rows reuse W46A and generic decode,
-memory effects, CPU retirement, and audit-only inventory binding. Direct,
+memory effects, CPU retirement, and audit-only inventory binding; all five
+implementation requirements and their focused runners are green. Direct,
 absolute, long-offset, CMPT1, indexed, circular, reverse, MMR/device, wrap,
 and timing expansion remain deferred. The projection is three additional
 rows/96 populated first-word entries: ID_COUNT=99, lookup=2,679, bindings=98;
-inventory family progress becomes 38/205 (18.537%) while strict complete-form
-coverage remains 25/205 (12.195%).
+inventory family progress is 38/205 (18.537%) while strict complete-form
+coverage remains 25/205 (12.195%). The dedicated observer-off benchmark
+cohort has an executable, capture, comparator, and quality contract with green
+smoke/quality checks, but no clean baseline artifact or baseline comparison yet;
+the benchmark requirement therefore remains PLANNED.
 
 ## Objective
 
@@ -725,7 +735,7 @@ function-pointer dispatch tables.
 | P2-W45A generic reverse-carry WORD16 MEMORY seam | Implemented — three focused C runners GREEN; full suite pending | Define private typed REVERSE_CARRY_WORD16 MOD4/MOD7 effect, ordered CMPT→ARP→selected AR→AR0 resolution, exact live snapshots, boundary rejection, and atomic WAIT/FAULT/cancel/READY transactionality. ARF is 1..7 only; no BK, root transaction, CPU/catalog/opcode/public ABI/timing/device/RPT changes. W45B remains projected at ID_COUNT 96, lookup 2,583, and 95 bindings. |
 | P2-W45B reverse-carry MOD4/MOD7 per-family composition | Implemented — six focused C/Python runners GREEN, quality 215, fresh ASan/UBSan 5/5, clean review, and full standalone gate GREEN | Register twenty bounded MOD4/MOD7 rows over the ten existing Smem families, reuse MOD4 layouts and the W45A seam, reject ARF0 transactionally, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 96, lookup 2,583, and bindings 95; unsupported alias/boundary scope remains excluded. |
 | P2-W46A generic WORD16 same-address RMW seam | Implemented — focused transaction/effect and structural performance runners GREEN | Allocation-free AND/OR/XOR carrier and one-read/one-write transaction resolve once, use fresh phase IDs, validate direct stale snapshots without replanning, and publish AR/PC only after WRITE READY. Carrier size is frozen on supported 32/64-bit ABIs; no bus-exclusion or TI timing claim is made. |
-| P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Planned — active next forcing-function slice | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. Projection: ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. |
+| P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Semantic/framework stage complete — five focused C/Python runners and benchmark quality contract green; clean baseline pending | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. The observer-off benchmark executable/capture/comparator smoke is green, but baseline artifact/comparison remain planned; W46B closure is pending that evidence. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
