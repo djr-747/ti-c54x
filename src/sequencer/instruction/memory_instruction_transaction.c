@@ -3,7 +3,7 @@
  *
  * Owns: the allocation-free root transaction that composes memory address
  * resolution, the WORD16 reducer, static opcode completion, ordinary effects,
- * and sequential PC/counter candidates.
+ * dual-WORD16 and LONG32 reducers, and sequential PC/counter candidates.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -17,7 +17,9 @@
 #include "sequencer/effect_transaction.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
+#include "memory_instruction_dual.h"
 #include "memory_instruction_long32.h"
+#include "memory_instruction_pair_dispatch.h"
 
 static void
 clear_preserving_sequence(ti_c54x_memory_instruction_transaction *transaction)
@@ -66,8 +68,10 @@ ti_c54x_memory_instruction_transaction_prepare(
 {
     ti_c54x_memory_instruction_candidate candidate = {0};
     ti_c54x_memory_address_resolution resolution = {0};
+    ti_c54x_dual_memory_address_resolution dual_resolution = {0};
     ti_c54x_program_pc_bridge_effect pc_effect = {0};
     ti_c54x_memory_instruction_transaction *target = transaction;
+    bool dual_read;
 
     if (target == NULL || instruction == NULL || input == NULL ||
         effect == NULL || state == NULL) {
@@ -86,15 +90,28 @@ ti_c54x_memory_instruction_transaction_prepare(
         instructions_retired_before == UINT64_MAX) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_COUNTER_OVERFLOW;
     }
-    if (ti_c54x_sequencer_resolve_memory_address(
-            state, &effect->payload.memory.address_spec,
-            effect->payload.memory.access,
-            ti_c54x_memory_instruction_memory_is_rmw(&effect->payload.memory)
-                ? UINT16_C(0)
-                : effect->payload.memory.value_word,
-            &resolution) !=
-        TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    dual_read = effect->payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
+    if (dual_read) {
+        if (ti_c54x_sequencer_resolve_dual_memory_address(
+                state, &effect->payload.memory.address_spec,
+                effect->payload.memory.access, UINT16_C(0),
+                &dual_resolution) !=
+            TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else {
+        if (ti_c54x_sequencer_resolve_memory_address(
+                state, &effect->payload.memory.address_spec,
+                effect->payload.memory.access,
+                ti_c54x_memory_instruction_memory_is_rmw(
+                    &effect->payload.memory)
+                    ? UINT16_C(0)
+                    : effect->payload.memory.value_word,
+                &resolution) != TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        candidate.address_resolution = resolution;
     }
     if (ti_c54x_program_pc_bridge_plan(
             state->pc_word, instruction->bundle.program_word_count,
@@ -104,16 +121,23 @@ ti_c54x_memory_instruction_transaction_prepare(
     candidate.instruction = *instruction;
     candidate.input = *input;
     candidate.effect = *effect;
-    candidate.address_resolution = resolution;
+    if (dual_read) {
+        candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
+        candidate.dual_address_snapshot.y_request = dual_resolution.y_request;
+    }
     candidate.pc_effect = pc_effect;
     candidate.instructions_attempted_after =
         instructions_attempted_before + UINT64_C(1);
     candidate.instructions_retired_after = instructions_retired_before +
                                            UINT64_C(1);
     target->candidate = candidate;
-    /* Only LONG32 pays the cold helper call; keep the established WORD16
+    /* Paired forms pay their cold helper call; keep the established WORD16
      * preparation path direct. */
-    if (candidate.effect.payload.memory.address_spec.kind ==
+    if (dual_read) {
+        if (!ti_c54x_memory_instruction_dual_prepare_snapshot(target)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else if (candidate.effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
         if (!ti_c54x_memory_instruction_long32_prepare_snapshot(target)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
@@ -284,12 +308,9 @@ ti_c54x_memory_instruction_transaction_advance(
         accumulators == NULL || t_register == NULL || result == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
     }
-    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
-        return ti_c54x_memory_instruction_long32_advance(
-            transaction, endpoint, state, accumulators, t_register, result);
-    }
     if (transaction->child_kind != TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return ti_c54x_memory_instruction_pair_dispatch_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
     }
     if (transaction->phase != TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED &&
         transaction->phase != TI_C54X_MEMORY_INSTRUCTION_PHASE_PENDING) {
@@ -419,8 +440,9 @@ ti_c54x_memory_instruction_transaction_cancel(
     if (transaction == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
     }
-    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
-        return ti_c54x_memory_instruction_long32_cancel(transaction, endpoint);
+    if (transaction->child_kind != TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16) {
+        return ti_c54x_memory_instruction_pair_dispatch_cancel(transaction,
+                                                                endpoint);
     }
     if (transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED) {
         if (transaction->bus_transaction.state !=
@@ -457,8 +479,13 @@ ti_c54x_memory_instruction_transaction_reset(
     if (transaction == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
     }
-    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
-        return ti_c54x_memory_instruction_long32_reset(transaction);
+    /* A freshly zero-initialized or cleared root has child_kind zero.  It is
+     * canonical only while IDLE and must retain the ordinary reset path;
+     * prepared/active non-WORD16 values belong to the cold pair dispatcher. */
+    if (transaction->child_kind != TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 &&
+        !(transaction->child_kind == UINT8_C(0) &&
+          transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_IDLE)) {
+        return ti_c54x_memory_instruction_pair_dispatch_reset(transaction);
     }
     if (transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_PENDING) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;

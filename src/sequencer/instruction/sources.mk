@@ -2,8 +2,12 @@
 # instruction transactions.
 ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_candidate_validate.c \
+	src/sequencer/instruction/memory_instruction_dual_candidate_validate.c \
 	src/sequencer/instruction/memory_instruction_rmw.c \
 	src/sequencer/instruction/memory_instruction_transaction.c \
 	src/sequencer/instruction/memory_instruction_long32.c \
+	src/sequencer/instruction/memory_instruction_dual.c \
+	src/sequencer/instruction/memory_instruction_pair_dispatch.c \
+	src/sequencer/instruction/dual_word16_read_transaction.c \
 	src/sequencer/instruction/long32_pair_transaction.c \
 	src/sequencer/instruction/long32_pair_transaction_validate.c

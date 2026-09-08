@@ -19,11 +19,13 @@
 #include <ti_c54x/bus_endpoint.h>
 
 #include "bus/transaction/word16_transaction.h"
+#include "sequencer/instruction/dual_word16_read_transaction.h"
 #include "sequencer/instruction/long32_pair_transaction.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/op_input.h"
 #include "sequencer/memory/address_resolution.h"
+#include "sequencer/memory/dual_address_resolution.h"
 #include "sequencer/program_pc_bridge.h"
 #include "state/accumulator/accumulator.h"
 #include "state/arch_state.h"
@@ -57,14 +59,18 @@ typedef enum ti_c54x_memory_instruction_phase {
 
 typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 = 1,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32 = 2
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32 = 2,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ = 3
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
     ti_c54x_decoded_instruction instruction;
     ti_c54x_op_input_snapshot input;
     ti_c54x_op_effect effect;
-    ti_c54x_memory_address_resolution address_resolution;
+    union {
+        ti_c54x_memory_address_resolution address_resolution;
+        ti_c54x_dual_memory_address_snapshot dual_address_snapshot;
+    };
     ti_c54x_program_pc_bridge_effect pc_effect;
     uint64_t instructions_attempted_after;
     uint64_t instructions_retired_after;
@@ -83,6 +89,7 @@ typedef struct ti_c54x_memory_instruction_transaction {
     union {
         ti_c54x_bus_word16_transaction bus_transaction;
         ti_c54x_long32_pair_transaction long32_bus_transaction;
+        ti_c54x_dual_word16_read_transaction dual_bus_transaction;
     };
     uint64_t last_transaction_id;
     /* The transformed WORD16 is staged between the READ and paired WRITE;
@@ -91,10 +98,13 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t rmw_write_value_word;
         /* LONG32 uses the otherwise RMW-only slot for the frozen MSW. */
         uint16_t long32_first_value_msw;
+        /* Dual MOD0 uses it as an immutable X-address shadow. */
+        uint16_t dual_x_address_word;
     };
-    /* Immutable copies of the RMW operator and operand.  The copied
-     * candidate remains externally inspectable, so a pending resume must
-     * reject edits that would otherwise still be structurally valid. */
+    /* Immutable copy of the RMW operator, or packed dual X/Y AR selectors.
+     * The copied candidate remains externally inspectable, so a pending
+     * resume must reject edits that would otherwise remain structurally
+     * valid. */
     uint8_t candidate_rmw_operation;
     /* Child discriminator occupies the existing scalar padding before the
      * candidate's alignment on LP64 and ILP32. */
@@ -103,6 +113,8 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t candidate_rmw_value_word;
         /* LONG32's second payload is frozen in the same scalar slot. */
         uint16_t long32_second_value_lsw;
+        /* Dual MOD0 uses it as an immutable Y-address shadow. */
+        uint16_t dual_y_address_word;
     };
     ti_c54x_memory_instruction_candidate candidate;
 } ti_c54x_memory_instruction_transaction;

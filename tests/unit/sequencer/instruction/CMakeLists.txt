@@ -22,6 +22,10 @@ ti_c54x_add_unit_test(long32_pair_read_transaction
                       test_long32_pair_read_transaction.c)
 ti_c54x_add_unit_test(long32_pair_write_transaction
                       test_long32_pair_write_transaction.c)
+ti_c54x_add_unit_test(dual_word16_read_transaction
+                      test_dual_word16_read_transaction.c)
+ti_c54x_add_unit_test(dual_memory_instruction_transaction
+                      test_dual_memory_instruction_transaction.c)
 # W47B1 RED contract: DLD/DST MOD13 LONG32 root failure lifecycle.
 ti_c54x_add_unit_test(dld_dst_long32_failure_lifecycle
                       test_dld_dst_long32_failure_lifecycle.c)

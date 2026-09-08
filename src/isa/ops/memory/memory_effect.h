@@ -7,7 +7,8 @@
  * Owns: the value-only generic WORD16 data-memory effect carrier, including
  * its MOD0--MOD3 single-indirect, AR0-indexed MOD5/MOD6, circular
  * MOD8/MOD10, ARF-selected reverse-carry MOD4/MOD7, and CMPT=0
- * MOD13 LONG32 address specifications and static completion callback shapes.
+ * MOD13 LONG32 and dual-indirect MOD0/MOD0 WORD16 address specifications and
+ * static completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -38,7 +39,8 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16 = 2,
     TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16 = 3,
     TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4,
-    TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 = 5
+    TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 = 5,
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 = 6
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -56,17 +58,35 @@ typedef enum ti_c54x_op_memory_rmw_operation {
 
 typedef struct ti_c54x_op_memory_address_spec {
     ti_c54x_op_memory_address_kind kind;
-    /* Used only by SINGLE_INDIRECT; must remain MOD0 for other kinds. */
-    ti_c54x_indirect_single_mode mode;
-    /* Used only by INDEXED_AR0; must remain zero/default for other kinds. */
-    ti_c54x_indirect_indexed_mode indexed_mode;
-    /* Used only by CIRCULAR; must remain zero/default for other kinds. */
-    ti_c54x_indirect_circular_mode circular_mode;
-    /* Used only by REVERSE_CARRY; must remain zero/default for other kinds. */
-    ti_c54x_indirect_reverse_carry_mode reverse_carry_mode;
-    /* Used only by LONG_OFFSET_MOD13_LONG32; copied verbatim as `lk`. */
-    uint16_t long_offset_word;
-    uint8_t arf;
+    union {
+        struct {
+            /* Used only by SINGLE_INDIRECT; must remain MOD0 for other kinds. */
+            ti_c54x_indirect_single_mode mode;
+            /* Used only by INDEXED_AR0; must remain zero/default for other kinds. */
+            ti_c54x_indirect_indexed_mode indexed_mode;
+            /* Used only by CIRCULAR; must remain zero/default for other kinds. */
+            ti_c54x_indirect_circular_mode circular_mode;
+            /* Used only by REVERSE_CARRY; must remain zero/default for other kinds. */
+            ti_c54x_indirect_reverse_carry_mode reverse_carry_mode;
+            /* Used only by LONG_OFFSET_MOD13_LONG32; copied verbatim as `lk`. */
+            uint16_t long_offset_word;
+            uint8_t arf;
+        };
+        struct {
+            /* Dual-indirect forms carry two fixed MOD0 AR selectors. */
+            uint8_t x_mode;
+            uint8_t x_ar;
+            uint8_t y_mode;
+            uint8_t y_ar;
+            /* Reserved words keep the arm fixed-size and make the checked
+             * hot-path validation four scalar comparisons rather than
+             * sixteen byte comparisons. */
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+            uint32_t reserved_word3;
+        } dual;
+    };
 } ti_c54x_op_memory_address_spec;
 
 typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_fn)(
@@ -80,6 +100,13 @@ typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_long32_fn)(
     const ti_c54x_op_input_snapshot *input,
     uint16_t first_msw,
     uint16_t second_lsw,
+    ti_c54x_op_effect *next_effect);
+
+typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_dual_fn)(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t x_word,
+    uint16_t y_word,
     ti_c54x_op_effect *next_effect);
 
 typedef struct ti_c54x_op_memory_effect {
@@ -102,8 +129,21 @@ typedef struct ti_c54x_op_memory_effect {
     union {
         ti_c54x_op_memory_complete_fn complete;
         ti_c54x_op_memory_complete_long32_fn complete_long32;
+        ti_c54x_op_memory_complete_dual_fn complete_dual;
     };
 } ti_c54x_op_memory_effect;
+
+#if UINTPTR_MAX == UINT64_MAX
+_Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
+               "WORD16 memory address ABI changed on LP64");
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
+               "WORD16 memory effect ABI changed on LP64");
+#elif UINTPTR_MAX == UINT32_MAX
+_Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
+               "WORD16 memory address ABI changed on ILP32");
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 36,
+               "WORD16 memory effect ABI changed on ILP32");
+#endif
 
 bool ti_c54x_op_memory_effect_is_valid(
     const ti_c54x_op_memory_effect *effect);

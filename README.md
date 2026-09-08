@@ -20,17 +20,18 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W49B complete):
+Current snapshot: P2-W50A complete.
 
 - 102 runnable catalog rows cover 2,967 first-word encodings. Inventory coverage
   is 42/205 instruction forms touched (20.488%) and 27/205 strict-complete
   (13.171%); lookup encodings are not instruction counts.
-- Register-only ADD/SUB syntax 9 now executes through the generic trusted path,
-  including signed full-40-bit shifts, SXM fill, bit-32 carry/no-borrow, OVM
-  saturation, sticky OVA/OVB, alias-safe reads, and atomic CPU retirement.
-- Memory execution covers standard, indexed, circular, and reverse-carry WORD16
-  addressing; same-address logical RMW; and DLD/DST LONG32 MOD13 with READY,
-  WAIT, fault, cancel, and stale-work handling.
+- The dual-WORD16 MOD0 foundation plans two old-AR reads, serializes X then Y
+  over one endpoint, and publishes the pair transactionally with fixed
+  LP64/ILP32 carriers. It adds no opcode row, CPU opcode branch, or TI timing
+  claim.
+- W50B next activates evidenced dual-memory ADD/SUB forms over this generic
+  seam. Register-only ADD/SUB syntax 9 and existing WORD16/LONG32 memory paths
+  remain covered by the trusted generic execution path.
 - Performance remains a release constraint. Execution uses immutable direct
   lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
   observer-off CPU benchmarks. These are host-performance checks, not TI
@@ -39,8 +40,8 @@ Current snapshot (P2-W49B complete):
   RPT activation still waits on positive repeatability evidence, repeated-body PC
   flow, and predecode interrupt arbitration. No catalog row is currently proven
   repeat-eligible.
-- Major remaining work is broader arithmetic coverage, multi-memory and parallel
-  transactions, control/repeat/IRQ execution, profiles/devices, and evidenced
+- Major remaining work is broader arithmetic coverage, dual/parallel opcode
+  activation, control/repeat/IRQ execution, profiles/devices, and evidenced
   machine timing. Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and

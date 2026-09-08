@@ -3077,6 +3077,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W47B: DLD/DST LONG32 MOD13 composition (planned)"},
       "assertion": "P2-W47B freezes exactly two private CMPT=0 MOD13 two-word catalog rows, DLD_LONG32_MOD13 at base 0x56E8/mask 0xFEF8 and DST_LONG32_MOD13 at base 0x4EE8/mask 0xFEF8, reusing a new private ACCUMULATOR_ARF_EXTENSION16_MOD4 layout and the generic LONG32 MEMORY carrier/root over W47A. The full variable patterns are 0101_011D_1110_1AAA and 0100_111S_1110_1AAA, with extension-word lk, MSW/LSW pairing, and MOD13 pre-access AR update composed from the separate TI records. DLD consumes STATUS_SXM and publishes its canonical MSW/LSW read only after both child words are READY; project C16×SXM vectors must prove the documented C16 lane descriptions converge on the same stored pattern. DST consumes ACCUMULATORS plus STATUS_SXM and STATUS_SST, reads the full source without mutation, and applies the pinned SST/SXM saturation policy before issuing MSW then LSW; it does not unconditionally discard guard bits. Architectural AR/PC pre-access candidates commit only after pair completion; per-word physical write visibility remains the W47A contract, with no external pair atomicity or rollback claim. The root must copy operands and source snapshots, use one discriminated child union, avoid address replanning, instruction refetch, source recomputation, allocation, callback-owned/context state, formatting/fanout, public-ABI/effect-carrier widening, opcode-specific CPU branches, timing, or observer behavior; static completion callbacks may remain process-lifetime function pointers, root and validator helpers split before file-size thresholds, and an observer-off full-CPU benchmark is required before closure."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4", "printed_page_start": "5-19", "printed_page_end": "5-22"},
+      "assertion": "SPRU131G §5.5.4 describes dual data-memory operations as one-word, indirect-only forms with an X-memory read on the D bus and a Y-memory read on the C bus. The encoding fields are Xmod[7:6], Xar[5:4], Ymod[3:2], and Yar[1:0]; selectors 00, 01, 10, and 11 choose AR2, AR3, AR4, and AR5. MOD0 uses the old selected AR without an address update. If both sides select the same AR with differing modes, Xmod controls; this foundation admits only MOD0/MOD0. Device/MMR behavior, physical cycle timing, and broader dual-operation semantics remain outside this record."
+    },
+    {
+      "id": "E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W50A: dual-WORD16 MOD0 read foundation (planned)"},
+      "assertion": "P2-W50A freezes a private dual-WORD16 MOD0 read foundation: a fixed-size compact effect arm copies encoded X/Y modes and AR selectors plus a static pair-completion callback while preserving the existing outer effect carrier size. Resolved addresses and transaction IDs/pair state belong to the resolver and generic root reducer; a deterministic hosted X-then-Y serializer issues two WORD16 reads over one endpoint. The pair reducer retains WAIT identity, clears unpublished values on FAULT, rejects failed terminal transitions, and publishes the two read values atomically only after both READY observations; generic root integration stages no architectural state before completion. This is a project transaction contract with no TI machine-cycle claim, no opcode activation, no catalog row, no CPU opcode branch, and no device/MMR behavior."
     }
   ],
   "requirements": [
@@ -6521,6 +6543,66 @@
       "claim": "ADD and SUB register-only syntax-9 repeatability remains unresolved. Their omission from SPRU172C Table 2-28 does not positively authorize single-repeat execution, so catalog metadata must remain non-admitting and runtime RPT must not be activated by this slice.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-ADD-SUB-ACCUMULATOR-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Plan the dual-WORD16 MOD0/MOD0 address pair from the TI Xmod/Xar/Ymod/Yar fields: selectors 00..11 choose AR2..AR5, each side reads its old selected AR, and MOD0 produces no AR update. Preserve same-selected-AR behavior with Xmod precedence only as an admitted MOD0/MOD0 rule. Only the selected AR2..AR5 snapshots are live dependencies; this STATE_POLICY_NONE foundation does not reject nonzero or unknown CMPT/ARP, while invalid AR state and range failures remain transactional before endpoint issue. This address foundation claims no MMR/device or cycle behavior.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0"],
+      "test_ids": ["T-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve the checked dual-WORD16 MOD0 plan through the generic sequencer memory owner by copying the two selected AR2..AR5 addresses and preserving no AR/ARP/CMPT update. The resolver uses STATE_POLICY_NONE: nonzero or unknown CMPT/ARP does not block this foundation, while unknown selected AR snapshots and invalid data-word addresses reject before endpoint issue without mutating caller-owned output.",
+      "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Add a fixed-size compact dual-WORD16 read effect/carrier arm that copies the encoded X/Y modes and AR selectors plus a static pair-completion function pointer while preserving the existing outer effect carrier size on supported LP64 and ILP32 ABIs. Resolved addresses and transaction IDs/pair state remain owned by the resolver and root reducer. Keep the effect allocation-free, value-owned, and generic; do not add an opcode identity, public ABI, device policy, physical atomicity, or timing claim.",
+      "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Sequence dual-WORD16 MOD0 reads deterministically X then Y over one WORD16 endpoint, retaining the same child request and transaction identity across WAIT. A FAULT, failed cancel, malformed observation, or invalid terminal transition cancels without pair publication; only two READY observations publish both copied words once. The reducer must not replan addresses, refetch the instruction, or commit architectural state before completion.",
+      "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Compose the generic instruction root with the compact dual-WORD16 MOD0 reducer while preserving copied operands, resume-before-fetch ordering, one endpoint descriptor, atomic pair result delivery, and existing PC/address/effect commit boundaries. Keep the root generic with no catalog row, opcode-specific CPU branch, new public API, or physical dual-bus timing guarantee.",
+      "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH-PERFORMANCE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Prove the dual-WORD16 MOD0 foundation remains fixed-size and allocation-free: one compact effect arm, bounded two-child state, deterministic X-then-Y ordering, no address replan/refetch, no callback-owned state or environment/I/O/formatting path, and observer-disabled structural checks with no TI cycle claim. Structural carrier-size checks must cover supported LP64 and ILP32 builds; hosted nanosecond measurement is deferred until opcode activation in W50B.",
+      "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH"]
     }
   ],
   "tests": [
@@ -8754,6 +8836,54 @@
       "path": "tests/contract/quality/perf/test_add_sub_acc_shift5_hot_path.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_dual_mod0.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_dual_mod0"},
+      "requirement_ids": ["REQ-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_dual_address_resolution.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_address_resolution"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_dual_word16_memory_effect.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_word16_memory_effect"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_dual_word16_read_transaction.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_word16_read_transaction"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_dual_memory_instruction_transaction.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_memory_instruction_transaction"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_dual_word16_hot_path.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH-PERFORMANCE"]
     }
   ]
 }

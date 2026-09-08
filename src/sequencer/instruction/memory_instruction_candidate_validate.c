@@ -3,7 +3,8 @@
  *
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates, including exact address-resolution snapshots for
- * single-indirect, AR0-indexed, circular, and reverse-carry operands.
+ * single-indirect, AR0-indexed, circular, reverse-carry, LONG32, and dual
+ * MOD0/MOD0 operands.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -18,6 +19,7 @@
 #include "bus/adapter/word16_adapter.h"
 #include "state/block_size_register.h"
 #include "sequencer/instruction/memory_instruction_transaction.h"
+#include "memory_instruction_dual_candidate_validate.h"
 
 static bool
 address_resolution_is_valid(
@@ -291,10 +293,20 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     if (candidate == NULL ||
         candidate->effect.kind != TI_C54X_OP_EFFECT_MEMORY ||
         !ti_c54x_op_memory_effect_is_valid(&candidate->effect.payload.memory) ||
-        !address_resolution_is_valid(&candidate->address_resolution,
-                                     &candidate->effect.payload.memory) ||
         candidate->instructions_attempted_after == UINT64_C(0) ||
         candidate->instructions_retired_after == UINT64_C(0)) {
+        return false;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
+        if (!ti_c54x_memory_instruction_dual_candidate_shape_is_valid(
+                &candidate->dual_address_snapshot,
+                &candidate->effect.payload.memory)) {
+            return false;
+        }
+    } else if (!address_resolution_is_valid(
+                   &candidate->address_resolution,
+                   &candidate->effect.payload.memory)) {
         return false;
     }
     if (ti_c54x_program_pc_bridge_plan(
@@ -318,6 +330,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     }
     if (candidate->effect.payload.memory.access ==
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+        if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
+            return candidate->dual_address_snapshot.x_request
+                           .write_value_word == UINT16_C(0) &&
+                   candidate->dual_address_snapshot.y_request
+                           .write_value_word == UINT16_C(0);
+        }
         return candidate->address_resolution.request.write_value_word ==
                UINT16_C(0);
     }
@@ -348,6 +367,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
      * the address resolver, so a pending candidate cannot be replanned. */
     if (!ti_c54x_memory_instruction_candidate_shape_is_valid(candidate)) {
         return false;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
+        return ti_c54x_memory_instruction_dual_candidate_matches_live(
+            candidate, state);
     }
     address_effect = &candidate->address_resolution.address_result.effect;
 

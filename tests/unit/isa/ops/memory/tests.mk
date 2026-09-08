@@ -8,3 +8,4 @@ $(eval $(call ti_c54x_add_test,word16_rmw_memory_effect,isa/ops/memory,test_word
 $(eval $(call ti_c54x_add_test,atomic_logical_memory_effects,isa/ops/memory,test_atomic_logical_memory_effects.c))
 # W47B1 RED contract: DLD/DST MOD13 LONG32 carrier and pure resolver.
 $(eval $(call ti_c54x_add_test,dld_dst_long32_memory_carrier,isa/ops/memory,test_dld_dst_long32_memory_carrier.c))
+$(eval $(call ti_c54x_add_test,dual_word16_memory_effect,isa/ops/memory,test_dual_word16_memory_effect.c))

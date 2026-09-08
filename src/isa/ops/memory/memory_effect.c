@@ -3,7 +3,8 @@
  *
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
  * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
- * REVERSE_CARRY MOD4/MOD7 WORD16, and MOD13 LONG32 memory effect carriers.
+ * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, and dual-indirect MOD0/MOD0
+ * WORD16 memory effect carriers.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -44,6 +45,34 @@ ti_c54x_op_memory_effect_access_shape_is_valid(
            effect->rmw_operation ==
                (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
            effect->complete == NULL;
+}
+
+static bool
+ti_c54x_op_memory_dual_address_is_valid(
+    const ti_c54x_op_memory_address_spec *address_spec)
+{
+    return address_spec->dual.x_mode == UINT8_C(0) &&
+           address_spec->dual.y_mode == UINT8_C(0) &&
+           address_spec->dual.x_ar >= UINT8_C(2) &&
+           address_spec->dual.x_ar <= UINT8_C(5) &&
+           address_spec->dual.y_ar >= UINT8_C(2) &&
+           address_spec->dual.y_ar <= UINT8_C(5) &&
+           address_spec->dual.reserved_word0 == UINT32_C(0) &&
+           address_spec->dual.reserved_word1 == UINT32_C(0) &&
+           address_spec->dual.reserved_word2 == UINT32_C(0) &&
+           address_spec->dual.reserved_word3 == UINT32_C(0);
+}
+
+static bool
+ti_c54x_op_memory_effect_dual_shape_is_valid(
+    const ti_c54x_op_memory_effect *effect)
+{
+    return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+           effect->value_word == UINT16_C(0) &&
+           effect->rmw_operation ==
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+           effect->transfer_reserved == UINT8_C(0) &&
+           effect->complete_dual != NULL;
 }
 
 bool
@@ -125,6 +154,11 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         }
         return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
                effect->complete_long32 == NULL;
+
+    case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16:
+        return ti_c54x_op_memory_dual_address_is_valid(
+                   &effect->address_spec) &&
+               ti_c54x_op_memory_effect_dual_shape_is_valid(effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
