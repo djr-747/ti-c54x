@@ -32,9 +32,10 @@ Current snapshot (P2-W46B):
   decode/effect/CPU/inventory path; MOD3 remains a deliberate pre-endpoint
   rejection.
 - Performance is a first-class constraint. The trusted per-ID execution packet,
-  single extraction pass, and hosted benchmark history are retained. A dedicated
-  observer-off RMW benchmark executable, capture, comparator, and quality contract
-  are green; a clean baseline artifact and comparison remain the next closure.
+  single extraction pass, and hosted benchmark history are retained. The dedicated
+  observer-off RMW benchmark has a clean baseline and baseline-relative comparison
+  at [`bench/audits/p2-w46b-rmw-baseline.json`](bench/audits/p2-w46b-rmw-baseline.json);
+  its semantic hash is `3b39187c40a4fd43` and it makes no TI timing claim.
 - Next forcing-function slice (P2-W47A): build the generic LONG32 pair seam while
   preserving the existing hot-path and memory transaction boundaries.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
