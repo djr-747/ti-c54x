@@ -6569,3 +6569,55 @@ rewritten after publication.
   W47B2C next proves full CPU READY/WAIT/FAULT behavior, deferred AR/PC and DLD
   publication, DST partial physical write visibility, unknown SXM/SST rejection
   before endpoint issue, C16 independence, and observer-off opcode performance.
+
+## 2026-09-09 — P2-W47B2C DLD/DST CPU and performance closure
+
+- State: implementation commit
+  `d7db000f696337ed1182def9a4e599d90c6b1824` closes W47B with full public-CPU
+  DLD/DST LONG32 MOD13 lifecycle tests and a dedicated observer-off opcode
+  benchmark. The evidence registry now marks the two CPU lifecycle contracts
+  and the hot-path performance contract implemented/passing. Catalog and ISA
+  inventory remain 100 rows, `ID_COUNT=101`, 2,711 lookup entries, 100
+  bindings, 40/205 family coverage, and 25/205 strict coverage.
+- DLD proves two-word fetch, D=0/1, SXM=0/1, C16=0/1/unknown independence,
+  unknown-SXM rejection before endpoint issue, even/odd LONG32 word pairing,
+  first/second WAIT identity, no resume refetch, first/second FAULT, deferred
+  accumulator/AR/PC publication, and fresh paired IDs. DST proves copied
+  full-40-bit sources, both accumulators, the SST×SXM saturation boundary
+  matrix, unknown source/SXM/SST rejection, the same WAIT/FAULT/ID/PC/AR
+  lifecycle, and the existing per-word physical visibility rule when the
+  second write faults.
+- Performance remains a first-class acceptance axis. The 478-line hosted
+  benchmark runs the exact two-word rows through the public CPU with observers
+  compiled out, checking 80,000 program reads and 80,000 ordered DATA requests
+  around 40,000 retirements per scenario. The 417-line capture owner validates
+  the exact schema, semantic hash `4ccf84d27d3fd6b7`, host/compiler/build
+  provenance, transaction ordering, PC progression, and timing arithmetic.
+  The 246-line quality owner freezes single trusted-packet extraction, static
+  dispatch, hot-path host-side-effect exclusion, and the established LP64/ILP32
+  carrier sizes. No machine-dependent threshold, baseline history, or TI
+  machine-cycle claim was added.
+- Clean-tree capture at the implementation hash on the local i7-1255U with cc
+  15.2, portable `-O2`/no-LTO, and observers off measured median DLD at
+  501.186100 ns/instruction (1,995,266.828031 instructions/s) and DST at
+  472.164275 ns/instruction (2,117,906.950923 instructions/s). Each instruction
+  includes two program-word callbacks and two DATA endpoint callbacks; the
+  record reports `vcs_state=clean`, IDs 470001..480000, and correct semantic
+  values. These figures are advisory host measurements, not acceptance
+  thresholds.
+- Validation is GREEN: both focused CPU executables pass normally and under a
+  fresh ASan/UBSan CTest matrix (2/2); the focused performance contract passes
+  7/7; Make and CMake benchmark smoke paths pass; and the authoritative
+  `rtk make test` gate passes the compiled C suite and all 245 Python quality
+  tests. Evidence, manifests, knobs, inventory, source boundaries, and the
+  observer-disabled artifact are green. Review warnings remain the three
+  previously reviewed 637/782/620-line files. The new CPU tests are 434/437
+  lines and all new owners remain below 500 lines. No knob was added or
+  changed, and no GitHub or other hosted runner was invoked for this work piece.
+- Closure accounting is 181 evidence records; 304 requirements (267
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 258 tests (250 PASSING, 8 PLANNED);
+  and 7 sources. The next architecture-forcing direction is W20F repeat/IRQ
+  evidence closure: resolve RC progression, repeated-body PC flow, and
+  predecode pending-request arbitration before activating runtime RPT. Its
+  implementation must retain prevalidated execution without per-repeat
+  allocation, refetch, or operand re-extraction.
