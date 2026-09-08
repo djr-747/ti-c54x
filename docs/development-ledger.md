@@ -6839,3 +6839,54 @@ rewritten after publication.
   carry/borrow semantics through the existing one-read memory completion path
   without regressing the trusted generic loop; compound arithmetic RMW and
   dual-memory effects remain subsequent larger seams.
+
+## 2026-09-09 — P2-W50A dual-WORD16 MOD0 read foundation
+
+- State: implementation commit
+  `501cf73ad81f6b39b173ee0aaa455f7590561384` adds the generic dual-indirect
+  MOD0/MOD0 WORD16 read foundation without activating an opcode row. Checked
+  address planning snapshots old AR2--AR5 values with no AR update; the memory
+  effect carries copied X/Y selectors and one static completion callback; and
+  the root serializes two canonical DATA reads X then Y over one endpoint before
+  publishing one ordinary effect and sequential PC retirement.
+- Evidence and architecture decisions: TI SPRU131G section 5.5.4 establishes
+  the Xmod/Xar/Ymod/Yar fields, AR2--AR5 selector mapping, old-AR MOD0 behavior,
+  and architectural X-D/Y-C bus roles. The public endpoint serialization is a
+  deterministic project lifecycle contract, not a TI timing or physical
+  dual-bus claim. MOD0 uses `STATE_POLICY_NONE`, does not consume CMPT or ARP,
+  and produces no address commit. Full dual resolution is prepare-local; the
+  persistent candidate retains only two canonical requests and size-neutral
+  immutable selector/address shadows for resume-time forgery detection.
+- Performance is a closure constraint. Adversarial review first exposed a
+  416/392-byte persistent-root expansion; the design was changed before commit
+  so the root remains frozen at 336/308 bytes on LP64/ILP32. The compact dual
+  reducer is 80/72 bytes; address spec, memory effect, and outer effect remain
+  24, 40/36, and 48/40 bytes. The common WORD16 route stays local and only
+  paired forms use the cold generic dispatcher. W50A proves observer-disabled
+  structure only; hosted nanosecond measurement is deferred to W50B activation.
+- TDD and review: RED contracts covered the absent address, effect, reducer,
+  root, and hot-path seams. Later RED regressions proved non-DATA pair requests
+  were being normalized into DATA reads, paired snapshot plus live-AR mutation
+  could forge Y, forged child identity could reach cancel, and a cleared
+  `child_kind == 0` root was rejected by CPU reset. DATA-only validation,
+  immutable address shadows, pre-callback canonical cancel validation, and the
+  IDLE zero-sentinel reset rule close those cases. X/Y WAIT identity, READY,
+  FAULT, malformed/stale observations, cancellation failure, ID exhaustion,
+  aliasing, atomic completion, and no-update behavior are executable.
+- Validation is GREEN: focused Make executables and focused CMake/CTest 5/5
+  pass; dual and legacy LONG32 ABI contracts pass 14/14; evidence, manifests,
+  inventory, source boundaries, knobs, observer-disabled structure, and diff
+  checks pass; and the corrected authoritative `rtk make test` gate passes the
+  complete compiled C suite plus all 260 Python quality tests. Reviewed size
+  warnings are 637-line operand-layout owner, 521-line common root, 782-line
+  LONG32 failure matrix, 769-line dual lifecycle matrix, and 620-line RMW
+  matrix; the two W50A files remain cohesive below 800 and future cases split.
+  No GitHub or other hosted runner was invoked, no RED commit was pushed, and
+  no benchmark history was written.
+- Closure accounting is 199 immutable evidence records; 327 requirements (290
+  IMPLEMENTED, 7 PLANNED, 30 UNRESOLVED); 280 tests (273 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts remain 102 rows, `ID_COUNT=103`, 2,967
+  lookup entries, 102 trusted bindings, 42/205 family coverage, and 27/205
+  strict coverage. No knob was added or changed. W50B next activates the
+  evidenced dual-memory ADD/SUB rows through this seam and adds observer-off
+  public-CPU performance evidence.
