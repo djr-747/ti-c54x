@@ -6053,3 +6053,33 @@ rewritten after publication.
   timing/repeatability, BK MMR/device routing, public ABI, new architectural
   kinds, IRQ/RPT, and broader family expansion. Next work remains
   evidence-first: reverse-carry MOD4/MOD7 activation/audit.
+
+## 2026-09-08 — P2-W45A generic reverse-carry WORD16 MEMORY seam activation
+
+- State: activation commit
+  `24c5afb80e3641b34aff267b66c11cb615749ec6` records the evidence-first W45A
+  ownership slice. Existing reverse-carry arithmetic, planner, effect, and
+  application contracts are complete; the missing seams are the generic
+  MEMORY kind, address resolution, and candidate validation.
+- W45A freezes typed MOD4/MOD7 `REVERSE_CARRY_WORD16` behavior with ARF 1..7;
+  AR0 aliasing remains unresolved and is rejected. Dependency order is
+  CMPT→ARP→selected AR→AR0, with known nonzero one-hot AR0. The old selected
+  AR is the operand address and only that selected AR receives the POST update.
+  Boundary propagation that escapes the documented domain rejects; no BK,
+  modulo, or wrap inference is added.
+- Transactionality requires exact live snapshots, WAIT/FAULT/cancel and stale
+  rejection, no refetch, and atomic READY publication. Three planned RED
+  runners are registered at
+  `tests/unit/isa/ops/memory/test_reverse_carry_word16_memory_effect.c`,
+  `tests/unit/sequencer/memory/test_reverse_carry_word16_address_resolution.c`,
+  and
+  `tests/unit/sequencer/instruction/test_reverse_carry_word16_memory_transaction.c`.
+  No root transaction, CPU, catalog/opcode, public ABI, timing, device, or RPT
+  change is activated.
+- W45B is audited but not activated: twenty projected MOD4/MOD7 rows at
+  `ID_COUNT=96`, lookup 2,583, and 95 bindings, with coverage unchanged.
+  Activation accounting is 169 evidence records; 275 requirements (235
+  IMPLEMENTED, 11 PLANNED, 29 UNRESOLVED); 229 tests (218 PASSING, 11
+  PLANNED); and 7 sources.
+- Activation `rtk make test` and evidence/diff checks are green. Follow-up
+  remains evidence-first until the three W45A RED lanes are implemented.
