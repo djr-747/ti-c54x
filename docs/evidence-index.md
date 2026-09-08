@@ -6,13 +6,13 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 199 immutable evidence records,
-327 requirements (290 `IMPLEMENTED`, 7 `PLANNED`, 30 `UNRESOLVED`), and 280 tests
-(273 `PASSING`, 7 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 203 immutable evidence records,
+335 requirements (297 `IMPLEMENTED`, 7 `PLANNED`, 31 `UNRESOLVED`), and 286 tests
+(279 `PASSING`, 7 `PLANNED`).
 
-Current catalog state is 102 rows with ID_COUNT 103, 2,967 populated
-first-word lookup entries, and 102 inventory bindings. Inventory family coverage
-is 42/205 (20.488%); strict complete-form coverage is 27/205 (13.171%).
+Current catalog state is 104 rows with ID_COUNT 105, 3,031 populated
+first-word lookup entries, and 104 inventory bindings. Inventory family coverage
+is 44/205 (21.463%); strict complete-form coverage is 27/205 (13.171%).
 
 ## Targets
 
@@ -247,6 +247,10 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W49B: register-only ADD/SUB syntax-9 activation (planned)` |
 | `E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.4, `5-19`–`5-22` |
 | `E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W50A: dual-WORD16 MOD0 read foundation (planned)` |
+| `E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ADD and SUB, `4-4`–`4-190` |
+| `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1 through 4.2.2, `4-3`–`4-12` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -677,6 +681,14 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` |
 | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` |
 | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH-PERFORMANCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH` |
+| `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16`, `E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0` | `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-METADATA` |
+| `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16`, `E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0` | `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE` |
+| `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16`, `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS`, `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION` | `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-OPS` |
+| `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/dispatch/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-TRUSTED-OPCODE-BINDING` |
+| `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU` |
+| `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` |
+| `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH` |
+| `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | — |
 
 ## Tests
 
@@ -848,7 +860,7 @@ exist in the repository.
 | `T-COMMON-FIXED-MOD2-STL-EFFECT` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_stl_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stl_smem_ops"}` | `REQ-COMMON-FIXED-MOD2-STL-EFFECTS` |
 | `T-PROJECT-CPU-FIXED-MOD2-LD-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ld_smem"}` | `REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT` |
 | `T-PROJECT-CPU-FIXED-MOD2-STL-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_stl_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_stl_smem"}` | `REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT` |
-| `T-PROJECT-TRUSTED-OPCODE-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_opcode_binding"}` | `REQ-PROJECT-TRUSTED-OPCODE-BINDING`, `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING` |
+| `T-PROJECT-TRUSTED-OPCODE-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_opcode_binding"}` | `REQ-PROJECT-TRUSTED-OPCODE-BINDING`, `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING`, `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING` |
 | `T-PROJECT-TRUSTED-EXECUTION-PACKET` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_trusted_execution_packet.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_execution_packet"}` | `REQ-PROJECT-TRUSTED-EXECUTION-PACKET` |
 | `T-PROJECT-TRUSTED-SEMANTIC-DISPATCH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_semantic_dispatch.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_semantic_dispatch"}` | `REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH` |
 | `T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/execution/test_trusted_instruction_path.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_instruction_path"}` | `REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` |
@@ -966,6 +978,12 @@ exist in the repository.
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_dual_word16_read_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_word16_read_transaction"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` |
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_dual_memory_instruction_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_memory_instruction_transaction"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` |
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_dual_word16_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH-PERFORMANCE` |
+| `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_add_sub_dual_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_sub_dual_metadata"}` | `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-CATALOG` |
+| `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_add_sub_dual_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_sub_dual_decode"}` | `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE` |
+| `T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_add_sub_dual.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_sub_dual"}` | `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-EFFECTS` |
+| `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_mod0.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_add_sub_dual_mod0"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU-RETIREMENT` |
+| `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_add_sub_dual_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` |
+| `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_dual_add_sub_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE` |
 
 ## Correction and tombstone policy
 

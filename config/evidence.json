@@ -3099,6 +3099,50 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W50A: dual-WORD16 MOD0 read foundation (planned)"},
       "assertion": "P2-W50A freezes a private dual-WORD16 MOD0 read foundation: a fixed-size compact effect arm copies encoded X/Y modes and AR selectors plus a static pair-completion callback while preserving the existing outer effect carrier size. Resolved addresses and transaction IDs/pair state belong to the resolver and generic root reducer; a deterministic hosted X-then-Y serializer issues two WORD16 reads over one endpoint. The pair reducer retains WAIT identity, clears unpublished values on FAULT, rejects failed terminal transitions, and publishes the two read values atomically only after both READY observations; generic root integration stages no architectural state before completion. This is a project transaction contract with no TI machine-cycle claim, no opcode activation, no catalog row, no CPU opcode branch, and no device/MMR behavior."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "ADD and SUB", "printed_page_start": "4-4", "printed_page_end": "4-190"},
+      "assertion": "SPRU172C ADD syntax 6 is ADD Xmem,Ymem,dst with full-form value/mask 0xA000/0xFE00 and execution ((Xmem)+(Ymem)) shifted left 16 into dst. SUB syntax 6 is SUB Xmem,Ymem,dst with full-form value/mask 0xA200/0xFE00 and execution Xmem shifted left 16 minus Ymem shifted left 16 into dst. D at bit 8 selects A or B; both forms are one program word. This record does not adopt the listed cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "4.1.1 through 4.2.2", "printed_page_start": "4-3", "printed_page_end": "4-12"},
+      "assertion": "SPRU131G identifies the DB and CB as 40-bit ALU inputs and independently zero-extends each 16-bit memory word when SXM=0 or sign-extends it when SXM=1. Carry and borrow are evaluated at bit 32. For a fixed 16-bit-shift ADD, C may be set on carry but is otherwise preserved; for a fixed 16-bit-shift SUB, C may be cleared on borrow but is otherwise preserved. OVM=0 retains an overflowing ALU result, while OVM=1 saturates to 00 7FFF FFFFh or FF 8000 0000h and the selected destination overflow flag remains sticky."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "2", "section": "2.5/Table 2‑28", "printed_page_start": "2-19", "printed_page_end": "2-21"},
+      "assertion": "The repeat section enumerates prohibited forms but does not state that every omitted ADD or SUB form is repeat-eligible. Dual-memory ADD and SUB syntax 6 therefore remain UNRESOLVED and this evidence does not authorize runtime repetition or a timing claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)"},
+      "assertion": "P2-W50B activates only ADD_DUAL_MOD0 at 0xA000/0xFECC and SUB_DUAL_MOD0 at 0xA200/0xFECC. A one-word D/Xar/Yar layout fixes both mode fields to MOD0; raw selectors map to AR2..AR5. The exact copied inputs are auxiliary registers plus C, SXM, and OVM. Checked and trusted leaves emit W50A's generic dual READ effect; completion independently extends and shifts X/Y, uses W49A modulo-40 arithmetic, applies fixed-shift directional C and OVM/sticky-overflow policy, and stages the existing accumulator effect. Generic X-then-Y WAIT/READY/FAULT sequencing and PC retirement remain unchanged. The slice preserves fixed carrier sizes, allocation-free trusted dispatch, no opcode-specific CPU branch, no public ABI, no physical parallelism or timing claim, and requires an observer-off public-CPU host benchmark. Inventory bindings remain MOD0/MOD0 SUBSET coverage."
     }
   ],
   "requirements": [
@@ -6603,6 +6647,96 @@
       "claim": "Prove the dual-WORD16 MOD0 foundation remains fixed-size and allocation-free: one compact effect arm, bounded two-child state, deterministic X-then-Y ordering, no address replan/refetch, no callback-owned state or environment/I/O/formatting path, and observer-disabled structural checks with no TI cycle claim. Structural carrier-size checks must cover supported LP64 and ILP32 builds; hosted nanosecond measurement is deferred until opcode activation in W50B.",
       "evidence_ids": ["E-PROJECT-P2-W50A-DUAL-WORD16-MOD0-FOUNDATION-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register the MOD0/MOD0 subsets ADD_DUAL_MOD0 at 0xA000/0xFECC and SUB_DUAL_MOD0 at 0xA200/0xFECC as one-word forms with auxiliary-register plus C/SXM/OVM inputs and unresolved repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16",
+        "E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0"
+      ],
+      "test_ids": ["T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Exhaustively decode the MOD0/MOD0 ADD/SUB subsets and extract D bit 8, Xar bits 5:4, and Yar bits 1:0 through one immutable layout while rejecting nonzero Xmod/Ymod near misses.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16",
+        "E-TI-C54X-SPRU131G-S5.5.4-P5-19-5-22-DUAL-WORD16-MOD0"
+      ],
+      "test_ids": ["T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Emit a dual MOD0 WORD16 read and complete ADD/SUB by independently SXM-extending X/Y to canonical 40-bit values, shifting each left 16, and applying checked modulo-40 arithmetic. ADD sets C only on bit-32 carry and otherwise preserves it; SUB clears C only on bit-32 borrow and otherwise preserves it. OVM selects raw or signed-32 saturated output, destination OVA/OVB is sticky, and unrelated state is preserved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16",
+        "E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS",
+        "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION"
+      ],
+      "test_ids": ["T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind both dual rows through the catalog-derived checked and trusted tables with pre-extracted D/Xar/Yar operands and exactly auxiliary-register, C, SXM, and OVM resources. The public CPU uses this immutable binding from first execution with no seen-before promotion, opcode-specific CPU branch, allocation, diagnostics, observer work, or public ABI change.",
+      "evidence_ids": ["E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Execute dual ADD/SUB through the generic public CPU lifecycle: issue exactly X then Y DATA reads with stable WAIT identity, publish no arithmetic or PC state on FAULT, leave MOD0 AR values unchanged, and atomically commit the selected accumulator, directional C, sticky destination overflow action, and sequential PC+1 only after both reads complete.",
+      "evidence_ids": ["E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind ADD and SUB syntax-6 inventory forms FORM-T2-01-06 and FORM-T2-02-06 as DUAL_INDIRECT_MOD0_MOD0 SUBSET coverage. Realize 104 catalog rows, ID_COUNT 105, 3,031 lookup entries, 104 bindings, 44/205 family coverage, and unchanged 27/205 strict complete-form coverage.",
+      "evidence_ids": ["E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Prove observer-off public-CPU dual ADD/SUB execution is fixed-size and allocation-free, performs exactly two deterministic DATA reads per retirement, preserves W50A carrier sizes and generic no-refetch/no-replan structure, and produces stable semantic hashes. Same-cohort host comparisons are advisory; no absolute nanosecond threshold or TI machine-cycle claim is admitted.",
+      "evidence_ids": ["E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W50B-DUAL-ADD-SUB-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Dual-memory ADD and SUB syntax-6 repeatability remains unresolved. Omission from a negative list is not positive eligibility evidence, so catalog metadata remains non-admitting and this slice does not activate runtime RPT.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -7947,7 +8081,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -8884,6 +9018,54 @@
       "path": "tests/contract/quality/perf/test_dual_word16_hot_path.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_add_sub_dual_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_add_sub_dual_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_sub_dual.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual"},
+      "requirement_ids": ["REQ-COMMON-P2-W50B-DUAL-ADD-SUB-MOD0-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_mod0.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_add_sub_dual_mod0"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_add_sub_dual_binding.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
+    },
+    {
+      "id": "T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_dual_add_sub_hot_path.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE"]
     }
   ]
 }

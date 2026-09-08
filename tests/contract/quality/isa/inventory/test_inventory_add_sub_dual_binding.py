@@ -1,0 +1,65 @@
+"""Inventory projection contract for the bounded dual ADD/SUB MOD0 forms."""
+
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+from tools.isa.inventory.schema import load_inventory
+from tools.quality.check_isa_inventory import report_inventory
+
+
+class AddSubDualInventoryTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.root = Path(__file__).resolve().parents[5]
+        cls.inventory = load_inventory(cls.root / "config/isa/inventory.json")
+
+    def test_forms_are_bounded_subsets(self) -> None:
+        forms = {form["id"]: form for form in self.inventory["forms"]}
+        self.assertEqual(
+            forms["FORM-T2-01-06"]["catalog_symbols"], ["ADD_DUAL_MOD0"]
+        )
+        self.assertEqual(
+            forms["FORM-T2-02-06"]["catalog_symbols"], ["SUB_DUAL_MOD0"]
+        )
+        for form_id in ("FORM-T2-01-06", "FORM-T2-02-06"):
+            self.assertEqual(forms[form_id]["scope"], "COMMON_CANDIDATE")
+            self.assertEqual(forms[form_id]["coverage"], "SUBSET")
+
+    def test_bindings_and_projection_counts(self) -> None:
+        bindings = {
+            binding["catalog_symbol"]: binding
+            for binding in self.inventory["catalog_bindings"]
+        }
+        self.assertEqual(
+            bindings["ADD_DUAL_MOD0"],
+            {
+                "catalog_symbol": "ADD_DUAL_MOD0",
+                "form_id": "FORM-T2-01-06",
+                "coverage": "SUBSET",
+                "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0",
+            },
+        )
+        self.assertEqual(
+            bindings["SUB_DUAL_MOD0"],
+            {
+                "catalog_symbol": "SUB_DUAL_MOD0",
+                "form_id": "FORM-T2-02-06",
+                "coverage": "SUBSET",
+                "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0",
+            },
+        )
+        self.assertEqual(len(self.inventory["catalog_bindings"]), 104)
+        report = report_inventory(self.root)
+        self.assertEqual(
+            report["catalog_family_progress"], {"covered": 44, "denominator": 205}
+        )
+        self.assertEqual(
+            report["strict_complete_lower_bound"],
+            {"covered": 27, "denominator": 205},
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

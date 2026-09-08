@@ -269,6 +269,28 @@ static const ti_c54x_operand_layout_set
         ti_c54x_accumulator_source_destination_extension16_shift16_operands,
         UINT8_C(3)};
 
+/* Syntax-6 dual-memory fields: D[8], Xar[5:4], Yar[1:0].  X/Y MOD bits
+ * [7:6]/[3:2] are fixed to MOD0 by the catalog mask and therefore are not
+ * exposed as operands. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_destination_xar_yar_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_destination_xar_yar_xar_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_destination_xar_yar_yar_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_dual_destination_xar_yar_operands[3] = {
+        {&ti_c54x_dual_destination_xar_yar_destination_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_dual_destination_xar_yar_xar_piece, UINT8_C(1), UINT8_C(2)},
+        {&ti_c54x_dual_destination_xar_yar_yar_piece, UINT8_C(1), UINT8_C(2)}};
+static const ti_c54x_operand_layout_set
+    ti_c54x_dual_destination_xar_yar_set = {
+        ti_c54x_dual_destination_xar_yar_operands, UINT8_C(3)};
+
 const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
     TI_C54X_OPERAND_LAYOUT_COUNT] = {
         [TI_C54X_OPERAND_LAYOUT_UNKNOWN] = {
@@ -332,6 +354,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
             UINT8_C(2), &ti_c54x_accumulator_source_destination_extension16_shift16_set},
+        [TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR] = {
+            TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, UINT8_C(1),
+            &ti_c54x_dual_destination_xar_yar_set},
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, UINT8_C(1),
             &ti_c54x_accumulator_arf_mod4_set},
@@ -472,6 +497,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_accumulator_source_destination_extension16_shift16_set;
+    case TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_dual_destination_xar_yar_set;
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_accumulator_arf_mod4_set;

@@ -51,22 +51,25 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 102)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 102)
+        self.assertEqual(len(bindings), 104)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 104)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 27)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 75)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 77)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
             | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)}
             | ATOMIC_LOGICAL_SUBSET
-            | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"},
+            | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
+            | {"ADD_DUAL_MOD0", "SUB_DUAL_MOD0"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
                 self.assertEqual(binding["addressing_subset"], "ALL")
             elif binding["catalog_symbol"] in {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}:
                 self.assertEqual(binding["addressing_subset"], "LONG_OFFSET_MOD13_CMPT0")
+            elif binding["catalog_symbol"] in {"ADD_DUAL_MOD0", "SUB_DUAL_MOD0"}:
+                self.assertEqual(binding["addressing_subset"], "DUAL_INDIRECT_MOD0_MOD0")
             else:
                 expected = (
                     "STANDARD_INDIRECT_MOD0_MOD3"

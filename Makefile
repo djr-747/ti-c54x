@@ -35,6 +35,7 @@ BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_bench
 RMW_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_rmw_bench
 DLD_DST_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_dld_dst_bench
 ADD_SUB_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_add_sub_bench
+DUAL_ADD_SUB_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_dual_add_sub_bench
 BENCH_CPPFLAGS := -Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0
 BENCH_DIAGNOSTIC_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
 	-Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
@@ -124,6 +125,13 @@ bench-add-sub-smoke: $(ADD_SUB_BENCH_EXE)
 		--compiler "$(CC)" --profile portable-o2-no-lto \
 		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
 
+bench-dual-add-sub: $(DUAL_ADD_SUB_BENCH_EXE)
+	$(PYTHON) tools/perf/dual_add_sub_capture.py --benchmark $(DUAL_ADD_SUB_BENCH_EXE) --root . --allow-dirty \
+		--compiler "$(CC)" --profile portable-o2-no-lto \
+		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
+
+bench-dual-add-sub-smoke: bench-dual-add-sub
+
 # Root owns the common direct-Make test construction policy. Owner manifests
 # provide only target identity and source path, so test registration follows
 # the ownership hierarchy without duplicating compiler policy.
@@ -205,6 +213,10 @@ $(DLD_DST_BENCH_EXE): bench/ti_c54x_dld_dst_bench.c $(BENCH_LIB)
 	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
 
 $(ADD_SUB_BENCH_EXE): bench/ti_c54x_add_sub_bench.c $(BENCH_LIB)
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
+
+$(DUAL_ADD_SUB_BENCH_EXE): bench/ti_c54x_dual_add_sub_bench.c $(BENCH_LIB)
 	@mkdir -p $(@D)
 	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
 

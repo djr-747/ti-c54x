@@ -26,3 +26,4 @@ $(eval $(call ti_c54x_add_test,atomic_logical_memory_metadata,isa/catalog,test_a
 $(eval $(call ti_c54x_add_test,dld_dst_long32_metadata,isa/catalog,test_dld_dst_long32_metadata.c))
 $(eval $(call ti_c54x_add_test,dld_repeatability_contract,isa/catalog,test_dld_repeatability_contract.c))
 $(eval $(call ti_c54x_add_test,add_sub_acc_shift_metadata,isa/catalog,test_add_sub_acc_shift_metadata.c))
+$(eval $(call ti_c54x_add_test,add_sub_dual_metadata,isa/catalog,test_add_sub_dual_metadata.c))

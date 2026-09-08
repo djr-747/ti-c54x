@@ -20,18 +20,20 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P2-W50A complete.
+Current snapshot: P2-W50B complete.
 
-- 102 runnable catalog rows cover 2,967 first-word encodings. Inventory coverage
-  is 42/205 instruction forms touched (20.488%) and 27/205 strict-complete
+- 104 runnable catalog rows cover 3,031 first-word encodings. Inventory coverage
+  is 44/205 instruction forms touched (21.463%) and 27/205 strict-complete
   (13.171%); lookup encodings are not instruction counts.
-- The dual-WORD16 MOD0 foundation plans two old-AR reads, serializes X then Y
-  over one endpoint, and publishes the pair transactionally with fixed
-  LP64/ILP32 carriers. It adds no opcode row, CPU opcode branch, or TI timing
-  claim.
-- W50B next activates evidenced dual-memory ADD/SUB forms over this generic
-  seam. Register-only ADD/SUB syntax 9 and existing WORD16/LONG32 memory paths
-  remain covered by the trusted generic execution path.
+- Dual-memory ADD/SUB MOD0/MOD0 forms are active through the generic trusted
+  path. Each instruction reads X then Y as WORD16 operands, applies SXM-aware
+  40-bit arithmetic with directional C and sticky destination overflow, and
+  commits the result transactionally after both reads.
+- The public CPU uses immutable direct lookup and trusted bindings on first
+  execution; there is no seen-before promotion. The observer-off dual-memory
+  benchmark is a hosted characterization and makes no TI cycle claim.
+- Next is W51: broader dual addressing/update modes, including the coordinated
+  two-AR update and same-AR mode-precedence seams that remain outside MOD0.
 - Performance remains a release constraint. Execution uses immutable direct
   lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
   observer-off CPU benchmarks. These are host-performance checks, not TI

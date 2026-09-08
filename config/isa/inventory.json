@@ -104,9 +104,11 @@
       "table_ordinal": 6,
       "mnemonic": "ADD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ADD_DUAL_MOD0"
+      ]
     },
     {
       "id": "FORM-T2-01-07",
@@ -249,9 +251,11 @@
       "table_ordinal": 6,
       "mnemonic": "SUB",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SUB_DUAL_MOD0"
+      ]
     },
     {
       "id": "FORM-T2-02-07",
@@ -2919,6 +2923,8 @@
     {"catalog_symbol": "DLD_LONG32_MOD13", "form_id": "FORM-T2-19-01", "coverage": "SUBSET", "addressing_subset": "LONG_OFFSET_MOD13_CMPT0"},
     {"catalog_symbol": "DST_LONG32_MOD13", "form_id": "FORM-T2-20-01", "coverage": "SUBSET", "addressing_subset": "LONG_OFFSET_MOD13_CMPT0"},
     {"catalog_symbol": "ADD_ACC_SHIFT", "form_id": "FORM-T2-01-09", "coverage": "COMPLETE", "addressing_subset": "ALL"},
-    {"catalog_symbol": "SUB_ACC_SHIFT", "form_id": "FORM-T2-02-09", "coverage": "COMPLETE", "addressing_subset": "ALL"}
+    {"catalog_symbol": "SUB_ACC_SHIFT", "form_id": "FORM-T2-02-09", "coverage": "COMPLETE", "addressing_subset": "ALL"},
+    {"catalog_symbol": "ADD_DUAL_MOD0", "form_id": "FORM-T2-01-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"},
+    {"catalog_symbol": "SUB_DUAL_MOD0", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"}
   ]
 }
