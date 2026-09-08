@@ -80,9 +80,11 @@ comparison are green. The baseline is recorded at
 `bench/audits/p2-w46b-rmw-baseline.json` with semantic hash
 `3b39187c40a4fd43`; performance remains a first-class acceptance axis without
 implying TI timing. P2-W47B1 is implementation-complete for the generic
-LONG32 MEMORY MOD13 carrier and root seam. P2-W47B2 is the active
-forcing-function slice for DLD/DST catalog, semantics, CPU execution,
-inventory, and opcode benchmarking.
+LONG32 MEMORY MOD13 carrier and root seam. P2-W47B2A completes the typed
+PMST.SST state/input prerequisite without widening the copied input snapshot.
+P2-W47B2B is the active forcing-function slice for DLD/DST catalog and
+checked/trusted semantics, followed by CPU execution, inventory, and opcode
+benchmarking in W47B2C.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -790,6 +792,15 @@ W47B1 accounting is 181 evidence records; 304 requirements (259 `IMPLEMENTED`,
 sources. Catalog and inventory counts remain unchanged until W47B2 activates the
 two production rows.
 
+W47B2A completes the typed PMST.SST state/input prerequisite without widening
+the 48-byte copied opcode-input snapshot on LP64 or ILP32. Common reset leaves
+SST unknown; checked typed writes establish knownness; collection keeps SST and
+SXM independently selectable and stages output transactionally. Unknown-status
+rejection before endpoint issue remains in the DLD/DST semantic and CPU slices.
+Accounting is 181 evidence records; 304 requirements (260 `IMPLEMENTED`, 15
+`PLANNED`, 29 `UNRESOLVED`); 258 tests (243 `PASSING`, 15 `PLANNED`); and 7
+sources. Catalog, lookup, binding, and ISA coverage counts remain unchanged.
+
 Activation leaves inventory rows `FORM-T2-19-01` (DLD) and `FORM-T2-20-01`
 (DST) unresolved until production catalog symbols exist. The post-implementation
 projection is 100 catalog rows, `ID_COUNT=101`, 2,711 populated first-word
@@ -848,6 +859,7 @@ function-pointer dispatch tables.
 | P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Implemented — six focused C/Python runners, clean baseline, and baseline comparison GREEN | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. The observer-off benchmark is advisory, with clean baseline artifact `bench/audits/p2-w46b-rmw-baseline.json`, semantic hash `3b39187c40a4fd43`, and no TI timing claim. |
 | P2-W47A generic LONG32 pair transaction seam | Implemented — focused shape/read/write CTests 3/3, hot-path quality 6/6, focused sanitizer 3/3, and authoritative full gate GREEN | Complete the generic sequencer-only LONG32 `{first=MSW,second=LSW}` reducer and validation split over the canonical private WORD16 transaction seam. Preserve deterministic MSW→LSW order, copied fixed-size state, fresh increasing IDs, WAIT/FAULT/cancel/read-publish/partial-write semantics, malformed-pair rejection, and allocation-free/no-replan hot-path checks. Native LP64 size is 32/88 bytes and supported ILP32 is 32/80; no catalog/opcode/CPU/public-ABI/effect-carrier change. W47B defers executable opcode benchmarking until evidence-backed DLD/DST composition. |
 | P2-W47B1 generic LONG32 MEMORY MOD13 root | Implemented — focused and sanitizer matrices 10/10 GREEN | Add the fixed-size LONG32 MEMORY carrier, checked CMPT=0 MOD13 resolver, and discriminated root transaction over W47A. Freeze LP64 address/effect/root sizes at 24/40/336 and ILP32 at 24/36/308; preserve copied MSW/LSW values, two fresh IDs, WAIT/fault/cancel/stale recovery, partial physical write visibility, deferred AR/PC commit, and the direct WORD16 fast path. Catalog rows, DLD/DST semantics, SST collection, CPU opcode tests, inventory, and benchmark remain W47B2. |
+| P2-W47B2A typed PMST.SST input seam | Implemented — focused normal, sanitizer, and LP64/ILP32 layout checks GREEN | Add typed SST read/write/knownness and copied input collection while retaining the 48-byte snapshot. Common reset leaves SST unknown, SXM/SST remain independent resources, and invalid collection is nonmutating. DLD/DST semantic rejection and execution remain W47B2B/C. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

@@ -79,7 +79,7 @@ typedef enum ti_c54x_repeatability_class {
 } ti_c54x_repeatability_class;
 
 typedef uint8_t ti_c54x_input_resource_mask;
-/* Resource values are powers of two; T_REGISTER is the sixth resource (32). */
+/* Resource values are powers of two; STATUS_SST is the seventh resource (64). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -89,6 +89,7 @@ typedef uint8_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)16U)
 #define TI_C54X_INPUT_RESOURCES_T_REGISTER \
     ((ti_c54x_input_resource_mask)32U)
+#define TI_C54X_INPUT_RESOURCES_STATUS_SST ((ti_c54x_input_resource_mask)64U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
@@ -104,7 +105,8 @@ typedef uint8_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_TC | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
-                                   TI_C54X_INPUT_RESOURCES_T_REGISTER))
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SST))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

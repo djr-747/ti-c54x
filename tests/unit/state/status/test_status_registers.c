@@ -131,6 +131,46 @@ static void test_cpl_cmpt_and_invalid_writes(void)
                        TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
 }
 
+static void test_pmst_sst_read_write_and_common_reset_unknownness(void)
+{
+    ti_c54x_status_register_state state;
+    ti_c54x_status_register_state before;
+    ti_c54x_status_register_field_result result;
+
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_reset_common(&state) ==
+                       TI_C54X_STATUS_REGISTER_OK);
+    result = ti_c54x_status_register_read_sst(&state);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_STATUS_REGISTER_UNKNOWN);
+    TI_C54X_TEST_CHECK(result.raw_value == UINT16_C(0));
+    TI_C54X_TEST_CHECK(!result.known);
+    TI_C54X_TEST_CHECK((state.pmst_known_mask & TI_C54X_PMST_SST_MASK) == 0U);
+
+    state.pmst = UINT16_C(0xA5A4);
+    state.pmst_known_mask = UINT16_C(0x5A5A);
+    before = state;
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_sst(&state, 2U) ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(memcmp(&state, &before, sizeof(state)) == 0);
+
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_sst(&state, 1U) ==
+                       TI_C54X_STATUS_REGISTER_OK);
+    TI_C54X_TEST_CHECK((state.pmst & TI_C54X_PMST_SST_MASK) != 0U);
+    TI_C54X_TEST_CHECK((state.pmst_known_mask & TI_C54X_PMST_SST_MASK) != 0U);
+    result = ti_c54x_status_register_read_sst(&state);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_STATUS_REGISTER_OK);
+    TI_C54X_TEST_CHECK(result.raw_value == UINT16_C(1));
+    TI_C54X_TEST_CHECK(result.known);
+
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_sst(&state, 0U) ==
+                       TI_C54X_STATUS_REGISTER_OK);
+    TI_C54X_TEST_CHECK((state.pmst & TI_C54X_PMST_SST_MASK) == 0U);
+    TI_C54X_TEST_CHECK((state.pmst_known_mask & TI_C54X_PMST_SST_MASK) != 0U);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_sst(NULL).status ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_write_sst(NULL, 0U) ==
+                       TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT);
+}
+
 static void test_checked_single_status_bit_writes(void)
 {
     const ti_c54x_status_register_target targets[] = {
@@ -225,6 +265,7 @@ int main(void)
     test_reset_and_unknown_reads();
     test_exhaustive_field_writes_preserve_surrounding_bits();
     test_cpl_cmpt_and_invalid_writes();
+    test_pmst_sst_read_write_and_common_reset_unknownness();
     test_checked_single_status_bit_writes();
     test_checked_single_status_bit_rejections_are_nonmutating();
     return 0;

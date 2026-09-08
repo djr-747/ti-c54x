@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W47B1 complete):
+Current snapshot (P2-W47B2A complete):
 
 - 98 runnable catalog rows and 2,679 populated first-word lookup entries. The
   inventory has touched 38/205 instruction families (18.537%); 25/205 forms are
@@ -39,8 +39,11 @@ Current snapshot (P2-W47B1 complete):
 - The fixed-size LONG32 memory path is green through MSW→LSW pairing, CMPT=0
   MOD13 resolution, and the root WAIT/fault/cancel/stale lifecycle. AR/PC commit
   waits for both words; the existing WORD16 path avoids the LONG32 cold helper.
-- Active next slice (P2-W47B2): DLD/DST catalog rows, SXM/SST semantics, CPU
-  execution tests, inventory activation, and an observer-off opcode benchmark.
+  Typed PMST.SST access and copied input knownness are now green without widening
+  the 48-byte opcode-input snapshot.
+- Active next slice (P2-W47B2B): DLD/DST catalog rows and checked/trusted
+  semantics, followed by CPU execution tests, inventory activation, and the
+  observer-off opcode benchmark.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

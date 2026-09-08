@@ -6032,11 +6032,11 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/input/",
-      "claim": "Add typed PMST.SST access, copied status_sst and status_sst_known input snapshots, and transactional unknown-input rejection for DST; preserve SXM knownness and reject when either required status input is unknown before any memory request or architectural mutation.",
+      "claim": "Add typed PMST.SST access and copied status_sst and status_sst_known input snapshots while preserving independent SXM knownness; common reset must not invent an SST value, and invalid collection requests must leave caller-owned output unchanged. Opcode-level rejection of unknown required status inputs remains owned by the DLD/DST semantic and CPU lifecycle requirements.",
       "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS"]
     },
@@ -8149,10 +8149,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/input/test_collect_sst_status.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_sst_status"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS"]
     },
     {
