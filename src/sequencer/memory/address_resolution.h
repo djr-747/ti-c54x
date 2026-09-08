@@ -5,8 +5,9 @@
  * Module contract
  *
  * Owns: pure resolution of the generic W16 data-memory address descriptor
- * against caller-owned architectural state, including a value-owned address
- * result, prevalidated AR commit, and DATA bus request.
+ * against caller-owned architectural state, including CMPT=0 single-indirect
+ * MOD0--MOD3 and AR0-indexed MOD5/MOD6 forms, a value-owned address result,
+ * prevalidated AR commit, and DATA bus request.
  * Does not own: opcode identity, memory visibility, endpoint callbacks,
  * architectural mutation, timing, CPU lifecycle, or diagnostics. State and
  * descriptor inputs are borrowed for one call; output owns no pointers and
@@ -40,7 +41,7 @@ typedef struct ti_c54x_memory_address_resolution {
     ti_c54x_bus_word16_request request;
 } ti_c54x_memory_address_resolution;
 
-/* Resolve one MOD0--MOD3 generic address and stage all fallible candidates. */
+/* Resolve one supported generic address and stage all fallible candidates. */
 ti_c54x_memory_address_resolution_status
 ti_c54x_sequencer_resolve_memory_address(
     const ti_c54x_arch_state *state,

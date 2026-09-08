@@ -49,9 +49,11 @@ contracts are tightened.
 P2-W42B is active as the bounded fan-out of that seam across the ten existing
 fixed-MOD2 Smem families; it replaces those rows with neutral MOD-bearing
 forms without adding opcode identities.
-P2-W43A is staged as the next generic indexed WORD16 MEMORY seam only; it adds
-no catalog row, opcode handler, or instruction-family claim. P2-W43B remains
-blocked pending explicit primary per-family MOD5/MOD6 encoding composition.
+P2-W43A is implementation-complete as the generic indexed WORD16 MEMORY seam
+only; it adds no catalog row, opcode handler, or instruction-family claim. Its
+three RED contracts are GREEN, covering the effect, resolver, and transaction
+behaviors below. P2-W43B remains blocked pending explicit primary per-family
+MOD5/MOD6 encoding composition.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -321,12 +323,20 @@ the CTest runners `ti_c54x.indexed_word16_memory_effect`,
 `ti_c54x.indexed_word16_memory_resolver`, and
 `ti_c54x.indexed_word16_memory_transaction` when each lane closes.
 
-The existing `memory_instruction_transaction.c` root owner is already 523
-lines; W43A candidate validation must be split before or with implementation if
-the seam would grow that monolith. The indexed resolver must be inspected at
-implementation start and split if it approaches the repository review threshold;
-no size growth is evidence of completion. Existing indexed-addressing TI and
-project-contract evidence is reused; no new evidence is admitted by activation.
+The existing `memory_instruction_transaction.c` root owner was 523 lines before
+implementation; W43A split it into a 335-line root owner and a 268-line
+candidate validator. The indexed resolver is 169 lines. Existing
+indexed-addressing TI and project-contract evidence is reused; no new evidence
+is admitted by activation.
+
+Status: COMPLETE. RED→GREEN focused strict and ASan/UBSan CTest execution,
+independent semantic/integration review, the authoritative standalone `make
+test`, the evidence checker, and repository diff validation are green. No
+public ABI, CPU snapshot, timing, device/MMR, IRQ, RPT, wrap, catalog,
+opcode-handler, or new architectural-state claim was added; inventory coverage
+is unchanged. The 335-line root, 268-line validator, and 169-line resolver are
+retained as cohesive modules and will be reviewed before approaching the
+repository's 500/800-line thresholds.
 
 ### P2-W43B: indexed MOD5/MOD6 per-family composition (blocked candidate)
 

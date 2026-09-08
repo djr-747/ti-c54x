@@ -7,3 +7,5 @@ ti_c54x_add_unit_test(memory_instruction_lifecycle
 # Test ownership: modes file owns MOD0--MOD3 transaction publication rules.
 ti_c54x_add_unit_test(memory_instruction_modes
                       test_memory_instruction_modes.c)
+ti_c54x_add_unit_test(indexed_word16_memory_transaction
+                      test_indexed_word16_memory_transaction.c)

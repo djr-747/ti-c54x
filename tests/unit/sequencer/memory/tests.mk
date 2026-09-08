@@ -2,3 +2,4 @@
 # resolution; it does not own opcode identity or CPU orchestration.
 $(eval $(call ti_c54x_add_test,memory_address_resolution,sequencer/memory,test_memory_address_resolution.c))
 $(eval $(call ti_c54x_add_test,memory_address_modes,sequencer/memory,test_memory_address_modes.c))
+$(eval $(call ti_c54x_add_test,indexed_word16_memory_resolver,sequencer/memory,test_indexed_word16_memory_resolver.c))

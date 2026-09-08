@@ -1,8 +1,9 @@
 /*
  * Module contract
  *
- * Owns: ordered, non-mutating resolution of a generic MOD0--MOD3 W16 data
- * address into the existing checked address planner and request constructor.
+ * Owns: ordered, non-mutating resolution of a generic CMPT=0 W16 data
+ * address (single-indirect MOD0--MOD3 or AR0-indexed MOD5/MOD6) into the
+ * existing checked address planner and request constructor.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
  * mutation, timing, lifecycle, or diagnostics.
  */
@@ -43,9 +44,20 @@ ti_c54x_sequencer_resolve_memory_address(
                               TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ARGUMENT);
     }
     *out = (ti_c54x_memory_address_resolution){0};
-    if (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16 ||
-        spec->mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
-        spec->mode > TI_C54X_INDIRECT_SINGLE_MOD3 || spec->arf > UINT8_C(7)) {
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16) {
+        if (spec->mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
+            spec->mode > TI_C54X_INDIRECT_SINGLE_MOD3 ||
+            spec->arf > UINT8_C(7)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
+    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16) {
+        if (spec->mode != TI_C54X_INDIRECT_SINGLE_MOD0 ||
+            (spec->indexed_mode != TI_C54X_INDIRECT_INDEXED_MOD5 &&
+             spec->indexed_mode != TI_C54X_INDIRECT_INDEXED_MOD6) ||
+            spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
+    } else {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
     }
     if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
@@ -71,6 +83,46 @@ ti_c54x_sequencer_resolve_memory_address(
     if (ti_c54x_arch_state_read_ar(state, spec->arf, &ar_value) !=
         TI_C54X_ARCH_STATE_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+    }
+
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16) {
+        uint16_t ar0_value = UINT16_C(0);
+
+        /* Indexed forms consume selected ARx first, then the AR0 index. */
+        if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &ar0_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+        address_access = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? TI_C54X_ADDRESS_ACCESS_READ
+                             : TI_C54X_ADDRESS_ACCESS_WRITE;
+        address_result = ti_c54x_indirect_indexed_word(
+            spec->arf, ar_value, ar0_value, spec->indexed_mode,
+            address_access);
+        if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        address_status = ti_c54x_sequencer_validate_address_effect(
+            state, &address_result,
+            TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS, &address_commit);
+        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        request_result = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? ti_c54x_bus_word16_request_read(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   address_result.effect.operand.first_word)
+                             : ti_c54x_bus_word16_request_write(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   address_result.effect.operand.first_word,
+                                   write_value_word);
+        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
+        }
+        out->address_result = address_result;
+        out->address_commit = address_commit;
+        out->request = request_result.request;
+        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
     address_access = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
