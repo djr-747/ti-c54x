@@ -6753,3 +6753,45 @@ rewritten after publication.
   lookup entries, 100 bindings, 40/205 family coverage, and 25/205 strict
   coverage. The next architecture-forcing implementation is the evidenced
   register ADD/SUB ALU/status slice; runtime RPT remains evidence-gated.
+
+## 2026-09-09 — P2-W49A bit-32 ADD/SUB overflow foundation
+
+- State: implementation commit
+  `725f99ca89c1e28d2091949c4bf91413797a8e9a` adds checked modulo-2^40 ADD/SUB
+  primitives, bit-32 carry/no-borrow, signed-32 overflow direction, typed
+  OVM/OVA/OVB access, copied OVM input, and atomic sticky destination-overflow
+  effects. No ADD/SUB opcode row or opcode-specific CPU branch is activated.
+- Evidence decision: TI SPRU131G §4.1 and Tables 4-1/4-2 define bit-32 C,
+  destination-specific sticky OVA/OVB, and OVM behavior; §4.2 defines the
+  40-bit ALU and signed-32 saturation endpoints. TI SPRU172C NEG printed
+  pp. 4-119–4-120 confirms both lower-32 and signed-40 extreme overflow cases.
+  The implementation keeps modulo result, bit-32 carry/borrow, overflow
+  direction, and OVM storage policy as separate facts rather than inferring one
+  from another.
+- Architecture: the input-resource carrier widens to `uint16_t` before OVM
+  occupies bit `0x0080`, retaining invalid/future resource space. The copied
+  input snapshot stays 48 bytes on LP64 and ILP32; metadata/decoded/trusted
+  packet sizes remain 24/20/104 on LP64 and 24/20/76 on supported ILP32. The
+  outer effect remains 48/40 bytes. All new paths are fixed-size,
+  allocation-free, instance-owned, and free of I/O, environment, logging,
+  observer, callback, and mutable-global behavior. No knob was added or changed.
+- Performance: six interleaved same-host observer-off `-O2` benchmark pairs
+  compared the frozen W48C binary with W49A. Median deltas were -1.34% NOP,
+  -2.96% LD-DP, -1.21% LD-ASM, +1.23% LD-ARP, and -3.62% mixed-current; all
+  semantic hashes were unchanged. The result is no material current-path
+  regression, not a machine-timing claim or permanent host threshold.
+- Validation is GREEN: the four focused strict Make executables pass; focused
+  CMake/CTest passes 4/4; the supported `-m32` assertion probe passes; semantic
+  review found no production defect after its coverage findings were closed;
+  the evidence registry passes at 2 targets, 7 sources, 314 requirements, and
+  269 tests; and the authoritative `rtk make test` gate passes the complete C
+  suite plus all 246 Python quality tests. Manifests, inventory, source
+  boundaries, knobs, and the observer-disabled artifact pass. Only the three
+  previously reviewed 637/782/620-line warnings remain. No GitHub or other
+  hosted runner was invoked, and no RED commit was pushed.
+- Closure accounting is 192 immutable evidence records; 314 requirements (278
+  IMPLEMENTED, 7 PLANNED, 29 UNRESOLVED); 269 tests (262 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts remain 100 rows, `ID_COUNT=101`, 2,711
+  lookup entries, 100 bindings, 40/205 family coverage, and 25/205 strict
+  coverage. W49B next composes the separately evidenced register-only ADD/SUB
+  syntax-9 forms and measures their trusted public-CPU path.
