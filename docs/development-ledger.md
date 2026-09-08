@@ -5849,3 +5849,32 @@ rewritten after publication.
 - No public ABI, catalog identity, opcode handler, CPU opcode branch, timing,
   machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
   allocation, mutable-global, wrap, or emulator dependency was added.
+
+## 2026-09-08 — P2-W43B indexed Smem expansion activation
+
+- State: evidence and ownership activation landed as
+  `05646cf721edaca4a03ff8464b2c02b70d07a217`. Primary TI evidence now
+  unblocks the bounded MOD5/MOD6 fan-out across the ten existing Smem forms.
+- SPRU131G Figure 5-7/Table 5-3 fixes I bit 7, MOD bits 6:3, and ARF bits 2:0;
+  Table 5-4 fixes MOD5/MOD6. The ten SPRU172C opcode diagrams compose those
+  fields into 20 disjoint rows with exact `0xFEF8` or `0xFFF8` masks.
+- The existing ten MOD0–3 identities remain. Twenty new `_MOD5`/`_MOD6`
+  identities use unique handler tokens and thin checked/trusted wrappers over
+  family cores; catalog handler-token uniqueness is not relaxed.
+- Three appended private four-bit-MOD layouts preserve all existing operand
+  indices. The W43A indexed MEMORY seam owns ARx/AR0 resolution and atomic
+  retirement; handlers consume decoded modes and add no CPU opcode branch.
+- The frozen catalog projection is ID_COUNT 36→56 and populated first-word
+  lookup 1,863→2,103, exactly +240 legal words. Inventory evolves to explicit
+  multi-binding under `STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6` while deduplicated
+  coverage remains 35/205 = 17.073% family and 25/205 = 12.195% strict.
+- Six owner-local RED lanes are planned for catalog, decode, load effects,
+  store effects, CPU integration, and inventory multi-binding quality.
+- Activation accounting is 165 evidence records; 263 requirements (220
+  IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 217 tests (203 PASSING, 14
+  PLANNED); and 7 sources. `make quality-test`, the evidence checker, inventory
+  checker, manifests, source boundaries, observer-off check, and
+  `git diff --check` passed.
+- No public ABI, new effect/address/state kind, opcode-specific CPU branch,
+  timing, machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
+  allocation, mutable-global, wrap, or emulator dependency is admitted.
