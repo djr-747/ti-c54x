@@ -5503,7 +5503,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/memory/",
@@ -5513,7 +5513,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/memory/",
@@ -5523,7 +5523,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -7310,26 +7310,26 @@
     },
     {
       "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/memory/test_circular_word16_memory_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_word16_memory_effect"},
       "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT"]
     },
     {
       "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/memory/test_circular_word16_address_resolution.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_word16_address_resolution"},
       "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION"]
     },
     {
       "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_circular_word16_memory_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_word16_memory_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION"]
     }
   ]

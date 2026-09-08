@@ -1,8 +1,9 @@
 /*
  * Module contract
  *
- * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3
- * and INDEXED_AR0 MOD5/MOD6 WORD16 memory effect carriers.
+ * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
+ * INDEXED_AR0 MOD5/MOD6, and CIRCULAR MOD8/MOD10 WORD16 memory effect
+ * carriers.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -33,6 +34,7 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
     switch (effect->address_spec.kind) {
     case TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16:
         if (effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
             effect->address_spec.mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
             effect->address_spec.mode > TI_C54X_INDIRECT_SINGLE_MOD3 ||
             effect->address_spec.arf > UINT8_C(7)) {
@@ -46,11 +48,24 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16:
         if (effect->address_spec.mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
             effect->address_spec.indexed_mode <
                 TI_C54X_INDIRECT_INDEXED_MOD5 ||
             effect->address_spec.indexed_mode >
                 TI_C54X_INDIRECT_INDEXED_MOD6 ||
             effect->address_spec.arf == UINT8_C(0) ||
+            effect->address_spec.arf > UINT8_C(7)) {
+            return false;
+        }
+        return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
+
+    case TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16:
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            (effect->address_spec.circular_mode !=
+                 TI_C54X_INDIRECT_CIRCULAR_MOD8 &&
+             effect->address_spec.circular_mode !=
+                 TI_C54X_INDIRECT_CIRCULAR_MOD10) ||
             effect->address_spec.arf > UINT8_C(7)) {
             return false;
         }

@@ -6,7 +6,7 @@
  *
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates, including exact address-resolution snapshots for
- * single-indirect and AR0-indexed operands.
+ * single-indirect, AR0-indexed, and circular operands.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  * Candidate and state arguments are borrowed for one validation call; no

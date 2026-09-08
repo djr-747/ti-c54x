@@ -3,7 +3,7 @@
  *
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates, including exact address-resolution snapshots for
- * single-indirect and AR0-indexed operands.
+ * single-indirect, AR0-indexed, and circular operands.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -135,6 +135,43 @@ address_resolution_is_valid(
         return address_effect->update.value_after == expected_after;
     }
 
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16) {
+        const ti_c54x_address_source_ar_circular *const source =
+            &address_effect->source.value.ar_circular;
+
+        if (!ti_c54x_indirect_circular_effect_is_valid(address_effect) ||
+            address_effect->source.kind !=
+                TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR ||
+            source->index != effect->address_spec.arf ||
+            source->modification !=
+                (uint8_t)effect->address_spec.circular_mode ||
+            address_effect->operand.first_word != source->value_before) {
+            return false;
+        }
+        if (source->bk_value_before == UINT16_C(0)) {
+            return address_effect->update.target ==
+                       TI_C54X_ADDRESS_UPDATE_NONE &&
+                   address_effect->update.phase ==
+                       TI_C54X_ADDRESS_UPDATE_PHASE_NONE &&
+                   address_effect->update.ar_index == UINT8_C(0) &&
+                   address_effect->update.value_before == UINT16_C(0) &&
+                   address_effect->update.value_after == UINT16_C(0) &&
+                   address_commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
+                   address_commit->ar_index == UINT8_C(0) &&
+                   address_commit->value_after == UINT16_C(0);
+        }
+        return address_effect->update.target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+               address_effect->update.ar_index == source->index &&
+               address_effect->update.value_before == source->value_before &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_commit->ar_index == source->index &&
+               address_commit->value_after ==
+                   address_effect->update.value_after;
+    }
+
     return false;
 }
 
@@ -188,6 +225,17 @@ address_resolution_matches(
                    actual_effect->source.value.ar_indexed.value_before &&
                expected_effect->source.value.ar_indexed.ar0_value_before ==
                    actual_effect->source.value.ar_indexed.ar0_value_before;
+    }
+    if (expected_effect->source.kind ==
+        TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR) {
+        return expected_effect->source.value.ar_circular.index ==
+                   actual_effect->source.value.ar_circular.index &&
+               expected_effect->source.value.ar_circular.modification ==
+                   actual_effect->source.value.ar_circular.modification &&
+               expected_effect->source.value.ar_circular.value_before ==
+                   actual_effect->source.value.ar_circular.value_before &&
+               expected_effect->source.value.ar_circular.bk_value_before ==
+                   actual_effect->source.value.ar_circular.bk_value_before;
     }
     return false;
 }
