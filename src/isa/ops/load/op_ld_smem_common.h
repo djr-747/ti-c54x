@@ -6,9 +6,10 @@
  *
  * Owns: private shared validation and MEMORY-effect staging for the neutral
  * standard-indirect accumulator loads. It extracts the copied destination,
- * ARF, and MOD operands from a catalog/decode contract and stages a copied
- * single-indirect WORD16 read after rejecting MOD3 loads. It retains no
- * caller-owned pointer and leaves caller effects unchanged on failure.
+ * ARF, and MOD operands from a catalog/decode contract and stages copied
+ * single-indirect WORD16 reads for MOD0--MOD2 or AR0-indexed WORD16 reads
+ * for MOD5/MOD6. It retains no caller-owned pointer and leaves caller
+ * effects unchanged on failure.
  * Does not own: opcode-family completion transforms, SXM/T input semantics,
  * decode tables, address resolution, buses, CPU state, sequencing, timing,
  * observers, allocation, logging, environment, or diagnostics.
@@ -44,8 +45,31 @@ ti_c54x_op_status ti_c54x_ld_smem_validate_trusted_operands(
 
 ti_c54x_op_status ti_c54x_ld_smem_validate_mode(uint8_t mode);
 
+ti_c54x_op_status ti_c54x_ld_smem_validate_indexed_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_input_resource_mask expected_resources,
+    ti_c54x_operand_layout_id expected_layout,
+    uint8_t expected_mode,
+    ti_c54x_ld_smem_operands *operands);
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_indexed_trusted_operands(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_input_resource_mask expected_resources,
+    ti_c54x_operand_layout_id expected_layout,
+    uint8_t expected_mode,
+    ti_c54x_ld_smem_operands *operands);
+
 void ti_c54x_ld_smem_stage_memory_read(
     const ti_c54x_ld_smem_operands *operands,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect);
+
+void ti_c54x_ld_smem_stage_indexed_memory_read(
+    const ti_c54x_ld_smem_operands *operands,
+    uint8_t indexed_mode,
     ti_c54x_op_memory_complete_fn complete,
     ti_c54x_op_effect *effect);
 

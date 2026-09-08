@@ -1658,7 +1658,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_SMEM"
+        "LD_SMEM",
+        "LD_SMEM_MOD5",
+        "LD_SMEM_MOD6"
       ]
     },
     {
@@ -1671,7 +1673,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_SMEM_TS"
+        "LD_SMEM_TS",
+        "LD_SMEM_TS_MOD5",
+        "LD_SMEM_TS_MOD6"
       ]
     },
     {
@@ -1684,7 +1688,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_SMEM_SHIFT16"
+        "LD_SMEM_SHIFT16",
+        "LD_SMEM_SHIFT16_MOD5",
+        "LD_SMEM_SHIFT16_MOD6"
       ]
     },
     {
@@ -1774,7 +1780,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_T_SMEM"
+        "LD_T_SMEM",
+        "LD_T_SMEM_MOD5",
+        "LD_T_SMEM_MOD6"
       ]
     },
     {
@@ -1787,7 +1795,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_DP_SMEM"
+        "LD_DP_SMEM",
+        "LD_DP_SMEM_MOD5",
+        "LD_DP_SMEM_MOD6"
       ]
     },
     {
@@ -1839,7 +1849,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LD_ASM_SMEM"
+        "LD_ASM_SMEM",
+        "LD_ASM_SMEM_MOD5",
+        "LD_ASM_SMEM_MOD6"
       ]
     },
     {
@@ -1874,7 +1886,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LDU_SMEM"
+        "LDU_SMEM",
+        "LDU_SMEM_MOD5",
+        "LDU_SMEM_MOD6"
       ]
     },
     {
@@ -1909,7 +1923,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "ST_T_SMEM"
+        "ST_T_SMEM",
+        "ST_T_SMEM_MOD5",
+        "ST_T_SMEM_MOD6"
       ]
     },
     {
@@ -1933,7 +1949,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "ST_IMMEDIATE_SMEM"
+        "ST_IMMEDIATE_SMEM",
+        "ST_IMMEDIATE_SMEM_MOD5",
+        "ST_IMMEDIATE_SMEM_MOD6"
       ]
     },
     {
@@ -1990,7 +2008,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "STL_SMEM"
+        "STL_SMEM",
+        "STL_SMEM_MOD5",
+        "STL_SMEM_MOD6"
       ]
     },
     {
@@ -2523,61 +2543,181 @@
       "catalog_symbol": "LD_SMEM",
       "form_id": "FORM-T2-19-02",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LD_SMEM_TS",
       "form_id": "FORM-T2-19-03",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "STL_SMEM",
       "form_id": "FORM-T2-20-09",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LDU_SMEM",
       "form_id": "FORM-T2-19-20",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LD_T_SMEM",
       "form_id": "FORM-T2-19-12",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "ST_IMMEDIATE_SMEM",
       "form_id": "FORM-T2-20-04",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LD_DP_SMEM",
       "form_id": "FORM-T2-19-13",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LD_ASM_SMEM",
       "form_id": "FORM-T2-19-17",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "LD_SMEM_SHIFT16",
       "form_id": "FORM-T2-19-04",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "ST_T_SMEM",
       "form_id": "FORM-T2-20-02",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_MOD5",
+      "form_id": "FORM-T2-19-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_MOD6",
+      "form_id": "FORM-T2-19-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_TS_MOD5",
+      "form_id": "FORM-T2-19-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_TS_MOD6",
+      "form_id": "FORM-T2-19-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "STL_SMEM_MOD5",
+      "form_id": "FORM-T2-20-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "STL_SMEM_MOD6",
+      "form_id": "FORM-T2-20-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LDU_SMEM_MOD5",
+      "form_id": "FORM-T2-19-20",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LDU_SMEM_MOD6",
+      "form_id": "FORM-T2-19-20",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_T_SMEM_MOD5",
+      "form_id": "FORM-T2-19-12",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_T_SMEM_MOD6",
+      "form_id": "FORM-T2-19-12",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "ST_IMMEDIATE_SMEM_MOD5",
+      "form_id": "FORM-T2-20-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "ST_IMMEDIATE_SMEM_MOD6",
+      "form_id": "FORM-T2-20-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_DP_SMEM_MOD5",
+      "form_id": "FORM-T2-19-13",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_DP_SMEM_MOD6",
+      "form_id": "FORM-T2-19-13",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_ASM_SMEM_MOD5",
+      "form_id": "FORM-T2-19-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_ASM_SMEM_MOD6",
+      "form_id": "FORM-T2-19-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_SHIFT16_MOD5",
+      "form_id": "FORM-T2-19-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_SHIFT16_MOD6",
+      "form_id": "FORM-T2-19-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "ST_T_SMEM_MOD5",
+      "form_id": "FORM-T2-20-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "ST_T_SMEM_MOD6",
+      "form_id": "FORM-T2-20-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     }
   ]
 }

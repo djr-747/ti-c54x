@@ -46,14 +46,17 @@ P2-W42A is implementation-complete as the standard-indirect MOD0–3 memory
 transaction seam; it deliberately leaves the catalog and opcode handlers
 unchanged while the generic MEMORY effect, resolver, and root transaction
 contracts are tightened.
-P2-W42B is active as the bounded fan-out of that seam across the ten existing
+P2-W42B is implementation-complete as the bounded fan-out of that seam across the ten existing
 fixed-MOD2 Smem families; it replaces those rows with neutral MOD-bearing
 forms without adding opcode identities.
 P2-W43A is implementation-complete as the generic indexed WORD16 MEMORY seam
 only; it adds no catalog row, opcode handler, or instruction-family claim. Its
 three RED contracts are GREEN, covering the effect, resolver, and transaction
-behaviors below. P2-W43B is now planned from the explicit primary per-family
-MOD5/MOD6 composition audit recorded in the evidence registry.
+behaviors below. P2-W43B is implementation-complete as the twenty-row indexed
+MOD5/MOD6 per-family expansion from the explicit primary composition audit.
+The catalog projection is ID_COUNT=56 with 2,103 populated first-word lookup
+entries and 55 catalog bindings; inventory family progress remains 35/205
+(17.073%) and strict complete-form coverage remains 25/205 (12.195%).
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -388,8 +391,28 @@ and inventory multi-binding quality. Planned CTest runners are
 `ti_c54x.quality.python` discovery runner for the inventory lane; each test
 path and owning module is recorded in the evidence registry.
 
-Activation accounting is 165 evidence records; 263 requirements (220
-IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 217 tests (203 PASSING, 14 PLANNED);
+Implementation closure: all six W43B RED lanes are GREEN. The catalog,
+decode/layout, indexed load, indexed store, CPU integration, and inventory
+multi-binding fixtures passed their recorded runners; a fresh ASan+UBSan
+configure/build passed the five focused CTests (5/5) with no diagnostics, and
+the inventory Python lane passed 3/3. The catalog projection
+is ID_COUNT=56 with 2,103 populated first-word lookup entries and 55 bindings;
+the ten indexed form bindings retain the
+`STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6` addressing token, so inventory family
+coverage remains 35/205 (17.073%) and strict complete-form coverage remains
+25/205 (12.195%). The implementation fixed the stale W42B/legacy ID_COUNT
+fixtures and added the TS pure prevalidation path before the memory endpoint;
+these corrections are regression fixtures, not new ISA scope. Operand
+ownership review retains `src/isa/decode/operand_layout.c` at 620 lines as a
+cohesive owner and requires a split before 800 lines. The current load/store
+owners remain below that threshold: `op_ld_smem.c` 393 lines,
+`op_ld_smem_common.c` 308, `op_ld_smem_indexed.c` 317, and
+`op_store_indexed_common.c` 243. No public ABI, new effect/address/state
+kind, CPU branch, timing, device/MMR, or IRQ/RPT expansion was added by this
+closure; sanitizer output is validation evidence only.
+
+Closure accounting is 165 evidence records; 263 requirements (226
+IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 217 tests (209 PASSING, 8 PLANNED);
 and 7 sources. Inventory coverage remains 35/205 = 17.073% catalog-family
 progress and 25/205 = 12.195% strict complete-form coverage. W43A seam reuse
 is the only address/effect integration admitted; no new ABI, timing, device,
@@ -437,6 +460,7 @@ function-pointer dispatch tables.
 | ISA instruction-form inventory (P2-W40) | Implemented — focused tests and checker green | Freeze the authoritative 205-form TI summary denominator and separate audit metadata from production decode; schema/count/catalog-binding/report contracts preserve explicit coverage and scope states, keep unresolved forms in the denominator, and report only the provisional 35/205 and 25/205 progress measures |
 | P2-W41 fixed-MOD2 LD Smem,TS,dst vertical slice | Implemented — focused strict/sanitizer tests, quality 207, clean dual review, and full standalone gate green | Add the 0x1490/0xFEF8 fixed-MOD2 TS load through the existing ACCUMULATOR_ARF, SXM/T input, MEMORY, ACCUMULATOR_WRITE, address-resolution, and CPU retirement seams. Valid signed six-bit counts shift the SXM-widened WORD16 in canonical 40-bit space; project-unsupported 0x20..0x2f rejects transactionally before the data bus. Catalog-family progress is 35/205 (17.073%); strict complete-form coverage remains 25/205 (12.195%). |
 | P2-W42A standard-indirect MOD0–MOD3 memory transaction seam | Implemented — focused CTest contracts, evidence checker, and diff validation green to date | Generalize the existing generic MEMORY effect, address resolver, and root memory-instruction transaction to MOD0–MOD3 without changing the catalog or opcode handlers. MOD3 read effects reject structurally before endpoint issue; MOD0 has no AR commit, MOD1/MOD2 are POST, and MOD3 writes are PRE metadata with commit-at-READY atomicity. |
+| P2-W43B indexed MOD5/MOD6 per-family composition | Implemented — five focused CTests, inventory Python 3/3, and independent ASan/UBSan gate green | Register 20 indexed catalog rows (ID_COUNT 56; lookup 2,103), append the three private MOD4 layouts, and add seven load plus three store MOD5/MOD6 wrappers through the W43A indexed MEMORY seam. Keep 55 catalog bindings, 35/205 family coverage, 25/205 strict complete coverage, and no ABI/effect/address/state/CPU/timing expansion. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

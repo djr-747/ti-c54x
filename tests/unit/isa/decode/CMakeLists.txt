@@ -27,3 +27,5 @@ ti_c54x_add_unit_test(st_immediate_smem_decode test_st_immediate_smem_decode.c)
 ti_c54x_add_unit_test(st_t_smem_decode test_st_t_smem_decode.c)
 ti_c54x_add_unit_test(standard_indirect_memory_decode
                       test_standard_indirect_memory_decode.c)
+ti_c54x_add_unit_test(indexed_standard_indirect_decode
+                      test_indexed_standard_indirect_decode.c)

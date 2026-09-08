@@ -6,7 +6,8 @@
  *
  * Owns: opcode identity, immutable first-word/program-word metadata, and the
  * catalog-owned scalar operand-layout, repeatability, and fixed-width
- * input-resource classifications derived from the one catalog definition.
+ * input-resource classifications derived from the one catalog definition,
+ * including private AR0-indexed MOD5/MOD6 identities.
  * NONE is explicit and zero-valued so zero-initialized decode values are safe.
  * Does not own: opcode strings, timing, semantic effects, buses, CPU state,
  * program-counter sequencing, or diagnostics. Metadata pointers returned by
@@ -62,6 +63,11 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
+    /* Indexed standard-indirect fields retain existing operands and widen
+     * MOD [4:3] to carry the MOD5/MOD6 discriminator in bits [6:3]. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+    TI_C54X_OPERAND_LAYOUT_ARF_MOD4,
+    TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD4,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

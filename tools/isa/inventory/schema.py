@@ -3,7 +3,8 @@
 Module contract
 ---------------
 Owns: JSON shape, lexical fields, summary checkpoints, stable form identities,
-and internal form/catalog cross-reference validation.  Does not own: opcode
+and internal form/catalog cross-reference validation, including multiple
+addressing-mode bindings for one stable form identity.  Does not own: opcode
 values or masks, production catalog membership, instruction semantics, or
 coverage claims beyond the explicit inventory records.  Parsing retains no
 caller-owned mutable state and performs no environment or network reads.
@@ -271,9 +272,10 @@ def validate_inventory(value: Any) -> list[str]:
         binding_symbols_by_form.setdefault(form_id, set()).add(symbol)
         bindings_by_form.setdefault(form_id, []).append(binding)
 
-    # Schema v1 intentionally models one production catalog symbol per form.
-    # Keep this relationship explicit so coverage cannot be swapped or silently
-    # inflated by aliases/multiple bindings.
+    # A COMPLETE form remains one production catalog row. A SUBSET form may
+    # expose multiple disjoint addressing-mode rows (for example neutral
+    # MOD0--3 plus indexed MOD5/MOD6), but every binding must retain the same
+    # audit coverage state and the form's symbol list must match exactly.
     for form_id, symbols in symbols_by_form.items():
         coverage = coverage_by_form.get(form_id)
         records = bindings_by_form.get(form_id, [])
@@ -281,10 +283,10 @@ def validate_inventory(value: Any) -> list[str]:
             if records:
                 _error(errors, f"forms[{form_id}].coverage", "UNIMPLEMENTED forms must not have catalog bindings")
         elif coverage in {"COMPLETE", "SUBSET"}:
-            if len(records) != 1:
-                _error(errors, f"forms[{form_id}].coverage", "bound forms must have exactly one catalog binding")
-            else:
-                binding = records[0]
+            if not records or (coverage == "COMPLETE" and len(records) != 1):
+                expected = "exactly one" if coverage == "COMPLETE" else "at least one"
+                _error(errors, f"forms[{form_id}].coverage", f"bound forms must have {expected} catalog binding")
+            for binding in records:
                 if binding.get("coverage") != coverage:
                     _error(errors, f"forms[{form_id}].coverage", "does not match its catalog binding coverage")
                 addressing_subset = binding.get("addressing_subset")

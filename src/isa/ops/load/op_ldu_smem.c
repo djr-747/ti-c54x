@@ -33,6 +33,112 @@ static ti_c54x_op_status ldu_smem_complete(
 static ti_c54x_op_status ldu_smem_complete_values(
     uint8_t destination,
     uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect);
+
+static ti_c54x_op_status ldu_smem_indexed_complete(
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    status = ti_c54x_ld_smem_validate_indexed_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    if (input == NULL || next_effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    return ldu_smem_complete_values(operands.destination, read_value_word,
+                                    next_effect);
+}
+
+static ti_c54x_op_status ldu_smem_mod5_complete(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    return ldu_smem_indexed_complete(
+        TI_C54X_OPCODE_ID_LDU_SMEM_MOD5,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, instruction, input,
+        read_value_word, next_effect);
+}
+
+static ti_c54x_op_status ldu_smem_mod6_complete(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    return ldu_smem_indexed_complete(
+        TI_C54X_OPCODE_ID_LDU_SMEM_MOD6,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, instruction, input,
+        read_value_word, next_effect);
+}
+
+static ti_c54x_op_status ldu_smem_checked_indexed(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_indexed_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_indexed_memory_read(&operands, expected_mode, complete,
+                                              effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ldu_smem_trusted_indexed(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || trusted_operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_indexed_trusted_operands(
+        instruction, trusted_operands, expected_id,
+        TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_indexed_memory_read(&operands, expected_mode, complete,
+                                              effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ldu_smem_complete_values(
+    uint8_t destination,
+    uint16_t read_value_word,
     ti_c54x_op_effect *next_effect)
 {
     const ti_c54x_op_effect staged = {
@@ -124,4 +230,46 @@ ti_c54x_op_status ti_c54x_trusted_op_ldu_smem(
     ti_c54x_ld_smem_stage_memory_read(&decoded_operands, ldu_smem_complete,
                                       effect);
     return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_op_ldu_smem_mod5(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    return ldu_smem_checked_indexed(
+        instruction, input, TI_C54X_OPCODE_ID_LDU_SMEM_MOD5,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, ldu_smem_mod5_complete, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_ldu_smem_mod6(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    return ldu_smem_checked_indexed(
+        instruction, input, TI_C54X_OPCODE_ID_LDU_SMEM_MOD6,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, ldu_smem_mod6_complete, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_ldu_smem_mod5(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    return ldu_smem_trusted_indexed(
+        instruction, operands, input, TI_C54X_OPCODE_ID_LDU_SMEM_MOD5,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, ldu_smem_mod5_complete, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_ldu_smem_mod6(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    return ldu_smem_trusted_indexed(
+        instruction, operands, input, TI_C54X_OPCODE_ID_LDU_SMEM_MOD6,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, ldu_smem_mod6_complete, effect);
 }

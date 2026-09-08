@@ -23,6 +23,8 @@
 #include "isa/decode/operand_layout.h"
 #include "isa/ops/dispatch/trusted_semantics.h"
 
+#include "op_ld_smem_common.h"
+
 typedef struct ld_status_smem_descriptor {
     ti_c54x_opcode_id id;
     ti_c54x_repeatability_class repeatability;
@@ -38,6 +40,30 @@ static const ld_status_smem_descriptor ld_status_smem_dp = {
 
 static const ld_status_smem_descriptor ld_status_smem_asm = {
     TI_C54X_OPCODE_ID_LD_ASM_SMEM,
+    TI_C54X_REPEATABILITY_UNRESOLVED,
+    TI_C54X_OP_STATUS_FIELD_TARGET_ASM,
+    UINT16_C(0x001F)};
+
+static const ld_status_smem_descriptor ld_status_smem_dp_mod5 = {
+    TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD5,
+    TI_C54X_REPEATABILITY_INELIGIBLE,
+    TI_C54X_OP_STATUS_FIELD_TARGET_DP,
+    UINT16_C(0x01FF)};
+
+static const ld_status_smem_descriptor ld_status_smem_dp_mod6 = {
+    TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD6,
+    TI_C54X_REPEATABILITY_INELIGIBLE,
+    TI_C54X_OP_STATUS_FIELD_TARGET_DP,
+    UINT16_C(0x01FF)};
+
+static const ld_status_smem_descriptor ld_status_smem_asm_mod5 = {
+    TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD5,
+    TI_C54X_REPEATABILITY_UNRESOLVED,
+    TI_C54X_OP_STATUS_FIELD_TARGET_ASM,
+    UINT16_C(0x001F)};
+
+static const ld_status_smem_descriptor ld_status_smem_asm_mod6 = {
+    TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD6,
     TI_C54X_REPEATABILITY_UNRESOLVED,
     TI_C54X_OP_STATUS_FIELD_TARGET_ASM,
     UINT16_C(0x001F)};
@@ -295,3 +321,162 @@ ti_c54x_op_status ti_c54x_trusted_op_ld_asm_smem(
     return ld_status_smem_trusted_for_id(
         instruction, operands, input, TI_C54X_OPCODE_ID_LD_ASM_SMEM, effect);
 }
+
+static const ld_status_smem_descriptor *
+ld_status_smem_indexed_descriptor_for_id(ti_c54x_opcode_id id)
+{
+    switch (id) {
+    case TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD5:
+        return &ld_status_smem_dp_mod5;
+    case TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD6:
+        return &ld_status_smem_dp_mod6;
+    case TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD5:
+        return &ld_status_smem_asm_mod5;
+    case TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD6:
+        return &ld_status_smem_asm_mod6;
+    default:
+        return NULL;
+    }
+}
+
+static ti_c54x_op_status ld_status_smem_indexed_complete(
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    const ld_status_smem_descriptor *descriptor =
+        ld_status_smem_indexed_descriptor_for_id(expected_id);
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (descriptor == NULL || input == NULL || next_effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_indexed_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    *next_effect = (ti_c54x_op_effect){
+        .kind = TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE,
+        .payload.status_field_write = {
+            .target = descriptor->target,
+            .raw_value = (uint16_t)(read_value_word & descriptor->completion_mask)}};
+    return TI_C54X_OP_STATUS_OK;
+}
+
+#define DEFINE_LD_STATUS_INDEXED_CALLBACK(suffix, id, mode)                      \
+    static ti_c54x_op_status ld_status_smem_##suffix##_complete(                 \
+        const ti_c54x_decoded_instruction *instruction,                          \
+        const ti_c54x_op_input_snapshot *input, uint16_t read_value_word,        \
+        ti_c54x_op_effect *next_effect)                                          \
+    {                                                                              \
+        return ld_status_smem_indexed_complete(id, mode, instruction, input,    \
+                                                read_value_word, next_effect);   \
+    }
+
+DEFINE_LD_STATUS_INDEXED_CALLBACK(
+    dp_smem_mod5, TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD5,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5)
+DEFINE_LD_STATUS_INDEXED_CALLBACK(
+    dp_smem_mod6, TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD6,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6)
+DEFINE_LD_STATUS_INDEXED_CALLBACK(
+    asm_smem_mod5, TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD5,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5)
+DEFINE_LD_STATUS_INDEXED_CALLBACK(
+    asm_smem_mod6, TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD6,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6)
+
+#undef DEFINE_LD_STATUS_INDEXED_CALLBACK
+
+static ti_c54x_op_status ld_status_smem_indexed_checked(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_indexed_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_indexed_memory_read(&operands, expected_mode, complete,
+                                              effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ld_status_smem_indexed_trusted(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    uint8_t expected_mode,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || trusted_operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_indexed_trusted_operands(
+        instruction, trusted_operands, expected_id,
+        TI_C54X_INPUT_RESOURCES_NONE, TI_C54X_OPERAND_LAYOUT_ARF_MOD4,
+        expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_indexed_memory_read(&operands, expected_mode, complete,
+                                              effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+#define DEFINE_LD_STATUS_INDEXED_WRAPPERS(suffix, id, mode)                     \
+    ti_c54x_op_status ti_c54x_op_ld_##suffix(                                    \
+        const ti_c54x_decoded_instruction *instruction,                         \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)       \
+    {                                                                             \
+        return ld_status_smem_indexed_checked(instruction, input, id, mode,     \
+                                               ld_status_smem_##suffix##_complete, \
+                                               effect);                           \
+    }                                                                             \
+    ti_c54x_op_status ti_c54x_trusted_op_ld_##suffix(                             \
+        const ti_c54x_decoded_instruction *instruction,                         \
+        const ti_c54x_trusted_operand_values *operands,                         \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)       \
+    {                                                                             \
+        return ld_status_smem_indexed_trusted(                                   \
+            instruction, operands, input, id, mode,                             \
+            ld_status_smem_##suffix##_complete, effect);                         \
+    }
+
+DEFINE_LD_STATUS_INDEXED_WRAPPERS(
+    dp_smem_mod5, TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD5,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5)
+DEFINE_LD_STATUS_INDEXED_WRAPPERS(
+    dp_smem_mod6, TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD6,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6)
+DEFINE_LD_STATUS_INDEXED_WRAPPERS(
+    asm_smem_mod5, TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD5,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5)
+DEFINE_LD_STATUS_INDEXED_WRAPPERS(
+    asm_smem_mod6, TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD6,
+    (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6)
+
+#undef DEFINE_LD_STATUS_INDEXED_WRAPPERS

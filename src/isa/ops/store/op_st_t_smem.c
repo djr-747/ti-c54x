@@ -21,6 +21,8 @@
 #include "isa/decode/operand_layout.h"
 #include "isa/ops/dispatch/trusted_semantics.h"
 
+#include "op_store_indexed_common.h"
+
 static void st_t_smem_memory_write(uint8_t arf, uint8_t mode, uint16_t value,
                                    ti_c54x_op_effect *effect)
 {
@@ -165,4 +167,109 @@ ti_c54x_op_status ti_c54x_trusted_op_st_t_smem(
     return st_t_smem_values((uint8_t)operands->values[0].raw_value,
                             (uint8_t)operands->values[1].raw_value, input,
                             effect);
+}
+
+static ti_c54x_op_status st_t_smem_indexed_values(
+    const ti_c54x_store_indexed_operands *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    if (operands == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->arf > UINT8_C(7)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    if (!input->t_register_known) {
+        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+    }
+    {
+        ti_c54x_op_effect staged = {0};
+        ti_c54x_store_stage_indexed_write(
+            operands->arf, operands->mode, input->t_register_raw16, &staged);
+        *effect = staged;
+    }
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status st_t_smem_indexed_checked(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id, uint8_t expected_mode,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_store_indexed_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_store_validate_indexed_instruction(
+        instruction, expected_id, TI_C54X_OPERAND_LAYOUT_ARF_MOD4,
+        TI_C54X_INPUT_RESOURCES_T_REGISTER, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return st_t_smem_indexed_values(&operands, input, effect);
+}
+
+static ti_c54x_op_status st_t_smem_indexed_trusted(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id, uint8_t expected_mode,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_store_indexed_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || trusted_operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_store_validate_indexed_trusted_operands(
+        instruction, trusted_operands, expected_id,
+        TI_C54X_OPERAND_LAYOUT_ARF_MOD4,
+        TI_C54X_INPUT_RESOURCES_T_REGISTER, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return st_t_smem_indexed_values(&operands, input, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_st_t_smem_mod5(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return st_t_smem_indexed_checked(
+        instruction, input, TI_C54X_OPCODE_ID_ST_T_SMEM_MOD5,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_st_t_smem_mod6(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return st_t_smem_indexed_checked(
+        instruction, input, TI_C54X_OPCODE_ID_ST_T_SMEM_MOD6,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_st_t_smem_mod5(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return st_t_smem_indexed_trusted(
+        instruction, operands, input, TI_C54X_OPCODE_ID_ST_T_SMEM_MOD5,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_st_t_smem_mod6(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return st_t_smem_indexed_trusted(
+        instruction, operands, input, TI_C54X_OPCODE_ID_ST_T_SMEM_MOD6,
+        (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, effect);
 }

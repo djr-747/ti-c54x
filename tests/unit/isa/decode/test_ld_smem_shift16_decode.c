@@ -97,7 +97,6 @@ static void
 test_fixed_bits_and_nearby_unknown_words(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020),
         UINT16_C(0x0040), UINT16_C(0x0080),
         UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
@@ -115,18 +114,26 @@ test_fixed_bits_and_nearby_unknown_words(void)
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
     }
 
-    /* Bit 9 alone is the intentional DP sibling; adding fixed bit 5 keeps
-     * the adjacent word unknown rather than overaccepting either row. */
+    /* Bit 9 alone is the neutral DP sibling; adding the indexed MOD6 bit
+     * selects the W43B DP MOD6 sibling. */
     {
         const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
             (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x0200)));
-        const ti_c54x_decode_result near_miss = ti_c54x_decode_first_word(
+        const ti_c54x_decode_result indexed_sibling = ti_c54x_decode_first_word(
             (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x0220)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LD_DP_SMEM);
-        TI_C54X_TEST_CHECK(near_miss.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(near_miss.id == TI_C54X_OPCODE_ID_UNKNOWN);
+        TI_C54X_TEST_CHECK(indexed_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(indexed_sibling.id ==
+                           TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD6);
+    }
+    {
+        const ti_c54x_decode_result indexed_sibling =
+            ti_c54x_decode_first_word((uint16_t)(LD_SMEM_SHIFT16_VALUE ^
+                                                 UINT16_C(0x0020)));
+        TI_C54X_TEST_CHECK(indexed_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(indexed_sibling.id ==
+                           TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD6);
     }
 }
 

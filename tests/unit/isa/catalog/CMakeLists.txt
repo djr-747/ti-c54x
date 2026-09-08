@@ -20,3 +20,5 @@ ti_c54x_add_unit_test(st_immediate_smem_metadata test_st_immediate_smem_metadata
 ti_c54x_add_unit_test(st_t_smem_metadata test_st_t_smem_metadata.c)
 ti_c54x_add_unit_test(standard_indirect_memory_metadata
                       test_standard_indirect_memory_metadata.c)
+ti_c54x_add_unit_test(indexed_standard_indirect_metadata
+                      test_indexed_standard_indirect_metadata.c)
