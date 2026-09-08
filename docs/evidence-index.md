@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 156 immutable evidence records,
-242 requirements (201 `IMPLEMENTED`, 12 `PLANNED`, 29 `UNRESOLVED`), and 196 tests
-(184 `PASSING`, 12 `PLANNED`).
+242 requirements (205 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`), and 196 tests
+(188 `PASSING`, 8 `PLANNED`).
 
 ## Targets
 
@@ -541,10 +541,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-ST-T-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13` | `T-COMMON-ST-T-SMEM-EFFECTS` |
 | `REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-ST-T-SMEM-RETIREMENT` |
 | `REQ-COMMON-ST-T-SMEM-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-ST-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | — |
-| `REQ-PROJECT-ISA-INVENTORY-SCHEMA` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `config/isa/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-SCHEMA` |
-| `REQ-PROJECT-ISA-INVENTORY-COUNT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-COUNT` |
-| `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
-| `REQ-PROJECT-ISA-INVENTORY-REPORT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-REPORT` |
+| `REQ-PROJECT-ISA-INVENTORY-SCHEMA` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `config/isa/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-SCHEMA` |
+| `REQ-PROJECT-ISA-INVENTORY-COUNT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-COUNT` |
+| `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-PROJECT-ISA-INVENTORY-REPORT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-REPORT` |
 
 ## Tests
 
@@ -746,10 +746,10 @@ exist in the repository.
 | `T-COMMON-ST-T-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_st_t_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_t_smem_decode"}` | `REQ-COMMON-ST-T-SMEM-DECODE` |
 | `T-COMMON-ST-T-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_st_t_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_t_smem_ops"}` | `REQ-COMMON-ST-T-SMEM-EFFECTS` |
 | `T-PROJECT-CPU-ST-T-SMEM-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_st_t_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_st_t_smem"}` | `REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT` |
-| `T-PROJECT-ISA-INVENTORY-SCHEMA` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_schema.py` | `null` | `REQ-PROJECT-ISA-INVENTORY-SCHEMA` |
-| `T-PROJECT-ISA-INVENTORY-COUNT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_count.py` | `null` | `REQ-PROJECT-ISA-INVENTORY-COUNT` |
-| `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py` | `null` | `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
-| `T-PROJECT-ISA-INVENTORY-REPORT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_report.py` | `null` | `REQ-PROJECT-ISA-INVENTORY-REPORT` |
+| `T-PROJECT-ISA-INVENTORY-SCHEMA` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_schema.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-SCHEMA` |
+| `T-PROJECT-ISA-INVENTORY-COUNT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_count.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-COUNT` |
+| `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `T-PROJECT-ISA-INVENTORY-REPORT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_report.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-REPORT` |
 
 ## Correction and tombstone policy
 

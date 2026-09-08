@@ -101,6 +101,15 @@ set_tests_properties(ti_c54x.quality.evidence PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
+add_test(
+    NAME ti_c54x.quality.isa_inventory
+    COMMAND "${Python3_EXECUTABLE}" tools/quality/check_isa_inventory.py
+        --root "${PROJECT_SOURCE_DIR}"
+)
+set_tests_properties(ti_c54x.quality.isa_inventory PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
 if(NOT CMAKE_NM)
     set(CMAKE_NM nm)
 endif()

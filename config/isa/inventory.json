@@ -1,0 +1,2575 @@
+{
+  "schema": {
+    "name": "ti-c54x-isa-inventory",
+    "version": 1
+  },
+  "target_id": "C54X_CORE_COMMON_V1",
+  "source_id": "SRC-TI-SPRU172C",
+  "basis": {
+    "chapter": "2.1-2.4",
+    "tables": "2-1 through 2-26",
+    "printed_pages": "2-2 through 2-18",
+    "table_form_counts": [
+      13,
+      13,
+      10,
+      22,
+      6,
+      15,
+      5,
+      5,
+      5,
+      6,
+      5,
+      6,
+      5,
+      2,
+      6,
+      5,
+      5,
+      7,
+      21,
+      14,
+      4,
+      2,
+      4,
+      2,
+      5,
+      12
+    ],
+    "form_count": 205,
+    "mnemonic_count": 126,
+    "parallel_bundle_count": 13
+  },
+  "forms": [
+    {
+      "id": "FORM-T2-01-01",
+      "ordinal": 1,
+      "table": "2-1",
+      "table_ordinal": 1,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-02",
+      "ordinal": 2,
+      "table": "2-1",
+      "table_ordinal": 2,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-03",
+      "ordinal": 3,
+      "table": "2-1",
+      "table_ordinal": 3,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-04",
+      "ordinal": 4,
+      "table": "2-1",
+      "table_ordinal": 4,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-05",
+      "ordinal": 5,
+      "table": "2-1",
+      "table_ordinal": 5,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-06",
+      "ordinal": 6,
+      "table": "2-1",
+      "table_ordinal": 6,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-07",
+      "ordinal": 7,
+      "table": "2-1",
+      "table_ordinal": 7,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-08",
+      "ordinal": 8,
+      "table": "2-1",
+      "table_ordinal": 8,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-09",
+      "ordinal": 9,
+      "table": "2-1",
+      "table_ordinal": 9,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-10",
+      "ordinal": 10,
+      "table": "2-1",
+      "table_ordinal": 10,
+      "mnemonic": "ADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-11",
+      "ordinal": 11,
+      "table": "2-1",
+      "table_ordinal": 11,
+      "mnemonic": "ADDC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-12",
+      "ordinal": 12,
+      "table": "2-1",
+      "table_ordinal": 12,
+      "mnemonic": "ADDM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-01-13",
+      "ordinal": 13,
+      "table": "2-1",
+      "table_ordinal": 13,
+      "mnemonic": "ADDS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-01",
+      "ordinal": 14,
+      "table": "2-2",
+      "table_ordinal": 1,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-02",
+      "ordinal": 15,
+      "table": "2-2",
+      "table_ordinal": 2,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-03",
+      "ordinal": 16,
+      "table": "2-2",
+      "table_ordinal": 3,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-04",
+      "ordinal": 17,
+      "table": "2-2",
+      "table_ordinal": 4,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-05",
+      "ordinal": 18,
+      "table": "2-2",
+      "table_ordinal": 5,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-06",
+      "ordinal": 19,
+      "table": "2-2",
+      "table_ordinal": 6,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-07",
+      "ordinal": 20,
+      "table": "2-2",
+      "table_ordinal": 7,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-08",
+      "ordinal": 21,
+      "table": "2-2",
+      "table_ordinal": 8,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-09",
+      "ordinal": 22,
+      "table": "2-2",
+      "table_ordinal": 9,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-10",
+      "ordinal": 23,
+      "table": "2-2",
+      "table_ordinal": 10,
+      "mnemonic": "SUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-11",
+      "ordinal": 24,
+      "table": "2-2",
+      "table_ordinal": 11,
+      "mnemonic": "SUBB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-12",
+      "ordinal": 25,
+      "table": "2-2",
+      "table_ordinal": 12,
+      "mnemonic": "SUBC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-02-13",
+      "ordinal": 26,
+      "table": "2-2",
+      "table_ordinal": 13,
+      "mnemonic": "SUBS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-01",
+      "ordinal": 27,
+      "table": "2-3",
+      "table_ordinal": 1,
+      "mnemonic": "MPY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-02",
+      "ordinal": 28,
+      "table": "2-3",
+      "table_ordinal": 2,
+      "mnemonic": "MPYR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-03",
+      "ordinal": 29,
+      "table": "2-3",
+      "table_ordinal": 3,
+      "mnemonic": "MPY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-04",
+      "ordinal": 30,
+      "table": "2-3",
+      "table_ordinal": 4,
+      "mnemonic": "MPY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-05",
+      "ordinal": 31,
+      "table": "2-3",
+      "table_ordinal": 5,
+      "mnemonic": "MPY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-06",
+      "ordinal": 32,
+      "table": "2-3",
+      "table_ordinal": 6,
+      "mnemonic": "MPYA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-07",
+      "ordinal": 33,
+      "table": "2-3",
+      "table_ordinal": 7,
+      "mnemonic": "MPYA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-08",
+      "ordinal": 34,
+      "table": "2-3",
+      "table_ordinal": 8,
+      "mnemonic": "MPYU",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-09",
+      "ordinal": 35,
+      "table": "2-3",
+      "table_ordinal": 9,
+      "mnemonic": "SQUR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-03-10",
+      "ordinal": 36,
+      "table": "2-3",
+      "table_ordinal": 10,
+      "mnemonic": "SQUR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-01",
+      "ordinal": 37,
+      "table": "2-4",
+      "table_ordinal": 1,
+      "mnemonic": "MAC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-02",
+      "ordinal": 38,
+      "table": "2-4",
+      "table_ordinal": 2,
+      "mnemonic": "MAC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-03",
+      "ordinal": 39,
+      "table": "2-4",
+      "table_ordinal": 3,
+      "mnemonic": "MAC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-04",
+      "ordinal": 40,
+      "table": "2-4",
+      "table_ordinal": 4,
+      "mnemonic": "MAC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-05",
+      "ordinal": 41,
+      "table": "2-4",
+      "table_ordinal": 5,
+      "mnemonic": "MACR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-06",
+      "ordinal": 42,
+      "table": "2-4",
+      "table_ordinal": 6,
+      "mnemonic": "MACR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-07",
+      "ordinal": 43,
+      "table": "2-4",
+      "table_ordinal": 7,
+      "mnemonic": "MACA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-08",
+      "ordinal": 44,
+      "table": "2-4",
+      "table_ordinal": 8,
+      "mnemonic": "MACA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-09",
+      "ordinal": 45,
+      "table": "2-4",
+      "table_ordinal": 9,
+      "mnemonic": "MACAR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-10",
+      "ordinal": 46,
+      "table": "2-4",
+      "table_ordinal": 10,
+      "mnemonic": "MACAR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-11",
+      "ordinal": 47,
+      "table": "2-4",
+      "table_ordinal": 11,
+      "mnemonic": "MACD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-12",
+      "ordinal": 48,
+      "table": "2-4",
+      "table_ordinal": 12,
+      "mnemonic": "MACP",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-13",
+      "ordinal": 49,
+      "table": "2-4",
+      "table_ordinal": 13,
+      "mnemonic": "MACSU",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-14",
+      "ordinal": 50,
+      "table": "2-4",
+      "table_ordinal": 14,
+      "mnemonic": "MAS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-15",
+      "ordinal": 51,
+      "table": "2-4",
+      "table_ordinal": 15,
+      "mnemonic": "MASR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-16",
+      "ordinal": 52,
+      "table": "2-4",
+      "table_ordinal": 16,
+      "mnemonic": "MAS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-17",
+      "ordinal": 53,
+      "table": "2-4",
+      "table_ordinal": 17,
+      "mnemonic": "MASR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-18",
+      "ordinal": 54,
+      "table": "2-4",
+      "table_ordinal": 18,
+      "mnemonic": "MASA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-19",
+      "ordinal": 55,
+      "table": "2-4",
+      "table_ordinal": 19,
+      "mnemonic": "MASA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-20",
+      "ordinal": 56,
+      "table": "2-4",
+      "table_ordinal": 20,
+      "mnemonic": "MASAR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-21",
+      "ordinal": 57,
+      "table": "2-4",
+      "table_ordinal": 21,
+      "mnemonic": "SQURA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-04-22",
+      "ordinal": 58,
+      "table": "2-4",
+      "table_ordinal": 22,
+      "mnemonic": "SQURS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-01",
+      "ordinal": 59,
+      "table": "2-5",
+      "table_ordinal": 1,
+      "mnemonic": "DADD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-02",
+      "ordinal": 60,
+      "table": "2-5",
+      "table_ordinal": 2,
+      "mnemonic": "DADST",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-03",
+      "ordinal": 61,
+      "table": "2-5",
+      "table_ordinal": 3,
+      "mnemonic": "DRSUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-04",
+      "ordinal": 62,
+      "table": "2-5",
+      "table_ordinal": 4,
+      "mnemonic": "DSADT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-05",
+      "ordinal": 63,
+      "table": "2-5",
+      "table_ordinal": 5,
+      "mnemonic": "DSUB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-05-06",
+      "ordinal": 64,
+      "table": "2-5",
+      "table_ordinal": 6,
+      "mnemonic": "DSUBT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-01",
+      "ordinal": 65,
+      "table": "2-6",
+      "table_ordinal": 1,
+      "mnemonic": "ABDST",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-02",
+      "ordinal": 66,
+      "table": "2-6",
+      "table_ordinal": 2,
+      "mnemonic": "ABS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-03",
+      "ordinal": 67,
+      "table": "2-6",
+      "table_ordinal": 3,
+      "mnemonic": "CMPL",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "CMPL_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-06-04",
+      "ordinal": 68,
+      "table": "2-6",
+      "table_ordinal": 4,
+      "mnemonic": "DELAY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-05",
+      "ordinal": 69,
+      "table": "2-6",
+      "table_ordinal": 5,
+      "mnemonic": "EXP",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "EXP_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-06-06",
+      "ordinal": 70,
+      "table": "2-6",
+      "table_ordinal": 6,
+      "mnemonic": "FIRS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-07",
+      "ordinal": 71,
+      "table": "2-6",
+      "table_ordinal": 7,
+      "mnemonic": "LMS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-08",
+      "ordinal": 72,
+      "table": "2-6",
+      "table_ordinal": 8,
+      "mnemonic": "MAX",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "MAX_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-06-09",
+      "ordinal": 73,
+      "table": "2-6",
+      "table_ordinal": 9,
+      "mnemonic": "MIN",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "MIN_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-06-10",
+      "ordinal": 74,
+      "table": "2-6",
+      "table_ordinal": 10,
+      "mnemonic": "NEG",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-11",
+      "ordinal": 75,
+      "table": "2-6",
+      "table_ordinal": 11,
+      "mnemonic": "NORM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-12",
+      "ordinal": 76,
+      "table": "2-6",
+      "table_ordinal": 12,
+      "mnemonic": "POLY",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-13",
+      "ordinal": 77,
+      "table": "2-6",
+      "table_ordinal": 13,
+      "mnemonic": "RND",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-14",
+      "ordinal": 78,
+      "table": "2-6",
+      "table_ordinal": 14,
+      "mnemonic": "SAT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-06-15",
+      "ordinal": 79,
+      "table": "2-6",
+      "table_ordinal": 15,
+      "mnemonic": "SQDST",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-07-01",
+      "ordinal": 80,
+      "table": "2-7",
+      "table_ordinal": 1,
+      "mnemonic": "AND",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-07-02",
+      "ordinal": 81,
+      "table": "2-7",
+      "table_ordinal": 2,
+      "mnemonic": "AND",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "AND_IMMEDIATE_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-07-03",
+      "ordinal": 82,
+      "table": "2-7",
+      "table_ordinal": 3,
+      "mnemonic": "AND",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "AND_IMMEDIATE_SHIFT16"
+      ]
+    },
+    {
+      "id": "FORM-T2-07-04",
+      "ordinal": 83,
+      "table": "2-7",
+      "table_ordinal": 4,
+      "mnemonic": "AND",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "AND_ACC_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-07-05",
+      "ordinal": 84,
+      "table": "2-7",
+      "table_ordinal": 5,
+      "mnemonic": "ANDM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-08-01",
+      "ordinal": 85,
+      "table": "2-8",
+      "table_ordinal": 1,
+      "mnemonic": "OR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-08-02",
+      "ordinal": 86,
+      "table": "2-8",
+      "table_ordinal": 2,
+      "mnemonic": "OR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "OR_IMMEDIATE_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-08-03",
+      "ordinal": 87,
+      "table": "2-8",
+      "table_ordinal": 3,
+      "mnemonic": "OR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "OR_IMMEDIATE_SHIFT16"
+      ]
+    },
+    {
+      "id": "FORM-T2-08-04",
+      "ordinal": 88,
+      "table": "2-8",
+      "table_ordinal": 4,
+      "mnemonic": "OR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "OR_ACC_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-08-05",
+      "ordinal": 89,
+      "table": "2-8",
+      "table_ordinal": 5,
+      "mnemonic": "ORM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-09-01",
+      "ordinal": 90,
+      "table": "2-9",
+      "table_ordinal": 1,
+      "mnemonic": "XOR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-09-02",
+      "ordinal": 91,
+      "table": "2-9",
+      "table_ordinal": 2,
+      "mnemonic": "XOR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "XOR_IMMEDIATE_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-09-03",
+      "ordinal": 92,
+      "table": "2-9",
+      "table_ordinal": 3,
+      "mnemonic": "XOR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "XOR_IMMEDIATE_SHIFT16"
+      ]
+    },
+    {
+      "id": "FORM-T2-09-04",
+      "ordinal": 93,
+      "table": "2-9",
+      "table_ordinal": 4,
+      "mnemonic": "XOR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "XOR_ACC_SHIFT"
+      ]
+    },
+    {
+      "id": "FORM-T2-09-05",
+      "ordinal": 94,
+      "table": "2-9",
+      "table_ordinal": 5,
+      "mnemonic": "XORM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-10-01",
+      "ordinal": 95,
+      "table": "2-10",
+      "table_ordinal": 1,
+      "mnemonic": "ROL",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ROL_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-10-02",
+      "ordinal": 96,
+      "table": "2-10",
+      "table_ordinal": 2,
+      "mnemonic": "ROLTC",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ROLTC_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-10-03",
+      "ordinal": 97,
+      "table": "2-10",
+      "table_ordinal": 3,
+      "mnemonic": "ROR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ROR_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-10-04",
+      "ordinal": 98,
+      "table": "2-10",
+      "table_ordinal": 4,
+      "mnemonic": "SFTA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-10-05",
+      "ordinal": 99,
+      "table": "2-10",
+      "table_ordinal": 5,
+      "mnemonic": "SFTC",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SFTC_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-10-06",
+      "ordinal": 100,
+      "table": "2-10",
+      "table_ordinal": 6,
+      "mnemonic": "SFTL",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SFTL_ACC"
+      ]
+    },
+    {
+      "id": "FORM-T2-11-01",
+      "ordinal": 101,
+      "table": "2-11",
+      "table_ordinal": 1,
+      "mnemonic": "BIT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-11-02",
+      "ordinal": 102,
+      "table": "2-11",
+      "table_ordinal": 2,
+      "mnemonic": "BITF",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-11-03",
+      "ordinal": 103,
+      "table": "2-11",
+      "table_ordinal": 3,
+      "mnemonic": "BITT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-11-04",
+      "ordinal": 104,
+      "table": "2-11",
+      "table_ordinal": 4,
+      "mnemonic": "CMPM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-11-05",
+      "ordinal": 105,
+      "table": "2-11",
+      "table_ordinal": 5,
+      "mnemonic": "CMPR",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "CMPR_AR"
+      ]
+    },
+    {
+      "id": "FORM-T2-12-01",
+      "ordinal": 106,
+      "table": "2-12",
+      "table_ordinal": 1,
+      "mnemonic": "B",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-12-02",
+      "ordinal": 107,
+      "table": "2-12",
+      "table_ordinal": 2,
+      "mnemonic": "BACC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-12-03",
+      "ordinal": 108,
+      "table": "2-12",
+      "table_ordinal": 3,
+      "mnemonic": "BANZ",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-12-04",
+      "ordinal": 109,
+      "table": "2-12",
+      "table_ordinal": 4,
+      "mnemonic": "BC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-12-05",
+      "ordinal": 110,
+      "table": "2-12",
+      "table_ordinal": 5,
+      "mnemonic": "FB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-12-06",
+      "ordinal": 111,
+      "table": "2-12",
+      "table_ordinal": 6,
+      "mnemonic": "FBACC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-13-01",
+      "ordinal": 112,
+      "table": "2-13",
+      "table_ordinal": 1,
+      "mnemonic": "CALA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-13-02",
+      "ordinal": 113,
+      "table": "2-13",
+      "table_ordinal": 2,
+      "mnemonic": "CALL",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-13-03",
+      "ordinal": 114,
+      "table": "2-13",
+      "table_ordinal": 3,
+      "mnemonic": "CC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-13-04",
+      "ordinal": 115,
+      "table": "2-13",
+      "table_ordinal": 4,
+      "mnemonic": "FCALA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-13-05",
+      "ordinal": 116,
+      "table": "2-13",
+      "table_ordinal": 5,
+      "mnemonic": "FCALL",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-14-01",
+      "ordinal": 117,
+      "table": "2-14",
+      "table_ordinal": 1,
+      "mnemonic": "INTR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-14-02",
+      "ordinal": 118,
+      "table": "2-14",
+      "table_ordinal": 2,
+      "mnemonic": "TRAP",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-01",
+      "ordinal": 119,
+      "table": "2-15",
+      "table_ordinal": 1,
+      "mnemonic": "FRET",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-02",
+      "ordinal": 120,
+      "table": "2-15",
+      "table_ordinal": 2,
+      "mnemonic": "FRETE",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-03",
+      "ordinal": 121,
+      "table": "2-15",
+      "table_ordinal": 3,
+      "mnemonic": "RC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-04",
+      "ordinal": 122,
+      "table": "2-15",
+      "table_ordinal": 4,
+      "mnemonic": "RET",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-05",
+      "ordinal": 123,
+      "table": "2-15",
+      "table_ordinal": 5,
+      "mnemonic": "RETE",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-15-06",
+      "ordinal": 124,
+      "table": "2-15",
+      "table_ordinal": 6,
+      "mnemonic": "RETF",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-16-01",
+      "ordinal": 125,
+      "table": "2-16",
+      "table_ordinal": 1,
+      "mnemonic": "RPT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-16-02",
+      "ordinal": 126,
+      "table": "2-16",
+      "table_ordinal": 2,
+      "mnemonic": "RPT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-16-03",
+      "ordinal": 127,
+      "table": "2-16",
+      "table_ordinal": 3,
+      "mnemonic": "RPT",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-16-04",
+      "ordinal": 128,
+      "table": "2-16",
+      "table_ordinal": 4,
+      "mnemonic": "RPTB",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-16-05",
+      "ordinal": 129,
+      "table": "2-16",
+      "table_ordinal": 5,
+      "mnemonic": "RPTZ",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-17-01",
+      "ordinal": 130,
+      "table": "2-17",
+      "table_ordinal": 1,
+      "mnemonic": "FRAME",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-17-02",
+      "ordinal": 131,
+      "table": "2-17",
+      "table_ordinal": 2,
+      "mnemonic": "POPD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-17-03",
+      "ordinal": 132,
+      "table": "2-17",
+      "table_ordinal": 3,
+      "mnemonic": "POPM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-17-04",
+      "ordinal": 133,
+      "table": "2-17",
+      "table_ordinal": 4,
+      "mnemonic": "PSHD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-17-05",
+      "ordinal": 134,
+      "table": "2-17",
+      "table_ordinal": 5,
+      "mnemonic": "PSHM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-18-01",
+      "ordinal": 135,
+      "table": "2-18",
+      "table_ordinal": 1,
+      "mnemonic": "IDLE",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-18-02",
+      "ordinal": 136,
+      "table": "2-18",
+      "table_ordinal": 2,
+      "mnemonic": "MAR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-18-03",
+      "ordinal": 137,
+      "table": "2-18",
+      "table_ordinal": 3,
+      "mnemonic": "NOP",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "NOP"
+      ]
+    },
+    {
+      "id": "FORM-T2-18-04",
+      "ordinal": 138,
+      "table": "2-18",
+      "table_ordinal": 4,
+      "mnemonic": "RESET",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-18-05",
+      "ordinal": 139,
+      "table": "2-18",
+      "table_ordinal": 5,
+      "mnemonic": "RSBX",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "RSBX_STATUS"
+      ]
+    },
+    {
+      "id": "FORM-T2-18-06",
+      "ordinal": 140,
+      "table": "2-18",
+      "table_ordinal": 6,
+      "mnemonic": "SSBX",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SSBX_STATUS"
+      ]
+    },
+    {
+      "id": "FORM-T2-18-07",
+      "ordinal": 141,
+      "table": "2-18",
+      "table_ordinal": 7,
+      "mnemonic": "XC",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-01",
+      "ordinal": 142,
+      "table": "2-19",
+      "table_ordinal": 1,
+      "mnemonic": "DLD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-02",
+      "ordinal": 143,
+      "table": "2-19",
+      "table_ordinal": 2,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LD_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-03",
+      "ordinal": 144,
+      "table": "2-19",
+      "table_ordinal": 3,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-04",
+      "ordinal": 145,
+      "table": "2-19",
+      "table_ordinal": 4,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LD_SMEM_SHIFT16_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-05",
+      "ordinal": 146,
+      "table": "2-19",
+      "table_ordinal": 5,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-06",
+      "ordinal": 147,
+      "table": "2-19",
+      "table_ordinal": 6,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-07",
+      "ordinal": 148,
+      "table": "2-19",
+      "table_ordinal": 7,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-08",
+      "ordinal": 149,
+      "table": "2-19",
+      "table_ordinal": 8,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-09",
+      "ordinal": 150,
+      "table": "2-19",
+      "table_ordinal": 9,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-10",
+      "ordinal": 151,
+      "table": "2-19",
+      "table_ordinal": 10,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-11",
+      "ordinal": 152,
+      "table": "2-19",
+      "table_ordinal": 11,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-12",
+      "ordinal": 153,
+      "table": "2-19",
+      "table_ordinal": 12,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LD_T_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-13",
+      "ordinal": 154,
+      "table": "2-19",
+      "table_ordinal": 13,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LD_DP_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-14",
+      "ordinal": 155,
+      "table": "2-19",
+      "table_ordinal": 14,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_IMMEDIATE_DP"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-15",
+      "ordinal": 156,
+      "table": "2-19",
+      "table_ordinal": 15,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_IMMEDIATE_ASM"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-16",
+      "ordinal": 157,
+      "table": "2-19",
+      "table_ordinal": 16,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_IMMEDIATE_ARP"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-17",
+      "ordinal": 158,
+      "table": "2-19",
+      "table_ordinal": 17,
+      "mnemonic": "LD",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LD_ASM_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-18",
+      "ordinal": 159,
+      "table": "2-19",
+      "table_ordinal": 18,
+      "mnemonic": "LDM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-19",
+      "ordinal": 160,
+      "table": "2-19",
+      "table_ordinal": 19,
+      "mnemonic": "LDR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-19-20",
+      "ordinal": 161,
+      "table": "2-19",
+      "table_ordinal": 20,
+      "mnemonic": "LDU",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LDU_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-19-21",
+      "ordinal": 162,
+      "table": "2-19",
+      "table_ordinal": 21,
+      "mnemonic": "LTD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-01",
+      "ordinal": 163,
+      "table": "2-20",
+      "table_ordinal": 1,
+      "mnemonic": "DST",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-02",
+      "ordinal": 164,
+      "table": "2-20",
+      "table_ordinal": 2,
+      "mnemonic": "ST",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ST_T_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-20-03",
+      "ordinal": 165,
+      "table": "2-20",
+      "table_ordinal": 3,
+      "mnemonic": "ST",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-04",
+      "ordinal": 166,
+      "table": "2-20",
+      "table_ordinal": 4,
+      "mnemonic": "ST",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ST_IMMEDIATE_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-20-05",
+      "ordinal": 167,
+      "table": "2-20",
+      "table_ordinal": 5,
+      "mnemonic": "STH",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-06",
+      "ordinal": 168,
+      "table": "2-20",
+      "table_ordinal": 6,
+      "mnemonic": "STH",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-07",
+      "ordinal": 169,
+      "table": "2-20",
+      "table_ordinal": 7,
+      "mnemonic": "STH",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-08",
+      "ordinal": 170,
+      "table": "2-20",
+      "table_ordinal": 8,
+      "mnemonic": "STH",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-09",
+      "ordinal": 171,
+      "table": "2-20",
+      "table_ordinal": 9,
+      "mnemonic": "STL",
+      "parallel": false,
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "STL_SMEM_MOD2"
+      ]
+    },
+    {
+      "id": "FORM-T2-20-10",
+      "ordinal": 172,
+      "table": "2-20",
+      "table_ordinal": 10,
+      "mnemonic": "STL",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-11",
+      "ordinal": 173,
+      "table": "2-20",
+      "table_ordinal": 11,
+      "mnemonic": "STL",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-12",
+      "ordinal": 174,
+      "table": "2-20",
+      "table_ordinal": 12,
+      "mnemonic": "STL",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-13",
+      "ordinal": 175,
+      "table": "2-20",
+      "table_ordinal": 13,
+      "mnemonic": "STLM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-20-14",
+      "ordinal": 176,
+      "table": "2-20",
+      "table_ordinal": 14,
+      "mnemonic": "STM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-21-01",
+      "ordinal": 177,
+      "table": "2-21",
+      "table_ordinal": 1,
+      "mnemonic": "CMPS",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-21-02",
+      "ordinal": 178,
+      "table": "2-21",
+      "table_ordinal": 2,
+      "mnemonic": "SACCD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-21-03",
+      "ordinal": 179,
+      "table": "2-21",
+      "table_ordinal": 3,
+      "mnemonic": "SRCCD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-21-04",
+      "ordinal": 180,
+      "table": "2-21",
+      "table_ordinal": 4,
+      "mnemonic": "STRCD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-22-01",
+      "ordinal": 181,
+      "table": "2-22",
+      "table_ordinal": 1,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-22-02",
+      "ordinal": 182,
+      "table": "2-22",
+      "table_ordinal": 2,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-23-01",
+      "ordinal": 183,
+      "table": "2-23",
+      "table_ordinal": 1,
+      "mnemonic": "LD",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-23-02",
+      "ordinal": 184,
+      "table": "2-23",
+      "table_ordinal": 2,
+      "mnemonic": "LD",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-23-03",
+      "ordinal": 185,
+      "table": "2-23",
+      "table_ordinal": 3,
+      "mnemonic": "LD",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-23-04",
+      "ordinal": 186,
+      "table": "2-23",
+      "table_ordinal": 4,
+      "mnemonic": "LD",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-24-01",
+      "ordinal": 187,
+      "table": "2-24",
+      "table_ordinal": 1,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-24-02",
+      "ordinal": 188,
+      "table": "2-24",
+      "table_ordinal": 2,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-25-01",
+      "ordinal": 189,
+      "table": "2-25",
+      "table_ordinal": 1,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-25-02",
+      "ordinal": 190,
+      "table": "2-25",
+      "table_ordinal": 2,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-25-03",
+      "ordinal": 191,
+      "table": "2-25",
+      "table_ordinal": 3,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-25-04",
+      "ordinal": 192,
+      "table": "2-25",
+      "table_ordinal": 4,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-25-05",
+      "ordinal": 193,
+      "table": "2-25",
+      "table_ordinal": 5,
+      "mnemonic": "ST",
+      "parallel": true,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-01",
+      "ordinal": 194,
+      "table": "2-26",
+      "table_ordinal": 1,
+      "mnemonic": "MVDD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-02",
+      "ordinal": 195,
+      "table": "2-26",
+      "table_ordinal": 2,
+      "mnemonic": "MVDK",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-03",
+      "ordinal": 196,
+      "table": "2-26",
+      "table_ordinal": 3,
+      "mnemonic": "MVDM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-04",
+      "ordinal": 197,
+      "table": "2-26",
+      "table_ordinal": 4,
+      "mnemonic": "MVDP",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-05",
+      "ordinal": 198,
+      "table": "2-26",
+      "table_ordinal": 5,
+      "mnemonic": "MVKD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-06",
+      "ordinal": 199,
+      "table": "2-26",
+      "table_ordinal": 6,
+      "mnemonic": "MVMD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-07",
+      "ordinal": 200,
+      "table": "2-26",
+      "table_ordinal": 7,
+      "mnemonic": "MVMM",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-08",
+      "ordinal": 201,
+      "table": "2-26",
+      "table_ordinal": 8,
+      "mnemonic": "MVPD",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-09",
+      "ordinal": 202,
+      "table": "2-26",
+      "table_ordinal": 9,
+      "mnemonic": "PORTR",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-10",
+      "ordinal": 203,
+      "table": "2-26",
+      "table_ordinal": 10,
+      "mnemonic": "PORTW",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-11",
+      "ordinal": 204,
+      "table": "2-26",
+      "table_ordinal": 11,
+      "mnemonic": "READA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    },
+    {
+      "id": "FORM-T2-26-12",
+      "ordinal": 205,
+      "table": "2-26",
+      "table_ordinal": 12,
+      "mnemonic": "WRITA",
+      "parallel": false,
+      "scope": "UNRESOLVED",
+      "coverage": "UNIMPLEMENTED",
+      "catalog_symbols": []
+    }
+  ],
+  "catalog_bindings": [
+    {
+      "catalog_symbol": "NOP",
+      "form_id": "FORM-T2-18-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "SSBX_STATUS",
+      "form_id": "FORM-T2-18-06",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "RSBX_STATUS",
+      "form_id": "FORM-T2-18-05",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_IMMEDIATE_DP",
+      "form_id": "FORM-T2-19-14",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_IMMEDIATE_ASM",
+      "form_id": "FORM-T2-19-15",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_IMMEDIATE_ARP",
+      "form_id": "FORM-T2-19-16",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "MAX_ACC",
+      "form_id": "FORM-T2-06-08",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "MIN_ACC",
+      "form_id": "FORM-T2-06-09",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "EXP_ACC",
+      "form_id": "FORM-T2-06-05",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "CMPL_ACC",
+      "form_id": "FORM-T2-06-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ROL_ACC",
+      "form_id": "FORM-T2-10-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ROR_ACC",
+      "form_id": "FORM-T2-10-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ROLTC_ACC",
+      "form_id": "FORM-T2-10-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "SFTC_ACC",
+      "form_id": "FORM-T2-10-05",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "SFTL_ACC",
+      "form_id": "FORM-T2-10-06",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "AND_ACC_SHIFT",
+      "form_id": "FORM-T2-07-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "OR_ACC_SHIFT",
+      "form_id": "FORM-T2-08-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "XOR_ACC_SHIFT",
+      "form_id": "FORM-T2-09-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "AND_IMMEDIATE_SHIFT",
+      "form_id": "FORM-T2-07-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "AND_IMMEDIATE_SHIFT16",
+      "form_id": "FORM-T2-07-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "OR_IMMEDIATE_SHIFT",
+      "form_id": "FORM-T2-08-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "OR_IMMEDIATE_SHIFT16",
+      "form_id": "FORM-T2-08-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "XOR_IMMEDIATE_SHIFT",
+      "form_id": "FORM-T2-09-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "XOR_IMMEDIATE_SHIFT16",
+      "form_id": "FORM-T2-09-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "CMPR_AR",
+      "form_id": "FORM-T2-11-05",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_MOD2",
+      "form_id": "FORM-T2-19-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "STL_SMEM_MOD2",
+      "form_id": "FORM-T2-20-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "LDU_SMEM_MOD2",
+      "form_id": "FORM-T2-19-20",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "LD_T_SMEM_MOD2",
+      "form_id": "FORM-T2-19-12",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "ST_IMMEDIATE_SMEM_MOD2",
+      "form_id": "FORM-T2-20-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "LD_DP_SMEM_MOD2",
+      "form_id": "FORM-T2-19-13",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "LD_ASM_SMEM_MOD2",
+      "form_id": "FORM-T2-19-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_SHIFT16_MOD2",
+      "form_id": "FORM-T2-19-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    },
+    {
+      "catalog_symbol": "ST_T_SMEM_MOD2",
+      "form_id": "FORM-T2-20-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "FIXED_MOD2"
+    }
+  ]
+}

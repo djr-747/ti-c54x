@@ -118,6 +118,7 @@ quality-test: $(OBSERVER_OFF_LIB)
 	$(PYTHON) tools/quality/check_source_boundaries.py --root .
 	$(PYTHON) tools/quality/check_build_manifests.py --root .
 	$(PYTHON) tools/quality/check_evidence.py --root .
+	$(PYTHON) tools/quality/check_isa_inventory.py --root .
 	$(PYTHON) tools/quality/check_observer_artifact.py \
 		--artifact $(OBSERVER_OFF_LIB) --nm $(NM)
 

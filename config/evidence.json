@@ -5092,7 +5092,7 @@
     },
     {
       "id": "REQ-PROJECT-ISA-INVENTORY-SCHEMA",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "config/isa/",
@@ -5102,7 +5102,7 @@
     },
     {
       "id": "REQ-PROJECT-ISA-INVENTORY-COUNT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -5112,7 +5112,7 @@
     },
     {
       "id": "REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -5122,7 +5122,7 @@
     },
     {
       "id": "REQ-PROJECT-ISA-INVENTORY-REPORT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -6709,34 +6709,34 @@
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-SCHEMA",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_schema.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-SCHEMA"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-COUNT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_count.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-COUNT"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_report.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-REPORT"]
     }
   ]
