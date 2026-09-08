@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""Projection contract for the DLD/DST LONG32 MOD13 inventory lane.
+
+Owns: the inventory-to-catalog identity projection and bounded-addressing
+token for the two-word DLD/DST forms.  Does not own opcode execution,
+operand extraction, or semantic state transitions.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+import unittest
+
+from tools.isa.catalog.generate_opcode_lookup import render_lookup
+from tools.isa.catalog.opcode_catalog_schema import parse_catalog
+from tools.isa.inventory.schema import load_inventory
+from tools.quality.check_isa_inventory import report_inventory
+
+
+SYMBOLS = {
+    "DLD_LONG32_MOD13": "FORM-T2-19-01",
+    "DST_LONG32_MOD13": "FORM-T2-20-01",
+}
+ADDRESSING_SUBSET = "LONG_OFFSET_MOD13_CMPT0"
+LAYOUT = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4"
+REPEATABILITY = "TI_C54X_REPEATABILITY_INELIGIBLE"
+RESOURCES = {
+    "DLD_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_STATUS_SXM",
+    "DST_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST",
+}
+
+
+class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.root = Path(__file__).resolve().parents[5]
+        cls.inventory_path = cls.root / "config/isa/inventory.json"
+        cls.catalog_path = cls.root / "src/isa/catalog/opcode_catalog.def"
+
+    def test_catalog_rows_project_to_bounded_inventory_forms(self) -> None:
+        inventory = load_inventory(self.inventory_path)
+        rows = parse_catalog(self.catalog_path.read_text(encoding="utf-8"))
+        by_symbol = {row.symbol: row for row in rows}
+        by_form = {form["id"]: form for form in inventory["forms"]}
+        bindings = {
+            binding["catalog_symbol"]: binding
+            for binding in inventory["catalog_bindings"]
+        }
+
+        self.assertEqual(len(rows), 100)
+        self.assertEqual(len(rows) + 1, 101)  # UNKNOWN retains identity zero.
+        self.assertEqual(len(inventory["catalog_bindings"]), 100)
+        self.assertEqual(
+            {symbol for symbol in SYMBOLS if symbol in by_symbol},
+            set(SYMBOLS),
+        )
+        for symbol, form_id in SYMBOLS.items():
+            with self.subTest(symbol=symbol):
+                row = by_symbol[symbol]
+                form = by_form[form_id]
+                binding = bindings[symbol]
+                self.assertEqual(binding["form_id"], form_id)
+                self.assertEqual(binding["coverage"], "SUBSET")
+                self.assertEqual(binding["addressing_subset"], ADDRESSING_SUBSET)
+                self.assertEqual(form["scope"], "COMMON_CANDIDATE")
+                self.assertEqual(form["coverage"], "SUBSET")
+                self.assertEqual(form["catalog_symbols"], [symbol])
+                self.assertEqual(row.first_word_mask, 0xFEF8)
+                self.assertEqual(row.program_word_count, 2)
+                self.assertEqual(row.operand_layout, LAYOUT)
+                self.assertEqual(row.repeatability, REPEATABILITY)
+                self.assertEqual(row.input_resources, RESOURCES[symbol])
+
+        rendered_lookup = render_lookup(rows)
+        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 2711)
+        report = report_inventory(self.root)
+        self.assertEqual(report["catalog_family_progress"], {"covered": 40, "denominator": 205})
+        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 25, "denominator": 205})
+        self.assertAlmostEqual(report["catalog_family_percent"], 19.512, places=3)
+        self.assertAlmostEqual(report["strict_complete_percent"], 12.195, places=3)
+
+
+if __name__ == "__main__":
+    unittest.main()

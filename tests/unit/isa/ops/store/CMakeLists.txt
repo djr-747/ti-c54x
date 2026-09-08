@@ -10,3 +10,4 @@ ti_c54x_add_unit_test(circular_standard_indirect_store_effects
                       test_circular_standard_indirect_store_effects.c)
 ti_c54x_add_unit_test(reverse_carry_standard_indirect_store_effects
                       test_reverse_carry_standard_indirect_store_effects.c)
+ti_c54x_add_unit_test(dst_long32_mod13_ops test_dst_long32_mod13.c)

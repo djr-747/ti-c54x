@@ -30,3 +30,4 @@ $(eval $(call ti_c54x_add_test,indexed_standard_indirect_decode,isa/decode,test_
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_decode,isa/decode,test_circular_standard_indirect_decode.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_decode,isa/decode,test_reverse_carry_standard_indirect_decode.c))
 $(eval $(call ti_c54x_add_test,atomic_logical_memory_decode,isa/decode,test_atomic_logical_memory_decode.c))
+$(eval $(call ti_c54x_add_test,dld_dst_long32_mod13_decode,isa/decode,test_dld_dst_long32_mod13_decode.c))

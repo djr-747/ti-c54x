@@ -2,8 +2,9 @@
  * Module contract
  *
  * Owns: static immutable descriptors for catalog-declared generic operand
- * layouts, including the appended four-bit indexed MOD5/MOD6 layouts, plus
- * their pure resolution and extraction seams. Does not own:
+ * layouts, including the appended four-bit indexed MOD5/MOD6 layouts and the
+ * two-word long32 DLD/DST MOD13 layout, plus their pure resolution and
+ * extraction seams. Does not own:
  * opcode semantics, instruction lookup, CPU/state, bus/memory, timing,
  * diagnostics, allocation, environment, or caller-owned storage.
  */
@@ -151,6 +152,16 @@ static const ti_c54x_operand_field_layout
         {&ti_c54x_standard_indirect_mod4_piece, UINT8_C(1), UINT8_C(4)}};
 static const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod4_set = {
     ti_c54x_accumulator_arf_mod4_operands, UINT8_C(3)};
+
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_arf_extension16_mod4_operands[4] = {
+        {&ti_c54x_accumulator_arf_accumulator_piece, UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_accumulator_arf_arf_piece, UINT8_C(1), UINT8_C(3)},
+        {&ti_c54x_arf_extension16_extension_piece, UINT8_C(1), UINT8_C(16)},
+        {&ti_c54x_standard_indirect_mod4_piece, UINT8_C(1), UINT8_C(4)}};
+static const ti_c54x_operand_layout_set
+    ti_c54x_accumulator_arf_extension16_mod4_set = {
+        ti_c54x_accumulator_arf_extension16_mod4_operands, UINT8_C(4)};
 
 static const ti_c54x_operand_field_piece ti_c54x_max_min_destination_piece = {
     UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
@@ -329,7 +340,10 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             &ti_c54x_arf_mod4_set},
         [TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD4] = {
             TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD4, UINT8_C(2),
-            &ti_c54x_arf_extension16_mod4_set}
+            &ti_c54x_arf_extension16_mod4_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4,
+            UINT8_C(2), &ti_c54x_accumulator_arf_extension16_mod4_set}
 };
 
 const ti_c54x_operand_layout_plan *
@@ -467,6 +481,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD4:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_arf_extension16_mod4_set;
+    case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_accumulator_arf_extension16_mod4_set;
     default:
         return NULL;
     }

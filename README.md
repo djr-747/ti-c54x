@@ -20,10 +20,10 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W47B2A complete):
+Current snapshot (P2-W47B2B complete):
 
-- 98 runnable catalog rows and 2,679 populated first-word lookup entries. The
-  inventory has touched 38/205 instruction families (18.537%); 25/205 forms are
+- 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
+  inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
   strict-complete (12.195%). These are separate counts: lookup entries are not
   instruction counts.
 - Standalone memory/addressing seams are proven through standard MOD0-3,
@@ -40,10 +40,10 @@ Current snapshot (P2-W47B2A complete):
   MOD13 resolution, and the root WAIT/fault/cancel/stale lifecycle. AR/PC commit
   waits for both words; the existing WORD16 path avoids the LONG32 cold helper.
   Typed PMST.SST access and copied input knownness are now green without widening
-  the 48-byte opcode-input snapshot.
-- Active next slice (P2-W47B2B): DLD/DST catalog rows and checked/trusted
-  semantics, followed by CPU execution tests, inventory activation, and the
-  observer-off opcode benchmark.
+  the 48-byte opcode-input snapshot. DLD/DST now have exact MOD13 catalog rows,
+  single-pass trusted operands, SXM load semantics, and SXM/SST store saturation.
+- Active next slice (P2-W47B2C): full CPU READY/WAIT/FAULT execution tests and
+  the observer-off DLD/DST opcode benchmark.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

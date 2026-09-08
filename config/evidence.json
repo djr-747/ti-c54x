@@ -5992,7 +5992,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -6012,7 +6012,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-DLD-SXM-SEMANTICS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/load/",
@@ -6022,7 +6022,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/store/",
@@ -6082,7 +6082,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -8117,10 +8117,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_dld_dst_long32_mod13_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_dst_long32_mod13_decode"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE"]
     },
     {
@@ -8133,18 +8133,18 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-DLD-SXM-SEMANTICS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/load/test_dld_long32_mod13.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_long32_mod13_ops"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-SXM-SEMANTICS"]
     },
     {
       "id": "T-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/store/test_dst_long32_mod13.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dst_long32_mod13_ops"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT"]
     },
     {
@@ -8189,10 +8189,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-INVENTORY-PROJECTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_dld_dst_long32_projection.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION"]
     }
   ]

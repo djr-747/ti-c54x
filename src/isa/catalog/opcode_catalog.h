@@ -68,6 +68,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
     TI_C54X_OPERAND_LAYOUT_ARF_MOD4,
     TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD4,
+    /* Two-word long32 standard-indirect fields: D/S, ARF, lk, MOD[6:3]. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -99,6 +101,10 @@ typedef uint8_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_T_REGISTER))
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SST))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \

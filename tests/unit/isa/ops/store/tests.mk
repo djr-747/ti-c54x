@@ -6,3 +6,4 @@ $(eval $(call ti_c54x_add_test,standard_indirect_store_modes,isa/ops/store,test_
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_store_effects,isa/ops/store,test_indexed_standard_indirect_store_effects.c))
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_store_effects,isa/ops/store,test_circular_standard_indirect_store_effects.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_store_effects,isa/ops/store,test_reverse_carry_standard_indirect_store_effects.c))
+$(eval $(call ti_c54x_add_test,dst_long32_mod13_ops,isa/ops/store,test_dst_long32_mod13.c))

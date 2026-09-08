@@ -23,3 +23,4 @@ $(eval $(call ti_c54x_add_test,indexed_standard_indirect_metadata,isa/catalog,te
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_metadata,isa/catalog,test_circular_standard_indirect_metadata.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_metadata,isa/catalog,test_reverse_carry_standard_indirect_metadata.c))
 $(eval $(call ti_c54x_add_test,atomic_logical_memory_metadata,isa/catalog,test_atomic_logical_memory_metadata.c))
+$(eval $(call ti_c54x_add_test,dld_dst_long32_metadata,isa/catalog,test_dld_dst_long32_metadata.c))

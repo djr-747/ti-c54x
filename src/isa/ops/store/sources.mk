@@ -8,3 +8,4 @@ ti_c54x_core_sources += src/isa/ops/store/op_store_reverse_carry_common.c
 ti_c54x_core_sources += src/isa/ops/store/op_stl_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_immediate_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_t_smem_reverse.c
+ti_c54x_core_sources += src/isa/ops/store/op_dst_long32.c

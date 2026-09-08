@@ -10,3 +10,4 @@ $(eval $(call ti_c54x_add_test,standard_indirect_load_modes,isa/ops/load,test_st
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_load_effects,isa/ops/load,test_indexed_standard_indirect_load_effects.c))
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_load_effects,isa/ops/load,test_circular_standard_indirect_load_effects.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_load_effects,isa/ops/load,test_reverse_carry_standard_indirect_load_effects.c))
+$(eval $(call ti_c54x_add_test,dld_long32_mod13_ops,isa/ops/load,test_dld_long32_mod13.c))

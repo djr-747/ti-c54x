@@ -2,7 +2,8 @@
 """Contracts for inventory-to-catalog identity binding.
 
 Owns: one-to-one symbol identities, multi-binding subset forms, and the
-    frozen 25 complete/70 standard-indirect subset checkpoint. Does not
+    frozen 25 complete/75 subset checkpoint, including the DLD/DST LONG32
+    MOD13 projection. Does not
 own: opcode value/mask parsing or instruction execution semantics.
 """
 
@@ -50,19 +51,22 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 98)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 98)
+        self.assertEqual(len(bindings), 100)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 100)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 25)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 73)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 75)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
             | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)}
-            | ATOMIC_LOGICAL_SUBSET,
+            | ATOMIC_LOGICAL_SUBSET
+            | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
                 self.assertEqual(binding["addressing_subset"], "ALL")
+            elif binding["catalog_symbol"] in {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}:
+                self.assertEqual(binding["addressing_subset"], "LONG_OFFSET_MOD13_CMPT0")
             else:
                 expected = (
                     "STANDARD_INDIRECT_MOD0_MOD3"
