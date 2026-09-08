@@ -6449,3 +6449,45 @@ rewritten after publication.
   the compiled C suite, evidence/inventory/manifests, source boundaries, and
   observer-disabled artifact checks; only the two already reviewed 620-line
   warnings remain.
+
+## 2026-09-08 — P2-W47B1 generic LONG32 MEMORY MOD13 root
+
+- State: implementation commit
+  `6a1a6f2774d0188285399f4e457dcd7eb23ef029` completes the fixed-size generic
+  LONG32 MEMORY carrier, checked CMPT=0 MOD13 resolver, and discriminated root
+  transaction over the W47A pair reducer. Catalog rows, DLD/DST semantics, SST
+  collection, CPU opcode tests, inventory activation, and the opcode benchmark
+  remain W47B2; ISA counts therefore remain 98 rows, 2,679 lookup entries,
+  38/205 family coverage, and 25/205 strict coverage.
+- The root copies both write words and the read completion contract, resolves
+  MOD13 once, reserves two consecutive nonzero transaction IDs, and reports the
+  active child separately from the sequence watermark. WAIT resumes the same
+  request. First/second faults, malformed observations, failed cancellation,
+  candidate edits, live-state edits, and watermark edits cannot publish a
+  partial read or commit AR/PC. A pair-owned staged-abandon transition makes
+  pre-second and post-second READY rejection terminal and resettable without an
+  endpoint callback; partial physical write visibility remains explicit.
+- Performance decisions are structural and tested: the effect/address carriers
+  stay 40/24 bytes on LP64 and 36/24 on ILP32; the root is 336/308 bytes; direct
+  endpoint calls avoid double-reducing the embedded WORD16 child; and no address
+  replan, allocator, I/O, environment, formatting, or callback context was
+  added. Existing WORD16 instructions do not call the LONG32 cold preparation
+  helper. No knob was added or changed.
+- File review closes the 494-line root dispatcher to further W47B growth; new
+  LONG32 lifecycle logic lives in its 419-line owner. The 782-line failure
+  matrix remains one cohesive transition-system test below the 800-line split
+  boundary and is closed to further growth; W47B2 tests belong in their opcode,
+  CPU, and quality owners.
+- Validation is GREEN: the focused compatibility matrix is 10/10; fresh
+  ASan/UBSan is 10/10; a supported `-m32` compile probe freezes the ILP32 sizes;
+  and the authoritative clean `rtk make test` gate passes the compiled C suite
+  and all 237 Python quality tests. The first Make run exposed duplicate stale
+  local archive members (`*.c.o` and `*.o`); after removing only repository
+  build artifacts, the fresh archive contained one member per source and the
+  full gate passed. Source-boundary warnings are limited to the two previously
+  reviewed 620-line files and this reviewed 782-line lifecycle test.
+- Closure accounting is 181 evidence records; 304 requirements (259
+  IMPLEMENTED, 16 PLANNED, 29 UNRESOLVED); 258 tests (242 PASSING, 16 PLANNED);
+  and 7 sources. W47B2 is next: typed SST input knownness, DLD/DST semantics and
+  catalog/decode bindings, full CPU lifecycle tests, inventory activation, and
+  the observer-off full-CPU benchmark.
