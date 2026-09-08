@@ -280,7 +280,7 @@ void ti_c54x_ld_smem_stage_memory_read(
                 .mode = (ti_c54x_indirect_single_mode)operands->mode,
                 .arf = operands->arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .write_value_word = UINT16_C(0),
+            .value_word = UINT16_C(0),
             .complete = complete}};
     *effect = staged;
 }
@@ -302,7 +302,7 @@ void ti_c54x_ld_smem_stage_indexed_memory_read(
                 .indexed_mode = (ti_c54x_indirect_indexed_mode)indexed_mode,
                 .arf = operands->arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .write_value_word = UINT16_C(0),
+            .value_word = UINT16_C(0),
             .complete = complete}};
     *effect = staged;
 }
@@ -467,6 +467,6 @@ void ti_c54x_ld_smem_stage_circular_memory_read(
                 .circular_mode = mode,
                 .arf = operands->arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .write_value_word = UINT16_C(0),
+            .value_word = UINT16_C(0),
             .complete = complete}};
 }

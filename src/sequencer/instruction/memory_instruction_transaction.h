@@ -76,6 +76,14 @@ typedef struct ti_c54x_memory_instruction_transaction {
     ti_c54x_memory_instruction_phase phase;
     ti_c54x_bus_word16_transaction bus_transaction;
     uint64_t last_transaction_id;
+    /* The transformed WORD16 is staged between the READ and paired WRITE;
+     * it is never recomputed while the WRITE is pending. */
+    uint16_t rmw_write_value_word;
+    /* Immutable copies of the RMW operator and operand.  The copied
+     * candidate remains externally inspectable, so a pending resume must
+     * reject edits that would otherwise still be structurally valid. */
+    uint8_t candidate_rmw_operation;
+    uint16_t candidate_rmw_value_word;
     ti_c54x_memory_instruction_candidate candidate;
 } ti_c54x_memory_instruction_transaction;
 

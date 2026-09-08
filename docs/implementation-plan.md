@@ -70,13 +70,13 @@ per-family composition; its twenty rows produce ID_COUNT=96, lookup 2,583, and
 95 bindings, with focused, quality, sanitizer, review, and full-gate validation
 green.
 
-P2-W46A/W46B is the active RED-first forcing-function slice. W46A freezes a
-private allocation-free WORD16 same-address read-modify-write seam inside the
-existing MEMORY effect carrier; W46B composes it across the three neutral
-MOD0–3 ANDM/ORM/XORM rows. Performance is a first-class acceptance axis: the
-seam must not grow the hot carrier/candidate unnecessarily, must remain
-allocation-free, and receives a dedicated observer-off benchmark contract
-without changing the frozen five-scenario history or implying TI timing.
+P2-W46A is implementation-complete as the private allocation-free WORD16
+same-address read-modify-write seam inside the existing MEMORY effect carrier.
+P2-W46B is the active next forcing-function slice and composes that seam across
+the three neutral MOD0–3 ANDM/ORM/XORM rows. Performance remains a first-class
+acceptance axis: W46A freezes carrier size and bounded hot-path structure;
+W46B owns the executable observer-off cohort without changing the five frozen
+history scenarios or implying TI timing.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -637,10 +637,26 @@ until separately evidenced. Helpers are split before the 500-line review
 threshold.
 
 Performance is part of the seam contract: keep the carrier/candidate fixed-size
-where feasible, retain an allocation-free hot path, add a structural one-read/
-one-write gate, and later add a dedicated observer-off RMW benchmark. The
-benchmark is non-history and must not redefine the five frozen performance
-scenarios or claim machine-cycle timing.
+where feasible, retain an allocation-free hot path, and add a structural
+one-read/one-write gate. W46B owns the later executable observer-off RMW
+benchmark. That benchmark is non-history and must not redefine the five frozen
+performance scenarios or claim machine-cycle timing.
+
+Implementation preserves the 40-byte MEMORY carrier and 48-byte generic effect
+on supported 64-bit ABIs (36/40 bytes on supported 32-bit ABIs). The root
+transaction remains 464 lines after splitting value transforms and paired-write
+construction into a private helper. Address resolution runs once; READY/WAIT,
+FAULT, cancel, stale-state, candidate-forgery, endpoint-callback mutation, and
+second-ID exhaustion paths are executable. Direct live validation never calls
+the address resolver, and AR/PC publish only after WRITE READY. The cohesive RMW
+transaction test is about 600 lines; it has been reviewed and remains unsplit
+for this single lifecycle contract, with a mandatory split before 800 lines.
+
+Closure accounting is 175 evidence records; 290 requirements (247
+IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 244 tests (230 PASSING, 14 PLANNED);
+and 7 sources. The two focused C runners and six-test structural performance
+lane are GREEN. No catalog row, opcode handler, CPU branch, public ABI, runtime
+knob, external-master exclusion, or TI timing claim is added by W46A.
 
 ### P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)
 
@@ -708,8 +724,8 @@ function-pointer dispatch tables.
 | P2-W44B circular MOD8/MOD10 per-family composition | Implemented — six focused C/Python runners GREEN; full suite pending | Register twenty bounded MOD8/MOD10 rows over the ten existing Smem families, reuse private MOD4 layouts and the W44A CIRCULAR_WORD16 seam, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 76, lookup 2,343, and bindings 75; unsupported modes/boundaries remain excluded. |
 | P2-W45A generic reverse-carry WORD16 MEMORY seam | Implemented — three focused C runners GREEN; full suite pending | Define private typed REVERSE_CARRY_WORD16 MOD4/MOD7 effect, ordered CMPT→ARP→selected AR→AR0 resolution, exact live snapshots, boundary rejection, and atomic WAIT/FAULT/cancel/READY transactionality. ARF is 1..7 only; no BK, root transaction, CPU/catalog/opcode/public ABI/timing/device/RPT changes. W45B remains projected at ID_COUNT 96, lookup 2,583, and 95 bindings. |
 | P2-W45B reverse-carry MOD4/MOD7 per-family composition | Implemented — six focused C/Python runners GREEN, quality 215, fresh ASan/UBSan 5/5, clean review, and full standalone gate GREEN | Register twenty bounded MOD4/MOD7 rows over the ten existing Smem families, reuse MOD4 layouts and the W45A seam, reject ARF0 transactionally, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 96, lookup 2,583, and bindings 95; unsupported alias/boundary scope remains excluded. |
-| P2-W46A generic WORD16 same-address RMW seam | Planned — RED contracts frozen | Prove an allocation-free AND/OR/XOR transform carrier and one-read/one-write transaction with one address resolution, fresh phase IDs, direct stale snapshots, and commit only after WRITE READY; keep hot carrier/candidate size stable where feasible and add structural/perf gates without claiming bus exclusion or TI timing. |
-| P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Planned — RED contracts frozen | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. Projection: ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. |
+| P2-W46A generic WORD16 same-address RMW seam | Implemented — focused transaction/effect and structural performance runners GREEN | Allocation-free AND/OR/XOR carrier and one-read/one-write transaction resolve once, use fresh phase IDs, validate direct stale snapshots without replanning, and publish AR/PC only after WRITE READY. Carrier size is frozen on supported 32/64-bit ABIs; no bus-exclusion or TI timing claim is made. |
+| P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Planned — active next forcing-function slice | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. Projection: ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

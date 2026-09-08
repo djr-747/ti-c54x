@@ -45,7 +45,7 @@ reverse_effect(ti_c54x_indirect_reverse_carry_mode mode,
     effect.address_spec.reverse_carry_mode = mode;
     effect.address_spec.arf = arf;
     effect.access = access;
-    effect.write_value_word = UINT16_C(0xBEEF);
+    effect.value_word = UINT16_C(0xBEEF);
     effect.complete = complete_effect;
     return effect;
 }
@@ -64,7 +64,7 @@ check_read_modes_and_registers(void)
                 modes[mode_index], arf,
                 TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
 
-            effect.write_value_word = UINT16_C(0);
+            effect.value_word = UINT16_C(0);
             TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
         }
     }
@@ -98,7 +98,7 @@ check_invalid_kind_and_fields(void)
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
     ti_c54x_op_memory_effect effect = seed;
 
-    effect.write_value_word = UINT16_C(0);
+    effect.value_word = UINT16_C(0);
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(NULL));
 
     effect.address_spec.kind = TI_C54X_OP_MEMORY_ADDRESS_INVALID;
@@ -139,7 +139,7 @@ check_access_shapes_and_nonmutation(void)
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
     const ti_c54x_op_memory_effect seed = effect;
 
-    effect.write_value_word = UINT16_C(1);
+    effect.value_word = UINT16_C(1);
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
     effect = seed;
     effect.complete = NULL;
@@ -173,7 +173,7 @@ existing_effect(ti_c54x_op_memory_address_kind kind)
     effect.address_spec.circular_mode = TI_C54X_INDIRECT_CIRCULAR_MOD8;
     effect.address_spec.arf = UINT8_C(3);
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
-    effect.write_value_word = UINT16_C(0x1234);
+    effect.value_word = UINT16_C(0x1234);
     return effect;
 }
 

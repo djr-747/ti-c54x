@@ -7,3 +7,4 @@ $(eval $(call ti_c54x_add_test,memory_instruction_modes,sequencer/instruction,te
 $(eval $(call ti_c54x_add_test,indexed_word16_memory_transaction,sequencer/instruction,test_indexed_word16_memory_transaction.c))
 $(eval $(call ti_c54x_add_test,circular_word16_memory_transaction,sequencer/instruction,test_circular_word16_memory_transaction.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_word16_memory_transaction,sequencer/instruction,test_reverse_carry_word16_memory_transaction.c))
+$(eval $(call ti_c54x_add_test,word16_rmw_memory_transaction,sequencer/instruction,test_word16_rmw_memory_transaction.c))

@@ -178,7 +178,7 @@ static ti_c54x_op_effect memory_effect(ti_c54x_bus_word16_request_access access)
     effect.payload.memory.address_spec.mode = TI_C54X_INDIRECT_SINGLE_MOD2;
     effect.payload.memory.address_spec.arf = UINT8_C(2);
     effect.payload.memory.access = access;
-    effect.payload.memory.write_value_word =
+    effect.payload.memory.value_word =
         access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ? UINT16_C(0x00a5)
                                                           : UINT16_C(0);
     effect.payload.memory.complete =

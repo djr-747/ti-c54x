@@ -13,14 +13,34 @@
 #include <stddef.h>
 
 static bool
+ti_c54x_op_memory_rmw_operation_is_valid(uint8_t operation)
+{
+    return operation ==
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE ||
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_AND ||
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_OR ||
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_XOR;
+}
+
+static bool
 ti_c54x_op_memory_effect_access_shape_is_valid(
     const ti_c54x_op_memory_effect *effect)
 {
+    if (!ti_c54x_op_memory_rmw_operation_is_valid(effect->rmw_operation)) {
+        return false;
+    }
+
     if (effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
-        return effect->write_value_word == UINT16_C(0) &&
-               effect->complete != NULL;
+        if (effect->rmw_operation ==
+            (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE) {
+            return effect->value_word == UINT16_C(0) &&
+                   effect->complete != NULL;
+        }
+        return effect->complete == NULL;
     }
     return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
+           effect->rmw_operation ==
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
            effect->complete == NULL;
 }
 

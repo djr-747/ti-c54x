@@ -168,7 +168,7 @@ assert_indexed_write(const ti_c54x_op_effect *effect, uint8_t mode,
     TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.arf == UINT8_C(5));
     TI_C54X_TEST_CHECK(effect->payload.memory.access ==
                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
-    TI_C54X_TEST_CHECK(effect->payload.memory.write_value_word ==
+    TI_C54X_TEST_CHECK(effect->payload.memory.value_word ==
                        expected_value);
     TI_C54X_TEST_CHECK(effect->payload.memory.complete == NULL);
 }

@@ -32,7 +32,7 @@ static void stl_memory_write(uint8_t arf, uint8_t mode, uint16_t value,
                 .mode = (ti_c54x_indirect_single_mode)mode,
                 .arf = arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
-            .write_value_word = value,
+            .value_word = value,
             .complete = NULL}};
 }
 

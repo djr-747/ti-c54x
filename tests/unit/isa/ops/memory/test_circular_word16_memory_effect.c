@@ -40,7 +40,7 @@ circular_effect(ti_c54x_indirect_circular_mode mode,
     effect.address_spec.circular_mode = mode;
     effect.address_spec.arf = arf;
     effect.access = access;
-    effect.write_value_word = UINT16_C(0xBEEF);
+    effect.value_word = UINT16_C(0xBEEF);
     effect.complete = complete_effect;
     return effect;
 }
@@ -58,7 +58,7 @@ check_read_modes_and_registers(void)
                 modes[mode_index], arf,
                 TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
 
-            effect.write_value_word = UINT16_C(0);
+            effect.value_word = UINT16_C(0);
             TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
         }
     }
@@ -91,7 +91,7 @@ check_shape_rejections_are_transactional(void)
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
     ti_c54x_op_memory_effect effect = seed;
 
-    effect.write_value_word = UINT16_C(0);
+    effect.value_word = UINT16_C(0);
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(NULL));
 
     effect.address_spec.kind = TI_C54X_OP_MEMORY_ADDRESS_INVALID;
@@ -110,7 +110,7 @@ check_shape_rejections_are_transactional(void)
     effect.address_spec.indexed_mode = TI_C54X_INDIRECT_INDEXED_MOD5;
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
     effect = seed;
-    effect.write_value_word = UINT16_C(1);
+    effect.value_word = UINT16_C(1);
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
     effect = seed;
     effect.complete = NULL;

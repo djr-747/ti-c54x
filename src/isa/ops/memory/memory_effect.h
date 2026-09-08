@@ -40,6 +40,19 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4
 } ti_c54x_op_memory_address_kind;
 
+/*
+ * A WORD16 memory read may optionally feed one value-owned transform before
+ * its paired write.  The carrier stores the operation in one byte of the
+ * existing value/callback alignment padding; no callback or context is
+ * retained here.
+ */
+typedef enum ti_c54x_op_memory_rmw_operation {
+    TI_C54X_OP_MEMORY_RMW_OPERATION_NONE = 0,
+    TI_C54X_OP_MEMORY_RMW_OPERATION_AND = 1,
+    TI_C54X_OP_MEMORY_RMW_OPERATION_OR = 2,
+    TI_C54X_OP_MEMORY_RMW_OPERATION_XOR = 3
+} ti_c54x_op_memory_rmw_operation;
+
 typedef struct ti_c54x_op_memory_address_spec {
     ti_c54x_op_memory_address_kind kind;
     /* Used only by SINGLE_INDIRECT; must remain MOD0 for other kinds. */
@@ -62,7 +75,10 @@ typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_fn)(
 typedef struct ti_c54x_op_memory_effect {
     ti_c54x_op_memory_address_spec address_spec;
     ti_c54x_bus_word16_request_access access;
-    uint16_t write_value_word;
+    /* Ordinary WRITE payload or RMW operand; ordinary READ requires zero. */
+    uint16_t value_word;
+    /* Kept byte-sized so the carrier remains compact on existing ABIs. */
+    uint8_t rmw_operation;
     ti_c54x_op_memory_complete_fn complete;
 } ti_c54x_op_memory_effect;
 

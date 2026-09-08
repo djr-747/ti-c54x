@@ -50,7 +50,7 @@ reverse_carry_memory_effect(ti_c54x_bus_word16_request_access access,
     effect.payload.memory.address_spec.reverse_carry_mode = mode;
     effect.payload.memory.address_spec.arf = ar_index;
     effect.payload.memory.access = access;
-    effect.payload.memory.write_value_word =
+    effect.payload.memory.value_word =
         access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ? UINT16_C(0x00a5)
                                                           : UINT16_C(0);
     effect.payload.memory.complete =

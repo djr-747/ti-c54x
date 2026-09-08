@@ -13,3 +13,5 @@ ti_c54x_add_unit_test(circular_word16_memory_transaction
                       test_circular_word16_memory_transaction.c)
 ti_c54x_add_unit_test(reverse_carry_word16_memory_transaction
                       test_reverse_carry_word16_memory_transaction.c)
+ti_c54x_add_unit_test(word16_rmw_memory_transaction
+                      test_word16_rmw_memory_transaction.c)

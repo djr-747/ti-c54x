@@ -15,6 +15,7 @@
 
 #include "address/indirect_reverse_carry.h"
 #include "bus/adapter/word16_adapter.h"
+#include "state/block_size_register.h"
 #include "sequencer/instruction/memory_instruction_transaction.h"
 
 static bool
@@ -57,23 +58,58 @@ address_resolution_is_valid(
                        TI_C54X_ADDRESS_UPDATE_NONE &&
                    address_effect->update.phase ==
                        TI_C54X_ADDRESS_UPDATE_PHASE_NONE &&
+                   address_effect->update.ar_index == UINT8_C(0) &&
+                   address_effect->update.value_before == UINT16_C(0) &&
+                   address_effect->update.value_after == UINT16_C(0) &&
                    address_effect->operand.first_word ==
                        address_effect->source.value.ar.value_before &&
                    address_commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
                    address_commit->ar_index == UINT8_C(0) &&
                    address_commit->value_after == UINT16_C(0);
         case TI_C54X_INDIRECT_SINGLE_MOD1:
-        case TI_C54X_INDIRECT_SINGLE_MOD2:
+            /* Word16 MOD1 is a checked post-access decrement.  The
+             * resolver rejects the zero boundary, so proving the arithmetic
+             * here cannot wrap a forged pending candidate. */
             return address_effect->update.target ==
                        TI_C54X_ADDRESS_UPDATE_AR &&
                    address_effect->update.phase ==
                        TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+                   address_effect->operand.first_word ==
+                       address_effect->source.value.ar.value_before &&
+                   address_effect->update.ar_index == effect->address_spec.arf &&
+                   address_effect->update.value_before ==
+                       address_effect->source.value.ar.value_before &&
+                   address_effect->source.value.ar.value_before >=
+                       UINT16_C(1) &&
+                   address_effect->update.value_after ==
+                       (uint16_t)(address_effect->source.value.ar.value_before -
+                                  UINT16_C(1)) &&
                    address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
                    address_commit->ar_index == effect->address_spec.arf &&
                    address_commit->value_after ==
-                       address_effect->update.value_after &&
-                   address_commit->value_after !=
-                       address_effect->update.value_before;
+                       address_effect->update.value_after;
+        case TI_C54X_INDIRECT_SINGLE_MOD2:
+            /* Word16 MOD2 is a checked post-access increment.  The
+             * resolver rejects the 0xffff boundary, so require the exact
+             * non-wrapping successor and its source snapshot. */
+            return address_effect->update.target ==
+                       TI_C54X_ADDRESS_UPDATE_AR &&
+                   address_effect->update.phase ==
+                       TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+                   address_effect->operand.first_word ==
+                       address_effect->source.value.ar.value_before &&
+                   address_effect->update.ar_index == effect->address_spec.arf &&
+                   address_effect->update.value_before ==
+                       address_effect->source.value.ar.value_before &&
+                   address_effect->source.value.ar.value_before <
+                       UINT16_MAX &&
+                   address_effect->update.value_after ==
+                       (uint16_t)(address_effect->source.value.ar.value_before +
+                                  UINT16_C(1)) &&
+                   address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+                   address_commit->ar_index == effect->address_spec.arf &&
+                   address_commit->value_after ==
+                       address_effect->update.value_after;
         case TI_C54X_INDIRECT_SINGLE_MOD3:
             return effect->access ==
                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
@@ -81,14 +117,20 @@ address_resolution_is_valid(
                        TI_C54X_ADDRESS_UPDATE_AR &&
                    address_effect->update.phase ==
                        TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+                   address_effect->update.ar_index == effect->address_spec.arf &&
+                   address_effect->update.value_before ==
+                       address_effect->source.value.ar.value_before &&
+                   address_effect->source.value.ar.value_before <
+                       UINT16_MAX &&
+                   address_effect->update.value_after ==
+                       (uint16_t)(address_effect->source.value.ar.value_before +
+                                  UINT16_C(1)) &&
                    address_effect->operand.first_word ==
                        address_effect->update.value_after &&
                    address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
                    address_commit->ar_index == effect->address_spec.arf &&
                    address_commit->value_after ==
-                       address_effect->update.value_after &&
-                   address_commit->value_after !=
-                       address_effect->update.value_before;
+                       address_effect->update.value_after;
         default:
             return false;
         }
@@ -201,84 +243,6 @@ address_resolution_is_valid(
 }
 
 static bool
-address_resolution_matches(
-    const ti_c54x_memory_address_resolution *expected,
-    const ti_c54x_memory_address_resolution *actual)
-{
-    const ti_c54x_address_effect *expected_effect;
-    const ti_c54x_address_effect *actual_effect;
-
-    if (expected == NULL || actual == NULL ||
-        expected->address_result.status != actual->address_result.status ||
-        expected->address_commit.target != actual->address_commit.target ||
-        expected->address_commit.ar_index != actual->address_commit.ar_index ||
-        expected->address_commit.value_after !=
-            actual->address_commit.value_after ||
-        expected->request.space != actual->request.space ||
-        expected->request.access != actual->request.access ||
-        expected->request.address_word != actual->request.address_word ||
-        expected->request.write_value_word !=
-            actual->request.write_value_word) {
-        return false;
-    }
-    expected_effect = &expected->address_result.effect;
-    actual_effect = &actual->address_result.effect;
-    if (expected_effect->operand.width != actual_effect->operand.width ||
-        expected_effect->operand.first_word != actual_effect->operand.first_word ||
-        expected_effect->operand.second_word != actual_effect->operand.second_word ||
-        expected_effect->source.kind != actual_effect->source.kind ||
-        expected_effect->state_policy != actual_effect->state_policy ||
-        expected_effect->update.target != actual_effect->update.target ||
-        expected_effect->update.phase != actual_effect->update.phase ||
-        expected_effect->update.ar_index != actual_effect->update.ar_index ||
-        expected_effect->update.value_before !=
-            actual_effect->update.value_before ||
-        expected_effect->update.value_after != actual_effect->update.value_after) {
-        return false;
-    }
-    if (expected_effect->source.kind == TI_C54X_ADDRESS_SOURCE_AR) {
-        return expected_effect->source.value.ar.index ==
-                   actual_effect->source.value.ar.index &&
-               expected_effect->source.value.ar.value_before ==
-                   actual_effect->source.value.ar.value_before;
-    }
-    if (expected_effect->source.kind ==
-        TI_C54X_ADDRESS_SOURCE_AR_INDEXED) {
-        return expected_effect->source.value.ar_indexed.index ==
-                   actual_effect->source.value.ar_indexed.index &&
-               expected_effect->source.value.ar_indexed.value_before ==
-                   actual_effect->source.value.ar_indexed.value_before &&
-               expected_effect->source.value.ar_indexed.ar0_value_before ==
-                   actual_effect->source.value.ar_indexed.ar0_value_before;
-    }
-    if (expected_effect->source.kind ==
-        TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR) {
-        return expected_effect->source.value.ar_circular.index ==
-                   actual_effect->source.value.ar_circular.index &&
-               expected_effect->source.value.ar_circular.modification ==
-                   actual_effect->source.value.ar_circular.modification &&
-               expected_effect->source.value.ar_circular.value_before ==
-                   actual_effect->source.value.ar_circular.value_before &&
-               expected_effect->source.value.ar_circular.bk_value_before ==
-                   actual_effect->source.value.ar_circular.bk_value_before;
-    }
-    if (expected_effect->source.kind ==
-        TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY) {
-        return expected_effect->source.value.ar_reverse_carry.index ==
-                   actual_effect->source.value.ar_reverse_carry.index &&
-               expected_effect->source.value.ar_reverse_carry.modification ==
-                   actual_effect->source.value.ar_reverse_carry.modification &&
-               expected_effect->source.value.ar_reverse_carry.value_before ==
-                   actual_effect->source.value.ar_reverse_carry.value_before &&
-               expected_effect->source.value.ar_reverse_carry
-                       .ar0_value_before ==
-                   actual_effect->source.value.ar_reverse_carry
-                       .ar0_value_before;
-    }
-    return false;
-}
-
-static bool
 pc_candidate_matches_live(const ti_c54x_program_pc_bridge_effect *pc,
                           const ti_c54x_arch_state *state)
 {
@@ -317,17 +281,26 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
         TI_C54X_PROGRAM_PC_BRIDGE_OK) {
         return false;
     }
-    return planned.public_pc_word_before ==
-               candidate->pc_effect.public_pc_word_before &&
-           planned.common_pc_word_before ==
-               candidate->pc_effect.common_pc_word_before &&
-           planned.common_pc_word_after ==
-               candidate->pc_effect.common_pc_word_after &&
-           planned.public_pc_word_after ==
-               candidate->pc_effect.public_pc_word_after &&
-           planned.program_word_count == candidate->pc_effect.program_word_count &&
-           candidate->address_resolution.request.write_value_word ==
-               candidate->effect.payload.memory.write_value_word;
+    if (planned.public_pc_word_before !=
+            candidate->pc_effect.public_pc_word_before ||
+        planned.common_pc_word_before !=
+            candidate->pc_effect.common_pc_word_before ||
+        planned.common_pc_word_after !=
+            candidate->pc_effect.common_pc_word_after ||
+        planned.public_pc_word_after !=
+            candidate->pc_effect.public_pc_word_after ||
+        planned.program_word_count != candidate->pc_effect.program_word_count ||
+        candidate->instruction.bundle.program_word_count !=
+            candidate->pc_effect.program_word_count) {
+        return false;
+    }
+    if (candidate->effect.payload.memory.access ==
+        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+        return candidate->address_resolution.request.write_value_word ==
+               UINT16_C(0);
+    }
+    return candidate->address_resolution.request.write_value_word ==
+           candidate->effect.payload.memory.value_word;
 }
 
 bool
@@ -335,20 +308,88 @@ ti_c54x_memory_instruction_candidate_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
     const ti_c54x_arch_state *state)
 {
-    ti_c54x_memory_address_resolution live = {0};
-    const ti_c54x_op_memory_effect *memory;
+    const ti_c54x_address_effect *address_effect;
+    uint8_t cmpt = UINT8_C(0);
+    uint8_t arp = UINT8_C(0);
+    uint16_t selected_ar = UINT16_C(0);
 
     if (candidate == NULL || state == NULL) {
         return false;
     }
-    memory = &candidate->effect.payload.memory;
-    if (ti_c54x_sequencer_resolve_memory_address(
-            state, &memory->address_spec, memory->access,
-            memory->write_value_word, &live) !=
-        TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK ||
-        !address_resolution_matches(&candidate->address_resolution, &live) ||
-        !pc_candidate_matches_live(&candidate->pc_effect, state)) {
+    /* Validate the copied candidate on every resume as well as before the
+     * first issue.  This is deliberately structural only: it never invokes
+     * the address resolver, so a pending candidate cannot be replanned. */
+    if (!ti_c54x_memory_instruction_candidate_shape_is_valid(candidate)) {
         return false;
     }
-    return true;
+    address_effect = &candidate->address_resolution.address_result.effect;
+
+    /* All currently supported generic memory forms are CMPT=0/ARP=0
+     * plans. Read the mode dependencies directly; re-running the resolver
+     * here would redo address arithmetic and could publish a different
+     * candidate after a WAIT. */
+    if (ti_c54x_arch_state_read_cmpt(state, &cmpt) !=
+            TI_C54X_ARCH_STATE_OK ||
+        cmpt != UINT8_C(0) ||
+        ti_c54x_arch_state_read_arp(state, &arp) !=
+            TI_C54X_ARCH_STATE_OK ||
+        arp != UINT8_C(0) ||
+        address_effect->state_policy !=
+            TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) {
+        return false;
+    }
+    if (!pc_candidate_matches_live(&candidate->pc_effect, state)) {
+        return false;
+    }
+    switch (address_effect->source.kind) {
+    case TI_C54X_ADDRESS_SOURCE_AR:
+        if (ti_c54x_arch_state_read_ar(
+                state, address_effect->source.value.ar.index,
+                &selected_ar) != TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return selected_ar == address_effect->source.value.ar.value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_INDEXED:
+        if (ti_c54x_arch_state_read_ar(
+                state, address_effect->source.value.ar_indexed.index,
+                &selected_ar) != TI_C54X_ARCH_STATE_OK ||
+            selected_ar != address_effect->source.value.ar_indexed.value_before) {
+            return false;
+        }
+        if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &selected_ar) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return selected_ar ==
+                   address_effect->source.value.ar_indexed.ar0_value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
+        if (ti_c54x_arch_state_read_ar(
+                state, address_effect->source.value.ar_circular.index,
+                &selected_ar) != TI_C54X_ARCH_STATE_OK ||
+            selected_ar != address_effect->source.value.ar_circular.value_before) {
+            return false;
+        }
+        if (ti_c54x_arch_state_read_bk(state, &selected_ar) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return selected_ar ==
+                   address_effect->source.value.ar_circular.bk_value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
+        if (ti_c54x_arch_state_read_ar(
+                state, address_effect->source.value.ar_reverse_carry.index,
+                &selected_ar) != TI_C54X_ARCH_STATE_OK ||
+            selected_ar !=
+                address_effect->source.value.ar_reverse_carry.value_before) {
+            return false;
+        }
+        if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &selected_ar) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return selected_ar == address_effect->source.value.ar_reverse_carry
+                                  .ar0_value_before;
+    default:
+        return false;
+    }
 }

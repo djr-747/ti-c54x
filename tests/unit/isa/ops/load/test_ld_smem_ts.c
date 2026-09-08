@@ -104,7 +104,7 @@ static void assert_memory_read(const ti_c54x_op_effect *effect, uint8_t arf)
     TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.arf == arf);
     TI_C54X_TEST_CHECK(effect->payload.memory.access ==
                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
-    TI_C54X_TEST_CHECK(effect->payload.memory.write_value_word == UINT16_C(0));
+    TI_C54X_TEST_CHECK(effect->payload.memory.value_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(effect->payload.memory.complete != NULL);
 }
 

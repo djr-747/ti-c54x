@@ -246,6 +246,6 @@ void ti_c54x_store_stage_circular_write(
                 .circular_mode = mode,
                 .arf = arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
-            .write_value_word = value,
+            .value_word = value,
             .complete = NULL}};
 }

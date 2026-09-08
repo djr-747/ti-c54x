@@ -15,6 +15,7 @@
 
 #include "bus/adapter/word16_adapter.h"
 #include "sequencer/effect_transaction.h"
+#include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
 
 static void
@@ -24,6 +25,21 @@ clear_preserving_sequence(ti_c54x_memory_instruction_transaction *transaction)
 
     *transaction = (ti_c54x_memory_instruction_transaction){0};
     transaction->last_transaction_id = last_id;
+}
+
+static bool
+candidate_snapshot_matches(
+    const ti_c54x_memory_instruction_transaction *transaction)
+{
+    const ti_c54x_op_memory_effect *const memory =
+        transaction == NULL || transaction->candidate.effect.kind !=
+                                  TI_C54X_OP_EFFECT_MEMORY
+            ? NULL
+            : &transaction->candidate.effect.payload.memory;
+
+    return memory != NULL &&
+           memory->rmw_operation == transaction->candidate_rmw_operation &&
+           memory->value_word == transaction->candidate_rmw_value_word;
 }
 
 ti_c54x_memory_instruction_status
@@ -61,7 +77,10 @@ ti_c54x_memory_instruction_transaction_prepare(
     if (ti_c54x_sequencer_resolve_memory_address(
             state, &effect->payload.memory.address_spec,
             effect->payload.memory.access,
-            effect->payload.memory.write_value_word, &resolution) !=
+            ti_c54x_memory_instruction_memory_is_rmw(&effect->payload.memory)
+                ? UINT16_C(0)
+                : effect->payload.memory.value_word,
+            &resolution) !=
         TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
@@ -80,6 +99,10 @@ ti_c54x_memory_instruction_transaction_prepare(
     candidate.instructions_retired_after = instructions_retired_before +
                                            UINT64_C(1);
     target->candidate = candidate;
+    target->candidate_rmw_operation =
+        candidate.effect.payload.memory.rmw_operation;
+    target->candidate_rmw_value_word =
+        candidate.effect.payload.memory.value_word;
     target->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
 }
@@ -117,7 +140,10 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
 
     /* A WRITE READY has already published externally; only infallible scalar
      * assignments remain. No validator, callback, or effect API is called. */
-    if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+    if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
+        (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
+         transaction->bus_transaction.request.access ==
+             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)) {
         return commit_architecture(transaction, state);
     }
     if (memory->complete == NULL || memory->complete(
@@ -139,6 +165,85 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
     return commit_architecture(transaction, state);
 }
 
+static ti_c54x_memory_instruction_status
+advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
+                  const ti_c54x_bus_word16_endpoint *endpoint,
+                  ti_c54x_arch_state *state,
+                  ti_c54x_memory_instruction_result *result,
+                  bool first_issue)
+{
+    ti_c54x_bus_word16_adapter_result adapter_result;
+    ti_c54x_memory_instruction_status operation_status;
+
+    result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
+
+    if (!candidate_snapshot_matches(transaction) ||
+        !ti_c54x_memory_instruction_rmw_transform(
+                       &transaction->candidate.effect.payload.memory,
+                       transaction->bus_transaction.staged_read_value_word,
+                       &transaction->rmw_write_value_word) ||
+        !ti_c54x_memory_instruction_candidate_matches_live(
+            &transaction->candidate, state)) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    {
+        uint64_t next_id;
+
+        if (!ti_c54x_memory_instruction_rmw_next_id(transaction, &next_id)) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_ID_EXHAUSTED;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_ID_EXHAUSTED;
+        }
+        if (!ti_c54x_memory_instruction_rmw_prepare_write(
+                transaction, next_id, transaction->rmw_write_value_word)) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    }
+    result->transaction_id = transaction->last_transaction_id;
+    adapter_result = ti_c54x_bus_word16_adapter_advance(
+        endpoint, TI_C54X_BUS_WORD16_ADVANCE_BEGIN,
+        &transaction->bus_transaction);
+    if (adapter_result.status == TI_C54X_BUS_WORD16_ADAPTER_STATUS_WAIT) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_PENDING;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_WAIT;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    }
+    if (adapter_result.status == TI_C54X_BUS_WORD16_ADAPTER_STATUS_FAULT) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_FAULT;
+        result->bus_status = adapter_result.bus_status;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    }
+    if (adapter_result.status != TI_C54X_BUS_WORD16_ADAPTER_STATUS_OK) {
+        result->status =
+            TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
+    }
+    /* A READY WRITE is externally visible but architectural publication is
+     * still local to this reducer. Recheck the frozen candidate and live
+     * dependencies after the host callback before committing AR/PC. */
+    if (!candidate_snapshot_matches(transaction) ||
+        !ti_c54x_memory_instruction_candidate_matches_live(
+            &transaction->candidate, state)) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    operation_status = commit_architecture(transaction, state);
+    if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+        return operation_status;
+    }
+    result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+    result->bus_status = TI_C54X_BUS_OK;
+    result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
+    result->instructions_retired = UINT64_C(1);
+    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+}
+
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_transaction_advance(
     ti_c54x_memory_instruction_transaction *transaction,
@@ -151,6 +256,7 @@ ti_c54x_memory_instruction_transaction_advance(
     ti_c54x_bus_word16_adapter_result adapter_result;
     ti_c54x_memory_instruction_status operation_status;
     bool first_issue;
+    bool rmw_read_phase;
 
     if (result != NULL) {
         *result = (ti_c54x_memory_instruction_result){0};
@@ -191,8 +297,10 @@ ti_c54x_memory_instruction_transaction_advance(
         }
     }
 
-    if (!ti_c54x_memory_instruction_candidate_matches_live(
+    if (!candidate_snapshot_matches(transaction) ||
+        !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
     if (first_issue) {
@@ -217,6 +325,12 @@ ti_c54x_memory_instruction_transaction_advance(
     } else {
         result->transaction_id = transaction->last_transaction_id;
     }
+
+    rmw_read_phase =
+        ti_c54x_memory_instruction_memory_is_rmw(
+            &transaction->candidate.effect.payload.memory) &&
+        transaction->bus_transaction.request.access ==
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
 
     adapter_result = ti_c54x_bus_word16_adapter_advance(
         endpoint,
@@ -245,6 +359,21 @@ ti_c54x_memory_instruction_transaction_advance(
     if (adapter_result.status != TI_C54X_BUS_WORD16_ADAPTER_STATUS_OK) {
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
+    }
+    /* Endpoint callbacks are host-controlled and may share the transaction
+     * context. Recheck the frozen candidate after READY and before any
+     * architectural publication or ordinary completion callback. */
+    if (!rmw_read_phase &&
+        (!candidate_snapshot_matches(transaction) ||
+         !ti_c54x_memory_instruction_candidate_matches_live(
+             &transaction->candidate, state))) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    if (rmw_read_phase) {
+        return advance_rmw_write(transaction, endpoint, state, result,
+                                 first_issue);
     }
     operation_status = commit_ready(transaction, state, accumulators,
                                      t_register, adapter_result.read_value_word);

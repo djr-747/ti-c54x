@@ -115,7 +115,7 @@ static void st_immediate_smem_memory_write(uint8_t arf, uint16_t immediate,
                 .mode = (ti_c54x_indirect_single_mode)mode,
                 .arf = arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
-            .write_value_word = immediate,
+            .value_word = immediate,
             .complete = NULL}};
 }
 

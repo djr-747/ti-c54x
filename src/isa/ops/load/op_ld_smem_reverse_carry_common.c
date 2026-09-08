@@ -162,5 +162,5 @@ void ti_c54x_ld_smem_stage_reverse_memory_read(
             .address_spec = {.kind = TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16,
                              .reverse_carry_mode = mode, .arf = operands->arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .write_value_word = UINT16_C(0), .complete = complete}};
+            .value_word = UINT16_C(0), .complete = complete}};
 }

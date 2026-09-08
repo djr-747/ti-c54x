@@ -207,7 +207,7 @@ static void ld_status_smem_memory_read(uint8_t arf, uint8_t mode,
                 .mode = (ti_c54x_indirect_single_mode)mode,
                 .arf = arf},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .write_value_word = UINT16_C(0),
+            .value_word = UINT16_C(0),
             .complete = ld_status_smem_complete}};
 }
 

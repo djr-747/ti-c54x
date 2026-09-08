@@ -5796,7 +5796,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/memory/",
@@ -5806,7 +5806,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46A-RMW-TRANSACTION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -5816,11 +5816,11 @@
     },
     {
       "id": "REQ-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
-      "claim": "Prove the RMW seam remains allocation-free and structurally bounded to one read/one write, keeps carrier/candidate growth stable where feasible, and has a dedicated observer-off benchmark cohort recorded outside the frozen five-scenario history; benchmark results are implementation-throughput observations and do not claim TI timing or reuse the hosted 60 ns gate.",
+      "claim": "Prove the RMW seam remains allocation-free and structurally bounded to one read/one write, with stable mainstream-ABI carrier size, no address replanning on resume, and no opcode-specific CPU branch. The executable observer-off opcode benchmark remains owned by W46B outside the frozen five-scenario history and does not claim TI timing or reuse the hosted 60 ns gate.",
       "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE"]
     },
@@ -7807,26 +7807,26 @@
     },
     {
       "id": "T-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/memory/test_word16_rmw_memory_effect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.word16_rmw_memory_effect"},
       "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM"]
     },
     {
       "id": "T-PROJECT-P2-W46A-RMW-TRANSACTION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_word16_rmw_memory_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.word16_rmw_memory_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-TRANSACTION"]
     },
     {
       "id": "T-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
-      "path": "tests/contract/performance/test_word16_rmw_hot_path.py",
-      "runner": null,
+      "path": "tests/contract/quality/perf/test_word16_rmw_hot_path.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE"]
     },
     {
