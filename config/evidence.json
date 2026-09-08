@@ -2608,6 +2608,36 @@
         "anchor": "P2-W42B: standard-indirect MOD0–3 Smem family expansion (planned)"
       },
       "assertion": "P2-W42B freezes replacement of the ten fixed-MOD2 standard-indirect Smem catalog rows with neutral symbols LD_SMEM, LD_SMEM_TS, STL_SMEM, LDU_SMEM, LD_T_SMEM, ST_IMMEDIATE_SMEM, LD_DP_SMEM, LD_ASM_SMEM, LD_SMEM_SHIFT16, and ST_T_SMEM. Their MOD0 base/mask pairs are 0x1080/0xFEE0, 0x1480/0xFEE0, 0x8080/0xFEE0, 0x1280/0xFEE0, 0x3080/0xFFE0, 0x7680/0xFFE0, 0x4680/0xFFE0, 0x3280/0xFFE0, 0x4480/0xFEE0, and 0x8C80/0xFFE0. Neutral layouts ACCUMULATOR_ARF_MOD (D/source, ARF, MOD), ARF_MOD (ARF, MOD), and ARF_EXTENSION16_MOD (ARF, EXTENSION16, MOD) append MOD without changing existing operand indices; mode bits are [4:3], ARF [2:0], and D bit 8. Handlers consume decoded mode fields and never parse raw words. Loads admit MOD0/MOD1/MOD2 and return INVALID_OPERAND for MOD3 before MEMORY effect or endpoint issue; stores admit MOD0–MOD3 through W42A. ID_COUNT remains 36, lookup projects 1503 to 1863, and 480 broadened encodings comprise 392 legal plus 88 rejected load MOD3 forms (+272 legal/+88 rejected). Inventory stays SUBSET with addressing_subset STANDARD_INDIRECT_MOD0_MOD3, family and strict percentages stay 35/205 and 25/205 through this slice, and op_ld_smem.c must be split before growth beyond its reviewed 491 lines. No new effect/address kind, CPU branch, ABI, timing, device/MMR, or architectural state is admitted."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5-MOD5-MOD6-FAMILY-COMPOSITION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "5",
+        "section": "5.5.1",
+        "printed_page_start": "5-10",
+        "printed_page_end": "5-13"
+      },
+      "assertion": "Figure 5-7 and Table 5-3 (printed pp. 5-10–5-11) establish the single-indirect field composition: the instruction word carries the family-specific opcode fields together with D where present, the auxiliary-register selector ARF in bits [2:0], and the addressing-mode field MOD in bits [4:3], with CMPT=0 selecting the ARF register without changing ARP. Table 5-4 (printed p. 5-13) defines MOD5 and MOD6 as the indexed modes that use the old selected ARx as the operand address and then apply ARx−AR0 or ARx+AR0. Composed only with the ten existing SPRU172C family diagrams/pages—LD Smem,dst (4-66–4-69), LD Smem,TS,dst (4-65–4-69), STL src,Smem (4-172–4-173), LDU Smem,dst (4-79), LD T,Smem (4-70–4-71), ST immediate,Smem (4-166–4-167), LD Smem,DP/ASM (4-69–4-71), LD Smem,16,dst (4-65–4-69), and ST T,Smem (4-166–4-168)—the W43B catalog admits exactly these twenty MOD5/MOD6 rows and no other opcode composition. Their exact MOD5/MOD6 base/mask pairs are 0x10A8/0xFEF8 and 0x10B0/0xFEF8, 0x14A8/0xFEF8 and 0x14B0/0xFEF8, 0x80A8/0xFEF8 and 0x80B0/0xFEF8, 0x12A8/0xFEF8 and 0x12B0/0xFEF8, 0x30A8/0xFFF8 and 0x30B0/0xFFF8, 0x76A8/0xFFF8 and 0x76B0/0xFFF8, 0x46A8/0xFFF8 and 0x46B0/0xFFF8, 0x32A8/0xFFF8 and 0x32B0/0xFFF8, 0x44A8/0xFEF8 and 0x44B0/0xFEF8, and 0x8CA8/0xFFF8 and 0x8CB0/0xFFF8, in the same family order. This composition evidence does not infer timing, repeatability, wrap, device/MMR, or any effect beyond reuse of the W43A indexed WORD16 seam."
+    },
+    {
+      "id": "E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W43B: indexed MOD5/MOD6 per-family composition (planned)"
+      },
+      "assertion": "P2-W43B freezes twenty private catalog identities, ten MOD5 and ten MOD6 rows, using unique handler wrapper tokens over the existing ten family cores. The wrappers consume decoded indexed layouts and reuse the W43A INDEXED_AR0_WORD16 MEMORY transaction seam for WORD16 READ/WRITE, selected-AR post-update, and atomic WAIT/READY/FAULT/cancel behavior. Three appended MOD4 layouts—ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4—preserve existing operand indices while carrying the indexed mode discriminator. Inventory remains audit metadata only and changes its ten subset bindings to the multi-addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6; catalog and decode remain private, and no public ABI, new effect/address/state kind, opcode-specific CPU branch, timing, device/MMR, IRQ/RPT, wrap, allocation, environment, diagnostic, or mutable-global behavior is admitted. Coverage percentages remain unchanged until all bound forms are complete."
     }
   ],
   "requirements": [
@@ -5396,6 +5426,66 @@
       "claim": "Report provisional semantic progress as 35/205 = 17.073% catalog-family progress and a strict 25/205 = 12.195% complete-form lower bound, with scope exclusions justified by evidence; never report populated-first-word ratios as ISA coverage.",
       "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT", "E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-REPORT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INDEXED-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly twenty private indexed standard-indirect catalog identities: LD_SMEM_MOD5/6, LD_SMEM_TS_MOD5/6, STL_SMEM_MOD5/6, LDU_SMEM_MOD5/6, LD_T_SMEM_MOD5/6, ST_IMMEDIATE_SMEM_MOD5/6, LD_DP_SMEM_MOD5/6, LD_ASM_SMEM_MOD5/6, LD_SMEM_SHIFT16_MOD5/6, and ST_T_SMEM_MOD5/6, with handler tokens suffixed _mod5/_mod6, the frozen MOD5/MOD6 base/mask pairs from the TI composition record, ID_COUNT=56, and populated first-word lookup count 2103 (+240) without duplicate or unrelated rows.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INDEXED-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INDEXED-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the twenty indexed rows through three appended private MOD4 layouts—ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4—preserving existing D/ARF/extension operand indices, carrying the explicit MOD5/MOD6 discriminator, and keeping raw-word parsing out of handlers.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INDEXED-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INDEXED-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Add unique MOD5/MOD6 wrappers for the seven load families that consume decoded indexed operands, preserve each existing load transform and destination, and reuse the W43A INDEXED_AR0_WORD16 MEMORY READ seam with old-AR addressing and one selected-AR post-update.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INDEXED-LOAD-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Add unique MOD5/MOD6 wrappers for the three store families that consume decoded indexed operands, preserve source and word-width semantics, and reuse the W43A INDEXED_AR0_WORD16 MEMORY WRITE seam without a new effect kind or raw-word mode parsing.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/memory/",
+      "claim": "Retire the twenty indexed load/store rows through generic decode, W43A indexed address resolution and MEMORY endpoint transactions, preserving atomic WAIT/READY/FAULT/cancel and sequential-PC behavior while adding no opcode-specific CPU branch, public ABI, timing, device/MMR, IRQ/RPT, wrap, or architectural-state seam.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Extend audit-only inventory binding validation to represent the ten W43B forms with the multi-addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6, retain one stable form identity per binding without opcode values or masks, and keep family and strict coverage percentages unchanged until complete-form evidence exists.",
+      "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING"]
     }
   ],
   "tests": [
@@ -7125,6 +7215,54 @@
       "path": "tests/contract/quality/isa/inventory/test_inventory_report.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-REPORT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INDEXED-CATALOG",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_indexed_standard_indirect_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INDEXED-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INDEXED-DECODE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_indexed_standard_indirect_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INDEXED-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INDEXED-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/load/test_indexed_standard_indirect_load_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INDEXED-LOAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/store/test_indexed_standard_indirect_store_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_indexed_standard_indirect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_multi_binding.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING"]
     }
   ]
 }
