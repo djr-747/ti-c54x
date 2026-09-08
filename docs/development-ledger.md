@@ -5566,3 +5566,50 @@ rewritten after publication.
   family coverage 35/205 = 17.073%, and unchanged strict complete-form lower
   bound 25/205 = 12.195%. Generic Smem MOD0–3 expansion remains the next
   throughput slice.
+
+## 2026-09-08 — P2-W41 fixed-MOD2 LD Smem,TS,dst implementation
+
+- State: implementation commit
+  `cd5242bcb3a240fcfed00ddd148545ca94ce9387` completes the bounded W41
+  vertical slice.
+- Four owner-local RED contracts first failed on the absent opcode/resource
+  identities and semantic handler, while the CPU contract stopped on the
+  unknown instruction before retirement. Production changes followed those
+  failures; no child agent created a commit.
+- GREEN registers `LD_SMEM_TS_MOD2` at `0x1490/0xFEF8` with sixteen D/ARF
+  encodings, the existing `ACCUMULATOR_ARF` layout, unresolved repeatability,
+  and a named composite of the existing SXM and T input bits. The generated
+  first-word lookup remains a deterministic derivative of the sole catalog.
+- The checked and trusted load leaves validate copied SXM/T input, use only
+  T[5:0], sign- or zero-extend the WORD16 under SXM, apply counts 0..31 as
+  modulo-40 logical left shifts and counts -16..-1 as arithmetic right shifts,
+  and preserve status state through the generic accumulator-write effect.
+  High T bits are ignored. The project-unsupported low-six-bit zone 0x20..0x2f
+  rejects transactionally before a DATA request and on completion revalidation.
+- Generic fixed-MOD2 address resolution and CPU READY/WAIT/FAULT/sequential-PC
+  retirement are reused without any CPU production change or opcode-specific
+  branch. The read uses the old selected AR and commits postincrement only with
+  the completed transaction.
+- Inventory coverage advances to 35/205 = 17.073% catalog-family progress,
+  comprising 25 complete forms and ten fixed-MOD2 subsets. Strict complete-form
+  coverage remains 25/205 = 12.195%; the catalog has 1,503 populated first
+  words and ID_COUNT 36. Populated-word ratios are not ISA coverage.
+- The load implementation remains cohesive at 491 lines after explicit review,
+  below the 500-line split trigger. Any further growth of that leaf requires a
+  split rather than another in-place family addition.
+- Validation: the four focused W41 tests and existing unshifted/shift16 load
+  regressions passed under strict flags; focused CMake ASan/UBSan passed 4/4;
+  `make quality-test` passed all 207 Python tests plus evidence, knob,
+  source-boundary, manifest, inventory, and observer-off checks; and the final
+  standalone `make test` passed. The known 535-line operand-layout review
+  warning remains unchanged, and `git diff --check` passed.
+- Independent Luna semantic and integration reviews are clean. Review-found
+  evidence-state overreach, a missing composite-token schema case, completion
+  invalid-count coverage, and one 171/170 documentation mismatch were all
+  corrected before commit.
+- Evidence accounting is 161 records; 246 requirements (209 IMPLEMENTED,
+  8 PLANNED, 29 UNRESOLVED); 200 tests (192 PASSING, 8 PLANNED); and 7 sources.
+  No new public ABI, resource bit, effect/address/layout/state kind, timing,
+  machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic, allocator,
+  mutable-global, or emulator dependency was added. Generic Smem MOD0–3
+  expansion is the next throughput slice.
