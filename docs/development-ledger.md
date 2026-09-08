@@ -6150,3 +6150,36 @@ rewritten after publication.
   IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 235 tests (221 PASSING, 14
   PLANNED); and 7 sources. Evidence validation and the full authoritative
   `rtk make test` gate are green. Follow-up remains evidence-first.
+
+## 2026-09-08 — P2-W45B reverse-carry MOD4/MOD7 per-family composition implementation
+
+- State: implementation commit
+  `a0c7a6450d3eb7f92b93016d0112a0e174a0703b` completes the bounded W45B
+  reverse-carry fan-out across ten existing Smem families and twenty exact
+  MOD4/MOD7 rows. The catalog has 95 rows, `ID_COUNT=96`, lookup 2,583, and
+  95 bindings; inventory uses
+  `STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10`. Coverage is
+  unchanged at 35/205 family (17.073%) and 25/205 strict (12.195%).
+- W45B reuses the typed W45A reverse-carry seam with ARF1..7 execution only;
+  ARF0 encodings decode but are rejected transactionally before endpoint issue
+  because alias semantics remain unresolved. CMPT=0/ARP=0, known nonzero
+  one-hot AR0, old selected-AR address, and POST update to the selected AR are
+  preserved. No BK or wrap inference is admitted; no CPU opcode branch,
+  public ABI, timing, device, or RPT change is made.
+- The implementation avoids growing near-threshold family files by using
+  reverse-carry-specific modules. It reuses the W45A typed seam and fixes
+  store AR_MOD4 field extraction, stale-now-valid near-miss fixtures, the load
+  completion NULL contract, trusted operand source parity, and test coverage
+  gaps. No knobs were added or changed.
+- Validation is GREEN: authoritative standalone `rtk make test` after final
+  fixes and evidence closure; Python quality 215 OK; exact catalog/decode/
+  inventory/manifest checks green; fresh post-fix ASan/UBSan validation passed
+  5/5 W45B CTests without diagnostics; independent integration review found no
+  P0/P1/P2 issues; and source boundaries pass with only the pre-existing
+  `operand_layout.c` 620-line review warning. All new files remain under 500
+  lines, with the CPU test at 498 lines; `git diff --check` is clean.
+- Closure accounting is 170 evidence records; 281 requirements (244
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 235 tests (227 PASSING, 8
+  PLANNED); and 7 sources. Follow-up remains evidence-first: preserve
+  unresolved ARF0 alias semantics and perform an evidence/FIT audit before
+  activating the next ISA slice.
