@@ -5908,3 +5908,29 @@ rewritten after publication.
   IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); and 217 tests (209 PASSING, 8
   PLANNED). Follow-up work remains evidence-first; no timing, device/MMR,
   IRQ/RPT, wrap, public-ABI, or broader scope claim is implied.
+
+## 2026-09-08 — P2-W44A generic circular WORD16 MEMORY seam activation
+
+- State: evidence and ownership activation landed in commit
+  `c073a2bbcbcfdeeea394f915e0b42997b5447f3f`. W44A is an evidence-first
+  generic circular WORD16 MEMORY seam; no catalog row or opcode handler is
+  activated.
+- One immutable project FIT/ownership record and three planned project
+  requirements/tests freeze a private typed `CIRCULAR_WORD16` MOD8/MOD10
+  specification for READ and WRITE. The operation-layer spec carries copied
+  ARF plus typed circular mode; the resolved address effect carries copied
+  AR/BK snapshots. Selected AR0–AR7 are admitted.
+- Dependency order is CMPT, ARP, selected AR, then BK. The existing circular
+  planner/application contracts own unknown/stale rejection, BK=0 valid
+  `NONE`/no-update behavior, and the positive-BK wrap domain. WAIT, READY,
+  FAULT, and cancel remain transactional; READY commits selected AR, PC, and
+  MEMORY effect atomically.
+- W44B remains non-activated, projected at `ID_COUNT=76`, 2,343 populated
+  first-word lookup entries, and 75 bindings. No catalog, public ABI, timing,
+  MMR/device, IRQ/RPT, or broader ISA scope is included in W44A.
+- Quality validation covered 210 Python tests, and an independent semantic /
+  integration review found no P0/P1/P2 issue. Closure accounting is 166
+  evidence records; 266 requirements (226 IMPLEMENTED, 11 PLANNED, 29
+  UNRESOLVED); and 220 tests (209 PASSING, 11 PLANNED). Follow-up remains
+  evidence-first; central-file size review and split decisions precede any
+  implementation growth.
