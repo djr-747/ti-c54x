@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """RED-first contracts for inventory-to-catalog identity binding.
 
-Owns: one-to-one symbol bindings and the frozen 25 complete/9 fixed-MOD2
+Owns: one-to-one symbol bindings and the frozen 25 complete/10 fixed-MOD2
 subset checkpoint.  Does not own: opcode value/mask parsing or instruction
 execution semantics.
 """
@@ -21,6 +21,7 @@ from tools.isa.inventory.schema import load_inventory, validate_inventory
 
 FIXED_MOD2_SUBSET = {
     "LD_SMEM_MOD2",
+    "LD_SMEM_TS_MOD2",
     "STL_SMEM_MOD2",
     "LDU_SMEM_MOD2",
     "LD_T_SMEM_MOD2",
@@ -44,10 +45,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_once_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 34)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 34)
+        self.assertEqual(len(bindings), 35)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 35)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 25)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 9)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 10)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             FIXED_MOD2_SUBSET,

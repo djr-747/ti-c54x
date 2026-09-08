@@ -34,15 +34,14 @@ inventory and coverage-reporting contract. Its audit metadata is deliberately
 separate from production decode: TI SPRU172C Chapter 2 Tables 2-1 through 2-26
 establish a 205-form summary/source-universe checkpoint, while
 common/profile/addressing scope remains explicit and unresolved; the current
-catalog reports only the provisional 34/205 family progress and strict 25/205
+catalog reports only the provisional 35/205 family progress and strict 25/205
 complete-form lower bound.
-P2-W41 is now activated as the bounded fixed-MOD2 `LD Smem,TS,dst` vertical
-slice. It is evidence-frozen against TI SPRU172C §4.66 (printed pp. 4-65–4-69)
-and SPRU131G §§2.3.3, 4.4, and 5.5.3. Implementation remains delegated; this
-activation admits only the existing accumulator-ARF layout, the combined
-STATUS_SXM+T_REGISTER input mask, generic MEMORY/ACCUMULATOR_WRITE effects,
-fixed-MOD2 address resolution, and generic CPU retirement. No new resource
-bits/state/effect/layout/address/CPU branch/timing seam is admitted.
+P2-W41 is implementation-complete as the bounded fixed-MOD2
+`LD Smem,TS,dst` vertical slice. Its catalog, decode, pure effect, and generic
+CPU contracts are green with combined STATUS_SXM+T_REGISTER input, documented
+signed TS transforms, and transactional rejection of the project-defined
+unsupported count zone. No new resource bit, state, effect, layout, address,
+CPU branch, public ABI, or timing seam was added.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -128,9 +127,9 @@ evidenced.
 inventory records must bind to catalog identity rather than duplicate opcode
 authority. Unresolved candidate forms remain in the provisional denominator,
 and any exclusion needs explicit evidence. The report is provisional and must
-state 34/205 = 16.585%
+state 35/205 = 17.073%
 catalog-family progress and the strict 25/205 = 12.195% complete-form lower
-bound; 1487/65536 is not ISA coverage.
+bound; populated-first-word ratios are not ISA coverage.
 
 The planned implementation owns `tools/isa/inventory/schema.py` and
 `tools/quality/check_isa_inventory.py`, with RED-first contract tests under
@@ -139,9 +138,9 @@ public-ABI change; timing and profile-specific forms remain outside this slice.
 
 Implementation is complete. The value-owned JSON inventory carries all 205
 stable table/ordinal form locators, the exact 126-mnemonic and 13-parallel-form
-checkpoints, 34 catalog bindings, and 171 explicitly unimplemented forms. The
-current bindings classify 25 forms as `COMPLETE` and nine fixed-MOD2 Smem forms
-as `SUBSET`; covered forms are `COMMON_CANDIDATE`, while the remaining 171 keep
+checkpoints, 35 catalog bindings, and 170 explicitly unimplemented forms. The
+current bindings classify 25 forms as `COMPLETE` and ten fixed-MOD2 Smem forms
+as `SUBSET`; covered forms are `COMMON_CANDIDATE`, while the remaining 170 keep
 scope `UNRESOLVED`. The validator derives table counts from form records,
 requires contiguous stable IDs, checks form/binding coverage bidirectionally,
 and compares every binding with the sole production catalog without copying
@@ -186,6 +185,17 @@ first-word encodings, ID_COUNT 36, five aggregate fixed-MOD2 memory rows, six
 reset-runnable rows, inventory touched 35/205 (17.073%), and strict complete
 25/205 (12.195%).
 
+Implementation is complete. Four RED contracts first failed on the absent
+opcode/resource/handler and unknown CPU instruction, then pass through one
+catalog-derived handler and the generic fixed-MOD2 memory transaction. T[5:0]
+valid counts cover 0..31 and -16..-1 with high T bits ignored; the project-only
+0x20..0x2f zone rejects before a data-bus request and also rejects completion
+transactionally. The source remains cohesive at 491 lines after explicit
+review, below the 500-line split trigger; further growth requires a split.
+Focused strict and ASan/UBSan tests, the 207-test quality gate, independent
+semantic/integration reviews, and the authoritative standalone `make test`
+gate are green.
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -225,7 +235,8 @@ function-pointer dispatch tables.
 | Explicit WORD16 byte-order codec (P2-W21B) | Complete | Pure BIG/LITTLE two-lane conversion is exhaustive and host-order-independent without becoming a global memory policy |
 | Opcode builder and decode | Complete | Exact-row NOP catalog, direct 16-bit first-word decoder, semantic dispatch seam, and checked sequential-PC contract are tested; unknown words remain explicit, while masked encodings and CPU-shell integration remain outside this slice |
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
-| ISA instruction-form inventory (P2-W40) | Implemented — focused tests and checker green | Freeze the authoritative 205-form TI summary denominator and separate audit metadata from production decode; schema/count/catalog-binding/report contracts preserve explicit coverage and scope states, keep unresolved forms in the denominator, and report only the provisional 34/205 and 25/205 progress measures |
+| ISA instruction-form inventory (P2-W40) | Implemented — focused tests and checker green | Freeze the authoritative 205-form TI summary denominator and separate audit metadata from production decode; schema/count/catalog-binding/report contracts preserve explicit coverage and scope states, keep unresolved forms in the denominator, and report only the provisional 35/205 and 25/205 progress measures |
+| P2-W41 fixed-MOD2 LD Smem,TS,dst vertical slice | Implemented — focused strict/sanitizer tests, quality 207, clean dual review, and full standalone gate green | Add the 0x1490/0xFEF8 fixed-MOD2 TS load through the existing ACCUMULATOR_ARF, SXM/T input, MEMORY, ACCUMULATOR_WRITE, address-resolution, and CPU retirement seams. Valid signed six-bit counts shift the SXM-widened WORD16 in canonical 40-bit space; project-unsupported 0x20..0x2f rejects transactionally before the data bus. Catalog-family progress is 35/205 (17.073%); strict complete-form coverage remains 25/205 (12.195%). |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

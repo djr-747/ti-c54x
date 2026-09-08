@@ -5,9 +5,10 @@
  * Module contract
  *
  * Owns: checked and trusted pure semantic leaves for fixed-MOD2 WORD16
- * indirect loads into accumulator A or B, including the unshifted and
- * SXM-dependent logical-left-shift-16 forms. Each checked leaf validates its
- * catalog/decode contract and stages a generic memory-read effect; its static
+ * indirect loads into accumulator A or B, including the unshifted,
+ * SXM-dependent logical-left-shift-16, and T-register-shift forms. Each
+ * checked leaf validates its catalog/decode contract and stages a generic
+ * memory-read effect; its static
  * completion validates the copied instruction and input before staging the
  * accumulator write. The trusted leaves consume constructor-validated
  * operands while retaining SXM input validation.
@@ -33,6 +34,11 @@ ti_c54x_op_status ti_c54x_op_ld_smem(
     ti_c54x_op_effect *effect);
 
 ti_c54x_op_status ti_c54x_op_ld_smem_shift16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_ld_smem_ts(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);

@@ -15,5 +15,6 @@ $(eval $(call ti_c54x_add_test,ldu_smem_metadata,isa/catalog,test_ldu_smem_metad
 $(eval $(call ti_c54x_add_test,ld_t_smem_metadata,isa/catalog,test_ld_t_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_status_smem_metadata,isa/catalog,test_ld_status_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_smem_shift16_metadata,isa/catalog,test_ld_smem_shift16_metadata.c))
+$(eval $(call ti_c54x_add_test,ld_smem_ts_metadata,isa/catalog,test_ld_smem_ts_metadata.c))
 $(eval $(call ti_c54x_add_test,st_immediate_smem_metadata,isa/catalog,test_st_immediate_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_metadata,isa/catalog,test_st_t_smem_metadata.c))

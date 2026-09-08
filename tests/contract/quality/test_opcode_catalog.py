@@ -37,6 +37,9 @@ REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_STATUS_SXM = "TI_C54X_INPUT_RESOURCES_STATUS_SXM"
+RESOURCES_STATUS_SXM_T_REGISTER = (
+    "TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER"
+)
 RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 RESOURCES_ACCUMULATORS_STATUS_C = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
@@ -130,7 +133,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 34)
+        self.assertEqual(len(catalog_rows), 35)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -147,7 +150,11 @@ class OpcodeCatalogContractTests(unittest.TestCase):
 
         # Preserve the historical positional assertions below while the
         # current catalog carries the two status rows immediately after NOP.
-        rows = [catalog_rows[0], *catalog_rows[3:]]
+        rows = [
+            catalog_rows[0],
+            *(row for row in catalog_rows[3:]
+              if row.symbol != "LD_SMEM_TS_MOD2"),
+        ]
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
@@ -167,6 +174,18 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[4].handler, "ld_smem")
         self.assertEqual(rows[4].first_word_value, 0x1090)
         self.assertEqual(rows[4].first_word_mask, 0xFEF8)
+        ld_smem_ts = next(
+            row for row in catalog_rows if row.symbol == "LD_SMEM_TS_MOD2"
+        )
+        self.assertEqual(ld_smem_ts.handler, "ld_smem_ts")
+        self.assertEqual(ld_smem_ts.first_word_value, 0x1490)
+        self.assertEqual(ld_smem_ts.first_word_mask, 0xFEF8)
+        self.assertEqual(ld_smem_ts.program_word_count, 1)
+        self.assertEqual(ld_smem_ts.operand_layout, LAYOUT_ACCUMULATOR_ARF)
+        self.assertEqual(ld_smem_ts.repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(
+            ld_smem_ts.input_resources, RESOURCES_STATUS_SXM_T_REGISTER
+        )
         self.assertEqual(rows[5].symbol, "STL_SMEM_MOD2")
         self.assertEqual(rows[5].handler, "stl_smem")
         self.assertEqual(rows[5].first_word_value, 0x8090)

@@ -85,6 +85,9 @@ typedef uint8_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_TC))
+#define TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \

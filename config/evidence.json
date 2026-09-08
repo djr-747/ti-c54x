@@ -5170,7 +5170,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-TS-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/catalog/",
@@ -5184,7 +5184,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-TS-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -5194,7 +5194,7 @@
     },
     {
       "id": "REQ-COMMON-LD-SMEM-TS-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/load/",
@@ -5208,7 +5208,7 @@
     },
     {
       "id": "REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/",
@@ -5242,8 +5242,8 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
-      "claim": "Bind inventory coverage to the production catalog by mnemonic/form identity and verify the current audit snapshot of 34 catalog-family rows, 25 complete summary forms, and 9 fixed-MOD2 subset rows without duplicating opcode value/mask authority outside opcode_catalog.def.",
-      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "claim": "Bind inventory coverage to the production catalog by mnemonic/form identity and verify the current audit snapshot of 35 catalog-family rows, 25 complete summary forms, and 10 fixed-MOD2 subset rows without duplicating opcode value/mask authority outside opcode_catalog.def.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT", "E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
@@ -5252,8 +5252,8 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
-      "claim": "Report provisional semantic progress as 34/205 = 16.585% catalog-family progress and a strict 25/205 = 12.195% complete-form lower bound, with scope exclusions justified by evidence; never report 1487/65536 as ISA coverage.",
-      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT"],
+      "claim": "Report provisional semantic progress as 35/205 = 17.073% catalog-family progress and a strict 25/205 = 12.195% complete-form lower bound, with scope exclusions justified by evidence; never report populated-first-word ratios as ISA coverage.",
+      "evidence_ids": ["E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT", "E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-REPORT"]
     }
   ],
@@ -6835,34 +6835,34 @@
     },
     {
       "id": "T-COMMON-LD-SMEM-TS-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/catalog/test_ld_smem_ts_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_ts_metadata"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-TS-CATALOG"]
     },
     {
       "id": "T-COMMON-LD-SMEM-TS-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_ld_smem_ts_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_ts_decode"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-TS-DECODE"]
     },
     {
       "id": "T-COMMON-LD-SMEM-TS-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/load/test_ld_smem_ts.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_smem_ts_ops"},
       "requirement_ids": ["REQ-COMMON-LD-SMEM-TS-EFFECTS"]
     },
     {
       "id": "T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_smem_ts.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_smem_ts"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT"]
     },
     {
