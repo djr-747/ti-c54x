@@ -2696,6 +2696,20 @@
         "anchor": "P2-W45A: generic reverse-carry WORD16 MEMORY seam (planned)"
       },
       "assertion": "P2-W45A freezes a private REVERSE_CARRY_WORD16 memory address kind with typed MOD4/MOD7 inputs. ARF admits only 1..7; AR0 alias behavior remains unresolved and is rejected by this seam. Unrelated fields are canonical zero and prevalidation completes before architectural reads. Dependency order is CMPT, ARP, selected AR, then AR0; AR0 must be known, nonzero, and one-hot. The reverse-carry planner uses the old selected AR as the operand address and stages a POST update to the selected AR only, without modulo or wrap inference, rejecting boundary cases whose propagation escapes the documented domain. Candidate validation requires exact live snapshots, with WAIT, FAULT, cancel, stale, and no-refetch behavior preserved and READY committing atomically. No BK, root transaction, CPU, catalog, opcode, public ABI, timing, device, or RPT change is admitted. Existing registered TI MOD4/MOD7, reverse-carry primitive, planner, and application evidence is reused; this is a project ownership contract, not additional TI conformance evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)"
+      },
+      "assertion": "P2-W45B freezes exactly twenty private reverse-carry MOD4/MOD7 catalog identities over the ten existing Smem families, with unique _mod4/_mod7 handler tokens, reuse of ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4 layouts/resources/word counts, and the completed W45A REVERSE_CARRY_WORD16 seam. The exact rows are LD_SMEM_MOD4/7 0x10A0/0x10B8 mask 0xFEF8, LD_SMEM_TS_MOD4/7 0x14A0/0x14B8 mask 0xFEF8, STL_SMEM_MOD4/7 0x80A0/0x80B8 mask 0xFEF8, LDU_SMEM_MOD4/7 0x12A0/0x12B8 mask 0xFEF8, LD_SMEM_SHIFT16_MOD4/7 0x44A0/0x44B8 mask 0xFEF8, LD_T_SMEM_MOD4/7 0x30A0/0x30B8 mask 0xFFF8, ST_IMMEDIATE_SMEM_MOD4/7 0x76A0/0x76B8 mask 0xFFF8 with two program words, LD_DP_SMEM_MOD4/7 0x46A0/0x46B8 mask 0xFFF8, LD_ASM_SMEM_MOD4/7 0x32A0/0x32B8 mask 0xFFF8, and ST_T_SMEM_MOD4/7 0x8CA0/0x8CB8 mask 0xFFF8. ARF 1..7 executes; ARF0 encodings decode but handlers reject transactionally before endpoint because alias semantics are unresolved. CMPT=0/ARP=0, known nonzero one-hot AR0, old selected AR address, POST selected-AR update, and no BK/wrap inference are required. The projection is 95 rows, ID_COUNT=96, lookup=2583, and 95 bindings with family and strict coverage unchanged at 35/205 and 25/205. No operand-layout, root-transaction, CPU-branch, public-ABI, timing, device, or RPT change is admitted."
     }
   ],
   "requirements": [
@@ -5664,6 +5678,66 @@
       "claim": "Integrate private REVERSE_CARRY_WORD16 READ and WRITE candidates through the existing memory transaction while preserving exact live snapshots, WAIT/FAULT/cancel, stale rejection, and no-refetch behavior. READY atomically commits the selected-AR POST update, sequential PC, and MEMORY effect; no BK, root transaction, CPU, catalog, opcode, public ABI, timing, device, or RPT change is added.",
       "evidence_ids": ["E-PROJECT-P2-W45A-REVERSE-CARRY-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION"],
       "test_ids": ["T-PROJECT-P2-W45A-REVERSE-CARRY-MEMORY-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly twenty private reverse-carry MOD4/MOD7 catalog identities with unique _mod4/_mod7 handler tokens across the ten existing Smem families, using the frozen base/mask pairs, ID_COUNT=96, populated lookup count 2583, and no duplicate or unrelated rows.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the twenty MOD4/MOD7 rows through the existing MOD4 layouts, preserving operand indices and typed reverse-carry mode. ARF0 encodings decode for metadata but remain rejected transactionally by handlers before endpoint issue.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Add unique MOD4/MOD7 wrappers for the seven load families, preserving existing transforms and destinations while reusing W45A reverse-carry READ effects. Execute ARF1..7 only; reject ARF0 before endpoint and preserve old-address POST selected-AR updates without BK or wrap behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W45A-REVERSE-CARRY-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-LOAD-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-STORE-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Add unique MOD4/MOD7 wrappers for the three store families, preserving source and WORD16 semantics while reusing W45A reverse-carry WRITE effects. Execute ARF1..7 only; reject ARF0 before endpoint and preserve old-address POST selected-AR updates without BK or wrap behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W45A-REVERSE-CARRY-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-STORE-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/memory/",
+      "claim": "Retire the twenty MOD4/MOD7 load/store rows through generic decode, W45A reverse-carry resolution, and the existing memory transaction while preserving WAIT/READY/FAULT/cancel and sequential-PC behavior. Do not add a root transaction change, CPU opcode branch, public ABI, timing, device, or RPT behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W45A-REVERSE-CARRY-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-CPU-INTEGRATION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Extend audit-only inventory bindings for the ten W45B forms using STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10, retaining one stable form identity per binding, projected 95 bindings, and unchanged 35/205 family and 25/205 strict coverage.",
+      "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING"]
     }
   ],
   "tests": [
@@ -7537,6 +7611,54 @@
       "path": "tests/unit/sequencer/instruction/test_reverse_carry_word16_memory_transaction.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reverse_carry_word16_memory_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W45A-REVERSE-CARRY-MEMORY-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-CATALOG",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_reverse_carry_standard_indirect_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-DECODE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_reverse_carry_standard_indirect_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/load/test_reverse_carry_standard_indirect_load_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-LOAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-STORE-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/store/test_reverse_carry_standard_indirect_store_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-STORE-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_reverse_carry_standard_indirect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-CPU-INTEGRATION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_reverse_carry_multi_binding.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING"]
     }
   ]
 }

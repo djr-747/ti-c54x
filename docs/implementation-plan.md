@@ -65,7 +65,9 @@ bindings. The six owner-local RED contracts and authoritative full suite are
 GREEN.
 P2-W45A is implementation-complete as the generic reverse-carry WORD16 MEMORY
 seam, with no catalog rows, handlers, or CPU opcode branch. W45B remains the
-next audited but inactive fan-out.
+next audited but inactive fan-out. P2-W45B is now activated as the
+evidence-first reverse-carry MOD4/MOD7 per-family composition; its twenty-row
+projection is ID_COUNT=96, lookup 2,583, and 95 bindings.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -571,6 +573,37 @@ found no production defect after their test/contract findings were closed, and
 the authoritative standalone `make test` gate is GREEN. W45B is the next
 audited but inactive reverse-carry fan-out.
 
+### P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for W45B. The
+ten existing Smem families compose exactly twenty private MOD4/MOD7 rows:
+
+`LD_SMEM_MOD4/7` `0x10A0/0x10B8` mask `0xFEF8`;
+`LD_SMEM_TS_MOD4/7` `0x14A0/0x14B8` mask `0xFEF8`;
+`STL_SMEM_MOD4/7` `0x80A0/0x80B8` mask `0xFEF8`;
+`LDU_SMEM_MOD4/7` `0x12A0/0x12B8` mask `0xFEF8`;
+`LD_SMEM_SHIFT16_MOD4/7` `0x44A0/0x44B8` mask `0xFEF8`;
+`LD_T_SMEM_MOD4/7` `0x30A0/0x30B8` mask `0xFFF8`;
+`ST_IMMEDIATE_SMEM_MOD4/7` `0x76A0/0x76B8` mask `0xFFF8` (two words);
+`LD_DP_SMEM_MOD4/7` `0x46A0/0x46B8` mask `0xFFF8`;
+`LD_ASM_SMEM_MOD4/7` `0x32A0/0x32B8` mask `0xFFF8`; and
+`ST_T_SMEM_MOD4/7` `0x8CA0/0x8CB8` mask `0xFFF8`. Handler tokens use
+`_mod4`/`_mod7` suffixes and the existing MOD4 layouts/resources/word counts.
+
+W45B reuses the typed W45A reverse-carry seam with CMPT=0/ARP=0, known
+nonzero one-hot AR0, old selected-AR address, and POST selected-AR update.
+ARF1..7 executes; ARF0 encodings decode but handlers reject transactionally
+before endpoint issue because alias semantics remain unresolved. No BK or
+wrap inference is admitted, and no operand-layout, root-transaction, CPU
+branch, public ABI, timing, device, or RPT change is included. Inventory uses
+`STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10`; family and strict
+coverage remain 35/205 (17.073%) and 25/205 (12.195%).
+
+Activation accounting is 170 evidence records; 281 requirements (238
+IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 235 tests (221 PASSING, 14 PLANNED);
+and 7 sources. W45B remains evidence-first until its six owner-local RED
+lanes are implemented.
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -617,6 +650,7 @@ function-pointer dispatch tables.
 | P2-W44A generic circular WORD16 MEMORY seam | Implemented — focused RED→GREEN C executable runners green; no catalog rows or handlers | Define typed CIRCULAR_WORD16 MOD8/MOD10 read/write effects, ordered CMPT→ARP→selected AR→BK resolution, existing circular planner reuse, BK=0 NONE/no-update, stale/unknown rejection, and atomic WAIT/READY/FAULT/cancel transactionality. Catalog remains ID_COUNT 56, lookup 2,103, and 55 bindings; coverage remains 35/205 family and 25/205 strict. W44B's 20-row fan-out remains projected at ID_COUNT 76, lookup 2,343, and 75 bindings. |
 | P2-W44B circular MOD8/MOD10 per-family composition | Implemented — six focused C/Python runners GREEN; full suite pending | Register twenty bounded MOD8/MOD10 rows over the ten existing Smem families, reuse private MOD4 layouts and the W44A CIRCULAR_WORD16 seam, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 76, lookup 2,343, and bindings 75; unsupported modes/boundaries remain excluded. |
 | P2-W45A generic reverse-carry WORD16 MEMORY seam | Implemented — three focused C runners GREEN; full suite pending | Define private typed REVERSE_CARRY_WORD16 MOD4/MOD7 effect, ordered CMPT→ARP→selected AR→AR0 resolution, exact live snapshots, boundary rejection, and atomic WAIT/FAULT/cancel/READY transactionality. ARF is 1..7 only; no BK, root transaction, CPU/catalog/opcode/public ABI/timing/device/RPT changes. W45B remains projected at ID_COUNT 96, lookup 2,583, and 95 bindings. |
+| P2-W45B reverse-carry MOD4/MOD7 per-family composition | Active — evidence-first; six owner-local RED lanes planned | Register twenty bounded MOD4/MOD7 rows over the ten existing Smem families, reuse MOD4 layouts and the W45A seam, reject ARF0 transactionally, and preserve the combined inventory token and unchanged coverage. Projected ID_COUNT 96, lookup 2,583, and 95 bindings; unsupported alias/boundary scope remains excluded. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
