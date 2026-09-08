@@ -5897,7 +5897,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-SHAPE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -5907,7 +5907,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -5917,7 +5917,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -5927,7 +5927,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -7930,34 +7930,34 @@
     },
     {
       "id": "T-PROJECT-P2-W47A-LONG32-PAIR-SHAPE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_long32_pair_shape.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.long32_pair_shape"},
       "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-SHAPE"]
     },
     {
       "id": "T-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_long32_pair_read_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.long32_pair_read_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE"]
     },
     {
       "id": "T-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_long32_pair_write_transaction.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.long32_pair_write_transaction"},
       "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE"]
     },
     {
       "id": "T-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/perf/test_long32_pair_hot_path.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE"]
     }
   ]

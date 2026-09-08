@@ -15,3 +15,10 @@ ti_c54x_add_unit_test(reverse_carry_word16_memory_transaction
                       test_reverse_carry_word16_memory_transaction.c)
 ti_c54x_add_unit_test(word16_rmw_memory_transaction
                       test_word16_rmw_memory_transaction.c)
+# W47A RED contracts: canonical LONG32 pair shape and two-word lifecycle.
+ti_c54x_add_unit_test(long32_pair_shape
+                      test_long32_pair_shape.c)
+ti_c54x_add_unit_test(long32_pair_read_transaction
+                      test_long32_pair_read_transaction.c)
+ti_c54x_add_unit_test(long32_pair_write_transaction
+                      test_long32_pair_write_transaction.c)

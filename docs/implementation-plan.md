@@ -79,8 +79,10 @@ comparator, and quality contract, clean baseline artifact, and baseline-relative
 comparison are green. The baseline is recorded at
 `bench/audits/p2-w46b-rmw-baseline.json` with semantic hash
 `3b39187c40a4fd43`; performance remains a first-class acceptance axis without
-implying TI timing. P2-W47A is the next forcing-function slice: a generic LONG32
-pair seam, and its evidence-first activation is recorded below.
+implying TI timing. P2-W47A is implementation-complete as the generic LONG32
+pair seam. P2-W47B is the next evidence-first forcing-function slice for DLD/DST
+composition; exact opcode rows remain deferred until their primary evidence is
+frozen.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -714,20 +716,30 @@ The activation contract freezes these decisions before implementation:
   write claim.
 - Malformed, noncanonical, or overlapping pairs reject before endpoint issue.
 
-Four RED lanes are required before implementation closure: descriptor shape,
-read lifecycle, write lifecycle, and structural hot-path performance. The
-performance lane is a core acceptance axis: the reducer is allocation-free,
-fixed-size, exactly two requests, and never replans; supported-ABI size freezes
-are executable checks. An executable opcode benchmark is intentionally deferred
-to W47B, after an opcode family supplies an evidence-backed LONG32 use.
+W47A is implementation-complete. Its private reducer and validation split
+preserve the canonical MSW→LSW order, copied descriptors/values, caller-supplied
+fresh increasing IDs, same-ID WAIT, first/second FAULT behavior, active-word
+cancellation, read publication only after both READY observations, and the
+existing endpoint's necessarily partial write visibility. The first write is
+not rolled back if the second faults or is cancelled; no external-master
+exclusion or all-or-none physical-write claim is made. Malformed,
+noncanonical, and overlapping pairs reject before issue.
 
-W47A owns only the private sequencer reducer and its owner-local tests; no
-catalog, decode, CPU, public-ABI, device, timing, or opcode-family scope is
-admitted. The activation closure target is 176 evidence records; 294
-requirements (253 `IMPLEMENTED`, 12 `PLANNED`, 29 `UNRESOLVED`); 248 tests
-(236 `PASSING`, 12 `PLANNED`); and 7 sources. The current ISA snapshot remains
-98 catalog rows, 2,679 populated first-word entries, 38/205 family progress,
-and 25/205 strict-complete forms.
+The four RED lanes are GREEN: shape, read lifecycle, write lifecycle, and
+structural hot-path performance. The reducer is allocation-free, fixed-size,
+never replans, and constructs exactly two child requests (one in `prepare`, one
+in the first-word transition); canonical validation uses direct field checks.
+The quality/performance lane is 6/6; native LP64 freezes the request and
+transaction at 32/88 bytes, and supported ILP32 at 32/80 bytes. Focused strict
+sanitizer validation is 3/3 and the authoritative standalone full gate is
+GREEN. No catalog, opcode, CPU, public-ABI, or effect-carrier change was made.
+An executable opcode benchmark is deferred to W47B.
+
+W47A closure accounting is 176 evidence records; 294 requirements (257
+`IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`); 248 tests (240 `PASSING`, 8
+`PLANNED`); and 7 sources. The current ISA snapshot remains 98 catalog rows,
+2,679 populated first-word entries, 38/205 family progress, and 25/205
+strict-complete forms.
 
 ## Objective
 
@@ -778,7 +790,7 @@ function-pointer dispatch tables.
 | P2-W45B reverse-carry MOD4/MOD7 per-family composition | Implemented — six focused C/Python runners GREEN, quality 215, fresh ASan/UBSan 5/5, clean review, and full standalone gate GREEN | Register twenty bounded MOD4/MOD7 rows over the ten existing Smem families, reuse MOD4 layouts and the W45A seam, reject ARF0 transactionally, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 96, lookup 2,583, and bindings 95; unsupported alias/boundary scope remains excluded. |
 | P2-W46A generic WORD16 same-address RMW seam | Implemented — focused transaction/effect and structural performance runners GREEN | Allocation-free AND/OR/XOR carrier and one-read/one-write transaction resolve once, use fresh phase IDs, validate direct stale snapshots without replanning, and publish AR/PC only after WRITE READY. Carrier size is frozen on supported 32/64-bit ABIs; no bus-exclusion or TI timing claim is made. |
 | P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Implemented — six focused C/Python runners, clean baseline, and baseline comparison GREEN | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. The observer-off benchmark is advisory, with clean baseline artifact `bench/audits/p2-w46b-rmw-baseline.json`, semantic hash `3b39187c40a4fd43`, and no TI timing claim. |
-| P2-W47A generic LONG32 pair transaction seam | Active — evidence-first activation; four RED lanes planned | Add the generic sequencer-only LONG32 `{first=MSW,second=LSW}` reducer over the canonical private WORD16 transaction seam. Freeze deterministic two-request order, copied fixed-size state, fresh increasing IDs, WAIT/FAULT/cancel/read-publish/write-visibility semantics, malformed-pair rejection, and allocation-free/no-replan hot-path checks. No catalog/opcode/CPU/public-ABI/effect-carrier change; opcode benchmarking is deferred to W47B. |
+| P2-W47A generic LONG32 pair transaction seam | Implemented — focused shape/read/write CTests 3/3, hot-path quality 6/6, focused sanitizer 3/3, and authoritative full gate GREEN | Complete the generic sequencer-only LONG32 `{first=MSW,second=LSW}` reducer and validation split over the canonical private WORD16 transaction seam. Preserve deterministic MSW→LSW order, copied fixed-size state, fresh increasing IDs, WAIT/FAULT/cancel/read-publish/partial-write semantics, malformed-pair rejection, and allocation-free/no-replan hot-path checks. Native LP64 size is 32/88 bytes and supported ILP32 is 32/80; no catalog/opcode/CPU/public-ABI/effect-carrier change. W47B defers executable opcode benchmarking until evidence-backed DLD/DST composition. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
