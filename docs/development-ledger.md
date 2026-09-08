@@ -5613,3 +5613,36 @@ rewritten after publication.
   machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic, allocator,
   mutable-global, or emulator dependency was added. Generic Smem MOD0–3
   expansion is the next throughput slice.
+
+## 2026-09-08 — P2-W42A standard-indirect MOD0–3 seam activation
+
+- State: evidence and ownership activation landed as
+  `c06098b667285be40a27a7f49c8650ed1a771af0`. P2-W42A is the active generic
+  memory-transaction work piece; the catalog and opcode handlers remain
+  unchanged.
+- The project contract extends the existing `SINGLE_INDIRECT_WORD16` seam
+  across MOD0 through MOD3. Effect validation owns structural mode/access/
+  width/callback/write-value shape, including rejection of MOD3 reads before
+  address resolution or endpoint issue. Address resolution owns MOD0 `NONE`,
+  MOD1/MOD2 `POST`, and write-only MOD3 `PRE` update metadata.
+- `PRE` records effective-address ordering; it does not expose an architectural
+  AR mutation before the root transaction reaches `READY`. `WAIT`, `FAULT`,
+  and cancel preserve architecture, while `READY` commits any target AR update
+  atomically with accepted program-counter and effect commits.
+- Three owner-local RED contracts are planned for the memory effect, address
+  resolver, and root memory-instruction transaction. W42A adds no public ABI,
+  catalog row, opcode handler, effect/address/state kind, CPU opcode branch,
+  timing, device/MMR, knob, diagnostic, allocation, or emulator dependency.
+- Activation accounting is 162 evidence records; 249 requirements (209
+  IMPLEMENTED, 11 PLANNED, 29 UNRESOLVED); 203 tests (192 PASSING, 11
+  PLANNED); and 7 sources.
+- Validation: the evidence checker passed with 249 requirements and 203 tests;
+  `make quality-test` passed all 207 Python tests and every quality gate; and
+  `git diff --check` passed. The known 535-line operand-layout size-review
+  warning remains unchanged.
+- W42B remains staged behind this seam. Its catalog design will use neutral
+  symbols and explicit MOD-bearing layouts with masks `0xFEE0` and `0xFFE0`.
+  The projected lookup change is 1,503 to 1,863 populated first words: 272 new
+  legal encodings and 88 load MOD3 encodings that handlers must reject before
+  a bus request. Inventory coverage remains 35/205 = 17.073% catalog-family
+  and 25/205 = 12.195% strict complete-form until those forms are implemented.
