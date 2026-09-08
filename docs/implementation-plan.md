@@ -101,6 +101,11 @@ current projection is 104 catalog rows, 3,031 populated first-word lookup
 entries, 104 bindings, 44/205 family coverage, and 27/205 strict-complete
 coverage. W50B's hosted benchmark is a characterization and optimization target;
 it records no absolute host threshold or TI machine-cycle claim.
+P2-W51A is now implementation-complete as the durable dual-indirect planning
+checkpoint: modes 0, 1, and 2 resolve from direct AR2–AR5 selectors with
+same-AR Xmod precedence, while the requests-only persistent snapshot remains
+32 bytes. Root size, CPU wiring, catalog projection, and opcode activation are
+unchanged; W51B owns atomic commit/publication before any broader activation.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -909,6 +914,7 @@ function-pointer dispatch tables.
 | P2-W47B2C DLD/DST CPU and performance closure | Implemented — focused CPU/sanitizer/performance tests and authoritative full gate GREEN | Prove READY/WAIT/FAULT execution, stable resume identity, deferred publication, partial DST visibility, unknown-input rejection, and an observer-off full-CPU benchmark while retaining single-pass trusted dispatch and fixed carrier sizes. |
 | P2-W50A dual-WORD16 MOD0 read foundation | Implemented — focused CTest 5/5, Python hot-path 7/7, and full-gate validation green | Establish the fixed-size dual-WORD16 MOD0 address/effect/pair/root seams: copy old AR2–AR5 addresses, serialize X then Y over one endpoint, preserve WAIT identity, and publish only after both READY observations. No opcode row, CPU branch, or TI timing claim. |
 | P2-W50B dual-memory ADD/SUB MOD0 activation | Implemented — focused CTest 4/4, Python quality/performance checks, benchmark smoke, and full-gate validation green | Activate `ADD_DUAL_MOD0`/`SUB_DUAL_MOD0` (`0xA000/0xA200`, `0xFECC`) through the generic trusted binding and W50A transaction. Preserve fixed carriers, observer-off execution, and no-refetch/no-replan structure; one recorded hosted characterization measured ~1.75–1.81 µs/instruction, with no absolute threshold or TI cycle claim. |
+| P2-W51A dual-indirect MOD0–MOD2 planning checkpoint | Implemented — focused RED→GREEN address and resolution contracts; no catalog/CPU/root activation | Direct AR2–AR5 selectors, MOD0/MOD1/MOD2 old-address and post-update planning, same-AR Xmod precedence, 32-byte requests-only snapshot, and MOD3 deferral. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
@@ -2483,6 +2489,51 @@ below the 800-line hard limit; future layout growth requires an explicit split.
 The next forcing seam is W51 coordinated non-MOD0 dual addressing/update modes,
 including same-AR Xmod precedence and atomic two-AR commit, while preserving the
 trusted-path and dual-read performance constraints.
+
+### P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)
+
+This immutable `(planned)` heading is the durable W51A FIT/ownership anchor.
+W51A extends the pure dual-indirect WORD16 planner and the sequencer resolution
+seam without activating an opcode row or changing the CPU, catalog, inventory,
+root carrier, or public API. The primary evidence is SPRU131G §5.5.4/Table 5-8
+(printed pp. 5-19–5-22): modes 0, 1, and 2 retain the old address, stage a
+post-access decrement of one, or stage a post-access increment of one, and the
+encoded Xar/Yar fields directly select AR2–AR5. SPRU179C ADD Example 4
+(printed p. 4-7) independently demonstrates that `*AR2+` paired with `*AR2−`
+leaves the X-side increment effective. MOD3 stays deferred because its AR0/BK
+circular dependency and the existing CMPT1 dual boundary are not yet resolved.
+
+`src/address/` owns the value-only mode planner. It accepts modes 0, 1, and 2,
+uses copied old AR values for both operands, stages at most one post-access AR
+update for a same-selector alias, and gives Xmod precedence. Directly encoded
+Xar/Yar selectors do not read CMPT or ARP; those controls belong to other
+addressing families. Boundary rejection remains transactional, with no partial
+X/Y effect on error. The new COMMON requirement is exercised by
+`tests/unit/address/test_indirect_dual_modes.c`.
+
+`src/sequencer/memory/` resolves the pair against one frozen architectural
+snapshot and publishes two canonical DATA READ requests plus value-owned commit
+candidates. W51A deliberately preserves the requests-only persistent snapshot
+at exactly 32 bytes (`sizeof(ti_c54x_dual_memory_address_snapshot) == 32`);
+atomic commit/publication of the staged updates is the next W51B seam. Existing
+`tests/unit/sequencer/memory/test_dual_address_resolution.c` now covers the
+MOD1/MOD2 and same-AR behavior while retaining W50A's reverse-linked project
+resolution requirement.
+
+W51A's RED→GREEN focused evidence covers all nine MOD0/MOD1/MOD2 X/Y mode pairs,
+old-address request order, decrement/increment candidates, same-AR Xmod
+precedence, transactional boundary rejection, and independence from CMPT/ARP.
+The observer-off W50B smoke remains green with semantic hash
+`b40823092c0aa605`. A dirty-tree W51A sample measured 733.988–882.744
+ns/instruction; this is volatile host characterization only, with no regression
+threshold, release gate, TI-cycle claim, or benchmark-history artifact.
+
+W51A closure accounting is 206 immutable evidence records; 337 requirements
+(299 `IMPLEMENTED`, 7 `PLANNED`, 31 `UNRESOLVED`); and 287 tests (280 `PASSING`,
+7 `PLANNED`). Catalog, lookup, binding, family, and strict-complete coverage
+remain 104, 3,031, 104, 44/205, and 27/205. The next documented seam is W51B:
+persist both prevalidated update candidates and publish the root transaction
+atomically, after which broader dual-mode opcode activation can proceed.
 
 ### P2-W21: shared-memory transaction foundation
 

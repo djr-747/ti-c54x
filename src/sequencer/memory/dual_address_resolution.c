@@ -1,8 +1,8 @@
 /*
  * Module contract
  *
- * Owns: ordered, non-mutating resolution of one W50A dual-indirect
- * MOD0/MOD0 WORD16 DATA READ pair. It snapshots X/Y AR2..AR5 values from
+ * Owns: ordered, non-mutating resolution of one W51A dual-indirect
+ * MOD0/MOD1/MOD2 WORD16 DATA READ pair. It snapshots X/Y AR2..AR5 values from
  * the supplied state, delegates effective-address construction to the
  * address planner, validates each intrinsic effect, and constructs both
  * canonical bus requests before publishing the pair.
@@ -43,6 +43,12 @@ dual_ar_index_is_valid(uint8_t index)
     return index >= UINT8_C(2) && index <= UINT8_C(5);
 }
 
+static int
+dual_mode_is_valid(uint8_t mode)
+{
+    return mode <= UINT8_C(2);
+}
+
 ti_c54x_memory_address_resolution_status
 ti_c54x_sequencer_resolve_dual_memory_address(
     const ti_c54x_arch_state *state,
@@ -68,8 +74,8 @@ ti_c54x_sequencer_resolve_dual_memory_address(
     *out = (ti_c54x_dual_memory_address_resolution){0};
 
     if (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
-        spec->dual.x_mode != UINT8_C(0) ||
-        spec->dual.y_mode != UINT8_C(0) ||
+        !dual_mode_is_valid(spec->dual.x_mode) ||
+        !dual_mode_is_valid(spec->dual.y_mode) ||
         !dual_ar_index_is_valid(spec->dual.x_ar) ||
         !dual_ar_index_is_valid(spec->dual.y_ar) ||
         !dual_reserved_words_are_zero(spec)) {
@@ -96,21 +102,24 @@ ti_c54x_sequencer_resolve_dual_memory_address(
 
     dual_result = ti_c54x_indirect_dual_word16(
         spec->dual.x_ar, x_ar_value, spec->dual.y_ar, y_ar_value,
-        TI_C54X_INDIRECT_DUAL_MOD0, TI_C54X_INDIRECT_DUAL_MOD0,
+        (ti_c54x_indirect_dual_mode)spec->dual.x_mode,
+        (ti_c54x_indirect_dual_mode)spec->dual.y_mode,
         TI_C54X_ADDRESS_ACCESS_READ);
     if (dual_result.status != TI_C54X_ADDRESS_STATUS_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }
 
-    /* MOD0/MOD0 carries STATE_POLICY_NONE by design. Intrinsic validation
-     * still proves operand/source/update shape for each independent result. */
+    /* Validate each effect at the phase selected by its actual planner
+     * result. MOD0 has no update; MOD1/MOD2 updates are post-access. The
+     * dependency validator observes no CMPT/ARP state because all admitted
+     * dual modes carry STATE_POLICY_NONE. */
     x_validation = ti_c54x_sequencer_validate_address_effect(
-        state, &dual_result.x, TI_C54X_ADDRESS_UPDATE_PHASE_NONE, &x_commit);
+        state, &dual_result.x, dual_result.x.effect.update.phase, &x_commit);
     if (x_validation != TI_C54X_ADDRESS_APPLY_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }
     y_validation = ti_c54x_sequencer_validate_address_effect(
-        state, &dual_result.y, TI_C54X_ADDRESS_UPDATE_PHASE_NONE, &y_commit);
+        state, &dual_result.y, dual_result.y.effect.update.phase, &y_commit);
     if (y_validation != TI_C54X_ADDRESS_APPLY_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }

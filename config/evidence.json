@@ -3143,6 +3143,39 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)"},
       "assertion": "P2-W50B activates only ADD_DUAL_MOD0 at 0xA000/0xFECC and SUB_DUAL_MOD0 at 0xA200/0xFECC. A one-word D/Xar/Yar layout fixes both mode fields to MOD0; raw selectors map to AR2..AR5. The exact copied inputs are auxiliary registers plus C, SXM, and OVM. Checked and trusted leaves emit W50A's generic dual READ effect; completion independently extends and shifts X/Y, uses W49A modulo-40 arithmetic, applies fixed-shift directional C and OVM/sticky-overflow policy, and stages the existing accumulator effect. Generic X-then-Y WAIT/READY/FAULT sequencing and PC retirement remain unchanged. The slice preserves fixed carrier sizes, allocation-free trusted dispatch, no opcode-specific CPU branch, no public ABI, no physical parallelism or timing claim, and requires an observer-off public-CPU host benchmark. Inventory bindings remain MOD0/MOD0 SUBSET coverage."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4", "printed_page_start": "5-19", "printed_page_end": "5-22"},
+      "assertion": "SPRU131G §5.5.4 and Table 5-8 define dual-memory indirect fields Xmod, Xar, Ymod, and Yar. Modes 0, 1, and 2 use the old selected address, the old address followed by decrement one, and the old address followed by increment one, respectively. The encoded Xar and Yar fields directly select AR2 through AR5. When X and Y select the same auxiliary register with differing modes, Xmod controls the update precedence. This record does not adopt MOD3, device arbitration, or machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU179C-S4-ADD-EXAMPLE4-P4-7-AR2-ALIAS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU179C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "ADD Example 4", "printed_page_start": "4-7", "printed_page_end": "4-7"},
+      "assertion": "SPRU179C ADD Example 4 shows the same-AR dual form *AR2+ with *AR2−. The X-side increment remains the effective update, confirming Xmod precedence when the two operands alias one auxiliary register."
+    },
+    {
+      "id": "E-PROJECT-P2-W51A-DUAL-MODES-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)"},
+      "assertion": "W51A is a durable dual-indirect planning checkpoint: modes 0, 1, and 2 are admitted in the pure planner and resolution seam while MOD3 remains deferred at the AR0/BK circular and CMPT1 unresolved boundary. The persistent dual snapshot remains requests-only at 32 bytes, and root size, CPU wiring, catalog rows, and opcode activation remain unchanged until the later W51B commit/publication seam."
     }
   ],
   "requirements": [
@@ -6737,6 +6770,26 @@
       "claim": "Dual-memory ADD and SUB syntax-6 repeatability remains unresolved. Omission from a negative list is not positive eligibility evidence, so catalog metadata remains non-admitting and this slice does not activate runtime RPT.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY"],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Plan dual-indirect WORD16 operands for modes 0, 1, and 2 using the encoded X/Y selectors directly as AR2–AR5: mode 0 preserves the old address, mode 1 stages a post-access decrement of one, and mode 2 stages a post-access increment of one. When both operands select one AR, Xmod owns the single update; the planner must not require CMPT or ARP reads for these directly encoded selectors. MOD3 remains outside this admitted contract.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES", "E-TI-C54X-SPRU179C-S4-ADD-EXAMPLE4-P4-7-AR2-ALIAS"],
+      "test_ids": ["T-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W51A-DUAL-MODES-RESOLUTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve the W51A dual-indirect modes 0, 1, and 2 against one frozen architectural snapshot and publish two canonical DATA READ requests plus value-owned post-access commits without partial output. Preserve the requests-only persistent dual snapshot at exactly 32 bytes. Reject mode 3 and unresolved boundaries transactionally, and preserve Xmod precedence for same-AR aliases. MOD3 remains deferred at the AR0/BK circular and CMPT1 boundary.",
+      "evidence_ids": ["E-PROJECT-P2-W51A-DUAL-MODES-PLAN-ANCHOR"],
+      "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION"]
     }
   ],
   "tests": [
@@ -8985,7 +9038,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/memory/test_dual_address_resolution.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_address_resolution"},
-      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION"]
+      "requirement_ids": ["REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION", "REQ-PROJECT-P2-W51A-DUAL-MODES-RESOLUTION"]
     },
     {
       "id": "T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER",
@@ -9066,6 +9119,14 @@
       "path": "tests/contract/quality/perf/test_dual_add_sub_hot_path.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNING",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_dual_modes.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_dual_modes"},
+      "requirement_ids": ["REQ-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNER"]
     }
   ]
 }

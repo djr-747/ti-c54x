@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P2-W50B complete.
+Current snapshot: P2-W51A complete.
 
 - 104 runnable catalog rows cover 3,031 first-word encodings. Inventory coverage
   is 44/205 instruction forms touched (21.463%) and 27/205 strict-complete
@@ -32,8 +32,11 @@ Current snapshot: P2-W50B complete.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. The observer-off dual-memory
   benchmark is a hosted characterization and makes no TI cycle claim.
-- Next is W51: broader dual addressing/update modes, including the coordinated
-  two-AR update and same-AR mode-precedence seams that remain outside MOD0.
+- W51A now plans dual-indirect MOD0/MOD1/MOD2 directly from AR2–AR5 selectors,
+  including same-AR Xmod precedence, without changing the 32-byte persistent
+  snapshot, root size, CPU wiring, or catalog projection. MOD3 remains deferred.
+- Next is W51B: persist and publish both address-update candidates atomically,
+  then activate broader dual-mode opcodes.
 - Performance remains a release constraint. Execution uses immutable direct
   lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
   observer-off CPU benchmarks. These are host-performance checks, not TI

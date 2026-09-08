@@ -5,9 +5,10 @@
  * Module contract
  *
  * Owns: value-owned planning for a dual-indirect WORD16 operand pair. The
- * raw dual mode is deliberately represented as MOD0 through MOD3 so future
- * mode-specific planners can extend this seam without changing its shape;
- * this slice implements only MOD0.
+ * raw dual mode is deliberately represented as MOD0 through MOD3. MOD0,
+ * MOD1, and MOD2 are admitted for WORD16 READ planning; MOD3 remains an
+ * explicit unsupported architectural seam until its AR0/BK indexed/circular
+ * dependencies and compatibility-mode boundary are resolved.
  * Does not own: CPU/ARP/CMPT state, dual-opcode decoding, register mutation,
  * bus transfers, sequencing, timing, diagnostics, or memory. Inputs are
  * copied scalar snapshots. Returned X/Y results own no borrowed storage and
@@ -22,8 +23,8 @@
 extern "C" {
 #endif
 
-/* Keep all four architectural raw selectors representable even though only
- * MOD0 has an admitted effect in this first dual-indirect slice. */
+/* Keep all four architectural raw selectors representable. W51A admits
+ * MOD0 through MOD2; MOD3 remains an explicit deferred boundary. */
 typedef enum ti_c54x_indirect_dual_mode {
     TI_C54X_INDIRECT_DUAL_MOD0 = 0,
     TI_C54X_INDIRECT_DUAL_MOD1 = 1,
@@ -40,13 +41,14 @@ typedef struct ti_c54x_indirect_dual_result {
 
 /*
  * Plan two dual-indirect WORD16 READ operands from copied old AR snapshots.
- * W50A admits only actual AR2..AR5 selectors and MOD0 in both raw mode
- * fields. The same selector is legal when both snapshots are equal; it
- * yields two independent same-address results and no update. A same-selector
- * mismatch, selector outside AR2..AR5, malformed raw mode, or invalid access
- * is rejected transactionally. MOD1--MOD3 are represented but return
- * TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS until their evidence and effects
- * are implemented.
+ * W51A admits actual AR2..AR5 selectors and MOD0/MOD1/MOD2. MOD0 reads the
+ * old address without an update; MOD1 and MOD2 read the old address and stage
+ * one post-access decrement/increment update. The same selector is legal when
+ * both snapshots are equal: both operands retain that old address, X mode
+ * owns at most one update, and Y carries no update. A same-selector mismatch,
+ * selector outside AR2..AR5, malformed raw mode, invalid access, or an
+ * unresolved decrement/increment boundary is rejected transactionally.
+ * MOD3 remains TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS.
  */
 ti_c54x_indirect_dual_result ti_c54x_indirect_dual_word16(
     uint8_t x_ar_index,

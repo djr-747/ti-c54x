@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 203 immutable evidence records,
-335 requirements (297 `IMPLEMENTED`, 7 `PLANNED`, 31 `UNRESOLVED`), and 286 tests
-(279 `PASSING`, 7 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 206 immutable evidence records,
+337 requirements (299 `IMPLEMENTED`, 7 `PLANNED`, 31 `UNRESOLVED`), and 287 tests
+(280 `PASSING`, 7 `PLANNED`).
 
 Current catalog state is 104 rows with ID_COUNT 105, 3,031 populated
 first-word lookup entries, and 104 inventory bindings. Inventory family coverage
@@ -251,6 +251,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1 through 4.2.2, `4-3`–`4-12` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)` |
+| `E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.4, `5-19`–`5-22` |
+| `E-TI-C54X-SPRU179C-S4-ADD-EXAMPLE4-P4-7-AR2-ALIAS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU179C` | `C54X_CORE_COMMON_V1` | §ADD Example 4, `4-7` |
+| `E-PROJECT-P2-W51A-DUAL-MODES-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -689,6 +692,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` |
 | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH` |
 | `REQ-COMMON-P2-W50B-DUAL-ADD-SUB-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | — |
+| `REQ-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES`, `E-TI-C54X-SPRU179C-S4-ADD-EXAMPLE4-P4-7-AR2-ALIAS` | `T-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNING` |
+| `REQ-PROJECT-P2-W51A-DUAL-MODES-RESOLUTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P2-W51A-DUAL-MODES-PLAN-ANCHOR` | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION` |
 
 ## Tests
 
@@ -973,7 +978,7 @@ exist in the repository.
 | `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_add_sub_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` |
 | `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_add_sub_acc_shift5_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE` |
 | `T-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_mod0.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_mod0"}` | `REQ-COMMON-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-PLANNING` |
-| `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_dual_address_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_address_resolution"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION` |
+| `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_dual_address_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_address_resolution"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION`, `REQ-PROJECT-P2-W51A-DUAL-MODES-RESOLUTION` |
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/memory/test_dual_word16_memory_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_word16_memory_effect"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-EFFECT-CARRIER` |
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_dual_word16_read_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_word16_read_transaction"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-PAIR-TRANSACTION` |
 | `T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_dual_memory_instruction_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_memory_instruction_transaction"}` | `REQ-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ROOT-INTEGRATION` |
@@ -984,6 +989,7 @@ exist in the repository.
 | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_mod0.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_add_sub_dual_mod0"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-CPU-RETIREMENT` |
 | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_add_sub_dual_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY` |
 | `T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_dual_add_sub_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH-PERFORMANCE` |
+| `T-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNING` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_modes.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_modes"}` | `REQ-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNER` |
 
 ## Correction and tombstone policy
 

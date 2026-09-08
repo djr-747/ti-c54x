@@ -155,7 +155,7 @@ test_unsupported_modes_and_alias_mismatch(void)
     const uint16_t x_value = UINT16_C(0x1111);
     const uint16_t y_value = UINT16_C(0x2222);
 
-    for (uint8_t mode = UINT8_C(1); mode <= UINT8_C(3); ++mode) {
+    for (uint8_t mode = UINT8_C(3); mode <= UINT8_C(3); ++mode) {
         const ti_c54x_indirect_dual_result x_mode_result =
             ti_c54x_indirect_dual_word16(
                 x_index, x_value, y_index, y_value,
