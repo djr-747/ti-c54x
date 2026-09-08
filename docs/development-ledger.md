@@ -5734,3 +5734,44 @@ rewritten after publication.
 - No public ABI, effect/address/state kind, opcode-specific CPU branch, timing,
   machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
   allocation, mutable-global, or emulator dependency is admitted.
+
+## 2026-09-08 — P2-W42B standard-indirect Smem expansion implementation
+
+- State: implementation commit
+  `42a0b1814f7038f8617287a39bb91e0ff8d0921a` completes the bounded W42B
+  fan-out across the ten existing Smem families.
+- Five owner-local RED contracts first failed on the fixed-MOD2 catalog,
+  layouts, handlers, and CPU behavior. Production changes followed those
+  failures; no child agent created a commit.
+- The ten catalog rows now have neutral symbols and explicit MOD-bearing
+  layouts while retaining `ID_COUNT=36`. Handlers consume decoded MOD fields:
+  all seven loads admit MOD0 through MOD2 and reject MOD3 as
+  `INVALID_OPERAND` before a MEMORY effect or endpoint request, while all
+  three stores admit MOD0 through MOD3 through the W42A transaction seam.
+- The generated direct lookup contains 1,863 populated first words. The ten
+  broadened rows cover 480 words: 392 legal and 88 known-but-rejected load
+  MOD3 words, an increment of 272 legal plus 88 rejected encodings. The
+  generated artifact remains derived from the sole catalog source.
+- Inventory bindings remain `SUBSET` with
+  `STANDARD_INDIRECT_MOD0_MOD3`; catalog-family progress remains 35/205 =
+  17.073% and strict complete-form coverage remains 25/205 = 12.195% because
+  other Smem addressing forms remain outside this slice.
+- The load owner was split before growth: `op_ld_smem.c` is approximately 393
+  lines and the shared `op_ld_smem_common.c` helper approximately 145 lines.
+  Independent review retains the 577-line `operand_layout.c` as one cohesive
+  descriptor table for this slice; it must split before further growth near
+  800 lines. The reviewed 523-line root memory transaction is unchanged.
+- Validation: all five focused W42B CTests passed in a fresh ASan/UBSan build;
+  `make quality-test` passed all 207 Python tests and every evidence, knob,
+  source-boundary, manifest, inventory, and observer-off gate; the
+  authoritative standalone `make test` passed all C tests and the minimal
+  example; generator provenance and `git diff --check` passed.
+- Independent Luna semantic and integration reviews found no P0/P1/P2
+  semantic defect. The final integration review also executed all five W42B
+  binaries and confirmed catalog/generated counts, neutral-ID migration,
+  handler transactionality, manifest registration, and evidence parity.
+- Evidence accounting is 163 records; 254 requirements (217 IMPLEMENTED,
+  8 PLANNED, 29 UNRESOLVED); 208 tests (200 PASSING, 8 PLANNED); and 7
+  sources. No public ABI, effect/address/state kind, opcode-specific CPU
+  branch, timing, machine-cycle, IRQ/RPT, device/MMR, knob, environment,
+  diagnostic, allocation, mutable-global, or emulator dependency was added.
