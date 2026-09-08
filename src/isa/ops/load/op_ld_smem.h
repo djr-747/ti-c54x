@@ -55,6 +55,13 @@ ti_c54x_op_status ti_c54x_op_ld_smem_mod6(
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 
+ti_c54x_op_status ti_c54x_op_ld_smem_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+
 ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod5(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input,
@@ -64,6 +71,12 @@ ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod6(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
 
 ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod5(
     const ti_c54x_decoded_instruction *instruction,
@@ -74,6 +87,12 @@ ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod6(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
 
 ti_c54x_op_status ti_c54x_trusted_op_ld_smem_mod5(
     const ti_c54x_decoded_instruction *instruction,
@@ -110,6 +129,24 @@ ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod6(
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_ts_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_ts_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod4(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod7(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
 
 ti_c54x_op_status ti_c54x_op_ld_smem_mod8(
     const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,

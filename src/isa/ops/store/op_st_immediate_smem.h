@@ -46,6 +46,14 @@ ti_c54x_op_status ti_c54x_op_st_immediate_smem_mod10(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 
+ti_c54x_op_status ti_c54x_op_st_immediate_smem_mod4(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_st_immediate_smem_mod7(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
 ti_c54x_op_status ti_c54x_trusted_op_st_immediate_smem_mod5(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *operands,

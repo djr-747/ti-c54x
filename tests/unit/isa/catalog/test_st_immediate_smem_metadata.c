@@ -87,7 +87,7 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* These flip fixed bits, including bit 8; the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020), UINT16_C(0x0080), UINT16_C(0x0100),
+        UINT16_C(0x0080), UINT16_C(0x0100),
         UINT16_C(0x0200), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};

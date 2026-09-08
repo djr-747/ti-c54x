@@ -12,3 +12,5 @@ ti_c54x_add_unit_test(indexed_standard_indirect_load_effects
                       test_indexed_standard_indirect_load_effects.c)
 ti_c54x_add_unit_test(circular_standard_indirect_load_effects
                       test_circular_standard_indirect_load_effects.c)
+ti_c54x_add_unit_test(reverse_carry_standard_indirect_load_effects
+                      test_reverse_carry_standard_indirect_load_effects.c)

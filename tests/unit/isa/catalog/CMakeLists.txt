@@ -24,3 +24,5 @@ ti_c54x_add_unit_test(indexed_standard_indirect_metadata
                       test_indexed_standard_indirect_metadata.c)
 ti_c54x_add_unit_test(circular_standard_indirect_metadata
                       test_circular_standard_indirect_metadata.c)
+ti_c54x_add_unit_test(reverse_carry_standard_indirect_metadata
+                      test_reverse_carry_standard_indirect_metadata.c)

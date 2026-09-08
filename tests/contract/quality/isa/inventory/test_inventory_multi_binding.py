@@ -2,7 +2,7 @@
 """Contracts for standard-indirect inventory multi-binding semantics.
 
 Owns: audit-only representation of one stable TI form bound to its neutral,
-MOD5, MOD6, MOD8, and MOD10 catalog rows, with deduplicated coverage arithmetic. Does not
+MOD4, MOD5, MOD6, MOD7, MOD8, and MOD10 catalog rows, with deduplicated coverage arithmetic. Does not
 own: opcode values/masks, catalog generation, decode, or execution semantics.
 """
 
@@ -28,7 +28,7 @@ FAMILIES = {
     "LD_SMEM_SHIFT16": "FORM-T2-19-04",
     "ST_T_SMEM": "FORM-T2-20-02",
 }
-TOKEN = "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10"
+TOKEN = "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
 
 
 class InventoryMultiBindingTests(unittest.TestCase):
@@ -43,23 +43,23 @@ class InventoryMultiBindingTests(unittest.TestCase):
     def test_each_standard_indirect_form_has_five_deduplicated_subset_bindings(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 75)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 75)
+        self.assertEqual(len(bindings), 95)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 95)
         by_form: dict[str, list[dict]] = {}
         for binding in bindings:
             by_form.setdefault(binding["form_id"], []).append(binding)
         for family, form_id in FAMILIES.items():
             rows = by_form[form_id]
-            self.assertEqual(len(rows), 5)
+            self.assertEqual(len(rows), 7)
             self.assertEqual(
                 {row["catalog_symbol"] for row in rows},
-                {family, f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD8", f"{family}_MOD10"},
+                {family, f"{family}_MOD4", f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD7", f"{family}_MOD8", f"{family}_MOD10"},
             )
             self.assertTrue(all(row["coverage"] == "SUBSET" for row in rows))
             self.assertEqual({row["addressing_subset"] for row in rows}, {TOKEN})
             form = next(item for item in inventory["forms"] if item["id"] == form_id)
             self.assertEqual(set(form["catalog_symbols"]),
-                             {family, f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD8", f"{family}_MOD10"})
+                             {family, f"{family}_MOD4", f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD7", f"{family}_MOD8", f"{family}_MOD10"})
 
     def test_report_counts_forms_once_after_multi_binding(self) -> None:
         report = report_inventory(self.root)
