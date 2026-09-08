@@ -6259,3 +6259,48 @@ rewritten after publication.
   PLANNED); and 7 sources. Catalog rows and ISA coverage are unchanged at 95
   rows, 2,583 lookup entries, 95 bindings, 35/205 family (17.073%), and 25/205
   strict (12.195%). W46B ANDM/ORM/XORM composition is next.
+
+## 2026-09-08 — P2-W46B atomic logical memory semantic/framework implementation
+
+- State: implementation commit
+  `58aabfb22507f53672cab7511a1b3a20b4ba8efd` composes ANDM, ORM, and XORM
+  over the private W46A WORD16 read-modify-write seam. The three two-word
+  MOD0–MOD3 rows use bases `0x6880`, `0x6980`, and `0x6A80` with mask
+  `0xFFE0`, the existing `ARF_EXTENSION16_MOD` layout, and no input or status
+  resources. Catalog state is 98 rows, `ID_COUNT=99`, 2,679 populated
+  first-word lookup entries, and 98 bindings; inventory is 38/205 family
+  (18.537%) and 25/205 strict (12.195%).
+- Checked leaves validate metadata and layout before extraction. Trusted leaves
+  consume the already copied operand packet in one pass and do not repeat
+  catalog lookup, layout resolution, or raw-word extraction. MOD0/1/2 stage the
+  generic READ carrier with a compact AND/OR/XOR descriptor; MOD3 rejects
+  before endpoint publication because the instruction requires a read and the
+  current MOD3 boundary is write-only.
+- CPU tests cover all three operations in MOD0/1/2, exact paired request shape,
+  same cached address, fresh transaction IDs, WAIT resume without refetch,
+  read/write faults, reset cancellation in both phases, stale-state guards,
+  AR/PC/counter publication, status and knownness preservation, and the MOD3
+  zero-endpoint boundary. No opcode-specific CPU branch, public ABI, CPU
+  production change, allocator, environment read, or knob was added.
+- Performance remains a core acceptance axis. A separate observer-off RMW
+  executable, strict capture tool, same-cohort comparator, and seven-test
+  quality contract are present without altering the frozen five-scenario
+  history. The smoke cohort retired 320,000 instructions per scenario with
+  valid READ/WRITE order, IDs, address, and transforms; semantic hash is
+  `3b39187c40a4fd43`. Observed medians were approximately 401 ns/instruction
+  for ANDM, 428 for ORM, and 430 for XORM. These are advisory hosted results,
+  not TI timing. A clean baseline artifact/comparison remains explicitly
+  planned, so W46B is not yet fully closed.
+- Validation is GREEN: authoritative `rtk make test` passed with 231 Python
+  quality tests and one expected clean-baseline skip; focused sanitizer/catalog
+  validation passed 25/25; evidence and manifests pass; benchmark smoke passes;
+  and `git diff --check` is clean. Independent semantic review found no
+  production P0/P1 issue. Benchmark review exposed and drove fixes for observer
+  self-labeling, source/cohort identity, dirty-baseline admission, and strict ID
+  validation. All new handwritten files remain below 500 lines. Source
+  boundaries pass for 413 files with reviewed 620-line warnings only for the
+  pre-existing operand-layout source and cohesive W46A lifecycle test.
+- Closure accounting is 175 evidence records; 290 requirements (252
+  IMPLEMENTED, 9 PLANNED, 29 UNRESOLVED); 244 tests (235 PASSING, 9 PLANNED);
+  and 7 sources. The immediate follow-up is a clean W46B baseline/evidence
+  closure, then the architecture-forcing P2-W47A LONG32 pair transaction seam.
