@@ -1224,6 +1224,54 @@
       "assertion": "The MVDK and MVKD repeat descriptions make their automatic address increment conditional on the current RC value being nonzero and describe the total transfer count as the value in RC at instruction start plus one. This proves that a body-visible RC predicate matters to these repeated operations, but not when RC decrements or what value remains after completion."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-READA-P4-136-4-137-RC-STEP",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "READA",
+        "printed_page_start": "4-136",
+        "printed_page_end": "4-137"
+      },
+      "assertion": "READA execution pseudocode transfers the program word while RC is nonzero, increments PAR by one, and writes RC minus one to RC; when RC is zero it performs the terminal transfer without a PAR or RC update. Together with the RPT operand load and operand-plus-one cardinality, this establishes the externally observable RC decrement sequence and final zero for this documented RC-consuming repeated body; it does not claim internal decrement ordering, PC flow, or interrupt arbitration."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-WRITA-P4-196-4-197-RC-STEP",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "WRITA",
+        "printed_page_start": "4-196",
+        "printed_page_end": "4-197"
+      },
+      "assertion": "WRITA execution pseudocode transfers the data word while RC is nonzero, increments PAR by one, and writes RC minus one to RC; when RC is zero it performs the terminal transfer without a PAR or RC update. Together with the RPT operand load and operand-plus-one cardinality, this independently establishes the externally observable RC decrement sequence and final zero for this documented RC-consuming repeated body; it does not claim internal decrement ordering, PC flow, or interrupt arbitration."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FIRS-P4-59-RC-LOOP",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "FIRS",
+        "printed_page_start": "4-59",
+        "printed_page_end": "4-59"
+      },
+      "assertion": "FIRS execution pseudocode runs its repeated body while RC is nonzero and writes RC minus one to RC after each loop body, corroborating the documented RC decrement progression. This record does not claim the terminal extra-body rule, internal decrement ordering, PC flow, or interrupt arbitration."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-P2-19-2-21-RPT-BODY",
       "immutable": true,
       "state": "PINNED",
@@ -1314,6 +1362,20 @@
         "anchor": "P2-W20E: pure single-repeat policy foundation (active kickoff)"
       },
       "assertion": "The P2-W20E project contract defines three allocation-free, value-only policies under the dedicated repeat sequencer owner: checked uint16_t operand to uint32_t body-cardinality derivation, admission from the catalog's existing tri-state repeatability scalar without opcode inference, and a repeat-only request gate over an explicit remaining-body count plus maskable, NMI, or literal RS/reset class. Invalid inputs are explicit and transactional. These policies do not claim that a body executed, bind concrete opcode restrictions, sample or mutate IFR, progress RC, control PC, integrate CPU execution, or resolve predecode interrupt arbitration."
+    },
+    {
+      "id": "E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W48A: observable RC progression lifecycle (implemented)"
+      },
+      "assertion": "The P2-W48A project contract introduces typed checked RC access and one fixed-size, allocation-free repeat-progress reducer. A REPEAT_START effect transactionally loads RC and stores an exact uint32_t operand-plus-one remaining count. Each caller-reported successful body retirement validates the authoritative RC snapshot, decrements nonzero RC once, preserves terminal zero, and reaches COMPLETE only after the exact count. Unknown, stale, malformed, unsupported, and extra-completion paths preserve state. The seam owns no CPU dispatch, body PC flow, interrupt arbitration, bus work, timing, observer, diagnostic, environment, allocator, or mutable process state, and adds no branch to the current CPU path."
     },
     {
       "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
@@ -3989,6 +4051,26 @@
       "test_ids": ["T-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
     },
     {
+      "id": "REQ-PROJECT-P2-W48A-RC-REGISTER-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Provide typed checked access to the private 16-bit RC storage and its dedicated knownness bit. Reads publish only a known value and otherwise preserve caller output; writes accept every uint16_t value, mutate only RC plus its knownness bit, retain no pointer, and perform no sequencing, allocation, I/O, observation, diagnostics, or environment access.",
+      "evidence_ids": ["E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE"],
+      "test_ids": ["T-PROJECT-P2-W48A-RC-REGISTER-ACCESS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Consume a value-owned REPEAT_START effect into a fixed-size caller-owned progress value and authoritative architectural RC state. Start widens before deriving operand-plus-one remaining bodies; a reported successful body retirement validates active phase, count bounds, RC knownness, and the exact remaining-minus-one RC invariant before decrementing nonzero RC once or preserving terminal zero. Completion occurs only when the remaining count reaches zero. Null, unsupported, active-restart, forged, stale, unknown, and extra-completion paths preserve both state and progress. The reducer is allocation-free and owns no CPU, PC, interrupt, bus, timing, observer, diagnostic, environment, or mutable-global behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE"],
+      "test_ids": ["T-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE"]
+    },
+    {
       "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -4091,6 +4173,21 @@
         "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
       ],
       "test_ids": []
+    },
+    {
+      "id": "REQ-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "For a documented RC-consuming single-repeat body, RC starts at the RPT operand K; each nonterminal body observes RC greater than zero and decrements it exactly once after the body operation, while the terminal body observes RC equal to zero and leaves RC at zero. This requirement claims only externally observable RC progression and final value; internal decrement ordering, repeated-body PC microflow, and interrupt arbitration remain outside its scope.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147",
+        "E-TI-C54X-SPRU172C-S4-READA-P4-136-4-137-RC-STEP",
+        "E-TI-C54X-SPRU172C-S4-WRITA-P4-196-4-197-RC-STEP",
+        "E-TI-C54X-SPRU172C-S4-FIRS-P4-59-RC-LOOP"
+      ],
+      "test_ids": ["T-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION"]
     },
     {
       "id": "REQ-COMMON-SINGLE-REPEAT-PC-FLOW",
@@ -6700,6 +6797,22 @@
       "requirement_ids": ["REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE"]
     },
     {
+      "id": "T-PROJECT-P2-W48A-RC-REGISTER-ACCESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_repeat_counter_register_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_counter_register_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W48A-RC-REGISTER-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/repeat/test_repeat_progress_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_progress_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE"]
+    },
+    {
       "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",
       "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
@@ -6762,6 +6875,14 @@
       "path": "tests/unit/sequencer/repeat/test_single_repeat_body_eligibility.c",
       "runner": null,
       "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY"]
+    },
+    {
+      "id": "T-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/repeat/test_single_repeat_rc_observable_progression.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.single_repeat_rc_observable_progression"},
+      "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION"]
     },
     {
       "id": "T-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE",

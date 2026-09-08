@@ -84,9 +84,10 @@ LONG32 MEMORY MOD13 carrier and root seam. P2-W47B2A completes the typed
 PMST.SST state/input prerequisite without widening the copied input snapshot.
 P2-W47B2B completes the DLD/DST catalog, checked/trusted semantics, and
 inventory activation. P2-W47B2C completes CPU lifecycle coverage and the
-observer-off full-CPU opcode benchmark; W47B is closed. The next
-architecture-forcing direction is W20F repeat/interrupt evidence closure before
-runtime RPT activation.
+observer-off full-CPU opcode benchmark; W47B is closed. P2-W48A implements the
+newly evidenced observable RC lifecycle as a typed, transactional repeat-progress
+seam with no current CPU hot-path cost. Runtime RPT activation still waits on
+single-repeat PC flow and predecode interrupt arbitration evidence.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -901,7 +902,8 @@ function-pointer dispatch tables.
 | Catalog operand/repeat metadata (P2-W20C) | Complete | Scalar catalog tokens and decode-owned immutable layout sets are proven while production RPT activation remains gated |
 | Typed immediate-RPT effect (P2-W20D) | Complete | A pure repeat-family operation converts an already extracted K/lk field into a transactional value-owned effect without production activation |
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
-| RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | Resolve RC decrement/final value, single-repeat PC flow/final PC, and already-pending request arbitration without inference from generic pipeline or block-repeat rules |
+| RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | W48A closes observable post-body RC progression/final zero; exact internal decrement ordering, single-repeat PC flow/final PC, and already-pending request arbitration remain unresolved without inference from generic or block-repeat rules |
+| P2-W48A observable RC progression lifecycle | Implemented — focused state/repeat contracts and full 65,536-body progression GREEN | Add typed RC access and a fixed-size transactional REPEAT_START/body-retirement reducer; preserve exact count, stale/unknown rejection, terminal RC zero, and zero current CPU hot-path impact without activating RPT decode or PC replay |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
@@ -2093,34 +2095,70 @@ remain unchanged.
 
 #### P2-W20F: CPU integration evidence closure (deferred)
 
-State: evidence review complete; implementation is intentionally deferred. A
-second bounded audit of official TI `SPRU172C` Rev C and `SPRU131G` Rev G material
-confirmed the existing RPT load, cardinality, repeatability, and post-decode
-interrupt gate, but did not close the three execution-order questions required by
-the generic CPU transaction.
+State: evidence review remains open and CPU integration is intentionally deferred.
+The original bounded audit of official TI `SPRU172C` Rev C and `SPRU131G` Rev G
+material confirmed RPT load, cardinality, repeatability, and the post-decode
+interrupt gate. P2-W48A's later primary-source correction closes the observable
+RC value progression, but not the exact internal decrement ordering, repeated-body
+PC behavior, or already-pending request arbitration required by the generic CPU
+transaction.
 
 The additional narrow evidence is useful but insufficient for retirement:
 
 - The RPT entry says RC is inaccessible to software while single-repeat execution
-  decrements it. It does not state the decrement edge or final visible RC.
+  decrements it. READA and WRITA operation pseudocode later closes the observable
+  sequence and final zero, while leaving the exact internal decrement ordering
+  unstated.
 - Repeated MVDK/MVKD behavior tests the current RC value for a conditional address
-  increment. That proves an instruction body can depend on repeat progress, so an
-  abstract remaining-count loop cannot be assumed to reproduce all architectural
-  RC behavior.
+  increment. W48A therefore keeps architectural RC authoritative and validates it
+  against the remaining-body invariant rather than substituting an unverified
+  abstract counter.
 - Generic sequential-PC, block-repeat, request-receipt, acknowledgement, latency,
   and pipeline examples do not specify the single-repeat PC hold/reload mechanism,
   final PC, or arbitration of a request already pending before RPT reaches decode.
 - GNU binutils 2.42 remains a secondary encoding and operand-shape oracle only. Its
   opcode metadata supplies no RC, PC, IFR, or interrupt-arbitration semantics.
 
-Therefore production RPT rows remain inactive and `cpu.c` gains no repeat branch or
-effect consumer. The next admissible normative W20F input is stronger TI evidence
-or a versioned original-hardware observation that records initial state, program
-words, request timing, externally visible RC/PC results, and provenance. An optional
-black-box differential vector may expose a hypothesis or disagreement but cannot
-close the common requirement by itself. No such test input may introduce an emulator
-build dependency. Until then, shared-memory transaction foundations and other fully
-evidenced owner-local work may proceed independently.
+Therefore production RPT rows remain inactive and `cpu.c` gains no repeat branch.
+The next admissible normative W20F input is stronger TI evidence or a versioned
+original-hardware observation for repeated-body PC flow and predecode request
+arbitration. An optional black-box differential vector may expose a hypothesis or
+disagreement but cannot close the common requirement by itself. No such test input
+may introduce an emulator build dependency.
+
+#### P2-W48A: observable RC progression lifecycle (implemented)
+
+The earlier W20F ledger conclusion is corrected additively by stronger passages in
+TI SPRU172C Rev C. READA (printed pp. 4-136–4-137) and WRITA (printed
+pp. 4-196–4-197) explicitly perform their transfer, increment PAR, and write
+`RC-1` while RC is nonzero, then perform a terminal transfer at RC zero without
+another RC update. FIRS (printed p. 4-59) independently corroborates the nonzero
+RC decrement loop. Paired with RPT's operand load and operand-plus-one cardinality,
+this proves the observable sequence and final zero without inventing a clock edge.
+
+`src/state/repeat_counter_register.[ch]` owns checked typed RC reads and writes
+plus the existing dedicated knownness bit. `src/sequencer/repeat/repeat_progress.[ch]`
+consumes the existing value-owned `REPEAT_START` effect into a fixed-size,
+caller-owned progress value. Start loads the exact operand into RC and widens before
+forming the one-through-65,536 body count. Each caller-reported successful body
+retirement first proves active phase, count bounds, RC knownness, and
+`RC == remaining - 1`; it then decrements nonzero RC once or preserves terminal
+zero, and reaches COMPLETE only when the remaining count becomes zero. Every
+rejected start or retirement preserves both architectural state and progress.
+
+Mirrored state and repeat tests prove checked RC access, zero/one/two/`0xffff`
+progressions, the full 65,536-body completion, unrelated-state preservation, and
+transactional null, unsupported-effect, active-restart, forged, unknown, stale,
+and extra-completion rejection. The reducer is O(1), allocation-free, value-owned,
+and performs no I/O, callback, observation, diagnostics, environment access, or
+mutable-global work. It is not yet called by `run.c`, so this slice adds no branch
+or carrier growth to the current trusted CPU path.
+
+The existing exact-phase `REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION` remains
+`UNRESOLVED`; the new narrower observable-progression requirement is implemented.
+Repeated-body PC flow and predecode interrupt arbitration remain unresolved.
+Production RPT catalog rows, body replay, request service, timing, and public API
+changes remain outside W48A.
 
 ### P2-W21: shared-memory transaction foundation
 

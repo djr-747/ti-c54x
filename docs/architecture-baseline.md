@@ -5,9 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 78 immutable evidence
-records, 115 requirements (91 `IMPLEMENTED`, 9 `PLANNED`, 15 `UNRESOLVED`),
-and 82 tests (73 `PASSING`, 9 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 185 immutable evidence
+records, 307 requirements (270 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`),
+and 261 tests (253 `PASSING`, 8 `PLANNED`).
 
 ## Targets and address boundary
 
