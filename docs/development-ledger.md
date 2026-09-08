@@ -5538,3 +5538,31 @@ rewritten after publication.
   global, or emulator dependency changed. The next evidence-fit ISA slice is
   fixed-MOD2 `LD Smem,TS,dst`; generic Smem expansion is the subsequent
   throughput multiplier for the nine partial forms.
+
+## 2026-09-08 — P2-W41 fixed-MOD2 LD Smem,TS,dst activation
+
+- State: evidence and ownership activation landed as
+  `e23767a3ac010967e1b646f83cabe016aafbb725`. P2-W41 is the active ISA work
+  piece; no production decode or execution behavior changed.
+- TI SPRU172C §4.66 and SPRU131G §§2.3.3 and 4.4 pin the one-word form,
+  signed TS direction/range, SXM widening, and shifter bounds. The project
+  contract composes the existing fixed-MOD2 `*ARx+` row as value `0x1490`,
+  mask `0xFEF8`, and defines raw T[5:0] `0x20..0x2f` as transactionally
+  rejected `INVALID_OPERAND` because TI behavior outside the documented TS
+  range is not inferred.
+- The slice reuses the existing `ACCUMULATOR_ARF` layout, SXM and T resource
+  bits, generic MEMORY/ACCUMULATOR_WRITE effects, fixed-MOD2 address resolver,
+  and generic CPU retirement. Repeatability remains `UNRESOLVED`.
+- Four owner-local RED contracts are planned for catalog, decode, pure load
+  effects, and CPU retirement. Implementation must review the load-family file
+  size before crossing the 500-line architecture threshold.
+- Activation accounting is 161 evidence records; 246 requirements (205
+  IMPLEMENTED, 12 PLANNED, 29 UNRESOLVED); 200 tests (188 PASSING, 12
+  PLANNED); and 7 sources.
+- Validation: `make quality-test` passed all 207 Python tests and every quality
+  gate; `git diff --check` passed. The known 535-line operand-layout
+  size-review warning remains unchanged.
+- Expected closure is 35 catalog rows, 1,503 populated first words, inventory
+  family coverage 35/205 = 17.073%, and unchanged strict complete-form lower
+  bound 25/205 = 12.195%. Generic Smem MOD0–3 expansion remains the next
+  throughput slice.
