@@ -80,9 +80,8 @@ comparison are green. The baseline is recorded at
 `bench/audits/p2-w46b-rmw-baseline.json` with semantic hash
 `3b39187c40a4fd43`; performance remains a first-class acceptance axis without
 implying TI timing. P2-W47A is implementation-complete as the generic LONG32
-pair seam. P2-W47B is the next evidence-first forcing-function slice for DLD/DST
-composition; exact opcode rows remain deferred until their primary evidence is
-frozen.
+pair seam. P2-W47B is the active evidence-frozen forcing-function slice for
+DLD/DST composition; implementation and catalog activation remain pending.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -740,6 +739,46 @@ W47A closure accounting is 176 evidence records; 294 requirements (257
 `PLANNED`); and 7 sources. The current ISA snapshot remains 98 catalog rows,
 2,679 populated first-word entries, 38/205 family progress, and 25/205
 strict-complete forms.
+
+### P2-W47B: DLD/DST LONG32 MOD13 composition (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the W47B
+activation. The TI DLD and DST entries define the long-word read/write families
+and their one-extension-word long-offset forms. Composed with the pinned
+CMPT=0 MOD13, LONG32 delta, word-pairing, and repeat-policy records, this slice
+freezes exactly two two-word rows: `DLD_LONG32_MOD13` base `0x56E8`, mask
+`0xFEF8`, and `DST_LONG32_MOD13` base `0x4EE8`, mask `0xFEF8`. Their full
+patterns are `0101_011D_1110_1AAA` and `0100_111S_1110_1AAA`; D/S is bit 8,
+ARF is bits 2:0, MOD13 is bits 6:3, and the second word is the copied `lk`
+extension. Each admits sixteen ARF encodings, uses the new private
+`ACCUMULATOR_ARF_EXTENSION16_MOD4` layout, and is ineligible for single-repeat
+execution. The activation does not claim TI bus order, external pair atomicity,
+rollback, or machine-cycle timing.
+
+DLD consumes `STATUS_SXM` and reads first/MSW then second/LSW into `dst31:0`;
+SXM=0 clears `dst39:32`, while SXM=1 sign-extends bit 31. C16 is not an input
+resource; project vectors must prove the C16×SXM lane descriptions converge on
+the same stored 40-bit pattern. DST consumes `ACCUMULATORS`, `STATUS_SXM`, and
+`STATUS_SST`; the full source remains unchanged and SST/SXM saturation is
+applied before first/MSW then second/LSW store. SST=0 stores source bits31:0;
+SST=1 clamps according to the pinned raw-40/signed-40 rules. Unknown SST or
+SXM rejects transactionally before endpoint issue.
+
+W47B composes both rows over the private W47A reducer and generic MOD13
+LONG32 MEMORY path. A fixed-size discriminated child union copies operands and
+source snapshots, issues exactly two children, and never replans, refetches, or
+recomputes source values. Pre-access AR/PC candidates commit only after pair
+completion; per-word physical write visibility remains the W47A contract. Static
+completion callbacks may remain process-lifetime function pointers but own no
+mutable context, formatting, or fan-out. Root and validator helpers split before
+file-size thresholds, and an observer-off full-CPU benchmark is required.
+
+Activation leaves inventory rows `FORM-T2-19-01` (DLD) and `FORM-T2-20-01`
+(DST) unresolved until production catalog symbols exist. The post-implementation
+projection is 100 catalog rows, `ID_COUNT=101`, 2,711 populated first-word
+entries, 100 bindings, family coverage 40/205 (19.512%), and strict complete
+coverage unchanged at 25/205 (12.195%) because each row is a SUBSET of its
+full mnemonic family.
 
 ## Objective
 

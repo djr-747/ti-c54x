@@ -2776,6 +2776,61 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W47A: generic LONG32 pair transaction seam (planned)"},
       "assertion": "P2-W47A freezes a generic fixed-size LONG32 pair transaction seam that reuses the canonical ti_c54x_data_operand MSW/LSW pair and one private WORD16 reducer. Values are copied before issue; malformed, noncanonical, or overlapping pairs are rejected before any endpoint request. The transaction issues exactly two supplied fresh nonzero strictly increasing IDs in deterministic first/MSW then second/LSW order. WAIT retains the same ID and request, and cancellation addresses only the active word; a failed cancel preserves the exact state. Reads publish only after both words are READY; a first fault never issues the second request, and a second fault publishes no read pair or architectural commit. Writes are externally visible per word, so a first READY remains visible if the second word faults or cancels, while architectural commit is deferred until both words are READY. No rollback or external-master exclusion claim is made. The carrier and reducer are allocation-free and fixed-size for mainstream ABIs, with no replan, public ABI, opcode, catalog, CPU, or effect-carrier change; executable opcode benchmarking is deferred to W47B and no TI timing claim is made."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.3.3-P4-15-DST-SST-SATURATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "SST saturation on store", "printed_page_start": "4-8", "printed_page_end": "4-15"},
+      "assertion": "SPRU131G Table 4-3 (printed p. 4-8) and §4.3.3 (printed p. 4-15) list DST among the accumulator stores controlled by PMST.SST and state that the accumulator remains unchanged. SST=0 disables saturation. With SST=1, SXM=0 treats the raw 40-bit value as positive and clamps values above 0xffffffff to 0xffffffff; SXM=1 interprets signed 40-bit state and clamps values above 0x7fffffff to 0x7fffffff or below -0x80000000 to 0x80000000. Values within the selected range retain their low 32 bits; this record does not select DST bus-word order."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.2.1-P4-11-SXM-SIGN-EXTENSION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "4.2.1", "printed_page_start": "4-11", "printed_page_end": "4-11"},
+      "assertion": "SPRU131G §4.2.1 and SXM Table 4-2 define the accumulator input shape for a 16-bit word placed in bits 31:16: bits 15:0 are zero, while bits 39:32 are zero-filled when SXM=0 or sign-extended when SXM=1. This record makes no claim about a particular opcode encoding, addressing form, or timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DLD-P4-42-LONG32",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "DLD", "printed_page_start": "4-42", "printed_page_end": "4-42"},
+      "assertion": "The TI DLD entry defines the long-word read syntax and opcode diagram 0101_011D_IAAAAAAA. The ordinary form consumes one program word; long-offset forms carry one extension word. DLD reads a 32-bit data-memory operand into the selected accumulator, and the instruction table lists SXM as an affecting status input; this record does not establish a particular addressing-mode composition, the detailed SXM transform, bus order, repeat policy, or timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DST-P4-47-LONG32",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "DST", "printed_page_start": "4-47", "printed_page_end": "4-47"},
+      "assertion": "The TI DST entry defines the long-word write syntax and opcode diagram 0100_111S_IAAAAAAA. The ordinary form consumes one program word; long-offset forms carry one extension word. DST writes a 32-bit data-memory operand from the selected accumulator; this record does not establish a particular addressing-mode composition, SST saturation behavior, bus order, repeat policy, or timing claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W47B: DLD/DST LONG32 MOD13 composition (planned)"},
+      "assertion": "P2-W47B freezes exactly two private CMPT=0 MOD13 two-word catalog rows, DLD_LONG32_MOD13 at base 0x56E8/mask 0xFEF8 and DST_LONG32_MOD13 at base 0x4EE8/mask 0xFEF8, reusing a new private ACCUMULATOR_ARF_EXTENSION16_MOD4 layout and the generic LONG32 MEMORY carrier/root over W47A. The full variable patterns are 0101_011D_1110_1AAA and 0100_111S_1110_1AAA, with extension-word lk, MSW/LSW pairing, and MOD13 pre-access AR update composed from the separate TI records. DLD consumes STATUS_SXM and publishes its canonical MSW/LSW read only after both child words are READY; project C16×SXM vectors must prove the documented C16 lane descriptions converge on the same stored pattern. DST consumes ACCUMULATORS plus STATUS_SXM and STATUS_SST, reads the full source without mutation, and applies the pinned SST/SXM saturation policy before issuing MSW then LSW; it does not unconditionally discard guard bits. Architectural AR/PC pre-access candidates commit only after pair completion; per-word physical write visibility remains the W47A contract, with no external pair atomicity or rollback claim. The root must copy operands and source snapshots, use one discriminated child union, avoid address replanning, instruction refetch, source recomputation, allocation, callback-owned/context state, formatting/fanout, public-ABI/effect-carrier widening, opcode-specific CPU branches, timing, or observer behavior; static completion callbacks may remain process-lifetime function pointers, root and validator helpers split before file-size thresholds, and an observer-off full-CPU benchmark is required before closure."
     }
   ],
   "requirements": [
@@ -5934,6 +5989,106 @@
       "claim": "Keep the LONG32 pair carrier and reducer allocation-free and fixed-size for mainstream ABIs, issue exactly two word requests with no replan, and preserve the existing public ABI, opcode, catalog, CPU, and effect-carrier boundaries. An executable opcode benchmark is deferred to W47B and no TI timing claim is made.",
       "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Register and decode exactly the two-word CMPT=0 MOD13 DLD_LONG32_MOD13 (0x56E8/0xFEF8) and DST_LONG32_MOD13 (0x4EE8/0xFEF8) rows with sixteen encodings each, D/S bit 8, ARF bits 2:0, MOD13 bits 6:3, a copied extension word, the private ACCUMULATOR_ARF_EXTENSION16_MOD4 layout, and no opcode-specific CPU branch or public ABI change.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-DLD-P4-42-LONG32", "E-TI-C54X-SPRU172C-S4-DST-P4-47-LONG32", "E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-14-MOD12-MOD13"],
+      "test_ids": ["T-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Compose DLD and DST over one fixed-size generic LONG32 MEMORY carrier and the checked CMPT=0 MOD13 resolver, preserving canonical first/MSW and second/LSW descriptors, one copied pre-access AR candidate, and supported-ABI sizes without widening the public effect carrier.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-DLD-SXM-SEMANTICS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Implement DLD_LONG32_MOD13 as a canonical LONG32 read that loads first/MSW then second/LSW into dst31:0, clears dst39:32 when SXM=0, sign-extends bit31 into dst39:32 when SXM=1, preserves unrelated state, and does not collect C16 as an input resource.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-DLD-P4-42-LONG32", "E-TI-C54X-SPRU131G-S4.2.1-P4-11-SXM-SIGN-EXTENSION", "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"],
+      "test_ids": ["T-PROJECT-P2-W47B-DLD-SXM-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Implement DST_LONG32_MOD13 as a canonical LONG32 write of src31:16 first/MSW then src15:0 second/LSW, applying the typed SXM/SST saturation policy to the copied full 40-bit source while preserving source and unrelated status, through the generic pair seam without claiming physical pair atomicity or rollback.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-DST-P4-47-LONG32", "E-TI-C54X-SPRU131G-S4.3.3-P4-15-DST-SST-SATURATION", "E-TI-C54X-SPRU131G-S5.8-P5-28-5-29-LONG32-WORD-PAIRING"],
+      "test_ids": ["T-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Add typed PMST.SST access, copied status_sst and status_sst_known input snapshots, and transactional unknown-input rejection for DST; preserve SXM knownness and reject when either required status input is unknown before any memory request or architectural mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire DLD through generic decode, the MOD13 LONG32 planner, one copied address effect, and the W47A pair reducer: pre-access AR/PC candidates commit only after both child reads are READY, WAIT resumes the same child request, and no refetch or address replan occurs.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire DST through generic decode, the MOD13 LONG32 planner, one copied source snapshot, and the W47A pair reducer: pre-access AR/PC candidates commit only after both child writes are READY, WAIT resumes the same child request, and per-word physical visibility follows the existing endpoint contract.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Preserve transactional DLD/DST reducer state across WAIT, first/second FAULT, failed cancel, stale child observations, and invalid terminal transitions; never issue the second word after a first fault, never publish a partial DLD result, and never commit AR/PC before pair completion.",
+      "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Prove DLD/DST execution remains allocation-free and structurally bounded: fixed-size discriminated child state, exactly two WORD16 requests, no address replan/refetch/source recomputation, no callback-owned/context state or environment/I/O/formatting path, exactly-once completion after both READY, unchanged LP64/ILP32 carrier size, and an observer-off full-CPU benchmark with no TI timing claim.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "After the two production catalog rows exist, bind DLD_LONG32_MOD13 and DST_LONG32_MOD13 as SUBSET coverage to FORM-T2-19-01 and FORM-T2-20-01 using a bounded long-offset MOD13 token; project 100 rows, ID_COUNT 101, 2711 populated lookup entries, 100 bindings, family 40/205, and strict complete-form coverage unchanged at 25/205, while activation leaves unresolved inventory entries until the symbols are present.",
+      "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47B-INVENTORY-PROJECTION"]
     }
   ],
   "tests": [
@@ -7959,6 +8114,86 @@
       "path": "tests/contract/quality/perf/test_long32_pair_hot_path.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_dld_dst_long32_mod13_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-DST-CATALOG-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_dld_dst_long32_memory_carrier.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-DLD-SXM-SEMANTICS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_dld_long32_mod13.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-SXM-SEMANTICS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_dst_long32_mod13.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-DST-LONG32-STORE-SPLIT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_sst_status.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-SST-INPUT-KNOWNNESS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_dld_long32_mod13.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_dst_long32_mod13.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_dld_dst_long32_failure_lifecycle.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_dld_dst_long32_hot_path.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47B-INVENTORY-PROJECTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_dld_dst_long32_projection.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION"]
     }
   ]
 }

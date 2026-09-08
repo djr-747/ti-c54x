@@ -41,9 +41,9 @@ Current snapshot (P2-W47A complete):
   carrier sizes are frozen, and no catalog/opcode/CPU/public-ABI change was
   made. Read publication waits for both words; writes retain the endpoint's
   necessarily partial visibility policy. No TI timing claim is implied.
-- Next forcing-function slice (P2-W47B): evidence-first DLD/DST composition
-  over the LONG32 seam. Exact opcode rows and executable opcode benchmarking
-  remain deferred until their primary evidence is frozen.
+- Active forcing-function slice (P2-W47B): evidence-frozen DLD/DST LONG32
+  MOD13 composition over the pair seam; implementation and opcode benchmarking
+  remain pending.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ
