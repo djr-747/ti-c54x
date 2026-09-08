@@ -6083,3 +6083,37 @@ rewritten after publication.
   PLANNED); and 7 sources.
 - Activation `rtk make test` and evidence/diff checks are green. Follow-up
   remains evidence-first until the three W45A RED lanes are implemented.
+
+## 2026-09-08 — P2-W45A generic reverse-carry WORD16 MEMORY seam implementation
+
+- State: implementation commit
+  `c2b4920e006f465c6ecfabb28ed864735700c3d8` completes the bounded W45A
+  reverse-carry MEMORY seam.
+- Three REDs were replayed: effect compilation failed on the absent enum/typed
+  field, a valid resolver case was rejected, and transaction prepare rejected.
+  GREEN adds the private kind and typed field with canonical validation,
+  ordered CMPT→ARP→selected AR→AR0 resolution, one-hot nonzero AR0, ARF 1..7
+  admission with AR0 alias rejection, old-address POST update to selected AR
+  only, boundary rejection, and candidate exact source/live/commit handling.
+  No BK, root transaction, CPU, catalog/opcode, public ABI, timing, device, or
+  RPT changes were made.
+- Review fixes include the exact “Does not own” contract token, resolver
+  nonzero sentinel and canonical-zero handling, rejection of forged
+  `address_commit.value_after` without endpoint/state change, and the
+  `address_resolution.h` module contract.
+- Combined three focused runners are GREEN. Fresh sanitizer validation passed
+  15/15 without diagnostics. Semantic review found no production defects after
+  P1/P2 test fixes; integration review passed 18/18 with no runtime findings
+  after the header-contract correction. `quality-test` passed 213 Python tests;
+  evidence, manifests, source boundaries, observer-off, and inventory checks
+  are green; the final authoritative `rtk make test` gate is green.
+- Current sizes are `memory_effect.c` 95 lines, `memory_effect.h` 76,
+  `address_resolution.c` 293, `memory_instruction_candidate_validate.c` 354,
+  the related headers with contracts, and tests at 219/411/426 lines.
+  Closure accounting is 169 evidence records; 275 requirements (238
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 229 tests (221 PASSING, 8
+  PLANNED); and 7 sources.
+- W45B remains audited but not activated: twenty projected MOD4/MOD7 rows at
+  `ID_COUNT=96`, lookup 2,583, and 95 bindings; AR0 remains excluded and
+  coverage is unchanged. `git diff --check` and append-only numstat are clean;
+  no commit was created by this ledger update.
