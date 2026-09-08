@@ -19,10 +19,10 @@
 #include <stdio.h>
 #include <string.h>
 
-/* W51A deliberately preserves W50A's requests-only persistent snapshot.
- * Commit persistence and atomic root publication are one later seam. */
-_Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 32U,
-               "W51A must not widen the persistent dual snapshot");
+/* W51B extends the persistent snapshot with both value-owned commit
+ * descriptors alongside the copied X/Y requests. */
+_Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 48U,
+               "W51B carries two requests plus two commit descriptors");
 
 static ti_c54x_arch_state
 known_mode_state(void)

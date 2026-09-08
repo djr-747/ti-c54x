@@ -26,6 +26,9 @@ ti_c54x_add_unit_test(dual_word16_read_transaction
                       test_dual_word16_read_transaction.c)
 ti_c54x_add_unit_test(dual_memory_instruction_transaction
                       test_dual_memory_instruction_transaction.c)
+# W51B RED contracts: dual address commit persistence and atomic publication.
+ti_c54x_add_unit_test(dual_memory_instruction_w51b_contract
+                      test_dual_memory_instruction_w51b_contract.c)
 # W47B1 RED contract: DLD/DST MOD13 LONG32 root failure lifecycle.
 ti_c54x_add_unit_test(dld_dst_long32_failure_lifecycle
                       test_dld_dst_long32_failure_lifecycle.c)

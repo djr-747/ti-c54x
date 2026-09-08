@@ -3,8 +3,9 @@
  *
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
  * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
- * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, and dual-indirect MOD0/MOD0
- * WORD16 memory effect carriers.
+ * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, and dual-indirect
+ * MOD0/MOD1/MOD2 WORD16 memory effect carriers. Dual MOD3 remains deferred
+ * with the AR0/BK indexed/circular dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -51,8 +52,8 @@ static bool
 ti_c54x_op_memory_dual_address_is_valid(
     const ti_c54x_op_memory_address_spec *address_spec)
 {
-    return address_spec->dual.x_mode == UINT8_C(0) &&
-           address_spec->dual.y_mode == UINT8_C(0) &&
+    return address_spec->dual.x_mode <= UINT8_C(2) &&
+           address_spec->dual.y_mode <= UINT8_C(2) &&
            address_spec->dual.x_ar >= UINT8_C(2) &&
            address_spec->dual.x_ar <= UINT8_C(5) &&
            address_spec->dual.y_ar >= UINT8_C(2) &&

@@ -3176,6 +3176,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)"},
       "assertion": "W51A is a durable dual-indirect planning checkpoint: modes 0, 1, and 2 are admitted in the pure planner and resolution seam while MOD3 remains deferred at the AR0/BK circular and CMPT1 unresolved boundary. The persistent dual snapshot remains requests-only at 32 bytes, and root size, CPU wiring, catalog rows, and opcode activation remain unchanged until the later W51B commit/publication seam."
+    },
+    {
+      "id": "E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51B: dual-memory root commit/publication contract (planned)"},
+      "assertion": "W51B is the planned generic root transaction contract: retain exactly two value-owned dual-address commit descriptors, validate copied mode/selector/address/live-state identity, publish distinct-AR updates atomically only after both DATA reads and ordinary-effect staging succeed, publish one Xmod-owned update for same-AR aliases, and keep WAIT/FAULT non-publishing. Root sizes remain frozen at 336/308 bytes and no opcode activation is admitted. Lifecycle and ABI policy are project contracts; W51A remains the source for architectural mode/update facts."
+    },
+    {
+      "id": "E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51B: dual-memory root commit/publication contract (planned)"},
+      "assertion": "W51B implements the generic dual-memory root commit/publication seam: the persistent snapshot carries exactly two value-owned commit descriptors (48 bytes) alongside the copied X/Y DATA READ requests, with zeroed no-update commits on MOD0 and aliased-Y sides and exact non-wrapping post-access AR updates on MOD1/MOD2 sides under Xmod precedence. The root validates copied mode/selector/address shadows and live AR/PC identity before issue and at every resume boundary, publishes distinct-AR updates atomically only after both reads are READY and ordinary-effect staging succeeds, and keeps WAIT, FAULT, cancellation, and other nonterminal paths non-publishing. LP64/ILP32 root sizes remain 336/308 bytes; no opcode row, CPU branch, public ABI, catalog, or inventory change is admitted."
     }
   ],
   "requirements": [
@@ -6790,6 +6812,16 @@
       "claim": "Resolve the W51A dual-indirect modes 0, 1, and 2 against one frozen architectural snapshot and publish two canonical DATA READ requests plus value-owned post-access commits without partial output. Preserve the requests-only persistent dual snapshot at exactly 32 bytes. Reject mode 3 and unresolved boundaries transactionally, and preserve Xmod precedence for same-AR aliases. MOD3 remains deferred at the AR0/BK circular and CMPT1 boundary.",
       "evidence_ids": ["E-PROJECT-P2-W51A-DUAL-MODES-PLAN-ANCHOR"],
       "test_ids": ["T-PROJECT-P2-W50A-DUAL-WORD16-MOD0-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Extend the generic dual-memory instruction root with exactly two value-owned post-access commit descriptors and copied mode/selector/address shadows. Validate those shadows against live architectural state before publication; reject malformed or drifted inputs transactionally. Publish distinct-AR commits atomically only after both DATA reads are READY and ordinary-effect staging succeeds, publish one Xmod-owned commit for same-AR aliases, and keep WAIT, FAULT, cancellation, and other nonterminal paths non-publishing. Preserve LP64/ILP32 root sizes at 336/308 bytes and do not activate opcode rows or widen the public ABI.",
+      "evidence_ids": ["E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION-PLAN-ANCHOR", "E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION"],
+      "test_ids": ["T-PROJECT-P2-W51B-DUAL-MEMORY-ROOT-CONTRACT"]
     }
   ],
   "tests": [
@@ -9127,6 +9159,14 @@
       "path": "tests/unit/address/test_indirect_dual_modes.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_dual_modes"},
       "requirement_ids": ["REQ-COMMON-P2-W51A-DUAL-MODES-ADDRESS-PLANNER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W51B-DUAL-MEMORY-ROOT-CONTRACT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_dual_memory_instruction_w51b_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_memory_instruction_w51b_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION"]
     }
   ]
 }

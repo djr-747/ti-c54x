@@ -2,9 +2,10 @@
  * Module contract
  *
  * Owns: executable structural proofs for the private dual-indirect WORD16
- * memory effect carrier, including its same-size address arm, MOD0/AR2..AR5
- * preconditions, pair completion callback, and transactional rejection of
- * malformed fields. Does not own: opcode identity, address arithmetic,
+ * memory effect carrier, including its same-size address arm,
+ * MOD0/MOD1/MOD2/AR2..AR5 preconditions, pair completion callback, and
+ * transactional rejection of malformed fields. MOD3 remains deferred.
+ * Does not own: opcode identity, address arithmetic,
  * endpoint I/O, transaction sequencing, architectural state, timing,
  * observers, or diagnostics.
  */
@@ -80,6 +81,16 @@ check_valid_shape_and_callback(void)
 }
 
 static void
+check_post_access_modes_are_valid(void)
+{
+    ti_c54x_op_memory_effect effect = valid_dual_read();
+
+    effect.address_spec.dual.x_mode = UINT8_C(1);
+    effect.address_spec.dual.y_mode = UINT8_C(2);
+    TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
+}
+
+static void
 check_rejections_are_transactional(void)
 {
     const ti_c54x_op_memory_effect baseline = valid_dual_read();
@@ -94,10 +105,10 @@ check_rejections_are_transactional(void)
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);       \
     } while (0)
 
-    CHECK_REJECT(address_spec.dual.x_mode, UINT8_C(1));
+    CHECK_REJECT(address_spec.dual.x_mode, UINT8_C(3));
     CHECK_REJECT(address_spec.dual.x_ar, UINT8_C(1));
     CHECK_REJECT(address_spec.dual.x_ar, UINT8_C(6));
-    CHECK_REJECT(address_spec.dual.y_mode, UINT8_C(1));
+    CHECK_REJECT(address_spec.dual.y_mode, UINT8_C(3));
     CHECK_REJECT(address_spec.dual.y_ar, UINT8_C(1));
     CHECK_REJECT(address_spec.dual.y_ar, UINT8_C(6));
     CHECK_REJECT(address_spec.dual.reserved_word0, UINT32_C(1));
@@ -124,6 +135,7 @@ int
 main(void)
 {
     check_valid_shape_and_callback();
+    check_post_access_modes_are_valid();
     check_rejections_are_transactional();
     return 0;
 }

@@ -124,6 +124,10 @@ ti_c54x_memory_instruction_transaction_prepare(
     if (dual_read) {
         candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
         candidate.dual_address_snapshot.y_request = dual_resolution.y_request;
+        candidate.dual_address_snapshot.x_commit =
+            dual_resolution.x_address_commit;
+        candidate.dual_address_snapshot.y_commit =
+            dual_resolution.y_address_commit;
     }
     candidate.pc_effect = pc_effect;
     candidate.instructions_attempted_after =

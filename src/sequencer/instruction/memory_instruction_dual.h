@@ -4,9 +4,10 @@
 /*
  * Module contract
  *
- * Owns: the root dual-indirect MOD0/MOD0 WORD16-read seam, including
+ * Owns: the root dual-indirect MOD0/MOD1/MOD2 WORD16-read seam, including
  * deferred two-request preparation, two-ID reservation, endpoint issue and
- * resume, pair completion, and terminal cancellation/reset.
+ * resume, pair completion, atomic address-commit publication, and terminal
+ * cancellation/reset.
  * Does not own: opcode decode or semantics, address arithmetic, CPU
  * lifecycle, endpoint storage, timing, observers, diagnostics, allocation,
  * I/O, or global state. All candidate and architectural inputs are borrowed

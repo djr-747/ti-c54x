@@ -106,6 +106,11 @@ checkpoint: modes 0, 1, and 2 resolve from direct AR2–AR5 selectors with
 same-AR Xmod precedence, while the requests-only persistent snapshot remains
 32 bytes. Root size, CPU wiring, catalog projection, and opcode activation are
 unchanged; W51B owns atomic commit/publication before any broader activation.
+P2-W51B is implementation-complete as the dual-memory root commit/publication
+seam: the persistent snapshot carries both value-owned commit descriptors,
+shadow validation runs before issue and at every resume boundary, and address
+updates publish atomically with the ordinary effect and PC. Root sizes remain
+frozen at 336/308; broader dual-mode opcode activation is the next seam.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -915,6 +920,7 @@ function-pointer dispatch tables.
 | P2-W50A dual-WORD16 MOD0 read foundation | Implemented — focused CTest 5/5, Python hot-path 7/7, and full-gate validation green | Establish the fixed-size dual-WORD16 MOD0 address/effect/pair/root seams: copy old AR2–AR5 addresses, serialize X then Y over one endpoint, preserve WAIT identity, and publish only after both READY observations. No opcode row, CPU branch, or TI timing claim. |
 | P2-W50B dual-memory ADD/SUB MOD0 activation | Implemented — focused CTest 4/4, Python quality/performance checks, benchmark smoke, and full-gate validation green | Activate `ADD_DUAL_MOD0`/`SUB_DUAL_MOD0` (`0xA000/0xA200`, `0xFECC`) through the generic trusted binding and W50A transaction. Preserve fixed carriers, observer-off execution, and no-refetch/no-replan structure; one recorded hosted characterization measured ~1.75–1.81 µs/instruction, with no absolute threshold or TI cycle claim. |
 | P2-W51A dual-indirect MOD0–MOD2 planning checkpoint | Implemented — focused RED→GREEN address and resolution contracts; no catalog/CPU/root activation | Direct AR2–AR5 selectors, MOD0/MOD1/MOD2 old-address and post-update planning, same-AR Xmod precedence, 32-byte requests-only snapshot, and MOD3 deferral. |
+| P2-W51B dual-memory root commit/publication contract | Implemented — RED→GREEN root contract plus carrier widening; focused, sanitizer, and full-gate validation green | Extend the persistent dual snapshot to 48 bytes with two value-owned commit descriptors, validate mode/selector/address/live-state identity, publish distinct-AR updates atomically only after both reads and ordinary-effect staging, commit one update for same-AR Xmod precedence, keep WAIT/FAULT non-publishing, and freeze root sizes at 336/308 with no opcode activation. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
@@ -2534,6 +2540,43 @@ W51A closure accounting is 206 immutable evidence records; 337 requirements
 remain 104, 3,031, 104, 44/205, and 27/205. The next documented seam is W51B:
 persist both prevalidated update candidates and publish the root transaction
 atomically, after which broader dual-mode opcode activation can proceed.
+
+### P2-W51B: dual-memory root commit/publication contract (planned)
+
+This immutable `(planned)` heading is the durable W51B FIT/ownership anchor.
+W51B owns the generic root transaction seam only; it does not activate an opcode
+row, alter CPU wiring, widen the public API, or change catalog/inventory
+projection. The W51A architectural mode/update evidence remains the source for
+MOD0/MOD1/MOD2 old-address behavior, direct Xar/Yar selector mapping to AR2–AR5,
+and same-AR Xmod precedence. All lifecycle and ABI assertions in this slice
+are project contracts.
+
+The persistent dual snapshot must carry exactly two value-owned commit
+descriptors alongside its copied requests. Before endpoint issue and again at
+the commit boundary, the root validates the copied mode/selector/address
+shadows against the live architectural state; malformed modes, selectors,
+addresses, or drift reject transactionally without partial output. Distinct
+selected ARs publish both post-access updates atomically, and only after both
+DATA reads are READY and the ordinary effect staging succeeds. If X and Y
+select one AR, Xmod precedence yields one commit. WAIT, FAULT, cancellation,
+and other nonterminal paths remain non-publishing. Native LP64/ILP32 root
+sizes stay frozen at 336/308 bytes, and no broader dual-mode opcode activation
+is part of W51B.
+
+The executable contract lives at
+`tests/unit/sequencer/instruction/test_dual_memory_instruction_w51b_contract.c`
+with CTest name `ti_c54x.dual_memory_instruction_w51b_contract` and is green:
+the 48-byte snapshot, atomic distinct-AR publication, single X-owned alias
+commit, WAIT/FAULT non-publication, drift rejection, and frozen 336/308 root
+sizes are all proven. The dual effect carrier admits MOD0/MOD1/MOD2 with MOD3
+still deferred, and the READY commit lives in the split
+`memory_instruction_dual_commit` owner after the 500-line quality bound forced
+`memory_instruction_dual.c` back to 448 lines. The W51B closure registry is
+208 immutable evidence records, 338 requirements (300 `IMPLEMENTED`, 7
+`PLANNED`, 31 `UNRESOLVED`), and 288 tests (281 `PASSING`, 7 `PLANNED`).
+Catalog, lookup, binding, family, and strict-complete coverage remain 104,
+3,031, 104, 44/205, and 27/205. The next documented seam is broader dual-mode
+opcode activation through this root.
 
 ### P2-W21: shared-memory transaction foundation
 

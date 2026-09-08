@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P2-W51A complete.
+Current snapshot: P2-W51B complete.
 
 - 104 runnable catalog rows cover 3,031 first-word encodings. Inventory coverage
   is 44/205 instruction forms touched (21.463%) and 27/205 strict-complete
@@ -35,8 +35,12 @@ Current snapshot: P2-W51A complete.
 - W51A now plans dual-indirect MOD0/MOD1/MOD2 directly from AR2–AR5 selectors,
   including same-AR Xmod precedence, without changing the 32-byte persistent
   snapshot, root size, CPU wiring, or catalog projection. MOD3 remains deferred.
-- Next is W51B: persist and publish both address-update candidates atomically,
-  then activate broader dual-mode opcodes.
+- W51B persists two value-owned commit descriptors in the 48-byte dual snapshot,
+  validates mode/selector/address/live-state identity before issue and at every
+  resume boundary, and publishes address updates atomically after both reads
+  and ordinary-effect staging: two updates for distinct ARs, one X-owned update
+  for same-AR aliases, none on WAIT/FAULT. Root sizes remain frozen at 336/308
+  with no opcode activation. Broader dual-mode opcode activation is next.
 - Performance remains a release constraint. Execution uses immutable direct
   lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
   observer-off CPU benchmarks. These are host-performance checks, not TI

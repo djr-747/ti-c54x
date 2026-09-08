@@ -1,9 +1,12 @@
 /*
  * Module contract
  *
- * Owns: root orchestration for one dual-indirect MOD0/MOD0 WORD16 read pair.
- * It reserves two consecutive IDs, serializes the X then Y endpoint calls,
- * and publishes one completion only after both values are ready.
+ * Owns: root orchestration for one dual-indirect MOD0/MOD1/MOD2 WORD16 read
+ * pair. It reserves two consecutive IDs, serializes the X then Y endpoint
+ * calls, and delegates the READY commit to the dual-commit owner only after
+ * both values are ready. The W51B persistent snapshot carries both
+ * prevalidated post-access commits; they are validated against the copied
+ * mode/selector/address shadows before issue and at every resume boundary.
  * Does not own: opcode semantics, address arithmetic, endpoint storage,
  * timing, CPU lifecycle, observers, diagnostics, allocation, I/O, or global
  * state. No architectural field is written until pair completion passes all
@@ -17,7 +20,8 @@
 
 #include "bus/adapter/word16_adapter.h"
 #include "memory_instruction_candidate_validate.h"
-#include "sequencer/effect_transaction.h"
+#include "memory_instruction_dual_candidate_validate.h"
+#include "memory_instruction_dual_commit.h"
 
 static void clear_preserving_sequence(
     ti_c54x_memory_instruction_transaction *transaction)
@@ -55,8 +59,8 @@ bool ti_c54x_memory_instruction_dual_prepare_snapshot(
     spec = &memory->address_spec;
     if (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
         memory->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
-        memory->complete_dual == NULL || spec->dual.x_mode != UINT8_C(0) ||
-        spec->dual.y_mode != UINT8_C(0) || spec->dual.x_ar < UINT8_C(2) ||
+        memory->complete_dual == NULL || spec->dual.x_mode > UINT8_C(2) ||
+        spec->dual.y_mode > UINT8_C(2) || spec->dual.x_ar < UINT8_C(2) ||
         spec->dual.x_ar > UINT8_C(5) || spec->dual.y_ar < UINT8_C(2) ||
         spec->dual.y_ar > UINT8_C(5) || spec->dual.reserved_word0 != 0U ||
         spec->dual.reserved_word1 != 0U || spec->dual.reserved_word2 != 0U ||
@@ -90,7 +94,8 @@ static bool candidate_snapshot_matches(
     memory = &transaction->candidate.effect.payload.memory;
     spec = &memory->address_spec;
     return spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 &&
-           spec->dual.x_mode == UINT8_C(0) && spec->dual.y_mode == UINT8_C(0) &&
+           spec->dual.x_mode <= UINT8_C(2) &&
+           spec->dual.y_mode <= UINT8_C(2) &&
            spec->dual.x_ar >= UINT8_C(2) && spec->dual.x_ar <= UINT8_C(5) &&
            spec->dual.y_ar >= UINT8_C(2) && spec->dual.y_ar <= UINT8_C(5) &&
            spec->dual.reserved_word0 == 0U &&
@@ -106,7 +111,9 @@ static bool candidate_snapshot_matches(
                    .address_word &&
            transaction->dual_y_address_word ==
                transaction->candidate.dual_address_snapshot.y_request
-                   .address_word;
+                   .address_word &&
+           ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
+               &transaction->candidate.dual_address_snapshot, spec);
 }
 
 static bool pair_ids_match_root_watermark(
@@ -123,42 +130,6 @@ static bool pair_ids_match_root_watermark(
                                              UINT64_C(1) &&
            request->y_transaction_id != UINT64_C(0) &&
            request->y_transaction_id == transaction->last_transaction_id;
-}
-
-static ti_c54x_memory_instruction_status commit_architecture(
-    ti_c54x_memory_instruction_transaction *transaction,
-    ti_c54x_arch_state *state)
-{
-    state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
-    transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
-    return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
-}
-
-static ti_c54x_memory_instruction_status commit_ready(
-    ti_c54x_memory_instruction_transaction *transaction,
-    ti_c54x_arch_state *state, ti_c54x_accumulator_state *accumulators,
-    ti_c54x_t_register_state *t_register, uint16_t x_word, uint16_t y_word)
-{
-    const ti_c54x_op_memory_effect *memory =
-        &transaction->candidate.effect.payload.memory;
-    ti_c54x_op_effect next_effect = {0};
-    ti_c54x_effect_transaction ordinary = {0};
-
-    if (memory->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
-        memory->complete_dual == NULL ||
-        memory->complete_dual(&transaction->candidate.instruction,
-                              &transaction->candidate.input, x_word, y_word,
-                              &next_effect) != TI_C54X_OP_STATUS_OK ||
-        ti_c54x_effect_transaction_stage(
-            &next_effect, &state->status, accumulators, t_register,
-            &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
-        ti_c54x_effect_transaction_commit(
-            &ordinary, &state->status, accumulators, t_register) !=
-            TI_C54X_EFFECT_TRANSACTION_OK) {
-        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    return commit_architecture(transaction, state);
 }
 
 typedef enum dual_child_result {
@@ -388,9 +359,9 @@ ti_c54x_memory_instruction_status ti_c54x_memory_instruction_dual_advance(
                        ? TI_C54X_MEMORY_INSTRUCTION_STATUS_OK
                        : result->status;
         }
-        status = commit_ready(transaction, state, accumulators, t_register,
-                              completion.x_value_word,
-                              completion.y_value_word);
+        status = ti_c54x_memory_instruction_dual_commit_ready(
+            transaction, state, accumulators, t_register,
+            completion.x_value_word, completion.y_value_word);
         if (status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
             result->status = status;
             return status;

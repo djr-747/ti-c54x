@@ -38,6 +38,8 @@ DUAL_CANDIDATE_HEADER = (
 DUAL_CANDIDATE_SOURCE = (
     DUAL_READ_DIR / "memory_instruction_dual_candidate_validate.c"
 )
+DUAL_COMMIT_HEADER = DUAL_READ_DIR / "memory_instruction_dual_commit.h"
+DUAL_COMMIT_SOURCE = DUAL_READ_DIR / "memory_instruction_dual_commit.c"
 PAIR_DISPATCH_HEADER = DUAL_READ_DIR / "memory_instruction_pair_dispatch.h"
 PAIR_DISPATCH_SOURCE = DUAL_READ_DIR / "memory_instruction_pair_dispatch.c"
 ROOT_HEADER = DUAL_READ_DIR / "memory_instruction_transaction.h"
@@ -92,6 +94,8 @@ class DualWord16HotPathTests(unittest.TestCase):
             DUAL_ROOT_SOURCE,
             DUAL_CANDIDATE_HEADER,
             DUAL_CANDIDATE_SOURCE,
+            DUAL_COMMIT_HEADER,
+            DUAL_COMMIT_SOURCE,
             PAIR_DISPATCH_HEADER,
             PAIR_DISPATCH_SOURCE,
         )

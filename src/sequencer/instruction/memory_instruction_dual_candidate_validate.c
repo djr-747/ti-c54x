@@ -1,10 +1,12 @@
 /*
  * Module contract
  *
- * Owns: structural and live-state validation of the copied W50A dual-memory
- * candidate arm. Structural validation proves both canonical DATA READ
- * requests and both MOD0 address snapshots; live validation rechecks only
- * the planned PC and the two source AR snapshots before a resume.
+ * Owns: structural and live-state validation of the copied W50A/W51B
+ * dual-memory candidate arm. Structural validation proves both canonical
+ * DATA READ requests, both MOD0/MOD1/MOD2 address snapshots, and both
+ * value-owned commit descriptors against the copied mode/selector/address
+ * shadows; live validation rechecks only the planned PC and the two source
+ * AR snapshots before a resume.
  * Does not own: candidate construction, transaction lifecycle, address
  * planning, CMPT/ARP policy, endpoint I/O, architectural mutation, opcode
  * semantics, timing, observers, diagnostics, or allocation. All arguments
@@ -22,8 +24,7 @@
 #include "sequencer/program_pc_bridge.h"
 
 static bool
-dual_mod0_request_side_is_valid(
-    const ti_c54x_bus_word16_request *request)
+dual_request_side_is_valid(const ti_c54x_bus_word16_request *request)
 {
     if (request == NULL || !ti_c54x_bus_word16_request_is_valid(request) ||
         request->space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
@@ -32,6 +33,81 @@ dual_mod0_request_side_is_valid(
         return false;
     }
     return true;
+}
+
+static bool
+dual_mode_is_valid(uint8_t mode)
+{
+    return mode <= UINT8_C(2);
+}
+
+static bool
+dual_no_update_commit_is_valid(
+    const ti_c54x_sequencer_address_commit *commit)
+{
+    return commit != NULL &&
+           commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
+           commit->ar_index == UINT8_C(0) &&
+           commit->value_after == UINT16_C(0);
+}
+
+static bool
+dual_side_commit_matches(uint8_t mode, uint8_t ar, uint32_t address_word,
+                         bool aliased_y,
+                         const ti_c54x_sequencer_address_commit *commit)
+{
+    if (commit == NULL || address_word > UINT32_C(0xffff)) {
+        return false;
+    }
+    /* A same-selector alias carries one X-owned update; the Y side reads the
+     * same frozen address but stages no independent commit. */
+    if (aliased_y || mode == UINT8_C(0)) {
+        return dual_no_update_commit_is_valid(commit);
+    }
+    if (mode == UINT8_C(1)) {
+        /* The resolver rejects the zero boundary, so a forged zero address
+         * cannot wrap into a pending candidate here. */
+        if (address_word == UINT32_C(0)) {
+            return false;
+        }
+        return commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               commit->ar_index == ar &&
+               commit->value_after ==
+                   (uint16_t)(address_word - UINT32_C(1));
+    }
+    if (mode == UINT8_C(2)) {
+        /* The resolver rejects the 0xffff boundary; require the exact
+         * non-wrapping successor. */
+        if (address_word == UINT32_C(0xffff)) {
+            return false;
+        }
+        return commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               commit->ar_index == ar &&
+               commit->value_after ==
+                   (uint16_t)(address_word + UINT32_C(1));
+    }
+    return false;
+}
+
+bool
+ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
+    const ti_c54x_dual_memory_address_snapshot *snapshot,
+    const struct ti_c54x_op_memory_address_spec *spec)
+{
+    if (snapshot == NULL || spec == NULL ||
+        spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
+        !dual_mode_is_valid(spec->dual.x_mode) ||
+        !dual_mode_is_valid(spec->dual.y_mode)) {
+        return false;
+    }
+    if (!dual_side_commit_matches(
+            spec->dual.x_mode, spec->dual.x_ar,
+            snapshot->x_request.address_word, false, &snapshot->x_commit)) {
+        return false;
+    }
+    return dual_side_commit_matches(
+        spec->dual.y_mode, spec->dual.y_ar, snapshot->y_request.address_word,
+        spec->dual.x_ar == spec->dual.y_ar, &snapshot->y_commit);
 }
 
 bool
@@ -48,8 +124,8 @@ ti_c54x_memory_instruction_dual_candidate_shape_is_valid(
         return false;
     }
     spec = &effect->address_spec;
-    if (spec->dual.x_mode != UINT8_C(0) ||
-        spec->dual.y_mode != UINT8_C(0) ||
+    if (!dual_mode_is_valid(spec->dual.x_mode) ||
+        !dual_mode_is_valid(spec->dual.y_mode) ||
         spec->dual.x_ar < UINT8_C(2) || spec->dual.x_ar > UINT8_C(5) ||
         spec->dual.y_ar < UINT8_C(2) || spec->dual.y_ar > UINT8_C(5) ||
         spec->dual.reserved_word0 != UINT32_C(0) ||
@@ -58,14 +134,19 @@ ti_c54x_memory_instruction_dual_candidate_shape_is_valid(
         spec->dual.reserved_word3 != UINT32_C(0)) {
         return false;
     }
-    if (!dual_mod0_request_side_is_valid(&snapshot->x_request) ||
-        !dual_mod0_request_side_is_valid(&snapshot->y_request)) {
+    if (!dual_request_side_is_valid(&snapshot->x_request) ||
+        !dual_request_side_is_valid(&snapshot->y_request)) {
         return false;
     }
     /* A selector alias is read twice during planning.  It is valid only if
      * both frozen snapshots agree, proving the pair was not torn. */
-    return spec->dual.x_ar != spec->dual.y_ar ||
-           snapshot->x_request.address_word == snapshot->y_request.address_word;
+    if (spec->dual.x_ar == spec->dual.y_ar &&
+        snapshot->x_request.address_word !=
+            snapshot->y_request.address_word) {
+        return false;
+    }
+    return ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
+        snapshot, spec);
 }
 
 static bool

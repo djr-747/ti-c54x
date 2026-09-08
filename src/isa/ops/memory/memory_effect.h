@@ -7,8 +7,8 @@
  * Owns: the value-only generic WORD16 data-memory effect carrier, including
  * its MOD0--MOD3 single-indirect, AR0-indexed MOD5/MOD6, circular
  * MOD8/MOD10, ARF-selected reverse-carry MOD4/MOD7, and CMPT=0
- * MOD13 LONG32 and dual-indirect MOD0/MOD0 WORD16 address specifications and
- * static completion callback shapes.
+ * MOD13 LONG32 and dual-indirect MOD0/MOD1/MOD2 WORD16 address specifications
+ * and static completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -73,7 +73,7 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint8_t arf;
         };
         struct {
-            /* Dual-indirect forms carry two fixed MOD0 AR selectors. */
+            /* Dual-indirect forms carry two MOD0/MOD1/MOD2 AR selectors. */
             uint8_t x_mode;
             uint8_t x_ar;
             uint8_t y_mode;
