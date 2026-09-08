@@ -49,6 +49,9 @@ contracts are tightened.
 P2-W42B is active as the bounded fan-out of that seam across the ten existing
 fixed-MOD2 Smem families; it replaces those rows with neutral MOD-bearing
 forms without adding opcode identities.
+P2-W43A is staged as the next generic indexed WORD16 MEMORY seam only; it adds
+no catalog row, opcode handler, or instruction-family claim. P2-W43B remains
+blocked pending explicit primary per-family MOD5/MOD6 encoding composition.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -289,6 +292,51 @@ threshold. `operand_layout.c` is ~577 lines and remains cohesive for now; it
 must be split before further growth approaches 800 lines. W42A completion and
 lookup projections are preserved, and no duplicate/conflicting row semantics
 are admitted.
+
+### P2-W43A: generic indexed WORD16 MEMORY seam (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the W43A
+activation. W43A is a generic transaction prerequisite only; it does not add
+catalog rows, opcode identities, handlers, or a CPU opcode branch. The private
+address kind is `INDEXED_AR0_WORD16`, with an explicit MOD5/MOD6 discriminator.
+The resolver reads CMPT and ARP, then the selected AR and AR0 from the copied
+private `arch_state`; it reuses the existing indexed planner and candidate/
+commit structures. MOD5 uses the old selected ARx as the WORD16 address and
+schedules ARx−AR0 after access, rejecting ARx<AR0; MOD6 uses ARx+AR0 and
+rejects unsigned overflow. Selected AR0 aliasing is rejected, and AR0 never
+mutates. Both READ and WRITE are admitted by this seam.
+
+The root transaction remains atomic: WAIT, FAULT, and cancel preserve all
+architectural state; READY validates both selected-AR and AR0 snapshots and
+commits the selected AR, program PC, and MEMORY effect together. No timing,
+device/MMR, IRQ, RPT, wrap, machine-cycle, public-ABI, or new public CPU
+snapshot claim is admitted. No new `op_input` or CPU snapshot field is planned.
+The three RED lanes are project-contract tests for the MEMORY effect shape,
+resolver, and root transaction, owned respectively by `src/isa/ops/memory/`,
+`src/sequencer/memory/`, and `src/sequencer/instruction/`, with owner-local
+proposed test files `test_indexed_word16_memory_effect.c`,
+`test_indexed_word16_memory_resolver.c`, and
+`test_indexed_word16_memory_transaction.c`; implementation should register
+the CTest runners `ti_c54x.indexed_word16_memory_effect`,
+`ti_c54x.indexed_word16_memory_resolver`, and
+`ti_c54x.indexed_word16_memory_transaction` when each lane closes.
+
+The existing `memory_instruction_transaction.c` root owner is already 523
+lines; W43A candidate validation must be split before or with implementation if
+the seam would grow that monolith. The indexed resolver must be inspected at
+implementation start and split if it approaches the repository review threshold;
+no size growth is evidence of completion. Existing indexed-addressing TI and
+project-contract evidence is reused; no new evidence is admitted by activation.
+
+### P2-W43B: indexed MOD5/MOD6 per-family composition (blocked candidate)
+
+W43B is explicitly blocked pending an authoritative primary source composition
+for each instruction family that would combine MOD5/MOD6 with its opcode and
+operand layout. The current projection is a candidate only, not frozen
+evidence: likely 20 rows, `ID_COUNT` 36→56, and populated first-word lookup
+1863→2103. These numbers must not be used for coverage, catalog, or evidence
+claims until the per-family encodings are pinned and a separate activation is
+approved.
 
 ## Objective
 
