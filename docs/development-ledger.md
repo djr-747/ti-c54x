@@ -5646,3 +5646,55 @@ rewritten after publication.
   legal encodings and 88 load MOD3 encodings that handlers must reject before
   a bus request. Inventory coverage remains 35/205 = 17.073% catalog-family
   and 25/205 = 12.195% strict complete-form until those forms are implemented.
+
+## 2026-09-08 — P2-W42A standard-indirect MOD0–3 seam implementation
+
+- State: implementation commit
+  `ef099cf26972a08837d7bb0619da54ee6bc91791` completes the generic W42A
+  memory-transaction seam. The production opcode catalog and handlers remain
+  unchanged.
+- Three owner-local RED contracts first failed at the existing fixed-MOD2
+  gates: MOD0 effect validation, MOD0 address resolution, and MOD0 root
+  transaction preparation. Production changes followed those failures; no
+  child agent created a commit.
+- The existing `SINGLE_INDIRECT_WORD16` effect now admits reads through MOD0,
+  MOD1, and MOD2 and writes through MOD0 to MOD3. MOD3 reads remain
+  structurally invalid before address resolution or endpoint issue. Existing
+  access, write-value, completion-callback, ARF, kind, and enum-range shape
+  validation remains allocation-free and value-owned.
+- The generic resolver continues to use the existing checked single-indirect
+  planner. MOD0 requests the old address and stages no AR commit; MOD1 and
+  MOD2 request the old address with decrement/increment `POST` commits; MOD3
+  writes request the incremented address with a `PRE` commit descriptor. Mode
+  boundaries reject without producing candidates or mutating state.
+- The root transaction validates those mode-specific candidates before issue.
+  `WAIT`, `FAULT`, and cancel preserve AR, PC, and ordinary effects; `READY`
+  commits the selected AR only when an AR target exists and publishes PC and
+  effects under the existing atomic transaction policy. `PRE` remains ordering
+  metadata and is not exposed as a live AR mutation during `WAIT`. The
+  externally visible write-READY path still performs only infallible scalar
+  publication after the endpoint accepts the write.
+- `memory_instruction_transaction.c` is 523 lines. Independent review found
+  the root transaction cohesive and explicitly retains it unsplit for this
+  work piece. Candidate validation must split if growth approaches roughly
+  700 lines and the file must be split before 800 lines.
+- Validation: six focused new/existing effect, resolver, and transaction tests
+  passed under strict flags; a fresh ASan/UBSan CMake build passed the three
+  W42A CTests (3/3); `make quality-test` passed all 207 Python tests and every
+  quality gate; and the authoritative standalone `make test` passed all C
+  tests and the minimal example. Evidence, build-manifest, and diff checks are
+  green. The known 535-line operand-layout warning and the reviewed 523-line
+  transaction warning are the only size-review warnings.
+- Independent Luna semantic and integration reviews found no blocking issue.
+  Existing fixed-MOD2 handlers and CPU memory lifecycle/pending regressions
+  remain green.
+- Evidence accounting is 162 records; 249 requirements (212 IMPLEMENTED,
+  8 PLANNED, 29 UNRESOLVED); 203 tests (195 PASSING, 8 PLANNED); and 7 sources.
+  No public ABI, catalog identity, generated decode, opcode handler, CPU opcode
+  branch, effect/address/state kind, timing, machine-cycle, IRQ/RPT,
+  device/MMR, knob, environment, diagnostic, allocation, mutable-global, or
+  emulator dependency was added.
+- Inventory coverage therefore remains 35/205 = 17.073% catalog-family and
+  25/205 = 12.195% strict complete-form. W42B is the next throughput slice:
+  bind the ten existing partial Smem families to explicit MOD0–3 operand
+  layouts and reuse this seam, including pre-bus rejection of load MOD3.
