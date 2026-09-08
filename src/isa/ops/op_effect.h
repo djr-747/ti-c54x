@@ -14,8 +14,8 @@
  * carries a copied field target/value only; mutation belongs to the status
  * sequencer. STATUS_BIT_WRITE carries a copied ST0/ST1 target, bit index, and
  * binary value; mutation belongs to the status sequencer. ACCUMULATOR_WRITE
- * carries only a canonical destination value
- * and explicit C/TC status disposition; mutation belongs to its sequencer.
+ * carries only a canonical destination value and explicit C/TC/destination-
+ * overflow status disposition; mutation belongs to its sequencer.
  * T_REGISTER_WRITE carries one copied 16-bit T value; mutation belongs to
  * the temporary-register sequencer.
  * Callers own each effect object.
@@ -75,9 +75,16 @@ typedef enum ti_c54x_op_status_bit_action {
     TI_C54X_OP_STATUS_BIT_ACTION_COUNT = 3
 } ti_c54x_op_status_bit_action;
 
+typedef enum ti_c54x_op_destination_overflow_action {
+    TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE = 0,
+    TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1 = 1,
+    TI_C54X_OP_DESTINATION_OVERFLOW_ACTION_COUNT = 2
+} ti_c54x_op_destination_overflow_action;
+
 typedef struct ti_c54x_op_status_delta {
     ti_c54x_op_status_bit_action c_action;
     ti_c54x_op_status_bit_action tc_action;
+    ti_c54x_op_destination_overflow_action destination_overflow_action;
 } ti_c54x_op_status_delta;
 
 typedef struct ti_c54x_op_accumulator_write_effect {

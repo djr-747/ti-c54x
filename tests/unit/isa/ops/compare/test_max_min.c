@@ -154,7 +154,7 @@ int main(void)
             TI_C54X_TEST_CHECK(ti_c54x_op_max_acc(&forged, &input, &effect) ==
                                TI_C54X_OP_STATUS_INVALID_DECODE);
             TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
-            forged.input_resources = (ti_c54x_input_resource_mask)0x80U;
+            forged.input_resources = (ti_c54x_input_resource_mask)0x0100U;
             TI_C54X_TEST_CHECK(ti_c54x_dispatch_decoded_with_input_snapshot(
                                    &forged, &input, &effect) ==
                                TI_C54X_OP_STATUS_INVALID_DECODE);

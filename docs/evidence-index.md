@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 188 immutable evidence records,
-310 requirements (274 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`), and 264 tests
-(257 `PASSING`, 7 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 192 immutable evidence records,
+314 requirements (278 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`), and 269 tests
+(262 `PASSING`, 7 `PLANNED`).
 
 Current catalog state is 100 rows with ID_COUNT 101, 2,711 populated
 first-word lookup entries, and 100 inventory bindings. Inventory family coverage
@@ -52,6 +52,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6.2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
 | `E-TI-C54X-SPRU131G-S6.9-P6-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.9, `6-25` |
 | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-2`–`4-5` |
+| `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1, `4-2`–`4-5` |
+| `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.2 through 4.2.3, `4-10`–`4-12` |
+| `E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §NEG, `4-119`–`4-120` |
 | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-2` |
 | `E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.2, `4-6`–`4-8` |
 | `E-TI-C54X-SPRU131G-S3.3.4.6-P3-28` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §3.3.4.6, `3-28` |
@@ -130,6 +133,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W48A: observable RC progression lifecycle (implemented)` |
 | `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W48B: repeat-gated pending IFR latch (implemented)` |
 | `E-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W48C: DLD repeatability correction (implemented)` |
+| `E-PROJECT-P2-W49A-BIT32-ALU-STATUS-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)` |
 | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21A: private WORD16 bus-request contract (active kickoff)` |
 | `E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21B: explicit WORD16 byte-order codec (implemented)` |
 | `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21C: resumable WORD16 transaction protocol (implemented)` |
@@ -445,6 +449,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | `T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` |
 | `REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/interrupt/` | `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | `T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` |
 | `REQ-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/catalog/` | `E-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` | `T-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` |
+| `REQ-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/foundation/` | `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW`, `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION`, `E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN` | `T-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION` |
+| `REQ-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/status/` | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5`, `E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES`, `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW` | `T-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS` |
+| `REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W49A-BIT32-ALU-STATUS-FOUNDATION` | `T-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER`, `T-PROJECT-P2-W49A-CARRIER-ABI` |
+| `REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/accumulator/` | `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW`, `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION` | `T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` |
 | `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/request/` | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/byte_order/` | `E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT` | `T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` |
 | `REQ-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-DECODE` |
@@ -734,6 +742,11 @@ exist in the repository.
 | `T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_interrupt_flag_register_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.interrupt_flag_register_contract"}` | `REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` |
 | `T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/interrupt/test_repeat_pending_request_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_pending_request_contract"}` | `REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` |
 | `T-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/catalog/test_dld_repeatability_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dld_repeatability_contract"}` | `REQ-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION` |
+| `T-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION` | PASSING | COMMON_TI | `tests/unit/foundation/test_arithmetic40_addsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arithmetic40_addsub"}` | `REQ-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION` |
+| `T-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS` | PASSING | COMMON_TI | `tests/unit/state/status/test_overflow_fields.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.status_overflow_fields"}` | `REQ-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS` |
+| `T-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_ovm_status.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_input_collect_ovm_status"}` | `REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER` |
+| `T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` | PASSING | COMMON_TI | `tests/unit/sequencer/accumulator/test_accumulator_overflow_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.accumulator_overflow_effect"}` | `REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` |
+| `T-PROJECT-P2-W49A-CARRIER-ABI` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_w49a_carrier_abi.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER` |
 | `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/request/test_word16_request.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bus_word16_request"}` | `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/byte_order/test_word16_codec.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bus_word16_codec"}` | `REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` |
 | `T-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_rpt_immediate_decode.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-DECODE` |

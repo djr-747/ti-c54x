@@ -5,9 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 188 immutable evidence
-records, 310 requirements (274 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
-and 264 tests (257 `PASSING`, 7 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 192 immutable evidence
+records, 314 requirements (278 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
+and 269 tests (262 `PASSING`, 7 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -401,6 +401,24 @@ negative classification to `UNRESOLVED`; DST remains `INELIGIBLE`. Both states
 remain non-admitting through the tri-state body policy. A trusted repeat-body
 cache can be designed as a fixed-size project seam, but no production row may
 enter it until positive eligibility evidence exists.
+
+### Bit-32 ADD/SUB and overflow foundation (P2-W49A implemented)
+
+The common 40-bit arithmetic owner now reports three independent facts for
+canonical ADD and SUB inputs: the modulo-2^40 result, carry or no-borrow at bit
+32, and overflow direction against the signed 32-bit result range. It owns no
+OVM storage decision or architectural mutation. Signed-40 extrema and guard-bit
+independence are covered directly, so later instruction handlers do not need to
+reconstruct these rules.
+
+Typed status access owns ST1.OVM and sticky destination-specific ST0.OVA/OVB.
+The copied input resource mask is widened to 16 bits before assigning OVM bit
+`0x0080`; the 48-byte input snapshot and trusted carriers remain fixed on LP64
+and supported ILP32. The existing accumulator effect transaction can preserve
+or set the selected overflow flag atomically with accumulator, C, and TC state.
+No ADD/SUB catalog row, opcode-specific CPU branch, public ABI, repeat decision,
+or timing claim is activated in this foundation; W49B owns the register-only
+instruction composition and its public-CPU benchmark.
 
 ### WORD16 bus-request boundary (P2-W21A implemented)
 

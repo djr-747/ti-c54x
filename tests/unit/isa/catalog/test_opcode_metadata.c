@@ -166,7 +166,7 @@ test_forged_tokens_are_rejected_transactionally(void)
     TI_C54X_TEST_CHECK(memcmp(before, &effect, sizeof(effect)) == 0);
 
     instruction = valid_nop();
-    instruction.input_resources = (ti_c54x_input_resource_mask)0x80U;
+    instruction.input_resources = (ti_c54x_input_resource_mask)0x0100U;
     (void)memset(&effect, 0x71, sizeof(effect));
     (void)memcpy(before, &effect, sizeof(before));
     TI_C54X_TEST_CHECK(ti_c54x_dispatch_decoded(&instruction, &effect) ==

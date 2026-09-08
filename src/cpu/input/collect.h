@@ -4,7 +4,7 @@
 /* Module contract
  * Owns: transactional collection of the catalog-declared input resources
  * needed by one opcode handler into a copied input snapshot. Status C, TC, SXM,
- * SST, auxiliary registers, and T are independently selectable resources;
+ * SST, OVM, auxiliary registers, and T are independently selectable resources;
  * unrequested sources are not read. Source pointers are borrowed for one call
  * and the copied snapshot is caller-owned.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, mutation,

@@ -127,7 +127,7 @@ test_direct_nop_rejects_forged_values_transactionally(void)
             TI_C54X_NOP_CALL(&instruction, &effect),
             TI_C54X_OP_STATUS_INVALID_DECODE, &effect, before);
     }
-    instruction.input_resources = (ti_c54x_input_resource_mask)0x80U;
+    instruction.input_resources = (ti_c54x_input_resource_mask)0x0100U;
     {
         ti_c54x_op_effect effect;
         unsigned char before[sizeof(effect)];

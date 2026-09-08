@@ -246,6 +246,54 @@
       "assertion": "ST0 and ST1 are 16-bit status registers. ST0 assigns ARP to bits 15-13, TC to bit 12, C to bit 11, OVA to bit 10, OVB to bit 9, and DP to bits 8-0. ST1 assigns BRAF to bit 15, CPL to bit 14, XF to bit 13, HM to bit 12, INTM to bit 11, reserves bit 10 as read-zero, OVM to bit 9, SXM to bit 8, C16 to bit 7, FRCT to bit 6, CMPT to bit 5, and ASM to bits 4-0; Table 4-1 and Table 4-2 provide the listed reset values."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.1",
+        "printed_page_start": "4-2",
+        "printed_page_end": "4-5"
+      },
+      "assertion": "C is set when addition carries at bit 32 and otherwise cleared; subtraction clears C on a bit-32 borrow and otherwise sets it, except for the separately identified fixed 16-bit-shift forms. OVA and OVB are destination-specific overflow flags that remain set until an explicit documented clear event. OVM selects normal overflowing accumulator results when zero and positive or negative saturation when one."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.2 through 4.2.3",
+        "printed_page_start": "4-10",
+        "printed_page_end": "4-12"
+      },
+      "assertion": "The ALU and its accumulator/shifter inputs are 40 bits. When an ALU result overflows, OVM=0 loads the ALU result without modification, while OVM=1 loads the most-positive signed-32 value 00 7FFF FFFFh or the most-negative signed-32 value FF 8000 0000h according to overflow direction. The destination OVA/OVB flag is set and remains sticky."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "NEG",
+        "printed_page_start": "4-119",
+        "printed_page_end": "4-120"
+      },
+      "assertion": "NEG identifies FF 8000 0000h as a lower-32-bit overflow boundary: OVM=0 produces 00 8000 0000h, OVM=1 produces 00 7FFF FFFFh, and the destination overflow flag is set in either mode. Its examples also show the signed-40 minimum 80 0000 0000h overflowing under negation, remaining modulo-40 when OVM=0 and saturating positive when OVM=1."
+    },
+    {
       "id": "E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES",
       "immutable": true,
       "state": "PINNED",
@@ -1420,6 +1468,20 @@
         "anchor": "P2-W48C: DLD repeatability correction (implemented)"
       },
       "assertion": "The P2-W48C project contract corrects DLD_LONG32_MOD13 repeatability from INELIGIBLE to UNRESOLVED. The official negative lists omit DLD and its instruction entry makes no repeatability statement; absence from a negative list is not positive authorization, so ELIGIBLE is also unsupported. DST_LONG32_MOD13 and every other evidenced negative remain INELIGIBLE. The correction changes metadata validation only, not opcode identity, lookup, operand extraction, semantics, CPU execution, inventory coverage, timing, or the current hot path."
+    },
+    {
+      "id": "E-PROJECT-P2-W49A-BIT32-ALU-STATUS-FOUNDATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)"
+      },
+      "assertion": "W49A defines a separate checked modulo-40 ADD/SUB foundation that reports bit-32 carry or no-borrow and signed-32 overflow direction without owning OVM policy. It adds typed OVM/OVA/OVB access, widens the private catalog input-resource mask to sixteen bits before assigning OVM bit 0x0080, preserves the 48-byte input snapshot and trusted carriers, and extends ACCUMULATOR_WRITE with a destination-overflow preserve-or-set action committed atomically with accumulator, C, and TC state. No catalog row, semantic handler, CPU opcode branch, public ABI, runtime repeat behavior, timing claim, allocation, I/O, observation, diagnostics, environment access, or mutable process state is introduced."
     },
     {
       "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
@@ -4143,6 +4205,46 @@
       "claim": "Classify DLD_LONG32_MOD13 repeatability as UNRESOLVED because no pinned primary evidence authorizes or prohibits it, while preserving DST_LONG32_MOD13 as INELIGIBLE. Generic repeat-body admission must keep both classes non-admitting and distinct. The correction must not change either opcode identity, encoding, layout, resources, semantic output, lookup population, inventory binding, CPU routing, or carrier size.",
       "evidence_ids": ["E-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"],
       "test_ids": ["T-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/foundation/",
+      "claim": "For two canonical 40-bit accumulator-lane operands, produce the exact modulo-2^40 ADD or SUB result, report ADD carry or SUB no-borrow at bit 32 independently of guard-bit carry, and classify overflow direction whenever the mathematical signed-40 result is above 2^31-1 or below -2^31, including signed-40 extrema. This foundation reports facts only and does not choose OVM storage or mutate status.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW", "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION", "E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN"],
+      "test_ids": ["T-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/state/status/",
+      "claim": "Provide field-local knownness-aware access to ST1.OVM bit 9 and ST0.OVA/OVB bits 10/9. Binary writes replace and establish only the selected field, invalid writes preserve state, and unknown reads publish no invented architectural value.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5", "E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES", "E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW"],
+      "test_ids": ["T-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Widen the private catalog input-resource mask to uint16_t before registering STATUS_OVM at bit 0x0080, retain representable invalid and future bits, and collect OVM as a copied binary value plus explicit knownness only when requested. Rejected masks and invalid sources preserve output. The change must not widen opcode metadata, decoded instruction, trusted binding, trusted packet, or the 48-byte LP64/ILP32-covered opcode-input snapshot and adds no opcode-specific CPU branch.",
+      "evidence_ids": ["E-PROJECT-P2-W49A-BIT32-ALU-STATUS-FOUNDATION"],
+      "test_ids": ["T-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER", "T-PROJECT-P2-W49A-CARRIER-ABI"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/accumulator/",
+      "claim": "Extend an accumulator write with an explicit destination-overflow action: no overflow preserves the selected OVA/OVB value and knownness, while overflow sets the destination accumulator's flag without clearing the other sticky flag. Accumulator, C, TC, and destination-overflow changes validate and publish as one transaction; malformed actions publish nothing and the outer effect carrier remains unchanged in size.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW", "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION"],
+      "test_ids": ["T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT"]
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
@@ -6910,6 +7012,46 @@
       "path": "tests/unit/isa/catalog/test_dld_repeatability_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_repeatability_contract"},
       "requirement_ids": ["REQ-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"]
+    },
+    {
+      "id": "T-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/foundation/test_arithmetic40_addsub.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.arithmetic40_addsub"},
+      "requirement_ids": ["REQ-COMMON-P2-W49A-ALU-BIT32-ADD-SUB-FOUNDATION"]
+    },
+    {
+      "id": "T-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/state/status/test_overflow_fields.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.status_overflow_fields"},
+      "requirement_ids": ["REQ-COMMON-P2-W49A-OVM-OVA-OVB-STATUS-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_ovm_status.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_ovm_status"},
+      "requirement_ids": ["REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER"]
+    },
+    {
+      "id": "T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/accumulator/test_accumulator_overflow_effect.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.accumulator_overflow_effect"},
+      "requirement_ids": ["REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W49A-CARRIER-ABI",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_w49a_carrier_abi.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W49A-OVM-INPUT-RESOURCE-CARRIER"]
     },
     {
       "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",

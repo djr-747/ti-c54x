@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W48C complete):
+Current snapshot (P2-W49A complete):
 
 - 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
   inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
@@ -55,7 +55,11 @@ Current snapshot (P2-W48C complete):
   become runtime behavior. A full repeatability audit also corrected DLD from an
   unsupported `INELIGIBLE` classification to `UNRESOLVED`; no current catalog row
   is positively evidenced `ELIGIBLE`.
-- Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
+- The shared ADD/SUB foundation now produces modulo-40 results, bit-32
+  carry/no-borrow, and signed-32 overflow direction. Typed OVM/OVA/OVB access,
+  copied OVM input, and atomic sticky destination-overflow effects are green;
+  LP64/ILP32 carrier sizes are frozen. Register-only ADD/SUB activation is next.
+- Remaining high-level gaps are broader arithmetic-family activation, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ
   details are unresolved; emulator integration remains deferred.

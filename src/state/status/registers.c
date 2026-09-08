@@ -165,6 +165,30 @@ ti_c54x_status_register_read_c(const ti_c54x_status_register_state *state)
                       TI_C54X_ST0_C_MASK, TI_C54X_ST0_C_SHIFT);
 }
 
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_ova(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st0,
+                      state == NULL ? 0U : state->st0_known_mask,
+                      TI_C54X_ST0_OVA_MASK, 10U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_ovb(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st0,
+                      state == NULL ? 0U : state->st0_known_mask,
+                      TI_C54X_ST0_OVB_MASK, 9U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_ovm(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_OVM_MASK, 9U);
+}
+
 ti_c54x_status_register_status
 ti_c54x_status_register_write_dp(ti_c54x_status_register_state *state,
                                   uint16_t raw_value)
@@ -253,6 +277,39 @@ ti_c54x_status_register_write_sst(ti_c54x_status_register_state *state,
     }
     return write_field(&state->pmst, &state->pmst_known_mask,
                        TI_C54X_PMST_SST_MASK, 0U, raw_value, UINT8_C(1));
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_ova(ti_c54x_status_register_state *state,
+                                   uint8_t raw_value)
+{
+    if (state == NULL || raw_value > UINT8_C(1)) {
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+    return write_field(&state->st0, &state->st0_known_mask,
+                       TI_C54X_ST0_OVA_MASK, 10U, raw_value, UINT8_C(1));
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_ovb(ti_c54x_status_register_state *state,
+                                   uint8_t raw_value)
+{
+    if (state == NULL || raw_value > UINT8_C(1)) {
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+    return write_field(&state->st0, &state->st0_known_mask,
+                       TI_C54X_ST0_OVB_MASK, 9U, raw_value, UINT8_C(1));
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_ovm(ti_c54x_status_register_state *state,
+                                   uint8_t raw_value)
+{
+    if (state == NULL || raw_value > UINT8_C(1)) {
+        return TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT;
+    }
+    return write_field(&state->st1, &state->st1_known_mask,
+                       TI_C54X_ST1_OVM_MASK, 9U, raw_value, UINT8_C(1));
 }
 
 ti_c54x_status_register_status

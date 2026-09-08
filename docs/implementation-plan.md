@@ -91,7 +91,10 @@ lifecycle and documented alternate clear paths. Neither slice changes the curren
 CPU hot path. P2-W48C corrects the unsupported DLD repeatability classification
 to `UNRESOLVED`; no catalog row is yet positively evidenced `ELIGIBLE`. Runtime
 RPT activation still waits on single-repeat PC flow, predecode interrupt
-arbitration, and positive body-eligibility evidence.
+arbitration, and positive body-eligibility evidence. P2-W49A is
+implementation-complete as the shared bit-32 ADD/SUB arithmetic, OVM input,
+typed OVA/OVB/OVM status, and atomic sticky-overflow effect foundation. W49B
+owns register-only ADD/SUB activation and its public-CPU performance proof.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -910,6 +913,7 @@ function-pointer dispatch tables.
 | P2-W48A observable RC progression lifecycle | Implemented — focused state/repeat contracts and full 65,536-body progression GREEN | Add typed RC access and a fixed-size transactional REPEAT_START/body-retirement reducer; preserve exact count, stale/unknown rejection, terminal RC zero, and zero current CPU hot-path impact without activating RPT decode or PC replay |
 | P2-W48B repeat-gated pending IFR latch | Implemented — focused state/interrupt contracts and authoritative full gate GREEN | Add typed one-bit IFR mutation and a fixed-size maskable-request receive/defer/take lifecycle with separate reset, IFR-write-one, and INTR clears; preserve unrelated flags and zero current CPU hot-path impact without claiming NMI mapping, priority, or predecode arbitration |
 | P2-W48C DLD repeatability correction | Implemented — focused metadata/admission tests and authoritative full gate GREEN | Correct DLD_LONG32_MOD13 from unsupported INELIGIBLE to UNRESOLVED while retaining DST and the other evidenced negatives; do not infer ELIGIBLE from absence in a negative list or change execution/coverage/hot-path behavior |
+| P2-W49A bit-32 ADD/SUB overflow and status foundation | Implemented — focused semantic/layout tests, supported ILP32 probe, evidence gate, semantic review, and interleaved observer-off benchmark GREEN | Provide modulo-40 ADD/SUB facts, bit-32 carry/no-borrow, signed-32 overflow direction, typed OVM/OVA/OVB, copied OVM input, and atomic sticky overflow effects without activating an instruction row or materially regressing the current CPU path |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
@@ -2229,6 +2233,52 @@ instruction hot-path work. Closure accounting is 188 immutable evidence records;
 tests (257 `PASSING`, 7 `PLANNED`). Catalog and ISA coverage remain 100 rows,
 `ID_COUNT=101`, 2,711 lookup entries, 100 bindings, 40/205 family coverage, and
 25/205 strict coverage.
+
+### P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)
+
+TI SPRU131G describes a 40-bit ALU and accumulator lane while defining carry
+and borrow at bit 32. Arithmetic overflow for the common C54x mode is measured
+against the signed 32-bit result range: with OVM clear, the full modulo-40 ALU
+result is retained; with OVM set, a positive or negative overflow is replaced
+by `00 7FFF FFFFh` or `FF 8000 0000h`. The destination accumulator's OVA or
+OVB flag is set on overflow and otherwise remains sticky. W49A establishes
+these shared rules before any ADD or SUB catalog form is activated.
+
+`src/foundation/arithmetic40_addsub.[ch]` owns checked, allocation-free ADD and
+SUB primitives over canonical 40-bit operands. Each produces one modulo-40
+result, the exact low-32 carry or no-borrow result, and an explicit signed-32
+overflow direction. The foundation does not choose OVM storage policy or mutate
+status. It uses defined unsigned arithmetic for the lane and sufficiently wide
+signed arithmetic for overflow classification, including the signed-40 extrema.
+
+The private status owner adds typed knownness-aware OVM, OVA, and OVB access.
+The generic input-resource mask widens from eight to sixteen bits before OVM
+occupies bit `0x0080`, retaining representable invalid and future resource bits
+without widening the copied 48-byte opcode-input snapshot or trusted packet.
+The accumulator effect's status delta gains a destination-overflow action that
+may preserve or set the selected OVA/OVB flag but may not implicitly clear it.
+The existing accumulator-plus-status candidate remains the atomic commit unit;
+no new effect kind or opcode-specific CPU branch is introduced.
+
+Mirrored tests cover modulo-40 wrap, bit-32 carry/no-borrow independent of guard
+bits, signed-32 positive and negative overflow including signed-40 extremes,
+typed field knownness and transactional writes, OVM collection, sticky A/B
+overflow effects, malformed rejection, and LP64/ILP32 carrier-size stability.
+W49A adds no catalog row, handler, timing claim, runtime repeat behavior, bus
+work, public ABI, allocator, I/O, environment access, observer, diagnostic, or
+mutable process state. W49B will compose the separately evidenced register-only
+ADD/SUB syntax-9 forms through this seam and will benchmark the resulting public
+CPU path.
+
+W49A is implementation-complete. Its supported ILP32 probe freezes metadata,
+decoded instruction, input snapshot, trusted packet, and outer effect sizes at
+24/20/48/76/40 bytes; native LP64 remains 24/20/48/104/48. Six interleaved
+same-host observer-off benchmark pairs against the frozen W48C binary found no
+material regression: median deltas were -1.34% NOP, -2.96% LD-DP, -1.21%
+LD-ASM, +1.23% LD-ARP, and -3.62% mixed-current, with semantic hashes unchanged.
+Closure accounting is 192 immutable evidence records; 314 requirements (278
+`IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`); and 269 tests (262 `PASSING`, 7
+`PLANNED`). Catalog and inventory counts remain unchanged.
 
 ### P2-W21: shared-memory transaction foundation
 

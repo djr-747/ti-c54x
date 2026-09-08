@@ -140,7 +140,7 @@ int main(void)
 
     /* Invalid masks and missing requested status reject without mutation. */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x80U, &sources, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x0100U, &sources, &output);
     missing_sources = sources_for(NULL, NULL);
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_SXM,
