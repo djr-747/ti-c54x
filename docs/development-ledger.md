@@ -6491,3 +6491,36 @@ rewritten after publication.
   and 7 sources. W47B2 is next: typed SST input knownness, DLD/DST semantics and
   catalog/decode bindings, full CPU lifecycle tests, inventory activation, and
   the observer-off full-CPU benchmark.
+
+## 2026-09-08 — P2-W47B2A typed PMST.SST input seam
+
+- State: implementation commit
+  `d21b88451a078ffcc2e077725f91aa2452ccb6a7` adds typed PMST.SST read/write
+  access and knownness-aware input collection. Common reset deliberately leaves
+  SST unknown; a checked typed write establishes its value and knownness. SST
+  and SXM remain independently selectable catalog resources, and invalid
+  collection leaves caller-owned output unchanged.
+- The copied opcode-input snapshot remains 48 bytes on both supported LP64 and
+  ILP32 layouts by using existing padding. The input-resource mask remains an
+  8-bit value with SST assigned bit 6. No allocator, environment access, I/O,
+  logging, observer work, opcode dispatch branch, public ABI, or mutable global
+  state was added. No knob was added or changed.
+- The SST requirement was narrowed at implementation from its activation-time
+  combined wording to the state/input seam it actually owns. Rejection of
+  unknown required SXM/SST before any endpoint request remains explicitly owned
+  by the planned DLD/DST semantic and CPU lifecycle requirements; this commit
+  does not claim those opcode behaviors.
+- Validation is GREEN: focused status and input collection tests pass; the new
+  collector contract passes fresh ASan/UBSan; an ILP32 compile probe confirms
+  the 48-byte snapshot; and the authoritative clean `rtk make test` gate passes
+  the compiled C suite and all 237 Python quality tests. Evidence, manifests,
+  inventory, source boundaries, and the observer-disabled artifact check pass.
+  Warnings remain limited to the three previously reviewed 620/782/620-line
+  files. No GitHub or other hosted runner was invoked for this work piece.
+- Accounting is 181 evidence records; 304 requirements (260 IMPLEMENTED, 15
+  PLANNED, 29 UNRESOLVED); 258 tests (243 PASSING, 15 PLANNED); and 7 sources.
+  Catalog counts remain 98 rows, `ID_COUNT=99`, 2,679 lookup entries, and 98
+  bindings; family/strict coverage remains 38/205 and 25/205. W47B2B next adds
+  the two catalog rows, four-field layout, and pure checked/trusted DLD/DST
+  semantics without duplicate trusted-path extraction or resume-time source
+  recomputation.
