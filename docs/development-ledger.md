@@ -5775,3 +5775,37 @@ rewritten after publication.
   sources. No public ABI, effect/address/state kind, opcode-specific CPU
   branch, timing, machine-cycle, IRQ/RPT, device/MMR, knob, environment,
   diagnostic, allocation, mutable-global, or emulator dependency was added.
+
+## 2026-09-08 — P2-W43A indexed WORD16 memory seam activation
+
+- State: evidence and ownership activation landed as
+  `152738bfe5b8c7e04dfc4d80e1b7b936026b6904`. P2-W43A is the next generic
+  memory-transaction work piece; it adds no catalog row or opcode handler.
+- The planned private `INDEXED_AR0_WORD16` address kind carries an explicit
+  MOD5/MOD6 discriminator and admits WORD16 reads and writes. Resolution will
+  reuse the existing indexed planner after reading CMPT, ARP, selected AR, and
+  AR0 from private architectural state; no new operation-input resource or
+  public CPU snapshot is introduced.
+- MOD5 uses the old selected AR as the operand address and stages selected-AR
+  subtraction by AR0 after access; MOD6 stages addition. Underflow, overflow,
+  and selected-AR0 alias reject, AR0 never becomes a commit target, and no wrap
+  behavior is claimed.
+- Three owner-local RED contracts are planned for the generic MEMORY effect,
+  indexed resolver, and root transaction. WAIT, FAULT, and cancel must preserve
+  architecture; READY must validate both copied AR snapshots before publishing
+  the selected-AR, PC, and effect commits atomically.
+- The 523-line root memory transaction may not absorb unbounded mode-specific
+  validation: W43A must split candidate validation before or with implementation
+  if this seam would grow the monolith. The indexed resolver receives the same
+  implementation-start size review.
+- W43B remains blocked pending primary-source per-family MOD5/MOD6 encoding
+  composition. Its possible 20-row, ID_COUNT 36→56, and lookup 1,863→2,103
+  figures are projections only and are not catalog, evidence, or coverage
+  claims.
+- Activation accounting is 163 evidence records; 257 requirements (217
+  IMPLEMENTED, 11 PLANNED, 29 UNRESOLVED); 211 tests (200 PASSING, 11
+  PLANNED); and 7 sources. `make quality-test` passed all 207 Python tests and
+  every quality gate; the evidence checker and `git diff --check` passed.
+- No public ABI, catalog identity, handler, CPU opcode branch, timing,
+  machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
+  allocation, mutable-global, wrap, or emulator dependency is admitted.
