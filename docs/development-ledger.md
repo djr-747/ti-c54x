@@ -6795,3 +6795,47 @@ rewritten after publication.
   lookup entries, 100 bindings, 40/205 family coverage, and 25/205 strict
   coverage. W49B next composes the separately evidenced register-only ADD/SUB
   syntax-9 forms and measures their trusted public-CPU path.
+
+## 2026-09-09 — P2-W49B register ADD/SUB shift forms
+
+- State: implementation commit
+  `5cbacda4076a43616be014ba0f528d7e95228e73` activates the one-word
+  `ADD src,SHIFT,dst` and `SUB src,SHIFT,dst` syntax-9 rows at
+  `0xF400/0xFCE0` and `0xF420/0xFCE0`. Checked and trusted pure semantics
+  compose the W49A modulo-2^40, bit-32 carry/no-borrow, signed-32 overflow,
+  OVM saturation, and destination-sticky OVA/OVB facts. Source/destination
+  aliases are read before publication, and the generic CPU route gains no
+  opcode-specific branch.
+- Evidence and architecture decisions: the signed five-bit shift covers
+  -16 through +15 over the canonical 40-bit source; right-shift fill follows
+  SXM and left shifts truncate to 40 bits. OVM selects raw modulo storage or
+  the evidenced signed-32 clamp without changing the separately derived carry
+  fact. Repeatability remains `UNRESOLVED`; no repeat admission is inferred.
+  The trusted leaf consumes constructor-proven operands without repeating ID,
+  layout, mask, resource, or operand-shape validation, while architectural
+  input knownness and transactional output behavior remain enforced.
+- Performance is part of closure. Six alternating observer-off W49A/current
+  benchmark pairs preserved every fixed semantic hash and 800,000-retirement
+  count. Paired-delta medians were +3.51% NOP, +4.79% LD-DP, +0.19% LD-ASM,
+  and +0.70% LD-ARP, within the wider same-host spread and with no material
+  generic-path regression. The dedicated public-CPU benchmark measured
+  70.569 ns/instruction for ADD and 68.553 ns/instruction for SUB with semantic
+  hash `dd671e98fa2ca1dd`; these are host characterizations, not TI cycle claims.
+  No benchmark history was written.
+- Validation is GREEN: focused checked/trusted semantics, decode, metadata,
+  CPU, inventory, and performance contracts pass; focused CMake/CTest passes
+  5/5; generator and evidence checks pass; and the authoritative
+  `rtk make test` gate passes the compiled C suite plus all 253 Python quality
+  tests. Manifests, knobs, inventory, source boundaries, and the
+  observer-disabled artifact pass. Only the three previously reviewed
+  637/782/620-line warnings remain. No GitHub or other hosted runner was
+  invoked, and no RED commit was pushed.
+- Closure accounting is 197 immutable evidence records; 321 requirements (284
+  IMPLEMENTED, 7 PLANNED, 30 UNRESOLVED); 274 tests (267 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts are now 102 rows, `ID_COUNT=103`, 2,967
+  lookup entries, 102 trusted bindings, 42/205 family coverage, and 27/205
+  strict coverage. No knob was added or changed. The next architecture-forcing
+  ISA slice is evidence-first fixed-MOD2 `ADDC`/`SUBB`: it must carry incoming
+  carry/borrow semantics through the existing one-read memory completion path
+  without regressing the trusted generic loop; compound arithmetic RMW and
+  dual-memory effects remain subsequent larger seams.
