@@ -6409,3 +6409,43 @@ rewritten after publication.
   and 7 sources. The next forcing-function slice is W47B: evidence-first
   selection of exact DLD/DST encodings and composition through this seam,
   including an observer-off full-CPU opcode benchmark.
+
+## 2026-09-08 — P2-W47B DLD/DST LONG32 MOD13 activation
+
+- State: activation commit
+  `e12dd2bb5a842d3234c2d6f2d95083c820c0ec80` freezes the two-word CMPT=0
+  MOD13 rows `DLD_LONG32_MOD13` at `0x56E8/0xFEF8` and
+  `DST_LONG32_MOD13` at `0x4EE8/0xFEF8`. Each row admits sixteen first words,
+  carries D/S at bit 8, ARF at bits 2:0, MOD13 at bits 6:3, and a copied
+  extension-word `lk`. Production catalog and inventory state remain
+  unchanged until the rows and their tests exist.
+- The activation deliberately chooses long-offset forms instead of the easier
+  one-word forms. This forces extension fetch, a four-field decode layout,
+  checked LONG32 MOD13 resolution, pair-backed root execution, pre-access AR
+  publication, and full WAIT/FAULT/cancel behavior through one generic CPU
+  route. DLD consumes SXM; its documented C16 lane descriptions are required
+  to converge under C16×SXM vectors, so no behaviorally inert C16 hot-path
+  input is admitted.
+- The evidence audit corrected the initial DST assumption before code was
+  written. PMST.SST applies saturation-on-store to DST, so DST must collect
+  copied accumulator, SXM, and SST inputs and implement the full raw-40/signed-
+  40 saturation boundaries. Unknown SST or SXM rejects before endpoint issue.
+  SST is therefore a typed state/input-collection forcing seam, not a hidden
+  default or an SST=0 restriction.
+- Performance is part of the exit contract: the private MEMORY carrier must
+  retain its supported-ABI size, pair/source values remain copied and fixed-
+  size, no address replan/refetch/source recomputation is allowed, static
+  completions own no context or diagnostic work, and closure requires an
+  observer-off full-CPU DLD/DST benchmark. The root uses one discriminated
+  child union and new helpers must keep handwritten owners below review
+  thresholds. No knob was added or changed.
+- Activation accounting is 181 evidence records; 304 requirements (257
+  IMPLEMENTED, 18 PLANNED, 29 UNRESOLVED); 258 tests (240 PASSING, 18
+  PLANNED); and 7 sources. The projected implemented catalog is 100 rows,
+  `ID_COUNT=101`, 2,711 lookup entries, and 100 bindings. Family coverage
+  becomes 40/205 (19.512%); strict complete-form coverage remains 25/205
+  (12.195%) because each MOD13 row is only a subset of its full Lmem form.
+  The authoritative `rtk make test` gate passed all 237 Python quality tests,
+  the compiled C suite, evidence/inventory/manifests, source boundaries, and
+  observer-disabled artifact checks; only the two already reviewed 620-line
+  warnings remain.
