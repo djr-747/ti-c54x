@@ -2594,6 +2594,20 @@
         "anchor": "P2-W42A: standard-indirect MOD0–3 memory transaction seam (planned)"
       },
       "assertion": "P2-W42A freezes a generic standard-indirect MOD0–3 MEMORY WORD16 transaction seam without changing the catalog or opcode handlers. The existing SINGLE_INDIRECT_WORD16 effect admits MOD0 through MOD3 while a MOD3 read is structurally rejected before address resolution or endpoint issue; the later W42B load-handler slice will select INVALID_OPERAND before endpoint issue. The existing planner records MOD0 NONE with no AR commit, MOD1/MOD2 POST, and MOD3 PRE for writes only. PRE is address-order metadata and does not expose AR mutation before READY. WAIT, FAULT, and cancel preserve architecture, while READY commits the target AR only together with accepted program-counter and effect commits. No public ABI, timing, device/MMR, CPU opcode branch, new effect/address/state kind, or other architectural seam is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W42B: standard-indirect MOD0–3 Smem family expansion (planned)"
+      },
+      "assertion": "P2-W42B freezes replacement of the ten fixed-MOD2 standard-indirect Smem catalog rows with neutral symbols LD_SMEM, LD_SMEM_TS, STL_SMEM, LDU_SMEM, LD_T_SMEM, ST_IMMEDIATE_SMEM, LD_DP_SMEM, LD_ASM_SMEM, LD_SMEM_SHIFT16, and ST_T_SMEM. Their MOD0 base/mask pairs are 0x1080/0xFEE0, 0x1480/0xFEE0, 0x8080/0xFEE0, 0x1280/0xFEE0, 0x3080/0xFFE0, 0x7680/0xFFE0, 0x4680/0xFFE0, 0x3280/0xFFE0, 0x4480/0xFEE0, and 0x8C80/0xFFE0. Neutral layouts ACCUMULATOR_ARF_MOD (D/source, ARF, MOD), ARF_MOD (ARF, MOD), and ARF_EXTENSION16_MOD (ARF, EXTENSION16, MOD) append MOD without changing existing operand indices; mode bits are [4:3], ARF [2:0], and D bit 8. Handlers consume decoded mode fields and never parse raw words. Loads admit MOD0/MOD1/MOD2 and return INVALID_OPERAND for MOD3 before MEMORY effect or endpoint issue; stores admit MOD0–MOD3 through W42A. ID_COUNT remains 36, lookup projects 1503 to 1863, and 480 broadened encodings comprise 392 legal plus 88 rejected load MOD3 forms (+272 legal/+88 rejected). Inventory stays SUBSET with addressing_subset STANDARD_INDIRECT_MOD0_MOD3, family and strict percentages stay 35/205 and 25/205 through this slice, and op_ld_smem.c must be split before growth beyond its reviewed 491 lines. No new effect/address kind, CPU branch, ABI, timing, device/MMR, or architectural state is admitted."
     }
   ],
   "requirements": [
@@ -5261,6 +5275,56 @@
       "test_ids": ["T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES"]
     },
     {
+      "id": "REQ-PROJECT-P2-W42B-MEMORY-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Replace the ten fixed-MOD2 standard-indirect Smem catalog rows with the neutral symbols LD_SMEM, LD_SMEM_TS, STL_SMEM, LDU_SMEM, LD_T_SMEM, ST_IMMEDIATE_SMEM, LD_DP_SMEM, LD_ASM_SMEM, LD_SMEM_SHIFT16, and ST_T_SMEM using the exact W42B MOD0 bases and masks, preserve ID_COUNT=36, project the first-word lookup from 1503 to 1863, and retain inventory SUBSET/addressing_subset STANDARD_INDIRECT_MOD0_MOD3 metadata without adding duplicate rows.",
+      "evidence_ids": ["E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42B-MEMORY-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42B-MEMORY-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode W42B standard-indirect Smem forms through explicit ACCUMULATOR_ARF_MOD, ARF_MOD, and ARF_EXTENSION16_MOD layouts with MOD bits [4:3], ARF bits [2:0], and D bit 8, appending MOD without changing existing operand indices and never parsing raw instruction words in handlers.",
+      "evidence_ids": ["E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42B-MEMORY-DECODE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42B-MEMORY-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Make the seven broadened load families admit MOD0, MOD1, and MOD2 through decoded mode fields, and return INVALID_OPERAND for MOD3 before producing a MEMORY effect or issuing an endpoint request; preserve each family’s existing value transform and destination behavior.",
+      "evidence_ids": ["E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42B-MEMORY-LOAD-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42B-MEMORY-STORE-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Make the broadened store families admit decoded MOD0, MOD1, MOD2, and MOD3 through the existing SINGLE_INDIRECT_WORD16/W42A transaction seam, preserving store source and word-width semantics without raw-word mode parsing or a new effect kind.",
+      "evidence_ids": ["E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42B-MEMORY-STORE-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42B-CPU-MEMORY-INTEGRATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/memory/",
+      "claim": "Retire broadened standard-indirect load/store families through generic decode, decoded MOD/address resolution, MEMORY endpoint and W42A atomic WAIT/READY/FAULT/cancel paths, with loads rejecting MOD3 before endpoint issue and stores committing MOD3 PRE metadata only at READY; add no opcode-specific CPU branch, ABI, timing, device/MMR, or architectural state seam.",
+      "evidence_ids": ["E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42B-CPU-MEMORY-INTEGRATION"]
+    },
+    {
       "id": "REQ-PROJECT-ISA-INVENTORY-SCHEMA",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -6932,6 +6996,46 @@
       "path": "tests/unit/sequencer/instruction/test_memory_instruction_modes.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_instruction_modes"},
       "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42B-MEMORY-CATALOG",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_standard_indirect_memory_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42B-MEMORY-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42B-MEMORY-DECODE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_standard_indirect_memory_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42B-MEMORY-DECODE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42B-MEMORY-LOAD-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/load/test_standard_indirect_load_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42B-MEMORY-LOAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42B-MEMORY-STORE-EFFECTS",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/store/test_standard_indirect_store_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42B-MEMORY-STORE-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42B-CPU-MEMORY-INTEGRATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_standard_indirect_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42B-CPU-MEMORY-INTEGRATION"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-SCHEMA",
