@@ -6183,3 +6183,40 @@ rewritten after publication.
   PLANNED); and 7 sources. Follow-up remains evidence-first: preserve
   unresolved ARF0 alias semantics and perform an evidence/FIT audit before
   activating the next ISA slice.
+
+## 2026-09-08 — P2-W46A/W46B atomic logical memory activation
+
+- State: activation commit
+  `475c4bc26d060c79b5ed2bb3e877ac656ada1973` freezes the next
+  architecture-forcing slice. W46A owns a private allocation-free WORD16
+  same-address read-modify-write transaction inside the generic MEMORY route;
+  W46B composes ANDM, ORM, and XORM over neutral MOD0–MOD3 rows.
+- The selected hot-path shape is one compact AND/OR/XOR transform descriptor,
+  one copied operand, one address resolution, one READ, one WRITE at the
+  cached old address, and one transform. Resume validation compares copied
+  dependencies directly rather than rerunning address arithmetic. No indirect
+  transform callback, new effect kind, opcode-specific CPU branch, allocation,
+  public ABI, or runtime knob is admitted.
+- Architectural AR/PC publication occurs only after WRITE READY. WAIT, FAULT,
+  cancel, stale-state rejection, no-refetch, and fresh per-phase transaction
+  IDs are required. This contract does not promise physical exclusion against
+  an external bus master between the two endpoint requests.
+- W46B freezes three two-word rows: ANDM `0x6880/0xFFE0`, ORM
+  `0x6980/0xFFE0`, and XORM `0x6A80/0xFFE0`. MOD0/1/2 are admitted under the
+  existing checked boundary policy; MOD3 decodes but must reject before the
+  endpoint because the form requires a read and MOD3 is write-only. Projected
+  catalog state is 98 runnable rows, `ID_COUNT=99`, lookup 2,679, and 98
+  bindings; inventory becomes 38/205 family (18.537%) while strict coverage
+  remains 25/205 (12.195%).
+- Performance is a core acceptance axis. Deterministic structural tests must
+  prove the bounded execution shape, and a separate observer-off RMW benchmark
+  will establish its own baseline-relative cohort without changing the frozen
+  five-scenario history or reusing its 60 ns target. Results remain hosted
+  implementation-throughput evidence, not TI timing.
+- Activation accounting is 175 evidence records; 290 requirements (244
+  IMPLEMENTED, 17 PLANNED, 29 UNRESOLVED); 244 tests (227 PASSING, 17
+  PLANNED); and 7 sources. `rtk make test` is GREEN, including 215 Python
+  quality tests and the evidence registry; source boundaries report only the
+  pre-existing `operand_layout.c` 620-line review warning. Registry-policy
+  review corrected multi-owner paths and classified the TI-backed catalog and
+  effect requirements as COMMON architectural claims before commit.
