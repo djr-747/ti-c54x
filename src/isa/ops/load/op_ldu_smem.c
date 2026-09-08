@@ -2,7 +2,8 @@
  * Module contract
  *
  * Owns: checked and trusted pure semantic leaves for standard-indirect
- * WORD16 unsigned loads into accumulator A or B. The checked leaf validates
+ * WORD16 unsigned loads into accumulator A or B, including circular MOD8/MOD10.
+ * The checked leaf validates
  * the catalog/decode contract, consumes the decoded MOD0--MOD2 operand, and
  * stages a generic memory-read effect; its static completion zero-extends the
  * copied WORD16 into a canonical 40-bit accumulator write. The trusted leaf
@@ -273,3 +274,114 @@ ti_c54x_op_status ti_c54x_trusted_op_ldu_smem_mod6(
         instruction, operands, input, TI_C54X_OPCODE_ID_LDU_SMEM_MOD6,
         (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, ldu_smem_mod6_complete, effect);
 }
+
+static ti_c54x_op_status ldu_smem_circular_complete(
+    ti_c54x_opcode_id expected_id, ti_c54x_indirect_circular_mode expected_mode,
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || next_effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_circular_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return ldu_smem_complete_values(operands.destination, read_value_word,
+                                    next_effect);
+}
+
+static ti_c54x_op_status ldu_smem_checked_circular(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_opcode_id expected_id,
+    ti_c54x_indirect_circular_mode expected_mode,
+    ti_c54x_op_memory_complete_fn complete, ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_circular_instruction(
+        instruction, expected_id, TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_circular_memory_read(
+        &operands, expected_mode, complete, effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ldu_smem_trusted_circular(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_opcode_id expected_id,
+    ti_c54x_indirect_circular_mode expected_mode,
+    ti_c54x_op_memory_complete_fn complete, ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || trusted_operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_circular_trusted_operands(
+        instruction, trusted_operands, expected_id,
+        TI_C54X_INPUT_RESOURCES_NONE,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_circular_memory_read(
+        &operands, expected_mode, complete, effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+#define DEFINE_LDU_CIRCULAR_CALLBACK(suffix, id, mode)                          \
+    static ti_c54x_op_status ldu_smem_##suffix##_complete(                     \
+        const ti_c54x_decoded_instruction *instruction,                         \
+        const ti_c54x_op_input_snapshot *input, uint16_t read_value_word,        \
+        ti_c54x_op_effect *next_effect)                                          \
+    {                                                                             \
+        return ldu_smem_circular_complete(id, mode, instruction, input,          \
+                                          read_value_word, next_effect);          \
+    }
+
+#define DEFINE_LDU_CIRCULAR_WRAPPER(suffix, id, mode)                           \
+    ti_c54x_op_status ti_c54x_op_ldu_smem_##suffix(                             \
+        const ti_c54x_decoded_instruction *instruction,                         \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)       \
+    {                                                                             \
+        return ldu_smem_checked_circular(                                        \
+            instruction, input, id, mode, ldu_smem_##suffix##_complete, effect); \
+    }                                                                             \
+    ti_c54x_op_status ti_c54x_trusted_op_ldu_smem_##suffix(                     \
+        const ti_c54x_decoded_instruction *instruction,                          \
+        const ti_c54x_trusted_operand_values *operands,                          \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)        \
+    {                                                                             \
+        return ldu_smem_trusted_circular(                                        \
+            instruction, operands, input, id, mode,                              \
+            ldu_smem_##suffix##_complete, effect);                               \
+    }
+
+DEFINE_LDU_CIRCULAR_CALLBACK(mod8, TI_C54X_OPCODE_ID_LDU_SMEM_MOD8,
+                             TI_C54X_INDIRECT_CIRCULAR_MOD8)
+DEFINE_LDU_CIRCULAR_CALLBACK(mod10, TI_C54X_OPCODE_ID_LDU_SMEM_MOD10,
+                             TI_C54X_INDIRECT_CIRCULAR_MOD10)
+DEFINE_LDU_CIRCULAR_WRAPPER(mod8, TI_C54X_OPCODE_ID_LDU_SMEM_MOD8,
+                            TI_C54X_INDIRECT_CIRCULAR_MOD8)
+DEFINE_LDU_CIRCULAR_WRAPPER(mod10, TI_C54X_OPCODE_ID_LDU_SMEM_MOD10,
+                            TI_C54X_INDIRECT_CIRCULAR_MOD10)
+
+#undef DEFINE_LDU_CIRCULAR_WRAPPER
+#undef DEFINE_LDU_CIRCULAR_CALLBACK

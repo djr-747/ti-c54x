@@ -6,3 +6,5 @@ ti_c54x_core_sources += src/isa/ops/load/op_ld_smem_common.c
 ti_c54x_core_sources += src/isa/ops/load/op_ldu_smem.c
 ti_c54x_core_sources += src/isa/ops/load/op_ld_t_smem.c
 ti_c54x_core_sources += src/isa/ops/load/op_ld_status_smem.c
+ti_c54x_core_sources += src/isa/ops/load/op_ld_status_smem_circular.c
+ti_c54x_core_sources += src/isa/ops/load/op_ld_smem_circular.c

@@ -19,6 +19,7 @@
 #include "isa/ops/dispatch/trusted_semantics.h"
 
 #include "op_store_indexed_common.h"
+#include "op_store_circular_common.h"
 
 static void stl_memory_write(uint8_t arf, uint8_t mode, uint16_t value,
                              ti_c54x_op_effect *effect)
@@ -244,6 +245,89 @@ static ti_c54x_op_status stl_indexed_trusted(
     return stl_indexed_values(&operands, input, effect);
 }
 
+static ti_c54x_op_status stl_circular_values(
+    const ti_c54x_store_circular_operands *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    ti_c54x_u40_t source_raw40;
+    bool source_known;
+
+    if (operands == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->source > UINT8_C(1) || operands->arf > UINT8_C(7)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    if (operands->source == UINT8_C(0)) {
+        source_raw40 = input->accumulator_a_raw40;
+        source_known = input->accumulator_a_known;
+    } else {
+        source_raw40 = input->accumulator_b_raw40;
+        source_known = input->accumulator_b_known;
+    }
+    if (!source_known) {
+        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+    }
+    if (source_raw40 > TI_C54X_U40_MASK) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    {
+        ti_c54x_op_effect staged = {0};
+        ti_c54x_store_stage_circular_write(
+            operands->arf, operands->mode, (uint16_t)source_raw40, &staged);
+        *effect = staged;
+    }
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status stl_circular_checked(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_indirect_circular_mode expected_mode,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_store_circular_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_store_validate_circular_instruction(
+        instruction, expected_id,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+        TI_C54X_INPUT_RESOURCES_ACCUMULATORS, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return stl_circular_values(&operands, input, effect);
+}
+
+static ti_c54x_op_status stl_circular_trusted(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *trusted_operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_indirect_circular_mode expected_mode,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_store_circular_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || trusted_operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_store_validate_circular_trusted_operands(
+        instruction, trusted_operands, expected_id,
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+        TI_C54X_INPUT_RESOURCES_ACCUMULATORS, expected_mode, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return stl_circular_values(&operands, input, effect);
+}
+
 ti_c54x_op_status ti_c54x_op_stl_smem_mod5(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
@@ -278,4 +362,42 @@ ti_c54x_op_status ti_c54x_trusted_op_stl_smem_mod6(
     return stl_indexed_trusted(
         instruction, operands, input, TI_C54X_OPCODE_ID_STL_SMEM_MOD6,
         (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD6, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_stl_smem_mod8(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return stl_circular_checked(
+        instruction, input, TI_C54X_OPCODE_ID_STL_SMEM_MOD8,
+        TI_C54X_INDIRECT_CIRCULAR_MOD8, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_stl_smem_mod10(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return stl_circular_checked(
+        instruction, input, TI_C54X_OPCODE_ID_STL_SMEM_MOD10,
+        TI_C54X_INDIRECT_CIRCULAR_MOD10, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_stl_smem_mod8(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return stl_circular_trusted(
+        instruction, operands, input, TI_C54X_OPCODE_ID_STL_SMEM_MOD8,
+        TI_C54X_INDIRECT_CIRCULAR_MOD8, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_stl_smem_mod10(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return stl_circular_trusted(
+        instruction, operands, input, TI_C54X_OPCODE_ID_STL_SMEM_MOD10,
+        TI_C54X_INDIRECT_CIRCULAR_MOD10, effect);
 }

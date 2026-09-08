@@ -20,3 +20,4 @@ $(eval $(call ti_c54x_add_test,st_immediate_smem_metadata,isa/catalog,test_st_im
 $(eval $(call ti_c54x_add_test,st_t_smem_metadata,isa/catalog,test_st_t_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,standard_indirect_memory_metadata,isa/catalog,test_standard_indirect_memory_metadata.c))
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_metadata,isa/catalog,test_indexed_standard_indirect_metadata.c))
+$(eval $(call ti_c54x_add_test,circular_standard_indirect_metadata,isa/catalog,test_circular_standard_indirect_metadata.c))

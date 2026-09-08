@@ -7,7 +7,7 @@
  * Owns: opcode identity, immutable first-word/program-word metadata, and the
  * catalog-owned scalar operand-layout, repeatability, and fixed-width
  * input-resource classifications derived from the one catalog definition,
- * including private AR0-indexed MOD5/MOD6 identities.
+ * including private AR0-indexed MOD5/MOD6 and circular MOD8/MOD10 identities.
  * NONE is explicit and zero-valued so zero-initialized decode values are safe.
  * Does not own: opcode strings, timing, semantic effects, buses, CPU state,
  * program-counter sequencing, or diagnostics. Metadata pointers returned by

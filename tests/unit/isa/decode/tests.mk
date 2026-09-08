@@ -27,3 +27,4 @@ $(eval $(call ti_c54x_add_test,st_immediate_smem_decode,isa/decode,test_st_immed
 $(eval $(call ti_c54x_add_test,st_t_smem_decode,isa/decode,test_st_t_smem_decode.c))
 $(eval $(call ti_c54x_add_test,standard_indirect_memory_decode,isa/decode,test_standard_indirect_memory_decode.c))
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_decode,isa/decode,test_indexed_standard_indirect_decode.c))
+$(eval $(call ti_c54x_add_test,circular_standard_indirect_decode,isa/decode,test_circular_standard_indirect_decode.c))

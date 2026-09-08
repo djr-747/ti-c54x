@@ -6,3 +6,5 @@ ti_c54x_add_unit_test(standard_indirect_store_modes
                       test_standard_indirect_store_modes.c)
 ti_c54x_add_unit_test(indexed_standard_indirect_store_effects
                       test_indexed_standard_indirect_store_effects.c)
+ti_c54x_add_unit_test(circular_standard_indirect_store_effects
+                      test_circular_standard_indirect_store_effects.c)

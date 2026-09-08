@@ -5,7 +5,8 @@
  * Module contract
  *
  * Owns: checked and trusted pure semantic leaves for standard-indirect WORD16
- * indirect loads into accumulator A or B, including the unshifted,
+ * indirect loads into accumulator A or B, including circular MOD8/MOD10 and
+ * the unshifted,
  * SXM-dependent logical-left-shift-16, and T-register-shift forms. Each
  * checked leaf validates its catalog/decode contract and stages a generic
  * memory-read effect; its static
@@ -109,6 +110,44 @@ ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod6(
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_ld_smem_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_ts_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_ts_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_ts_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod8(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift16_mod10(
+    const ti_c54x_decoded_instruction *, const ti_c54x_trusted_operand_values *,
+    const ti_c54x_op_input_snapshot *, ti_c54x_op_effect *);
 
 #ifdef __cplusplus
 }

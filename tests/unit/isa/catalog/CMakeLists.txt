@@ -22,3 +22,5 @@ ti_c54x_add_unit_test(standard_indirect_memory_metadata
                       test_standard_indirect_memory_metadata.c)
 ti_c54x_add_unit_test(indexed_standard_indirect_metadata
                       test_indexed_standard_indirect_metadata.c)
+ti_c54x_add_unit_test(circular_standard_indirect_metadata
+                      test_circular_standard_indirect_metadata.c)

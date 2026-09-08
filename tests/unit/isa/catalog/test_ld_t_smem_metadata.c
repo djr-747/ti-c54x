@@ -82,8 +82,7 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* These flip fixed bits, including bit 8; the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0100),
-        UINT16_C(0x0400),
+        UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
@@ -101,6 +100,9 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0030))) ==
                        TI_C54X_OPCODE_ID_LD_T_SMEM_MOD6);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0040))) ==
+                       TI_C54X_OPCODE_ID_LD_T_SMEM_MOD8);
 }
 
 int

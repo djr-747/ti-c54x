@@ -98,7 +98,7 @@ test_metadata_rows(void)
 
     TI_C54X_TEST_CHECK(row_count == 10U);
     /* Unknown plus the ten neutral rows and all prior rows remains 36 IDs. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 56);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 76);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];
@@ -165,9 +165,9 @@ test_modes_arf_and_d_population(void)
             TI_C54X_TEST_CHECK(matches(row, word));
         }
     }
-    /* W42B's 1863 words plus 240 indexed MOD5/MOD6 words. */
+    /* W42B's 1863 words plus 240 indexed and 240 circular words. */
     TI_C54X_TEST_CHECK(expected_total == 480U);
-    TI_C54X_TEST_CHECK(populated_first_words == 2103U);
+    TI_C54X_TEST_CHECK(populated_first_words == 2343U);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];

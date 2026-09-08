@@ -29,3 +29,5 @@ ti_c54x_add_unit_test(standard_indirect_memory_decode
                       test_standard_indirect_memory_decode.c)
 ti_c54x_add_unit_test(indexed_standard_indirect_decode
                       test_indexed_standard_indirect_decode.c)
+ti_c54x_add_unit_test(circular_standard_indirect_decode
+                      test_circular_standard_indirect_decode.c)

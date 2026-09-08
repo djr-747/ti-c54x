@@ -92,8 +92,7 @@ static void
 test_fixed_bit_near_misses(void)
 {
     static const uint16_t unknown_near_misses[] = {
-        UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0080),
-        UINT16_C(0x0800),
+        UINT16_C(0x0020), UINT16_C(0x0080), UINT16_C(0x0800),
         UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
@@ -108,6 +107,10 @@ test_fixed_bit_near_misses(void)
             ti_c54x_opcode_catalog_lookup_first_word(word) ==
             TI_C54X_OPCODE_ID_UNKNOWN);
     }
+
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LDU_VALUE ^ UINT16_C(0x0040))) ==
+                       TI_C54X_OPCODE_ID_LDU_SMEM_MOD8);
 
     /* Flipping fixed bit 9 reaches the intentional LD sibling, never LDU. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(

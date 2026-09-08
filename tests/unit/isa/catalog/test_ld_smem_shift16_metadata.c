@@ -34,7 +34,7 @@ test_metadata(void)
         ti_c54x_opcode_metadata_for_id(
             TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 56);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 76);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id ==
                        TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
@@ -92,7 +92,7 @@ test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
 {
     /* Every bit other than D and ARF is fixed by the exact FE F8 mask. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0080),
+        UINT16_C(0x0020), UINT16_C(0x0080),
         UINT16_C(0x0400), UINT16_C(0x0800),
         UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000),
         UINT16_C(0x8000)};

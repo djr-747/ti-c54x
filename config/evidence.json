@@ -5563,7 +5563,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-CATALOG",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/catalog/",
@@ -5573,7 +5573,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/decode/",
@@ -5583,7 +5583,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/load/",
@@ -5593,7 +5593,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/store/",
@@ -5603,7 +5603,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/cpu/memory/",
@@ -5613,7 +5613,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -7424,50 +7424,50 @@
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-CATALOG",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/catalog/test_circular_standard_indirect_metadata.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_standard_indirect_metadata"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-CATALOG"]
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/decode/test_circular_standard_indirect_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_standard_indirect_decode"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-DECODE"]
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/load/test_circular_standard_indirect_load_effects.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_standard_indirect_load_effects"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-LOAD-EFFECTS"]
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/store/test_circular_standard_indirect_store_effects.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.circular_standard_indirect_store_effects"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-STORE-EFFECTS"]
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/memory/test_cpu_circular_standard_indirect.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_circular_standard_indirect"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-CPU-INTEGRATION"]
     },
     {
       "id": "T-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_circular_multi_binding.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W44B-CIRCULAR-INVENTORY-MULTI-BINDING"]
     }
   ]

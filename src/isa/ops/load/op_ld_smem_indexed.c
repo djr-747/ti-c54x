@@ -2,10 +2,10 @@
  * Module contract
  *
  * Owns: checked and trusted pure semantic leaves for the three accumulator
- * standard-indirect AR0-indexed WORD16 load families (LD, LD TS, and
- * LD shift16), with distinct MOD5 and MOD6 catalog identities. Each wrapper
- * validates the exact decoded identity and typed four-bit mode, stages an
- * INDEXED_AR0_WORD16 read, and retains no borrowed pointer. It does not own:
+ * standard-indirect AR0-indexed and circular WORD16 load families (LD, LD TS,
+ * and LD shift16), with distinct MOD5/MOD6/MOD8/MOD10 catalog identities.
+ * Each wrapper validates the exact decoded identity and typed mode, stages an
+ * indexed or CIRCULAR_WORD16 read, and retains no borrowed pointer. It does not own:
  * catalog/decode definitions, AR resolution or mutation, buses, CPU state,
  * sequencing, timing, observers, allocation, logging, environment, or
  * diagnostics.
