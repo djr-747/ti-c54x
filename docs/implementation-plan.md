@@ -86,8 +86,10 @@ P2-W47B2B completes the DLD/DST catalog, checked/trusted semantics, and
 inventory activation. P2-W47B2C completes CPU lifecycle coverage and the
 observer-off full-CPU opcode benchmark; W47B is closed. P2-W48A implements the
 newly evidenced observable RC lifecycle as a typed, transactional repeat-progress
-seam with no current CPU hot-path cost. Runtime RPT activation still waits on
-single-repeat PC flow and predecode interrupt arbitration evidence.
+seam. P2-W48B implements the post-decode maskable-request IFR latch/defer/take
+lifecycle and documented alternate clear paths. Neither slice changes the current
+CPU hot path. Runtime RPT activation still waits on single-repeat PC flow and
+predecode interrupt arbitration evidence.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -904,6 +906,7 @@ function-pointer dispatch tables.
 | Pure single-repeat policy foundation (P2-W20E) | Complete | Three repeat-sequencer leaf owners prove cardinality derivation, preclassified-body admission, and repeat-only request gating without claiming CPU execution |
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | W48A closes observable post-body RC progression/final zero; exact internal decrement ordering, single-repeat PC flow/final PC, and already-pending request arbitration remain unresolved without inference from generic or block-repeat rules |
 | P2-W48A observable RC progression lifecycle | Implemented — focused state/repeat contracts and full 65,536-body progression GREEN | Add typed RC access and a fixed-size transactional REPEAT_START/body-retirement reducer; preserve exact count, stale/unknown rejection, terminal RC zero, and zero current CPU hot-path impact without activating RPT decode or PC replay |
+| P2-W48B repeat-gated pending IFR latch | Implemented — focused state/interrupt contracts and authoritative full gate GREEN | Add typed one-bit IFR mutation and a fixed-size maskable-request receive/defer/take lifecycle with separate reset, IFR-write-one, and INTR clears; preserve unrelated flags and zero current CPU hot-path impact without claiming NMI mapping, priority, or predecode arbitration |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
@@ -2159,6 +2162,43 @@ The existing exact-phase `REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION` remains
 Repeated-body PC flow and predecode interrupt arbitration remain unresolved.
 Production RPT catalog rows, body replay, request service, timing, and public API
 changes remain outside W48A.
+
+#### P2-W48B: repeat-gated pending IFR latch (implemented)
+
+TI SPRU131G separates request receipt from acknowledgement: receipt sets the
+corresponding IFR flag even when the request cannot yet be taken. Its single-repeat
+rule defers maskable requests received after RPT decode until every body execution
+completes. Section 6.10.1 also identifies reset, explicit write-one-to-IFR, and
+`INTR` as clear paths in addition to normal interrupt take. W48B therefore does
+not retain the earlier overbroad statement that only normal take can clear IFR.
+
+`src/state/interrupt_flag_register.[ch]` owns knownness-aware reads, full writes,
+and checked one-bit set and clear operations over the existing 16-bit IFR storage.
+It preserves unrelated flags and every other architectural field. The fixed-size,
+caller-owned `src/sequencer/interrupt/repeat_pending_request.[ch]` reducer admits
+exactly one caller-selected maskable IFR bit. Receipt latches the bit before consulting the
+existing repeat gate; an active gate reports deferral without clearing either the
+bit or pending latch. An explicit take is rejected while the gate is active and,
+after the remaining-body count reaches zero, clears the matching bit and latch.
+Separate reset, IFR-write-one, and `INTR` operations clear matching pending state.
+
+Focused common and project tests prove receipt-before-deferral, preservation at
+remaining counts one and 65,536, eligibility and normal take at zero, unrelated
+IFR-bit preservation, alternate clears, authoritative reset from unknown IFR, and
+transactional null, validation-dependent unknown, forged, stale, duplicate,
+invalid-mask, and invalid-count rejection. The reducer calls the existing repeat
+request gate rather than duplicating it. It allocates nothing, retains no pointer,
+and performs no I/O, observer, diagnostic, environment, or mutable-global work. No
+CPU, `run.c`, catalog, trusted packet, public ABI, or benchmark binary changes, so
+current CPU execution gains no branch or carrier.
+
+NMI representation, concrete bit assignment, request-priority selection, vector
+entry, PC behavior, and requests already pending before RPT reaches decode remain
+outside W48B. Production RPT activation therefore remains gated by repeated-body
+PC flow and predecode arbitration evidence. Closure accounting is 187 immutable
+evidence records; 309 requirements (273 `IMPLEMENTED`, 7 `PLANNED`, 29
+`UNRESOLVED`); and 263 tests (256 `PASSING`, 7 `PLANNED`). Catalog and ISA
+coverage counts remain unchanged.
 
 ### P2-W21: shared-memory transaction foundation
 

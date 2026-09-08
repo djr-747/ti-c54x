@@ -5,9 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 185 immutable evidence
-records, 307 requirements (270 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`),
-and 261 tests (253 `PASSING`, 8 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 187 immutable evidence
+records, 309 requirements (273 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
+and 263 tests (256 `PASSING`, 7 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -297,16 +297,18 @@ expanded into a monolith simply to land one instruction.
 TI `SPRU131G` establishes the critical gate: after RPT decode, maskable requests
 and NMI cannot be serviced until every body execution completes, while literal
 RS/reset remains admissible. Requests are still represented in IFR while
-acknowledgement is deferred and clear only when taken; exact source bits, vectors,
-and priorities remain outside the common target. Repeatability metadata is also
-first-class because the TI restrictions exclude documented instruction and
-operand/addressing forms from being a repeated body.
+acknowledgement is deferred. Normal take clears the corresponding flag, while
+reset, explicit write-one-to-IFR, and `INTR` are separate documented clear paths;
+exact source bits, vectors, and priorities remain outside the common target.
+Repeatability metadata is also first-class because the TI restrictions exclude
+documented instruction and operand/addressing forms from being a repeated body.
 
-The registry leaves three architectural questions unresolved: exact RC decrement
-phase and final RC, repeated-body PC hold/reload and final PC, and arbitration of
-a request already pending before RPT decode. CPU repeat retirement cannot land
-until these are resolved. Machine-cycle cost and detailed pipeline behavior stay
-outside this functional slice.
+The registry leaves the exact internal RC decrement phase unresolved, although
+W48A proves the observable RC progression and final zero. Repeated-body PC
+hold/reload and final PC, plus arbitration of a request already pending before RPT
+decode, also remain unresolved. CPU repeat retirement cannot land until the
+externally visible PC and predecode arbitration rules are resolved. Machine-cycle
+cost and detailed pipeline behavior stay outside this functional slice.
 
 P2-W20B now implements the first seam as a decode-owned, copied instruction bundle
 with an explicit helper capacity rather than an ISA-wide size claim. CPU fetch
@@ -375,19 +377,21 @@ RS/reset classes, with explicit range/kind failures. These tests execute through
 owner-local Make and CTest registrations; the parent sequencer manifests only
 aggregate the repeat subtree.
 
-The P2-W20F evidence-closure review does not authorize CPU integration. A second
-pass over official TI `SPRU172C` and `SPRU131G` material adds two narrower facts:
-software cannot access RC while single-repeat execution decrements it, and the
-repeated MVDK/MVKD forms use a current-`RC != 0` predicate for their address
-increment behavior. Neither fact identifies the decrement phase or final RC.
-The generic PC, block-repeat, interrupt-receipt, acknowledgement, and pipeline
-sections likewise do not define a single-repeat PC hold/reload rule, final PC, or
-the arbitration edge for a request already pending before RPT reaches decode.
-Those three requirements therefore remain unresolved, production RPT decode stays
-inactive, and W20F is deferred until a separately recorded original-hardware vector
-or stronger TI evidence resolves the externally visible behavior. A black-box
-differential vector may identify a hypothesis or disagreement, but cannot itself
-close a normative common-core requirement.
+The P2-W20F evidence-closure review does not authorize CPU integration. Later W48A
+primary evidence from READA, WRITA, and FIRS proves the observable RC progression
+and final zero without selecting an internal clock phase. W48B then implements a
+typed IFR and fixed-size pending-request lifecycle: a post-decode maskable request
+sets its caller-selected one-bit flag before the repeat gate reports deferral,
+preserves it while deferred, and permits explicit normal take only after the gate
+opens. Separate reset, IFR-write-one, and `INTR` operations own alternate clears.
+
+The generic PC and block-repeat sections still do not define a single-repeat PC
+hold/reload rule, final PC, or the arbitration edge for a request already pending
+before RPT reaches decode. Those questions remain unresolved, production RPT decode
+stays inactive, and W20F remains deferred until a separately recorded
+original-hardware vector or stronger TI evidence resolves the externally visible
+behavior. A black-box differential vector may identify a hypothesis or
+disagreement, but cannot itself close a normative common-core requirement.
 
 ### WORD16 bus-request boundary (P2-W21A implemented)
 

@@ -24,6 +24,7 @@ ti_c54x_add_unit_test(program_pc_bridge_multiword test_program_pc_bridge_multiwo
 ti_c54x_add_unit_test(effect_transaction test_effect_transaction.c)
 add_subdirectory(pc)
 add_subdirectory(repeat)
+add_subdirectory(interrupt)
 add_subdirectory(status)
 add_subdirectory(accumulator)
 add_subdirectory(temporary)

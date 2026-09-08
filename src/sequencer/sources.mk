@@ -8,6 +8,7 @@ ti_c54x_core_sources += \
 	src/sequencer/program_pc_bridge.c \
 	src/sequencer/effect_transaction.c
 include src/sequencer/repeat/sources.mk
+include src/sequencer/interrupt/sources.mk
 include src/sequencer/status/sources.mk
 include src/sequencer/accumulator/sources.mk
 include src/sequencer/temporary/sources.mk

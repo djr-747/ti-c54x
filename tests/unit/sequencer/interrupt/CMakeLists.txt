@@ -1,0 +1,3 @@
+# Test ownership: tests/unit/sequencer/interrupt owns pending-request proofs.
+ti_c54x_add_unit_test(repeat_pending_request test_repeat_pending_request.c)
+ti_c54x_add_unit_test(repeat_pending_request_contract test_repeat_pending_request_contract.c)

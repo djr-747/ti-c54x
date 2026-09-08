@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W48A complete):
+Current snapshot (P2-W48B complete):
 
 - 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
   inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
@@ -46,10 +46,13 @@ Current snapshot (P2-W48A complete):
   benchmark with semantic self-checks and no machine-dependent threshold.
 - Repeat sequencing now has typed RC access and an allocation-free transactional
   progress reducer proving the full observable `K...0` sequence, terminal RC zero,
-  stale/unknown rejection, and all 65,536 bodies for `K=0xffff`. It adds no branch
-  to the current CPU path. Repeated-body PC flow and predecode pending-request
-  arbitration still require evidence before the inert RPT seams become runtime
-  behavior.
+  stale/unknown rejection, and all 65,536 bodies for `K=0xffff`. Typed IFR access
+  and a fixed-size pending-request reducer now prove that a post-decode maskable
+  request is latched while repeat defers it, then cleared on explicit normal take;
+  reset, IFR-write-one, and `INTR` clears are separate modeled paths. These seams
+  add no branch to the current CPU path. Repeated-body PC flow and predecode
+  pending-request arbitration still require evidence before inert RPT policy can
+  become runtime behavior.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

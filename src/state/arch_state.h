@@ -6,7 +6,9 @@
  * program-word PC carrier, common TI reset seeding, and checked
  * knownness-aware AR/SP and ARP/CMPT status-field access, knownness, and
  * field-limited mutation for ARP, DP, CPL, and CMPT. Status register storage
- * is composed from the status owner; block_size_register.h owns BK access.
+ * is composed from the status owner; block_size_register.h owns BK access,
+ * repeat_counter_register.h owns RC access, and interrupt_flag_register.h
+ * owns IFR access.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.

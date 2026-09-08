@@ -1336,6 +1336,22 @@
       "assertion": "The interrupt request and recognition descriptions state that a request sets its IFR flag regardless of immediate acknowledgement and that the corresponding flag is cleared when the interrupt is taken. This record does not select device-specific sources, vectors, or priority wiring."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S6-10-1-P6-27-6-28-IFR-CLEAR-PATHS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "6",
+        "section": "6.10.1",
+        "printed_page_start": "6-27",
+        "printed_page_end": "6-28"
+      },
+      "assertion": "The interrupt flag register description lists four clear events: RS reset, taking the corresponding interrupt trap, writing one to a corresponding IFR bit, and executing INTR with the appropriate interrupt number. A set bit denotes a pending interrupt; writing the current IFR value clears every currently set flag. This record does not select a bit assignment, request priority, or interrupt entry behavior."
+    },
+    {
       "id": "E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE",
       "immutable": true,
       "state": "PINNED",
@@ -1376,6 +1392,20 @@
         "anchor": "P2-W48A: observable RC progression lifecycle (implemented)"
       },
       "assertion": "The P2-W48A project contract introduces typed checked RC access and one fixed-size, allocation-free repeat-progress reducer. A REPEAT_START effect transactionally loads RC and stores an exact uint32_t operand-plus-one remaining count. Each caller-reported successful body retirement validates the authoritative RC snapshot, decrements nonzero RC once, preserves terminal zero, and reaches COMPLETE only after the exact count. Unknown, stale, malformed, unsupported, and extra-completion paths preserve state. The seam owns no CPU dispatch, body PC flow, interrupt arbitration, bus work, timing, observer, diagnostic, environment, allocator, or mutable process state, and adds no branch to the current CPU path."
+    },
+    {
+      "id": "E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W48B: repeat-gated pending IFR latch (implemented)"
+      },
+      "assertion": "The P2-W48B project contract introduces typed checked IFR access and one fixed-size, caller-owned maskable pending-request reducer. Accepted requests validate a caller-selected one-bit IFR mask, set and preserve that bit while the existing repeat gate reports DEFER, and clear it on an explicit normal-take operation after the gate opens. Separate explicit IFR-write-one and INTR operations clear matching pending state; authoritative reset establishes known-zero IFR and an empty latch even from unknown IFR storage. Validation-dependent unknown, stale, malformed, and invalid-count paths preserve state. NMI representation, predecode arbitration, source and priority selection, CPU dispatch, PC, timing, allocation, I/O, observers, environment access, and mutable globals remain outside the seam, which adds no branch to the current CPU path."
     },
     {
       "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
@@ -4071,6 +4101,26 @@
       "test_ids": ["T-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE"]
     },
     {
+      "id": "REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Provide typed checked access to private 16-bit IFR storage and its dedicated knownness bit. Reads publish only a known value and otherwise preserve caller output; full writes accept every uint16_t value and establish knownness; one-bit set and clear operations accept exactly one nonzero bit, preserve unrelated flags and every other architectural field, and reject invalid or unknown state transactionally. The accessor retains no pointer and owns no request sequencing, allocation, I/O, observation, diagnostics, environment access, or mutable global state.",
+      "evidence_ids": ["E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"],
+      "test_ids": ["T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/interrupt/",
+      "claim": "Provide one fixed-size, caller-owned lifecycle for a maskable request identified by exactly one caller-selected IFR bit. Receipt sets the bit before the existing repeat gate reports deferred or eligible; an active gate prevents take and preserves both bit and latch, while an explicit take after the gate opens clears both. Separate IFR-write-one and INTR clear operations remove matching pending state; authoritative reset establishes known-zero IFR and an empty latch. Null, validation-dependent unknown, stale, forged, duplicate, invalid-mask, and invalid-count paths preserve caller state. The reducer owns no NMI mapping, source or priority selection, predecode arbitration, CPU dispatch, PC, timing, allocation, I/O, observers, environment access, or mutable globals and adds no current CPU hot-path branch.",
+      "evidence_ids": ["E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"],
+      "test_ids": ["T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"]
+    },
+    {
       "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -4138,14 +4188,15 @@
     },
     {
       "id": "REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/interrupt/",
-      "claim": "Latch an accepted request in IFR even when the active single-repeat gate prevents immediate acknowledgement, preserve it while deferred, and clear the corresponding flag only when that request is eventually taken; exact bit assignment and priority remain outside this requirement.",
+      "claim": "After an accepted maskable request arrives while the post-decode single-repeat gate is active, set and preserve its caller-selected IFR bit while acknowledgement is deferred; when that deferred request is explicitly reported taken through normal service, clear that bit. Reset, explicit IFR writes, INTR-triggered clearing, NMI representation, bit assignment, priority selection, and requests already pending before RPT decode remain outside this requirement.",
       "evidence_ids": [
         "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ",
-        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR"
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR",
+        "E-TI-C54X-SPRU131G-S6-10-1-P6-27-6-28-IFR-CLEAR-PATHS"
       ],
       "test_ids": ["T-COMMON-SINGLE-REPEAT-PENDING-REQUEST"]
     },
@@ -6813,6 +6864,22 @@
       "requirement_ids": ["REQ-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE"]
     },
     {
+      "id": "T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_interrupt_flag_register_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.interrupt_flag_register_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/interrupt/test_repeat_pending_request_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_pending_request_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"]
+    },
+    {
       "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",
       "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
@@ -6862,10 +6929,10 @@
     },
     {
       "id": "T-COMMON-SINGLE-REPEAT-PENDING-REQUEST",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/interrupt/test_repeat_pending_request.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_pending_request"},
       "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST"]
     },
     {

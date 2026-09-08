@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 185 immutable evidence records,
-307 requirements (270 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`), and 261 tests
-(253 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 187 immutable evidence records,
+309 requirements (273 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`), and 263 tests
+(256 `PASSING`, 7 `PLANNED`).
 
 Current catalog state is 100 rows with ID_COUNT 101, 2,711 populated
 first-word lookup entries, and 100 inventory bindings. Inventory family coverage
@@ -124,9 +124,11 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.7, `6-20`–`6-22` |
 | `E-TI-C54X-SPRU131G-S6-10-7-P6-34-RPT-IRQ-COMPLETION` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.7, `6-34` |
 | `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.3 and 6.10.8, `6-31`–`6-36` |
+| `E-TI-C54X-SPRU131G-S6-10-1-P6-27-6-28-IFR-CLEAR-PATHS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.10.1, `6-27`–`6-28` |
 | `E-PROJECT-P2-W20A-RPT-TRANSACTION-ARCHITECTURE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)` |
 | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W20E: pure single-repeat policy foundation (active kickoff)` |
 | `E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W48A: observable RC progression lifecycle (implemented)` |
+| `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W48B: repeat-gated pending IFR latch (implemented)` |
 | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21A: private WORD16 bus-request contract (active kickoff)` |
 | `E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21B: explicit WORD16 byte-order codec (implemented)` |
 | `E-PROJECT-P2-W21C-BUS-WORD16-TRANSACTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W21C: resumable WORD16 transaction protocol (implemented)` |
@@ -439,13 +441,15 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W20E-REPEAT-POLICY-FOUNDATION` | `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
 | `REQ-PROJECT-P2-W48A-RC-REGISTER-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE` | `T-PROJECT-P2-W48A-RC-REGISTER-ACCESS` |
 | `REQ-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/repeat/` | `E-PROJECT-P2-W48A-RC-PROGRESSION-LIFECYCLE` | `T-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE` |
+| `REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | `T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` |
+| `REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/interrupt/` | `E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | `T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` |
 | `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/request/` | `E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT` | `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/byte_order/` | `E-PROJECT-P2-W21B-BUS-WORD16-BYTE-ORDER-CONTRACT` | `T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` |
 | `REQ-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-DECODE` |
 | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147` | `T-COMMON-SINGLE-REPEAT-CARDINALITY` |
 | `REQ-COMMON-SINGLE-REPEAT-IRQ-GATE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ`, `E-TI-C54X-SPRU131G-S6-10-7-P6-34-RPT-IRQ-COMPLETION` | `T-COMMON-SINGLE-REPEAT-IRQ-GATE` |
-| `REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/interrupt/` | `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ`, `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR` | `T-COMMON-SINGLE-REPEAT-PENDING-REQUEST` |
+| `REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/interrupt/` | `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ`, `E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR`, `E-TI-C54X-SPRU131G-S6-10-1-P6-27-6-28-IFR-CLEAR-PATHS` | `T-COMMON-SINGLE-REPEAT-PENDING-REQUEST` |
 | `REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-P2-19-2-21-RPT-BODY` | `T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` |
 | `REQ-COMMON-SINGLE-REPEAT-RC-PROGRESSION` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147`, `E-TI-C54X-SPRU172C-S4-RPT-P4-146-RC-INACCESSIBLE`, `E-TI-C54X-SPRU172C-S4-MVDK-MVKD-P4-108-4-114-RPT-RC-PREDICATE`, `E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ` |  |
 | `REQ-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/repeat/` | `E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147`, `E-TI-C54X-SPRU172C-S4-READA-P4-136-4-137-RC-STEP`, `E-TI-C54X-SPRU172C-S4-WRITA-P4-196-4-197-RC-STEP`, `E-TI-C54X-SPRU172C-S4-FIRS-P4-59-RC-LOOP` | `T-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION` |
@@ -725,13 +729,15 @@ exist in the repository.
 | `T-PROJECT-SINGLE-REPEAT-REQUEST-GATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_request_gate_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_request_gate_contract"}` | `REQ-PROJECT-SINGLE-REPEAT-REQUEST-GATE` |
 | `T-PROJECT-P2-W48A-RC-REGISTER-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_repeat_counter_register_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_counter_register_contract"}` | `REQ-PROJECT-P2-W48A-RC-REGISTER-ACCESS` |
 | `T-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/repeat/test_repeat_progress_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_progress_contract"}` | `REQ-PROJECT-P2-W48A-REPEAT-PROGRESS-LIFECYCLE` |
+| `T-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_interrupt_flag_register_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.interrupt_flag_register_contract"}` | `REQ-PROJECT-P2-W48B-IFR-REGISTER-ACCESS` |
+| `T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/interrupt/test_repeat_pending_request_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_pending_request_contract"}` | `REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE` |
 | `T-PROJECT-BUS-WORD16-REQUEST-SHAPE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/request/test_word16_request.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bus_word16_request"}` | `REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE` |
 | `T-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/byte_order/test_word16_codec.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bus_word16_codec"}` | `REQ-PROJECT-BUS-WORD16-BYTE-ORDER-CODEC` |
 | `T-COMMON-RPT-IMMEDIATE-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_rpt_immediate_decode.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-DECODE` |
 | `T-COMMON-RPT-IMMEDIATE-OPERATION` | PLANNED | COMMON_TI | `tests/unit/isa/ops/repeat/test_rpt_immediate.c` | `null` | `REQ-COMMON-RPT-IMMEDIATE-OPERATION` |
 | `T-COMMON-SINGLE-REPEAT-CARDINALITY` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_cardinality.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-CARDINALITY` |
 | `T-COMMON-SINGLE-REPEAT-IRQ-GATE` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_irq_gate.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-IRQ-GATE` |
-| `T-COMMON-SINGLE-REPEAT-PENDING-REQUEST` | PLANNED | COMMON_TI | `tests/unit/sequencer/interrupt/test_repeat_pending_request.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST` |
+| `T-COMMON-SINGLE-REPEAT-PENDING-REQUEST` | PASSING | COMMON_TI | `tests/unit/sequencer/interrupt/test_repeat_pending_request.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.repeat_pending_request"}` | `REQ-COMMON-SINGLE-REPEAT-PENDING-REQUEST` |
 | `T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` | PLANNED | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_body_eligibility.c` | `null` | `REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY` |
 | `T-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION` | PASSING | COMMON_TI | `tests/unit/sequencer/repeat/test_single_repeat_rc_observable_progression.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.single_repeat_rc_observable_progression"}` | `REQ-COMMON-SINGLE-REPEAT-RC-OBSERVABLE-PROGRESSION` |
 | `T-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/transaction/test_word16_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bus_word16_transaction"}` | `REQ-PROJECT-BUS-WORD16-TRANSACTION-LIFECYCLE` |
