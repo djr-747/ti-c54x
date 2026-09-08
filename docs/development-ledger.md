@@ -5970,3 +5970,46 @@ rewritten after publication.
   IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); and 220 tests (212 PASSING, 8
   PLANNED). W44B remains the next evidence-first work: a projected twenty-row
   MOD8/MOD10 fan-out at `ID_COUNT=76`, lookup 2,343, and 75 bindings.
+
+## 2026-09-08 — P2-W44B circular MOD8/MOD10 per-family composition activation
+
+- State: evidence and ownership activation landed in commit
+  `75da0812324312d1b88a4be269ae5028400a0478`. W44B is an evidence-first
+  twenty-row MOD8/MOD10 fan-out over the ten existing Smem families; no catalog
+  implementation or handler is activated by this entry.
+- Two immutable records were added: one TI_PRIMARY composition synthesis from
+  Figure 5-7/Table 5-3, Table 5-4, and the ten registered SPRU172C diagrams;
+  one PROJECT_CONTRACT_ONLY fit/ownership freeze. The exact rows are:
+  `LD_SMEM_MOD8/10` `0x10C0/0x10D0` mask `0xFEF8`,
+  `LD_SMEM_TS_MOD8/10` `0x14C0/0x14D0` mask `0xFEF8`,
+  `STL_SMEM_MOD8/10` `0x80C0/0x80D0` mask `0xFEF8`,
+  `LDU_SMEM_MOD8/10` `0x12C0/0x12D0` mask `0xFEF8`,
+  `LD_T_SMEM_MOD8/10` `0x30C0/0x30D0` mask `0xFFF8`,
+  `ST_IMMEDIATE_SMEM_MOD8/10` `0x76C0/0x76D0` mask `0xFFF8`,
+  `LD_DP_SMEM_MOD8/10` `0x46C0/0x46D0` mask `0xFFF8`,
+  `LD_ASM_SMEM_MOD8/10` `0x32C0/0x32D0` mask `0xFFF8`,
+  `LD_SMEM_SHIFT16_MOD8/10` `0x44C0/0x44D0` mask `0xFEF8`, and
+  `ST_T_SMEM_MOD8/10` `0x8CC0/0x8CD0` mask `0xFFF8`; tokens use `_mod8` and
+  `_mod10` suffixes.
+- Six project requirements/tests are planned for catalog, decode, seven load
+  effects, three store effects, CPU integration, and inventory multi-binding.
+  The projection is `ID_COUNT=76`, lookup 2,343, and 75 bindings. Inventory
+  remains audit-only under
+  `STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10`; family and strict
+  coverage remain 35/205 = 17.073% and 25/205 = 12.195%.
+- W44B reuses the W44A CIRCULAR_WORD16 effect/resolver/transaction seam and
+  the existing `ACCUMULATOR_ARF_MOD4`, `ARF_MOD4`, and
+  `ARF_EXTENSION16_MOD4` layouts. CMPT=0 resolution admits AR0–AR7 in strict
+  CMPT→ARP→selected AR→BK order; BK=0 is valid `NONE`/no-update and BK>0 is
+  the positive-BK POST-access wrap update. No `operand_layout.c` edit is
+  planned. A new status-load circular file and new store circular common
+  helper are preferred splits; catalog and inventory edits remain serialized.
+- Unsupported scope remains MOD9/MOD11, MOD14, CMPT=1/dual-indirect, LONG32
+  circular scaling, unselected boundary policy, timing/repeatability, BK
+  MMR/device routing, public ABI, new architectural kinds, IRQ/RPT, and other
+  families. Quality baseline is 210 Python tests; independent semantic and
+  catalog-collision review is clean for the bounded activation.
+- Activation accounting is 168 evidence records; 272 requirements (229
+  IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 226 tests (212 PASSING, 14
+  PLANNED); and 7 sources. Follow-up remains evidence-first until all six RED
+  lanes are implemented and their focused runners are GREEN.
