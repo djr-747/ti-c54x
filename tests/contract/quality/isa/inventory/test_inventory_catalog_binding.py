@@ -2,7 +2,7 @@
 """Contracts for inventory-to-catalog identity binding.
 
 Owns: one-to-one symbol identities, multi-binding subset forms, and the
-    frozen 25 complete/75 subset checkpoint, including the DLD/DST LONG32
+    frozen 27 complete/75 subset checkpoint, including the DLD/DST LONG32
     MOD13 projection. Does not
 own: opcode value/mask parsing or instruction execution semantics.
 """
@@ -51,9 +51,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 100)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 100)
-        self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 25)
+        self.assertEqual(len(bindings), 102)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 102)
+        self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 27)
         self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 75)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},

@@ -5,9 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 192 immutable evidence
-records, 314 requirements (278 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
-and 269 tests (262 `PASSING`, 7 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 197 immutable evidence
+records, 321 requirements (284 `IMPLEMENTED`, 7 `PLANNED`, 30 `UNRESOLVED`),
+and 274 tests (267 `PASSING`, 7 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -394,8 +394,8 @@ behavior. A black-box differential vector may identify a hypothesis or
 disagreement, but cannot itself close a normative common-core requirement.
 
 The W48C repeatability audit confirms that the official nonrepeatable tables do
-not provide a positive rule for omitted instructions. Of the 100 current catalog
-rows, 16 retain directly evidenced `INELIGIBLE` classifications, 84 remain
+not provide a positive rule for omitted instructions. Of the 102 current catalog
+rows, 16 retain directly evidenced `INELIGIBLE` classifications, 86 remain
 `UNRESOLVED`, and none is `ELIGIBLE`. DLD was corrected from an unsupported
 negative classification to `UNRESOLVED`; DST remains `INELIGIBLE`. Both states
 remain non-admitting through the tri-state body policy. A trusted repeat-body
@@ -419,6 +419,36 @@ or set the selected overflow flag atomically with accumulator, C, and TC state.
 No ADD/SUB catalog row, opcode-specific CPU branch, public ABI, repeat decision,
 or timing claim is activated in this foundation; W49B owns the register-only
 instruction composition and its public-CPU benchmark.
+
+### Register-only ADD/SUB syntax 9 (P2-W49B implemented)
+
+The catalog now activates `ADD_ACC_SHIFT` at `0xF400/0xFCE0` and
+`SUB_ACC_SHIFT` at `0xF420/0xFCE0`. Each one-word row uses the existing
+`ACCUMULATOR_SOURCE_DESTINATION_SHIFT5` plan: S selects the source accumulator,
+D selects the destination, and the five-bit SHIFT is interpreted as -16 through
++15. The two rows bring the catalog to 102 entries, ID_COUNT 103, 2,967 populated
+first words, and 102 inventory bindings; inventory coverage is 42/205 touched
+forms and 27/205 strict-complete forms.
+
+The arithmetic leaf shifts the complete canonical 40-bit source before applying
+the W49A modulo-40 ADD/SUB kernel. Negative shifts use SXM-selected sign or zero
+fill; positive shifts discard bits beyond bit 39. Source/destination aliases read
+the original snapshot. C receives ADD carry or SUB no-borrow at bit 32; signed
+32-bit overflow sets only the destination's sticky OVA/OVB, and OVM selects the
+raw modulo result or the positive/negative clamp. The generic accumulator effect
+and PC bridge commit the result, status, PC+1, and retirement atomically.
+
+Public CPU execution selects both rows through the immutable direct lookup and
+one-pass trusted packet. The trusted arithmetic leaf consumes constructor-proven
+operand values without repeating packet identity or layout validation, adds no
+opcode-specific CPU branch, and retains the frozen packet, input, and effect
+carrier sizes. The dedicated observer-off host benchmark has semantic hash
+`dd671e98fa2ca1dd` and measured 70.569/68.553 ns per ADD/SUB instruction on
+this host. Six interleaved comparisons with W49A retained matching fixed-scenario
+semantic hashes and showed paired median deltas from +0.19% to +4.79%, within
+wider host spread. These checks assert exact state and retirement counts without
+claiming TI cycles or imposing a machine-dependent timing threshold. Both rows
+remain `UNRESOLVED` for repeatability and are not admitted as repeat bodies.
 
 ### WORD16 bus-request boundary (P2-W21A implemented)
 

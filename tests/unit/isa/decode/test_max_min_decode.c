@@ -80,7 +80,7 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_max_min == 4U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0xF406), UINT16_C(0xF4C6),
+        const uint16_t invalid[] = {UINT16_C(0xF496), UINT16_C(0xF4C6),
                                     UINT16_C(0xF4C8), UINT16_C(0xF487) ^
                                         UINT16_C(0x0200)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {

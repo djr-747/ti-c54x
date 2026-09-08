@@ -6,13 +6,13 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 192 immutable evidence records,
-314 requirements (278 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`), and 269 tests
-(262 `PASSING`, 7 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 197 immutable evidence records,
+321 requirements (284 `IMPLEMENTED`, 7 `PLANNED`, 30 `UNRESOLVED`), and 274 tests
+(267 `PASSING`, 7 `PLANNED`).
 
-Current catalog state is 100 rows with ID_COUNT 101, 2,711 populated
-first-word lookup entries, and 100 inventory bindings. Inventory family coverage
-is 40/205 (19.512%); strict complete-form coverage remains 25/205 (12.195%).
+Current catalog state is 102 rows with ID_COUNT 103, 2,967 populated
+first-word lookup entries, and 102 inventory bindings. Inventory family coverage
+is 42/205 (20.488%); strict complete-form coverage is 27/205 (13.171%).
 
 ## Targets
 
@@ -240,6 +240,11 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-DLD-P4-42-LONG32` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DLD, `4-42` |
 | `E-TI-C54X-SPRU172C-S4-DST-P4-47-LONG32` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DST, `4-47` |
 | `E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W47B: DLD/DST LONG32 MOD13 composition (planned)` |
+| `E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ADD, `4-4`–`4-7` |
+| `E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SUB, `4-187`–`4-190` |
+| `E-TI-C54X-SPRU131G-S4.4-P4-17-4-18-ACCUMULATOR-SHIFT5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.4, `4-17`–`4-18` |
+| `E-TI-C54X-SPRU172C-S2-5-T2-28-ADD-SUB-ACCUMULATOR-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W49B: register-only ADD/SUB syntax-9 activation (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -657,6 +662,13 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT`, `E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT` |
 | `REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE` |
 | `REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W47B-INVENTORY-PROJECTION` |
+| `REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5`, `E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5` | `T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE` |
+| `REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5`, `E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5`, `E-TI-C54X-SPRU131G-S4.4-P4-17-4-18-ACCUMULATOR-SHIFT5`, `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW`, `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION`, `E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN` | `T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-OPS` |
+| `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/dispatch/` | `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-TRUSTED-OPCODE-BINDING` |
+| `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU` |
+| `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` |
+| `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH` |
+| `REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-REPEATABILITY` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S2-5-T2-28-ADD-SUB-ACCUMULATOR-REPEATABILITY-BOUNDARY` | — |
 
 ## Tests
 
@@ -828,7 +840,7 @@ exist in the repository.
 | `T-COMMON-FIXED-MOD2-STL-EFFECT` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_stl_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stl_smem_ops"}` | `REQ-COMMON-FIXED-MOD2-STL-EFFECTS` |
 | `T-PROJECT-CPU-FIXED-MOD2-LD-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ld_smem"}` | `REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT` |
 | `T-PROJECT-CPU-FIXED-MOD2-STL-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_stl_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_stl_smem"}` | `REQ-PROJECT-CPU-FIXED-MOD2-LD-STL-RETIREMENT` |
-| `T-PROJECT-TRUSTED-OPCODE-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_opcode_binding"}` | `REQ-PROJECT-TRUSTED-OPCODE-BINDING` |
+| `T-PROJECT-TRUSTED-OPCODE-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_opcode_binding"}` | `REQ-PROJECT-TRUSTED-OPCODE-BINDING`, `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING` |
 | `T-PROJECT-TRUSTED-EXECUTION-PACKET` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_trusted_execution_packet.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_execution_packet"}` | `REQ-PROJECT-TRUSTED-EXECUTION-PACKET` |
 | `T-PROJECT-TRUSTED-SEMANTIC-DISPATCH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/dispatch/test_trusted_semantic_dispatch.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_semantic_dispatch"}` | `REQ-PROJECT-TRUSTED-SEMANTIC-DISPATCH` |
 | `T-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/execution/test_trusted_instruction_path.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trusted_instruction_path"}` | `REQ-PROJECT-CPU-TRUSTED-INSTRUCTION-PATH` |
@@ -935,6 +947,11 @@ exist in the repository.
 | `T-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_dld_dst_long32_failure_lifecycle.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dld_dst_long32_failure_lifecycle"}` | `REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT` |
 | `T-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_dld_dst_long32_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE` |
 | `T-PROJECT-P2-W47B-INVENTORY-PROJECTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_dld_dst_long32_projection.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION` |
+| `T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_add_sub_acc_shift_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_sub_acc_shift_decode"}` | `REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE` |
+| `T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_add_sub_acc_shift.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_sub_acc_shift"}` | `REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-EFFECTS` |
+| `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/test_cpu_add_sub_acc_shift.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_add_sub_acc_shift"}` | `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU-RETIREMENT` |
+| `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_add_sub_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY` |
+| `T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/perf/test_add_sub_acc_shift5_hot_path.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE` |
 
 ## Correction and tombstone policy
 

@@ -55,6 +55,9 @@ RESOURCES_ACCUMULATORS_STATUS_C = (
 RESOURCES_ACCUMULATORS_STATUS_TC = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC"
 )
+RESOURCES_ACCUMULATORS_STATUS_SXM_OVM = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM"
+)
 
 
 class OpcodeCatalogSchemaTests(unittest.TestCase):
@@ -199,7 +202,8 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
                          RESOURCES_T_REGISTER,
                          RESOURCES_STATUS_SXM_T_REGISTER,
                          RESOURCES_ACCUMULATORS_STATUS_C,
-                         RESOURCES_ACCUMULATORS_STATUS_TC):
+                         RESOURCES_ACCUMULATORS_STATUS_TC,
+                         RESOURCES_ACCUMULATORS_STATUS_SXM_OVM):
             with self.subTest(resource=resource):
                 rows = parse_catalog(
                     f"TI_C54X_OPCODE_EXACT(ACC, acc, 0x1234, 1, {LAYOUT_NONE}, "

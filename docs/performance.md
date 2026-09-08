@@ -471,6 +471,41 @@ improvement. The architectural change adds canonical state ownership and one
 additional normally-not-taken SXM resource-mask check in the generic collector;
 it does not change the workloads or catalog and is not a DSP-timing result.
 
+### W49B register ADD/SUB observer-off audit
+
+The W49B pre-commit audit compared the current 102-row tree with the frozen
+W49A ledger commit `82ba99a113758bd824a5282114fd63950698e9cc`. Six
+baseline/current pairs were interleaved and their execution order alternated;
+no benchmark history was written. All fixed-scenario semantic hashes and every
+800,000-attempt/retirement count matched.
+
+| Fixed scenario | W49A median | W49B median | Median ratio | Paired-delta median |
+|---|---:|---:|---:|---:|
+| `nop` | 31.711 ns | 28.982 ns | -8.61% | +3.51% |
+| `ld-dp` | 39.180 ns | 42.312 ns | +8.00% | +4.79% |
+| `ld-asm` | 41.346 ns | 42.110 ns | +1.85% | +0.19% |
+| `ld-arp` | 40.573 ns | 40.404 ns | -0.42% | +0.70% |
+
+The widest current ranges were 28.208–36.319 ns (`nop`), 39.202–49.486 ns
+(`ld-dp`), 38.112–53.197 ns (`ld-asm`), and 38.168–51.976 ns (`ld-arp`). The
+paired medians and same-binary host spread do not establish a material generic
+path regression. `mixed-current` remained an evolving workload because the
+catalog grew from 100 to 102 rows; its paired-delta median was +1.11% and is not
+used as a like-for-like acceptance result.
+
+The separate ADD/SUB benchmark executes the public CPU with observers compiled
+out, 7 measured samples, 16 warmups, 16 windows per sample, and 50,000
+instructions per window. Its semantic hash is `dd671e98fa2ca1dd`.
+
+| Scenario | Median cost | Final state after the final window |
+|---|---:|---|
+| `add-acc-shift5` | 70.569 ns | A=1, B=`0x1234C350`, C=0, OVA=0, OVB=0 |
+| `sub-acc-shift5` | 68.553 ns | A=1, B=`0x12333CB0`, C=1, OVA=0, OVB=0 |
+
+Both scenarios reported PC=50,000 and 800,000 program reads, attempts, and
+retirements per measured sample. These figures characterize this host and build;
+they are neither hard thresholds nor TI machine-cycle evidence.
+
 Hosted scripts own capture and same-cohort comparison. They must not be linked
 into the core or required by a standalone build. The `TI_C54X_BUILD_BENCHMARKS`
 knob is an ACTIVE TEST/KEEP control, default OFF, owned by `bench/`; it has no

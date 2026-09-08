@@ -20,49 +20,28 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W49A complete):
+Current snapshot (P2-W49B complete):
 
-- 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
-  inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
-  strict-complete (12.195%). These are separate counts: lookup entries are not
-  instruction counts.
-- Standalone memory/addressing seams are proven through standard MOD0-3,
-  indexed MOD5/6, circular MOD8/10, reverse-carry MOD4/7, and same-address
-  WORD16 RMW modes. W46B is complete: `ANDM`, `ORM`, and `XORM` retire through
-  the generic decode/effect/CPU/inventory path; MOD3 remains a deliberate
-  pre-endpoint rejection.
-- Performance is a first-class constraint. The trusted per-ID execution packet,
-  single extraction pass, and hosted benchmark history are retained. The dedicated
-  observer-off RMW benchmark has a clean baseline and baseline-relative comparison
-  at [`bench/audits/p2-w46b-rmw-baseline.json`](bench/audits/p2-w46b-rmw-baseline.json);
-  its semantic hash is `3b39187c40a4fd43` and it makes no TI timing claim.
-- The fixed-size LONG32 memory path is green through MSW→LSW pairing, CMPT=0
-  MOD13 resolution, and the root WAIT/fault/cancel/stale lifecycle. AR/PC commit
-  waits for both words; the existing WORD16 path avoids the LONG32 cold helper.
-  Typed PMST.SST access and copied input knownness are green without widening
-  the 48-byte opcode-input snapshot. DLD/DST have exact MOD13 catalog rows,
-  single-pass trusted operands, full CPU READY/WAIT/FAULT coverage, SXM load
-  semantics, SXM/SST store saturation, and a dedicated observer-off full-CPU
-  benchmark with semantic self-checks and no machine-dependent threshold.
-- Repeat sequencing now has typed RC access and an allocation-free transactional
-  progress reducer proving the full observable `K...0` sequence, terminal RC zero,
-  stale/unknown rejection, and all 65,536 bodies for `K=0xffff`. Typed IFR access
-  and a fixed-size pending-request reducer now prove that a post-decode maskable
-  request is latched while repeat defers it, then cleared on explicit normal take;
-  reset, IFR-write-one, and `INTR` clears are separate modeled paths. These seams
-  add no branch to the current CPU path. Repeated-body PC flow and predecode
-  pending-request arbitration still require evidence before inert RPT policy can
-  become runtime behavior. A full repeatability audit also corrected DLD from an
-  unsupported `INELIGIBLE` classification to `UNRESOLVED`; no current catalog row
-  is positively evidenced `ELIGIBLE`.
-- The shared ADD/SUB foundation now produces modulo-40 results, bit-32
-  carry/no-borrow, and signed-32 overflow direction. Typed OVM/OVA/OVB access,
-  copied OVM input, and atomic sticky destination-overflow effects are green;
-  LP64/ILP32 carrier sizes are frozen. Register-only ADD/SUB activation is next.
-- Remaining high-level gaps are broader arithmetic-family activation, multi-memory
-  and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
-  behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ
-  details are unresolved; emulator integration remains deferred.
+- 102 runnable catalog rows cover 2,967 first-word encodings. Inventory coverage
+  is 42/205 instruction forms touched (20.488%) and 27/205 strict-complete
+  (13.171%); lookup encodings are not instruction counts.
+- Register-only ADD/SUB syntax 9 now executes through the generic trusted path,
+  including signed full-40-bit shifts, SXM fill, bit-32 carry/no-borrow, OVM
+  saturation, sticky OVA/OVB, alias-safe reads, and atomic CPU retirement.
+- Memory execution covers standard, indexed, circular, and reverse-carry WORD16
+  addressing; same-address logical RMW; and DLD/DST LONG32 MOD13 with READY,
+  WAIT, fault, cancel, and stale-work handling.
+- Performance remains a release constraint. Execution uses immutable direct
+  lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
+  observer-off CPU benchmarks. These are host-performance checks, not TI
+  machine-cycle claims.
+- RC progression and pending IFR deferral are modeled transactionally, but runtime
+  RPT activation still waits on positive repeatability evidence, repeated-body PC
+  flow, and predecode interrupt arbitration. No catalog row is currently proven
+  repeat-eligible.
+- Major remaining work is broader arithmetic coverage, multi-memory and parallel
+  transactions, control/repeat/IRQ execution, profiles/devices, and evidenced
+  machine timing. Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

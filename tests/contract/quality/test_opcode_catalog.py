@@ -136,7 +136,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 100)
+        self.assertEqual(len(catalog_rows), 102)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -152,11 +152,16 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.input_resources, RESOURCES_NONE)
 
         # Preserve the historical positional assertions below while the
-        # current catalog carries the two status rows immediately after NOP.
+        # current catalog carries the status rows immediately after NOP and
+        # the W49B ADD/SUB rows before the immediate logical forms.
         rows = [
             catalog_rows[0],
             *(row for row in catalog_rows[3:]
-              if row.symbol != "LD_SMEM_TS"),
+              if row.symbol not in {
+                  "LD_SMEM_TS",
+                  "ADD_ACC_SHIFT",
+                  "SUB_ACC_SHIFT",
+              }),
         ]
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),

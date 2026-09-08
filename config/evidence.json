@@ -1484,6 +1484,84 @@
       "assertion": "W49A defines a separate checked modulo-40 ADD/SUB foundation that reports bit-32 carry or no-borrow and signed-32 overflow direction without owning OVM policy. It adds typed OVM/OVA/OVB access, widens the private catalog input-resource mask to sixteen bits before assigning OVM bit 0x0080, preserves the 48-byte input snapshot and trusted carriers, and extends ACCUMULATOR_WRITE with a destination-overflow preserve-or-set action committed atomically with accumulator, C, and TC state. No catalog row, semantic handler, CPU opcode branch, public ABI, runtime repeat behavior, timing claim, allocation, I/O, observation, diagnostics, environment access, or mutable process state is introduced."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD",
+        "printed_page_start": "4-4",
+        "printed_page_end": "4-7"
+      },
+      "assertion": "SPRU172C ADD syntax 9 is ADD src [, SHIFT] [, dst]. S at bit 9 selects the source accumulator, D at bit 8 selects the destination, and the five-bit SHIFT field is a signed two's-complement count from -16 through 15. Its execution is (dst or src) plus (src shifted by SHIFT) written to dst; the source shift precedes the ALU operation. The form is one program word, class 1, is affected by SXM and OVM, and affects C and the destination overflow flag. Summary cycle values are not adopted as common timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "SUB",
+        "printed_page_start": "4-187",
+        "printed_page_end": "4-190"
+      },
+      "assertion": "SPRU172C SUB syntax 9 is SUB src [, SHIFT] [, dst]. S at bit 9 selects the source accumulator, D at bit 8 selects the destination, and the five-bit SHIFT field is a signed two's-complement count from -16 through 15. Its execution subtracts the shifted src value from dst (or src when dst is omitted) and writes the result to dst; the source shift precedes the ALU operation. The form is one program word, class 1, is affected by SXM and OVM, and affects C and the destination overflow flag. Summary cycle values are not adopted as common timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4.4-P4-17-4-18-ACCUMULATOR-SHIFT5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "4",
+        "section": "4.4",
+        "printed_page_start": "4-17",
+        "printed_page_end": "4-18"
+      },
+      "assertion": "SPRU131G describes a 40-bit barrel shifter whose input may be either accumulator, with immediate four- or five-bit counts represented in two's-complement form from -16 through 15. Positive counts shift left and negative counts shift right; low output bits are zero and SXM selects sign or zero fill for the high bits. The register-only ADD/SUB syntax-9 slice therefore operates on the canonical low-40-bit shifted source without making a timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-ADD-SUB-ACCUMULATOR-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "chapter": "2",
+        "section": "2.5/Table 2‑28",
+        "printed_page_start": "2-19",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "The SPRU172C repeat section lists forms prohibited from RPT or RPTZ and separately excludes long-offset or absolute single-data-memory forms, but it does not positively authorize every omitted form. Register-only ADD and SUB syntax 9 are not listed; their repeatability therefore remains UNRESOLVED and no runtime-repeat eligibility or timing claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W49B: register-only ADD/SUB syntax-9 activation (planned)"
+      },
+      "assertion": "P2-W49B composes only the register-only ADD and SUB syntax-9 rows through the existing arithmetic40 ADD/SUB foundation, typed OVM/OVA/OVB status access, ACCUMULATOR_WRITE effect, accumulator input collection, trusted binding, and generic CPU retirement. The bounded forms use values 0xF400 and 0xF420 with mask 0xFCE0, one word, and ACCUMULATOR_SOURCE_DESTINATION_SHIFT5; repeatability remains UNRESOLVED. Activation must preserve fixed-size carriers, allocation-free trusted dispatch, no opcode-specific CPU branch, no public ABI change, no timing/device/profile claim, and an observer-off public-CPU performance proof against the current baseline."
+    },
+    {
       "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
       "immutable": true,
       "state": "PINNED",
@@ -6363,6 +6441,86 @@
       "claim": "After the two production catalog rows exist, bind DLD_LONG32_MOD13 and DST_LONG32_MOD13 as SUBSET coverage to FORM-T2-19-01 and FORM-T2-20-01 using a bounded long-offset MOD13 token; project 100 rows, ID_COUNT 101, 2711 populated lookup entries, 100 bindings, family 40/205, and strict complete-form coverage unchanged at 25/205, while activation leaves unresolved inventory entries until the symbols are present.",
       "evidence_ids": ["E-PROJECT-P2-W47B-DLD-DST-LONG32-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W47B-INVENTORY-PROJECTION"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the register-only ADD and SUB syntax-9 rows as one-word masked forms ADD_ACC_SHIFT (0xF400/0xFCE0) and SUB_ACC_SHIFT (0xF420/0xFCE0). Use ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 with S at bit 9, D at bit 8, and raw SHIFT bits 4:0 sign-extended to -16..15; classify fixed-bit near misses and malformed layouts transactionally without adding timing or repeat eligibility claims.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5",
+        "E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5"
+      ],
+      "test_ids": ["T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Produce pure register-only ADD/SUB syntax-9 effects by shifting the original source accumulator in canonical 40-bit space with SXM sign or zero fill, then applying the shared modulo-40 ALU foundation. Report bit-32 ADD carry or SUB no-borrow, classify signed-32 overflow before OVM policy, preserve or set only the destination OVA/OVB sticky flag, apply OVM raw or signed-32 saturation, preserve unrelated state, and use read-before-write values when source and destination alias.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-P4-4-7-ACCUMULATOR-SHIFT5",
+        "E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5",
+        "E-TI-C54X-SPRU131G-S4.4-P4-17-4-18-ACCUMULATOR-SHIFT5",
+        "E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW",
+        "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION",
+        "E-TI-C54X-SPRU172C-S4-NEG-P4-119-4-120-OVERFLOW-DOMAIN"
+      ],
+      "test_ids": ["T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind ADD_ACC_SHIFT and SUB_ACC_SHIFT through the catalog-derived trusted semantic table with the existing ACCUMULATORS|STATUS_SXM|STATUS_OVM resources, ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 layout, one program word, and unresolved repeatability. The trusted path must consume copied operands without opcode-identity CPU branches, allocations, callbacks, I/O, observers, diagnostics, or public-ABI changes.",
+      "evidence_ids": ["E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire one-word register-only ADD_ACC_SHIFT and SUB_ACC_SHIFT effects through generic input collection and ACCUMULATOR_WRITE atomically, committing the selected accumulator, C, destination OVA/OVB action, and sequential PC+1 together. Unknown required SXM/OVM/accumulator inputs, bus faults, and PC overflow leave architectural state unchanged; no opcode-specific CPU branch or timing claim is admitted.",
+      "evidence_ids": ["E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "After the two catalog rows exist, bind ADD syntax-9 FORM-T2-01-09 and SUB syntax-9 FORM-T2-02-09 as COMPLETE coverage without changing the 205-form denominator. Project two catalog rows, ID_COUNT 103, 2,967 populated first-word lookup entries, 102 bindings, family coverage 42/205, and strict complete-form coverage 27/205; leave syntax-10, memory, carry, and sign-suppressed variants outside this slice.",
+      "evidence_ids": ["E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Prove the ADD/SUB syntax-9 activation remains fixed-size and allocation-free, preserves the existing trusted packet and public effect carrier sizes, adds no opcode-specific CPU branch or observer work, and has no material regression in the observer-off public-CPU benchmark against the current clean W49A baseline. The benchmark is a host-performance contract only and makes no TI cycle claim.",
+      "evidence_ids": ["E-PROJECT-P2-W49B-REGISTER-ADD-SUB-SHIFT5-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-REPEATABILITY",
+      "state": "UNRESOLVED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "ADD and SUB register-only syntax-9 repeatability remains unresolved. Their omission from SPRU172C Table 2-28 does not positively authorize single-repeat execution, so catalog metadata must remain non-admitting and runtime RPT must not be activated by this slice.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S2-5-T2-28-ADD-SUB-ACCUMULATOR-REPEATABILITY-BOUNDARY"],
+      "test_ids": []
     }
   ],
   "tests": [
@@ -7707,7 +7865,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -8556,6 +8714,46 @@
       "path": "tests/contract/quality/isa/inventory/test_inventory_dld_dst_long32_projection.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-INVENTORY-PROJECTION"]
+    },
+    {
+      "id": "T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_add_sub_acc_shift_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_acc_shift_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_sub_acc_shift.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_acc_shift"},
+      "requirement_ids": ["REQ-COMMON-P2-W49B-ADD-SUB-ACC-SHIFT5-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/test_cpu_add_sub_acc_shift.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_add_sub_acc_shift"},
+      "requirement_ids": ["REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_add_sub_binding.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"]
+    },
+    {
+      "id": "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_add_sub_acc_shift5_hot_path.py",
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
+      "requirement_ids": ["REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-HOT-PATH-PERFORMANCE"]
     }
   ]
 }
