@@ -6304,3 +6304,31 @@ rewritten after publication.
   IMPLEMENTED, 9 PLANNED, 29 UNRESOLVED); 244 tests (235 PASSING, 9 PLANNED);
   and 7 sources. The immediate follow-up is a clean W46B baseline/evidence
   closure, then the architecture-forcing P2-W47A LONG32 pair transaction seam.
+
+## 2026-09-08 — P2-W46B observer-off RMW performance closure
+
+- State: performance-evidence commit
+  `bcb3555e92864ce2de4580419bbae21d630b27cb` records the clean dedicated
+  RMW cohort at `bench/audits/p2-w46b-rmw-baseline.json` and closes W46B's
+  final planned requirement/test. The capture identifies source, binary,
+  compiler, build flags, host, observer-off profile, VCS state, exact roster,
+  and semantic hash `3b39187c40a4fd43`.
+- The clean baseline retired 320,000 instructions for each MOD0 ANDM/ORM/XORM
+  scenario and proved two program-word reads plus exactly one DATA READ and
+  one same-address DATA WRITE per retirement, strict request order, fresh
+  transaction IDs, and correct transforms. Recorded hosted medians are
+  620.863, 558.865, and 559.790 ns/instruction respectively; timing spread is
+  retained in the artifact and the values remain advisory rather than TI
+  machine-cycle claims or absolute pass/fail thresholds.
+- `rtk make bench-rmw-compare` accepted a subsequent capture as the same
+  source/profile/observer/host/compiler/roster/semantic cohort and emitted
+  per-scenario deltas. The focused benchmark contract passed 7/7. The final
+  authoritative `rtk make test` gate passed all 231 Python quality tests with
+  no skips, plus the compiled C suite, evidence, manifest, inventory, source
+  boundary, and observer-off artifact checks.
+- Closure accounting is 175 evidence records; 290 requirements (253
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 244 tests (236 PASSING, 8 PLANNED);
+  and 7 sources. W46B is fully closed. P2-W47A is next: an allocation-free
+  private LONG32 pair transaction seam that preserves the one-word endpoint
+  ABI and makes request order, WAIT/FAULT/cancel, visibility, and hot-path
+  costs explicit before any DLD/DST opcode composition.
