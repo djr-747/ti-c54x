@@ -6524,3 +6524,48 @@ rewritten after publication.
   the two catalog rows, four-field layout, and pure checked/trusted DLD/DST
   semantics without duplicate trusted-path extraction or resume-time source
   recomputation.
+
+## 2026-09-09 — P2-W47B2B DLD/DST LONG32 MOD13 semantics
+
+- State: implementation commit
+  `4aa69eb42193e0b4498e44e9142253479a02715f` activates the exact
+  `DLD_LONG32_MOD13` and `DST_LONG32_MOD13` rows at `0x56E8/0xFEF8` and
+  `0x4EE8/0xFEF8`. Each row has sixteen first words, one copied extension word,
+  the shared D/S–ARF–`lk`–MOD13 layout, and an ineligible repeat class. The
+  generated direct lookup now contains 2,711 populated entries.
+- Checked and trusted semantic leaves are separate. The checked path validates
+  complete decode and extracts fields transactionally; the normal CPU trusted
+  path consumes the four values already extracted into its canonical packet and
+  does not resolve or extract the layout again. Dispatch remains a static
+  catalog-derived function table with no opcode switch, learning pass, cache,
+  allocation, observer fan-out, environment access, formatting, or I/O.
+- DLD stages one generic LONG32 MOD13 read and publishes an accumulator effect
+  only after copied MSW/LSW completion; SXM=0 clears guard bits and SXM=1 sign
+  extends bit 31 while C/TC remain preserved. DST selects a copied full raw-40
+  source, validates SXM/SST knownness, applies the pinned unsigned/signed clamp
+  once before issue, and stages copied MSW then LSW values with no completion
+  callback or source mutation. Resume-time source reads and recomputation remain
+  absent.
+- Inventory binds the rows to `FORM-T2-19-01` and `FORM-T2-20-01` as
+  `LONG_OFFSET_MOD13_CMPT0` subsets. The current snapshot is 100 catalog rows,
+  `ID_COUNT=101`, 2,711 lookup entries, 100 bindings, 40/205 family coverage
+  (19.512%), and unchanged 25/205 strict coverage (12.195%).
+- File review retains `src/isa/decode/operand_layout.c` as the cohesive central
+  immutable layout registry at 637 lines, but closes it to another layout
+  addition until its static family definitions are split into owned helpers.
+  W47B2C requires no new layout. The two new semantic owners are 219 lines each
+  and their focused tests are 230/225 lines. No knob was added or changed.
+- Validation is GREEN: the four focused catalog/decode/DLD/DST C executables
+  pass; 25 focused catalog/inventory Python tests pass; focused DLD/DST
+  ASan/UBSan passes; generated lookup staleness checking passes; and the
+  authoritative `rtk make test` gate passes the compiled C suite and all 238
+  Python quality tests. Evidence, manifests, inventory, source boundaries, and
+  the observer-disabled artifact pass. Two initial gate failures were stale
+  aggregate count assertions and strict module-contract comment spelling; both
+  were corrected before the clean green gate. No GitHub or other hosted runner
+  was invoked.
+- Accounting is 181 evidence records; 304 requirements (264 IMPLEMENTED, 11
+  PLANNED, 29 UNRESOLVED); 258 tests (247 PASSING, 11 PLANNED); and 7 sources.
+  W47B2C next proves full CPU READY/WAIT/FAULT behavior, deferred AR/PC and DLD
+  publication, DST partial physical write visibility, unknown SXM/SST rejection
+  before endpoint issue, C16 independence, and observer-off opcode performance.
