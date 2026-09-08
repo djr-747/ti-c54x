@@ -6990,3 +6990,65 @@ rewritten after publication.
   same-AR pair commits once; WAIT and FAULT remain non-publishing; root sizes
   stay frozen at 336/308 bytes. Broader dual-mode opcode activation follows
   only after that root transaction seam is green.
+
+## 2026-09-09 — P2-W51B dual-memory root commit/publication seam
+
+- State: implementation commit
+  `c431a6130585494c288ab09097f7a280248b98c7` implements the W51B root
+  transaction seam left planned by the previous session. The persistent dual
+  snapshot grows from 32 to 48 bytes with exactly two value-owned
+  post-access commit descriptors; the dual effect carrier, root prepare
+  snapshot, and both candidate validators admit MOD0/MOD1/MOD2 with MOD3
+  still deferred; copied mode/selector/address shadows plus live AR/PC
+  identity are validated before endpoint issue and at every resume boundary;
+  distinct-AR updates publish atomically only after both DATA reads are
+  READY and ordinary-effect staging succeeds; a same-selector alias commits
+  the one X-owned update; WAIT, FAULT, cancellation, and other nonterminal
+  paths remain non-publishing. No opcode row, CPU branch, public ABI,
+  catalog, or inventory change is admitted.
+- Evidence and architecture decisions: W51A remains the source for MOD0-2
+  old-address behavior, AR2--AR5 mapping, and Xmod precedence. Mode-drift
+  detection reuses the frozen commits as the mode shadow: the validator
+  re-derives the expected commit (zeroed no-update for MOD0/aliased-Y, exact
+  non-wrapping decrement/increment for MOD1/MOD2) from the copied spec and
+  frozen request address, so no new root bytes were needed and LP64/ILP32
+  root sizes stay frozen at 336/308 bytes (the widened snapshot still fits
+  the candidate union; both structs hold no pointers). The READY commit
+  (ordinary staging plus atomic AR/PC publication) split into the new
+  `memory_instruction_dual_commit` owner after the dual hot-path quality
+  bound failed at 514 lines; `memory_instruction_dual.c` is back to 448
+  lines with orchestration only. The W50-era carrier test now proves
+  MOD1/MOD2 valid with MOD3 still rejected.
+- Performance is part of closure. The observer-off W50B dual ADD/SUB smoke
+  preserves semantic hash `b40823092c0aa605` with exactly two DATA reads per
+  retirement across 320,000 retirements per scenario; one dirty-tree sample
+  measured 766.5--840.7 ns/instruction, within the earlier volatile host
+  spread, with no threshold, regression claim, TI-cycle claim, or history
+  artifact. The split commit call sits on the retire path only; MOD0
+  retirements stage zeroed commits and publish no AR writes.
+- TDD and review: the inherited RED contract first failed on the 32-vs-48
+  snapshot size, then went green; the widening exposed two pinned MOD0-only
+  expectations (`test_dual_address_resolution` 32-byte static assert,
+  `test_dual_word16_memory_effect` mode-1 rejection) that were updated to
+  the W51B contract, and the 500-line quality bound forced the commit-owner
+  split. Validation is GREEN: focused Make executables pass; focused
+  CMake/CTest with ASan/UBSan passes 17/17 dual-adjacent tests plus the full
+  CTest suite except the quality.python m32/ILP32 probes below; the full
+  compiled C suite passes 258/258 including `minimal`; evidence, manifests,
+  inventory, source boundaries, knobs, and observer-disabled structure pass.
+  Three Python quality probes (`dual m32 carriers`, `long32 m32 sizes`,
+  `dld_dst ilp32 sizes`) fail with SIGSYS under this sandbox; a clean-HEAD
+  worktree reproduces two of them identically, and all three die in the
+  `-m32` probe binary itself, so they are pre-existing environmental
+  failures unrelated to this slice. (LSan also fatals under sandbox ptrace,
+  so sanitizer runs use `LSAN_OPTIONS=detect_leaks=0` with ASan/UBSan
+  active.) No GitHub or other hosted runner was invoked, and nothing was
+  pushed.
+- Closure accounting is 208 immutable evidence records; 338 requirements
+  (300 IMPLEMENTED, 7 PLANNED, 31 UNRESOLVED); 288 tests (281 PASSING, 7
+  PLANNED); and 7 sources. Catalog/ISA counts remain 104 rows,
+  `ID_COUNT=105`, 3,031 lookup entries, 104 trusted bindings,
+  44/205 family coverage, and 27/205 strict coverage. No knob was added or
+  changed. The next architecture-forcing seam is broader dual-mode opcode
+  activation through this root; `memory_instruction_dual.c` at 448 lines
+  stays under review if it approaches 500 again.
