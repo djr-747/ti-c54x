@@ -6890,3 +6890,52 @@ rewritten after publication.
   strict coverage. No knob was added or changed. W50B next activates the
   evidenced dual-memory ADD/SUB rows through this seam and adds observer-off
   public-CPU performance evidence.
+
+## 2026-09-09 — P2-W50B dual-memory ADD/SUB MOD0 activation
+
+- State: implementation commit
+  `05e3ee68d5076c07e9bea356a041cdf1ad1e0451` activates the one-word
+  syntax-6 `ADD Xmem,Ymem,dst` and `SUB Xmem,Ymem,dst` MOD0/MOD0 subsets as
+  `ADD_DUAL_MOD0` at `0xA000/0xFECC` and `SUB_DUAL_MOD0` at
+  `0xA200/0xFECC`. The decode-owned D/Xar/Yar layout maps raw X/Y selectors
+  to AR2--AR5, and catalog-derived trusted bindings compose the existing W50A
+  dual-read transaction without an opcode-specific CPU branch.
+- Evidence and semantic decisions: TI SPRU172C and SPRU131G support independent
+  SXM extension of both WORD16 inputs, fixed left shift 16, modulo-40 ADD/SUB,
+  directional bit-32 C behavior, OVM signed-32 saturation, and sticky
+  destination OVA/OVB. Repeatability remains `UNRESOLVED`; omission from the
+  negative repeat tables is not positive eligibility evidence. Both inventory
+  forms remain `SUBSET` under `DUAL_INDIRECT_MOD0_MOD0` because non-MOD0 modes
+  are not claimed by this slice.
+- CPU behavior is transactional: each retirement performs exactly one X read
+  followed by one Y read, preserves WAIT identity without refetch or replan,
+  and publishes accumulator/status/PC state only after both reads are READY.
+  X or Y FAULT leaves architectural state unchanged. Checked APIs retain forged
+  input validation; the production CPU uses the trusted binding on the first
+  execution and performs no seen-before promotion.
+- Performance remains a closure axis. The observer-off four-scenario benchmark
+  retires 320,000 instructions per scenario with 640,000 ordered DATA reads and
+  semantic hash `b40823092c0aa605`. Hosted samples varied materially across
+  system load; one recorded characterization measured 1,749.8--1,811.9
+  ns/instruction and a later smoke measured approximately 799.9--1,423.3
+  ns/instruction. These values are advisory host observations, not a threshold
+  or TI machine-cycle claim. The generic two-read path remains a visible
+  optimization target, and no benchmark history artifact was written.
+- Validation is GREEN: focused metadata, decode, checked/trusted semantics, CPU
+  READY/WAIT/FAULT, inventory, and performance contracts pass; focused CTest is
+  4/4; benchmark smoke passes; evidence parity passes at 2 targets, 7 sources,
+  335 requirements, and 286 tests; and the authoritative `rtk make test` gate
+  passes the complete compiled C suite plus all 268 Python quality tests.
+  Manifests, inventory, source boundaries, knobs, observer-disabled structure,
+  and diff checks pass. Independent review found no correctness blocker. No
+  GitHub or other hosted runner was invoked, and no RED commit was pushed.
+- Closure accounting is 203 immutable evidence records; 335 requirements (297
+  IMPLEMENTED, 7 PLANNED, 31 UNRESOLVED); 286 tests (279 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts are 104 rows, `ID_COUNT=105`, 3,031 lookup
+  entries, 104 trusted bindings, 44/205 family coverage, and 27/205 strict
+  coverage. No knob was added or changed. The 499-line benchmark is retained as
+  a cohesive fixed roster and future scenarios must split; the 665-line
+  descriptor owner remains below 800 with future growth requiring an explicit
+  split. W51 next implements coordinated non-MOD0 dual addressing/update modes,
+  including same-AR Xmod precedence and atomic two-AR commit, while preserving
+  trusted-path and two-read performance constraints.
