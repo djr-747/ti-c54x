@@ -95,6 +95,11 @@ ti_c54x_long32_pair_status ti_c54x_long32_pair_transaction_cancel(
     ti_c54x_long32_pair_transaction *transaction,
     uint64_t transaction_id);
 
+/* Abandon only canonical staged, unpublished work; no endpoint is called. */
+ti_c54x_long32_pair_status
+ti_c54x_long32_pair_transaction_abandon_staged(
+    ti_c54x_long32_pair_transaction *transaction);
+
 /* Publish a staged pair, or return WAIT/FAULT without inventing values. */
 ti_c54x_long32_pair_completion_result
 ti_c54x_long32_pair_transaction_complete(

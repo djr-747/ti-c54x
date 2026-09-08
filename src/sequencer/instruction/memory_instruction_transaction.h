@@ -19,6 +19,7 @@
 #include <ti_c54x/bus_endpoint.h>
 
 #include "bus/transaction/word16_transaction.h"
+#include "sequencer/instruction/long32_pair_transaction.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
 #include "isa/ops/op_input.h"
@@ -54,6 +55,11 @@ typedef enum ti_c54x_memory_instruction_phase {
     TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT = 4
 } ti_c54x_memory_instruction_phase;
 
+typedef enum ti_c54x_memory_instruction_child_kind {
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 = 1,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32 = 2
+} ti_c54x_memory_instruction_child_kind;
+
 typedef struct ti_c54x_memory_instruction_candidate {
     ti_c54x_decoded_instruction instruction;
     ti_c54x_op_input_snapshot input;
@@ -74,16 +80,30 @@ typedef struct ti_c54x_memory_instruction_result {
 
 typedef struct ti_c54x_memory_instruction_transaction {
     ti_c54x_memory_instruction_phase phase;
-    ti_c54x_bus_word16_transaction bus_transaction;
+    union {
+        ti_c54x_bus_word16_transaction bus_transaction;
+        ti_c54x_long32_pair_transaction long32_bus_transaction;
+    };
     uint64_t last_transaction_id;
     /* The transformed WORD16 is staged between the READ and paired WRITE;
      * it is never recomputed while the WRITE is pending. */
-    uint16_t rmw_write_value_word;
+    union {
+        uint16_t rmw_write_value_word;
+        /* LONG32 uses the otherwise RMW-only slot for the frozen MSW. */
+        uint16_t long32_first_value_msw;
+    };
     /* Immutable copies of the RMW operator and operand.  The copied
      * candidate remains externally inspectable, so a pending resume must
      * reject edits that would otherwise still be structurally valid. */
     uint8_t candidate_rmw_operation;
-    uint16_t candidate_rmw_value_word;
+    /* Child discriminator occupies the existing scalar padding before the
+     * candidate's alignment on LP64 and ILP32. */
+    uint8_t child_kind;
+    union {
+        uint16_t candidate_rmw_value_word;
+        /* LONG32's second payload is frozen in the same scalar slot. */
+        uint16_t long32_second_value_lsw;
+    };
     ti_c54x_memory_instruction_candidate candidate;
 } ti_c54x_memory_instruction_transaction;
 

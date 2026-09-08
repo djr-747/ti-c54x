@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "address/indirect_reverse_carry.h"
+#include "address/indirect_long_offset.h"
 #include "bus/adapter/word16_adapter.h"
 #include "state/block_size_register.h"
 #include "sequencer/instruction/memory_instruction_transaction.h"
@@ -28,8 +29,6 @@ address_resolution_is_valid(
 
     if (resolution == NULL || effect == NULL ||
         resolution->address_result.status != TI_C54X_ADDRESS_STATUS_OK ||
-        resolution->address_result.effect.operand.width !=
-            TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
         resolution->request.space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
         resolution->request.access != effect->access ||
         resolution->request.address_word !=
@@ -39,6 +38,29 @@ address_resolution_is_valid(
     }
     address_effect = &resolution->address_result.effect;
     address_commit = &resolution->address_commit;
+
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
+        const ti_c54x_address_source_ar_long_offset *const source =
+            &address_effect->source.value.ar_long_offset;
+        return address_effect->operand.width ==
+                   TI_C54X_DATA_OPERAND_WIDTH_LONG32 &&
+               ti_c54x_indirect_long_offset_effect_is_valid(address_effect) &&
+               address_effect->source.kind ==
+                   TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET &&
+               source->index == effect->address_spec.arf &&
+               source->long_offset_word ==
+                   effect->address_spec.long_offset_word &&
+               address_effect->operand.first_word ==
+                   resolution->request.address_word &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_commit->ar_index == source->index &&
+               address_commit->value_after ==
+                   address_effect->update.value_after;
+    }
+    if (address_effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16) {
+        return false;
+    }
 
     if (effect->address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16) {
@@ -299,6 +321,11 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
         return candidate->address_resolution.request.write_value_word ==
                UINT16_C(0);
     }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
+        return candidate->address_resolution.request.write_value_word ==
+               candidate->effect.payload.memory.first_value_msw;
+    }
     return candidate->address_resolution.request.write_value_word ==
            candidate->effect.payload.memory.value_word;
 }
@@ -389,6 +416,14 @@ ti_c54x_memory_instruction_candidate_matches_live(
         }
         return selected_ar == address_effect->source.value.ar_reverse_carry
                                   .ar0_value_before;
+    case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
+        if (ti_c54x_arch_state_read_ar(
+                state, address_effect->source.value.ar_long_offset.index,
+                &selected_ar) != TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return selected_ar ==
+               address_effect->source.value.ar_long_offset.value_before;
     default:
         return false;
     }

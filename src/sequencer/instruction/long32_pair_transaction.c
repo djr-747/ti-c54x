@@ -255,6 +255,34 @@ ti_c54x_long32_pair_status ti_c54x_long32_pair_transaction_cancel(
     return TI_C54X_LONG32_PAIR_STATUS_OK;
 }
 
+ti_c54x_long32_pair_status
+ti_c54x_long32_pair_transaction_abandon_staged(
+    ti_c54x_long32_pair_transaction *transaction)
+{
+    bool staged_second;
+
+    if (transaction == NULL) {
+        return TI_C54X_LONG32_PAIR_STATUS_INVALID_ARGUMENT;
+    }
+    staged_second =
+        transaction->state == TI_C54X_LONG32_PAIR_STATE_SECOND &&
+        transaction->word16_transaction.state ==
+            TI_C54X_BUS_WORD16_TRANSACTION_STATE_ISSUE_READY;
+    if (!ti_c54x_long32_pair_transaction_is_canonical(transaction) ||
+        (!staged_second &&
+         !(transaction->state ==
+               TI_C54X_LONG32_PAIR_STATE_COMPLETION_READY &&
+           transaction->word16_transaction.state ==
+               TI_C54X_BUS_WORD16_TRANSACTION_STATE_COMPLETE))) {
+        return TI_C54X_LONG32_PAIR_STATUS_INVALID_STATE;
+    }
+    /* Clear staged work before architectural publication.  This is the only
+     * pair-owned rollback for either an unissued second child or a completed
+     * second child whose pair has not yet been published. */
+    ti_c54x_long32_pair_clear(transaction);
+    return TI_C54X_LONG32_PAIR_STATUS_OK;
+}
+
 ti_c54x_long32_pair_completion_result
 ti_c54x_long32_pair_transaction_complete(
     ti_c54x_long32_pair_transaction *transaction)

@@ -79,9 +79,10 @@ comparator, and quality contract, clean baseline artifact, and baseline-relative
 comparison are green. The baseline is recorded at
 `bench/audits/p2-w46b-rmw-baseline.json` with semantic hash
 `3b39187c40a4fd43`; performance remains a first-class acceptance axis without
-implying TI timing. P2-W47A is implementation-complete as the generic LONG32
-pair seam. P2-W47B is the active evidence-frozen forcing-function slice for
-DLD/DST composition; implementation and catalog activation remain pending.
+implying TI timing. P2-W47B1 is implementation-complete for the generic
+LONG32 MEMORY MOD13 carrier and root seam. P2-W47B2 is the active
+forcing-function slice for DLD/DST catalog, semantics, CPU execution,
+inventory, and opcode benchmarking.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -773,6 +774,22 @@ completion callbacks may remain process-lifetime function pointers but own no
 mutable context, formatting, or fan-out. Root and validator helpers split before
 file-size thresholds, and an observer-off full-CPU benchmark is required.
 
+W47B1 is implementation-complete for the generic fixed-size LONG32 MEMORY
+carrier, checked CMPT=0 MOD13 resolver, and discriminated root transaction.
+Focused and sanitizer matrices are 10/10 GREEN. Native LP64 freezes the address
+specification/effect/root at 24/40/336 bytes; supported ILP32 freezes them at
+24/36/308. The root issues two copied requests directly through the pair reducer,
+preserves active IDs and the sequence watermark across WAIT/fault/cancel/stale
+paths, and commits AR/PC only after both words are READY. The established WORD16
+path does not call the LONG32 preparation helper. The 494-line root and 782-line
+cohesive lifecycle test are closed to further W47B growth; W47B2 owns its opcode,
+semantic, CPU, quality, and benchmark work in their existing modules.
+
+W47B1 accounting is 181 evidence records; 304 requirements (259 `IMPLEMENTED`,
+16 `PLANNED`, 29 `UNRESOLVED`); 258 tests (242 `PASSING`, 16 `PLANNED`); and 7
+sources. Catalog and inventory counts remain unchanged until W47B2 activates the
+two production rows.
+
 Activation leaves inventory rows `FORM-T2-19-01` (DLD) and `FORM-T2-20-01`
 (DST) unresolved until production catalog symbols exist. The post-implementation
 projection is 100 catalog rows, `ID_COUNT=101`, 2,711 populated first-word
@@ -830,6 +847,7 @@ function-pointer dispatch tables.
 | P2-W46A generic WORD16 same-address RMW seam | Implemented — focused transaction/effect and structural performance runners GREEN | Allocation-free AND/OR/XOR carrier and one-read/one-write transaction resolve once, use fresh phase IDs, validate direct stale snapshots without replanning, and publish AR/PC only after WRITE READY. Carrier size is frozen on supported 32/64-bit ABIs; no bus-exclusion or TI timing claim is made. |
 | P2-W46B ANDM/ORM/XORM neutral MOD0–3 composition | Implemented — six focused C/Python runners, clean baseline, and baseline comparison GREEN | Register three two-word MOD0–3 rows (0x6880/0x6980/0x6A80, mask 0xFFE0), reject MOD3 before endpoint, and reuse W46A through generic decode/effects/CPU/inventory. ID_COUNT 99, lookup 2,679, bindings 98; family 38/205, strict 25/205. The observer-off benchmark is advisory, with clean baseline artifact `bench/audits/p2-w46b-rmw-baseline.json`, semantic hash `3b39187c40a4fd43`, and no TI timing claim. |
 | P2-W47A generic LONG32 pair transaction seam | Implemented — focused shape/read/write CTests 3/3, hot-path quality 6/6, focused sanitizer 3/3, and authoritative full gate GREEN | Complete the generic sequencer-only LONG32 `{first=MSW,second=LSW}` reducer and validation split over the canonical private WORD16 transaction seam. Preserve deterministic MSW→LSW order, copied fixed-size state, fresh increasing IDs, WAIT/FAULT/cancel/read-publish/partial-write semantics, malformed-pair rejection, and allocation-free/no-replan hot-path checks. Native LP64 size is 32/88 bytes and supported ILP32 is 32/80; no catalog/opcode/CPU/public-ABI/effect-carrier change. W47B defers executable opcode benchmarking until evidence-backed DLD/DST composition. |
+| P2-W47B1 generic LONG32 MEMORY MOD13 root | Implemented — focused and sanitizer matrices 10/10 GREEN | Add the fixed-size LONG32 MEMORY carrier, checked CMPT=0 MOD13 resolver, and discriminated root transaction over W47A. Freeze LP64 address/effect/root sizes at 24/40/336 and ILP32 at 24/36/308; preserve copied MSW/LSW values, two fresh IDs, WAIT/fault/cancel/stale recovery, partial physical write visibility, deferred AR/PC commit, and the direct WORD16 fast path. Catalog rows, DLD/DST semantics, SST collection, CPU opcode tests, inventory, and benchmark remain W47B2. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

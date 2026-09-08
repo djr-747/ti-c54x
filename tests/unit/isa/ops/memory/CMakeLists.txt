@@ -11,3 +11,6 @@ ti_c54x_add_unit_test(word16_rmw_memory_effect
                       test_word16_rmw_memory_effect.c)
 ti_c54x_add_unit_test(atomic_logical_memory_effects
                       test_atomic_logical_memory_effects.c)
+# W47B1 RED contract: DLD/DST MOD13 LONG32 carrier and pure resolver.
+ti_c54x_add_unit_test(dld_dst_long32_memory_carrier
+                      test_dld_dst_long32_memory_carrier.c)

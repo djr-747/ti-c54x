@@ -6,8 +6,8 @@
  *
  * Owns: the value-only generic WORD16 data-memory effect carrier, including
  * its MOD0--MOD3 single-indirect, AR0-indexed MOD5/MOD6, circular
- * MOD8/MOD10, and ARF-selected reverse-carry MOD4/MOD7 address
- * specifications and static completion callback shape.
+ * MOD8/MOD10, ARF-selected reverse-carry MOD4/MOD7, and CMPT=0
+ * MOD13 LONG32 address specifications and static completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -37,7 +37,8 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16 = 1,
     TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16 = 2,
     TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16 = 3,
-    TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4
+    TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4,
+    TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 = 5
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -63,6 +64,8 @@ typedef struct ti_c54x_op_memory_address_spec {
     ti_c54x_indirect_circular_mode circular_mode;
     /* Used only by REVERSE_CARRY; must remain zero/default for other kinds. */
     ti_c54x_indirect_reverse_carry_mode reverse_carry_mode;
+    /* Used only by LONG_OFFSET_MOD13_LONG32; copied verbatim as `lk`. */
+    uint16_t long_offset_word;
     uint8_t arf;
 } ti_c54x_op_memory_address_spec;
 
@@ -72,14 +75,34 @@ typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_fn)(
     uint16_t read_value_word,
     ti_c54x_op_effect *next_effect);
 
+typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_long32_fn)(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t first_msw,
+    uint16_t second_lsw,
+    ti_c54x_op_effect *next_effect);
+
 typedef struct ti_c54x_op_memory_effect {
     ti_c54x_op_memory_address_spec address_spec;
     ti_c54x_bus_word16_request_access access;
-    /* Ordinary WRITE payload or RMW operand; ordinary READ requires zero. */
-    uint16_t value_word;
-    /* Kept byte-sized so the carrier remains compact on existing ABIs. */
-    uint8_t rmw_operation;
-    ti_c54x_op_memory_complete_fn complete;
+    union {
+        struct {
+            /* Ordinary WRITE payload or RMW operand; ordinary READ requires
+             * zero. The final byte is reserved and must remain zero. */
+            uint16_t value_word;
+            uint8_t rmw_operation;
+            uint8_t transfer_reserved;
+        };
+        struct {
+            /* Copied MSW/LSW payload for a LONG32 WRITE or READ result. */
+            uint16_t first_value_msw;
+            uint16_t second_value_lsw;
+        };
+    };
+    union {
+        ti_c54x_op_memory_complete_fn complete;
+        ti_c54x_op_memory_complete_long32_fn complete_long32;
+    };
 } ti_c54x_op_memory_effect;
 
 bool ti_c54x_op_memory_effect_is_valid(

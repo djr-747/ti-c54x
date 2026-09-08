@@ -6002,7 +6002,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/memory/",
@@ -6062,7 +6062,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -8125,10 +8125,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/memory/test_dld_dst_long32_memory_carrier.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_dst_long32_memory_carrier"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-LONG32-MEMORY-MOD13-CARRIER"]
     },
     {
@@ -8173,10 +8173,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_dld_dst_long32_failure_lifecycle.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_dst_long32_failure_lifecycle"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-FAILURE-CANCEL-STALE-COMMIT"]
     },
     {

@@ -2,8 +2,8 @@
  * Module contract
  *
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
- * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, and ARF-selected
- * REVERSE_CARRY MOD4/MOD7 WORD16 memory effect carriers.
+ * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
+ * REVERSE_CARRY MOD4/MOD7 WORD16, and MOD13 LONG32 memory effect carriers.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -29,7 +29,9 @@ ti_c54x_op_memory_effect_access_shape_is_valid(
     if (!ti_c54x_op_memory_rmw_operation_is_valid(effect->rmw_operation)) {
         return false;
     }
-
+    if (effect->transfer_reserved != UINT8_C(0)) {
+        return false;
+    }
     if (effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
         if (effect->rmw_operation ==
             (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE) {
@@ -107,6 +109,22 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
             return false;
         }
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
+
+    case TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32:
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf > UINT8_C(7)) {
+            return false;
+        }
+        if (effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+            return effect->first_value_msw == UINT16_C(0) &&
+                   effect->second_value_lsw == UINT16_C(0) &&
+                   effect->complete_long32 != NULL;
+        }
+        return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
+               effect->complete_long32 == NULL;
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:

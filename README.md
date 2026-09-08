@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W47A complete):
+Current snapshot (P2-W47B1 complete):
 
 - 98 runnable catalog rows and 2,679 populated first-word lookup entries. The
   inventory has touched 38/205 instruction families (18.537%); 25/205 forms are
@@ -36,14 +36,11 @@ Current snapshot (P2-W47A complete):
   observer-off RMW benchmark has a clean baseline and baseline-relative comparison
   at [`bench/audits/p2-w46b-rmw-baseline.json`](bench/audits/p2-w46b-rmw-baseline.json);
   its semantic hash is `3b39187c40a4fd43` and it makes no TI timing claim.
-- W47A is complete as a private, allocation-free LONG32 MSW→LSW pair reducer:
-  focused shape/read/write tests are green, native LP64 and supported ILP32
-  carrier sizes are frozen, and no catalog/opcode/CPU/public-ABI change was
-  made. Read publication waits for both words; writes retain the endpoint's
-  necessarily partial visibility policy. No TI timing claim is implied.
-- Active forcing-function slice (P2-W47B): evidence-frozen DLD/DST LONG32
-  MOD13 composition over the pair seam; implementation and opcode benchmarking
-  remain pending.
+- The fixed-size LONG32 memory path is green through MSW→LSW pairing, CMPT=0
+  MOD13 resolution, and the root WAIT/fault/cancel/stale lifecycle. AR/PC commit
+  waits for both words; the existing WORD16 path avoids the LONG32 cold helper.
+- Active next slice (P2-W47B2): DLD/DST catalog rows, SXM/SST semantics, CPU
+  execution tests, inventory activation, and an observer-off opcode benchmark.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

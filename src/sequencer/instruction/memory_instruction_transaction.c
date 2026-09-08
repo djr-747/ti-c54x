@@ -17,6 +17,7 @@
 #include "sequencer/effect_transaction.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
+#include "memory_instruction_long32.h"
 
 static void
 clear_preserving_sequence(ti_c54x_memory_instruction_transaction *transaction)
@@ -37,7 +38,18 @@ candidate_snapshot_matches(
             ? NULL
             : &transaction->candidate.effect.payload.memory;
 
-    return memory != NULL &&
+    if (memory == NULL) {
+        return false;
+    }
+    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
+        return memory->address_spec.kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 &&
+               memory->first_value_msw ==
+                   transaction->long32_first_value_msw &&
+               memory->second_value_lsw ==
+                   transaction->long32_second_value_lsw;
+    }
+    return transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 &&
            memory->rmw_operation == transaction->candidate_rmw_operation &&
            memory->value_word == transaction->candidate_rmw_value_word;
 }
@@ -99,10 +111,21 @@ ti_c54x_memory_instruction_transaction_prepare(
     candidate.instructions_retired_after = instructions_retired_before +
                                            UINT64_C(1);
     target->candidate = candidate;
-    target->candidate_rmw_operation =
-        candidate.effect.payload.memory.rmw_operation;
-    target->candidate_rmw_value_word =
-        candidate.effect.payload.memory.value_word;
+    /* Only LONG32 pays the cold helper call; keep the established WORD16
+     * preparation path direct. */
+    if (candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
+        if (!ti_c54x_memory_instruction_long32_prepare_snapshot(target)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else {
+        target->child_kind = TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16;
+        target->candidate_rmw_operation =
+            candidate.effect.payload.memory.rmw_operation;
+        target->candidate_rmw_value_word =
+            candidate.effect.payload.memory.value_word;
+        target->long32_first_value_msw = UINT16_C(0);
+    }
     target->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
 }
@@ -114,8 +137,6 @@ commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
     const ti_c54x_sequencer_address_commit *const address_commit =
         &transaction->candidate.address_resolution.address_commit;
 
-    /* Candidate and live-state validation admitted only NONE or a valid AR
-     * target before endpoint issue. Keep READY publication infallible. */
     if (address_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
         state->ar[address_commit->ar_index] = address_commit->value_after;
         state->ar_known_mask |=
@@ -138,8 +159,6 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
     const ti_c54x_op_memory_effect *memory =
         &transaction->candidate.effect.payload.memory;
 
-    /* A WRITE READY has already published externally; only infallible scalar
-     * assignments remain. No validator, callback, or effect API is called. */
     if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
         (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
          transaction->bus_transaction.request.access ==
@@ -265,6 +284,13 @@ ti_c54x_memory_instruction_transaction_advance(
         accumulators == NULL || t_register == NULL || result == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
     }
+    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
+        return ti_c54x_memory_instruction_long32_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
+    }
+    if (transaction->child_kind != TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
     if (transaction->phase != TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED &&
         transaction->phase != TI_C54X_MEMORY_INSTRUCTION_PHASE_PENDING) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
@@ -360,9 +386,7 @@ ti_c54x_memory_instruction_transaction_advance(
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_MALFORMED_OBSERVATION;
     }
-    /* Endpoint callbacks are host-controlled and may share the transaction
-     * context. Recheck the frozen candidate after READY and before any
-     * architectural publication or ordinary completion callback. */
+    /* Recheck the frozen candidate after READY before publication. */
     if (!rmw_read_phase &&
         (!candidate_snapshot_matches(transaction) ||
          !ti_c54x_memory_instruction_candidate_matches_live(
@@ -394,6 +418,9 @@ ti_c54x_memory_instruction_transaction_cancel(
 {
     if (transaction == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
+    }
+    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
+        return ti_c54x_memory_instruction_long32_cancel(transaction, endpoint);
     }
     if (transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED) {
         if (transaction->bus_transaction.state !=
@@ -429,6 +456,9 @@ ti_c54x_memory_instruction_transaction_reset(
 {
     if (transaction == NULL) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
+    }
+    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
+        return ti_c54x_memory_instruction_long32_reset(transaction);
     }
     if (transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_PENDING) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;

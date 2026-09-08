@@ -12,3 +12,5 @@ $(eval $(call ti_c54x_add_test,word16_rmw_memory_transaction,sequencer/instructi
 $(eval $(call ti_c54x_add_test,long32_pair_shape,sequencer/instruction,test_long32_pair_shape.c))
 $(eval $(call ti_c54x_add_test,long32_pair_read_transaction,sequencer/instruction,test_long32_pair_read_transaction.c))
 $(eval $(call ti_c54x_add_test,long32_pair_write_transaction,sequencer/instruction,test_long32_pair_write_transaction.c))
+# W47B1 RED contract: DLD/DST MOD13 LONG32 root failure lifecycle.
+$(eval $(call ti_c54x_add_test,dld_dst_long32_failure_lifecycle,sequencer/instruction,test_dld_dst_long32_failure_lifecycle.c))
