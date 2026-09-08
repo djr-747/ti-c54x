@@ -5878,3 +5878,33 @@ rewritten after publication.
 - No public ABI, new effect/address/state kind, opcode-specific CPU branch,
   timing, machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
   allocation, mutable-global, wrap, or emulator dependency is admitted.
+
+## 2026-09-08 — P2-W43B indexed Smem expansion implementation
+
+- State: implementation commit
+  `e3d135883f8ee45c19abccb4f5be0cabfd901636` completes the bounded MOD5/MOD6
+  fan-out across the ten existing indexed Smem families.
+- The catalog adds twenty private MOD5/MOD6 rows, taking `ID_COUNT` to 56 and
+  the populated first-word lookup to 2,103. Inventory carries 55 catalog
+  bindings; deduplicated coverage remains 35/205 = 17.073% catalog-family and
+  25/205 = 12.195% strict complete-form coverage.
+- All six owner-local RED lanes are GREEN: catalog, decode/layout, indexed
+  load effects, indexed store effects, CPU integration, and inventory
+  multi-binding. The implementation retained the W43A indexed MEMORY seam,
+  used pure TS prevalidation before the endpoint, and corrected stale W42B and
+  legacy `ID_COUNT` regression fixtures. No new ABI, effect/address/state
+  kind, CPU branch, timing, or ISA scope was added.
+- File-size review retains `src/isa/decode/operand_layout.c` at 620 lines as
+  cohesive, with a required split before 800 lines. The active owners remain
+  below the review threshold: `op_ld_smem.c` 393 lines,
+  `op_ld_smem_common.c` 308, `op_ld_smem_indexed.c` 317, and
+  `op_store_indexed_common.c` 243.
+- Independent semantic and integration reviews were clean. A fresh ASan/UBSan
+  configure/build passed all five focused CTests (5/5) without diagnostics;
+  the inventory Python lane passed 3/3. The authoritative `rtk make test`
+  gate passed all C tests plus quality, evidence, inventory, and observer-off
+  checks, including 210 Python tests.
+- Closure accounting is 165 evidence records; 263 requirements (226
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); and 217 tests (209 PASSING, 8
+  PLANNED). Follow-up work remains evidence-first; no timing, device/MMR,
+  IRQ/RPT, wrap, public-ABI, or broader scope claim is implied.
