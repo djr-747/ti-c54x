@@ -88,8 +88,10 @@ observer-off full-CPU opcode benchmark; W47B is closed. P2-W48A implements the
 newly evidenced observable RC lifecycle as a typed, transactional repeat-progress
 seam. P2-W48B implements the post-decode maskable-request IFR latch/defer/take
 lifecycle and documented alternate clear paths. Neither slice changes the current
-CPU hot path. Runtime RPT activation still waits on single-repeat PC flow and
-predecode interrupt arbitration evidence.
+CPU hot path. P2-W48C corrects the unsupported DLD repeatability classification
+to `UNRESOLVED`; no catalog row is yet positively evidenced `ELIGIBLE`. Runtime
+RPT activation still waits on single-repeat PC flow, predecode interrupt
+arbitration, and positive body-eligibility evidence.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -907,6 +909,7 @@ function-pointer dispatch tables.
 | RPT CPU integration evidence closure (P2-W20F) | Deferred pending stronger evidence | W48A closes observable post-body RC progression/final zero; exact internal decrement ordering, single-repeat PC flow/final PC, and already-pending request arbitration remain unresolved without inference from generic or block-repeat rules |
 | P2-W48A observable RC progression lifecycle | Implemented — focused state/repeat contracts and full 65,536-body progression GREEN | Add typed RC access and a fixed-size transactional REPEAT_START/body-retirement reducer; preserve exact count, stale/unknown rejection, terminal RC zero, and zero current CPU hot-path impact without activating RPT decode or PC replay |
 | P2-W48B repeat-gated pending IFR latch | Implemented — focused state/interrupt contracts and authoritative full gate GREEN | Add typed one-bit IFR mutation and a fixed-size maskable-request receive/defer/take lifecycle with separate reset, IFR-write-one, and INTR clears; preserve unrelated flags and zero current CPU hot-path impact without claiming NMI mapping, priority, or predecode arbitration |
+| P2-W48C DLD repeatability correction | Implemented — focused metadata/admission tests and authoritative full gate GREEN | Correct DLD_LONG32_MOD13 from unsupported INELIGIBLE to UNRESOLVED while retaining DST and the other evidenced negatives; do not infer ELIGIBLE from absence in a negative list or change execution/coverage/hot-path behavior |
 | P2-W22 immediate status-field LD vertical slice | Implemented — full local and remote gates green | One atomic end-to-end slice for LD #k9,DP, LD #k5,ASM, and LD #k3,ARP; add only the status-field effect and CPU retirement seams these forms require |
 | P2-W23 MAX/MIN accumulator vertical slice | Implemented — full local and remote gates green; clean performance record captured at `a14d331` | Four one-word MAX/MIN encodings with signed full-40-bit accumulator selection, explicit tie/C behavior, transactional accumulator effects, and CPU retirement tests; repeatability and machine timing remain unresolved |
 | P2-W24 generic accumulator-write effect and CMPL vertical slice | Implemented — full local and remote gates green; clean performance record captured at `7cad341`; repeatability and machine timing remain unresolved | Generic `ACCUMULATOR_WRITE` effect and CMPL four-form vertical slice are proven before further accumulator-family fanout |
@@ -2199,6 +2202,33 @@ PC flow and predecode arbitration evidence. Closure accounting is 187 immutable
 evidence records; 309 requirements (273 `IMPLEMENTED`, 7 `PLANNED`, 29
 `UNRESOLVED`); and 263 tests (256 `PASSING`, 7 `PLANNED`). Catalog and ISA
 coverage counts remain unchanged.
+
+#### P2-W48C: DLD repeatability correction (implemented)
+
+A complete audit of the current 100 catalog rows against TI SPRU172C §2.5/Table
+2-28 and SPRU131G §6.7/Table 6-18 finds 16 directly supported `INELIGIBLE`
+classifications, 83 unresolved classifications, and no positively authorized
+`ELIGIBLE` row. The tables enumerate nonrepeatable instructions but do not state
+that every omitted form is repeatable. Chapter 3 repeat-execution timing classes
+cannot fill that gap because they include instructions separately documented as
+nonrepeatable.
+
+`DLD_LONG32_MOD13` was the one unsupported negative: DLD is absent from both
+negative lists, and its SPRU172C §4.42 entry does not state a repeat rule. W48C
+therefore changes DLD from `INELIGIBLE` to `UNRESOLVED`, not `ELIGIBLE`.
+`DST_LONG32_MOD13` remains `INELIGIBLE`, as the negative tables explicitly list
+the long-word store. The DLD semantic validator and exact metadata/admission tests
+preserve this asymmetry. Both values remain non-admitting through the existing
+tri-state repeat-body policy.
+
+The correction changes no opcode identity, encoding, program-word count, layout,
+input resource, semantic result, generated lookup population, inventory binding,
+CPU routing, carrier, or benchmark binary. It therefore adds no normal or memory
+instruction hot-path work. Closure accounting is 188 immutable evidence records;
+310 requirements (274 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`); and 264
+tests (257 `PASSING`, 7 `PLANNED`). Catalog and ISA coverage remain 100 rows,
+`ID_COUNT=101`, 2,711 lookup entries, 100 bindings, 40/205 family coverage, and
+25/205 strict coverage.
 
 ### P2-W21: shared-memory transaction foundation
 

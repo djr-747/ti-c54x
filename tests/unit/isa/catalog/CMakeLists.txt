@@ -30,3 +30,5 @@ ti_c54x_add_unit_test(atomic_logical_memory_metadata
                       test_atomic_logical_memory_metadata.c)
 ti_c54x_add_unit_test(dld_dst_long32_metadata
                       test_dld_dst_long32_metadata.c)
+ti_c54x_add_unit_test(dld_repeatability_contract
+                      test_dld_repeatability_contract.c)

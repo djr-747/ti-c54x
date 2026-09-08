@@ -23,7 +23,10 @@ SYMBOLS = {
 }
 ADDRESSING_SUBSET = "LONG_OFFSET_MOD13_CMPT0"
 LAYOUT = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4"
-REPEATABILITY = "TI_C54X_REPEATABILITY_INELIGIBLE"
+REPEATABILITY = {
+    "DLD_LONG32_MOD13": "TI_C54X_REPEATABILITY_UNRESOLVED",
+    "DST_LONG32_MOD13": "TI_C54X_REPEATABILITY_INELIGIBLE",
+}
 RESOURCES = {
     "DLD_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_STATUS_SXM",
     "DST_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST",
@@ -68,7 +71,7 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
                 self.assertEqual(row.first_word_mask, 0xFEF8)
                 self.assertEqual(row.program_word_count, 2)
                 self.assertEqual(row.operand_layout, LAYOUT)
-                self.assertEqual(row.repeatability, REPEATABILITY)
+                self.assertEqual(row.repeatability, REPEATABILITY[symbol])
                 self.assertEqual(row.input_resources, RESOURCES[symbol])
 
         rendered_lookup = render_lookup(rows)

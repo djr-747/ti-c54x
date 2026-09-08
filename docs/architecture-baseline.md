@@ -5,9 +5,9 @@ Status: active baseline. Primary target: `C54X_CORE_COMMON_V1`.
 The machine-readable source of truth is
 [`config/evidence.json`](../config/evidence.json). This page states the boundary
 that implementation work must preserve; the index gives an ID-by-ID review view.
-The current registry contains 2 targets, 7 sources, 187 immutable evidence
-records, 309 requirements (273 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
-and 263 tests (256 `PASSING`, 7 `PLANNED`).
+The current registry contains 2 targets, 7 sources, 188 immutable evidence
+records, 310 requirements (274 `IMPLEMENTED`, 7 `PLANNED`, 29 `UNRESOLVED`),
+and 264 tests (257 `PASSING`, 7 `PLANNED`).
 
 ## Targets and address boundary
 
@@ -392,6 +392,15 @@ stays inactive, and W20F remains deferred until a separately recorded
 original-hardware vector or stronger TI evidence resolves the externally visible
 behavior. A black-box differential vector may identify a hypothesis or
 disagreement, but cannot itself close a normative common-core requirement.
+
+The W48C repeatability audit confirms that the official nonrepeatable tables do
+not provide a positive rule for omitted instructions. Of the 100 current catalog
+rows, 16 retain directly evidenced `INELIGIBLE` classifications, 84 remain
+`UNRESOLVED`, and none is `ELIGIBLE`. DLD was corrected from an unsupported
+negative classification to `UNRESOLVED`; DST remains `INELIGIBLE`. Both states
+remain non-admitting through the tri-state body policy. A trusted repeat-body
+cache can be designed as a fixed-size project seam, but no production row may
+enter it until positive eligibility evidence exists.
 
 ### WORD16 bus-request boundary (P2-W21A implemented)
 

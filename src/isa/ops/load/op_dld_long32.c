@@ -32,7 +32,7 @@ static ti_c54x_op_status dld_validate_shape(
         metadata->program_word_count != UINT8_C(2) ||
         metadata->operand_layout !=
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4 ||
-        metadata->repeatability != TI_C54X_REPEATABILITY_INELIGIBLE ||
+        metadata->repeatability != TI_C54X_REPEATABILITY_UNRESOLVED ||
         metadata->input_resources != TI_C54X_INPUT_RESOURCES_STATUS_SXM ||
         instruction->id != metadata->id ||
         instruction->operand_layout != metadata->operand_layout ||

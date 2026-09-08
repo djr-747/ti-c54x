@@ -1408,6 +1408,20 @@
       "assertion": "The P2-W48B project contract introduces typed checked IFR access and one fixed-size, caller-owned maskable pending-request reducer. Accepted requests validate a caller-selected one-bit IFR mask, set and preserve that bit while the existing repeat gate reports DEFER, and clear it on an explicit normal-take operation after the gate opens. Separate explicit IFR-write-one and INTR operations clear matching pending state; authoritative reset establishes known-zero IFR and an empty latch even from unknown IFR storage. Validation-dependent unknown, stale, malformed, and invalid-count paths preserve state. NMI representation, predecode arbitration, source and priority selection, CPU dispatch, PC, timing, allocation, I/O, observers, environment access, and mutable globals remain outside the seam, which adds no branch to the current CPU path."
     },
     {
+      "id": "E-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W48C: DLD repeatability correction (implemented)"
+      },
+      "assertion": "The P2-W48C project contract corrects DLD_LONG32_MOD13 repeatability from INELIGIBLE to UNRESOLVED. The official negative lists omit DLD and its instruction entry makes no repeatability statement; absence from a negative list is not positive authorization, so ELIGIBLE is also unsupported. DST_LONG32_MOD13 and every other evidenced negative remain INELIGIBLE. The correction changes metadata validation only, not opcode identity, lookup, operand extraction, semantics, CPU execution, inventory coverage, timing, or the current hot path."
+    },
+    {
       "id": "E-PROJECT-P2-W21A-BUS-WORD16-REQUEST-CONTRACT",
       "immutable": true,
       "state": "PINNED",
@@ -4119,6 +4133,16 @@
       "claim": "Provide one fixed-size, caller-owned lifecycle for a maskable request identified by exactly one caller-selected IFR bit. Receipt sets the bit before the existing repeat gate reports deferred or eligible; an active gate prevents take and preserves both bit and latch, while an explicit take after the gate opens clears both. Separate IFR-write-one and INTR clear operations remove matching pending state; authoritative reset establishes known-zero IFR and an empty latch. Null, validation-dependent unknown, stale, forged, duplicate, invalid-mask, and invalid-count paths preserve caller state. The reducer owns no NMI mapping, source or priority selection, predecode arbitration, CPU dispatch, PC, timing, allocation, I/O, observers, environment access, or mutable globals and adds no current CPU hot-path branch.",
       "evidence_ids": ["E-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"],
       "test_ids": ["T-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Classify DLD_LONG32_MOD13 repeatability as UNRESOLVED because no pinned primary evidence authorizes or prohibits it, while preserving DST_LONG32_MOD13 as INELIGIBLE. Generic repeat-body admission must keep both classes non-admitting and distinct. The correction must not change either opcode identity, encoding, layout, resources, semantic output, lookup population, inventory binding, CPU routing, or carrier size.",
+      "evidence_ids": ["E-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"],
+      "test_ids": ["T-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"]
     },
     {
       "id": "REQ-PROJECT-BUS-WORD16-REQUEST-SHAPE",
@@ -6878,6 +6902,14 @@
       "path": "tests/unit/sequencer/interrupt/test_repeat_pending_request_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_pending_request_contract"},
       "requirement_ids": ["REQ-PROJECT-P2-W48B-PENDING-REQUEST-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/catalog/test_dld_repeatability_contract.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dld_repeatability_contract"},
+      "requirement_ids": ["REQ-PROJECT-P2-W48C-DLD-REPEATABILITY-CORRECTION"]
     },
     {
       "id": "T-PROJECT-BUS-WORD16-REQUEST-SHAPE",

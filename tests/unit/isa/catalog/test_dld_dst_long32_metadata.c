@@ -18,14 +18,17 @@ typedef struct long32_row {
     ti_c54x_opcode_id id;
     uint16_t value;
     uint16_t mask;
+    ti_c54x_repeatability_class repeatability;
     ti_c54x_input_resource_mask input_resources;
 } long32_row;
 
 static const long32_row rows[] = {
     {TI_C54X_OPCODE_ID_DLD_LONG32_MOD13, UINT16_C(0x56E8),
-     UINT16_C(0xFEF8), TI_C54X_INPUT_RESOURCES_STATUS_SXM},
+     UINT16_C(0xFEF8), TI_C54X_REPEATABILITY_UNRESOLVED,
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM},
     {TI_C54X_OPCODE_ID_DST_LONG32_MOD13, UINT16_C(0x4EE8),
-     UINT16_C(0xFEF8), TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST},
+     UINT16_C(0xFEF8), TI_C54X_REPEATABILITY_INELIGIBLE,
+     TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST},
 };
 
 static void
@@ -45,8 +48,7 @@ test_metadata_rows(void)
         TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(2));
         TI_C54X_TEST_CHECK(metadata->operand_layout ==
                            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4);
-        TI_C54X_TEST_CHECK(metadata->repeatability ==
-                           TI_C54X_REPEATABILITY_INELIGIBLE);
+        TI_C54X_TEST_CHECK(metadata->repeatability == row->repeatability);
         TI_C54X_TEST_CHECK(metadata->input_resources == row->input_resources);
         TI_C54X_TEST_CHECK((uint16_t)~row->mask == UINT16_C(0x0107));
     }

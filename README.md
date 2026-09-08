@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W48B complete):
+Current snapshot (P2-W48C complete):
 
 - 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
   inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
@@ -52,7 +52,9 @@ Current snapshot (P2-W48B complete):
   reset, IFR-write-one, and `INTR` clears are separate modeled paths. These seams
   add no branch to the current CPU path. Repeated-body PC flow and predecode
   pending-request arbitration still require evidence before inert RPT policy can
-  become runtime behavior.
+  become runtime behavior. A full repeatability audit also corrected DLD from an
+  unsupported `INELIGIBLE` classification to `UNRESOLVED`; no current catalog row
+  is positively evidenced `ELIGIBLE`.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ
