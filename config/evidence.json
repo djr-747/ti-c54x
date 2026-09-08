@@ -2710,6 +2710,61 @@
         "anchor": "P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)"
       },
       "assertion": "P2-W45B freezes exactly twenty private reverse-carry MOD4/MOD7 catalog identities over the ten existing Smem families, with unique _mod4/_mod7 handler tokens, reuse of ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4 layouts/resources/word counts, and the completed W45A REVERSE_CARRY_WORD16 seam. The exact rows are LD_SMEM_MOD4/7 0x10A0/0x10B8 mask 0xFEF8, LD_SMEM_TS_MOD4/7 0x14A0/0x14B8 mask 0xFEF8, STL_SMEM_MOD4/7 0x80A0/0x80B8 mask 0xFEF8, LDU_SMEM_MOD4/7 0x12A0/0x12B8 mask 0xFEF8, LD_SMEM_SHIFT16_MOD4/7 0x44A0/0x44B8 mask 0xFEF8, LD_T_SMEM_MOD4/7 0x30A0/0x30B8 mask 0xFFF8, ST_IMMEDIATE_SMEM_MOD4/7 0x76A0/0x76B8 mask 0xFFF8 with two program words, LD_DP_SMEM_MOD4/7 0x46A0/0x46B8 mask 0xFFF8, LD_ASM_SMEM_MOD4/7 0x32A0/0x32B8 mask 0xFFF8, and ST_T_SMEM_MOD4/7 0x8CA0/0x8CB8 mask 0xFFF8. ARF 1..7 executes; ARF0 encodings decode but handlers reject transactionally before endpoint because alias semantics are unresolved. CMPT=0/ARP=0, known nonzero one-hot AR0, old selected AR address, POST selected-AR update, and no BK/wrap inference are required. The projection is 95 rows, ID_COUNT=96, lookup=2583, and 95 bindings with family and strict coverage unchanged at 35/205 and 25/205. No operand-layout, root-transaction, CPU-branch, public-ABI, timing, device, or RPT change is admitted."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ANDM-P4-13",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "ANDM", "printed_page_start": "4-13", "printed_page_end": "4-13"},
+      "assertion": "SPRU172C ANDM defines the two-word immediate logical memory operation ANDM #lk,Smem with opcode diagram 0110_1000 I AAAAAAA: the 16-bit extension operand is ANDed with the WORD16 data-memory operand and written back to the same Smem location. The MOD0–MOD3 composition uses base 0x6880 and mask 0xFFE0; no status-bit effect is adopted by this record."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ORM-P4-125",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "ORM", "printed_page_start": "4-125", "printed_page_end": "4-125"},
+      "assertion": "SPRU172C ORM defines the two-word immediate logical memory operation ORM #lk,Smem with opcode diagram 0110_1001 I AAAAAAA: the 16-bit extension operand is ORed with the WORD16 data-memory operand and written back to the same Smem location. The MOD0–MOD3 composition uses base 0x6980 and mask 0xFFE0; no status-bit effect is adopted by this record."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-XORM-P4-203",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "XORM", "printed_page_start": "4-203", "printed_page_end": "4-203"},
+      "assertion": "SPRU172C XORM defines the two-word immediate logical memory operation XORM #lk,Smem with opcode diagram 0110_1010 I AAAAAAA: the 16-bit extension operand is XORed with the WORD16 data-memory operand and written back to the same Smem location. The MOD0–MOD3 composition uses base 0x6A80 and mask 0xFFE0; no status-bit effect is adopted by this record."
+    },
+    {
+      "id": "E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W46A: generic WORD16 same-address read-modify-write seam (planned)"},
+      "assertion": "W46A freezes a private allocation-free WORD16 same-address read-modify-write seam inside the existing TI_C54X_OP_EFFECT_MEMORY carrier. A compact typed transform enum (AND, OR, XOR) and copied WORD16 operand are value-owned; no indirect callback, allocation, new effect kind, CPU opcode branch, or public ABI is admitted. Address resolution occurs once; one READ and one WRITE use the exact cached old address with fresh bus transaction IDs, and the transform runs once on the copied read word. Resume validation uses direct live CMPT/ARP, selected AR, AR0/BK when applicable, and PC snapshots rather than rerunning the planner or refetching. Architectural address and PC commits occur only after WRITE READY; WAIT, FAULT, cancel, stale, and no-refetch behavior are required. This is core architectural commit atomicity and does not promise exclusion against an external bus master. Helpers split before the 500-line review threshold; carrier/candidate growth is minimized and a structural plus observer-off performance gate is required without claiming TI timing."
+    },
+    {
+      "id": "E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)"},
+      "assertion": "W46B freezes three neutral two-word catalog rows over MOD0–MOD3: ANDM_SMEM_MOD0_3 base 0x6880 mask 0xFFE0, ORM_SMEM_MOD0_3 base 0x6980 mask 0xFFE0, and XORM_SMEM_MOD0_3 base 0x6A80 mask 0xFFE0. Existing ARF_EXTENSION16_MOD layout is reused with no input resources or status effects and repeatability INELIGIBLE. MOD0/1/2 are admitted under the current safe boundary policy; MOD3 decodes for metadata but handlers reject before endpoint issue because a read is required and MOD3 is write-only. W46A and generic decode/effects/CPU/inventory seams are reused. Direct, absolute, long-offset, CMPT1, indexed, circular, reverse, MMR/device, wrap, and timing expansion remain deferred. The projection is ID_COUNT=99, lookup=2679, bindings=98, family 38/205, and strict 25/205."
     }
   ],
   "requirements": [
@@ -5738,6 +5793,96 @@
       "claim": "Extend audit-only inventory bindings for the ten W45B forms using STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10, retaining one stable form identity per binding, projected 95 bindings, and unchanged 35/205 family and 25/205 strict coverage.",
       "evidence_ids": ["E-PROJECT-P2-W45B-REVERSE-CARRY-FAMILY-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Add a private allocation-free WORD16 same-address RMW descriptor inside TI_C54X_OP_EFFECT_MEMORY using a compact AND/OR/XOR transform enum and copied operand, with no indirect callback, allocation, new effect kind, CPU opcode branch, or public ABI; preserve carrier size where feasible and validate intrinsic shape before architectural reads.",
+      "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46A-RMW-TRANSACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Integrate same-address WORD16 RMW through one address resolution, one READ and one WRITE at the cached old address with fresh phase IDs, one transform over a copied read word, direct live snapshot stale checks on resumes, and architectural address/PC commit only after WRITE READY; preserve WAIT/FAULT/cancel and no-refetch behavior, without promising external-master exclusion.",
+      "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46A-RMW-TRANSACTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Prove the RMW seam remains allocation-free and structurally bounded to one read/one write, keeps carrier/candidate growth stable where feasible, and has a dedicated observer-off benchmark cohort recorded outside the frozen five-scenario history; benchmark results are implementation-throughput observations and do not claim TI timing or reuse the hosted 60 ns gate.",
+      "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly three neutral two-word MOD0–MOD3 catalog identities for ANDM, ORM, and XORM using bases 0x6880, 0x6980, and 0x6A80 with mask 0xFFE0, existing ARF_EXTENSION16_MOD layout, no input resources or status effects, and repeatability INELIGIBLE; the projection is ID_COUNT=99, lookup=2679, and 98 bindings.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ANDM-P4-13", "E-TI-C54X-SPRU172C-S4-ORM-P4-125", "E-TI-C54X-SPRU172C-S4-XORM-P4-203", "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11", "E-TI-C54X-SPRU131G-S5.5.3-P5-13"],
+      "test_ids": ["T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the three ANDM/ORM/XORM MOD0–MOD3 rows through ARF_EXTENSION16_MOD with copied extension operands; admit MOD0/1/2 under the current safe boundary policy and reject MOD3 transactionally before endpoint issue because these operations require a read and MOD3 is write-only.",
+      "evidence_ids": ["E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Implement ANDM/ORM/XORM logical memory effects as same-address WORD16 transforms over copied extension operands for the evidenced MOD0–MOD3 catalog encodings, with no status-bit changes.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ANDM-P4-13", "E-TI-C54X-SPRU172C-S4-ORM-P4-125", "E-TI-C54X-SPRU172C-S4-XORM-P4-203", "E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11", "E-TI-C54X-SPRU131G-S5.5.3-P5-13"],
+      "test_ids": ["T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/memory/",
+      "claim": "Retire the three ANDM/ORM/XORM rows through generic decode, the W46A same-address RMW transaction, and sequential-PC retirement while preserving WAIT/READY/FAULT/cancel and stale/no-refetch behavior; do not add an opcode-specific CPU branch, public ABI, device, IRQ/RPT, bus-exclusion, or TI timing contract.",
+      "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Extend audit-only inventory bindings for the three W46B forms with the existing standard-indirect MOD0–MOD3 token, preserve one stable form identity per binding without duplicating opcode authority, and report family progress as 38/205 (18.537%) while strict complete-form coverage remains 25/205 (12.195%).",
+      "evidence_ids": ["E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Add a dedicated observer-off ANDM/ORM/XORM RMW benchmark cohort with its own baseline-relative comparison and semantic hash; preserve the existing five-scenario hosted history and do not apply or imply the 60 ns target as a TI timing claim.",
+      "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK"]
     }
   ],
   "tests": [
@@ -7659,6 +7804,78 @@
       "path": "tests/contract/quality/isa/inventory/test_inventory_reverse_carry_multi_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W45B-REVERSE-CARRY-INVENTORY-MULTI-BINDING"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_word16_rmw_memory_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-CARRIER-TRANSFORM"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46A-RMW-TRANSACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_word16_rmw_memory_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-TRANSACTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/performance/test_word16_rmw_hot_path.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46A-RMW-HOT-PATH-PERFORMANCE"]
+    },
+    {
+      "id": "T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_atomic_logical_memory_metadata.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-CATALOG"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_atomic_logical_memory_decode.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-DECODE"]
+    },
+    {
+      "id": "T-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS",
+      "state": "PLANNED",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/memory/test_atomic_logical_memory_effects.c",
+      "runner": null,
+      "requirement_ids": ["REQ-COMMON-ANDM-ORM-XORM-MOD0-MOD3-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_atomic_logical_memory.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-CPU-INTEGRATION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/isa/inventory/test_inventory_atomic_logical_multi_binding.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING"]
+    },
+    {
+      "id": "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/performance/test_atomic_logical_rmw_benchmark.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK"]
     }
   ]
 }

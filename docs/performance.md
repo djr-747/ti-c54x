@@ -60,6 +60,22 @@ rather than a regression percentage. There is intentionally no flaky CI throughp
 history is for trend review, while correctness and architectural claims remain
 test/evidence work.
 
+## P2-W46 RMW performance policy
+
+The WORD16 same-address read-modify-write seam is performance-sensitive. Its
+acceptance requires an allocation-free hot path, a compact value-owned transform
+descriptor, and structural proof of one address resolution, one READ, one WRITE,
+and one transform. Carrier/candidate size growth is measured and must remain
+stable where feasible. These are implementation-shape constraints, not TI
+machine-cycle claims.
+
+ANDM/ORM/XORM receive a dedicated observer-off benchmark cohort with its own
+clean baseline, binary/semantic hash, and baseline-relative trend comparison.
+It is appended as non-history evidence and does not redefine or add scenarios
+to the frozen `nop`, `ld-dp`, `ld-asm`, `ld-arp`, and `mixed-current` roster.
+The existing 60 ns hosted target is not applied to this cohort; no result may
+be presented as a TI timing or bus-exclusion guarantee.
+
 ## P2-W31P performance architecture freeze
 
 The common retired-instruction path has now received the P2-W31P optimization.
