@@ -5483,3 +5483,58 @@ rewritten after publication.
   IRQ/RPT, device/MMR, knob, environment, diagnostic, allocation, mutable
   global, or emulator dependency changed. Implementation begins with the four
   owner-local RED quality contracts.
+
+## 2026-09-08 — P2-W40 authoritative ISA inventory implementation
+
+- State: implementation commit
+  `d56610607a6d77b7f66a94919160d03519c01938` completes the bounded
+  instruction-form inventory and coverage-reporting quality work piece. No
+  production decoder, opcode, or execution behavior changed.
+- TDD RED comprised four owner-local Python test modules. Discovery produced
+  four expected import failures because the inventory schema and repository
+  checker did not yet exist; production data/tooling followed that failure.
+- GREEN adds 205 stable `FORM-T2-XX-YY` records keyed by exact Chapter 2 table
+  and row ordinal. The manifest reproduces the pinned 26-table vector, 126
+  normalized mnemonic tokens, and 13 parallel bundles without transcribing
+  opcode values, masks, or a second decode table. The table/ordinal locator is
+  the compact authoritative form identity; full syntax remains in the cited TI
+  source.
+- Every one of the 34 production catalog symbols binds exactly once. Twenty-
+  five forms are `COMPLETE`; nine fixed-MOD2 Smem rows are `SUBSET`; 171 forms
+  are explicitly `UNIMPLEMENTED`. Covered forms are `COMMON_CANDIDATE`; the
+  other 171 remain scope `UNRESOLVED`, so unevidenced common/profile exclusions
+  cannot improve the denominator.
+- The pure schema validates exact record shape, stable global/table ordinals,
+  form-derived table counts, mnemonic and parallel checkpoints, closed scope
+  and coverage states, and bidirectional form/binding consistency. It forbids
+  opcode-authority fields and accepts future uppercase partial-addressing
+  tokens without requiring validator code changes.
+- The repository checker parses `opcode_catalog.def` through the existing sole
+  catalog parser and rejects missing or unknown bindings. The report counts
+  distinct bound form IDs and complete form states, preventing aliases from
+  inflating progress. Make and CTest now invoke the checker explicitly.
+- The first semantic review found four future-correctness gaps: hard-coded
+  34/25/9 validator counts, no form/binding coverage cross-check, no derived
+  table-vector validation, and binding-count rather than distinct-form report
+  arithmetic. A dedicated Luna hardening lane fixed each gap and added negative
+  regression tests. A separate integration review required the explicit Make
+  and CTest checker gates. No review finding remains open.
+- Validation: 21 focused inventory tests and the direct CLI passed. The final
+  `make quality-test` and authoritative standalone `make test` each passed all
+  207 Python checks plus the evidence, knob, source-boundary, build-manifest,
+  ISA-inventory, observer-disabled artifact, C unit, and minimal-example gates.
+  A fresh CMake configure independently passed the Python discovery and new
+  `ti_c54x.quality.isa_inventory` CTest entries (2/2). The known 535-line
+  operand-layout size-review warning is unchanged; `git diff --check` passed.
+- Evidence accounting is 156 evidence records; 242 requirements (205
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 196 tests (188 PASSING, 8 PLANNED);
+  and 7 sources.
+- Reported progress is intentionally provisional: 34/205 = 16.585%
+  catalog-family coverage and 25/205 = 12.195% strict complete-form coverage.
+  The 1,487 populated first words remain a catalog statistic, not an ISA
+  denominator.
+- No public ABI, runtime source, generated decode, timing, machine-cycle,
+  IRQ/RPT, device/MMR, knob, environment, diagnostic, allocation, mutable
+  global, or emulator dependency changed. The next evidence-fit ISA slice is
+  fixed-MOD2 `LD Smem,TS,dst`; generic Smem expansion is the subsequent
+  throughput multiplier for the nine partial forms.
