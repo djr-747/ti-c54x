@@ -6713,3 +6713,43 @@ rewritten after publication.
   entries, 100 bindings, 40/205 family coverage, and 25/205 strict coverage.
   Repeated-body PC flow and predecode request arbitration still gate runtime RPT
   activation; those evidence problems are next rather than inferred in code.
+
+## 2026-09-09 — P2-W48C DLD repeatability correction
+
+- State: implementation commit
+  `b0144d16d4de6d559c26210c356a67031f025094` corrects only
+  `DLD_LONG32_MOD13` repeatability from `INELIGIBLE` to `UNRESOLVED`. Its
+  checked semantic shape validator and the DLD/DST metadata/inventory tests now
+  preserve the exact asymmetry; `DST_LONG32_MOD13` remains `INELIGIBLE`.
+- Evidence decision: a complete primary-source audit of TI SPRU172C
+  §2.5/Table 2-28, SPRU131G §6.7/Table 6-18, and the DLD instruction entry
+  found no DLD prohibition or positive authorization. The negative tables do
+  not say that every omitted instruction is repeatable, and the timing-class
+  tables include separately nonrepeatable instructions. DLD therefore cannot
+  truthfully be either `INELIGIBLE` or `ELIGIBLE`; `UNRESOLVED` is the only
+  supported state. Existing immutable evidence was not rewritten.
+- The catalog now contains 84 `UNRESOLVED`, 16 directly evidenced
+  `INELIGIBLE`, and zero `ELIGIBLE` rows. A new contract proves DLD maps to the
+  distinct non-admitting unresolved decision, DST maps to reject-ineligible,
+  and both retain canonical trusted bindings and non-null handlers. No runtime
+  repeat body or trusted repeat cache is activated without positive evidence.
+- Performance and execution behavior are unchanged. The correction changes no
+  opcode value/mask, layout, resource, handler output, lookup entry, inventory
+  binding, CPU route, packet/effect/input carrier, bus transaction, observer,
+  public ABI, or benchmark binary. It adds no hot-path operation, allocation,
+  I/O, environment access, mutable global, or knob.
+- Validation is GREEN: the focused Make C tests pass; focused CMake/CTest passes
+  5/5; affected inventory/catalog Python tests pass 4/4; and the authoritative
+  `rtk make test` gate passes the compiled C suite plus all 245 Python quality
+  tests. Live evidence passes at 2 targets, 7 sources, 310 requirements, and 264
+  tests. Manifests, inventory, source boundaries, knobs, and the
+  observer-disabled artifact pass. Only the three previously reviewed
+  637/782/620-line warnings remain. No hosted runner was invoked, no RED commit
+  was pushed, and implementation plus ledger commits are pushed together only
+  after local GREEN.
+- Closure accounting is 188 immutable evidence records; 310 requirements (274
+  IMPLEMENTED, 7 PLANNED, 29 UNRESOLVED); 264 tests (257 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts remain 100 rows, `ID_COUNT=101`, 2,711
+  lookup entries, 100 bindings, 40/205 family coverage, and 25/205 strict
+  coverage. The next architecture-forcing implementation is the evidenced
+  register ADD/SUB ALU/status slice; runtime RPT remains evidence-gated.
