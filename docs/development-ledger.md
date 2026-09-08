@@ -5934,3 +5934,39 @@ rewritten after publication.
   UNRESOLVED); and 220 tests (209 PASSING, 11 PLANNED). Follow-up remains
   evidence-first; central-file size review and split decisions precede any
   implementation growth.
+
+## 2026-09-08 — P2-W44A generic circular WORD16 MEMORY seam implementation
+
+- State: implementation commit
+  `eca273bd805cc91efb37e6d7c4dde75d9d8f18f2` completes the bounded W44A
+  generic circular WORD16 MEMORY seam without activating catalog rows or
+  opcode handlers.
+- All three owner-local RED lanes are GREEN: circular memory-effect shape,
+  circular address resolution, and circular memory transaction. The operation
+  layer carries only copied ARF and typed MOD8/MOD10 mode; the resolved address
+  effect carries copied AR/BK snapshots. Selected AR0–AR7 are admitted, with
+  strict CMPT, ARP, selected AR, then BK dependency order. BK=0 is valid
+  `NONE`/no-update; BK>0 stages the documented POST-access wrap update.
+  Unknown or stale live-state snapshots reject, and WAIT, READY, FAULT, and
+  cancel remain transactional with atomic READY publication of selected AR,
+  sequential PC, and MEMORY effect. The existing root transaction source is
+  unchanged.
+- The structural module-contract correction keeps ownership boundaries explicit
+  for the memory effect, resolver, and candidate validator; no public ABI,
+  catalog identity, timing, MMR/device, IRQ/RPT, or broader ISA scope was
+  added. Current owner sizes are `memory_effect.c` 78 lines,
+  `address_resolution.c` 222 lines,
+  `memory_instruction_candidate_validate.c` 316 lines, and
+  `memory_instruction_transaction.c` 335 lines unchanged. No split is needed;
+  review the candidate validator before it reaches 500 lines.
+- Catalog and inventory are unchanged at `ID_COUNT=56`, lookup 2,103, and 55
+  bindings; coverage remains 35/205 = 17.073% catalog-family and 25/205 =
+  12.195% strict complete-form.
+- Fresh ASan/UBSan validation passed all eleven focused CTests (11/11) without
+  diagnostics. Independent semantic and integration review found no P0/P1/P2
+  issue. The authoritative `rtk make test` gate passed all C tests, quality
+  checks, evidence/inventory/observer checks, and all 210 Python tests.
+- Closure accounting is 166 evidence records; 266 requirements (229
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); and 220 tests (212 PASSING, 8
+  PLANNED). W44B remains the next evidence-first work: a projected twenty-row
+  MOD8/MOD10 fan-out at `ID_COUNT=76`, lookup 2,343, and 75 bindings.
