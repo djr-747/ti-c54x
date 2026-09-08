@@ -156,6 +156,26 @@ if(TI_C54X_BUILD_BENCHMARKS)
             --build-flags "${CMAKE_C_FLAGS} -O2 -DNDEBUG -DTI_C54X_ENABLE_OBSERVERS=0")
     set_tests_properties(ti_c54x.bench_rmw_smoke PROPERTIES
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+    add_executable(ti_c54x_dld_dst_bench
+        bench/ti_c54x_dld_dst_bench.c ${ti_c54x_core_sources})
+    target_compile_features(ti_c54x_dld_dst_bench PRIVATE c_std_11)
+    target_compile_definitions(ti_c54x_dld_dst_bench PRIVATE
+        TI_C54X_ENABLE_OBSERVERS=0)
+    target_include_directories(ti_c54x_dld_dst_bench PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src)
+    target_compile_options(ti_c54x_dld_dst_bench PRIVATE -O2 -DNDEBUG)
+    ti_c54x_enable_warnings(ti_c54x_dld_dst_bench)
+    add_test(NAME ti_c54x.bench_dld_dst_smoke
+        COMMAND "${Python3_EXECUTABLE}" tools/perf/dld_dst_capture.py
+            --benchmark "$<TARGET_FILE:ti_c54x_dld_dst_bench>"
+            --root "${PROJECT_SOURCE_DIR}" --allow-dirty
+            --compiler "${CMAKE_C_COMPILER}"
+            --profile portable-o2-no-lto
+            --build-flags "${CMAKE_C_FLAGS} -O2 -DNDEBUG -DTI_C54X_ENABLE_OBSERVERS=0")
+    set_tests_properties(ti_c54x.bench_dld_dst_smoke PROPERTIES
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
 
 install(TARGETS ti_c54x

@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W47B2B complete):
+Current snapshot (P2-W47B complete):
 
 - 100 runnable catalog rows and 2,711 populated first-word lookup entries. The
   inventory has touched 40/205 instruction families (19.512%); 25/205 forms are
@@ -39,11 +39,16 @@ Current snapshot (P2-W47B2B complete):
 - The fixed-size LONG32 memory path is green through MSW→LSW pairing, CMPT=0
   MOD13 resolution, and the root WAIT/fault/cancel/stale lifecycle. AR/PC commit
   waits for both words; the existing WORD16 path avoids the LONG32 cold helper.
-  Typed PMST.SST access and copied input knownness are now green without widening
-  the 48-byte opcode-input snapshot. DLD/DST now have exact MOD13 catalog rows,
-  single-pass trusted operands, SXM load semantics, and SXM/SST store saturation.
-- Active next slice (P2-W47B2C): full CPU READY/WAIT/FAULT execution tests and
-  the observer-off DLD/DST opcode benchmark.
+  Typed PMST.SST access and copied input knownness are green without widening
+  the 48-byte opcode-input snapshot. DLD/DST have exact MOD13 catalog rows,
+  single-pass trusted operands, full CPU READY/WAIT/FAULT coverage, SXM load
+  semantics, SXM/SST store saturation, and a dedicated observer-off full-CPU
+  benchmark with semantic self-checks and no machine-dependent threshold.
+- The next architecture-forcing slice is repeat/interrupt sequencing evidence
+  closure: RC progression, repeated-body PC flow, and predecode pending-request
+  arbitration must be pinned before the existing inert RPT seams become runtime
+  behavior. Its hot path must preserve prevalidated execution without per-repeat
+  allocation, refetch, or operand re-extraction.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ

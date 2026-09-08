@@ -6042,7 +6042,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -6052,7 +6052,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -6072,7 +6072,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "tools/quality/",
@@ -8157,18 +8157,18 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/memory/test_cpu_dld_long32_mod13.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_dld_long32_mod13"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-DLD-ROOT-READ-LIFECYCLE"]
     },
     {
       "id": "T-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/cpu/memory/test_cpu_dst_long32_mod13.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_dst_long32_mod13"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-DST-ROOT-WRITE-LIFECYCLE"]
     },
     {
@@ -8181,10 +8181,10 @@
     },
     {
       "id": "T-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/perf/test_dld_dst_long32_hot_path.py",
-      "runner": null,
+      "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W47B-HOT-PATH-PERFORMANCE"]
     },
     {

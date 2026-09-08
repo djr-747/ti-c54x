@@ -83,8 +83,10 @@ implying TI timing. P2-W47B1 is implementation-complete for the generic
 LONG32 MEMORY MOD13 carrier and root seam. P2-W47B2A completes the typed
 PMST.SST state/input prerequisite without widening the copied input snapshot.
 P2-W47B2B completes the DLD/DST catalog, checked/trusted semantics, and
-inventory activation. CPU execution and opcode benchmarking are the active
-W47B2C closure slice.
+inventory activation. P2-W47B2C completes CPU lifecycle coverage and the
+observer-off full-CPU opcode benchmark; W47B is closed. The next
+architecture-forcing direction is W20F repeat/interrupt evidence closure before
+runtime RPT activation.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -814,6 +816,24 @@ binds both rows as bounded MOD13 subsets: 100 catalog rows, `ID_COUNT=101`,
 11 `PLANNED`); and 7 sources. CPU READY/WAIT/FAULT execution and the
 observer-off benchmark remain W47B2C.
 
+W47B2C closes the activation with full public-CPU execution proofs. DLD and DST
+each cover READY, first/second WAIT and first/second FAULT, two-word fetch,
+stable resume identity, fresh paired transaction IDs, no refetch, deferred
+AR/PC publication, and parity-derived LONG32 word order. DLD additionally
+proves D/S selection, SXM lanes, unknown-SXM rejection, and C16 independence;
+DST proves copied raw-40 sources, the SST/SXM saturation boundary matrix,
+unknown-source/status rejection, and first-write physical visibility when the
+second write faults. The dedicated observer-off benchmark runs both exact rows
+through the public CPU with semantic counts and ordering checked around every
+timed window. Its capture schema records host/compiler/build provenance and
+timing spread but intentionally freezes no host threshold or TI timing claim.
+Structural tests retain single trusted-packet extraction, static dispatch,
+allocation/I/O/environment exclusion, and LP64/ILP32 carrier sizes. Accounting
+is 181 evidence records; 304 requirements (267 `IMPLEMENTED`, 8 `PLANNED`, 29
+`UNRESOLVED`); 258 tests (250 `PASSING`, 8 `PLANNED`); and 7 sources. Catalog,
+lookup, binding, and ISA-coverage counts remain 100, 2,711, 100, 40/205, and
+25/205 respectively.
+
 Inventory rows `FORM-T2-19-01` (DLD) and `FORM-T2-20-01` (DST) now bind the
 production symbols as `LONG_OFFSET_MOD13_CMPT0` subsets. Strict complete
 coverage remains unchanged because each row implements only part of its full
@@ -872,6 +892,7 @@ function-pointer dispatch tables.
 | P2-W47B1 generic LONG32 MEMORY MOD13 root | Implemented — focused and sanitizer matrices 10/10 GREEN | Add the fixed-size LONG32 MEMORY carrier, checked CMPT=0 MOD13 resolver, and discriminated root transaction over W47A. Freeze LP64 address/effect/root sizes at 24/40/336 and ILP32 at 24/36/308; preserve copied MSW/LSW values, two fresh IDs, WAIT/fault/cancel/stale recovery, partial physical write visibility, deferred AR/PC commit, and the direct WORD16 fast path. Catalog rows, DLD/DST semantics, SST collection, CPU opcode tests, inventory, and benchmark remain W47B2. |
 | P2-W47B2A typed PMST.SST input seam | Implemented — focused normal, sanitizer, and LP64/ILP32 layout checks GREEN | Add typed SST read/write/knownness and copied input collection while retaining the 48-byte snapshot. Common reset leaves SST unknown, SXM/SST remain independent resources, and invalid collection is nonmutating. DLD/DST semantic rejection and execution remain W47B2B/C. |
 | P2-W47B2B DLD/DST MOD13 catalog and semantics | Implemented — focused catalog/decode/semantic and inventory tests plus authoritative full gate GREEN | Activate two 16-encoding rows and a four-field two-word layout; keep trusted execution single-pass; implement DLD SXM completion and DST copied raw-40 SST/SXM saturation; bind both as MOD13 subsets. CPU bus lifecycle and opcode benchmarking remain W47B2C. |
+| P2-W47B2C DLD/DST CPU and performance closure | Implemented — focused CPU/sanitizer/performance tests and authoritative full gate GREEN | Prove READY/WAIT/FAULT execution, stable resume identity, deferred publication, partial DST visibility, unknown-input rejection, and an observer-off full-CPU benchmark while retaining single-pass trusted dispatch and fixed carrier sizes. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

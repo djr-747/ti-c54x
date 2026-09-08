@@ -1,4 +1,4 @@
-.PHONY: all build test quality-test bench bench-release bench-smoke bench-record bench-compare bench-rmw bench-rmw-smoke bench-rmw-compare cmake-build install clean format
+.PHONY: all build test quality-test bench bench-release bench-smoke bench-record bench-compare bench-rmw bench-rmw-smoke bench-rmw-compare bench-dld-dst bench-dld-dst-smoke cmake-build install clean format
 
 # Root policy: compiler flags, artifacts, orchestration, and packaging. Source
 # and test ownership manifests live beside the files they register.
@@ -33,6 +33,7 @@ BENCH_BUILD_DIR := build-bench
 BENCH_LIB := $(BENCH_BUILD_DIR)/libti_c54x.a
 BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_bench
 RMW_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_rmw_bench
+DLD_DST_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_dld_dst_bench
 BENCH_CPPFLAGS := -Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0
 BENCH_DIAGNOSTIC_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
 	-Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
@@ -101,6 +102,16 @@ bench-rmw-compare: $(RMW_BENCH_EXE)
 		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)" | \
 	$(PYTHON) tools/perf/rmw_compare.py \
 		--baseline bench/audits/p2-w46b-rmw-baseline.json --current-file -
+
+bench-dld-dst: $(DLD_DST_BENCH_EXE)
+	$(PYTHON) tools/perf/dld_dst_capture.py --benchmark $(DLD_DST_BENCH_EXE) --root . --allow-dirty \
+		--compiler "$(CC)" --profile portable-o2-no-lto \
+		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
+
+bench-dld-dst-smoke: $(DLD_DST_BENCH_EXE)
+	$(PYTHON) tools/perf/dld_dst_capture.py --benchmark $(DLD_DST_BENCH_EXE) --root . --allow-dirty \
+		--compiler "$(CC)" --profile portable-o2-no-lto \
+		--build-flags "$(BENCH_CPPFLAGS) $(BENCH_CFLAGS)"
 
 # Root owns the common direct-Make test construction policy. Owner manifests
 # provide only target identity and source path, so test registration follows
@@ -175,6 +186,10 @@ $(BENCH_EXE): bench/ti_c54x_bench.c $(BENCH_LIB)
 	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
 
 $(RMW_BENCH_EXE): bench/ti_c54x_rmw_bench.c $(BENCH_LIB)
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
+
+$(DLD_DST_BENCH_EXE): bench/ti_c54x_dld_dst_bench.c $(BENCH_LIB)
 	@mkdir -p $(@D)
 	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(BENCH_LIB) -o $@
 
