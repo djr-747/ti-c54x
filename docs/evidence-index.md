@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 165 immutable evidence records,
-263 requirements (220 `IMPLEMENTED`, 14 `PLANNED`, 29 `UNRESOLVED`), and 217 tests
-(203 `PASSING`, 14 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 166 immutable evidence records,
+266 requirements (226 `IMPLEMENTED`, 11 `PLANNED`, 29 `UNRESOLVED`), and 220 tests
+(209 `PASSING`, 11 `PLANNED`).
 
 ## Targets
 
@@ -209,6 +209,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W42B-STANDARD-INDIRECT-SMEM-FAMILY-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W42B: standard-indirect MOD0–3 Smem family expansion (planned)` |
 | `E-TI-C54X-SPRU131G-S5.5-MOD5-MOD6-FAMILY-COMPOSITION` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §5.5.1, `5-10`–`5-13` |
 | `E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W43B: indexed MOD5/MOD6 per-family composition (planned)` |
+| `E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W44A: generic circular WORD16 MEMORY seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -575,6 +576,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/store/` | `E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS` |
 | `REQ-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/memory/` | `E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION` |
 | `REQ-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING` |
+| `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT`, `E-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT` | `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT` |
+| `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT`, `E-PROJECT-INDIRECT-CIRCULAR-APPLICATION` | `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION` |
+| `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT`, `E-PROJECT-INDIRECT-CIRCULAR-APPLICATION` | `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION` |
 
 ## Tests
 
@@ -801,6 +805,9 @@ exist in the repository.
 | `T-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/store/test_indexed_standard_indirect_store_effects.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indexed_standard_indirect_store_effects"}` | `REQ-PROJECT-P2-W43B-INDEXED-STORE-EFFECTS` |
 | `T-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/memory/test_cpu_indexed_standard_indirect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_indexed_standard_indirect"}` | `REQ-PROJECT-P2-W43B-INDEXED-CPU-INTEGRATION` |
 | `T-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_multi_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING` |
+| `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/memory/test_circular_word16_memory_effect.c` | `null` | `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT` |
+| `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_circular_word16_address_resolution.c` | `null` | `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION` |
+| `T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_circular_word16_memory_transaction.c` | `null` | `REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION` |
 
 ## Correction and tombstone policy
 

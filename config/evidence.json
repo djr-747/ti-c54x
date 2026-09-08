@@ -2638,6 +2638,20 @@
         "anchor": "P2-W43B: indexed MOD5/MOD6 per-family composition (planned)"
       },
       "assertion": "P2-W43B freezes twenty private catalog identities, ten MOD5 and ten MOD6 rows, using unique handler wrapper tokens over the existing ten family cores. The wrappers consume decoded indexed layouts and reuse the W43A INDEXED_AR0_WORD16 MEMORY transaction seam for WORD16 READ/WRITE, selected-AR post-update, and atomic WAIT/READY/FAULT/cancel behavior. Three appended MOD4 layouts—ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4—preserve existing operand indices while carrying the indexed mode discriminator. Inventory remains audit metadata only and changes its ten subset bindings to the multi-addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6; catalog and decode remain private, and no public ABI, new effect/address/state kind, opcode-specific CPU branch, timing, device/MMR, IRQ/RPT, wrap, allocation, environment, diagnostic, or mutable-global behavior is admitted. Coverage percentages remain unchanged until all bound forms are complete."
+    },
+    {
+      "id": "E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W44A: generic circular WORD16 MEMORY seam (planned)"
+      },
+      "assertion": "P2-W44A freezes a private CIRCULAR_WORD16 MEMORY specification for CMPT=0 WORD16 MOD8/MOD10 reads and writes, carrying only copied ARF and typed circular-mode inputs at the operation layer. Resolution orders CMPT, ARP, selected AR, then BK, and reuses the existing circular planner: BK=0 is a valid NONE/no-update result, while positive BK applies the documented circular wrap domain. The resolved address effect carries copied AR/BK snapshots; unknown or stale dependencies reject, selected AR0–AR7 are admitted, and WAIT, READY, FAULT, and cancel preserve transactional state with READY atomically committing selected AR, PC, and effect. No catalog row, opcode handler, public ABI, timing, MMR/device, IRQ/RPT, or new public architectural kind is admitted. W44B remains the subsequent twenty-row MOD8/MOD10 family fan-out projected at ID_COUNT=76, lookup=2343, and 75 bindings; those values are not activated by W44A."
     }
   ],
   "requirements": [
@@ -5486,6 +5500,36 @@
       "claim": "Extend audit-only inventory binding validation to represent the ten W43B forms with the multi-addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6, retain one stable form identity per binding without opcode values or masks, and keep family and strict coverage percentages unchanged until complete-form evidence exists.",
       "evidence_ids": ["E-PROJECT-P2-W43B-INDEXED-FAMILY-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Define a private CIRCULAR_WORD16 MEMORY specification for typed CMPT=0 WORD16 MOD8/MOD10 READ and WRITE effects, carrying copied ARF and typed circular-mode inputs at the operation layer, preserving BK=0 as valid NONE/no-update, and rejecting malformed or unsupported shape without adding a public effect/address kind or catalog handler.",
+      "evidence_ids": ["E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve the private CIRCULAR_WORD16 specification in dependency order CMPT, ARP, selected AR, then BK, reusing the existing circular planner and carrying copied AR/BK snapshots while rejecting unknown or stale dependencies; selected AR0–AR7 are admitted, the documented BK>0 wrap domain is applied, and BK=0 remains a valid non-mutating NONE update without claiming LONG32, CMPT=1, MOD9/MOD11, MOD14, or boundary behavior beyond the registered planner contract.",
+      "evidence_ids": ["E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-INDIRECT-CIRCULAR-APPLICATION"],
+      "test_ids": ["T-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Integrate private CIRCULAR_WORD16 READ and WRITE candidates through the generic memory transaction with WAIT, READY, FAULT, and cancel transactionality; READY atomically commits selected AR, sequential PC, and MEMORY effect, while copied AR/BK snapshots reject stale state. No catalog row, opcode handler, public ABI, timing, MMR/device, IRQ/RPT, or opcode-specific CPU branch is added.",
+      "evidence_ids": ["E-PROJECT-P2-W44A-CIRCULAR-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-INDIRECT-CIRCULAR-APPLICATION"],
+      "test_ids": ["T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION"]
     }
   ],
   "tests": [
@@ -7263,6 +7307,30 @@
       "path": "tests/contract/quality/isa/inventory/test_inventory_multi_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W43B-INVENTORY-MULTI-BINDING"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_circular_word16_memory_effect.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-EFFECT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_circular_word16_address_resolution.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-ADDRESS-RESOLUTION"]
+    },
+    {
+      "id": "T-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_circular_word16_memory_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W44A-CIRCULAR-MEMORY-TRANSACTION"]
     }
   ]
 }
