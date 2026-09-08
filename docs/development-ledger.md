@@ -6220,3 +6220,42 @@ rewritten after publication.
   pre-existing `operand_layout.c` 620-line review warning. Registry-policy
   review corrected multi-owner paths and classified the TI-backed catalog and
   effect requirements as COMMON architectural claims before commit.
+
+## 2026-09-08 — P2-W46A generic WORD16 read-modify-write implementation
+
+- State: implementation commit
+  `898d1f7985124a128acdd61238c620073d5f80e7` completes the private W46A
+  same-address WORD16 read-modify-write seam inside the existing MEMORY
+  carrier and CPU route.
+- The carrier owns a compact value-based AND/OR/XOR operation and copied
+  operand. The sequencer resolves the address once, issues one READ, applies
+  the transform exactly once, resets the reducer, obtains a fresh transaction
+  ID, and issues one WRITE to the cached address. AR and PC publish only after
+  WRITE READY. WAIT, FAULT, cancellation, reset, ID exhaustion, no-refetch,
+  and stale-state/candidate rejection are covered in both phases. This is
+  core-architectural atomicity only; no external-bus-master exclusion is
+  claimed.
+- Review hardened exact candidate shape, including MOD0 canonical zero update
+  fields, and added hostile read/write callback mutation checks. Resume
+  validation compares copied CMPT, ARP, selected AR, AR0, BK, PC, operation,
+  and operand snapshots directly without replanning the address. No callback
+  transform, new effect kind, opcode-specific CPU branch, allocation, public
+  ABI, environment read, or knob was added.
+- Performance remains an acceptance axis: the MEMORY and root effect carriers
+  remain 40/48 bytes on 64-bit and 36/40 bytes on 32-bit; six structural tests
+  prove allocation-free bounded dispatch, no address replan, one paired READ/
+  WRITE advance path, and no opcode branch in the CPU route. W46B retains the
+  separate observer-off executable RMW benchmark so measured throughput can
+  govern any hot-path refinement.
+- Validation is GREEN: the nine affected memory effect/transaction CTests and
+  six structural hot-path tests pass; fresh ASan/UBSan validation passed 8/8
+  focused CTests without diagnostics; evidence validation reports 290
+  requirements and 244 tests; and the final authoritative `rtk make test`
+  gate passes, including 221 Python quality tests. Source boundaries pass with
+  reviewed warnings for pre-existing `operand_layout.c` and the cohesive
+  620-line RMW lifecycle test; the latter must split before 800 lines.
+- Closure accounting is 175 evidence records; 290 requirements (247
+  IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 244 tests (230 PASSING, 14
+  PLANNED); and 7 sources. Catalog rows and ISA coverage are unchanged at 95
+  rows, 2,583 lookup entries, 95 bindings, 35/205 family (17.073%), and 25/205
+  strict (12.195%). W46B ANDM/ORM/XORM composition is next.
