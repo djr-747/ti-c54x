@@ -6621,3 +6621,49 @@ rewritten after publication.
   predecode pending-request arbitration before activating runtime RPT. Its
   implementation must retain prevalidated execution without per-repeat
   allocation, refetch, or operand re-extraction.
+
+## 2026-09-09 — P2-W48A observable RC progression lifecycle
+
+- State: implementation commit
+  `148c811c77c250ca60c88e764258b79957a86827` adds checked typed RC access and
+  a fixed-size repeat-progress reducer under the existing state and repeat
+  owners. It consumes the value-owned `REPEAT_START` effect, loads exact RC,
+  widens before forming the operand-plus-one remaining-body count, and mutates
+  RC only after the caller reports a successfully retired body.
+- Evidence correction: the earlier W20F conclusion remains immutable but is
+  narrowed by three new TI SPRU172C Rev C records. READA printed
+  pp. 4-136–4-137 and WRITA pp. 4-196–4-197 perform their transfer, increment
+  PAR, and write `RC-1` while RC is nonzero, then perform the terminal transfer
+  at RC zero without another RC update. FIRS p. 4-59 independently corroborates
+  the nonzero decrement loop. Together with RPT's load and operand-plus-one
+  count, these passages prove operation-level RC progression and final zero;
+  they do not prove the exact internal decrement ordering.
+- The progress reducer validates canonical IDLE/ACTIVE/COMPLETE phase shape,
+  count bounds, RC knownness, and the exact `RC == remaining-1` invariant before
+  publication. Unknown, stale, malformed, unsupported-effect, active-restart,
+  and extra-completion paths preserve architectural state and progress. A new
+  repeat may overwrite RC after a completed repeat, including after an
+  intervening known RC state write through the typed owner.
+- Performance is an explicit design constraint. The body-retirement hot path
+  performs one typed RC read, one non-failing typed RC write, and one small
+  progress update; review removed an initial whole-architectural-state copy
+  from every body. Only the cold repeat-start path stages full state. `run.c`,
+  the CPU instance, public ABI, catalog, trusted packet, and current benchmark
+  binaries are unchanged, so this slice adds zero branches and zero carrier
+  growth to normal CPU execution. No allocator, I/O, callback, environment,
+  observer, diagnostic, mutable global, or knob was added.
+- Validation is GREEN: the three focused Make executables pass; the agent's
+  independent CMake build and exact CTest selection pass 3/3; the evidence
+  checker passes at 2 targets, 7 sources, 307 requirements, and 261 tests; and
+  the authoritative `rtk make test` gate passes the compiled C suite plus all
+  245 Python quality tests. Manifests, knobs, inventory, source boundaries, and
+  the observer-disabled artifact pass. Warnings remain limited to the three
+  previously reviewed 637/782/620-line files. No GitHub or other hosted runner
+  was invoked, and no RED commit was pushed.
+- Closure accounting is 185 immutable evidence records; 307 requirements (270
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 261 tests (253 PASSING, 8 PLANNED);
+  and 7 sources. Catalog/ISA counts remain 100 rows, `ID_COUNT=101`, 2,711
+  lookup entries, 100 bindings, 40/205 family coverage, and 25/205 strict
+  coverage. The existing exact-phase RC requirement remains UNRESOLVED; the new
+  narrower observable-progression requirement is IMPLEMENTED. Repeated-body PC
+  flow and predecode request arbitration still gate runtime RPT activation.
