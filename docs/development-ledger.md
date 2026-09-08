@@ -5698,3 +5698,39 @@ rewritten after publication.
   25/205 = 12.195% strict complete-form. W42B is the next throughput slice:
   bind the ten existing partial Smem families to explicit MOD0–3 operand
   layouts and reuse this seam, including pre-bus rejection of load MOD3.
+
+## 2026-09-08 — P2-W42B standard-indirect Smem expansion activation
+
+- State: evidence and ownership activation landed as
+  `65955fcdaf0a9ab2a377980e4ff568be1eca7884`. P2-W42B is the active bounded
+  fan-out across the ten existing fixed-MOD2 Smem families.
+- The catalog contract replaces those ten rows rather than adding identities.
+  Neutral symbols drop `_MOD2`; five D/source rows use their exact MOD0 bases
+  with mask `0xFEE0`, and five no-D rows use mask `0xFFE0`. `ID_COUNT` remains
+  36. Three explicit layouts append decoded MOD bits [4:3] while preserving
+  existing D/source, ARF, and extension operand indices; handlers may not parse
+  raw instruction words.
+- Seven load families accept MOD0 through MOD2 and reject MOD3 as
+  `INVALID_OPERAND` before producing a MEMORY effect or endpoint request.
+  Three store families accept MOD0 through MOD3 through the completed W42A
+  transaction seam.
+- The projected lookup grows from 1,503 to 1,863 populated first words. The ten
+  broadened rows cover 480 words: 392 legal and 88 known-but-rejected load
+  MOD3 encodings, an increment of 272 legal plus 88 rejected words.
+- Inventory symbols become neutral, but all ten forms remain `SUBSET` with
+  `STANDARD_INDIRECT_MOD0_MOD3`; other Smem addressing forms remain outside
+  W42B. Coverage therefore stays 35/205 = 17.073% catalog-family and 25/205 =
+  12.195% strict complete-form.
+- Five owner-local RED contracts are planned for catalog metadata,
+  decode/layout, load effects, store effects, and generic CPU integration.
+  `op_ld_smem.c` is already 491 lines and must split before handler growth.
+- Activation accounting is 163 evidence records; 254 requirements (212
+  IMPLEMENTED, 13 PLANNED, 29 UNRESOLVED); 208 tests (195 PASSING, 13
+  PLANNED); and 7 sources.
+- Validation: `make quality-test` passed all 207 Python tests and every quality
+  gate; the evidence checker passed with 254 requirements and 208 tests; and
+  `git diff --check` passed. The reviewed 535-line operand-layout and 523-line
+  root-transaction warnings remain unchanged.
+- No public ABI, effect/address/state kind, opcode-specific CPU branch, timing,
+  machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
+  allocation, mutable-global, or emulator dependency is admitted.
