@@ -61,8 +61,10 @@ P2-W44A is implementation-complete as the generic circular WORD16 MEMORY
 seam; it adds no catalog rows or handlers. P2-W44B is implementation-complete
 as the bounded twenty-row MOD8/MOD10 family fan-out: ID_COUNT is 76, the
 populated first-word lookup has 2,343 entries, and there are 75 catalog
-bindings. The six owner-local RED contracts are GREEN; the final full suite
-remains pending and is not claimed here.
+bindings. The six owner-local RED contracts and authoritative full suite are
+GREEN.
+P2-W45A is now the next evidence-first activation: a generic reverse-carry
+WORD16 MEMORY seam with no catalog rows, handlers, or CPU opcode branch.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -529,6 +531,35 @@ IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 226 tests (218 PASSING, 8 PLANNED);
 and 7 sources. The authoritative standalone `make test` runner is GREEN after
 the full masked-row near-miss audit.
 
+### P2-W45A: generic reverse-carry WORD16 MEMORY seam (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for the W45A
+activation. Existing registered TI MOD4/MOD7 and reverse-carry primitive,
+planner, and application records are reused. W45A freezes a private typed
+`REVERSE_CARRY_WORD16` memory address kind for MOD4/MOD7; ARF admits only 1..7
+and AR0 aliasing remains unresolved/rejected. Unrelated fields are canonical
+zero and prevalidation completes before architectural reads.
+
+Resolution is ordered CMPT, ARP, selected AR, then AR0; AR0 must be known,
+nonzero, and one-hot. The planner uses the old selected AR as the operand
+address and stages a POST update to the selected AR only. No modulo or wrap
+inference is made; boundary propagation that escapes the documented domain is
+rejected. Candidate validation requires exact live snapshots, with WAIT,
+FAULT, cancel, stale, and no-refetch behavior preserved and READY committing
+the selected-AR update, sequential PC, and MEMORY effect atomically.
+
+W45A owns only the private memory effect, address-resolution, and candidate
+validation seams. It adds no BK, root transaction, CPU, catalog, opcode, public
+ABI, timing, device, or RPT behavior. Three planned project requirements/tests
+cover effect shape, address resolution, and memory transaction ownership.
+W45B remains a later twenty-row MOD4/MOD7 fan-out, projected at ID_COUNT=96,
+lookup 2,583, and 95 bindings; it is not activated here.
+
+Activation accounting is 169 evidence records; 275 requirements (235
+IMPLEMENTED, 11 PLANNED, 29 UNRESOLVED); 229 tests (218 PASSING, 11 PLANNED);
+and 7 sources. Follow-up remains evidence-first until the three owner-local
+RED lanes are implemented.
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -574,6 +605,7 @@ function-pointer dispatch tables.
 | P2-W43B indexed MOD5/MOD6 per-family composition | Implemented — five focused CTests, inventory Python 3/3, and independent ASan/UBSan gate green | Register 20 indexed catalog rows (ID_COUNT 56; lookup 2,103), append the three private MOD4 layouts, and add seven load plus three store MOD5/MOD6 wrappers through the W43A indexed MEMORY seam. Keep 55 catalog bindings, 35/205 family coverage, 25/205 strict complete coverage, and no ABI/effect/address/state/CPU/timing expansion. |
 | P2-W44A generic circular WORD16 MEMORY seam | Implemented — focused RED→GREEN C executable runners green; no catalog rows or handlers | Define typed CIRCULAR_WORD16 MOD8/MOD10 read/write effects, ordered CMPT→ARP→selected AR→BK resolution, existing circular planner reuse, BK=0 NONE/no-update, stale/unknown rejection, and atomic WAIT/READY/FAULT/cancel transactionality. Catalog remains ID_COUNT 56, lookup 2,103, and 55 bindings; coverage remains 35/205 family and 25/205 strict. W44B's 20-row fan-out remains projected at ID_COUNT 76, lookup 2,343, and 75 bindings. |
 | P2-W44B circular MOD8/MOD10 per-family composition | Implemented — six focused C/Python runners GREEN; full suite pending | Register twenty bounded MOD8/MOD10 rows over the ten existing Smem families, reuse private MOD4 layouts and the W44A CIRCULAR_WORD16 seam, and preserve the combined inventory token and unchanged coverage. ID_COUNT is 76, lookup 2,343, and bindings 75; unsupported modes/boundaries remain excluded. |
+| P2-W45A generic reverse-carry WORD16 MEMORY seam | Planned — evidence-first activation; three owner-local RED lanes | Define private typed REVERSE_CARRY_WORD16 MOD4/MOD7 effect, ordered CMPT→ARP→selected AR→AR0 resolution, exact live snapshots, boundary rejection, and atomic WAIT/FAULT/cancel/READY transactionality. ARF is 1..7 only; no BK, root transaction, CPU/catalog/opcode/public ABI/timing/device/RPT changes. W45B remains projected at ID_COUNT 96, lookup 2,583, and 95 bindings. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |
