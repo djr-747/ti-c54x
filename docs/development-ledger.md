@@ -6939,3 +6939,54 @@ rewritten after publication.
   split. W51 next implements coordinated non-MOD0 dual addressing/update modes,
   including same-AR Xmod precedence and atomic two-AR commit, while preserving
   trusted-path and two-read performance constraints.
+
+## 2026-09-09 — P2-W51A dual-indirect MOD0–MOD2 planning checkpoint
+
+- State: implementation commit
+  `d039dee00f481cbf03a18c6451841d3932a69893` extends the pure dual-indirect
+  WORD16 address planner and memory-address resolution seam to modes 0, 1, and
+  2. Both operands retain their frozen old addresses; modes 1 and 2 produce
+  value-owned post-access decrement/increment commit candidates. No opcode row,
+  CPU path, root transaction, catalog projection, or persistent carrier is
+  activated or widened in this checkpoint.
+- Evidence and architecture decisions: TI SPRU131G section 5.5.4/Table 5-8
+  defines Xmod/Xar/Ymod/Yar, direct AR2--AR5 selection, and mode 0/1/2 effects;
+  TI SPRU179C ADD Example 4 confirms Xmod precedence when X and Y alias one AR.
+  These modes use `STATE_POLICY_NONE` and do not consume CMPT or ARP. Aliased
+  operands read the same frozen value and stage at most the X-owned update;
+  distinct selectors retain independent candidates. Mode 1 at `0x0000` and
+  mode 2 at `0xffff` are transactionally `UNRESOLVED_BOUNDARY`. MOD3 remains
+  deferred at its AR0/BK indexed/circular and CMPT1 boundary.
+- TDD proceeded RED to GREEN: the new planner matrix initially failed because
+  modes 1 and 2 were unsupported, then the resolution contract initially
+  failed because it admitted only mode 0. Focused strict Make tests and focused
+  CMake/CTest pass after implementation. Coverage includes all nine mode-0/1/2
+  pairs, frozen read order, post-update candidates, same-AR precedence,
+  transactional boundaries, CMPT/ARP independence, and the unchanged 32-byte
+  requests-only persistent snapshot.
+- Performance remains a closure constraint. The observer-off W50B public-CPU
+  smoke preserves semantic hash `b40823092c0aa605` and exactly two DATA reads
+  per retirement. Dirty-tree host samples measured 733.988--882.744
+  ns/instruction; this is volatile characterization only, with no history,
+  threshold, regression claim, or TI machine-cycle claim. The production CPU
+  and trusted first-execution route are unchanged.
+- Validation is GREEN: the authoritative `rtk make test` gate passes the full
+  compiled C suite plus all 268 Python quality tests; evidence parity passes at
+  2 targets, 7 sources, 337 requirements, and 287 tests. Manifests, inventory,
+  source boundaries, knobs, observer-disabled structure, and diff checks pass.
+  Reviewed warnings remain the existing 665-line operand-layout owner, 521-line
+  root transaction, and 782/769/620-line test matrices. No knob was added or
+  changed. No GitHub or other hosted runner was invoked, and no RED commit was
+  pushed.
+- Closure accounting is 206 immutable evidence records; 337 requirements (299
+  IMPLEMENTED, 7 PLANNED, 31 UNRESOLVED); 287 tests (280 PASSING, 7 PLANNED);
+  and 7 sources. Catalog/ISA counts remain 104 rows, `ID_COUNT=105`, 3,031
+  lookup entries, 104 trusted bindings, 44/205 family coverage, and 27/205
+  strict coverage.
+- Exact resume point: W51B extends the persistent dual snapshot with both
+  prevalidated commit descriptors, validates snapshot and live-state identity,
+  adds immutable mode/selector drift shadows, and atomically publishes distinct
+  AR commits only after both reads and ordinary-effect staging succeed. A
+  same-AR pair commits once; WAIT and FAULT remain non-publishing; root sizes
+  stay frozen at 336/308 bytes. Broader dual-mode opcode activation follows
+  only after that root transaction seam is green.
