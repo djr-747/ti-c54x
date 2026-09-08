@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof of the two-word fixed-MOD2 ST immediate-to-memory
+ * Owns: executable proof of the two-word MOD2 ST immediate-to-memory
  * catalog row, including its exact masked identity, ARF-plus-extension
  * operand layout, repeatability and input-resource metadata, eight-word
  * first-word population, and fixed-bit separation. Does not own: opcode
@@ -18,8 +18,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-static const uint16_t ST_IMMEDIATE_VALUE = UINT16_C(0x7690);
-static const uint16_t ST_IMMEDIATE_MASK = UINT16_C(0xFFF8);
+static const uint16_t ST_IMMEDIATE_VALUE = UINT16_C(0x7680);
+static const uint16_t ST_IMMEDIATE_MOD2_WORD = UINT16_C(0x7690);
+static const uint16_t ST_IMMEDIATE_MASK = UINT16_C(0xFFE0);
 
 static bool
 matches_st_immediate(uint16_t word)
@@ -32,24 +33,27 @@ test_metadata(void)
 {
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(
-            TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+            TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
 
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id ==
-                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == ST_IMMEDIATE_VALUE);
     TI_C54X_TEST_CHECK(metadata->first_word_mask == ST_IMMEDIATE_MASK);
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(2));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16);
+                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD);
     TI_C54X_TEST_CHECK(metadata->repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(metadata->input_resources ==
                        TI_C54X_INPUT_RESOURCES_NONE);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           ST_IMMEDIATE_MOD2_WORD) ==
+                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
 
     /* Only ARF bits 2:0 vary; bit 8 and every other bit are fixed. */
     TI_C54X_TEST_CHECK((uint16_t)~metadata->first_word_mask ==
-                       UINT16_C(0x0007));
+                       UINT16_C(0x001F));
 }
 
 static void
@@ -63,18 +67,18 @@ test_exact_population(void)
             ti_c54x_opcode_catalog_lookup_first_word(word);
         const bool st_immediate = matches_st_immediate(word);
 
-        TI_C54X_TEST_CHECK((id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2) ==
+        TI_C54X_TEST_CHECK((id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM) ==
                            st_immediate);
         if (st_immediate) {
             ++st_immediate_count;
         }
     }
 
-    TI_C54X_TEST_CHECK(st_immediate_count == 8U);
+    TI_C54X_TEST_CHECK(st_immediate_count == 32U);
     for (uint16_t arf = 0U; arf < UINT16_C(8); ++arf) {
         TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                                (uint16_t)(ST_IMMEDIATE_VALUE | arf)) ==
-                           TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+                           TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     }
 }
 
@@ -83,10 +87,10 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* These flip fixed bits, including bit 8; the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
-        UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0100),
-        UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
-        UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0080),
+        UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
+        UINT16_C(0x8000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

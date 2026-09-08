@@ -4,7 +4,7 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for fixed-MOD2 WORD16
+ * Owns: checked and trusted pure semantic leaves for standard-indirect WORD16
  * indirect loads into accumulator A or B, including the unshifted,
  * SXM-dependent logical-left-shift-16, and T-register-shift forms. Each
  * checked leaf validates its catalog/decode contract and stages a generic

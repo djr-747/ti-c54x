@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: exhaustive RED proofs for the fixed-MOD2 WORD16 LDU memory effect,
+ * Owns: exhaustive RED proofs for the MOD2 WORD16 LDU memory effect,
  * including D/ARF selection, zero-extending completion, checked/trusted/
  * dispatch parity, and transactional rejection. Does not own: catalog rows,
  * operand-layout descriptors, address resolution, buses, CPU/state mutation,
@@ -41,13 +41,13 @@ static ti_c54x_decoded_instruction decode(uint8_t destination, uint8_t arf)
     ti_c54x_decoded_instruction instruction;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LDU_SMEM_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LDU_SMEM);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
                        TI_C54X_INPUT_RESOURCES_NONE);
     return instruction;
@@ -57,11 +57,13 @@ static ti_c54x_trusted_operand_values trusted_operands(uint8_t destination,
                                                        uint8_t arf)
 {
     ti_c54x_trusted_operand_values operands = {0};
-    operands.count = UINT8_C(2);
+    operands.count = UINT8_C(3);
     operands.values[0].raw_value = destination;
     operands.values[0].width_bits = UINT8_C(1);
     operands.values[1].raw_value = arf;
     operands.values[1].width_bits = UINT8_C(3);
+    operands.values[2].raw_value = TI_C54X_INDIRECT_SINGLE_MOD2;
+    operands.values[2].width_bits = UINT8_C(2);
     return operands;
 }
 
@@ -115,7 +117,7 @@ static void check_all_forms_and_completion(void)
                 decode(destination, arf);
             const ti_c54x_trusted_opcode_binding *binding =
                 ti_c54x_trusted_opcode_binding_for_id(
-                    TI_C54X_OPCODE_ID_LDU_SMEM_MOD2);
+                    TI_C54X_OPCODE_ID_LDU_SMEM);
             const ti_c54x_instruction_word_bundle bundle = {
                 .program_words = {instruction.bundle.program_words[0],
                                   UINT16_C(0)},
@@ -215,7 +217,7 @@ static void check_transactional_checked_and_dispatch_rejection(void)
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
 
         forged = instruction;
-        forged.bundle.program_words[0] ^= UINT16_C(0x0008);
+        forged.bundle.program_words[0] ^= UINT16_C(0x0020);
         TI_C54X_TEST_CHECK(ti_c54x_op_ldu_smem(&forged, &input, &effect) ==
                            TI_C54X_OP_STATUS_INVALID_DECODE);
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
@@ -226,7 +228,7 @@ static void check_trusted_operand_rejection(void)
 {
     const ti_c54x_op_input_snapshot input = ignored_input(7U, false);
     const ti_c54x_trusted_opcode_binding *binding =
-        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LDU_SMEM_MOD2);
+        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LDU_SMEM);
     const ti_c54x_instruction_word_bundle bundle = {
         .program_words = {ldu_word(1U, 7U), UINT16_C(0)},
         .program_word_count = UINT8_C(1)};
@@ -300,7 +302,7 @@ static void check_completion_rejection(void)
 
     {
         ti_c54x_decoded_instruction forged = instruction;
-        forged.bundle.program_words[0] ^= UINT16_C(0x0008);
+        forged.bundle.program_words[0] ^= UINT16_C(0x0020);
         TI_C54X_TEST_CHECK(read_effect.payload.memory.complete(
                                &forged, &input, UINT16_C(0xFFFF), &effect) ==
                            TI_C54X_OP_STATUS_INVALID_DECODE);

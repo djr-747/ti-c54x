@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: exhaustive RED proofs for the fixed-MOD2 WORD16 LD Smem,16,dst
+ * Owns: exhaustive RED proofs for the MOD2 WORD16 LD Smem,16,dst
  * effect, including D/ARF selection, SXM-controlled sign/zero extension and
  * logical left shift, checked/trusted/dispatch parity, and transactional
  * rejection. Does not own: catalog rows, operand-layout descriptors, address
@@ -42,15 +42,15 @@ static ti_c54x_decoded_instruction decode(uint8_t destination, uint8_t arf)
     ti_c54x_decoded_instruction instruction;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.id ==
-                       TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
+                       TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD);
     TI_C54X_TEST_CHECK(instruction.repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
@@ -85,11 +85,13 @@ static ti_c54x_trusted_operand_values trusted_operands(uint8_t destination,
                                                        uint8_t arf)
 {
     ti_c54x_trusted_operand_values operands = {0};
-    operands.count = UINT8_C(2);
+    operands.count = UINT8_C(3);
     operands.values[0].raw_value = destination;
     operands.values[0].width_bits = UINT8_C(1);
     operands.values[1].raw_value = arf;
     operands.values[1].width_bits = UINT8_C(3);
+    operands.values[2].raw_value = TI_C54X_INDIRECT_SINGLE_MOD2;
+    operands.values[2].width_bits = UINT8_C(2);
     return operands;
 }
 
@@ -135,16 +137,16 @@ static void check_metadata_and_exact_forms(void)
 {
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(
-            TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
+            TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
 
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id ==
-                       TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
-    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0x4490));
-    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFEF8));
+                       TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
+    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0x4480));
+    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFEE0));
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD);
     TI_C54X_TEST_CHECK(metadata->repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(metadata->input_resources ==
@@ -172,7 +174,7 @@ static void check_effects_and_parity(void)
                 decode(destination, arf);
             const ti_c54x_trusted_opcode_binding *binding =
                 ti_c54x_trusted_opcode_binding_for_id(
-                    TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
+                    TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
             ti_c54x_trusted_execution_packet packet;
 
             TI_C54X_TEST_CHECK(binding != NULL);
@@ -313,7 +315,7 @@ static void check_input_and_decode_rejection(void)
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
 
         forged = *original;
-        forged.bundle.program_words[0] ^= UINT16_C(0x0008);
+        forged.bundle.program_words[0] ^= UINT16_C(0x0020);
         TI_C54X_TEST_CHECK(ti_c54x_op_ld_smem_shift16(&forged, &valid, &effect) ==
                            TI_C54X_OP_STATUS_INVALID_DECODE);
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
@@ -326,7 +328,7 @@ static void check_trusted_operand_rejection(void)
     const ti_c54x_op_input_snapshot input = input_for(0U, true, 0U);
     const ti_c54x_trusted_opcode_binding *binding =
         ti_c54x_trusted_opcode_binding_for_id(
-            TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2);
+            TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
     ti_c54x_trusted_execution_packet packet;
     const ti_c54x_op_effect before = {
         .kind = TI_C54X_OP_EFFECT_REPEAT_START,
@@ -415,7 +417,7 @@ static void check_completion_rejection(void)
                            TI_C54X_OP_STATUS_INVALID_DECODE);
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
         forged = instruction;
-        forged.bundle.program_words[0] ^= UINT16_C(0x0008);
+        forged.bundle.program_words[0] ^= UINT16_C(0x0020);
         TI_C54X_TEST_CHECK(read_effect.payload.memory.complete(
                                &forged, &valid, UINT16_C(0xFFFF), &effect) ==
                            TI_C54X_OP_STATUS_INVALID_DECODE);

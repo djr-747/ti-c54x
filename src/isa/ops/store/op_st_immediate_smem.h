@@ -4,8 +4,8 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for the two-word fixed-MOD2
- * WORD16 immediate store. The checked leaf validates the copied instruction
+ * Owns: checked and trusted pure semantic leaves for the two-word standard-
+ * indirect WORD16 immediate store. The checked leaf validates the copied instruction
  * and extracts its ARF and 16-bit immediate; both paths stage one generic
  * memory-write effect and do not inspect input values or knownness. Borrowed
  * instruction, operand, input, and effect objects are used for one call only;

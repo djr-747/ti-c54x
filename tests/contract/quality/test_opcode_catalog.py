@@ -23,6 +23,9 @@ LAYOUT_CONDITION_ARF = "TI_C54X_OPERAND_LAYOUT_CONDITION_ARF"
 LAYOUT_ARF = "TI_C54X_OPERAND_LAYOUT_ARF"
 LAYOUT_ARF_EXTENSION16 = "TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16"
 LAYOUT_ACCUMULATOR_ARF = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF"
+LAYOUT_ARF_MOD = "TI_C54X_OPERAND_LAYOUT_ARF_MOD"
+LAYOUT_ARF_EXTENSION16_MOD = "TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD"
+LAYOUT_ACCUMULATOR_ARF_MOD = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD"
 LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
@@ -153,7 +156,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         rows = [
             catalog_rows[0],
             *(row for row in catalog_rows[3:]
-              if row.symbol != "LD_SMEM_TS_MOD2"),
+              if row.symbol != "LD_SMEM_TS"),
         ]
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
@@ -170,26 +173,26 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(rows[3].symbol, "LD_IMMEDIATE_ARP")
         self.assertEqual(rows[3].first_word_value, 0xF4A0)
         self.assertEqual(rows[3].first_word_mask, 0xFFF8)
-        self.assertEqual(rows[4].symbol, "LD_SMEM_MOD2")
+        self.assertEqual(rows[4].symbol, "LD_SMEM")
         self.assertEqual(rows[4].handler, "ld_smem")
-        self.assertEqual(rows[4].first_word_value, 0x1090)
-        self.assertEqual(rows[4].first_word_mask, 0xFEF8)
+        self.assertEqual(rows[4].first_word_value, 0x1080)
+        self.assertEqual(rows[4].first_word_mask, 0xFEE0)
         ld_smem_ts = next(
-            row for row in catalog_rows if row.symbol == "LD_SMEM_TS_MOD2"
+            row for row in catalog_rows if row.symbol == "LD_SMEM_TS"
         )
         self.assertEqual(ld_smem_ts.handler, "ld_smem_ts")
-        self.assertEqual(ld_smem_ts.first_word_value, 0x1490)
-        self.assertEqual(ld_smem_ts.first_word_mask, 0xFEF8)
+        self.assertEqual(ld_smem_ts.first_word_value, 0x1480)
+        self.assertEqual(ld_smem_ts.first_word_mask, 0xFEE0)
         self.assertEqual(ld_smem_ts.program_word_count, 1)
-        self.assertEqual(ld_smem_ts.operand_layout, LAYOUT_ACCUMULATOR_ARF)
+        self.assertEqual(ld_smem_ts.operand_layout, LAYOUT_ACCUMULATOR_ARF_MOD)
         self.assertEqual(ld_smem_ts.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(
             ld_smem_ts.input_resources, RESOURCES_STATUS_SXM_T_REGISTER
         )
-        self.assertEqual(rows[5].symbol, "STL_SMEM_MOD2")
+        self.assertEqual(rows[5].symbol, "STL_SMEM")
         self.assertEqual(rows[5].handler, "stl_smem")
-        self.assertEqual(rows[5].first_word_value, 0x8090)
-        self.assertEqual(rows[5].first_word_mask, 0xFEF8)
+        self.assertEqual(rows[5].first_word_value, 0x8080)
+        self.assertEqual(rows[5].first_word_mask, 0xFEE0)
         self.assertEqual(rows[6].symbol, "MAX_ACC")
         self.assertEqual(rows[6].first_word_value, 0xF486)
         self.assertEqual(rows[6].first_word_mask, 0xFEFF)
@@ -311,73 +314,73 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(cmpr.input_resources, RESOURCES_AUXILIARY_REGISTERS)
 
         ldu = catalog_rows[-7]
-        self.assertEqual(ldu.symbol, "LDU_SMEM_MOD2")
+        self.assertEqual(ldu.symbol, "LDU_SMEM")
         self.assertEqual(ldu.handler, "ldu_smem")
-        self.assertEqual(ldu.first_word_value, 0x1290)
-        self.assertEqual(ldu.first_word_mask, 0xFEF8)
+        self.assertEqual(ldu.first_word_value, 0x1280)
+        self.assertEqual(ldu.first_word_mask, 0xFEE0)
         self.assertEqual(ldu.program_word_count, 1)
-        self.assertEqual(ldu.operand_layout, LAYOUT_ACCUMULATOR_ARF)
+        self.assertEqual(ldu.operand_layout, LAYOUT_ACCUMULATOR_ARF_MOD)
         self.assertEqual(ldu.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ldu.input_resources, RESOURCES_NONE)
 
         ld_t = catalog_rows[-6]
-        self.assertEqual(ld_t.symbol, "LD_T_SMEM_MOD2")
+        self.assertEqual(ld_t.symbol, "LD_T_SMEM")
         self.assertEqual(ld_t.handler, "ld_t_smem")
-        self.assertEqual(ld_t.first_word_value, 0x3090)
-        self.assertEqual(ld_t.first_word_mask, 0xFFF8)
+        self.assertEqual(ld_t.first_word_value, 0x3080)
+        self.assertEqual(ld_t.first_word_mask, 0xFFE0)
         self.assertEqual(ld_t.program_word_count, 1)
-        self.assertEqual(ld_t.operand_layout, LAYOUT_ARF)
+        self.assertEqual(ld_t.operand_layout, LAYOUT_ARF_MOD)
         self.assertEqual(ld_t.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_t.input_resources, RESOURCES_NONE)
 
         st_immediate = catalog_rows[-5]
-        self.assertEqual(st_immediate.symbol, "ST_IMMEDIATE_SMEM_MOD2")
+        self.assertEqual(st_immediate.symbol, "ST_IMMEDIATE_SMEM")
         self.assertEqual(st_immediate.handler, "st_immediate_smem")
-        self.assertEqual(st_immediate.first_word_value, 0x7690)
-        self.assertEqual(st_immediate.first_word_mask, 0xFFF8)
+        self.assertEqual(st_immediate.first_word_value, 0x7680)
+        self.assertEqual(st_immediate.first_word_mask, 0xFFE0)
         self.assertEqual(st_immediate.program_word_count, 2)
-        self.assertEqual(st_immediate.operand_layout, LAYOUT_ARF_EXTENSION16)
+        self.assertEqual(st_immediate.operand_layout, LAYOUT_ARF_EXTENSION16_MOD)
         self.assertEqual(st_immediate.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(st_immediate.input_resources, RESOURCES_NONE)
 
         ld_dp = catalog_rows[-4]
-        self.assertEqual(ld_dp.symbol, "LD_DP_SMEM_MOD2")
+        self.assertEqual(ld_dp.symbol, "LD_DP_SMEM")
         self.assertEqual(ld_dp.handler, "ld_dp_smem")
-        self.assertEqual(ld_dp.first_word_value, 0x4690)
-        self.assertEqual(ld_dp.first_word_mask, 0xFFF8)
+        self.assertEqual(ld_dp.first_word_value, 0x4680)
+        self.assertEqual(ld_dp.first_word_mask, 0xFFE0)
         self.assertEqual(ld_dp.program_word_count, 1)
-        self.assertEqual(ld_dp.operand_layout, LAYOUT_ARF)
+        self.assertEqual(ld_dp.operand_layout, LAYOUT_ARF_MOD)
         self.assertEqual(ld_dp.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(ld_dp.input_resources, RESOURCES_NONE)
 
         ld_asm = catalog_rows[-3]
-        self.assertEqual(ld_asm.symbol, "LD_ASM_SMEM_MOD2")
+        self.assertEqual(ld_asm.symbol, "LD_ASM_SMEM")
         self.assertEqual(ld_asm.handler, "ld_asm_smem")
-        self.assertEqual(ld_asm.first_word_value, 0x3290)
-        self.assertEqual(ld_asm.first_word_mask, 0xFFF8)
+        self.assertEqual(ld_asm.first_word_value, 0x3280)
+        self.assertEqual(ld_asm.first_word_mask, 0xFFE0)
         self.assertEqual(ld_asm.program_word_count, 1)
-        self.assertEqual(ld_asm.operand_layout, LAYOUT_ARF)
+        self.assertEqual(ld_asm.operand_layout, LAYOUT_ARF_MOD)
         self.assertEqual(ld_asm.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_asm.input_resources, RESOURCES_NONE)
 
         ld_smem_shift16 = catalog_rows[-2]
-        self.assertEqual(ld_smem_shift16.symbol, "LD_SMEM_SHIFT16_MOD2")
+        self.assertEqual(ld_smem_shift16.symbol, "LD_SMEM_SHIFT16")
         self.assertEqual(ld_smem_shift16.handler, "ld_smem_shift16")
-        self.assertEqual(ld_smem_shift16.first_word_value, 0x4490)
-        self.assertEqual(ld_smem_shift16.first_word_mask, 0xFEF8)
+        self.assertEqual(ld_smem_shift16.first_word_value, 0x4480)
+        self.assertEqual(ld_smem_shift16.first_word_mask, 0xFEE0)
         self.assertEqual(ld_smem_shift16.program_word_count, 1)
         self.assertEqual(ld_smem_shift16.operand_layout,
-                         LAYOUT_ACCUMULATOR_ARF)
+                         LAYOUT_ACCUMULATOR_ARF_MOD)
         self.assertEqual(ld_smem_shift16.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_smem_shift16.input_resources, RESOURCES_STATUS_SXM)
 
         st_t = catalog_rows[-1]
-        self.assertEqual(st_t.symbol, "ST_T_SMEM_MOD2")
+        self.assertEqual(st_t.symbol, "ST_T_SMEM")
         self.assertEqual(st_t.handler, "st_t_smem")
-        self.assertEqual(st_t.first_word_value, 0x8C90)
-        self.assertEqual(st_t.first_word_mask, 0xFFF8)
+        self.assertEqual(st_t.first_word_value, 0x8C80)
+        self.assertEqual(st_t.first_word_mask, 0xFFE0)
         self.assertEqual(st_t.program_word_count, 1)
-        self.assertEqual(st_t.operand_layout, LAYOUT_ARF)
+        self.assertEqual(st_t.operand_layout, LAYOUT_ARF_MOD)
         self.assertEqual(st_t.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(st_t.input_resources, RESOURCES_T_REGISTER)
 

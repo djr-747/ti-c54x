@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: exhaustive RED proofs for the two-word fixed-MOD2 WORD16 immediate
+ * Owns: exhaustive RED proofs for the two-word MOD2 WORD16 immediate
  * store effect, including ARF/immediate extraction, checked/trusted/dispatch
  * parity, ignored input state, and transactional rejection. Does not own:
  * catalog rows, operand-layout descriptors, address resolution, buses, CPU or
@@ -40,16 +40,16 @@ static ti_c54x_decoded_instruction decode(uint8_t arf, uint16_t immediate)
     ti_c54x_decoded_instruction instruction;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     TI_C54X_TEST_CHECK(first.first_word == first_word);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(2));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.id ==
-                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16);
+                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD);
     TI_C54X_TEST_CHECK(instruction.repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
@@ -86,11 +86,13 @@ static ti_c54x_trusted_operand_values trusted_operands(uint8_t arf,
 {
     ti_c54x_trusted_operand_values operands = {0};
 
-    operands.count = UINT8_C(2);
+    operands.count = UINT8_C(3);
     operands.values[0].raw_value = arf;
     operands.values[0].width_bits = UINT8_C(3);
     operands.values[1].raw_value = immediate;
     operands.values[1].width_bits = UINT8_C(16);
+    operands.values[2].raw_value = TI_C54X_INDIRECT_SINGLE_MOD2;
+    operands.values[2].width_bits = UINT8_C(2);
     return operands;
 }
 
@@ -114,15 +116,15 @@ static void check_metadata_and_all_forms(void)
     static const uint16_t immediates[] = {UINT16_C(0x0000), UINT16_C(0x7FFF),
                                           UINT16_C(0x8000), UINT16_C(0xFFFF)};
     const ti_c54x_opcode_metadata *metadata =
-        ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+        ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
 
     TI_C54X_TEST_CHECK(metadata != NULL);
-    TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
-    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0x7690));
-    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFFF8));
+    TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
+    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0x7680));
+    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFFE0));
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(2));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16);
+                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD);
     TI_C54X_TEST_CHECK(metadata->repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(metadata->input_resources ==
@@ -136,7 +138,7 @@ static void check_metadata_and_all_forms(void)
                 decode(arf, immediate);
             const ti_c54x_trusted_opcode_binding *binding =
                 ti_c54x_trusted_opcode_binding_for_id(
-                    TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+                    TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
             const ti_c54x_instruction_word_bundle bundle = {
                 .program_words = {instruction.bundle.program_words[0],
                                   instruction.bundle.program_words[1]},
@@ -240,7 +242,7 @@ static void check_trusted_operand_rejection(void)
     const ti_c54x_op_input_snapshot input = ignored_input(UINT8_C(7), false);
     const ti_c54x_trusted_opcode_binding *binding =
         ti_c54x_trusted_opcode_binding_for_id(
-            TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+            TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     const ti_c54x_instruction_word_bundle bundle = {
         .program_words = {st_immediate_word(UINT8_C(7)), immediate},
         .program_word_count = UINT8_C(2)};

@@ -4,12 +4,13 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for fixed-MOD2 WORD16
- * indirect unsigned loads into accumulator A or B. The checked leaf validates
- * the catalog/decode contract and stages a generic memory-read effect; its
- * static completion zero-extends the copied WORD16 into a canonical 40-bit
- * accumulator write. The trusted leaf consumes constructor-validated
- * operands. Neither path observes or interprets SXM. Does not own: opcode
+ * Owns: checked and trusted pure semantic leaves for standard-indirect
+ * WORD16 unsigned loads into accumulator A or B. The checked leaf validates
+ * the catalog/decode contract, consumes MOD0--MOD2, and stages a generic
+ * memory-read effect; its static completion zero-extends the copied WORD16
+ * into a canonical 40-bit accumulator write. The trusted leaf consumes
+ * constructor-validated operands. Neither path observes or interprets SXM.
+ * Does not own: opcode
  * inventory, generic decode, AR resolution or mutation, buses, CPU/state
  * mutation, sequencing, timing, observers, allocation, logging, environment,
  * or diagnostics. Borrowed instruction/input/effect objects are used for one

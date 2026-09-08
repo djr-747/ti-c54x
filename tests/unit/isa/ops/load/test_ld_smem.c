@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: exhaustive RED proof of pure fixed-MOD2 WORD16 LD memory effects,
+ * Owns: exhaustive RED proof of pure MOD2 WORD16 LD memory effects,
  * including D/ARF selection, SXM completion, trusted equivalence, and
  * transactional rejection. Does not own: catalog rows, operand-layout
  * descriptors, address resolution, buses, CPU/state mutation, sequencing,
@@ -40,13 +40,13 @@ decode(uint8_t destination, uint8_t arf)
     ti_c54x_decoded_instruction instruction;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
                        TI_C54X_INPUT_RESOURCES_STATUS_SXM);
     return instruction;
@@ -105,11 +105,13 @@ static ti_c54x_trusted_operand_values
 trusted_operands(uint8_t destination, uint8_t arf)
 {
     ti_c54x_trusted_operand_values operands = {0};
-    operands.count = UINT8_C(2);
+    operands.count = UINT8_C(3);
     operands.values[0].raw_value = destination;
     operands.values[0].width_bits = UINT8_C(1);
     operands.values[1].raw_value = arf;
     operands.values[1].width_bits = UINT8_C(3);
+    operands.values[2].raw_value = TI_C54X_INDIRECT_SINGLE_MOD2;
+    operands.values[2].width_bits = UINT8_C(2);
     return operands;
 }
 

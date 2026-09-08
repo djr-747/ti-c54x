@@ -4,8 +4,8 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for the one-word fixed-MOD2
- * WORD16 store of the copied T register. The checked leaf validates the
+ * Owns: checked and trusted pure semantic leaves for the one-word standard-
+ * indirect WORD16 store of the copied T register. The checked leaf validates the
  * catalog/decode contract and extracts ARF; both paths consume only copied T
  * knownness/value and stage one generic memory-write effect. Borrowed
  * instruction, operand, input, and effect objects are used for one call only;

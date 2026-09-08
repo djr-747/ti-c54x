@@ -2,8 +2,9 @@
 #define TI_C54X_ISA_OPS_STORE_STL_SMEM_H
 
 /* Module contract
- * Owns: pure fixed-MOD2 WORD16 STL memory-write effects over one selected
- * canonical accumulator low word and one ARF operand.
+ * Owns: pure standard-indirect WORD16 STL memory-write effects over one
+ * selected canonical accumulator low word, one ARF operand, and one MOD
+ * operand.
  * Does not own: opcode inventory, operand-layout definitions, address
  * resolution, buses, CPU or architectural state, sequencing, timing,
  * observers, diagnostics, allocation, or callbacks.

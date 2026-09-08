@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """RED-first contracts for inventory-to-catalog identity binding.
 
-Owns: one-to-one symbol bindings and the frozen 25 complete/10 fixed-MOD2
+Owns: one-to-one symbol bindings and the frozen 25 complete/10 MOD2
 subset checkpoint.  Does not own: opcode value/mask parsing or instruction
 execution semantics.
 """
@@ -19,17 +19,17 @@ from tools.quality.check_isa_inventory import check_repository
 from tools.isa.inventory.schema import load_inventory, validate_inventory
 
 
-FIXED_MOD2_SUBSET = {
-    "LD_SMEM_MOD2",
-    "LD_SMEM_TS_MOD2",
-    "STL_SMEM_MOD2",
-    "LDU_SMEM_MOD2",
-    "LD_T_SMEM_MOD2",
-    "ST_IMMEDIATE_SMEM_MOD2",
-    "LD_DP_SMEM_MOD2",
-    "LD_ASM_SMEM_MOD2",
-    "LD_SMEM_SHIFT16_MOD2",
-    "ST_T_SMEM_MOD2",
+STANDARD_INDIRECT_SUBSET = {
+    "LD_SMEM",
+    "LD_SMEM_TS",
+    "STL_SMEM",
+    "LDU_SMEM",
+    "LD_T_SMEM",
+    "ST_IMMEDIATE_SMEM",
+    "LD_DP_SMEM",
+    "LD_ASM_SMEM",
+    "LD_SMEM_SHIFT16",
+    "ST_T_SMEM",
 }
 
 
@@ -51,13 +51,13 @@ class InventoryCatalogBindingTests(unittest.TestCase):
         self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 10)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
-            FIXED_MOD2_SUBSET,
+            STANDARD_INDIRECT_SUBSET,
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
                 self.assertEqual(binding["addressing_subset"], "ALL")
             else:
-                self.assertEqual(binding["addressing_subset"], "FIXED_MOD2")
+                self.assertEqual(binding["addressing_subset"], "STANDARD_INDIRECT_MOD0_MOD3")
         self.assertTrue(all(binding["form_id"].startswith("FORM-T2-") for binding in bindings))
 
     def test_unknown_form_binding_and_duplicate_are_rejected_by_schema(self) -> None:

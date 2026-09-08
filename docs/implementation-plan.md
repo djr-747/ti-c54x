@@ -272,6 +272,10 @@ MEMORY effect or endpoint request; stores admit MOD0–MOD3 through the W42A
 transaction seam. No new effect kind, address kind, CPU branch, public ABI,
 device/MMR route, timing contract, or architectural state is added.
 
+Status: COMPLETE. The five W42B requirements and executable tests are closed;
+the implementation retains the project-contract boundary and makes no new
+public ABI or timing promise.
+
 The expansion retains `ID_COUNT=36` and projects the direct first-word lookup
 from 1503 to 1863 (+360): 480 broadened encodings comprise 392 legal forms and
 88 known-but-rejected load MOD3 forms, for +272 legal and +88 rejected words.
@@ -279,9 +283,12 @@ Inventory symbols become neutral while all ten remain `SUBSET` with
 `addressing_subset=STANDARD_INDIRECT_MOD0_MOD3`; family progress remains
 35/205 (17.073%) and strict complete-form coverage remains 25/205 (12.195%)
 through W42B because other Smem addressing forms remain outside this slice.
-`op_ld_smem.c` is already 491 lines;
-it must be split before handler growth. W42A completion and lookup projections
-are preserved, and no duplicate/conflicting row semantics are admitted.
+The load implementation is split across `op_ld_smem.c` (~393 lines) and
+`op_ld_smem_common.c` (~145 lines), keeping each module below the review
+threshold. `operand_layout.c` is ~577 lines and remains cohesive for now; it
+must be split before further growth approaches 800 lines. W42A completion and
+lookup projections are preserved, and no duplicate/conflicting row semantics
+are admitted.
 
 ## Objective
 

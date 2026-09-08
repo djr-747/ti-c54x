@@ -106,7 +106,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 1503)
+        self.assertEqual(actual.count("= (uint16_t)"), 1863)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn(
             "[0xF5B0] = (uint16_t)TI_C54X_OPCODE_ID_SSBX_STATUS,", actual
@@ -136,42 +136,42 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         self.assertIn("[0xED00] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ASM,", actual)
         self.assertIn("[0xF4A0] = (uint16_t)TI_C54X_OPCODE_ID_LD_IMMEDIATE_ARP,", actual)
         for word in ("3090", "3091", "3092", "3093", "3094", "3095", "3096", "3097"):
-            with self.subTest(symbol="LD_T_SMEM_MOD2", word=word):
+            with self.subTest(symbol="LD_T_SMEM", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_T_SMEM_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_T_SMEM,",
                     actual,
                 )
         for word in ("7690", "7691", "7692", "7693", "7694", "7695", "7696", "7697"):
-            with self.subTest(symbol="ST_IMMEDIATE_SMEM_MOD2", word=word):
+            with self.subTest(symbol="ST_IMMEDIATE_SMEM", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM,",
                     actual,
                 )
         for word in ("4690", "4691", "4692", "4693", "4694", "4695", "4696", "4697"):
-            with self.subTest(symbol="LD_DP_SMEM_MOD2", word=word):
+            with self.subTest(symbol="LD_DP_SMEM", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_DP_SMEM,",
                     actual,
                 )
         for word in ("3290", "3291", "3292", "3293", "3294", "3295", "3296", "3297"):
-            with self.subTest(symbol="LD_ASM_SMEM_MOD2", word=word):
+            with self.subTest(symbol="LD_ASM_SMEM", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_ASM_SMEM,",
                     actual,
                 )
         for word in (
             "4490", "4491", "4492", "4493", "4494", "4495", "4496", "4497",
             "4590", "4591", "4592", "4593", "4594", "4595", "4596", "4597",
         ):
-            with self.subTest(symbol="LD_SMEM_SHIFT16_MOD2", word=word):
+            with self.subTest(symbol="LD_SMEM_SHIFT16", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16,",
                     actual,
                 )
         for word in ("8C90", "8C91", "8C92", "8C93", "8C94", "8C95", "8C96", "8C97"):
-            with self.subTest(symbol="ST_T_SMEM_MOD2", word=word):
+            with self.subTest(symbol="ST_T_SMEM", word=word):
                 self.assertIn(
-                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_ST_T_SMEM_MOD2,",
+                    f"[0x{word}] = (uint16_t)TI_C54X_OPCODE_ID_ST_T_SMEM,",
                     actual,
                 )
         for word in ("F4A8", "F4AF", "F5A8", "F5AF", "F6A8", "F6AF",

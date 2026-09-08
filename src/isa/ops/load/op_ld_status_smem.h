@@ -4,11 +4,12 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for fixed-MOD2 WORD16
- * indirect loads into the DP and ASM status fields. The checked leaf
- * validates the per-ID catalog/decode contract and stages a generic memory
- * read; its static completion masks the copied WORD16 and stages the status
- * field write. The trusted leaf consumes constructor-validated operands.
+ * Owns: checked and trusted pure semantic leaves for standard-indirect
+ * WORD16 loads into the DP and ASM status fields. The checked leaf validates
+ * the per-ID catalog/decode contract, consumes MOD0--MOD2, and stages a
+ * generic memory read; its static completion masks the copied WORD16 and
+ * stages the status field write. The trusted leaf consumes constructor-
+ * validated operands.
  * Neither path interprets input values or knownness.
  * Does not own: opcode inventory, generic decode, AR resolution or mutation,
  * buses, CPU/state mutation, sequencing, timing, observers, allocation,

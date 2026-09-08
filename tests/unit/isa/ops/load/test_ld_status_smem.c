@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: exhaustive RED proofs for fixed-MOD2 WORD16 loads into the DP and
+ * Owns: exhaustive RED proofs for MOD2 WORD16 loads into the DP and
  * ASM status fields, including ARF selection, masked completion, checked/
  * trusted/dispatch parity, and transactional rejection. Does not own:
  * catalog rows, operand-layout descriptors, address resolution, buses,
@@ -39,11 +39,11 @@ typedef struct ld_status_case {
 } ld_status_case;
 
 static const ld_status_case cases[] = {
-    {TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD2, UINT16_C(0x4690), UINT16_C(0xFFF8),
+    {TI_C54X_OPCODE_ID_LD_DP_SMEM, UINT16_C(0x4680), UINT16_C(0xFFE0),
      TI_C54X_REPEATABILITY_INELIGIBLE,
      TI_C54X_OP_STATUS_FIELD_TARGET_DP, UINT16_C(0x01FF),
      ti_c54x_op_ld_dp_smem, ti_c54x_trusted_op_ld_dp_smem},
-    {TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD2, UINT16_C(0x3290), UINT16_C(0xFFF8),
+    {TI_C54X_OPCODE_ID_LD_ASM_SMEM, UINT16_C(0x3280), UINT16_C(0xFFE0),
      TI_C54X_REPEATABILITY_UNRESOLVED,
      TI_C54X_OP_STATUS_FIELD_TARGET_ASM, UINT16_C(0x001F),
      ti_c54x_op_ld_asm_smem, ti_c54x_trusted_op_ld_asm_smem},
@@ -51,7 +51,8 @@ static const ld_status_case cases[] = {
 
 static uint16_t word_for(const ld_status_case *test_case, uint8_t arf)
 {
-    return (uint16_t)(test_case->first_word_value | (uint16_t)(arf & 7U));
+    return (uint16_t)(test_case->first_word_value | UINT16_C(0x0010) |
+                      (uint16_t)(arf & 7U));
 }
 
 static ti_c54x_decoded_instruction decode_case(const ld_status_case *test_case,
@@ -71,7 +72,7 @@ static ti_c54x_decoded_instruction decode_case(const ld_status_case *test_case,
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.id == test_case->id);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ARF_MOD);
     TI_C54X_TEST_CHECK(instruction.repeatability == test_case->repeatability);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
                        TI_C54X_INPUT_RESOURCES_NONE);
@@ -104,9 +105,11 @@ static ti_c54x_trusted_operand_values trusted_operands(uint8_t arf)
 {
     ti_c54x_trusted_operand_values operands = {0};
 
-    operands.count = UINT8_C(1);
+    operands.count = UINT8_C(2);
     operands.values[0].raw_value = arf;
     operands.values[0].width_bits = UINT8_C(3);
+    operands.values[1].raw_value = TI_C54X_INDIRECT_SINGLE_MOD2;
+    operands.values[1].width_bits = UINT8_C(2);
     return operands;
 }
 
@@ -146,7 +149,7 @@ static void check_metadata_and_exact_forms(const ld_status_case *test_case)
                        test_case->first_word_value);
     TI_C54X_TEST_CHECK(metadata->first_word_mask == test_case->first_word_mask);
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
-    TI_C54X_TEST_CHECK(metadata->operand_layout == TI_C54X_OPERAND_LAYOUT_ARF);
+    TI_C54X_TEST_CHECK(metadata->operand_layout == TI_C54X_OPERAND_LAYOUT_ARF_MOD);
     TI_C54X_TEST_CHECK(metadata->repeatability == test_case->repeatability);
     TI_C54X_TEST_CHECK(metadata->input_resources ==
                        TI_C54X_INPUT_RESOURCES_NONE);
@@ -279,7 +282,7 @@ static void check_transactional_checked_rejection(const ld_status_case *test_cas
             {instruction.id, instruction.operand_layout, instruction.repeatability,
              instruction.input_resources, 2U, 0U},
             {instruction.id, instruction.operand_layout, instruction.repeatability,
-             instruction.input_resources, 1U, UINT16_C(0x0008)},
+             instruction.input_resources, 1U, UINT16_C(0x0020)},
             {instruction.id, instruction.operand_layout, instruction.repeatability,
              instruction.input_resources, 1U, UINT16_C(0x0100)},
         };
@@ -338,7 +341,7 @@ static void check_trusted_operand_rejection(const ld_status_case *test_case)
                        TI_C54X_OP_STATUS_INVALID_OPERAND);
     TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);
     operands = trusted_operands(7U);
-    operands.count = UINT8_C(2);
+    operands.count = UINT8_C(1);
     TI_C54X_TEST_CHECK(test_case->trusted_handler(
                            &packet.instruction, &operands, &input, &effect) ==
                        TI_C54X_OP_STATUS_INVALID_OPERAND);
@@ -385,7 +388,7 @@ static void check_completion_rejection(const ld_status_case *test_case)
 
     {
         ti_c54x_decoded_instruction forged = instruction;
-        const uint16_t invalid_words[] = {UINT16_C(0x0008), UINT16_C(0x0100)};
+        const uint16_t invalid_words[] = {UINT16_C(0x0020), UINT16_C(0x0100)};
         for (size_t index = 0U;
              index < sizeof(invalid_words) / sizeof(invalid_words[0]); ++index) {
             forged = instruction;
@@ -402,9 +405,9 @@ static void check_completion_rejection(const ld_status_case *test_case)
 static void check_distinct_trusted_handlers(void)
 {
     const ti_c54x_trusted_opcode_binding *dp =
-        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD2);
+        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LD_DP_SMEM);
     const ti_c54x_trusted_opcode_binding *as =
-        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD2);
+        ti_c54x_trusted_opcode_binding_for_id(TI_C54X_OPCODE_ID_LD_ASM_SMEM);
 
     TI_C54X_TEST_CHECK(dp != NULL);
     TI_C54X_TEST_CHECK(as != NULL);

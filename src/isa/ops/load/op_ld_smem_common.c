@@ -1,0 +1,145 @@
+/*
+ * Module contract
+ *
+ * Owns: private shared validation and MEMORY-effect staging for the neutral
+ * standard-indirect accumulator loads. It extracts the copied destination,
+ * ARF, and MOD operands from a catalog/decode contract and stages a copied
+ * single-indirect WORD16 read after rejecting MOD3 loads. It retains no
+ * caller-owned pointer and leaves caller effects unchanged on failure.
+ * Does not own: opcode-family completion transforms, SXM/T input semantics,
+ * decode tables, address resolution, buses, CPU state, sequencing, timing,
+ * observers, allocation, logging, environment, or diagnostics.
+ */
+
+#include "op_ld_smem_common.h"
+
+#include <stddef.h>
+
+#include "isa/decode/operand_layout.h"
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_input_resource_mask expected_resources,
+    ti_c54x_ld_smem_operands *operands)
+{
+    const ti_c54x_opcode_metadata *metadata;
+    ti_c54x_operand_layout_set_view layout_view;
+    ti_c54x_operand_field_value destination_field = {0U, 0U};
+    ti_c54x_operand_field_value arf_field = {0U, 0U};
+    ti_c54x_operand_field_value mode_field = {0U, 0U};
+
+    if (instruction == NULL || operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+
+    metadata = ti_c54x_opcode_metadata_for_id(expected_id);
+    if (metadata == NULL || metadata->id != expected_id ||
+        metadata->first_word_mask == UINT16_C(0) ||
+        (metadata->first_word_value & (uint16_t)~metadata->first_word_mask) !=
+            UINT16_C(0) ||
+        metadata->program_word_count == UINT8_C(0) ||
+        metadata->program_word_count >
+            (uint8_t)TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY ||
+        metadata->operand_layout !=
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD ||
+        metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
+        metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        (metadata->input_resources &
+         (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
+            TI_C54X_INPUT_RESOURCES_NONE ||
+        metadata->input_resources != expected_resources ||
+        instruction->id != expected_id ||
+        instruction->operand_layout != metadata->operand_layout ||
+        instruction->repeatability != metadata->repeatability ||
+        instruction->input_resources != metadata->input_resources ||
+        instruction->bundle.program_word_count != UINT8_C(1) ||
+        instruction->bundle.program_word_count != metadata->program_word_count ||
+        (uint16_t)(instruction->bundle.program_words[0] &
+                   metadata->first_word_mask) != metadata->first_word_value) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    if (ti_c54x_operand_layout_set_resolve(
+            metadata->operand_layout, metadata->program_word_count,
+            &layout_view) != TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    {
+        const ti_c54x_program_words_view words = {
+            instruction->bundle.program_words,
+            instruction->bundle.program_word_count};
+        if (ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(0), &destination_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(1), &arf_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(2), &mode_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            destination_field.width_bits != UINT8_C(1) ||
+            destination_field.raw_value > UINT64_C(1) ||
+            arf_field.width_bits != UINT8_C(3) ||
+            arf_field.raw_value > UINT64_C(7) ||
+            mode_field.width_bits != UINT8_C(2) ||
+            mode_field.raw_value > UINT64_C(3)) {
+            return TI_C54X_OP_STATUS_INVALID_DECODE;
+        }
+    }
+
+    operands->destination = (uint8_t)destination_field.raw_value;
+    operands->arf = (uint8_t)arf_field.raw_value;
+    operands->mode = (uint8_t)mode_field.raw_value;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_trusted_operands(
+    const ti_c54x_trusted_operand_values *operands,
+    ti_c54x_ld_smem_operands *decoded_operands)
+{
+    if (operands == NULL || decoded_operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count < UINT8_C(3) ||
+        operands->values[0].width_bits != UINT8_C(1) ||
+        operands->values[0].raw_value > UINT64_C(1) ||
+        operands->values[1].width_bits != UINT8_C(3) ||
+        operands->values[1].raw_value > UINT64_C(7) ||
+        operands->values[2].width_bits != UINT8_C(2) ||
+        operands->values[2].raw_value > UINT64_C(3)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    decoded_operands->destination = (uint8_t)operands->values[0].raw_value;
+    decoded_operands->arf = (uint8_t)operands->values[1].raw_value;
+    decoded_operands->mode = (uint8_t)operands->values[2].raw_value;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_mode(uint8_t mode)
+{
+    return mode >= (uint8_t)TI_C54X_INDIRECT_SINGLE_MOD3
+               ? TI_C54X_OP_STATUS_INVALID_OPERAND
+               : TI_C54X_OP_STATUS_OK;
+}
+
+void ti_c54x_ld_smem_stage_memory_read(
+    const ti_c54x_ld_smem_operands *operands,
+    ti_c54x_op_memory_complete_fn complete,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged;
+
+    staged = (ti_c54x_op_effect){
+        .kind = TI_C54X_OP_EFFECT_MEMORY,
+        .payload.memory = {
+            .address_spec = {
+                .kind = TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16,
+                .mode = (ti_c54x_indirect_single_mode)operands->mode,
+                .arf = operands->arf},
+            .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+            .write_value_word = UINT16_C(0),
+            .complete = complete}};
+    *effect = staged;
+}

@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof of fixed-MOD2 LD Smem,TS,dst first-word
+ * Owns: executable proof of standard-indirect LD Smem,TS,dst first-word
  * classification, copied metadata, exhaustive D/ARF extraction through the
  * existing accumulator-ARF layout, fixed-bit rejection, and transactional
  * rejection of forged completion inputs. Does not own: catalog generation,
@@ -38,9 +38,11 @@ check_operand(const ti_c54x_operand_layout_set_view *view,
 }
 
 static void
-check_case(uint8_t d, uint8_t arf)
+check_case(uint8_t mode, uint8_t d, uint8_t arf)
 {
-    const uint16_t word = (uint16_t)(LD_SMEM_TS_VALUE |
+    const uint16_t word = (uint16_t)((LD_SMEM_TS_VALUE &
+                                     (uint16_t)~UINT16_C(0x0018)) |
+                                     (uint16_t)(mode << 3U) |
                                      (uint16_t)(d << 8U) | arf);
     const ti_c54x_decode_result first = ti_c54x_decode_first_word(word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -52,15 +54,15 @@ check_case(uint8_t d, uint8_t arf)
     ti_c54x_operand_layout_set_view view;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM_TS_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_LD_SMEM_TS);
     TI_C54X_TEST_CHECK(first.first_word == word);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
-    TI_C54X_TEST_CHECK(instruction.id == TI_C54X_OPCODE_ID_LD_SMEM_TS_MOD2);
+    TI_C54X_TEST_CHECK(instruction.id == TI_C54X_OPCODE_ID_LD_SMEM_TS);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF);
+                       TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD);
     TI_C54X_TEST_CHECK(instruction.repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
@@ -69,9 +71,10 @@ check_case(uint8_t d, uint8_t arf)
                            instruction.operand_layout, UINT8_C(1), &view) ==
                        TI_C54X_OPERAND_LAYOUT_STATUS_OK);
     TI_C54X_TEST_CHECK(view.descriptor != NULL);
-    TI_C54X_TEST_CHECK(view.descriptor->operand_count == UINT8_C(2));
+    TI_C54X_TEST_CHECK(view.descriptor->operand_count == UINT8_C(3));
     check_operand(&view, &words, UINT8_C(0), d, UINT8_C(1));
     check_operand(&view, &words, UINT8_C(1), arf, UINT8_C(3));
+    check_operand(&view, &words, UINT8_C(2), mode, UINT8_C(2));
 }
 
 static void
@@ -98,26 +101,27 @@ test_exhaustive_classification_is_disjoint(void)
     for (uint32_t raw = 0U; raw <= UINT16_MAX; ++raw) {
         const uint16_t word = (uint16_t)raw;
         const bool expected =
-            (word & UINT16_C(0xFEF8)) == LD_SMEM_TS_VALUE;
+            (word & UINT16_C(0xFEE0)) ==
+            (LD_SMEM_TS_VALUE & UINT16_C(0xFEE0));
         const ti_c54x_decode_result decoded =
             ti_c54x_decode_first_word(word);
 
         TI_C54X_TEST_CHECK((decoded.id ==
-                            TI_C54X_OPCODE_ID_LD_SMEM_TS_MOD2) == expected);
+                            TI_C54X_OPCODE_ID_LD_SMEM_TS) == expected);
         if (expected) {
             ++encoded_count;
             TI_C54X_TEST_CHECK(decoded.status == TI_C54X_DECODE_STATUS_OK);
             TI_C54X_TEST_CHECK(decoded.program_word_count == UINT8_C(1));
         }
     }
-    TI_C54X_TEST_CHECK(encoded_count == 16U);
+    TI_C54X_TEST_CHECK(encoded_count == 64U);
 }
 
 static void
 test_fixed_bits_and_nearby_unknown_words(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
+        UINT16_C(0x0020),
         UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
@@ -128,7 +132,7 @@ test_fixed_bits_and_nearby_unknown_words(void)
         const ti_c54x_decode_result result = ti_c54x_decode_first_word(
             (uint16_t)(LD_SMEM_TS_VALUE ^ fixed_bit_masks[index]));
 
-        TI_C54X_TEST_CHECK(result.id != TI_C54X_OPCODE_ID_LD_SMEM_TS_MOD2);
+        TI_C54X_TEST_CHECK(result.id != TI_C54X_OPCODE_ID_LD_SMEM_TS);
     }
 
     /* Bit 10 is the established LD Smem sibling; it must not classify as TS. */
@@ -136,7 +140,7 @@ test_fixed_bits_and_nearby_unknown_words(void)
         const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
             (uint16_t)(LD_SMEM_TS_VALUE ^ UINT16_C(0x0400)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
-        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LD_SMEM_MOD2);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LD_SMEM);
     }
 }
 
@@ -153,7 +157,7 @@ test_transactional_completion_rejects_forged_inputs(void)
     ti_c54x_instruction_word_bundle bundle = valid_bundle;
 
     TI_C54X_TEST_CHECK(valid.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_LD_SMEM_TS_MOD2);
+    TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_LD_SMEM_TS);
 
     forged.status = TI_C54X_DECODE_STATUS_UNKNOWN_WORD;
     check_transactional_failure(
@@ -167,7 +171,7 @@ test_transactional_completion_rejects_forged_inputs(void)
         TI_C54X_INSTRUCTION_COMPLETION_STATUS_UNKNOWN_OPCODE_ID);
 
     forged = valid;
-    forged.id = TI_C54X_OPCODE_ID_LD_SMEM_MOD2;
+    forged.id = TI_C54X_OPCODE_ID_LD_SMEM;
     check_transactional_failure(
         &forged, &bundle,
         TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_PATTERN_MISMATCH);
@@ -194,9 +198,11 @@ test_transactional_completion_rejects_forged_inputs(void)
 int
 main(void)
 {
-    for (uint8_t d = 0U; d < UINT8_C(2); ++d) {
-        for (uint8_t arf = 0U; arf < UINT8_C(8); ++arf) {
-            check_case(d, arf);
+    for (uint8_t mode = 0U; mode < UINT8_C(4); ++mode) {
+        for (uint8_t d = 0U; d < UINT8_C(2); ++d) {
+            for (uint8_t arf = 0U; arf < UINT8_C(8); ++arf) {
+                check_case(mode, d, arf);
+            }
         }
     }
     test_exhaustive_classification_is_disjoint();

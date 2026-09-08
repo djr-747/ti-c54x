@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof of the fixed-MOD2 LD Smem,DP and LD Smem,ASM
+ * Owns: executable proof of the MOD2 LD Smem,DP and LD Smem,ASM
  * catalog rows, including their exact masked identity, ARF layout,
  * repeatability/resource metadata, eight-word populations, and fixed-bit
  * separation. Does not own: opcode decoding, operand extraction, address
@@ -24,14 +24,14 @@ typedef struct ld_status_row {
 } ld_status_row;
 
 static const ld_status_row rows[] = {
-    {TI_C54X_OPCODE_ID_LD_DP_SMEM_MOD2, UINT16_C(0x4690),
+    {TI_C54X_OPCODE_ID_LD_DP_SMEM, UINT16_C(0x4680),
      TI_C54X_REPEATABILITY_INELIGIBLE},
-    {TI_C54X_OPCODE_ID_LD_ASM_SMEM_MOD2, UINT16_C(0x3290),
+    {TI_C54X_OPCODE_ID_LD_ASM_SMEM, UINT16_C(0x3280),
      TI_C54X_REPEATABILITY_UNRESOLVED},
 };
 
-static const uint16_t LD_STATUS_MASK = UINT16_C(0xFFF8);
-static const uint16_t LD_STATUS_LAX_MASK = UINT16_C(0xFEF8);
+static const uint16_t LD_STATUS_MASK = UINT16_C(0xFFE0);
+static const uint16_t LD_STATUS_LAX_MASK = UINT16_C(0xFEE0);
 
 static bool
 matches(const ld_status_row *row, uint16_t word)
@@ -55,7 +55,7 @@ test_metadata_rows(void)
         TI_C54X_TEST_CHECK(metadata->first_word_mask == LD_STATUS_MASK);
         TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
         TI_C54X_TEST_CHECK(metadata->operand_layout ==
-                           TI_C54X_OPERAND_LAYOUT_ARF);
+                           TI_C54X_OPERAND_LAYOUT_ARF_MOD);
         TI_C54X_TEST_CHECK(metadata->operand_layout !=
                            TI_C54X_OPERAND_LAYOUT_LD_IMMEDIATE_ARP);
         TI_C54X_TEST_CHECK(metadata->repeatability == row->repeatability);
@@ -64,7 +64,7 @@ test_metadata_rows(void)
 
         /* Only ARF bits 2:0 vary; bit 8 is fixed zero. */
         TI_C54X_TEST_CHECK((uint16_t)~metadata->first_word_mask ==
-                           UINT16_C(0x0007));
+                           UINT16_C(0x001F));
     }
 }
 
@@ -101,7 +101,7 @@ test_exact_eight_word_population(void)
             TI_C54X_TEST_CHECK((id == row->id) == matches(row, word));
         }
 
-        TI_C54X_TEST_CHECK(encoded_count == 8U);
+        TI_C54X_TEST_CHECK(encoded_count == 32U);
         for (uint16_t arf = 0U; arf < UINT16_C(8); ++arf) {
             TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                                    (uint16_t)(row->value | arf)) == row->id);
@@ -113,11 +113,10 @@ static void
 test_fixed_bit_near_misses_and_no_arp_alias(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
-        UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0100),
-        UINT16_C(0x0200), UINT16_C(0x0400), UINT16_C(0x0800),
-        UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0080),
+        UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x4000), UINT16_C(0x8000)};
 
     for (size_t row_index = 0U;
          row_index < sizeof(rows) / sizeof(rows[0]); ++row_index) {

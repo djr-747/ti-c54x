@@ -150,7 +150,7 @@ class InventorySchemaTests(unittest.TestCase):
         altered = copy.deepcopy(self.inventory())
         binding = next(item for item in altered["catalog_bindings"] if item["coverage"] == "COMPLETE")
         binding["coverage"] = "SUBSET"
-        binding["addressing_subset"] = "FIXED_MOD2"
+        binding["addressing_subset"] = "STANDARD_INDIRECT_MOD0_MOD3"
         errors = validate_inventory(altered)
         self.assertTrue(any("coverage" in error for error in errors))
 

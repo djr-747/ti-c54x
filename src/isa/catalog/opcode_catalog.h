@@ -52,6 +52,10 @@ typedef enum ti_c54x_operand_layout_id {
     /* Two-word auxiliary-register plus raw extension-word field. */
     TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF,
+    /* Standard-indirect auxiliary-register fields with MOD bits (4:3). */
+    TI_C54X_OPERAND_LAYOUT_ARF_MOD,
+    TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD,
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD,
     TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION,

@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof that all eight two-word fixed-MOD2 ST immediate
+ * Owns: executable proof that all standard-indirect two-word ST immediate
  * first words classify through the generic decoder, copy their complete
  * bundles and scalar metadata, extract ARF then raw extension16, and reject
  * malformed inputs transactionally. Does not own: catalog generation,
@@ -37,9 +37,11 @@ check_operand(const ti_c54x_operand_layout_set_view *view,
 }
 
 static void
-check_case(uint8_t arf, uint16_t extension)
+check_case(uint8_t mode, uint8_t arf, uint16_t extension)
 {
-    const uint16_t first_word = (uint16_t)(ST_IMMEDIATE_VALUE | arf);
+    const uint16_t first_word = (uint16_t)((ST_IMMEDIATE_VALUE &
+                                           (uint16_t)~UINT16_C(0x0018)) |
+                                           (uint16_t)(mode << 3U) | arf);
     const ti_c54x_decode_result first =
         ti_c54x_decode_first_word(first_word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -51,16 +53,16 @@ check_case(uint8_t arf, uint16_t extension)
     ti_c54x_operand_layout_set_view view;
 
     TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+    TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     TI_C54X_TEST_CHECK(first.first_word == first_word);
     TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(2));
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
                            &first, &bundle, &instruction) ==
                        TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
     TI_C54X_TEST_CHECK(instruction.id ==
-                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+                       TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
     TI_C54X_TEST_CHECK(instruction.operand_layout ==
-                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16);
+                       TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD);
     TI_C54X_TEST_CHECK(instruction.repeatability ==
                        TI_C54X_REPEATABILITY_UNRESOLVED);
     TI_C54X_TEST_CHECK(instruction.input_resources ==
@@ -72,11 +74,12 @@ check_case(uint8_t arf, uint16_t extension)
                            instruction.operand_layout, UINT8_C(2), &view) ==
                        TI_C54X_OPERAND_LAYOUT_STATUS_OK);
     TI_C54X_TEST_CHECK(view.descriptor != NULL);
-    TI_C54X_TEST_CHECK(view.descriptor->operand_count == UINT8_C(2));
+    TI_C54X_TEST_CHECK(view.descriptor->operand_count == UINT8_C(3));
 
     /* Layout order is ARF in word 0, then the raw extension16 word. */
     check_operand(&view, &words, UINT8_C(0), arf, UINT8_C(3));
     check_operand(&view, &words, UINT8_C(1), extension, UINT8_C(16));
+    check_operand(&view, &words, UINT8_C(2), mode, UINT8_C(2));
 }
 
 static void
@@ -108,7 +111,7 @@ test_malformed_two_word_inputs_reject_transactionally(void)
     ti_c54x_instruction_word_bundle bundle = valid_bundle;
 
     TI_C54X_TEST_CHECK(valid.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD2);
+    TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM);
 
     /* Incomplete extension bundle. */
     bundle.program_word_count = UINT8_C(1);
@@ -126,7 +129,7 @@ test_malformed_two_word_inputs_reject_transactionally(void)
     /* Forged first-word result must not be accepted as this opcode. */
     bundle = valid_bundle;
     forged = valid;
-    forged.first_word = UINT16_C(0x7698);
+    forged.first_word = UINT16_C(0x76B8);
     bundle.program_words[0] = forged.first_word;
     check_transactional_failure(
         &forged, &bundle,
@@ -149,7 +152,7 @@ static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
+        UINT16_C(0x0020),
         UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0100),
         UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
@@ -174,11 +177,13 @@ main(void)
         UINT16_C(0x0000), UINT16_C(0x7FFF), UINT16_C(0x8000),
         UINT16_C(0xFFFF)};
 
-    for (uint8_t arf = 0U; arf < UINT8_C(8); ++arf) {
-        for (size_t index = 0U;
-             index < sizeof(extension_values) / sizeof(extension_values[0]);
-             ++index) {
-            check_case(arf, extension_values[index]);
+    for (uint8_t mode = 0U; mode < UINT8_C(4); ++mode) {
+        for (uint8_t arf = 0U; arf < UINT8_C(8); ++arf) {
+            for (size_t index = 0U;
+                 index < sizeof(extension_values) / sizeof(extension_values[0]);
+                 ++index) {
+                check_case(mode, arf, extension_values[index]);
+            }
         }
     }
     test_malformed_two_word_inputs_reject_transactionally();
