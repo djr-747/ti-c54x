@@ -2765,6 +2765,17 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)"},
       "assertion": "W46B freezes three neutral two-word catalog rows over MOD0–MOD3: ANDM_SMEM_MOD0_3 base 0x6880 mask 0xFFE0, ORM_SMEM_MOD0_3 base 0x6980 mask 0xFFE0, and XORM_SMEM_MOD0_3 base 0x6A80 mask 0xFFE0. Existing ARF_EXTENSION16_MOD layout is reused with no input resources or status effects and repeatability INELIGIBLE. MOD0/1/2 are admitted under the current safe boundary policy; MOD3 decodes for metadata but handlers reject before endpoint issue because a read is required and MOD3 is write-only. W46A and generic decode/effects/CPU/inventory seams are reused. Direct, absolute, long-offset, CMPT1, indexed, circular, reverse, MMR/device, wrap, and timing expansion remain deferred. The projection is ID_COUNT=99, lookup=2679, bindings=98, family 38/205, and strict 25/205."
+    },
+    {
+      "id": "E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W47A: generic LONG32 pair transaction seam (planned)"},
+      "assertion": "P2-W47A freezes a generic fixed-size LONG32 pair transaction seam that reuses the canonical ti_c54x_data_operand MSW/LSW pair and one private WORD16 reducer. Values are copied before issue; malformed, noncanonical, or overlapping pairs are rejected before any endpoint request. The transaction issues exactly two supplied fresh nonzero strictly increasing IDs in deterministic first/MSW then second/LSW order. WAIT retains the same ID and request, and cancellation addresses only the active word; a failed cancel preserves the exact state. Reads publish only after both words are READY; a first fault never issues the second request, and a second fault publishes no read pair or architectural commit. Writes are externally visible per word, so a first READY remains visible if the second word faults or cancels, while architectural commit is deferred until both words are READY. No rollback or external-master exclusion claim is made. The carrier and reducer are allocation-free and fixed-size for mainstream ABIs, with no replan, public ABI, opcode, catalog, CPU, or effect-carrier change; executable opcode benchmarking is deferred to W47B and no TI timing claim is made."
     }
   ],
   "requirements": [
@@ -5883,6 +5894,46 @@
       "claim": "Add a dedicated observer-off ANDM/ORM/XORM RMW benchmark cohort with its own baseline-relative comparison and semantic hash; preserve the existing five-scenario hosted history and do not apply or imply the 60 ns target as a TI timing claim.",
       "evidence_ids": ["E-PROJECT-P2-W46A-RMW-WORD16-MEMORY-FIT-OWNERSHIP-CONTRACT", "E-PROJECT-P2-W46B-ATOMIC-LOGICAL-FAMILY-FIT-OWNERSHIP-CONTRACT"],
       "test_ids": ["T-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-SHAPE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Shape the generic LONG32 pair seam from the canonical ti_c54x_data_operand MSW/LSW pair and one private WORD16 reducer, copying values and rejecting malformed, noncanonical, or overlapping pairs before issue. Emit exactly two supplied fresh nonzero strictly increasing IDs in deterministic first/MSW then second/LSW request order, with fixed carrier sizes for mainstream ABIs and no public ABI, opcode, catalog, CPU, or effect-carrier change.",
+      "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47A-LONG32-PAIR-SHAPE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Sequence LONG32 pair reads with WAIT retaining the same ID and request, a first fault that never issues the second request, and a second fault that publishes no read pair or architectural commit. Reads publish only after both words are READY; cancellation addresses only the active word and a failed cancel preserves the exact state. No rollback or external-master exclusion claim is made.",
+      "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Sequence LONG32 pair writes with the same two-request and WAIT identity rules, retaining external per-word visibility so a first READY remains visible if the second word faults or cancels, while deferring architectural commit until both words are READY. A failed cancel preserves exact state and no rollback or external-master exclusion is promised.",
+      "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Keep the LONG32 pair carrier and reducer allocation-free and fixed-size for mainstream ABIs, issue exactly two word requests with no replan, and preserve the existing public ABI, opcode, catalog, CPU, and effect-carrier boundaries. An executable opcode benchmark is deferred to W47B and no TI timing claim is made.",
+      "evidence_ids": ["E-PROJECT-P2-W47A-LONG32-PAIR-FIT-OWNERSHIP-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE"]
     }
   ],
   "tests": [
@@ -7876,6 +7927,38 @@
       "path": "tests/contract/quality/perf/test_atomic_logical_rmw_benchmark.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
       "requirement_ids": ["REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-RMW-BENCHMARK"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47A-LONG32-PAIR-SHAPE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_long32_pair_shape.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-SHAPE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_long32_pair_read_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-READ-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_long32_pair_write_transaction.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-WRITE-LIFECYCLE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/contract/quality/perf/test_long32_pair_hot_path.py",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W47A-LONG32-PAIR-HOT-PATH-PERFORMANCE"]
     }
   ]
 }

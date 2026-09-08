@@ -20,7 +20,7 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot (P2-W46B):
+Current snapshot (P2-W47A activation):
 
 - 98 runnable catalog rows and 2,679 populated first-word lookup entries. The
   inventory has touched 38/205 instruction families (18.537%); 25/205 forms are
@@ -28,16 +28,18 @@ Current snapshot (P2-W46B):
   instruction counts.
 - Standalone memory/addressing seams are proven through standard MOD0-3,
   indexed MOD5/6, circular MOD8/10, reverse-carry MOD4/7, and same-address
-  WORD16 RMW modes. `ANDM`, `ORM`, and `XORM` now retire through the generic
-  decode/effect/CPU/inventory path; MOD3 remains a deliberate pre-endpoint
-  rejection.
+  WORD16 RMW modes. W46B is complete: `ANDM`, `ORM`, and `XORM` retire through
+  the generic decode/effect/CPU/inventory path; MOD3 remains a deliberate
+  pre-endpoint rejection.
 - Performance is a first-class constraint. The trusted per-ID execution packet,
   single extraction pass, and hosted benchmark history are retained. The dedicated
   observer-off RMW benchmark has a clean baseline and baseline-relative comparison
   at [`bench/audits/p2-w46b-rmw-baseline.json`](bench/audits/p2-w46b-rmw-baseline.json);
   its semantic hash is `3b39187c40a4fd43` and it makes no TI timing claim.
-- Next forcing-function slice (P2-W47A): build the generic LONG32 pair seam while
-  preserving the existing hot-path and memory transaction boundaries.
+- Next forcing-function slice (P2-W47A, now active): build the generic LONG32
+  pair seam while preserving the existing hot-path and memory transaction
+  boundaries. It is sequencer-only; catalog/opcode/CPU/public-ABI changes and
+  executable opcode benchmarking wait for W47B.
 - Remaining high-level gaps are accumulator status/OVM semantics, multi-memory
   and parallel transactions, control/repeat/IRQ sequencing, reset/profile/device
   behavior, and machine timing. `RPT` layouts remain inert while RC/PC/IRQ
