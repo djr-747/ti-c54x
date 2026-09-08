@@ -6366,3 +6366,46 @@ rewritten after publication.
   and 7 sources. Evidence validation and the authoritative `rtk make test` gate
   are green with all 231 Python quality tests passing. ISA counts remain 98
   catalog rows, 2,679 lookup entries, 38/205 family, and 25/205 strict.
+
+## 2026-09-08 — P2-W47A generic LONG32 pair transaction implementation
+
+- State: implementation commit
+  `9ef10773d40b2cc06669f5916083733d734060a9` completes the private
+  allocation-free LONG32 pair reducer. It copies one canonical data-operand
+  request, reuses one WORD16 child transaction, and issues exactly first/MSW
+  then second/LSW using two supplied fresh nonzero increasing IDs. No catalog,
+  opcode handler, CPU route, public ABI, or MEMORY effect-carrier change is
+  included; ISA counts remain 98 rows, 2,679 lookup entries, 38/205 family,
+  and 25/205 strict.
+- The reducer preserves the active request and ID through WAIT, rejects stale
+  observations and failed cancellation transactionally, prevents second-word
+  issue after a first fault, clears staged read values on either fault, and
+  publishes a read pair only after both words are READY. Reset is terminal-only.
+  Writes preserve the existing one-word endpoint contract: each successful
+  word may become externally visible independently, a first READY is not
+  rolled back if the second faults or is cancelled, and the reducer makes no
+  rollback, external-master exclusion, or physical pair-atomicity claim.
+- Lifecycle and canonical validation are separate owner files at 325 and 198
+  lines. Canonical checks compare copied child fields directly; request
+  construction occurs only twice, at first preparation and the first-to-second
+  transition. This removed repeated constructor work from begin/poll/complete/
+  cancel validation. All new handwritten files remain below 500 lines.
+- Performance is an executable acceptance axis. The fixed request/transaction
+  sizes are 32/88 bytes on native LP64 and 32/80 on supported ILP32. The 6/6
+  quality lane compiles and runs both ABI probes, freezes those sizes, proves
+  one child reducer, copied request identity, exactly two constructor sites,
+  no address replan, no allocation/I/O/callback state, and no crossing into
+  public, opcode, CPU, or effect-carrier surfaces. A full opcode benchmark is
+  intentionally deferred to W47B.
+- Validation is GREEN: three focused shape/read/write CTests pass under fresh
+  ASan/UBSan; the hardened API matrix covers NULL arguments, duplicate begin,
+  stale/invalid observations, cancel/reset, and post-terminal preservation;
+  independent review found no P0/P1 defect after correcting the test's physical
+  write-visibility model. The authoritative `rtk make test` gate passes the
+  full C suite and 237 Python quality tests, with evidence, manifests, source
+  boundaries, inventory, and observer-off artifact checks green.
+- Closure accounting is 176 evidence records; 294 requirements (257
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 248 tests (240 PASSING, 8 PLANNED);
+  and 7 sources. The next forcing-function slice is W47B: evidence-first
+  selection of exact DLD/DST encodings and composition through this seam,
+  including an observer-off full-CPU opcode benchmark.
