@@ -6013,3 +6013,43 @@ rewritten after publication.
   IMPLEMENTED, 14 PLANNED, 29 UNRESOLVED); 226 tests (212 PASSING, 14
   PLANNED); and 7 sources. Follow-up remains evidence-first until all six RED
   lanes are implemented and their focused runners are GREEN.
+
+## 2026-09-08 — P2-W44B circular MOD8/MOD10 per-family composition implementation
+
+- State: implementation commit
+  `2e925b8ea0bc7702511f5ac0aa65632e2fc7a54c` completes the bounded W44B
+  twenty-row MOD8/MOD10 fan-out over the ten existing Smem families.
+- RED replay against activation `75da0812324312d1b88a4be269ae5028400a0478`
+  reproduced missing MOD8/MOD10 IDs and handlers, a CPU behavioral failure,
+  and the inventory mismatch `55 != 75`. GREEN implementation scope is exactly
+  twenty rows, `ID_COUNT=76`, 2,343 populated lookup entries, and 75 catalog
+  bindings. The ten-family inventory uses the combined
+  `STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10` token without changing
+  family or strict coverage (35/205 = 17.073% and 25/205 = 12.195%).
+- Circular typed WORD16 semantics remain bounded to CMPT=0, selected AR0–AR7,
+  and strict CMPT→ARP→selected AR→BK dependency order. BK=0 is valid
+  `NONE`/no-update; BK>0 stages the positive-BK POST-access wrap update. The
+  checked and trusted paths reuse the W44A effect/resolver/transaction seams,
+  and CPU retirement remains generic and transactional.
+- Corrected manifest ordering and module-contract labels, plus legacy
+  catalog/decode `0x0040` circular-sibling fixtures and evidence-index
+  aggregate counts. The common load and LD_T implementation is 472 lines and
+  must not grow without a split; the original status-load implementation is
+  482 lines and the circular path is split; `operand_layout.c` remains 620
+  lines under the prior split-before-800 decision.
+- Targeted W44B validation is GREEN across catalog, decode, load effects,
+  store effects, CPU integration, and inventory (five focused C lanes plus the
+  Python inventory lane). Fresh ASan/UBSan validation passed 9/9 focused tests
+  without diagnostics. Semantic review found no P0–P3 issue (12/12 review
+  checks) and quality review passed 26/26. Integration review is clean after
+  one stale documentation-count finding was corrected. `quality-test` passed
+  213 Python tests; evidence, inventory, manifests, source boundaries, and
+  observer-off checks are green, and the final authoritative `rtk make test`
+  gate is green.
+- Closure accounting is 168 evidence records; 272 requirements (235
+  IMPLEMENTED, 8 PLANNED, 29 UNRESOLVED); 226 tests (218 PASSING, 8
+  PLANNED); and 7 sources. Unsupported scope remains MOD9/MOD11, MOD14,
+  CMPT=1/dual-indirect, LONG32 circular scaling, unselected boundary policy,
+  timing/repeatability, BK MMR/device routing, public ABI, new architectural
+  kinds, IRQ/RPT, and broader family expansion. Next work remains
+  evidence-first: reverse-carry MOD4/MOD7 activation/audit.
