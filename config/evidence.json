@@ -2580,6 +2580,20 @@
         "anchor": "P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)"
       },
       "assertion": "P2-W41 admits only the existing ACCUMULATOR_ARF layout, a combined STATUS_SXM+T_REGISTER input mask, generic MEMORY and ACCUMULATOR_WRITE effects, fixed-MOD2 address resolution, and generic CPU WAIT/READY/FAULT/sequential-PC retirement. The pure transform widens Smem under SXM and applies signed TS to canonical 40-bit state; raw T[5:0] 0x20..0x2F rejects transactionally as INVALID_OPERAND. No new resource bits/state/effect/layout/address/CPU branch/public ABI/timing seam is admitted, and repeatability remains UNRESOLVED."
+    },
+    {
+      "id": "E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W42A: standard-indirect MOD0–3 memory transaction seam (planned)"
+      },
+      "assertion": "P2-W42A freezes a generic standard-indirect MOD0–3 MEMORY WORD16 transaction seam without changing the catalog or opcode handlers. The existing SINGLE_INDIRECT_WORD16 effect admits MOD0 through MOD3 while a MOD3 read is structurally rejected before address resolution or endpoint issue; the later W42B load-handler slice will select INVALID_OPERAND before endpoint issue. The existing planner records MOD0 NONE with no AR commit, MOD1/MOD2 POST, and MOD3 PRE for writes only. PRE is address-order metadata and does not expose AR mutation before READY. WAIT, FAULT, and cancel preserve architecture, while READY commits the target AR only together with accepted program-counter and effect commits. No public ABI, timing, device/MMR, CPU opcode branch, new effect/address/state kind, or other architectural seam is admitted."
     }
   ],
   "requirements": [
@@ -5217,6 +5231,36 @@
       "test_ids": ["T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT"]
     },
     {
+      "id": "REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Extend the existing SINGLE_INDIRECT_WORD16 MEMORY WORD16 effect contract to admit MOD0 through MOD3 without introducing a new effect kind; validate the existing mode, access, width, callback, and write-value shape while structurally rejecting MOD3 reads before address resolution or endpoint issue.",
+      "evidence_ids": ["E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve the existing SINGLE_INDIRECT_WORD16 planner through MOD0 NONE, MOD1/MOD2 POST, and MOD3 PRE-for-write-only phases, preserving selected-AR snapshots and treating PRE as address-order metadata rather than an early architectural mutation.",
+      "evidence_ids": ["E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES",
+      "state": "PLANNED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Keep the root memory-instruction transaction atomic across MOD0 through MOD3: WAIT, FAULT, and cancel preserve architecture, and READY commits any selected-AR update only together with accepted program-counter and effect commits, without adding a CPU opcode branch, public ABI, timing, device/MMR, or architectural state kind.",
+      "evidence_ids": ["E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT"],
+      "test_ids": ["T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES"]
+    },
+    {
       "id": "REQ-PROJECT-ISA-INVENTORY-SCHEMA",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -6864,6 +6908,30 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_smem_ts.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_smem_ts"},
       "requirement_ids": ["REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_memory_effect_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_memory_address_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES"]
+    },
+    {
+      "id": "T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES",
+      "state": "PLANNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_memory_instruction_modes.c",
+      "runner": null,
+      "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-SCHEMA",
