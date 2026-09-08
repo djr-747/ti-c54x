@@ -40,7 +40,7 @@ typedef struct ti_c54x_memory_address_resolution {
     ti_c54x_bus_word16_request request;
 } ti_c54x_memory_address_resolution;
 
-/* Resolve one fixed MOD2 generic address and stage all fallible candidates. */
+/* Resolve one MOD0--MOD3 generic address and stage all fallible candidates. */
 ti_c54x_memory_address_resolution_status
 ti_c54x_sequencer_resolve_memory_address(
     const ti_c54x_arch_state *state,

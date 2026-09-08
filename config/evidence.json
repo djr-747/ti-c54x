@@ -5232,7 +5232,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/isa/ops/memory/",
@@ -5242,7 +5242,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/memory/",
@@ -5252,7 +5252,7 @@
     },
     {
       "id": "REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "PROJECT_CONTRACT",
       "owner_path": "src/sequencer/instruction/",
@@ -6911,26 +6911,26 @@
     },
     {
       "id": "T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/memory/test_memory_effect_modes.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_effect_modes"},
       "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES"]
     },
     {
       "id": "T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/memory/test_memory_address_modes.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_address_modes"},
       "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES"]
     },
     {
       "id": "T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/sequencer/instruction/test_memory_instruction_modes.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.memory_instruction_modes"},
       "requirement_ids": ["REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES"]
     },
     {

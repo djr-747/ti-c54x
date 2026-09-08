@@ -5,7 +5,7 @@
  * Module contract
  *
  * Owns: the value-only generic WORD16 data-memory effect carrier, including
- * its fixed MOD2 single-indirect address specification and static completion
+ * its MOD0--MOD3 single-indirect address specification and static completion
  * callback shape.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is

@@ -1,8 +1,8 @@
 /*
  * Module contract
  *
- * Owns: ordered, non-mutating resolution of a fixed MOD2 W16 data address
- * into the existing checked address planner and request constructor.
+ * Owns: ordered, non-mutating resolution of a generic MOD0--MOD3 W16 data
+ * address into the existing checked address planner and request constructor.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
  * mutation, timing, lifecycle, or diagnostics.
  */
@@ -44,7 +44,8 @@ ti_c54x_sequencer_resolve_memory_address(
     }
     *out = (ti_c54x_memory_address_resolution){0};
     if (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16 ||
-        spec->mode != TI_C54X_INDIRECT_SINGLE_MOD2 || spec->arf > UINT8_C(7)) {
+        spec->mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
+        spec->mode > TI_C54X_INDIRECT_SINGLE_MOD3 || spec->arf > UINT8_C(7)) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
     }
     if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
@@ -80,9 +81,20 @@ ti_c54x_sequencer_resolve_memory_address(
     if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }
-    address_status = ti_c54x_sequencer_validate_address_effect(
-        state, &address_result,
-        TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS, &address_commit);
+    /* The planner is authoritative for operand/update shape.  Resolve the
+     * phase from the selected standard-indirect mode so MOD0's NONE update
+     * and MOD3's PRE update are validated without any mode-specific parsing
+     * of the returned raw effect. */
+    {
+        const ti_c54x_address_update_phase requested_phase =
+            spec->mode == TI_C54X_INDIRECT_SINGLE_MOD0
+                ? TI_C54X_ADDRESS_UPDATE_PHASE_NONE
+                : spec->mode == TI_C54X_INDIRECT_SINGLE_MOD3
+                      ? TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS
+                      : TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS;
+        address_status = ti_c54x_sequencer_validate_address_effect(
+            state, &address_result, requested_phase, &address_commit);
+    }
     if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }

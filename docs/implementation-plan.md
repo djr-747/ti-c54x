@@ -42,9 +42,10 @@ CPU contracts are green with combined STATUS_SXM+T_REGISTER input, documented
 signed TS transforms, and transactional rejection of the project-defined
 unsupported count zone. No new resource bit, state, effect, layout, address,
 CPU branch, public ABI, or timing seam was added.
-P2-W42A is planned as the standard-indirect MOD0–3 memory transaction seam;
-it deliberately leaves the catalog and opcode handlers unchanged while the
-generic MEMORY effect, resolver, and root transaction contracts are tightened.
+P2-W42A is implementation-complete as the standard-indirect MOD0–3 memory
+transaction seam; it deliberately leaves the catalog and opcode handlers
+unchanged while the generic MEMORY effect, resolver, and root transaction
+contracts are tightened.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -224,8 +225,17 @@ when the target AR commit and the program-counter/effect commits are all
 accepted. No public ABI, machine-cycle/timing, device/MMR, CPU opcode branch,
 new effect kind, new address kind, or new architectural state kind is admitted.
 The three RED tests are owned by `src/isa/ops/memory`, `src/sequencer/memory`,
-and `src/sequencer/instruction` respectively and remain project-contract tests
-until implementation starts.
+and `src/sequencer/instruction` respectively. Implementation is complete: each
+RED contract now runs GREEN through the corresponding generic seam, covering
+MOD0–MOD3 validation, address-order planning, and atomic WAIT/FAULT/cancel/
+READY behavior. Focused strict and ASan/UBSan CTest execution, the 207-test
+quality gate, independent semantic/integration reviews, the authoritative
+standalone `make test`, the evidence checker, and repository diff validation
+are green; no catalog row, opcode handler, or public ABI changed. A reviewed
+retain decision keeps
+`memory_instruction_transaction.c` cohesive at 523 lines as the root
+transaction owner; candidate validation will be split if growth approaches
+approximately 700 lines and must be split before 800 lines.
 
 W42A is staged before W42B's opcode fan-out. W42B must make an explicit,
 neutral symbol and MOD-layout decision before catalog rows or handlers are
@@ -278,6 +288,7 @@ function-pointer dispatch tables.
 | Masked opcode catalog foundation | Complete | The sole catalog accepts exact and masked 16-bit rows, rejects malformed or overlapping patterns deterministically, and owns a checked-in immutable direct lookup artifact; no production masked instruction is registered |
 | ISA instruction-form inventory (P2-W40) | Implemented — focused tests and checker green | Freeze the authoritative 205-form TI summary denominator and separate audit metadata from production decode; schema/count/catalog-binding/report contracts preserve explicit coverage and scope states, keep unresolved forms in the denominator, and report only the provisional 35/205 and 25/205 progress measures |
 | P2-W41 fixed-MOD2 LD Smem,TS,dst vertical slice | Implemented — focused strict/sanitizer tests, quality 207, clean dual review, and full standalone gate green | Add the 0x1490/0xFEF8 fixed-MOD2 TS load through the existing ACCUMULATOR_ARF, SXM/T input, MEMORY, ACCUMULATOR_WRITE, address-resolution, and CPU retirement seams. Valid signed six-bit counts shift the SXM-widened WORD16 in canonical 40-bit space; project-unsupported 0x20..0x2f rejects transactionally before the data bus. Catalog-family progress is 35/205 (17.073%); strict complete-form coverage remains 25/205 (12.195%). |
+| P2-W42A standard-indirect MOD0–MOD3 memory transaction seam | Implemented — focused CTest contracts, evidence checker, and diff validation green to date | Generalize the existing generic MEMORY effect, address resolver, and root memory-instruction transaction to MOD0–MOD3 without changing the catalog or opcode handlers. MOD3 read effects reject structurally before endpoint issue; MOD0 has no AR commit, MOD1/MOD2 are POST, and MOD3 writes are PRE metadata with commit-at-READY atomicity. |
 | Private program-PC bridge and CPU NOP transaction | Complete | Preserve the public carrier through one-word fetch, decode and dispatch NOP, stage through a private 16-bit PC seam, and retire transactionally with explicit stop/counter behavior |
 | Value-owned operand-field extraction (P2-W19A) | Complete | A pure borrowed-view extractor assembles checked one-to-64-bit raw fields transactionally; no production opcode or fetch behavior changes |
 | Transactional extension fetch and width-aware program PC (P2-W19B) | Complete | Allocation-free fixed-capacity extension fetch and explicit 1..255-word PC span/commit are proven before any multiword opcode or RPT integration |

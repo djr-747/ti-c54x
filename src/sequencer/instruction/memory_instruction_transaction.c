@@ -22,6 +22,7 @@ address_resolution_is_valid(
     const ti_c54x_op_memory_effect *effect)
 {
     const ti_c54x_address_effect *address_effect;
+    const ti_c54x_sequencer_address_commit *address_commit;
 
     if (resolution == NULL || effect == NULL ||
         resolution->address_result.status != TI_C54X_ADDRESS_STATUS_OK ||
@@ -31,12 +32,6 @@ address_resolution_is_valid(
             TI_C54X_ADDRESS_SOURCE_AR ||
         resolution->address_result.effect.source.value.ar.index !=
             effect->address_spec.arf ||
-        resolution->address_result.effect.update.target !=
-            TI_C54X_ADDRESS_UPDATE_AR ||
-        resolution->address_result.effect.update.phase !=
-            TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS ||
-        resolution->address_commit.target != TI_C54X_ADDRESS_UPDATE_AR ||
-        resolution->address_commit.ar_index != effect->address_spec.arf ||
         resolution->request.space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
         resolution->request.access != effect->access ||
         resolution->request.address_word !=
@@ -45,10 +40,52 @@ address_resolution_is_valid(
         return false;
     }
     address_effect = &resolution->address_result.effect;
-    return resolution->address_commit.value_after ==
-               address_effect->update.value_after &&
-           resolution->address_commit.value_after !=
-               address_effect->update.value_before;
+    address_commit = &resolution->address_commit;
+
+    /* The resolved address effect does not retain its originating mode
+     * discriminator, so recheck the mode-specific operand/update contract
+     * against the memory effect. This keeps forged candidates from reaching
+     * the endpoint while leaving arithmetic to the address planner. */
+    switch (effect->address_spec.mode) {
+    case TI_C54X_INDIRECT_SINGLE_MOD0:
+        return address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_NONE &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_NONE &&
+               address_effect->operand.first_word ==
+                   address_effect->source.value.ar.value_before &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
+               address_commit->ar_index == UINT8_C(0) &&
+               address_commit->value_after == UINT16_C(0);
+    case TI_C54X_INDIRECT_SINGLE_MOD1:
+    case TI_C54X_INDIRECT_SINGLE_MOD2:
+        return address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_AR &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_commit->ar_index == effect->address_spec.arf &&
+               address_commit->value_after ==
+                   address_effect->update.value_after &&
+               address_commit->value_after !=
+                   address_effect->update.value_before;
+    case TI_C54X_INDIRECT_SINGLE_MOD3:
+        return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
+               address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_AR &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+               address_effect->operand.first_word ==
+                   address_effect->update.value_after &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_commit->ar_index == effect->address_spec.arf &&
+               address_commit->value_after ==
+                   address_effect->update.value_after &&
+               address_commit->value_after !=
+                   address_effect->update.value_before;
+    default:
+        return false;
+    }
 }
 
 static bool
@@ -240,12 +277,16 @@ static ti_c54x_memory_instruction_status
 commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
                     ti_c54x_arch_state *state)
 {
-    const uint8_t ar_index =
-        transaction->candidate.address_resolution.address_commit.ar_index;
+    const ti_c54x_sequencer_address_commit *const address_commit =
+        &transaction->candidate.address_resolution.address_commit;
 
-    state->ar[ar_index] =
-        transaction->candidate.address_resolution.address_commit.value_after;
-    state->ar_known_mask |= (uint8_t)(UINT8_C(1) << ar_index);
+    /* Candidate and live-state validation admitted only NONE or a valid AR
+     * target before endpoint issue. Keep READY publication infallible. */
+    if (address_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
+        state->ar[address_commit->ar_index] = address_commit->value_after;
+        state->ar_known_mask |=
+            (uint8_t)(UINT8_C(1) << address_commit->ar_index);
+    }
     state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
     transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;

@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 162 immutable evidence records,
-249 requirements (209 `IMPLEMENTED`, 11 `PLANNED`, 29 `UNRESOLVED`), and 203 tests
-(192 `PASSING`, 11 `PLANNED`).
+249 requirements (212 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`), and 203 tests
+(195 `PASSING`, 8 `PLANNED`).
 
 ## Targets
 
@@ -555,9 +555,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-LD-SMEM-TS-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS` | `T-COMMON-LD-SMEM-TS-DECODE` |
 | `REQ-COMMON-LD-SMEM-TS-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS`, `E-TI-C54X-SPRU131G-S2.3.3-P2-9-TS-SHIFTER`, `E-TI-C54X-SPRU131G-S4.4-P4-17-TS-SIGNED-SHIFT` | `T-COMMON-LD-SMEM-TS-EFFECTS` |
 | `REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` |
-| `REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` |
-| `REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` |
-| `REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` |
+| `REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` |
+| `REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` |
+| `REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W42A-STANDARD-INDIRECT-MEMORY-TRANSACTION-CONTRACT` | `T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` |
 
 ## Tests
 
@@ -763,9 +763,9 @@ exist in the repository.
 | `T-COMMON-LD-SMEM-TS-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_ld_smem_ts_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_smem_ts_decode"}` | `REQ-COMMON-LD-SMEM-TS-DECODE` |
 | `T-COMMON-LD-SMEM-TS-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_ld_smem_ts.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ld_smem_ts_ops"}` | `REQ-COMMON-LD-SMEM-TS-EFFECTS` |
 | `T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_smem_ts.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_ld_smem_ts"}` | `REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` |
-| `T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/memory/test_memory_effect_modes.c` | — | `REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` |
-| `T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_memory_address_modes.c` | — | `REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` |
-| `T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_modes.c` | — | `REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` |
+| `T-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/memory/test_memory_effect_modes.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_effect_modes"}` | `REQ-PROJECT-P2-W42A-MEMORY-EFFECT-MODES` |
+| `T-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_memory_address_modes.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_address_modes"}` | `REQ-PROJECT-P2-W42A-MEMORY-ADDRESS-MODES` |
+| `T-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_modes.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_modes"}` | `REQ-PROJECT-P2-W42A-MEMORY-INSTRUCTION-MODES` |
 | `T-PROJECT-ISA-INVENTORY-SCHEMA` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_schema.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-SCHEMA` |
 | `T-PROJECT-ISA-INVENTORY-COUNT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_count.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-COUNT` |
 | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |

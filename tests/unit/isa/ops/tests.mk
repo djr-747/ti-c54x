@@ -7,6 +7,7 @@ include tests/unit/isa/ops/rotate/tests.mk
 include tests/unit/isa/ops/shift/tests.mk
 include tests/unit/isa/ops/logical/tests.mk
 include tests/unit/isa/ops/load/tests.mk
+include tests/unit/isa/ops/memory/tests.mk
 include tests/unit/isa/ops/store/tests.mk
 include tests/unit/isa/ops/status/tests.mk
 include tests/unit/isa/ops/repeat/tests.mk
