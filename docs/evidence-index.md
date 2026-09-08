@@ -6,9 +6,9 @@ source, evidence, requirement, and test ID in that file for review. The primary
 target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
-Current registry counts are 2 targets, 7 sources, 156 immutable evidence records,
-242 requirements (205 `IMPLEMENTED`, 8 `PLANNED`, 29 `UNRESOLVED`), and 196 tests
-(188 `PASSING`, 8 `PLANNED`).
+Current registry counts are 2 targets, 7 sources, 161 immutable evidence records,
+246 requirements (205 `IMPLEMENTED`, 12 `PLANNED`, 29 `UNRESOLVED`), and 200 tests
+(188 `PASSING`, 12 `PLANNED`).
 
 ## Targets
 
@@ -200,6 +200,11 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W39-ST-T-SMEM-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)` |
 | `E-TI-C54X-SPRU172C-S2-1-S2-4-T2-1-T2-26-ISA-INSTRUCTION-INVENTORY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.1–2.4, `2-2`–`2-18` |
 | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W40: authoritative ISA instruction-form inventory (planned)` |
+| `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4.66, `4-65`–`4-69` |
+| `E-TI-C54X-SPRU131G-S2.3.3-P2-9-TS-SHIFTER` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §2.3.3, `2-9` |
+| `E-TI-C54X-SPRU131G-S4.4-P4-17-TS-SIGNED-SHIFT` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.4, `4-17` |
+| `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-TS-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
+| `E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -545,6 +550,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-ISA-INVENTORY-COUNT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-COUNT` |
 | `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
 | `REQ-PROJECT-ISA-INVENTORY-REPORT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W40-ISA-INSTRUCTION-INVENTORY-CONTRACT` | `T-PROJECT-ISA-INVENTORY-REPORT` |
+| `REQ-COMMON-LD-SMEM-TS-CATALOG` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS`, `E-TI-C54X-SPRU131G-S5.5.3-P5-13`, `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-TS-REPEATABILITY-BOUNDARY-P2-19-2-21` | `T-COMMON-LD-SMEM-TS-CATALOG` |
+| `REQ-COMMON-LD-SMEM-TS-DECODE` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS` | `T-COMMON-LD-SMEM-TS-DECODE` |
+| `REQ-COMMON-LD-SMEM-TS-EFFECTS` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-66-P4-65-4-69-LD-TS`, `E-TI-C54X-SPRU131G-S2.3.3-P2-9-TS-SHIFTER`, `E-TI-C54X-SPRU131G-S4.4-P4-17-TS-SIGNED-SHIFT` | `T-COMMON-LD-SMEM-TS-EFFECTS` |
+| `REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` | PLANNED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W41-LD-SMEM-TS-FIT-OWNERSHIP-CONTRACT` | `T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` |
 
 ## Tests
 
@@ -746,6 +755,10 @@ exist in the repository.
 | `T-COMMON-ST-T-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_st_t_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_t_smem_decode"}` | `REQ-COMMON-ST-T-SMEM-DECODE` |
 | `T-COMMON-ST-T-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_st_t_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_t_smem_ops"}` | `REQ-COMMON-ST-T-SMEM-EFFECTS` |
 | `T-PROJECT-CPU-ST-T-SMEM-RETIREMENT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/store/test_cpu_st_t_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_st_t_smem"}` | `REQ-PROJECT-CPU-ST-T-SMEM-RETIREMENT` |
+| `T-COMMON-LD-SMEM-TS-CATALOG` | PLANNED | COMMON_TI | `tests/unit/isa/catalog/test_ld_smem_ts_metadata.c` | `null` | `REQ-COMMON-LD-SMEM-TS-CATALOG` |
+| `T-COMMON-LD-SMEM-TS-DECODE` | PLANNED | COMMON_TI | `tests/unit/isa/decode/test_ld_smem_ts_decode.c` | `null` | `REQ-COMMON-LD-SMEM-TS-DECODE` |
+| `T-COMMON-LD-SMEM-TS-EFFECTS` | PLANNED | COMMON_TI | `tests/unit/isa/ops/load/test_ld_smem_ts.c` | `null` | `REQ-COMMON-LD-SMEM-TS-EFFECTS` |
+| `T-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` | PLANNED | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/load/test_cpu_ld_smem_ts.c` | `null` | `REQ-PROJECT-CPU-LD-SMEM-TS-RETIREMENT` |
 | `T-PROJECT-ISA-INVENTORY-SCHEMA` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_schema.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-SCHEMA` |
 | `T-PROJECT-ISA-INVENTORY-COUNT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_count.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-COUNT` |
 | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` | PASSING | PROJECT_CONTRACT_ONLY | `tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py` | `{"kind":"PYTHON_UNITTEST_DISCOVERY","make_goal":"test","ctest_name":"ti_c54x.quality.python"}` | `REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |

@@ -36,6 +36,13 @@ establish a 205-form summary/source-universe checkpoint, while
 common/profile/addressing scope remains explicit and unresolved; the current
 catalog reports only the provisional 34/205 family progress and strict 25/205
 complete-form lower bound.
+P2-W41 is now activated as the bounded fixed-MOD2 `LD Smem,TS,dst` vertical
+slice. It is evidence-frozen against TI SPRU172C §4.66 (printed pp. 4-65–4-69)
+and SPRU131G §§2.3.3, 4.4, and 5.5.3. Implementation remains delegated; this
+activation admits only the existing accumulator-ARF layout, the combined
+STATUS_SXM+T_REGISTER input mask, generic MEMORY/ACCUMULATOR_WRITE effects,
+fixed-MOD2 address resolution, and generic CPU retirement. No new resource
+bits/state/effect/layout/address/CPU branch/timing seam is admitted.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
@@ -145,6 +152,39 @@ gate, and 21 focused schema/count/binding/report tests are green.
 Execution history is recorded in `docs/development-ledger.md`. This plan describes
 current intent; the ledger records completed work and decisions without rewriting
 history.
+
+### P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)
+
+This heading is the FIT/ownership anchor for the W41 activation. TI SPRU172C
+§4.66 (printed pp. 4-65–4-69) defines the one-word `LD Smem,TS,dst` form with
+opcode diagram `0001_010D_IAAAAAAA`. The project composes that form with the
+registered fixed-MOD2 `*ARx+` rule, producing a row with value `0x1490`, mask
+`0xFEF8`, D bit 8, ARF bits 2:0, and sixteen encodings. The existing
+`ACCUMULATOR_ARF` layout and a combined
+`STATUS_SXM+T_REGISTER` input mask are reused. `TS` is the signed six-bit
+`T[5:0]` shift count with documented encodings 00..1F = 0..31 and 30..3F =
+-16..-1; raw 20..2F is outside the documented range and must reject
+`INVALID_OPERAND` transactionally.
+
+The pure effect reads one WORD16 from the old selected-AR address before
+postincrement, widens according to SXM, then applies the signed TS transform to
+the canonical 40-bit accumulator result. Pinned boundary vectors include
+`FEDC,T=8,SXM=1 -> 0xfffffedc00`; `8000,T=0x30 -> 0` (SXM=0) or
+`0xffffffffff` (SXM=1); `T=0x3f -> 0x4000`/`0xffffffc000`; and
+`T=0x1f,7fff -> 0xff80000000`. The transform is modulo-40 for positive left
+shifts and arithmetic-right for negative shifts of the widened signed value.
+TS is distinct from `SHIFT`/`ASM`; OVM and OVdst do not apply, and C, TC, OVM,
+OVA/OVB, and unrelated state other than the selected destination accumulator
+remain unchanged. Repeatability remains
+`UNRESOLVED`; no timing, IRQ/RPT, device/MMR, public-ABI, or opcode-specific
+CPU branch claim is admitted.
+
+Four RED requirements/tests cover catalog, decode, pure effect, and generic CPU
+retirement; the combined input mask is exercised within effect/CPU coverage.
+Expected post-implementation closure is 35 catalog rows, 1503 populated
+first-word encodings, ID_COUNT 36, five aggregate fixed-MOD2 memory rows, six
+reset-runnable rows, inventory touched 35/205 (17.073%), and strict complete
+25/205 (12.195%).
 
 ## Objective
 
