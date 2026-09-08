@@ -5,8 +5,9 @@
  * Module contract
  *
  * Owns: the value-only generic WORD16 data-memory effect carrier, including
- * its MOD0--MOD3 single-indirect, AR0-indexed MOD5/MOD6, and circular
- * MOD8/MOD10 address specifications and static completion callback shape.
+ * its MOD0--MOD3 single-indirect, AR0-indexed MOD5/MOD6, circular
+ * MOD8/MOD10, and ARF-selected reverse-carry MOD4/MOD7 address
+ * specifications and static completion callback shape.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -21,6 +22,7 @@
 #include "isa/ops/op_status.h"
 #include "address/indirect_circular.h"
 #include "address/indirect_indexed.h"
+#include "address/indirect_reverse_carry.h"
 #include "address/indirect_single.h"
 #include "bus/request/word16_request.h"
 
@@ -34,7 +36,8 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_INVALID = 0,
     TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16 = 1,
     TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16 = 2,
-    TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16 = 3
+    TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16 = 3,
+    TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4
 } ti_c54x_op_memory_address_kind;
 
 typedef struct ti_c54x_op_memory_address_spec {
@@ -45,6 +48,8 @@ typedef struct ti_c54x_op_memory_address_spec {
     ti_c54x_indirect_indexed_mode indexed_mode;
     /* Used only by CIRCULAR; must remain zero/default for other kinds. */
     ti_c54x_indirect_circular_mode circular_mode;
+    /* Used only by REVERSE_CARRY; must remain zero/default for other kinds. */
+    ti_c54x_indirect_reverse_carry_mode reverse_carry_mode;
     uint8_t arf;
 } ti_c54x_op_memory_address_spec;
 

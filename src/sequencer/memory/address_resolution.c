@@ -2,9 +2,9 @@
  * Module contract
  *
  * Owns: ordered, non-mutating resolution of a generic CMPT=0 W16 data
- * address (single-indirect MOD0--MOD3, AR0-indexed MOD5/MOD6, or fixed-step
- * circular MOD8/MOD10) into the existing checked address planner and request
- * constructor.
+ * address (single-indirect MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step
+ * circular MOD8/MOD10, or reverse-carry MOD4/MOD7) into the existing checked
+ * address planner and request constructor.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
  * mutation, timing, lifecycle, or diagnostics.
  */
@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 
+#include "address/indirect_reverse_carry.h"
 #include "state/block_size_register.h"
 
 static ti_c54x_memory_address_resolution_status
@@ -48,13 +49,16 @@ ti_c54x_sequencer_resolve_memory_address(
     }
     *out = (ti_c54x_memory_address_resolution){0};
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16) {
-        if (spec->mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
+        if (spec->indexed_mode != 0 || spec->circular_mode != 0 ||
+            spec->reverse_carry_mode != 0 ||
+            spec->mode < TI_C54X_INDIRECT_SINGLE_MOD0 ||
             spec->mode > TI_C54X_INDIRECT_SINGLE_MOD3 ||
             spec->arf > UINT8_C(7)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
     } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_INDEXED_AR0_WORD16) {
         if (spec->mode != TI_C54X_INDIRECT_SINGLE_MOD0 ||
+            spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             (spec->indexed_mode != TI_C54X_INDIRECT_INDEXED_MOD5 &&
              spec->indexed_mode != TI_C54X_INDIRECT_INDEXED_MOD6) ||
             spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
@@ -62,9 +66,20 @@ ti_c54x_sequencer_resolve_memory_address(
         }
     } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16) {
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
+            spec->reverse_carry_mode != 0 ||
             (spec->circular_mode != TI_C54X_INDIRECT_CIRCULAR_MOD8 &&
              spec->circular_mode != TI_C54X_INDIRECT_CIRCULAR_MOD10) ||
             spec->arf > UINT8_C(7)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
+    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16) {
+        if (spec->mode != 0 || spec->indexed_mode != 0 ||
+            spec->circular_mode != 0 ||
+            (spec->reverse_carry_mode !=
+                 TI_C54X_INDIRECT_REVERSE_CARRY_MOD4 &&
+             spec->reverse_carry_mode !=
+                 TI_C54X_INDIRECT_REVERSE_CARRY_MOD7) ||
+            spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
     } else {
@@ -77,6 +92,62 @@ ti_c54x_sequencer_resolve_memory_address(
     if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
         write_value_word != UINT16_C(0)) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
+    }
+
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16) {
+        uint16_t ar0_value = UINT16_C(0);
+
+        /* Reverse-carry dependencies are deliberately ordered. The exact
+         * spec shape above is complete before any architectural read. */
+        if (ti_c54x_arch_state_read_cmpt(state, &cmpt) !=
+                TI_C54X_ARCH_STATE_OK ||
+            cmpt != UINT8_C(0)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_MODE;
+        }
+        if (ti_c54x_arch_state_read_arp(state, &arp) !=
+                TI_C54X_ARCH_STATE_OK ||
+            arp != UINT8_C(0)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_MODE;
+        }
+        if (ti_c54x_arch_state_read_ar(state, spec->arf, &ar_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+        if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &ar0_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+
+        address_access = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? TI_C54X_ADDRESS_ACCESS_READ
+                             : TI_C54X_ADDRESS_ACCESS_WRITE;
+        address_result = ti_c54x_indirect_reverse_carry_word16(
+            spec->arf, ar_value, ar0_value, spec->reverse_carry_mode,
+            address_access);
+        if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        address_status = ti_c54x_sequencer_validate_address_effect(
+            state, &address_result,
+            TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS, &address_commit);
+        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        request_result = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? ti_c54x_bus_word16_request_read(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   address_result.effect.operand.first_word)
+                             : ti_c54x_bus_word16_request_write(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   address_result.effect.operand.first_word,
+                                   write_value_word);
+        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
+        }
+        out->address_result = address_result;
+        out->address_commit = address_commit;
+        out->request = request_result.request;
+        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
     /* COMMON_TI dependency order is architectural and deliberate. */

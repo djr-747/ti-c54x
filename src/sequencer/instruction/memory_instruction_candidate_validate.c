@@ -3,7 +3,7 @@
  *
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates, including exact address-resolution snapshots for
- * single-indirect, AR0-indexed, and circular operands.
+ * single-indirect, AR0-indexed, circular, and reverse-carry operands.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "address/indirect_reverse_carry.h"
 #include "bus/adapter/word16_adapter.h"
 #include "sequencer/instruction/memory_instruction_transaction.h"
 
@@ -172,6 +173,30 @@ address_resolution_is_valid(
                    address_effect->update.value_after;
     }
 
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16) {
+        const ti_c54x_address_source_ar_reverse_carry *const source =
+            &address_effect->source.value.ar_reverse_carry;
+
+        return ti_c54x_indirect_reverse_carry_effect_is_valid(address_effect) &&
+               address_effect->source.kind ==
+                   TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY &&
+               source->index == effect->address_spec.arf &&
+               source->modification ==
+                   (uint8_t)effect->address_spec.reverse_carry_mode &&
+               address_effect->operand.first_word == source->value_before &&
+               address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_AR &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+               address_effect->update.ar_index == source->index &&
+               address_effect->update.value_before == source->value_before &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               address_commit->ar_index == source->index &&
+               address_commit->value_after ==
+                   address_effect->update.value_after;
+    }
+
     return false;
 }
 
@@ -236,6 +261,19 @@ address_resolution_matches(
                    actual_effect->source.value.ar_circular.value_before &&
                expected_effect->source.value.ar_circular.bk_value_before ==
                    actual_effect->source.value.ar_circular.bk_value_before;
+    }
+    if (expected_effect->source.kind ==
+        TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY) {
+        return expected_effect->source.value.ar_reverse_carry.index ==
+                   actual_effect->source.value.ar_reverse_carry.index &&
+               expected_effect->source.value.ar_reverse_carry.modification ==
+                   actual_effect->source.value.ar_reverse_carry.modification &&
+               expected_effect->source.value.ar_reverse_carry.value_before ==
+                   actual_effect->source.value.ar_reverse_carry.value_before &&
+               expected_effect->source.value.ar_reverse_carry
+                       .ar0_value_before ==
+                   actual_effect->source.value.ar_reverse_carry
+                       .ar0_value_before;
     }
     return false;
 }
