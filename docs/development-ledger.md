@@ -5809,3 +5809,43 @@ rewritten after publication.
 - No public ABI, catalog identity, handler, CPU opcode branch, timing,
   machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
   allocation, mutable-global, wrap, or emulator dependency is admitted.
+
+## 2026-09-08 — P2-W43A indexed WORD16 memory seam implementation
+
+- State: implementation commit
+  `19119a3500b75741cf4ba27fb4fdd23f5c6296fe` completes the generic W43A
+  indexed-memory prerequisite without adding a catalog row or handler.
+- Three owner-local RED contracts first failed on the absent indexed MEMORY
+  kind and typed mode field. Production changes followed those failures; no
+  child agent created a commit.
+- The private effect carrier now distinguishes `INDEXED_AR0_WORD16` and carries
+  typed MOD5/MOD6 state alongside the unchanged MOD0–3 single-indirect field.
+  Indexed reads and writes require AR1–AR7 and preserve existing access-specific
+  completion/write-value shape validation.
+- Resolution reads CMPT, ARP, selected AR, then AR0 and reuses the existing
+  indexed planner. MOD5 and MOD6 request the old selected-AR address and stage
+  one POST selected-AR update; alias, unknown state, underflow, and overflow
+  reject with zero output. AR0 is never a commit target.
+- Candidate validation was extracted from the root transaction into a focused
+  private owner. Live re-resolution compares both copied ARx and AR0 snapshots,
+  so WAIT/FAULT/cancel preserve state and resumed READY rejects stale inputs
+  before atomically publishing the selected AR, PC, and effect commits.
+- The root transaction shrank from 523 to 335 lines; the new candidate validator
+  is 268 lines and the resolver 169. Only the previously reviewed 577-line
+  operand-layout warning remains.
+- Validation: the three focused tests passed in a fresh ASan/UBSan build (3/3);
+  `make quality-test` passed all 207 Python tests and every quality gate; the
+  authoritative post-closure `make test` passed all standalone binaries and the
+  minimal example; build manifests, evidence, inventory, observer-off artifact,
+  source boundaries, and `git diff --check` are green.
+- Independent Luna semantic review found no P0/P1/P2 issue and confirmed typed
+  validation, arithmetic boundaries, stale-snapshot handling, transaction
+  atomicity, file ownership, and the split decision.
+- Evidence accounting is 163 records; 257 requirements (220 IMPLEMENTED,
+  8 PLANNED, 29 UNRESOLVED); 211 tests (203 PASSING, 8 PLANNED); and 7 sources.
+  Inventory coverage remains 35/205 = 17.073% catalog-family and 25/205 =
+  12.195% strict complete-form. W43B remains blocked on primary per-family
+  MOD5/MOD6 encoding composition.
+- No public ABI, catalog identity, opcode handler, CPU opcode branch, timing,
+  machine-cycle, IRQ/RPT, device/MMR, knob, environment, diagnostic,
+  allocation, mutable-global, wrap, or emulator dependency was added.
