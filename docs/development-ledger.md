@@ -6332,3 +6332,37 @@ rewritten after publication.
   private LONG32 pair transaction seam that preserves the one-word endpoint
   ABI and makes request order, WAIT/FAULT/cancel, visibility, and hot-path
   costs explicit before any DLD/DST opcode composition.
+
+## 2026-09-08 — P2-W47A generic LONG32 pair transaction activation
+
+- State: activation commit
+  `00db85dc3b10c1d509d4b062ee74d5fa05048927` freezes a private
+  sequencer-only LONG32 pair transaction before any opcode composition. It
+  reuses the existing canonical `{first=MSW, second=LSW}` data operand and one
+  private WORD16 reducer without changing the catalog, opcode handlers, CPU,
+  public ABI, or frozen WORD16 MEMORY carrier.
+- The project contract selects deterministic first/MSW then second/LSW issue,
+  copied descriptors and values, and two caller-supplied fresh nonzero strictly
+  increasing IDs. WAIT retains the active request and ID. A first-word fault
+  cannot issue the second word; a second-word fault publishes no pair read
+  result or later architectural commit. Cancel targets only the active word,
+  and failed cancellation must preserve exact reducer state.
+- Reads become available only after both requests are READY. With the existing
+  one-word endpoint ABI, writes are externally visible per word: a completed
+  first write is not rolled back if the second faults or is cancelled, while
+  any later architectural state commit remains deferred. No external-master
+  exclusion, rollback, all-or-none physical write, device, timing, or TI bus
+  ordering claim is admitted. Existing TI records remain authoritative only
+  for LONG32 word pairing and address delta; lifecycle policy is explicitly a
+  project contract.
+- Four RED lanes are registered for pair shape, read lifecycle, write
+  lifecycle, and structural hot-path performance. The implementation must be
+  allocation-free and fixed-size, issue exactly two requests without replanning,
+  freeze supported-ABI sizes, and stay below file-size review boundaries. An
+  executable opcode benchmark is deferred to W47B, where an evidenced LONG32
+  opcode can exercise the full CPU path.
+- Activation accounting is 176 evidence records; 294 requirements (253
+  IMPLEMENTED, 12 PLANNED, 29 UNRESOLVED); 248 tests (236 PASSING, 12 PLANNED);
+  and 7 sources. Evidence validation and the authoritative `rtk make test` gate
+  are green with all 231 Python quality tests passing. ISA counts remain 98
+  catalog rows, 2,679 lookup entries, 38/205 family, and 25/205 strict.
