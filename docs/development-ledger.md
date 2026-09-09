@@ -7424,3 +7424,47 @@ rewritten after publication.
 - Follow-up work: LD syntaxes 5, 7, 8, 9 (`FORM-T2-19-06`, `-08`,
   `-09`, `-10`: Xmem dual, #lk immediate pair, src-ASM) remain, then
   ST/STH/STL stores; ADD/SUB remainder and MAC/MPY families follow.
+
+## 2026-09-10 — P2-W56 LD src,ASM[,dst] vertical slice
+
+- Implementation commit `9f7749c` activates Table 2-19 form
+  `FORM-T2-19-10`, TI SPRU172C §4 LD syntax 9: one row `LD_SRC_ASM`
+  at first-word value `0xF482` under mask `0xFCFF` (4 encodings),
+  one program word with source in bit 9 and destination in bit 8,
+  reusing the `ACCUMULATOR_SOURCE_DESTINATION` layout,
+  `UNRESOLVED` repeatability, and a new
+  `ACCUMULATORS_STATUS_SXM_OVM_ASM` resource combination. Ground
+  truth is dual-sourced (SPRU172C mnemonic mirror plus the SPRU179C
+  algebraic volume, which agree on all ten LD opcode diagrams).
+- Semantics is `dst = src << ASM` with the 5-bit ASM field read
+  signed (-16..15): SXM selects logical versus arithmetic right
+  shift exactly as in W54, OVM saturates on guard-bit overflow with
+  sticky destination overflow, and C/TC stay preserved. No memory
+  touched. The new `STATUS_ASM` input bit (256) extends the input
+  snapshot 48→56 bytes and the memory transaction 336→344 bytes,
+  with an independent carrier proof; twelve 512-byte CPU test
+  storages move to 1024 and frozen perf carrier sizes follow.
+- Evidence: three new TI records (syntax-9 opcode, ASM-shift
+  semantics, T2-28 repeatability boundary), plan anchor plus
+  activation records, seven requirements (including the ASM carrier),
+  and five RED contracts (metadata, decode with five sibling pins,
+  ops exhaustive over S×D×ASM32 with an independent oracle and
+  four-way parity, ASM carrier, CPU sweep with unknown-ASM
+  rejection). `FORM-T2-19-10` is inventory COMPLETE; the
+  trusted-binding and inventory-catalog-binding tests extend their
+  back-links. The row is not reset-runnable (accumulators start
+  unknown).
+- Validation is GREEN: fast C suite 292/292 including `minimal`;
+  contract quality unittest 264/268 with only the four pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries (534 files), manifests, evidence (378 requirements with
+  347 IMPLEMENTED, 316 tests all PASSING), inventory (48/205 family
+  23.415%, 30/205 strict), and observer-disabled structure pass.
+  Fresh CMake/CTest with ASan/UBSan passes 298/298 excluding
+  `quality.python` (`ASAN_OPTIONS=detect_leaks=0`; LSan itself cannot
+  run under this container's ptrace). Registry closure is 239
+  immutable evidence records. No knob was added or changed. Nothing
+  was pushed.
+- Follow-up work: LD syntaxes 5, 7, 8 (`FORM-T2-19-06`, `-08`,
+  `-09`: Xmem dual, #lk immediate pair) remain, then ST/STH/STL
+  stores; ADD/SUB remainder and MAC/MPY families follow.
