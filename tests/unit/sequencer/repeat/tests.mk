@@ -4,3 +4,7 @@ $(eval $(call ti_c54x_add_test,repeat_body_admission_contract,sequencer/repeat,t
 $(eval $(call ti_c54x_add_test,repeat_request_gate_contract,sequencer/repeat,test_repeat_request_gate_contract.c))
 $(eval $(call ti_c54x_add_test,repeat_progress_contract,sequencer/repeat,test_repeat_progress_contract.c))
 $(eval $(call ti_c54x_add_test,single_repeat_rc_observable_progression,sequencer/repeat,test_single_repeat_rc_observable_progression.c))
+# W52A COMMON repeat-truth closure: TI-evidence-bound repeat contracts.
+$(eval $(call ti_c54x_add_test,repeat_cardinality_common,sequencer/repeat,test_single_repeat_cardinality.c))
+$(eval $(call ti_c54x_add_test,repeat_request_gate_common,sequencer/repeat,test_single_repeat_irq_gate.c))
+$(eval $(call ti_c54x_add_test,repeat_body_eligibility_common,sequencer/repeat,test_single_repeat_body_eligibility.c))

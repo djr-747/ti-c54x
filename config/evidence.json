@@ -3220,6 +3220,17 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51C: dual ADD/SUB MOD0–MOD2 activation (planned)"},
       "assertion": "W51C activates sixteen non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows through the W51B root with per-row first words under mask 0xFECC, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share one operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change; all nine MOD0-MOD2 combinations per form are inventory SUBSET while MOD3 stays deferred. Realized 120 catalog rows, ID_COUNT 121, 3,543 lookup entries, 120 bindings, 44/205 family coverage, and unchanged 27/205 strict complete-form coverage; the MOD0 benchmark roster is frozen and its smoke preserves semantic hash b40823092c0aa605."
+    },
+    {
+      "id": "E-PROJECT-P2-W52A-COMMON-REPEAT-TRUTH-CLOSURE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52A: COMMON repeat-truth closure (planned)"},
+      "assertion": "W52A closes the five PLANNED COMMON repeat requirements with executable TI-evidence-bound contracts over the existing immediate-RPT, cardinality, request-gate, eligibility, and observable-progression leaves. No production RPT catalog row, CPU repeat branch, public API, or timing claim is added; the W20F RC-ordering, PC-flow, and predecode-arbitration gaps stay UNRESOLVED; the twenty W49B/W50B/W51C rows stay UNRESOLVED with neither eligibility nor ineligibility inferred. Catalog, lookup, binding, family, and strict-complete coverage are unchanged at 120, 3,543, 120, 44/205, and 27/205."
     }
   ],
   "requirements": [
@@ -4489,7 +4500,7 @@
     },
     {
       "id": "REQ-COMMON-RPT-IMMEDIATE-DECODE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
@@ -4502,7 +4513,7 @@
     },
     {
       "id": "REQ-COMMON-RPT-IMMEDIATE-OPERATION",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/ops/repeat/",
@@ -4512,7 +4523,7 @@
     },
     {
       "id": "REQ-COMMON-SINGLE-REPEAT-CARDINALITY",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/repeat/",
@@ -4522,7 +4533,7 @@
     },
     {
       "id": "REQ-COMMON-SINGLE-REPEAT-IRQ-GATE",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/repeat/",
@@ -4549,7 +4560,7 @@
     },
     {
       "id": "REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/repeat/",
@@ -7612,34 +7623,34 @@
     },
     {
       "id": "T-COMMON-RPT-IMMEDIATE-DECODE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/decode/test_rpt_immediate_decode.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rpt_immediate_decode_common"},
       "requirement_ids": ["REQ-COMMON-RPT-IMMEDIATE-DECODE"]
     },
     {
       "id": "T-COMMON-RPT-IMMEDIATE-OPERATION",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/isa/ops/repeat/test_rpt_immediate.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.rpt_immediate_operation_common"},
       "requirement_ids": ["REQ-COMMON-RPT-IMMEDIATE-OPERATION"]
     },
     {
       "id": "T-COMMON-SINGLE-REPEAT-CARDINALITY",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/repeat/test_single_repeat_cardinality.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_cardinality_common"},
       "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-CARDINALITY"]
     },
     {
       "id": "T-COMMON-SINGLE-REPEAT-IRQ-GATE",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/repeat/test_single_repeat_irq_gate.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_request_gate_common"},
       "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-IRQ-GATE"]
     },
     {
@@ -7652,10 +7663,10 @@
     },
     {
       "id": "T-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/repeat/test_single_repeat_body_eligibility.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.repeat_body_eligibility_common"},
       "requirement_ids": ["REQ-COMMON-SINGLE-REPEAT-BODY-ELIGIBILITY"]
     },
     {
