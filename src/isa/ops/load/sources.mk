@@ -14,3 +14,4 @@ ti_c54x_core_sources += src/isa/ops/load/op_ld_status_smem_reverse_carry.c
 ti_c54x_core_sources += src/isa/ops/load/op_dld_long32.c
 ti_c54x_core_sources += src/isa/ops/load/op_ld_src_shift.c
 ti_c54x_core_sources += src/isa/ops/load/op_ld_k.c
+ti_c54x_core_sources += src/isa/ops/load/op_ld_src_asm.c

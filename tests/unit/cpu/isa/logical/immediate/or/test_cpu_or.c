@@ -86,7 +86,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
                            reset_pc, reset_pc + UINT32_C(1), {0U, 0U}, 0U};
     const ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     const ti_c54x_config config = {reset_pc, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -145,7 +145,7 @@ static void test_extension_failure_rolls_back_atomically(void)
                            {0U, 0U}, 0U};
     const ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state before_state;
     ti_c54x_state after_state;
@@ -191,7 +191,7 @@ static void test_fffd_succeeds_and_fffe_rejects_candidate_atomically(void)
         const ti_c54x_bus bus = {.context = &fixture,
                                  .program_read_word = read_word};
         const ti_c54x_config config = {start, {0U, NULL, NULL}};
-        _Alignas(max_align_t) unsigned char storage[512];
+        _Alignas(max_align_t) unsigned char storage[1024];
         ti_c54x_cpu *cpu = NULL;
         ti_c54x_state before_state;
         ti_c54x_state after_state;

@@ -3431,6 +3431,28 @@
       "assertion": "W53 activates the LD Smem[,SHIFT],dst row with SXM widening, signed five-bit shift, OVM saturation, and sticky destination overflow through the shared load core with per-row identity validation, shift-specific completion validators, and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-05 is inventory SUBSET. Realized 135 catalog rows, ID_COUNT 136, 4,023 lookup entries, 135 bindings, family coverage 45/205, and unchanged 27/205 strict complete-form coverage."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-SYNTAX9-OPCODE-P4-66-4-68",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-68"},
+      "assertion": "The LD description defines syntax 9 LD src,ASM[,dst] as a single-word form: 1111_01SD_1000_0010 with the source accumulator in bit 9 and the destination accumulator in bit 8, giving first-word value 0xF482 under mask 0xFCFF; an omitted dst defaults to src. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-SYNTAX9-SEMANTICS-P4-66-4-68",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-68"},
+      "assertion": "The LD description defines dst = src << ASM with the shift count read from the 5-bit ASM field: OVM saturation and OVdst staging apply to ASM shifts exactly as to immediate SHIFT forms, and C/TC stay preserved."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-K-REPEATABILITY-BOUNDARY",
       "immutable": true,
       "state": "PINNED",
@@ -3464,6 +3486,17 @@
       "assertion": "W54 activates the LD src[,SHIFT],dst row with SXM-dependent right shifts, signed five-bit shift, OVM saturation, and sticky destination overflow through accumulator-only inputs with per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-11 is inventory COMPLETE. Realized 136 catalog rows, ID_COUNT 137, 4,151 lookup entries, 136 bindings, family coverage 46/205, and 28/205 strict complete-form coverage."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-SRC-ASM-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "2", "section": "2.5/Table 2\u201128", "printed_page_start": "2-19", "printed_page_end": "2-21"},
+      "assertion": "The repeat section states that instructions listed in Table 2-28 cannot be repeated with RPT or RPTZ; Table 2-28 lists only LD ARP and LD DP among loads, and LD src,ASM[,dst] is not listed. The source does not provide a positive all-unlisted-forms rule, so this record is a repeatability boundary only and does not authorize an ELIGIBLE classification."
+    },
+    {
       "id": "E-PROJECT-P2-W55-LD-K-PLAN-ANCHOR",
       "immutable": true,
       "state": "PINNED",
@@ -3484,6 +3517,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W55: LD #K,dst vertical slice (planned)"},
       "assertion": "W55 activates the LD #K,dst row with zero extension, full status preservation, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-07 is inventory COMPLETE. Realized 137 catalog rows, ID_COUNT 138, 4,663 lookup entries, 137 bindings, family coverage 47/205, and 29/205 strict complete-form coverage."
+    },
+    {
+      "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W56: LD src,ASM[,dst] vertical slice (planned)"},
+      "assertion": "W56 is the planned Table 2-19 form FORM-T2-19-10 activation contract: one LD src,ASM[,dst] row at first-word value 0xF482 under mask 0xFCFF with one program word, the reused ACCUMULATOR_SOURCE_DESTINATION operand layout, UNRESOLVED repeatability, and a new ACCUMULATORS_STATUS_SXM_OVM_ASM resource combination built on a new STATUS_ASM input bit. The signed ASM count drives SXM-dependent shifts with OVM saturation and sticky destination overflow. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W56: LD src,ASM[,dst] vertical slice (planned)"},
+      "assertion": "W56 activates the LD src,ASM[,dst] row with signed ASM shifts, SXM-dependent right shifts, OVM saturation, and sticky destination overflow through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-10 is inventory COMPLETE. Realized 138 catalog rows, ID_COUNT 139, 4,667 lookup entries, 138 bindings, family coverage 48/205, and 30/205 strict complete-form coverage."
     }
   ],
   "requirements": [
@@ -7438,6 +7493,76 @@
       "claim": "Bind FORM-T2-19-07 as inventory COMPLETE under ALL addressing with the LD_K catalog symbol.",
       "evidence_ids": ["E-PROJECT-P2-W55-LD-K-PLAN-ANCHOR", "E-PROJECT-P2-W55-LD-K-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the LD src,ASM[,dst] row with first-word value 0xF482 under mask 0xFCFF, one program word, the ACCUMULATOR_SOURCE_DESTINATION layout, UNRESOLVED repeatability, and ACCUMULATORS_STATUS_SXM_OVM_ASM resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX9-OPCODE-P4-66-4-68"],
+      "test_ids": ["T-COMMON-P2-W56-LD-SRC-ASM-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every LD src,ASM[,dst] first word through the generic decoder with complete bundles, scalar metadata, and source/destination extraction; malformed inputs reject transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX9-OPCODE-P4-66-4-68"],
+      "test_ids": ["T-COMMON-P2-W56-LD-SRC-ASM-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute LD src,ASM[,dst] with signed ASM shifts, SXM-dependent right shifts, OVM saturation, and sticky destination overflow with C/TC preserved; enforce per-row identity on checked and trusted leaves with transactional rejection of unknown or invalid inputs.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX9-SEMANTICS-P4-66-4-68", "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-SRC-ASM-REPEATABILITY-BOUNDARY"],
+      "test_ids": ["T-COMMON-P2-W56-LD-SRC-ASM-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W56-ASM-INPUT-RESOURCE-CARRIER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect the ST1.ASM field through a STATUS_ASM input resource bit with canonical unknownness, independent SXM/ASM knownness, and transactional rejection, growing the input snapshot to 56 bytes.",
+      "evidence_ids": ["E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR", "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W56-ASM-INPUT-RESOURCE-CARRIER"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the LD src,ASM[,dst] row through macro-driven dispatch with the same identity, metadata, and handler presence as the canonical catalog.",
+      "evidence_ids": ["E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR", "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W56-LD-SRC-ASM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LD src,ASM[,dst] through the generic CPU path with single-word PC advance, accumulator-plus-ASM inputs, staged destination overflow, and unknown-input atomicity with no endpoint traffic.",
+      "evidence_ids": ["E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR", "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W56-LD-SRC-ASM-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-19-10 as inventory COMPLETE under ALL addressing with the LD_SRC_ASM catalog symbol.",
+      "evidence_ids": ["E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR", "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -8782,7 +8907,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9246,7 +9371,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -9967,6 +10092,46 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_k.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_k"},
       "requirement_ids": ["REQ-PROJECT-P2-W55-LD-K-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ld_src_asm_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_src_asm_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W56-LD-SRC-ASM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ld_src_asm_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_src_asm_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W56-LD-SRC-ASM-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W56-LD-SRC-ASM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_src_asm.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_src_asm"},
+      "requirement_ids": ["REQ-COMMON-P2-W56-LD-SRC-ASM-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W56-ASM-INPUT-RESOURCE-CARRIER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_asm_status.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_input_collect_asm_status"},
+      "requirement_ids": ["REQ-PROJECT-P2-W56-ASM-INPUT-RESOURCE-CARRIER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W56-LD-SRC-ASM-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ld_src_asm.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_src_asm"},
+      "requirement_ids": ["REQ-PROJECT-P2-W56-LD-SRC-ASM-CPU-RETIREMENT"]
     }
   ]
 }

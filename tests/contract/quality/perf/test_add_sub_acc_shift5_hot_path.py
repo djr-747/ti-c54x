@@ -157,7 +157,7 @@ class AddSubAccShift5HotPathTests(unittest.TestCase):
 #include "isa/ops/op_input.h"
 _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U, "metadata");
 _Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U, "decoded");
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 48U, "input");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 56U, "input");
 #if UINTPTR_MAX == UINT64_MAX
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 104U, "packet");
 _Static_assert(sizeof(ti_c54x_op_effect) == 48U, "effect");

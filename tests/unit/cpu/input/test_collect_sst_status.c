@@ -16,8 +16,8 @@
 #include <stdint.h>
 #include <string.h>
 
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 48U,
-               "op input snapshot must retain its fixed 48-byte layout");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 56U,
+               "op input snapshot must retain its fixed 56-byte layout");
 
 static ti_c54x_input_sources sources_for(
     const ti_c54x_status_register_state *status)
@@ -126,7 +126,7 @@ int main(void)
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_SST, NULL, &output);
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x0100U, &sources, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x0200U, &sources, &output);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_STATUS_SST, &sources,
                            NULL) != TI_C54X_INPUT_COLLECT_OK);

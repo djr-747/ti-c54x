@@ -30,7 +30,7 @@
  * the dual snapshot arm. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 336U,
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 344U,
                "W52B LP64 root unchanged with AR0/BK shadows");
 
 static ti_c54x_op_memory_address_spec

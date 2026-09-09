@@ -36,6 +36,8 @@ typedef struct ti_c54x_op_input_snapshot {
     bool status_sst_known;
     uint8_t status_ovm;
     bool status_ovm_known;
+    uint8_t status_asm;
+    bool status_asm_known;
 } ti_c54x_op_input_snapshot;
 
 #endif /* TI_C54X_ISA_OP_INPUT_H */

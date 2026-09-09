@@ -8,6 +8,7 @@ ti_c54x_add_unit_test(ld_smem_shift16_ops test_ld_smem_shift16.c)
 ti_c54x_add_unit_test(ld_smem_shift test_ld_smem_shift.c)
 ti_c54x_add_unit_test(ld_src_shift test_ld_src_shift.c)
 ti_c54x_add_unit_test(ld_k test_ld_k.c)
+ti_c54x_add_unit_test(ld_src_asm test_ld_src_asm.c)
 ti_c54x_add_unit_test(ld_smem_ts_ops test_ld_smem_ts.c)
 ti_c54x_add_unit_test(standard_indirect_load_modes
                       test_standard_indirect_load_modes.c)

@@ -201,7 +201,7 @@ int main(void)
                     &sources, &output);
     output = sentinel();
     sources = sources_for(&accumulators, &status, &arch_state);
-    expect_rejected((ti_c54x_input_resource_mask)UINT16_C(0x0100), &sources,
+    expect_rejected((ti_c54x_input_resource_mask)UINT16_C(0x0200), &sources,
                     &output);
     output = sentinel();
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(

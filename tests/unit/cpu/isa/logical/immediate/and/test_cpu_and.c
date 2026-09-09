@@ -98,7 +98,7 @@ static void run_success(uint16_t first_word, uint16_t lk, uint8_t source,
     const uint64_t b = UINT64_C(0x00ABCDEF01);
     and_cpu_bus_fixture fixture = {{first_word, lk}, start, {0U, 0U}, 0U,
                                    false, TI_C54X_BUS_FAULT};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu;
     ti_c54x_status_register_state before_status;
     ti_c54x_state state;
@@ -152,7 +152,7 @@ static void run_distinct_unknown_destination(void)
     and_cpu_bus_fixture fixture = {
         {shifted_word(source, destination, shift), lk}, 0U, {0U, 0U}, 0U,
         false, TI_C54X_BUS_FAULT};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -180,7 +180,7 @@ static void run_extension_failure(void)
     const uint16_t first_word = shifted_word(1U, 0U, UINT8_C(1));
     and_cpu_bus_fixture fixture = {{first_word, UINT16_C(0x7FFF)}, 0U,
                                    {0U, 0U}, 0U, true, TI_C54X_BUS_FAULT};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -219,7 +219,7 @@ static void run_boundary_fffd_and_fffe(void)
         and_cpu_bus_fixture fixture = {
             {shifted_word(0U, 0U, 0U), UINT16_C(1)}, UINT32_C(0xFFFD),
             {0U, 0U}, 0U, false, TI_C54X_BUS_FAULT};
-        _Alignas(max_align_t) unsigned char storage[512];
+        _Alignas(max_align_t) unsigned char storage[1024];
         ti_c54x_cpu *cpu = init_cpu(&fixture, UINT32_C(0xFFFD), storage,
                                     sizeof(storage));
         ti_c54x_state state;
@@ -243,7 +243,7 @@ static void run_boundary_fffd_and_fffe(void)
         and_cpu_bus_fixture fixture = {
             {shifted_word(0U, 0U, 0U), UINT16_C(1)}, UINT32_C(0xFFFE),
             {0U, 0U}, 0U, false, TI_C54X_BUS_FAULT};
-        _Alignas(max_align_t) unsigned char storage[512];
+        _Alignas(max_align_t) unsigned char storage[1024];
         ti_c54x_cpu *cpu = init_cpu(&fixture, UINT32_C(0xFFFE), storage,
                                     sizeof(storage));
         ti_c54x_accumulator_state before_accumulators;

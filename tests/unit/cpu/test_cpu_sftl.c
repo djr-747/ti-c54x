@@ -90,7 +90,7 @@ static void run_case(uint8_t source, uint8_t destination, int shift,
     cpu_fixture fixture = {encode_sftl(source, destination, shift), 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -145,7 +145,7 @@ static void run_unknown_selected(uint8_t source)
     cpu_fixture fixture = {encode_sftl(source, 0U, 1), 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -180,7 +180,7 @@ static void run_unknown_unselected(void)
     cpu_fixture fixture = {encode_sftl(0U, 1U, -1), 0U};
     ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -258,7 +258,7 @@ int main(void)
         cpu_fixture fixture = {encode_sftl(0U, 1U, 1), UINT32_C(0xFFFF)};
         ti_c54x_bus bus = {.context = &fixture, .program_read_word = read_word};
         ti_c54x_config config = {UINT32_C(0xFFFF), {0U, NULL, NULL}};
-        _Alignas(max_align_t) unsigned char storage[512];
+        _Alignas(max_align_t) unsigned char storage[1024];
         ti_c54x_cpu *cpu = NULL;
         ti_c54x_status_register_state before_status;
         ti_c54x_accumulator_state before_accumulators;

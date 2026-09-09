@@ -57,7 +57,7 @@ static void init_cpu(exp_fixture *fixture,
         .trace = {0U, NULL, NULL},
     };
 
-    TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, 512U, &config, &bus, cpu) ==
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, 1024U, &config, &bus, cpu) ==
                        TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(*cpu != NULL);
 }
@@ -65,7 +65,7 @@ static void init_cpu(exp_fixture *fixture,
 static void test_t_is_zero_and_unknown_after_init_and_reset(void)
 {
     exp_fixture fixture = {UINT16_C(0xF48E), 0U, 0U};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
 
     init_cpu(&fixture, 0U, storage, &cpu);
@@ -85,7 +85,7 @@ static void run_success_case(uint16_t word,
                              uint16_t expected_t)
 {
     exp_fixture fixture = {word, 0U, 0U};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -134,7 +134,7 @@ static void run_unknown_selected_case(uint16_t word,
                                       uint64_t unselected_value)
 {
     exp_fixture fixture = {word, 0U, 0U};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state before_state;
     ti_c54x_state after_state;
@@ -191,7 +191,7 @@ static void run_unknown_selected_case(uint16_t word,
 static void test_t_write_waits_for_candidate_pc_validation(void)
 {
     exp_fixture fixture = {UINT16_C(0xF48E), UINT32_C(0xFFFF), 0U};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;

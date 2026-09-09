@@ -140,7 +140,7 @@ int main(void)
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_TC, &missing_sources,
                     &output);
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x0100U, &sources, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x0200U, &sources, &output);
 
     /* Raw carriers stay canonical even when their knownness says unknown. */
     accumulators.a_raw40 = TI_C54X_U40_MASK + UINT64_C(1);

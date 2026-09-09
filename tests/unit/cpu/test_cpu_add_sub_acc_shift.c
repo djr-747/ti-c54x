@@ -72,7 +72,7 @@ static void run_guard_shift(void)
                  TI_C54X_BUS_OK};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -112,7 +112,7 @@ static void run_saturating_subtract(void)
                  TI_C54X_BUS_OK};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -188,7 +188,7 @@ static void run_positive_clamp(void)
                  TI_C54X_BUS_OK};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_state state;
     ti_c54x_run_result result;
@@ -223,7 +223,7 @@ static void run_rejected_input(uint8_t reject_kind)
                  TI_C54X_BUS_OK};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_accumulator_state before_accumulators;
     ti_c54x_status_register_state before_status;
@@ -270,7 +270,7 @@ static void run_program_fault(void)
                  TI_C54X_BUS_FAULT};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {0U, {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_accumulator_state before_accumulators;
     ti_c54x_status_register_state before_status;
@@ -300,7 +300,7 @@ static void run_pc_boundary(void)
                  TI_C54X_BUS_OK};
     ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
     const ti_c54x_config config = {UINT32_C(0xFFFF), {0U, NULL, NULL}};
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = NULL;
     ti_c54x_accumulator_state before_accumulators;
     ti_c54x_status_register_state before_status;

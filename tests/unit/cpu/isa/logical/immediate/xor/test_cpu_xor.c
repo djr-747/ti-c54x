@@ -98,7 +98,7 @@ static ti_c54x_cpu *init_cpu(xor_fixture *fixture,
     };
     ti_c54x_cpu *cpu = NULL;
 
-    TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, 512U, &config, &bus, &cpu) ==
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_init(storage, 1024U, &config, &bus, &cpu) ==
                        TI_C54X_ERROR_OK);
     return cpu;
 }
@@ -116,7 +116,7 @@ static void run_success(uint16_t first_word, uint16_t extension_word,
         .extension_address = start + UINT32_C(1),
         .extension_status = TI_C54X_BUS_OK,
     };
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = init_cpu(&fixture, start, storage);
     ti_c54x_status_register_state before_status;
     ti_c54x_state state;
@@ -180,7 +180,7 @@ static void test_extension_failure_is_atomic(void)
         .extension_address = UINT32_C(1),
         .extension_status = TI_C54X_BUS_FAULT,
     };
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = init_cpu(&fixture, 0U, storage);
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -231,7 +231,7 @@ static void test_fffe_fetches_extension_then_rejects_candidate_pc(void)
         .extension_address = UINT32_C(0xFFFF),
         .extension_status = TI_C54X_BUS_OK,
     };
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = init_cpu(&fixture, UINT32_C(0xFFFE), storage);
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
@@ -273,7 +273,7 @@ static void test_unknown_selected_source_rolls_back(void)
         .extension_address = UINT32_C(1),
         .extension_status = TI_C54X_BUS_OK,
     };
-    _Alignas(max_align_t) unsigned char storage[512];
+    _Alignas(max_align_t) unsigned char storage[1024];
     ti_c54x_cpu *cpu = init_cpu(&fixture, 0U, storage);
     ti_c54x_status_register_state before_status;
     ti_c54x_accumulator_state before_accumulators;
