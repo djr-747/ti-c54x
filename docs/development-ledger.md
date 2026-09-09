@@ -7221,3 +7221,43 @@ rewritten after publication.
   or changed. The next documented work is W52C MOD3 dual ADD/SUB
   activation (fourteen rows: all `(m,n)` in `{0..3}^2` minus the nine done
   in W50B/W51C), then reset/MMR edges.
+
+## 2026-09-09 — P2-W52C dual ADD/SUB MOD3 activation
+
+- Implementation commit `3800574` activates the fourteen MOD3-involving
+  syntax-6 dual-memory ADD/SUB rows (`0xA000|(m<<6)|(n<<2)` and
+  `0xA200|(m<<6)|(n<<2)` minus the nine MOD0–MOD2 combinations) with mask
+  `0xFECC`, one program word, `DUAL_DESTINATION_XAR_YAR` layout,
+  `UNRESOLVED` repeatability, and
+  `AUXILIARY_REGISTERS_STATUS_C_SXM_OVM` resources. MOD3 sides retire
+  through the generic W52B root with AR0/BK snapshots, atomic per-row
+  address publication, single X-owned commits for same-AR aliases, and
+  destination routing; no opcode-specific CPU branch and no public ABI
+  change.
+- Evidence and decisions: catalog grows to 134 rows, `ID_COUNT=135`,
+  3,991 lookup entries, 134 trusted bindings; family coverage stays
+  44/205 (21.463%) with unchanged 27/205 strict coverage since the new
+  rows bind SUBSET to the existing `FORM-T2-01-06`/`FORM-T2-02-06`. All
+  MOD3-rejection pins became admission pins (C decode/metadata/modes/
+  memory-effect, six global `3543U` population pins to `3991U`, Python
+  inventory counts to 134/135/3991 and SUBSET 93 to 107). The evidence
+  registry gained the two W52C reverse back-links and the completed
+  W52B-ROOT index row; closure accounting is 219 immutable evidence
+  records, 353 requirements (320 IMPLEMENTED, 2 PLANNED, 31 UNRESOLVED),
+  and 299 tests (297 PASSING, 2 PLANNED).
+- Correction to the in-flight record: an earlier turn reported the C
+  suite green from `make test`, but the `quality-test` prerequisite was
+  failing first, so the C recipe never ran; the six stale `3543U` pins
+  were caught by the sanitizer CTest instead. The true fast-suite result
+  is 273/273 binaries plus `minimal`, verified by direct execution.
+- Validation is GREEN: full compiled C suite 273/273 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source boundaries
+  (507 files, size-review warnings only), manifests, evidence, inventory,
+  and observer-disabled structure pass. Fresh CMake/CTest with ASan/UBSan
+  passes 279/279 excluding `quality.python`
+  (`LSAN_OPTIONS=detect_leaks=0`; LSan itself fatals under the sandbox
+  ptrace restriction). No knob was added or changed. No GitHub or other
+  hosted runner was invoked, and nothing was pushed.
+- Follow-up work: the next documented work is reset/MMR edges
+  (`T-COMMON-RESET-SUBSET` and `T-COMMON-BK-MMR-ROUTING` remain PLANNED).
