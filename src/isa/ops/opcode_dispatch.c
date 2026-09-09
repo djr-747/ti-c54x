@@ -21,6 +21,7 @@
 #include "compare/op_cmpr.h"
 #include "load/op_ld_smem.h"
 #include "load/op_ld_src_shift.h"
+#include "load/op_ld_k.h"
 #include "load/op_dld_long32.h"
 #include "load/op_ld_status_smem.h"
 #include "load/op_ld_t_smem.h"

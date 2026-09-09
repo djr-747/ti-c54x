@@ -7,6 +7,7 @@ $(eval $(call ti_c54x_add_test,ld_status_smem_ops,isa/ops/load,test_ld_status_sm
 $(eval $(call ti_c54x_add_test,ld_smem_shift16_ops,isa/ops/load,test_ld_smem_shift16.c))
 $(eval $(call ti_c54x_add_test,ld_smem_shift,isa/ops/load,test_ld_smem_shift.c))
 $(eval $(call ti_c54x_add_test,ld_src_shift,isa/ops/load,test_ld_src_shift.c))
+$(eval $(call ti_c54x_add_test,ld_k,isa/ops/load,test_ld_k.c))
 $(eval $(call ti_c54x_add_test,ld_smem_ts_ops,isa/ops/load,test_ld_smem_ts.c))
 $(eval $(call ti_c54x_add_test,standard_indirect_load_modes,isa/ops/load,test_standard_indirect_load_modes.c))
 $(eval $(call ti_c54x_add_test,indexed_standard_indirect_load_effects,isa/ops/load,test_indexed_standard_indirect_load_effects.c))
