@@ -189,6 +189,94 @@ ti_c54x_status_register_read_ovm(const ti_c54x_status_register_state *state)
                       TI_C54X_ST1_OVM_MASK, 9U);
 }
 
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_braf(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_BRAF_MASK, 15U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_xf(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_XF_MASK, 13U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_hm(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_HM_MASK, 12U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_intm(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_INTM_MASK, 11U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_c16(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_C16_MASK, 7U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_frct(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      TI_C54X_ST1_FRCT_MASK, 6U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_iptr(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      TI_C54X_PMST_IPTR_MASK, 7U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_ovly(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      TI_C54X_PMST_OVLY_MASK, 5U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_avis(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      TI_C54X_PMST_AVIS_MASK, 4U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_drom(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      TI_C54X_PMST_DROM_MASK, 3U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_clkoff(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      TI_C54X_PMST_CLKOFF_MASK, 2U);
+}
+
 ti_c54x_status_register_status
 ti_c54x_status_register_write_dp(ti_c54x_status_register_state *state,
                                   uint16_t raw_value)

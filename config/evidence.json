@@ -3324,7 +3324,7 @@
   "requirements": [
     {
       "id": "REQ-COMMON-RESET-DOCUMENTED-SUBSET",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/sequencer/",
@@ -4068,7 +4068,7 @@
     },
     {
       "id": "REQ-COMMON-BK-MMR-ROUTING",
-      "state": "PLANNED",
+      "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/bus/",
@@ -7098,10 +7098,10 @@
   "tests": [
     {
       "id": "T-COMMON-RESET-SUBSET",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/sequencer/test_reset.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reset"},
       "requirement_ids": ["REQ-COMMON-RESET-DOCUMENTED-SUBSET"]
     },
     {
@@ -7501,10 +7501,10 @@
     },
     {
       "id": "T-COMMON-BK-MMR-ROUTING",
-      "state": "PLANNED",
+      "state": "PASSING",
       "scope": "COMMON_TI",
       "path": "tests/unit/bus/test_bk_mmr.c",
-      "runner": null,
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.bk_mmr"},
       "requirement_ids": ["REQ-COMMON-BK-MMR-ROUTING"]
     },
     {

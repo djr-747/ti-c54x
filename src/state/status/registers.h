@@ -6,7 +6,8 @@
  *
  * Owns: the private ST0, ST1, and PMST register bank, common reset seed,
  * knownness masks, and checked field-local access for DP, ASM, ARP, TC, C,
- * OVA, OVB, OVM, CPL, CMPT, SXM, and PMST.SST. Reads return canonical zero/unknown values when a
+ * OVA, OVB, OVM, CPL, CMPT, SXM, BRAF, XF, HM, INTM, C16, FRCT, PMST.IPTR,
+ * PMST.OVLY, PMST.AVIS, PMST.DROM, PMST.CLKOFF, and PMST.SST. Reads return canonical zero/unknown values when a
  * field is unknown.
  * Does not own: CPU lifecycle, program counter, opcode semantics, effect
  * sequencing, buses, timing, diagnostics, or public persistence formats.
@@ -75,6 +76,28 @@ ti_c54x_status_register_field_result
 ti_c54x_status_register_read_ovb(const ti_c54x_status_register_state *state);
 ti_c54x_status_register_field_result
 ti_c54x_status_register_read_ovm(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_braf(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_xf(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_hm(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_intm(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_c16(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_frct(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_iptr(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_ovly(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_avis(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_drom(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_clkoff(const ti_c54x_status_register_state *state);
 
 ti_c54x_status_register_status
 ti_c54x_status_register_write_dp(ti_c54x_status_register_state *state,

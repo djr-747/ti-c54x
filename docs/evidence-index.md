@@ -7,8 +7,8 @@ target is `C54X_CORE_COMMON_V1`; the only other target is the planned
 `C54X_VC5402_PROFILE_V1`.
 
 Current registry counts are 2 targets, 7 sources, 219 immutable evidence records,
-353 requirements (320 `IMPLEMENTED`, 2 `PLANNED`, 31 `UNRESOLVED`), and 299 tests
-(297 `PASSING`, 2 `PLANNED`).
+353 requirements (322 `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), and 299 tests
+(299 `PASSING`, 0 `PLANNED`).
 
 Current catalog state is 134 rows with ID_COUNT 135, 3,991 populated
 first-word lookup entries, and 134 inventory bindings. Inventory family coverage
@@ -370,7 +370,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 
 | Requirement ID | State | Target | Claim kind | Owner | Evidence IDs | Test IDs |
 |---|---|---|---|---|---|---|
-| `REQ-COMMON-RESET-DOCUMENTED-SUBSET` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | `T-COMMON-RESET-SUBSET` |
+| `REQ-COMMON-RESET-DOCUMENTED-SUBSET` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | `T-COMMON-RESET-SUBSET` |
 | `REQ-COMMON-ARCH-STATE-RESET-SEED` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/` | `E-TI-C54X-SPRU131G-S6.9-P6-25`, `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5`, `E-TI-C54X-SPRU131G-S4.1.2-P4-6-4-8`, `E-TI-C54X-SPRU131G-S3.3.4.6-P3-28`, `E-TI-C54X-SPRU131G-S3.3.4.7-P3-28`, `E-TI-C54X-SPRU131G-S6.2-T6-2-P6-4`, `E-TI-C54X-SPRU131G-S6.7-P6-20`, `E-TI-C54X-SPRU131G-S6.10.1-P6-27-6-28` | `T-COMMON-ARCH-STATE-RESET-SEED` |
 | `REQ-COMMON-ARCH-STATE-ADDRESS-FIELDS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/` | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5`, `E-TI-C54X-SPRU131G-S4.1.1-P4-2-STATUS-FIELD-WRITES` | `T-COMMON-ARCH-STATE-ADDRESS-FIELDS` |
 | `REQ-COMMON-RESET-UNSPECIFIED-FIELDS` | UNRESOLVED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S6.9-P6-25` | — |
@@ -432,7 +432,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | `T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` |
 | `REQ-COMMON-ARCH-STATE-BK-WIDTH` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/state/` | `E-TI-C54X-SPRU131G-S3.3.4.8-P3-28-BK-WIDTH` | `T-COMMON-ARCH-STATE-BK-WIDTH` |
 | `REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-ARCH-STATE-BK-CONTRACT` | `T-PROJECT-ARCH-STATE-BK-KNOWNNESS` |
-| `REQ-COMMON-BK-MMR-ROUTING` | PLANNED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/bus/` | `E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS` | `T-COMMON-BK-MMR-ROUTING` |
+| `REQ-COMMON-BK-MMR-ROUTING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/bus/` | `E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-BK-MMR-ADDRESS` | `T-COMMON-BK-MMR-ROUTING` |
 | `REQ-COMMON-INDIRECT-CIRCULAR-BK` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-BK`, `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | `T-COMMON-INDIRECT-CIRCULAR-BK` |
 | `REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/address/` | `E-TI-C54X-SPRU131G-S5.5.1-P5-10-5-11`, `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16`, `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM` | `T-COMMON-INDIRECT-CIRCULAR-BK` |
 | `REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/` | `E-TI-C54X-SPRU131G-S5.5.3-T5-4-P5-13-MOD8-MOD10-WORD16`, `E-TI-C54X-SPRU131G-S5.5.3.4-P5-15-5-16-CIRCULAR-ALGORITHM`, `E-TI-C54X-SPRU131G-S5.5.5-P5-24` | `T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION` |
@@ -732,7 +732,7 @@ exist in the repository.
 
 | Test ID | State | Scope | Path | Runner | Requirement IDs |
 |---|---|---|---|---|---|
-| `T-COMMON-RESET-SUBSET` | PLANNED | COMMON_TI | `tests/unit/sequencer/test_reset.c` | `null` | `REQ-COMMON-RESET-DOCUMENTED-SUBSET` |
+| `T-COMMON-RESET-SUBSET` | PASSING | COMMON_TI | `tests/unit/sequencer/test_reset.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.reset"}` | `REQ-COMMON-RESET-DOCUMENTED-SUBSET` |
 | `T-COMMON-ARCH-STATE-RESET-SEED` | PASSING | COMMON_TI | `tests/unit/state/test_arch_state_reset.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_reset"}` | `REQ-COMMON-ARCH-STATE-RESET-SEED` |
 | `T-COMMON-ARCH-STATE-ADDRESS-FIELDS` | PASSING | COMMON_TI | `tests/unit/state/test_arch_state_address_fields.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.arch_state_address_fields"}` | `REQ-COMMON-ARCH-STATE-ADDRESS-FIELDS` |
 | `T-COMMON-NOP-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_nop_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.nop_decode"}` | `REQ-COMMON-NOP-DECODE` |
@@ -779,7 +779,7 @@ exist in the repository.
 | `T-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/test_indirect_reverse_carry_effect_apply_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_reverse_carry_effect_apply_contract"}` | `REQ-PROJECT-INDIRECT-REVERSE-CARRY-APPLICATION` |
 | `T-COMMON-ARCH-STATE-BK-WIDTH` | PASSING | COMMON_TI | `tests/unit/state/test_block_size_register.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.block_size_register"}` | `REQ-COMMON-ARCH-STATE-BK-WIDTH` |
 | `T-PROJECT-ARCH-STATE-BK-KNOWNNESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_block_size_register_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.block_size_register_contract"}` | `REQ-PROJECT-ARCH-STATE-BK-KNOWNNESS` |
-| `T-COMMON-BK-MMR-ROUTING` | PLANNED | COMMON_TI | `tests/unit/bus/test_bk_mmr.c` | `null` | `REQ-COMMON-BK-MMR-ROUTING` |
+| `T-COMMON-BK-MMR-ROUTING` | PASSING | COMMON_TI | `tests/unit/bus/test_bk_mmr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bk_mmr"}` | `REQ-COMMON-BK-MMR-ROUTING` |
 | `T-COMMON-INDIRECT-CIRCULAR-BK` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_circular_word.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_circular_word"}` | `REQ-COMMON-INDIRECT-CIRCULAR-BK`, `REQ-COMMON-INDIRECT-CIRCULAR-MOD8-MOD10-WORD16` |
 | `T-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION` | PASSING | COMMON_TI | `tests/unit/sequencer/test_indirect_circular_effect_apply.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_circular_effect_apply"}` | `REQ-COMMON-INDIRECT-CIRCULAR-EFFECT-APPLICATION` |
 | `T-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_indirect_circular_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_circular_contract"}` | `REQ-PROJECT-INDIRECT-CIRCULAR-PLANNER-CONTRACT` |
