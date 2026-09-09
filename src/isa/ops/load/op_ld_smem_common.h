@@ -32,6 +32,7 @@ typedef struct ti_c54x_ld_smem_operands {
     uint8_t destination;
     uint8_t arf;
     uint8_t mode;
+    uint8_t shift_raw5;
 } ti_c54x_ld_smem_operands;
 
 ti_c54x_op_status ti_c54x_ld_smem_validate_instruction(
@@ -45,6 +46,20 @@ ti_c54x_op_status ti_c54x_ld_smem_validate_trusted_operands(
     ti_c54x_ld_smem_operands *decoded_operands);
 
 ti_c54x_op_status ti_c54x_ld_smem_validate_mode(uint8_t mode);
+
+/* Shift-form validation for the two-word D/ARF/MOD/SHIFT5 layout. In
+ * addition to the shared identity checks it verifies the second-word
+ * fixed pattern (mask 0xFEE0 equals 0x0C40) and extracts the raw five-bit
+ * shift into operands->shift_raw5. */
+ti_c54x_op_status ti_c54x_ld_smem_validate_shift_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_input_resource_mask expected_resources,
+    ti_c54x_ld_smem_operands *operands);
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_shift_trusted_operands(
+    const ti_c54x_trusted_operand_values *operands,
+    ti_c54x_ld_smem_operands *decoded_operands);
 
 ti_c54x_op_status ti_c54x_ld_smem_validate_indexed_instruction(
     const ti_c54x_decoded_instruction *instruction,

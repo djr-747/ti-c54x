@@ -7,7 +7,8 @@
  * Owns: checked and trusted pure semantic leaves for standard-indirect WORD16
  * indirect loads into accumulator A or B, including circular MOD8/MOD10 and
  * the unshifted,
- * SXM-dependent logical-left-shift-16, and T-register-shift forms. Each
+ * SXM-dependent logical-left-shift-16, T-register-shift, and five-bit
+ * SHIFT forms with OVM saturation and destination overflow. Each
  * checked leaf validates its catalog/decode contract and stages a generic
  * memory-read effect; its static
  * completion validates the copied instruction and input before staging the
@@ -42,6 +43,17 @@ ti_c54x_op_status ti_c54x_op_ld_smem_shift16(
 
 ti_c54x_op_status ti_c54x_op_ld_smem_ts(
     const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_ld_smem_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input,
     ti_c54x_op_effect *effect);
 

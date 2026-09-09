@@ -26,6 +26,9 @@ LAYOUT_ACCUMULATOR_ARF = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF"
 LAYOUT_ARF_MOD = "TI_C54X_OPERAND_LAYOUT_ARF_MOD"
 LAYOUT_ARF_EXTENSION16_MOD = "TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD"
 LAYOUT_ACCUMULATOR_ARF_MOD = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD"
+LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5 = (
+    "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5"
+)
 LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
@@ -40,6 +43,7 @@ REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_STATUS_SXM = "TI_C54X_INPUT_RESOURCES_STATUS_SXM"
+RESOURCES_STATUS_SXM_OVM = "TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM"
 RESOURCES_STATUS_SXM_T_REGISTER = (
     "TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER"
 )
@@ -136,7 +140,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 134)
+        self.assertEqual(len(catalog_rows), 135)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -380,6 +384,18 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_ARF_MOD)
         self.assertEqual(ld_smem_shift16.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_smem_shift16.input_resources, RESOURCES_STATUS_SXM)
+
+        ld_smem_shift = rows_by_symbol["LD_SMEM_SHIFT"]
+        self.assertEqual(ld_smem_shift.symbol, "LD_SMEM_SHIFT")
+        self.assertEqual(ld_smem_shift.handler, "ld_smem_shift")
+        self.assertEqual(ld_smem_shift.first_word_value, 0x6F80)
+        self.assertEqual(ld_smem_shift.first_word_mask, 0xFFE0)
+        self.assertEqual(ld_smem_shift.program_word_count, 2)
+        self.assertEqual(ld_smem_shift.operand_layout,
+                         LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5)
+        self.assertEqual(ld_smem_shift.repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(ld_smem_shift.input_resources,
+                         RESOURCES_STATUS_SXM_OVM)
 
         st_t = rows_by_symbol["ST_T_SMEM"]
         self.assertEqual(st_t.symbol, "ST_T_SMEM")

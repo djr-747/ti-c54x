@@ -115,6 +115,117 @@ ti_c54x_op_status ti_c54x_ld_smem_validate_trusted_operands(
     decoded_operands->destination = (uint8_t)operands->values[0].raw_value;
     decoded_operands->arf = (uint8_t)operands->values[1].raw_value;
     decoded_operands->mode = (uint8_t)operands->values[2].raw_value;
+    decoded_operands->shift_raw5 = UINT8_C(0);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_shift_instruction(
+    const ti_c54x_decoded_instruction *instruction,
+    ti_c54x_opcode_id expected_id,
+    ti_c54x_input_resource_mask expected_resources,
+    ti_c54x_ld_smem_operands *operands)
+{
+    const ti_c54x_opcode_metadata *metadata;
+    ti_c54x_operand_layout_set_view layout_view;
+    ti_c54x_operand_field_value destination_field = {0U, 0U};
+    ti_c54x_operand_field_value arf_field = {0U, 0U};
+    ti_c54x_operand_field_value mode_field = {0U, 0U};
+    ti_c54x_operand_field_value shift_field = {0U, 0U};
+
+    if (instruction == NULL || operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+
+    metadata = ti_c54x_opcode_metadata_for_id(expected_id);
+    if (metadata == NULL || metadata->id != expected_id ||
+        metadata->first_word_mask == UINT16_C(0) ||
+        (metadata->first_word_value & (uint16_t)~metadata->first_word_mask) !=
+            UINT16_C(0) ||
+        metadata->program_word_count != UINT8_C(2) ||
+        metadata->operand_layout !=
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5 ||
+        metadata->repeatability < TI_C54X_REPEATABILITY_UNRESOLVED ||
+        metadata->repeatability >= TI_C54X_REPEATABILITY_COUNT ||
+        (metadata->input_resources &
+         (ti_c54x_input_resource_mask)~TI_C54X_INPUT_RESOURCES_KNOWN_MASK) !=
+            TI_C54X_INPUT_RESOURCES_NONE ||
+        metadata->input_resources != expected_resources ||
+        instruction->id != expected_id ||
+        instruction->operand_layout != metadata->operand_layout ||
+        instruction->repeatability != metadata->repeatability ||
+        instruction->input_resources != metadata->input_resources ||
+        instruction->bundle.program_word_count != UINT8_C(2) ||
+        instruction->bundle.program_word_count != metadata->program_word_count ||
+        (uint16_t)(instruction->bundle.program_words[0] &
+                   metadata->first_word_mask) != metadata->first_word_value ||
+        (uint16_t)(instruction->bundle.program_words[1] &
+                   UINT16_C(0xFEE0)) != UINT16_C(0x0C40)) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    if (ti_c54x_operand_layout_set_resolve(
+            metadata->operand_layout, metadata->program_word_count,
+            &layout_view) != TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    {
+        const ti_c54x_program_words_view words = {
+            instruction->bundle.program_words,
+            instruction->bundle.program_word_count};
+        if (ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(0), &destination_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(1), &arf_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(2), &mode_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(3), &shift_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            destination_field.width_bits != UINT8_C(1) ||
+            destination_field.raw_value > UINT64_C(1) ||
+            arf_field.width_bits != UINT8_C(3) ||
+            arf_field.raw_value > UINT64_C(7) ||
+            mode_field.width_bits != UINT8_C(2) ||
+            mode_field.raw_value > UINT64_C(3) ||
+            shift_field.width_bits != UINT8_C(5) ||
+            shift_field.raw_value > UINT64_C(0x1F)) {
+            return TI_C54X_OP_STATUS_INVALID_DECODE;
+        }
+    }
+
+    operands->destination = (uint8_t)destination_field.raw_value;
+    operands->arf = (uint8_t)arf_field.raw_value;
+    operands->mode = (uint8_t)mode_field.raw_value;
+    operands->shift_raw5 = (uint8_t)shift_field.raw_value;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_ld_smem_validate_shift_trusted_operands(
+    const ti_c54x_trusted_operand_values *operands,
+    ti_c54x_ld_smem_operands *decoded_operands)
+{
+    if (operands == NULL || decoded_operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count < UINT8_C(4) ||
+        operands->values[0].width_bits != UINT8_C(1) ||
+        operands->values[0].raw_value > UINT64_C(1) ||
+        operands->values[1].width_bits != UINT8_C(3) ||
+        operands->values[1].raw_value > UINT64_C(7) ||
+        operands->values[2].width_bits != UINT8_C(2) ||
+        operands->values[2].raw_value > UINT64_C(3) ||
+        operands->values[3].width_bits != UINT8_C(5) ||
+        operands->values[3].raw_value > UINT64_C(0x1F)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    decoded_operands->destination = (uint8_t)operands->values[0].raw_value;
+    decoded_operands->arf = (uint8_t)operands->values[1].raw_value;
+    decoded_operands->mode = (uint8_t)operands->values[2].raw_value;
+    decoded_operands->shift_raw5 = (uint8_t)operands->values[3].raw_value;
     return TI_C54X_OP_STATUS_OK;
 }
 

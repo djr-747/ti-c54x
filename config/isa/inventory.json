@@ -1758,9 +1758,9 @@
       "table_ordinal": 5,
       "mnemonic": "LD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": ["LD_SMEM_SHIFT"]
     },
     {
       "id": "FORM-T2-19-06",
@@ -2985,6 +2985,7 @@
     {"catalog_symbol": "SUB_DUAL_M3_M0", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD3_MOD0"},
     {"catalog_symbol": "SUB_DUAL_M3_M1", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD3_MOD1"},
     {"catalog_symbol": "SUB_DUAL_M3_M2", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD3_MOD2"},
-    {"catalog_symbol": "SUB_DUAL_M3_M3", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD3_MOD3"}
+    {"catalog_symbol": "SUB_DUAL_M3_M3", "form_id": "FORM-T2-02-06", "coverage": "SUBSET", "addressing_subset": "DUAL_INDIRECT_MOD3_MOD3"},
+    {"catalog_symbol": "LD_SMEM_SHIFT", "form_id": "FORM-T2-19-05", "coverage": "SUBSET", "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"}
   ]
 }

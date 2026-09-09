@@ -131,6 +131,24 @@ static const ti_c54x_operand_field_layout
 static const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod_set = {
     ti_c54x_accumulator_arf_mod_operands, UINT8_C(3)};
 
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_arf_mod_shift5_destination_piece = {
+        UINT8_C(1), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_arf_mod_shift5_shift_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_arf_mod_shift5_operands[4] = {
+        {&ti_c54x_accumulator_arf_mod_shift5_destination_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_accumulator_arf_arf_piece, UINT8_C(1), UINT8_C(3)},
+        {&ti_c54x_standard_indirect_mod_piece, UINT8_C(1), UINT8_C(2)},
+        {&ti_c54x_accumulator_arf_mod_shift5_shift_piece, UINT8_C(1),
+         UINT8_C(5)}};
+static const ti_c54x_operand_layout_set
+    ti_c54x_accumulator_arf_mod_shift5_set = {
+        ti_c54x_accumulator_arf_mod_shift5_operands, UINT8_C(4)};
+
 static const ti_c54x_operand_field_layout ti_c54x_arf_mod4_operands[2] = {
     {&ti_c54x_arf_piece, UINT8_C(1), UINT8_C(3)},
     {&ti_c54x_standard_indirect_mod4_piece, UINT8_C(1), UINT8_C(4)}};
@@ -336,6 +354,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD, UINT8_C(1),
             &ti_c54x_accumulator_arf_mod_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5, UINT8_C(2),
+            &ti_c54x_accumulator_arf_mod_shift5_set},
         [TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC] = {
             TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC, UINT8_C(1),
             &ti_c54x_max_min_destination_set},
@@ -479,6 +500,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_accumulator_arf_mod_set;
+    case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_accumulator_arf_mod_shift5_set;
     case TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_max_min_destination_set;

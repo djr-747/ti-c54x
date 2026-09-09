@@ -133,6 +133,103 @@ static ti_c54x_op_status ld_smem_ts_complete_values(
         shift_bits > UINT8_C(31), next_effect);
 }
 
+static ti_c54x_op_status ld_smem_validate_ovm(
+    const ti_c54x_op_input_snapshot *input)
+{
+    if (!input->status_ovm_known) {
+        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
+    }
+    if (input->status_ovm > UINT8_C(1)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ld_smem_shift_complete_values(
+    uint8_t destination,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    uint8_t shift_raw5,
+    ti_c54x_op_effect *next_effect)
+{
+    ti_c54x_op_status input_status = ld_smem_validate_sxm(input);
+    ti_c54x_op_status ovm_status = ld_smem_validate_ovm(input);
+    ti_c54x_op_effect staged;
+    ti_c54x_u40_t widened;
+    ti_c54x_u40_t value_raw40;
+    uint64_t guard;
+    uint8_t bit31;
+    bool overflow;
+    bool negative;
+
+    if (input_status != TI_C54X_OP_STATUS_OK) {
+        return input_status;
+    }
+    if (ovm_status != TI_C54X_OP_STATUS_OK) {
+        return ovm_status;
+    }
+
+    widened = ti_c54x_u40_from_unsigned(read_value_word);
+    if (input->status_sxm != UINT8_C(0) &&
+        (read_value_word & UINT16_C(0x8000)) != UINT16_C(0)) {
+        widened = (TI_C54X_U40_MASK & ~UINT64_C(0xFFFF)) |
+                  (uint64_t)read_value_word;
+    }
+    negative = (widened & TI_C54X_U40_SIGN_BIT) != UINT64_C(0);
+    if (shift_raw5 <= UINT8_C(15)) {
+        value_raw40 = ti_c54x_u40_logical_left_shift(widened, shift_raw5);
+    } else {
+        value_raw40 = ti_c54x_u40_arithmetic_right_shift(
+            widened, (uint64_t)(UINT8_C(32) - shift_raw5));
+    }
+    guard = (value_raw40 >> UINT64_C(32)) & UINT64_C(0xFF);
+    bit31 = (uint8_t)((value_raw40 >> UINT64_C(31)) & UINT64_C(1));
+    overflow = guard != (bit31 != UINT8_C(0) ? UINT64_C(0xFF) : UINT64_C(0));
+    if (overflow && input->status_ovm != UINT8_C(0)) {
+        value_raw40 = negative ? UINT64_C(0xFF80000000) : UINT64_C(0x007FFFFFFF);
+    }
+    staged = (ti_c54x_op_effect){
+        .kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE,
+        .payload.accumulator_write = {
+            .destination = destination,
+            .value_raw40 = value_raw40,
+            .status_delta = {
+                .c_action = TI_C54X_OP_STATUS_BIT_PRESERVE,
+                .tc_action = TI_C54X_OP_STATUS_BIT_PRESERVE,
+                .destination_overflow_action =
+                    overflow ? TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1
+                             : TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE}}};
+    *next_effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status ld_smem_shift_complete(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t read_value_word,
+    ti_c54x_op_effect *next_effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || next_effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_shift_instruction(
+        instruction, TI_C54X_OPCODE_ID_LD_SMEM_SHIFT,
+        TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ti_c54x_ld_smem_validate_mode(operands.mode);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return ld_smem_shift_complete_values(operands.destination, input,
+                                         read_value_word,
+                                         operands.shift_raw5, next_effect);
+}
+
 static ti_c54x_op_status ld_smem_complete(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input,
@@ -389,5 +486,79 @@ ti_c54x_op_status ti_c54x_trusted_op_ld_smem_ts(
     }
     ti_c54x_ld_smem_stage_memory_read(&decoded_operands, ld_smem_ts_complete,
                                       effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_op_ld_smem_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = ti_c54x_ld_smem_validate_shift_instruction(
+        instruction, TI_C54X_OPCODE_ID_LD_SMEM_SHIFT,
+        TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM, &operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ti_c54x_ld_smem_validate_mode(operands.mode);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ld_smem_validate_sxm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ld_smem_validate_ovm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_memory_read(&operands, ld_smem_shift_complete,
+                                      effect);
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_ld_smem_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    ti_c54x_ld_smem_operands decoded_operands;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || operands == NULL || input == NULL ||
+        effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (instruction->bundle.program_word_count != UINT8_C(2) ||
+        (uint16_t)(instruction->bundle.program_words[1] &
+                   UINT16_C(0xFEE0)) != UINT16_C(0x0C40)) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+    status = ti_c54x_ld_smem_validate_shift_trusted_operands(
+        operands, &decoded_operands);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ti_c54x_ld_smem_validate_mode(decoded_operands.mode);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ld_smem_validate_sxm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    status = ld_smem_validate_ovm(input);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    ti_c54x_ld_smem_stage_memory_read(&decoded_operands,
+                                      ld_smem_shift_complete, effect);
     return TI_C54X_OP_STATUS_OK;
 }
