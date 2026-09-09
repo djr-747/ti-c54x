@@ -2,7 +2,7 @@
 """Contracts for inventory-to-catalog identity binding.
 
 Owns: one-to-one symbol identities, multi-binding subset forms, and the
-    frozen 27 complete/75 subset checkpoint, including the DLD/DST LONG32
+    frozen 27 complete/93 subset checkpoint, including the DLD/DST LONG32
     MOD13 projection. Does not
 own: opcode value/mask parsing or instruction execution semantics.
 """
@@ -37,6 +37,15 @@ ATOMIC_LOGICAL_SUBSET = {
     "ORM_SMEM_MOD0_3",
     "XORM_SMEM_MOD0_3",
 }
+DUAL_ARITHMETIC_SUBSET = {
+    "ADD_DUAL_MOD0",
+    "SUB_DUAL_MOD0",
+    *(f"{mnemonic}_DUAL_M{x}_M{y}"
+      for mnemonic in ("ADD", "SUB")
+      for x in range(3)
+      for y in range(3)
+      if (x, y) != (0, 0)),
+}
 
 
 class InventoryCatalogBindingTests(unittest.TestCase):
@@ -51,25 +60,33 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 104)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 104)
+        self.assertEqual(len(bindings), 120)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 120)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 27)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 77)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 93)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
             | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)}
             | ATOMIC_LOGICAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
-            | {"ADD_DUAL_MOD0", "SUB_DUAL_MOD0"},
+            | DUAL_ARITHMETIC_SUBSET,
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
                 self.assertEqual(binding["addressing_subset"], "ALL")
             elif binding["catalog_symbol"] in {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}:
                 self.assertEqual(binding["addressing_subset"], "LONG_OFFSET_MOD13_CMPT0")
-            elif binding["catalog_symbol"] in {"ADD_DUAL_MOD0", "SUB_DUAL_MOD0"}:
-                self.assertEqual(binding["addressing_subset"], "DUAL_INDIRECT_MOD0_MOD0")
+            elif binding["catalog_symbol"] in DUAL_ARITHMETIC_SUBSET:
+                symbol = binding["catalog_symbol"]
+                if symbol.endswith("_MOD0"):
+                    self.assertEqual(binding["addressing_subset"], "DUAL_INDIRECT_MOD0_MOD0")
+                else:
+                    modes = symbol.rsplit("_M", 2)
+                    self.assertEqual(
+                        binding["addressing_subset"],
+                        f"DUAL_INDIRECT_MOD{modes[1]}_MOD{modes[2]}",
+                    )
             else:
                 expected = (
                     "STANDARD_INDIRECT_MOD0_MOD3"

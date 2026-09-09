@@ -3198,6 +3198,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51B: dual-memory root commit/publication contract (planned)"},
       "assertion": "W51B implements the generic dual-memory root commit/publication seam: the persistent snapshot carries exactly two value-owned commit descriptors (48 bytes) alongside the copied X/Y DATA READ requests, with zeroed no-update commits on MOD0 and aliased-Y sides and exact non-wrapping post-access AR updates on MOD1/MOD2 sides under Xmod precedence. The root validates copied mode/selector/address shadows and live AR/PC identity before issue and at every resume boundary, publishes distinct-AR updates atomically only after both reads are READY and ordinary-effect staging succeeds, and keeps WAIT, FAULT, cancellation, and other nonterminal paths non-publishing. LP64/ILP32 root sizes remain 336/308 bytes; no opcode row, CPU branch, public ABI, catalog, or inventory change is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51C: dual ADD/SUB MOD0–MOD2 activation (planned)"},
+      "assertion": "W51C is the planned syntax-6 activation contract: sixteen non-MOD0/MOD0 ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2}^2 minus (0,0), each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. A clean-decode probe proves all sixteen neighborhoods are currently unclaimed while MOD3 neighborhoods stay deferred. Checked and trusted leaves share one core parameterized by operation and both modes; the W51B root publishes the staged updates with no opcode-specific CPU branch; inventory binds all nine combos per form as SUBSET. Lifecycle and ABI policy are project contracts."
+    },
+    {
+      "id": "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W51C: dual ADD/SUB MOD0–MOD2 activation (planned)"},
+      "assertion": "W51C activates sixteen non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows through the W51B root with per-row first words under mask 0xFECC, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share one operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change; all nine MOD0-MOD2 combinations per form are inventory SUBSET while MOD3 stays deferred. Realized 120 catalog rows, ID_COUNT 121, 3,543 lookup entries, 120 bindings, 44/205 family coverage, and unchanged 27/205 strict complete-form coverage; the MOD0 benchmark roster is frozen and its smoke preserves semantic hash b40823092c0aa605."
     }
   ],
   "requirements": [
@@ -6822,6 +6844,66 @@
       "claim": "Extend the generic dual-memory instruction root with exactly two value-owned post-access commit descriptors and copied mode/selector/address shadows. Validate those shadows against live architectural state before publication; reject malformed or drifted inputs transactionally. Publish distinct-AR commits atomically only after both DATA reads are READY and ordinary-effect staging succeeds, publish one Xmod-owned commit for same-AR aliases, and keep WAIT, FAULT, cancellation, and other nonterminal paths non-publishing. Preserve LP64/ILP32 root sizes at 336/308 bytes and do not activate opcode rows or widen the public ABI.",
       "evidence_ids": ["E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION-PLAN-ANCHOR", "E-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION"],
       "test_ids": ["T-PROJECT-P2-W51B-DUAL-MEMORY-ROOT-CONTRACT"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W51C-DUAL-MODES-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Declare the sixteen non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2}^2 minus (0,0), each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16", "E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES"],
+      "test_ids": ["T-COMMON-P2-W51C-DUAL-MODES-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W51C-DUAL-MODES-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every new row across the full destination/selector fan-out to its exact identity with D/Xar/Yar operand extraction, while every MOD3-involving neighborhood stays undecoded.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16"],
+      "test_ids": ["T-COMMON-P2-W51C-DUAL-MODES-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W51C-DUAL-MODES-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Stage the row's exact X/Y modes in checked and trusted leaves that share one operation/mode-parameterized core with per-row identity validation and completion validators, with transactional wrong-identity rejection.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16", "E-TI-C54X-SPRU131G-S5.5.4-T5-8-P5-19-5-22-DUAL-MODES", "E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS", "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION"],
+      "test_ids": ["T-COMMON-P2-W51C-DUAL-MODES-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind all sixteen new rows through the macro-driven checked and trusted dispatch tables with no opcode-specific CPU branch and no public ABI change.",
+      "evidence_ids": ["E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION-PLAN-ANCHOR", "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W51C-DUAL-MODES-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire every new row through the generic W51B root with atomic per-row address publication, single X-owned commits for same-AR aliases, WAIT persistence of staged commits, and destination routing.",
+      "evidence_ids": ["E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION-PLAN-ANCHOR", "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W51C-DUAL-MODES-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W51C-DUAL-MODES-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind all nine MOD0-MOD2 combinations per syntax-6 form as inventory SUBSET under per-row DUAL_INDIRECT_MOD{m}_MOD{n} addressing while MOD3 stays deferred and the MOD0 benchmark roster stays frozen.",
+      "evidence_ids": ["E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION-PLAN-ANCHOR", "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
     }
   ],
   "tests": [
@@ -8166,7 +8248,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9142,7 +9224,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_add_sub_dual_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY", "REQ-PROJECT-P2-W51C-DUAL-MODES-INVENTORY"]
     },
     {
       "id": "T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH",
@@ -9167,6 +9249,38 @@
       "path": "tests/unit/sequencer/instruction/test_dual_memory_instruction_w51b_contract.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_memory_instruction_w51b_contract"},
       "requirement_ids": ["REQ-PROJECT-P2-W51B-DUAL-MODES-ROOT-TRANSACTION"]
+    },
+    {
+      "id": "T-COMMON-P2-W51C-DUAL-MODES-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_add_sub_dual_modes_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_modes_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W51C-DUAL-MODES-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W51C-DUAL-MODES-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_add_sub_dual_modes_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_modes_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W51C-DUAL-MODES-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W51C-DUAL-MODES-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_sub_dual_modes.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_modes"},
+      "requirement_ids": ["REQ-COMMON-P2-W51C-DUAL-MODES-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W51C-DUAL-MODES-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_modes.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_add_sub_dual_modes"},
+      "requirement_ids": ["REQ-PROJECT-P2-W51C-DUAL-MODES-CPU-RETIREMENT"]
     }
   ]
 }

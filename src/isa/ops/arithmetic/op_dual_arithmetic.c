@@ -1,8 +1,11 @@
 /* Module contract
- * Owns: checked and trusted syntax-6 dual-memory ADD/SUB MOD0 semantic
- * leaves.  The leaves stage one dual WORD16 read effect and, on pair
- * completion, one accumulator write with fixed-left-16 arithmetic, OVM
- * saturation, sticky destination overflow, and fixed-shift carry policy.
+ * Owns: checked and trusted syntax-6 dual-memory ADD/SUB semantic leaves
+ * across X/Y MOD0/MOD1/MOD2 addressing.  The leaves stage one dual WORD16
+ * read effect carrying the row's modes and, on pair completion, one
+ * accumulator write with fixed-left-16 arithmetic, OVM saturation, sticky
+ * destination overflow, and fixed-shift carry policy.  One shared core is
+ * parameterized by operation and both modes; per-row wrappers and completion
+ * validators prove the exact decoded identity.
  * Does not own: catalog generation, operand layout definitions, address
  * resolution, memory/bus execution, architectural mutation, sequencing,
  * timing, observers, diagnostics, or allocation.  Borrowed instruction,
@@ -212,20 +215,30 @@ static ti_c54x_op_status complete_values(
     return TI_C54X_OP_STATUS_OK;
 }
 
+static ti_c54x_op_status complete_for_id(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, uint16_t x_word, uint16_t y_word,
+    ti_c54x_opcode_id expected_id, uint16_t expected_value,
+    ti_c54x_dual_arithmetic_kind kind, ti_c54x_op_effect *next_effect)
+{
+    ti_c54x_dual_arithmetic_operands operands;
+    ti_c54x_op_status status = validate_metadata(
+        instruction, expected_id, expected_value, &operands);
+    if (status != TI_C54X_OP_STATUS_OK || next_effect == NULL || input == NULL) {
+        return status != TI_C54X_OP_STATUS_OK ? status
+                                               : TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    return complete_values(&operands, input, x_word, y_word, kind,
+                           next_effect);
+}
+
 static ti_c54x_op_status complete_add_dual(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, uint16_t x_word, uint16_t y_word,
     ti_c54x_op_effect *next_effect)
 {
-    ti_c54x_dual_arithmetic_operands operands;
-    ti_c54x_op_status status = validate_metadata(
-        instruction, TI_C54X_OPCODE_ID_ADD_DUAL_MOD0, UINT16_C(0xA000),
-        &operands);
-    if (status != TI_C54X_OP_STATUS_OK || next_effect == NULL || input == NULL) {
-        return status != TI_C54X_OP_STATUS_OK ? status
-                                               : TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-    return complete_values(&operands, input, x_word, y_word,
+    return complete_for_id(instruction, input, x_word, y_word,
+                           TI_C54X_OPCODE_ID_ADD_DUAL_MOD0, UINT16_C(0xA000),
                            TI_C54X_DUAL_ARITHMETIC_ADD, next_effect);
 }
 
@@ -234,21 +247,60 @@ static ti_c54x_op_status complete_sub_dual(
     const ti_c54x_op_input_snapshot *input, uint16_t x_word, uint16_t y_word,
     ti_c54x_op_effect *next_effect)
 {
-    ti_c54x_dual_arithmetic_operands operands;
-    ti_c54x_op_status status = validate_metadata(
-        instruction, TI_C54X_OPCODE_ID_SUB_DUAL_MOD0, UINT16_C(0xA200),
-        &operands);
-    if (status != TI_C54X_OP_STATUS_OK || next_effect == NULL || input == NULL) {
-        return status != TI_C54X_OP_STATUS_OK ? status
-                                               : TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-    return complete_values(&operands, input, x_word, y_word,
+    return complete_for_id(instruction, input, x_word, y_word,
+                           TI_C54X_OPCODE_ID_SUB_DUAL_MOD0, UINT16_C(0xA200),
                            TI_C54X_DUAL_ARITHMETIC_SUB, next_effect);
 }
 
+#define DEFINE_DUAL_MODES_COMPLETE(suffix, id, value, kind)                   \
+    static ti_c54x_op_status complete_##suffix(                                 \
+        const ti_c54x_decoded_instruction *instruction,                        \
+        const ti_c54x_op_input_snapshot *input, uint16_t x_word,               \
+        uint16_t y_word, ti_c54x_op_effect *next_effect)                       \
+    {                                                                          \
+        return complete_for_id(instruction, input, x_word, y_word, id, value, \
+                               kind, next_effect);                             \
+    }
+
+DEFINE_DUAL_MODES_COMPLETE(add_m0_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M1,
+                           UINT16_C(0xA004), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m0_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M2,
+                           UINT16_C(0xA008), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m1_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M0,
+                           UINT16_C(0xA040), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m1_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M1,
+                           UINT16_C(0xA044), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m1_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M2,
+                           UINT16_C(0xA048), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m2_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M0,
+                           UINT16_C(0xA080), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m2_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M1,
+                           UINT16_C(0xA084), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m2_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M2,
+                           UINT16_C(0xA088), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(sub_m0_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M1,
+                           UINT16_C(0xA204), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m0_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M2,
+                           UINT16_C(0xA208), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m1_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M0,
+                           UINT16_C(0xA240), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m1_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M1,
+                           UINT16_C(0xA244), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m1_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M2,
+                           UINT16_C(0xA248), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m2_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M0,
+                           UINT16_C(0xA280), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m2_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M1,
+                           UINT16_C(0xA284), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m2_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M2,
+                           UINT16_C(0xA288), TI_C54X_DUAL_ARITHMETIC_SUB)
+
+#undef DEFINE_DUAL_MODES_COMPLETE
+
 static ti_c54x_op_status stage_memory(
     const ti_c54x_dual_arithmetic_operands *operands,
-    ti_c54x_op_memory_complete_dual_fn completion, ti_c54x_op_effect *effect)
+    ti_c54x_op_memory_complete_dual_fn completion, uint8_t x_mode,
+    uint8_t y_mode, ti_c54x_op_effect *effect)
 {
     ti_c54x_op_effect staged;
 
@@ -260,9 +312,9 @@ static ti_c54x_op_status stage_memory(
         .payload.memory = {
             .address_spec = {
                 .kind = TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16,
-                .dual = {.x_mode = UINT8_C(0),
+                .dual = {.x_mode = x_mode,
                           .x_ar = operands->x_ar,
-                          .y_mode = UINT8_C(0),
+                          .y_mode = y_mode,
                           .y_ar = operands->y_ar,
                           .reserved_word0 = UINT32_C(0),
                           .reserved_word1 = UINT32_C(0),
@@ -283,7 +335,8 @@ static ti_c54x_op_status checked_common(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect,
     ti_c54x_opcode_id expected_id, uint16_t expected_value,
-    ti_c54x_op_memory_complete_dual_fn completion)
+    ti_c54x_op_memory_complete_dual_fn completion, uint8_t x_mode,
+    uint8_t y_mode)
 {
     ti_c54x_dual_arithmetic_operands operands;
     ti_c54x_op_status status;
@@ -300,14 +353,15 @@ static ti_c54x_op_status checked_common(
     if (status != TI_C54X_OP_STATUS_OK) {
         return status;
     }
-    return stage_memory(&operands, completion, effect);
+    return stage_memory(&operands, completion, x_mode, y_mode, effect);
 }
 
 static ti_c54x_op_status trusted_common(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *trusted,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect,
-    ti_c54x_op_memory_complete_dual_fn completion)
+    ti_c54x_op_memory_complete_dual_fn completion, uint8_t x_mode,
+    uint8_t y_mode)
 {
     ti_c54x_dual_arithmetic_operands operands;
     ti_c54x_op_status status;
@@ -324,7 +378,7 @@ static ti_c54x_op_status trusted_common(
     if (status != TI_C54X_OP_STATUS_OK) {
         return status;
     }
-    return stage_memory(&operands, completion, effect);
+    return stage_memory(&operands, completion, x_mode, y_mode, effect);
 }
 
 ti_c54x_op_status ti_c54x_op_add_dual_mod0(
@@ -333,7 +387,7 @@ ti_c54x_op_status ti_c54x_op_add_dual_mod0(
 {
     return checked_common(instruction, input, effect,
                           TI_C54X_OPCODE_ID_ADD_DUAL_MOD0, UINT16_C(0xA000),
-                          complete_add_dual);
+                          complete_add_dual, UINT8_C(0), UINT8_C(0));
 }
 
 ti_c54x_op_status ti_c54x_op_sub_dual_mod0(
@@ -342,7 +396,7 @@ ti_c54x_op_status ti_c54x_op_sub_dual_mod0(
 {
     return checked_common(instruction, input, effect,
                           TI_C54X_OPCODE_ID_SUB_DUAL_MOD0, UINT16_C(0xA200),
-                          complete_sub_dual);
+                          complete_sub_dual, UINT8_C(0), UINT8_C(0));
 }
 
 ti_c54x_op_status ti_c54x_trusted_op_add_dual_mod0(
@@ -351,7 +405,7 @@ ti_c54x_op_status ti_c54x_trusted_op_add_dual_mod0(
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
 {
     return trusted_common(instruction, operands, input, effect,
-                          complete_add_dual);
+                          complete_add_dual, UINT8_C(0), UINT8_C(0));
 }
 
 ti_c54x_op_status ti_c54x_trusted_op_sub_dual_mod0(
@@ -360,5 +414,74 @@ ti_c54x_op_status ti_c54x_trusted_op_sub_dual_mod0(
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
 {
     return trusted_common(instruction, operands, input, effect,
-                          complete_sub_dual);
+                          complete_sub_dual, UINT8_C(0), UINT8_C(0));
 }
+
+#define DEFINE_DUAL_MODES_WRAPPERS(suffix, id, value, completion, x_mode, \
+                                   y_mode)                                 \
+    ti_c54x_op_status ti_c54x_op_##suffix(                                  \
+        const ti_c54x_decoded_instruction *instruction,                    \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect) \
+    {                                                                      \
+        return checked_common(instruction, input, effect, id, value,       \
+                              completion, x_mode, y_mode);                 \
+    }                                                                      \
+    ti_c54x_op_status ti_c54x_trusted_op_##suffix(                          \
+        const ti_c54x_decoded_instruction *instruction,                    \
+        const ti_c54x_trusted_operand_values *operands,                    \
+        const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect) \
+    {                                                                      \
+        return trusted_common(instruction, operands, input, effect,        \
+                              completion, x_mode, y_mode);                 \
+    }
+
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m0_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M1,
+                           UINT16_C(0xA004), complete_add_m0_m1, UINT8_C(0),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m0_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M2,
+                           UINT16_C(0xA008), complete_add_m0_m2, UINT8_C(0),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m1_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M0,
+                           UINT16_C(0xA040), complete_add_m1_m0, UINT8_C(1),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m1_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M1,
+                           UINT16_C(0xA044), complete_add_m1_m1, UINT8_C(1),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m1_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M2,
+                           UINT16_C(0xA048), complete_add_m1_m2, UINT8_C(1),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m2_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M0,
+                           UINT16_C(0xA080), complete_add_m2_m0, UINT8_C(2),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m2_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M1,
+                           UINT16_C(0xA084), complete_add_m2_m1, UINT8_C(2),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m2_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M2,
+                           UINT16_C(0xA088), complete_add_m2_m2, UINT8_C(2),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m0_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M1,
+                           UINT16_C(0xA204), complete_sub_m0_m1, UINT8_C(0),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m0_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M2,
+                           UINT16_C(0xA208), complete_sub_m0_m2, UINT8_C(0),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m1_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M0,
+                           UINT16_C(0xA240), complete_sub_m1_m0, UINT8_C(1),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m1_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M1,
+                           UINT16_C(0xA244), complete_sub_m1_m1, UINT8_C(1),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m1_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M2,
+                           UINT16_C(0xA248), complete_sub_m1_m2, UINT8_C(1),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M0,
+                           UINT16_C(0xA280), complete_sub_m2_m0, UINT8_C(2),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M1,
+                           UINT16_C(0xA284), complete_sub_m2_m1, UINT8_C(2),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M2,
+                           UINT16_C(0xA288), complete_sub_m2_m2, UINT8_C(2),
+                           UINT8_C(2))
+
+#undef DEFINE_DUAL_MODES_WRAPPERS

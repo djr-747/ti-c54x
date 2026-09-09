@@ -33,3 +33,5 @@ $(eval $(call ti_c54x_add_test,atomic_logical_memory_decode,isa/decode,test_atom
 $(eval $(call ti_c54x_add_test,dld_dst_long32_mod13_decode,isa/decode,test_dld_dst_long32_mod13_decode.c))
 $(eval $(call ti_c54x_add_test,add_sub_acc_shift_decode,isa/decode,test_add_sub_acc_shift_decode.c))
 $(eval $(call ti_c54x_add_test,add_sub_dual_decode,isa/decode,test_add_sub_dual_decode.c))
+# W51C RED contract: non-MOD0/MOD0 dual ADD/SUB decode.
+$(eval $(call ti_c54x_add_test,add_sub_dual_modes_decode,isa/decode,test_add_sub_dual_modes_decode.c))

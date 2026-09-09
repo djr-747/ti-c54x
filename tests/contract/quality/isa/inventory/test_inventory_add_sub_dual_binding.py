@@ -1,4 +1,4 @@
-"""Inventory projection contract for the bounded dual ADD/SUB MOD0 forms."""
+"""Inventory projection contract for the dual ADD/SUB MOD0-MOD2 forms."""
 
 from __future__ import annotations
 
@@ -18,10 +18,32 @@ class AddSubDualInventoryTest(unittest.TestCase):
     def test_forms_are_bounded_subsets(self) -> None:
         forms = {form["id"]: form for form in self.inventory["forms"]}
         self.assertEqual(
-            forms["FORM-T2-01-06"]["catalog_symbols"], ["ADD_DUAL_MOD0"]
+            forms["FORM-T2-01-06"]["catalog_symbols"],
+            [
+                "ADD_DUAL_MOD0",
+                "ADD_DUAL_M0_M1",
+                "ADD_DUAL_M0_M2",
+                "ADD_DUAL_M1_M0",
+                "ADD_DUAL_M1_M1",
+                "ADD_DUAL_M1_M2",
+                "ADD_DUAL_M2_M0",
+                "ADD_DUAL_M2_M1",
+                "ADD_DUAL_M2_M2",
+            ],
         )
         self.assertEqual(
-            forms["FORM-T2-02-06"]["catalog_symbols"], ["SUB_DUAL_MOD0"]
+            forms["FORM-T2-02-06"]["catalog_symbols"],
+            [
+                "SUB_DUAL_MOD0",
+                "SUB_DUAL_M0_M1",
+                "SUB_DUAL_M0_M2",
+                "SUB_DUAL_M1_M0",
+                "SUB_DUAL_M1_M1",
+                "SUB_DUAL_M1_M2",
+                "SUB_DUAL_M2_M0",
+                "SUB_DUAL_M2_M1",
+                "SUB_DUAL_M2_M2",
+            ],
         )
         for form_id in ("FORM-T2-01-06", "FORM-T2-02-06"):
             self.assertEqual(forms[form_id]["scope"], "COMMON_CANDIDATE")
@@ -32,25 +54,23 @@ class AddSubDualInventoryTest(unittest.TestCase):
             binding["catalog_symbol"]: binding
             for binding in self.inventory["catalog_bindings"]
         }
-        self.assertEqual(
-            bindings["ADD_DUAL_MOD0"],
-            {
-                "catalog_symbol": "ADD_DUAL_MOD0",
-                "form_id": "FORM-T2-01-06",
-                "coverage": "SUBSET",
-                "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0",
-            },
-        )
-        self.assertEqual(
-            bindings["SUB_DUAL_MOD0"],
-            {
-                "catalog_symbol": "SUB_DUAL_MOD0",
-                "form_id": "FORM-T2-02-06",
-                "coverage": "SUBSET",
-                "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0",
-            },
-        )
-        self.assertEqual(len(self.inventory["catalog_bindings"]), 104)
+        for mnemonic, form_id in (("ADD", "FORM-T2-01-06"), ("SUB", "FORM-T2-02-06")):
+            for x_mode in range(3):
+                for y_mode in range(3):
+                    if x_mode == 0 and y_mode == 0:
+                        symbol = f"{mnemonic}_DUAL_MOD0"
+                    else:
+                        symbol = f"{mnemonic}_DUAL_M{x_mode}_M{y_mode}"
+                    self.assertEqual(
+                        bindings[symbol],
+                        {
+                            "catalog_symbol": symbol,
+                            "form_id": form_id,
+                            "coverage": "SUBSET",
+                            "addressing_subset": f"DUAL_INDIRECT_MOD{x_mode}_MOD{y_mode}",
+                        },
+                    )
+        self.assertEqual(len(self.inventory["catalog_bindings"]), 120)
         report = report_inventory(self.root)
         self.assertEqual(
             report["catalog_family_progress"], {"covered": 44, "denominator": 205}

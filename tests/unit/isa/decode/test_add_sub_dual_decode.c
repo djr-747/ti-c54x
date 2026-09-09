@@ -64,9 +64,11 @@ int main(void)
 {
     check_row(UINT16_C(0xA000), TI_C54X_OPCODE_ID_ADD_DUAL_MOD0);
     check_row(UINT16_C(0xA200), TI_C54X_OPCODE_ID_SUB_DUAL_MOD0);
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xA040)).status ==
+    /* Non-MOD0/MOD0 combinations live in sibling rows; MOD3 neighborhoods
+     * stay undecoded. */
+    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xA0CC)).status ==
                        TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xA204)).status ==
+    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xA2CC)).status ==
                        TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
     return 0;
 }

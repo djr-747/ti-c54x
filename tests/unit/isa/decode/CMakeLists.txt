@@ -39,3 +39,5 @@ ti_c54x_add_unit_test(dld_dst_long32_mod13_decode
                       test_dld_dst_long32_mod13_decode.c)
 ti_c54x_add_unit_test(add_sub_acc_shift_decode test_add_sub_acc_shift_decode.c)
 ti_c54x_add_unit_test(add_sub_dual_decode test_add_sub_dual_decode.c)
+# W51C RED contract: non-MOD0/MOD0 dual ADD/SUB decode.
+ti_c54x_add_unit_test(add_sub_dual_modes_decode test_add_sub_dual_modes_decode.c)
