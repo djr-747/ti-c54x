@@ -7383,3 +7383,44 @@ rewritten after publication.
 - Follow-up work: LD syntaxes 5-9 (`FORM-T2-19-06` through `-10`)
   remain the next LD block, then ST/STH/STL stores; ADD/SUB remainder
   and MAC/MPY families follow.
+
+## 2026-09-10 — P2-W55 LD #K,dst vertical slice
+
+- Implementation commit `f767fdf` activates Table 2-19 form
+  `FORM-T2-19-07`, TI SPRU172C §4 LD syntax 6: one row `LD_K` at
+  first-word value `0xE800` under mask `0xFE00` (512 encodings), one
+  program word with destination in bit 8 and unsigned 8-bit K in bits
+  7-0, a new `ACCUMULATOR_IMMEDIATE_K8` layout, `UNRESOLVED`
+  repeatability, and `NONE` input resources. Ground truth is dual-
+  sourced: the SPRU172C mnemonic mirror and the SPRU179C algebraic
+  volume agree on all ten LD opcode diagrams.
+- Semantics is `dst = K` zero-extended: TI Example 5 (`LD #248, B`
+  with SXM=1 yields `00 0000 00F8`) proves SXM is ignored, and with
+  no SHIFT or ASM shift there is no OVM/OV effect, so C/TC/OVA/OVB
+  stay preserved with no status inputs collected. No memory touched.
+- Evidence: three new TI records (syntax-6 opcode, zero-extension
+  semantics, T2-28 repeatability boundary), plan anchor plus
+  activation records, six requirements, and four RED contracts
+  (metadata, decode with the `0xEA00` DP-sibling pin, ops exhaustive
+  over all 512 encodings with hostile-input independence and
+  five-way parity, CPU over all 512 encodings with full status
+  preservation). `FORM-T2-19-07` is inventory COMPLETE; the
+  trusted-binding and inventory-catalog-binding tests extend their
+  back-links. The row is reset-runnable (no inputs required).
+- One neighbor update: `test_ld_status_fields_decode` dropped two
+  near-miss entries (`0xE800` unregistered claim, `0xE900` DP-fixed
+  claim) that are now valid `LD_K` encodings.
+- Validation is GREEN: fast C suite 287/287 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries (527 files), manifests, evidence (371 requirements with
+  340 IMPLEMENTED, 311 tests all PASSING), inventory (47/205 family
+  22.927%, 29/205 strict), and observer-disabled structure pass.
+  Fresh CMake/CTest with ASan/UBSan passes 293/293 excluding
+  `quality.python` (`ASAN_OPTIONS=detect_leaks=0`; LSan itself cannot
+  run under this container's ptrace). Registry closure is 234
+  immutable evidence records. No knob was added or changed. Nothing
+  was pushed.
+- Follow-up work: LD syntaxes 5, 7, 8, 9 (`FORM-T2-19-06`, `-08`,
+  `-09`, `-10`: Xmem dual, #lk immediate pair, src-ASM) remain, then
+  ST/STH/STL stores; ADD/SUB remainder and MAC/MPY families follow.
