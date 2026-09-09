@@ -7261,3 +7261,39 @@ rewritten after publication.
   hosted runner was invoked, and nothing was pushed.
 - Follow-up work: the next documented work is reset/MMR edges
   (`T-COMMON-RESET-SUBSET` and `T-COMMON-BK-MMR-ROUTING` remain PLANNED).
+
+## 2026-09-09 — Reset documented subset and BK MMR route edges
+
+- Implementation commit `6d8601c` closes the last two PLANNED items:
+  `REQ-COMMON-RESET-DOCUMENTED-SUBSET` (owner `src/sequencer/`) and
+  `REQ-COMMON-BK-MMR-ROUTING` (owner `src/bus/`).
+- Reset: the 25 documented §6.9 values already seeded by
+  `ti_c54x_arch_state_reset_common` had no field-level architectural
+  proof — 11 documented fields (ST1 BRAF/XF/HM/INTM/C16/FRCT, PMST
+  IPTR/OVLY/AVIS/DROM/CLKOFF) had no checked readers at all. Added the
+  11 readers in `src/state/status/registers.[ch]` following the existing
+  `read_field` pattern (reads only; generic `write_bit` already covers
+  writes). New RED contract `tests/unit/sequencer/test_reset.c` (CTest
+  `ti_c54x.reset`) proves every documented value reads back known after
+  seeding dirty state, SP/AR0-AR7/BK stay unknown, NULL rejects, and
+  asserts nothing for XPC, MP/MC, SMUL/SST, or reserved ST1 bit 10.
+- BK MMR: new `src/bus/mmr/bk_route.[ch]` owns the Table 3-3 address
+  constant (`0x0019`) and a pure router over borrowed request/state:
+  DATA reads service known BK, DATA writes replace BK, unknown-BK reads
+  decline unknown, other spaces/addresses decline untouched, and NULL or
+  malformed requests reject. State access stays in `src/state`. New RED
+  contract `tests/unit/bus/test_bk_mmr.c` (CTest `ti_c54x.bk_mmr`).
+  Mapping record only; full MMR/device routing remains future work.
+- Validation is GREEN: fast C suite 275/275 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source boundaries
+  (511 files), manifests, evidence (353 requirements, 299 tests),
+  inventory, and observer-disabled structure pass. Fresh CMake/CTest
+  with ASan/UBSan passes 281/281 excluding `quality.python`
+  (`LSAN_OPTIONS=detect_leaks=0`). Registry closure is 219 immutable
+  evidence records, 353 requirements (322 IMPLEMENTED, 0 PLANNED, 31
+  UNRESOLVED), and 299 tests (299 PASSING, 0 PLANNED). No knob was added
+  or changed. Nothing was pushed.
+- Follow-up work: ISA family expansion — LD (17 unimplemented forms)
+  and ST/STH/STL stores (20) are the biggest coverage blocks, followed
+  by the ADD/SUB remainder and the MAC/MPY families.
