@@ -16,5 +16,7 @@ $(eval $(call ti_c54x_add_test,dual_word16_read_transaction,sequencer/instructio
 $(eval $(call ti_c54x_add_test,dual_memory_instruction_transaction,sequencer/instruction,test_dual_memory_instruction_transaction.c))
 # W51B RED contracts: dual address commit persistence and atomic publication.
 $(eval $(call ti_c54x_add_test,dual_memory_instruction_w51b_contract,sequencer/instruction,test_dual_memory_instruction_w51b_contract.c))
+# W52B RED contract: dual-indirect MOD3 root commit validation.
+$(eval $(call ti_c54x_add_test,dual_mod3_root,sequencer/instruction,test_dual_mod3_root.c))
 # W47B1 RED contract: DLD/DST MOD13 LONG32 root failure lifecycle.
 $(eval $(call ti_c54x_add_test,dld_dst_long32_failure_lifecycle,sequencer/instruction,test_dld_dst_long32_failure_lifecycle.c))

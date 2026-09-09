@@ -3231,6 +3231,72 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52A: COMMON repeat-truth closure (planned)"},
       "assertion": "W52A closes the five PLANNED COMMON repeat requirements with executable TI-evidence-bound contracts over the existing immediate-RPT, cardinality, request-gate, eligibility, and observable-progression leaves. No production RPT catalog row, CPU repeat branch, public API, or timing claim is added; the W20F RC-ordering, PC-flow, and predecode-arbitration gaps stay UNRESOLVED; the twenty W49B/W50B/W51C rows stay UNRESOLVED with neither eligibility nor ineligibility inferred. Catalog, lookup, binding, family, and strict-complete coverage are unchanged at 120, 3,543, 120, 44/205, and 27/205."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4 and Table 5‑8", "printed_page_start": "5-20", "printed_page_end": "5-21"},
+      "assertion": "Table 5-8 assigns Xmod/Ymod value 11 (3) the operand syntax *ARx+0% with function addr = ARx and ARx = circ(ARx + AR0): after access, AR0 is added to ARx using circular addressing. The circular-buffer size comes from BK. This record adopts the MOD3 function row; BK=0 indexed behavior, the section 5.5.3.4 circular-algorithm binding, and same-register precedence are separate records."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-4-2-P5-21-5-22-DUAL-MOD3-INDEXED",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4.2", "printed_page_start": "5-21", "printed_page_end": "5-22"},
+      "assertion": "Section 5.5.4.2 states that when Xmod or Ymod = 3 and BK = 0, AR0 is added to ARx after each access as plain addition, because clearing BK to 0 disables circular modification. Otherwise dual-operand indexed addressing is exactly section 5.5.3.3. This record does not define selected-AR0 alias ordering, address wrap, or timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-4-3-P5-21-5-22-DUAL-MOD3-CIRCULAR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4.3", "printed_page_start": "5-21", "printed_page_end": "5-22"},
+      "assertion": "Section 5.5.4.3 states that when Xmod or Ymod = 3 and BK is nonzero, AR0 is added to ARx using circular addressing after each access. Otherwise dual-operand circular addressing is exactly section 5.5.3.4 as pinned by the circular-algorithm record. This record selects no unsupported operand form and makes no timing claim."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-4-T5-6-T5-7-S5-5-5-P5-19-5-22-DUAL-SELECTORS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4 and 5.5.5", "printed_page_start": "5-19", "printed_page_end": "5-22"},
+      "assertion": "Tables 5-6 and 5-7 define the dual-operand Xar/Yar fields as direct selectors of AR2 through AR5; the dual instruction format contains no ARF field. Section 5.5.5 conditions ARP substitution on compatibility mode with an ARF field equal to 0. This record states both facts and draws no wider compatibility-mode conclusion."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-3-4-P5-15-5-16-CIRCULAR-STEP-RULE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.3.4", "printed_page_start": "5-15", "printed_page_end": "5-16"},
+      "assertion": "Section 5.5.3.4 defines the circular step as the quantity added to or subtracted from the auxiliary register, requires a step less than or equal to the circular buffer size, and requires the auxiliary register to point inside the circular queue on first access. This record adds the signed-step and step-bound rules to the pinned fold rules; it selects no operand form and makes no timing claim."
+    },
+    {
+      "id": "E-PROJECT-P2-W52B-DUAL-MOD3-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52B: dual MOD3 AR0/BK planning checkpoint (planned)"},
+      "assertion": "W52B is the planned dual-indirect MOD3 planning contract: MOD3 sides plan from copied AR0/BK snapshots with BK=0 indexed addition and nonzero-BK circular movement under the section-5.5.3.4 step rules, same-selector Xmod precedence, lazy AR0/BK resolution reads with CMPT/ARP invariance, and a 48-to-52-byte snapshot widening for root revalidation. No opcode row, CPU branch, catalog, inventory, or public API change is admitted; MOD3 opcode activation remains W52C."
     }
   ],
   "requirements": [
@@ -6915,6 +6981,36 @@
       "claim": "Bind all nine MOD0-MOD2 combinations per syntax-6 form as inventory SUBSET under per-row DUAL_INDIRECT_MOD{m}_MOD{n} addressing while MOD3 stays deferred and the MOD0 benchmark roster stays frozen.",
       "evidence_ids": ["E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION-PLAN-ANCHOR", "E-PROJECT-P2-W51C-DUAL-MODES-ACTIVATION"],
       "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/address/",
+      "claim": "Plan a dual-indirect WORD16 MOD3 side from copied AR, AR0, and BK snapshots: BK=0 stages the plain post-access ARx+AR0 addition with overflow rejected as boundary; nonzero BK stages the section-5.5.3.4 circular post-access ARx+AR0 update with out-of-buffer starts rejected; same-selector aliases keep Xmod precedence with one X-owned update.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3", "E-TI-C54X-SPRU131G-S5-5-4-2-P5-21-5-22-DUAL-MOD3-INDEXED", "E-TI-C54X-SPRU131G-S5-5-4-3-P5-21-5-22-DUAL-MOD3-CIRCULAR", "E-TI-C54X-SPRU131G-S5-5-3-4-P5-15-5-16-CIRCULAR-STEP-RULE"],
+      "test_ids": ["T-COMMON-P2-W52B-DUAL-MOD3-PLAN"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve a MOD3 dual-indirect WORD16 READ pair against one frozen snapshot, reading AR0 and BK with knownness so unknown sources reject, publishing two DATA READ requests plus value-owned commits; identical specs resolve identically under any CMPT/ARP state with no CMPT/ARP input admitted.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3", "E-TI-C54X-SPRU131G-S5-5-4-2-P5-21-5-22-DUAL-MOD3-INDEXED", "E-TI-C54X-SPRU131G-S5-5-4-3-P5-21-5-22-DUAL-MOD3-CIRCULAR", "E-TI-C54X-SPRU131G-S5-5-3-4-P5-15-5-16-CIRCULAR-STEP-RULE", "E-TI-C54X-SPRU131G-S5-5-4-T5-6-T5-7-S5-5-5-P5-19-5-22-DUAL-SELECTORS"],
+      "test_ids": ["T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Validate MOD3 snapshot commits against copied mode, selector, address, AR0, and BK shadows and publish them atomically only after both reads; widen the persistent dual snapshot from 48 to 52 bytes with AR0/BK shadows while the root carriers hold at 336/308.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3", "E-TI-C54X-SPRU131G-S5-5-4-2-P5-21-5-22-DUAL-MOD3-INDEXED", "E-TI-C54X-SPRU131G-S5-5-4-3-P5-21-5-22-DUAL-MOD3-CIRCULAR", "E-TI-C54X-SPRU131G-S5-5-3-4-P5-15-5-16-CIRCULAR-STEP-RULE"],
+      "test_ids": ["T-COMMON-P2-W52B-DUAL-MOD3-ROOT"]
     }
   ],
   "tests": [
@@ -9292,6 +9388,30 @@
       "path": "tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_modes.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_add_sub_dual_modes"},
       "requirement_ids": ["REQ-PROJECT-P2-W51C-DUAL-MODES-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W52B-DUAL-MOD3-PLAN",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/address/test_indirect_dual_mod3.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indirect_dual_mod3"},
+      "requirement_ids": ["REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN"]
+    },
+    {
+      "id": "T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/memory/test_dual_mod3_resolution.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_mod3_resolution"},
+      "requirement_ids": ["REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE"]
+    },
+    {
+      "id": "T-COMMON-P2-W52B-DUAL-MOD3-ROOT",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/instruction/test_dual_mod3_root.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_mod3_root"},
+      "requirement_ids": ["REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT"]
     }
   ]
 }

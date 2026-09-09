@@ -99,7 +99,8 @@ test_distinct_selectors_plan_independently(void)
             const ti_c54x_indirect_dual_result result =
                 ti_c54x_indirect_dual_word16(
                     UINT8_C(2), x_value, UINT8_C(3), y_value, x_mode,
-                    y_mode, TI_C54X_ADDRESS_ACCESS_READ);
+                    y_mode, UINT16_C(0), UINT16_C(0),
+                    TI_C54X_ADDRESS_ACCESS_READ);
             const ti_c54x_address_update_target x_update =
                 x_mode == TI_C54X_INDIRECT_DUAL_MOD0
                     ? TI_C54X_ADDRESS_UPDATE_NONE
@@ -128,11 +129,13 @@ test_distinct_selector_boundaries_are_transactional(void)
         ti_c54x_indirect_dual_word16(
             UINT8_C(2), UINT16_C(0), UINT8_C(3), UINT16_C(0x1234),
             TI_C54X_INDIRECT_DUAL_MOD1, TI_C54X_INDIRECT_DUAL_MOD0,
+            UINT16_C(0), UINT16_C(0),
             TI_C54X_ADDRESS_ACCESS_READ);
     const ti_c54x_indirect_dual_result y_overflow =
         ti_c54x_indirect_dual_word16(
             UINT8_C(2), UINT16_C(0x1234), UINT8_C(3), UINT16_C(0xffff),
             TI_C54X_INDIRECT_DUAL_MOD0, TI_C54X_INDIRECT_DUAL_MOD2,
+            UINT16_C(0), UINT16_C(0),
             TI_C54X_ADDRESS_ACCESS_READ);
 
     check_rejected(&x_underflow, TI_C54X_ADDRESS_STATUS_UNRESOLVED_BOUNDARY);
@@ -151,6 +154,7 @@ test_same_selector_uses_x_mode_for_one_update(void)
                 ar_index, value, ar_index, value,
                 TI_C54X_INDIRECT_DUAL_MOD1,
                 TI_C54X_INDIRECT_DUAL_MOD1,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_operand(&result.x, ar_index, value,
                       TI_C54X_ADDRESS_UPDATE_AR,
@@ -164,6 +168,7 @@ test_same_selector_uses_x_mode_for_one_update(void)
                 ar_index, value, ar_index, value,
                 TI_C54X_INDIRECT_DUAL_MOD2,
                 TI_C54X_INDIRECT_DUAL_MOD2,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_operand(&result.x, ar_index, value,
                       TI_C54X_ADDRESS_UPDATE_AR,
@@ -178,6 +183,7 @@ test_same_selector_uses_x_mode_for_one_update(void)
                 ar_index, UINT16_C(0), ar_index, UINT16_C(0),
                 TI_C54X_INDIRECT_DUAL_MOD2,
                 TI_C54X_INDIRECT_DUAL_MOD1,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_operand(&result.x, ar_index, UINT16_C(0),
                       TI_C54X_ADDRESS_UPDATE_AR, UINT16_C(1));
@@ -190,6 +196,7 @@ test_same_selector_uses_x_mode_for_one_update(void)
                 ar_index, UINT16_C(0xffff), ar_index, UINT16_C(0xffff),
                 TI_C54X_INDIRECT_DUAL_MOD0,
                 TI_C54X_INDIRECT_DUAL_MOD2,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_operand(&result.x, ar_index, UINT16_C(0xffff),
                       TI_C54X_ADDRESS_UPDATE_NONE, UINT16_C(0));

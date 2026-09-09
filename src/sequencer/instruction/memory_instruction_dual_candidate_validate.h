@@ -32,7 +32,9 @@ struct ti_c54x_arch_state;
 /* Prove both snapshot commits equal the planner contract for the copied
  * mode/selector/address shadows: MOD0 and aliased-Y sides hold a zeroed
  * no-update commit, MOD1/MOD2 sides hold the exact non-wrapping post-access
- * decrement/increment of the frozen request address. */
+ * decrement/increment of the frozen request address, and MOD3 sides hold
+ * the exact AR0/BK post-access update recomputed from the AR0/BK shadows
+ * (or a zeroed no-update commit for the BK=0/AR0=0 case). */
 bool ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
     const ti_c54x_dual_memory_address_snapshot *snapshot,
     const struct ti_c54x_op_memory_address_spec *spec);

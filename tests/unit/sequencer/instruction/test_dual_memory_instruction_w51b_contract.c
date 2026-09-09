@@ -278,7 +278,7 @@ static void test_sizes_and_distinct_ar_atomic_commit(void)
 
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
                        (sizeof(void *) == 8U ? 336U : 308U));
-    TI_C54X_TEST_CHECK(sizeof(ti_c54x_dual_memory_address_snapshot) == 48U);
+    TI_C54X_TEST_CHECK(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U);
     init_runtime(&accumulators, &t_register);
     TI_C54X_TEST_CHECK(prepare_dual(&transaction, &effect, &state) ==
                        TI_C54X_MEMORY_INSTRUCTION_STATUS_OK);

@@ -128,6 +128,8 @@ ti_c54x_memory_instruction_transaction_prepare(
             dual_resolution.x_address_commit;
         candidate.dual_address_snapshot.y_commit =
             dual_resolution.y_address_commit;
+        candidate.dual_address_snapshot.ar0_shadow = dual_resolution.ar0_value;
+        candidate.dual_address_snapshot.bk_shadow = dual_resolution.bk_value;
     }
     candidate.pc_effect = pc_effect;
     candidate.instructions_attempted_after =

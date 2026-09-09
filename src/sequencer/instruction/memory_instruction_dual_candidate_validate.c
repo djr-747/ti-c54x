@@ -1,12 +1,13 @@
 /*
  * Module contract
  *
- * Owns: structural and live-state validation of the copied W50A/W51B
+ * Owns: structural and live-state validation of the copied W50A/W51B/W52B
  * dual-memory candidate arm. Structural validation proves both canonical
- * DATA READ requests, both MOD0/MOD1/MOD2 address snapshots, and both
+ * DATA READ requests, both MOD0/MOD1/MOD2/MOD3 address snapshots, and both
  * value-owned commit descriptors against the copied mode/selector/address
- * shadows; live validation rechecks only the planned PC and the two source
- * AR snapshots before a resume.
+ * shadows (MOD3 additionally rechecks the AR0/BK shadows); live validation
+ * rechecks only the planned PC and the two source AR snapshots before a
+ * resume.
  * Does not own: candidate construction, transaction lifecycle, address
  * planning, CMPT/ARP policy, endpoint I/O, architectural mutation, opcode
  * semantics, timing, observers, diagnostics, or allocation. All arguments
@@ -23,6 +24,8 @@
 #include "sequencer/instruction/memory_instruction_transaction.h"
 #include "sequencer/program_pc_bridge.h"
 
+#include "address/indirect_dual_mod3.h"
+
 static bool
 dual_request_side_is_valid(const ti_c54x_bus_word16_request *request)
 {
@@ -38,7 +41,7 @@ dual_request_side_is_valid(const ti_c54x_bus_word16_request *request)
 static bool
 dual_mode_is_valid(uint8_t mode)
 {
-    return mode <= UINT8_C(2);
+    return mode <= UINT8_C(3);
 }
 
 static bool
@@ -54,6 +57,8 @@ dual_no_update_commit_is_valid(
 static bool
 dual_side_commit_matches(uint8_t mode, uint8_t ar, uint32_t address_word,
                          bool aliased_y,
+                         uint16_t ar0_shadow,
+                         uint16_t bk_shadow,
                          const ti_c54x_sequencer_address_commit *commit)
 {
     if (commit == NULL || address_word > UINT32_C(0xffff)) {
@@ -63,6 +68,24 @@ dual_side_commit_matches(uint8_t mode, uint8_t ar, uint32_t address_word,
      * same frozen address but stages no independent commit. */
     if (aliased_y || mode == UINT8_C(0)) {
         return dual_no_update_commit_is_valid(commit);
+    }
+    if (mode == UINT8_C(3)) {
+        uint16_t expected_after = UINT16_C(0);
+
+        /* The planner rejects MOD3 boundary violations, so a forged
+         * boundary-crossing commit cannot validate here either. */
+        if (ti_c54x_indirect_dual_mod3_after((uint16_t)address_word,
+                                            ar0_shadow, bk_shadow,
+                                            &expected_after) !=
+            TI_C54X_ADDRESS_STATUS_OK) {
+            return false;
+        }
+        /* The documented BK=0/AR0=0 case performs no modification. */
+        if (ar0_shadow == UINT16_C(0) && bk_shadow == UINT16_C(0)) {
+            return dual_no_update_commit_is_valid(commit);
+        }
+        return commit->target == TI_C54X_ADDRESS_UPDATE_AR &&
+               commit->ar_index == ar && commit->value_after == expected_after;
     }
     if (mode == UINT8_C(1)) {
         /* The resolver rejects the zero boundary, so a forged zero address
@@ -102,12 +125,14 @@ ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
     }
     if (!dual_side_commit_matches(
             spec->dual.x_mode, spec->dual.x_ar,
-            snapshot->x_request.address_word, false, &snapshot->x_commit)) {
+            snapshot->x_request.address_word, false, snapshot->ar0_shadow,
+            snapshot->bk_shadow, &snapshot->x_commit)) {
         return false;
     }
     return dual_side_commit_matches(
         spec->dual.y_mode, spec->dual.y_ar, snapshot->y_request.address_word,
-        spec->dual.x_ar == spec->dual.y_ar, &snapshot->y_commit);
+        spec->dual.x_ar == spec->dual.y_ar, snapshot->ar0_shadow,
+        snapshot->bk_shadow, &snapshot->y_commit);
 }
 
 bool

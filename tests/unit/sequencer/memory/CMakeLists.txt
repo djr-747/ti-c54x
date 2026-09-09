@@ -12,3 +12,6 @@ ti_c54x_add_unit_test(reverse_carry_word16_address_resolution
                       test_reverse_carry_word16_address_resolution.c)
 ti_c54x_add_unit_test(dual_address_resolution
                       test_dual_address_resolution.c)
+# W52B RED contract: dual-indirect MOD3 resolution and CMPT/ARP invariance.
+ti_c54x_add_unit_test(dual_mod3_resolution
+                      test_dual_mod3_resolution.c)

@@ -30,6 +30,10 @@ typedef struct ti_c54x_dual_memory_address_resolution {
     ti_c54x_sequencer_address_commit y_address_commit;
     ti_c54x_bus_word16_request x_request;
     ti_c54x_bus_word16_request y_request;
+    /* Copied AR0/BK snapshots consumed by a MOD3 side; zero when neither
+     * side selects MOD3. The root transaction shadows these verbatim. */
+    uint16_t ar0_value;
+    uint16_t bk_value;
 } ti_c54x_dual_memory_address_resolution;
 
 /*
@@ -49,14 +53,21 @@ typedef struct ti_c54x_dual_memory_address_snapshot {
     ti_c54x_bus_word16_request y_request;
     ti_c54x_sequencer_address_commit x_commit;
     ti_c54x_sequencer_address_commit y_commit;
+    /* Copied AR0/BK shadows consumed only by MOD3 commit revalidation;
+     * zero when the resolved pair selects no MOD3 side. */
+    uint16_t ar0_shadow;
+    uint16_t bk_shadow;
 } ti_c54x_dual_memory_address_snapshot;
 
 /*
- * Resolve one frozen MOD0/MOD1/MOD2 dual-indirect WORD16 READ pair. The access
- * and write-value parameters retain the generic resolver's boundary shape;
- * only READ with a canonical zero write value is admitted for this slice.
- * Both selectors must name actual dual-operation AR2..AR5 registers. The
- * resolver never mutates state and stages no partial result.
+ * Resolve one frozen MOD0/MOD1/MOD2/MOD3 dual-indirect WORD16 READ pair. The
+ * access and write-value parameters retain the generic resolver's boundary
+ * shape; only READ with a canonical zero write value is admitted for this
+ * slice. Both selectors must name actual dual-operation AR2..AR5 registers.
+ * A MOD3 side additionally reads known AR0 and BK snapshots; unknown
+ * sources reject, while pairs without a MOD3 side never read BK. The
+ * resolver never mutates state, observes no CMPT/ARP state, and stages no
+ * partial result.
  */
 ti_c54x_memory_address_resolution_status
 ti_c54x_sequencer_resolve_dual_memory_address(

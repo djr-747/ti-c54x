@@ -10,6 +10,7 @@
  */
 
 #include "indirect_dual.h"
+#include "indirect_dual_mod3.h"
 
 #include <stdbool.h>
 
@@ -84,7 +85,9 @@ ti_c54x_dual_ar_update(ti_c54x_indirect_dual_mode mode,
 static ti_c54x_address_result
 ti_c54x_dual_word16_operand(uint8_t ar_index,
                             uint16_t ar_value,
-                            ti_c54x_indirect_dual_mode mode)
+                            ti_c54x_indirect_dual_mode mode,
+                            uint16_t ar0_value,
+                            uint16_t bk_value)
 {
     ti_c54x_address_result result = {
         .status = TI_C54X_ADDRESS_STATUS_OK,
@@ -98,9 +101,31 @@ ti_c54x_dual_word16_operand(uint8_t ar_index,
     result.effect.source.value.ar.index = ar_index;
     result.effect.source.value.ar.value_before = ar_value;
     result.effect.state_policy = TI_C54X_ADDRESS_STATE_POLICY_NONE;
-    if (mode != TI_C54X_INDIRECT_DUAL_MOD0) {
-        result.effect.update = ti_c54x_dual_ar_update(mode, ar_index, ar_value);
+    if (mode == TI_C54X_INDIRECT_DUAL_MOD0) {
+        return result;
     }
+    if (mode == TI_C54X_INDIRECT_DUAL_MOD3) {
+        uint16_t value_after = UINT16_C(0);
+        const ti_c54x_address_status status =
+            ti_c54x_indirect_dual_mod3_after(ar_value, ar0_value, bk_value,
+                                            &value_after);
+
+        if (status != TI_C54X_ADDRESS_STATUS_OK) {
+            return ti_c54x_dual_operand_result(status);
+        }
+        /* The documented BK=0/AR0=0 case performs no modification. */
+        if (ar0_value == UINT16_C(0) && bk_value == UINT16_C(0)) {
+            return result;
+        }
+        result.effect.update = (ti_c54x_address_update){
+            .target = TI_C54X_ADDRESS_UPDATE_AR,
+            .phase = TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS,
+            .ar_index = ar_index,
+            .value_before = ar_value,
+            .value_after = value_after};
+        return result;
+    }
+    result.effect.update = ti_c54x_dual_ar_update(mode, ar_index, ar_value);
     return result;
 }
 
@@ -112,9 +137,15 @@ ti_c54x_indirect_dual_word16(
     uint16_t y_ar_value,
     ti_c54x_indirect_dual_mode x_mode,
     ti_c54x_indirect_dual_mode y_mode,
+    uint16_t ar0_value,
+    uint16_t bk_value,
     ti_c54x_address_access access)
 {
     ti_c54x_indirect_dual_result result;
+    ti_c54x_address_result x_side;
+    ti_c54x_address_result y_side;
+    const ti_c54x_indirect_dual_mode y_planned_mode =
+        x_ar_index == y_ar_index ? TI_C54X_INDIRECT_DUAL_MOD0 : y_mode;
 
     /* Intrinsic discriminants are checked before unsupported values so a
      * malformed call cannot be mistaken for a recognized architectural mode. */
@@ -125,11 +156,6 @@ ti_c54x_indirect_dual_word16(
         !ti_c54x_dual_access_is_valid(access)) {
         return ti_c54x_dual_result_with_status(
             TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
-    }
-    if (x_mode == TI_C54X_INDIRECT_DUAL_MOD3 ||
-        y_mode == TI_C54X_INDIRECT_DUAL_MOD3) {
-        return ti_c54x_dual_result_with_status(
-            TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
     }
     if (access != TI_C54X_ADDRESS_ACCESS_READ) {
         return ti_c54x_dual_result_with_status(
@@ -150,10 +176,19 @@ ti_c54x_indirect_dual_word16(
             TI_C54X_ADDRESS_STATUS_UNRESOLVED_BOUNDARY);
     }
 
+    x_side = ti_c54x_dual_word16_operand(x_ar_index, x_ar_value, x_mode,
+                                        ar0_value, bk_value);
+    if (x_side.status != TI_C54X_ADDRESS_STATUS_OK) {
+        return ti_c54x_dual_result_with_status(x_side.status);
+    }
+    y_side = ti_c54x_dual_word16_operand(y_ar_index, y_ar_value,
+                                        y_planned_mode, ar0_value, bk_value);
+    if (y_side.status != TI_C54X_ADDRESS_STATUS_OK) {
+        return ti_c54x_dual_result_with_status(y_side.status);
+    }
+
     result.status = TI_C54X_ADDRESS_STATUS_OK;
-    result.x = ti_c54x_dual_word16_operand(x_ar_index, x_ar_value, x_mode);
-    result.y = ti_c54x_dual_word16_operand(
-        y_ar_index, y_ar_value,
-        x_ar_index == y_ar_index ? TI_C54X_INDIRECT_DUAL_MOD0 : y_mode);
+    result.x = x_side;
+    result.y = y_side;
     return result;
 }

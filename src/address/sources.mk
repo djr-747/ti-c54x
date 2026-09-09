@@ -7,5 +7,6 @@ ti_c54x_core_sources += \
 	src/address/indirect_indexed.c \
 	src/address/indirect_long_offset.c \
 	src/address/indirect_dual.c \
+	src/address/indirect_dual_mod3.c \
 	src/address/indirect_reverse_carry.c \
 	src/address/indirect_circular.c

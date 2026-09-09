@@ -21,8 +21,9 @@
 
 /* W51B extends the persistent snapshot with both value-owned commit
  * descriptors alongside the copied X/Y requests. */
-_Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 48U,
-               "W51B carries two requests plus two commit descriptors");
+_Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
+               "W52B carries two requests, two commit descriptors, and "
+               "AR0/BK shadows");
 
 static ti_c54x_arch_state
 known_mode_state(void)
@@ -279,7 +280,7 @@ test_same_ar_alias_preserves_x_mode_precedence(void)
 }
 
 static void
-test_mode_boundaries_and_mode3_are_rejected_transactionally(void)
+test_mode_boundaries_are_rejected_transactionally(void)
 {
     ti_c54x_arch_state state = known_mode_state();
     ti_c54x_dual_memory_address_resolution resolution;
@@ -310,13 +311,16 @@ test_mode_boundaries_and_mode3_are_rejected_transactionally(void)
                        TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED);
     check_zero_resolution(&resolution);
 
+    /* W52B admits mode 3 at spec validation; with AR0/BK unknown here it
+     * rejects as an unknown source instead. Known-source MOD3 resolution
+     * lives in test_dual_mod3_resolution.c. */
     spec = dual_spec_modes(2, UINT8_C(3), 5, UINT8_C(0));
     resolution = (ti_c54x_dual_memory_address_resolution){0};
     TI_C54X_TEST_CHECK(ti_c54x_sequencer_resolve_dual_memory_address(
                            &state, &spec,
                            TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
                            UINT16_C(0), &resolution) ==
-                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE);
     check_zero_resolution(&resolution);
 }
 
@@ -379,6 +383,8 @@ test_unknown_ar_and_malformed_inputs_are_zero_on_error(void)
                        TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
     check_zero_resolution(&resolution);
 
+    /* W52B admits mode 3 at spec validation; with AR2 unknown here the
+     * selected-AR read rejects first. */
     spec = dual_spec(UINT8_C(2), UINT8_C(5));
     spec.dual.x_mode = UINT8_C(3);
     resolution = (ti_c54x_dual_memory_address_resolution){0};
@@ -386,7 +392,7 @@ test_unknown_ar_and_malformed_inputs_are_zero_on_error(void)
                            &state, &spec,
                            TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
                            UINT16_C(0), &resolution) ==
-                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE);
     check_zero_resolution(&resolution);
 
     spec = dual_spec(UINT8_C(2), UINT8_C(5));
@@ -425,7 +431,7 @@ main(void)
     test_same_ar_alias_uses_one_frozen_value();
     test_distinct_mod1_mod2_publish_post_access_commits();
     test_same_ar_alias_preserves_x_mode_precedence();
-    test_mode_boundaries_and_mode3_are_rejected_transactionally();
+    test_mode_boundaries_are_rejected_transactionally();
     test_cmpt_arp_are_not_dependencies_for_dual_modes();
     test_unknown_ar_and_malformed_inputs_are_zero_on_error();
     puts("dual_address_resolution: ok");

@@ -90,6 +90,7 @@ test_actual_ar_domain_and_old_snapshots(void)
                             x_index, x_value, y_index, y_value,
                             TI_C54X_INDIRECT_DUAL_MOD0,
                             TI_C54X_INDIRECT_DUAL_MOD0,
+                            UINT16_C(0), UINT16_C(0),
                             TI_C54X_ADDRESS_ACCESS_READ);
 
                     if (x_index == y_index && x_value != y_value) {
@@ -118,6 +119,7 @@ test_invalid_selectors_and_access_are_transactional(void)
             ti_c54x_indirect_dual_word16(
                 UINT8_C(1), value, valid, value, TI_C54X_INDIRECT_DUAL_MOD0,
                 TI_C54X_INDIRECT_DUAL_MOD0,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
@@ -126,6 +128,7 @@ test_invalid_selectors_and_access_are_transactional(void)
             ti_c54x_indirect_dual_word16(
                 valid, value, UINT8_C(6), value,
                 TI_C54X_INDIRECT_DUAL_MOD0, TI_C54X_INDIRECT_DUAL_MOD0,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
@@ -133,7 +136,7 @@ test_invalid_selectors_and_access_are_transactional(void)
         const ti_c54x_indirect_dual_result result =
             ti_c54x_indirect_dual_word16(
                 valid, value, valid, value, TI_C54X_INDIRECT_DUAL_MOD0,
-                TI_C54X_INDIRECT_DUAL_MOD0,
+                TI_C54X_INDIRECT_DUAL_MOD0, UINT16_C(0), UINT16_C(0),
                 (ti_c54x_address_access)UINT8_C(2));
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
@@ -141,7 +144,7 @@ test_invalid_selectors_and_access_are_transactional(void)
         const ti_c54x_indirect_dual_result result =
             ti_c54x_indirect_dual_word16(
                 valid, value, valid, value, TI_C54X_INDIRECT_DUAL_MOD0,
-                TI_C54X_INDIRECT_DUAL_MOD0,
+                TI_C54X_INDIRECT_DUAL_MOD0, UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_WRITE);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
     }
@@ -155,24 +158,25 @@ test_unsupported_modes_and_alias_mismatch(void)
     const uint16_t x_value = UINT16_C(0x1111);
     const uint16_t y_value = UINT16_C(0x2222);
 
-    for (uint8_t mode = UINT8_C(3); mode <= UINT8_C(3); ++mode) {
-        const ti_c54x_indirect_dual_result x_mode_result =
+    /* W52B admits MOD3: with BK=0/AR0=0 snapshots both sides plan the
+     * documented no-modification read. Full MOD3 coverage lives in
+     * test_indirect_dual_mod3.c. */
+    {
+        const ti_c54x_indirect_dual_result result =
             ti_c54x_indirect_dual_word16(
                 x_index, x_value, y_index, y_value,
-                (ti_c54x_indirect_dual_mode)mode,
-                TI_C54X_INDIRECT_DUAL_MOD0,
+                TI_C54X_INDIRECT_DUAL_MOD3,
+                TI_C54X_INDIRECT_DUAL_MOD3,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
-        check_zero_dual(&x_mode_result,
-                        TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
 
-        const ti_c54x_indirect_dual_result y_mode_result =
-            ti_c54x_indirect_dual_word16(
-                x_index, x_value, y_index, y_value,
-                TI_C54X_INDIRECT_DUAL_MOD0,
-                (ti_c54x_indirect_dual_mode)mode,
-                TI_C54X_ADDRESS_ACCESS_READ);
-        check_zero_dual(&y_mode_result,
-                        TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
+        TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_OK);
+        TI_C54X_TEST_CHECK_U64(result.x.effect.operand.first_word, x_value);
+        TI_C54X_TEST_CHECK_U64(result.y.effect.operand.first_word, y_value);
+        TI_C54X_TEST_CHECK(result.x.effect.update.target ==
+                           TI_C54X_ADDRESS_UPDATE_NONE);
+        TI_C54X_TEST_CHECK(result.y.effect.update.target ==
+                           TI_C54X_ADDRESS_UPDATE_NONE);
     }
 
     {
@@ -181,6 +185,7 @@ test_unsupported_modes_and_alias_mismatch(void)
                 x_index, x_value, y_index, y_value,
                 (ti_c54x_indirect_dual_mode)UINT8_C(4),
                 TI_C54X_INDIRECT_DUAL_MOD0,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
@@ -190,6 +195,7 @@ test_unsupported_modes_and_alias_mismatch(void)
                 x_index, x_value, y_index, y_value,
                 TI_C54X_INDIRECT_DUAL_MOD0,
                 (ti_c54x_indirect_dual_mode)UINT8_C(4),
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
@@ -199,6 +205,7 @@ test_unsupported_modes_and_alias_mismatch(void)
                 x_index, x_value, x_index, (uint16_t)(x_value + UINT16_C(1)),
                 TI_C54X_INDIRECT_DUAL_MOD0,
                 TI_C54X_INDIRECT_DUAL_MOD0,
+                UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_READ);
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }

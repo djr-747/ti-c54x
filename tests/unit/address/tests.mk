@@ -13,6 +13,8 @@ $(eval $(call ti_c54x_add_test,indirect_long_offset_mod13,address,test_indirect_
 $(eval $(call ti_c54x_add_test,indirect_long_offset_contract,address,test_indirect_long_offset_contract.c))
 $(eval $(call ti_c54x_add_test,indirect_dual_mod0,address,test_indirect_dual_mod0.c))
 $(eval $(call ti_c54x_add_test,indirect_dual_modes,address,test_indirect_dual_modes.c))
+# W52B RED contract: dual-indirect MOD3 AR0/BK planning.
+$(eval $(call ti_c54x_add_test,indirect_dual_mod3,address,test_indirect_dual_mod3.c))
 $(eval $(call ti_c54x_add_test,indirect_reverse_carry_word,address,test_indirect_reverse_carry_word.c))
 $(eval $(call ti_c54x_add_test,indirect_reverse_carry_contract,address,test_indirect_reverse_carry_contract.c))
 $(eval $(call ti_c54x_add_test,indirect_circular_word,address,test_indirect_circular_word.c))

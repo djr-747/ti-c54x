@@ -17,6 +17,7 @@
 #include <stdint.h>
 
 #include "address/indirect_dual.h"
+#include "state/block_size_register.h"
 
 static ti_c54x_memory_address_resolution_status
 invalid_output(ti_c54x_dual_memory_address_resolution *out,
@@ -46,7 +47,7 @@ dual_ar_index_is_valid(uint8_t index)
 static int
 dual_mode_is_valid(uint8_t mode)
 {
-    return mode <= UINT8_C(2);
+    return mode <= UINT8_C(3);
 }
 
 ti_c54x_memory_address_resolution_status
@@ -59,6 +60,8 @@ ti_c54x_sequencer_resolve_dual_memory_address(
 {
     uint16_t x_ar_value = UINT16_C(0);
     uint16_t y_ar_value = UINT16_C(0);
+    uint16_t ar0_value = UINT16_C(0);
+    uint16_t bk_value = UINT16_C(0);
     ti_c54x_indirect_dual_result dual_result;
     ti_c54x_sequencer_address_commit x_commit;
     ti_c54x_sequencer_address_commit y_commit;
@@ -100,17 +103,31 @@ ti_c54x_sequencer_resolve_dual_memory_address(
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }
 
+    /* AR0/BK are read lazily: pairs without a MOD3 side never observe BK,
+     * and no CMPT/ARP state is observed on any path. */
+    if (spec->dual.x_mode == UINT8_C(3) || spec->dual.y_mode == UINT8_C(3)) {
+        if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &ar0_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+        if (ti_c54x_arch_state_read_bk(state, &bk_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+    }
+
     dual_result = ti_c54x_indirect_dual_word16(
         spec->dual.x_ar, x_ar_value, spec->dual.y_ar, y_ar_value,
         (ti_c54x_indirect_dual_mode)spec->dual.x_mode,
-        (ti_c54x_indirect_dual_mode)spec->dual.y_mode,
+        (ti_c54x_indirect_dual_mode)spec->dual.y_mode, ar0_value, bk_value,
         TI_C54X_ADDRESS_ACCESS_READ);
     if (dual_result.status != TI_C54X_ADDRESS_STATUS_OK) {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
     }
 
     /* Validate each effect at the phase selected by its actual planner
-     * result. MOD0 has no update; MOD1/MOD2 updates are post-access. The
+     * result. MOD0 has no update; MOD1/MOD2/MOD3 updates are post-access
+     * (MOD3 is a no-update plan only for the BK=0/AR0=0 case). The
      * dependency validator observes no CMPT/ARP state because all admitted
      * dual modes carry STATE_POLICY_NONE. */
     x_validation = ti_c54x_sequencer_validate_address_effect(
@@ -143,5 +160,7 @@ ti_c54x_sequencer_resolve_dual_memory_address(
     out->y_address_commit = y_commit;
     out->x_request = x_request.request;
     out->y_request = y_request.request;
+    out->ar0_value = ar0_value;
+    out->bk_value = bk_value;
     return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
 }

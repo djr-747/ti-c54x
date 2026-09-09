@@ -7,6 +7,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/indirect_indexed.c"
     "${CMAKE_CURRENT_LIST_DIR}/indirect_long_offset.c"
     "${CMAKE_CURRENT_LIST_DIR}/indirect_dual.c"
+    "${CMAKE_CURRENT_LIST_DIR}/indirect_dual_mod3.c"
     "${CMAKE_CURRENT_LIST_DIR}/indirect_reverse_carry.c"
     "${CMAKE_CURRENT_LIST_DIR}/indirect_circular.c"
 )
