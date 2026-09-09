@@ -7112,3 +7112,55 @@ rewritten after publication.
   cardinality/gating/eligibility, and per-opcode repeatability), then
   AR0/BK indexed/circular addressing including MOD3 dual, then reset/MMR
   edges.
+
+## 2026-09-09 — P2-W52A COMMON repeat-truth closure
+
+- State: implementation commit
+  `eaf8902ef8a455b58c35695deab63b6fb92fc6ad` closes the five `PLANNED`
+  COMMON repeat requirements with executable TI-evidence-bound contracts
+  over the existing W20D/W20E/W48A/W48B leaves. Decode pins the exhaustive
+  `0xEC00`–`0xECFF` K neighborhood, the exact-`0xF070` full-range
+  extension word, width-mismatch rejection, and explicit unknown-word
+  pins. Operation chains the op leaf into `repeat_progress_start` to prove
+  the exact operand reaches architectural RC with a bytewise
+  `{REPEAT_START, operand}` effect and no status payload. Cardinality pins
+  the `#2`-to-three, `#0`-to-one, and `#0xffff`-to-65,536 examples with
+  widen-before-add. The IRQ gate pins maskable-plus-NMI deferral at
+  remaining counts one and 65,536 with literal RS/reset admission at both
+  endpoints and full admission at zero. Eligibility pins the admission
+  tri-state, sweeps all 120 rows to a valid admission, spot-pins the
+  documented `INELIGIBLE` rejections and the DLD/DST asymmetry, and audits
+  the twenty W49B/W50B/W51C rows as staying `UNRESOLVED`.
+- Evidence and architecture decisions: no production RPT catalog row, CPU
+  repeat branch, public API, or timing change is admitted, so the W20F
+  deferral stays in force and the three exact-ordering/PC-flow/predecode
+  gaps remain `UNRESOLVED`. Full first-word value/mask metadata pins are
+  deferred to the later RPT activation slice that registers production
+  rows. The registry `PLANNED` test paths were honored as-is: the five new
+  files were renamed to those placeholder paths and the CTest names kept
+  the `*_common` suffix. Registry edits were surgical text edits because a
+  `json.dump` round-trip is not byte-stable on `config/evidence.json`
+  (+29KB reformat); `docs/evidence-index.md` state/runner cells were
+  updated in parity, plus one `E-PROJECT-P2-W52A` closure record.
+- TDD and review: the eligibility contract caught one self-authored test
+  bug during GREEN (`metadata_for_id(UNKNOWN)` returns the index-0
+  sentinel row, not NULL; only out-of-enum IDs return NULL). The audit
+  found no misclassified row, so production code is unchanged.
+  Validation is GREEN: full compiled C suite 266/266 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures (dual-word16, long32-pair,
+  dld-dst probes, identical signature at clean HEAD); knobs, source
+  boundaries, manifests, evidence, inventory, and observer-disabled
+  structure pass. Fresh CMake/CTest with ASan/UBSan passes 272/272
+  excluding `quality.python`, which fails only on those same three
+  environmental probes (`LSAN_OPTIONS=detect_leaks=0`; LSan itself fatals
+  under sandbox ptrace). No GitHub or other hosted runner was invoked,
+  and nothing was pushed.
+- Closure accounting is 211 immutable evidence records; 344 requirements
+  (311 IMPLEMENTED, 2 PLANNED, 31 UNRESOLVED); 292 tests (290 PASSING, 2
+  PLANNED); and 7 sources. Catalog/ISA counts remain 120 rows,
+  `ID_COUNT=121`, 3,543 lookup entries, 120 trusted bindings, 44/205
+  family coverage (21.463%), and 27/205 strict coverage. No knob was added
+  or changed. The next documented work is AR0/BK indexed/circular
+  addressing including MOD3 dual, then reset/MMR edges
+  (`T-COMMON-RESET-SUBSET` and `T-COMMON-BK-MMR-ROUTING` stay `PLANNED`).
