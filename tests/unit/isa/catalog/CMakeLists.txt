@@ -39,3 +39,6 @@ ti_c54x_add_unit_test(add_sub_dual_metadata
 # W51C RED contract: non-MOD0/MOD0 dual ADD/SUB row metadata.
 ti_c54x_add_unit_test(add_sub_dual_modes_metadata
                       test_add_sub_dual_modes_metadata.c)
+# W52C RED contract: MOD3-involving dual ADD/SUB row metadata.
+ti_c54x_add_unit_test(add_sub_dual_mod3_metadata
+                      test_add_sub_dual_mod3_metadata.c)

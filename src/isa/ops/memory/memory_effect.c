@@ -52,8 +52,8 @@ static bool
 ti_c54x_op_memory_dual_address_is_valid(
     const ti_c54x_op_memory_address_spec *address_spec)
 {
-    return address_spec->dual.x_mode <= UINT8_C(2) &&
-           address_spec->dual.y_mode <= UINT8_C(2) &&
+    return address_spec->dual.x_mode <= UINT8_C(3) &&
+           address_spec->dual.y_mode <= UINT8_C(3) &&
            address_spec->dual.x_ar >= UINT8_C(2) &&
            address_spec->dual.x_ar <= UINT8_C(5) &&
            address_spec->dual.y_ar >= UINT8_C(2) &&

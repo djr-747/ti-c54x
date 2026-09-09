@@ -1,7 +1,7 @@
 /* Module contract
  * Owns: exhaustive metadata and first-word lookup proofs for the sixteen
  * non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows, plus proof that every
- * MOD3-involving neighborhood stays undecoded.
+ * MOD3-involving neighborhood decodes to a dedicated row.
  * Does not own: dual addressing, arithmetic semantics, CPU mutation, or
  * inventory policy.
  */
@@ -81,9 +81,10 @@ static void check_all_rows(const dual_modes_row *rows, size_t count)
     }
 }
 
-static void check_mod3_neighborhoods_stay_unknown(void)
+static void check_mod3_neighborhoods_decode(void)
 {
-    /* Every MOD3-involving (xmode, ymode) combination per operation. */
+    /* Every MOD3-involving (xmode, ymode) combination per operation now
+     * decodes to a dedicated W52C row. */
     static const uint16_t bases[] = {
         UINT16_C(0xA00C), UINT16_C(0xA04C), UINT16_C(0xA08C),
         UINT16_C(0xA0C0), UINT16_C(0xA0C4), UINT16_C(0xA0C8),
@@ -94,7 +95,7 @@ static void check_mod3_neighborhoods_stay_unknown(void)
 
     for (index = 0U; index < sizeof(bases) / sizeof(bases[0]); ++index) {
         TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                               bases[index]) == TI_C54X_OPCODE_ID_UNKNOWN);
+                               bases[index]) != TI_C54X_OPCODE_ID_UNKNOWN);
     }
 }
 
@@ -102,6 +103,6 @@ int main(void)
 {
     check_all_rows(add_rows, sizeof(add_rows) / sizeof(add_rows[0]));
     check_all_rows(sub_rows, sizeof(sub_rows) / sizeof(sub_rows[0]));
-    check_mod3_neighborhoods_stay_unknown();
+    check_mod3_neighborhoods_decode();
     return 0;
 }

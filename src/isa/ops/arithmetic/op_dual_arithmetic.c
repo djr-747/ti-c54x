@@ -294,6 +294,34 @@ DEFINE_DUAL_MODES_COMPLETE(sub_m2_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M1,
                            UINT16_C(0xA284), TI_C54X_DUAL_ARITHMETIC_SUB)
 DEFINE_DUAL_MODES_COMPLETE(sub_m2_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M2,
                            UINT16_C(0xA288), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(add_m0_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M3,
+                           UINT16_C(0xA00C), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m1_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M3,
+                           UINT16_C(0xA04C), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m2_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M3,
+                           UINT16_C(0xA08C), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m3_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M0,
+                           UINT16_C(0xA0C0), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m3_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M1,
+                           UINT16_C(0xA0C4), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m3_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M2,
+                           UINT16_C(0xA0C8), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(add_m3_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M3,
+                           UINT16_C(0xA0CC), TI_C54X_DUAL_ARITHMETIC_ADD)
+DEFINE_DUAL_MODES_COMPLETE(sub_m0_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M3,
+                           UINT16_C(0xA20C), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m1_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M3,
+                           UINT16_C(0xA24C), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m2_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M3,
+                           UINT16_C(0xA28C), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m3_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M0,
+                           UINT16_C(0xA2C0), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m3_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M1,
+                           UINT16_C(0xA2C4), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m3_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M2,
+                           UINT16_C(0xA2C8), TI_C54X_DUAL_ARITHMETIC_SUB)
+DEFINE_DUAL_MODES_COMPLETE(sub_m3_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M3,
+                           UINT16_C(0xA2CC), TI_C54X_DUAL_ARITHMETIC_SUB)
 
 #undef DEFINE_DUAL_MODES_COMPLETE
 
@@ -483,5 +511,47 @@ DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M1,
 DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M2,
                            UINT16_C(0xA288), complete_sub_m2_m2, UINT8_C(2),
                            UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m0_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M0_M3,
+                           UINT16_C(0xA00C), complete_add_m0_m3, UINT8_C(0),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m1_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M1_M3,
+                           UINT16_C(0xA04C), complete_add_m1_m3, UINT8_C(1),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m2_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M2_M3,
+                           UINT16_C(0xA08C), complete_add_m2_m3, UINT8_C(2),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m3_m0, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M0,
+                           UINT16_C(0xA0C0), complete_add_m3_m0, UINT8_C(3),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m3_m1, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M1,
+                           UINT16_C(0xA0C4), complete_add_m3_m1, UINT8_C(3),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m3_m2, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M2,
+                           UINT16_C(0xA0C8), complete_add_m3_m2, UINT8_C(3),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(add_dual_m3_m3, TI_C54X_OPCODE_ID_ADD_DUAL_M3_M3,
+                           UINT16_C(0xA0CC), complete_add_m3_m3, UINT8_C(3),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m0_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M0_M3,
+                           UINT16_C(0xA20C), complete_sub_m0_m3, UINT8_C(0),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m1_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M1_M3,
+                           UINT16_C(0xA24C), complete_sub_m1_m3, UINT8_C(1),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m2_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M2_M3,
+                           UINT16_C(0xA28C), complete_sub_m2_m3, UINT8_C(2),
+                           UINT8_C(3))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m3_m0, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M0,
+                           UINT16_C(0xA2C0), complete_sub_m3_m0, UINT8_C(3),
+                           UINT8_C(0))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m3_m1, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M1,
+                           UINT16_C(0xA2C4), complete_sub_m3_m1, UINT8_C(3),
+                           UINT8_C(1))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m3_m2, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M2,
+                           UINT16_C(0xA2C8), complete_sub_m3_m2, UINT8_C(3),
+                           UINT8_C(2))
+DEFINE_DUAL_MODES_WRAPPERS(sub_dual_m3_m3, TI_C54X_OPCODE_ID_SUB_DUAL_M3_M3,
+                           UINT16_C(0xA2CC), complete_sub_m3_m3, UINT8_C(3),
+                           UINT8_C(3))
 
 #undef DEFINE_DUAL_MODES_WRAPPERS

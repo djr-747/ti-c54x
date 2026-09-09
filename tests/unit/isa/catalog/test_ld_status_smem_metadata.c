@@ -42,7 +42,7 @@ matches(const ld_status_row *row, uint16_t word)
 static void
 test_metadata_rows(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 121);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 135);
 
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const ld_status_row *row = &rows[index];

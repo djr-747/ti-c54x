@@ -29,3 +29,5 @@ $(eval $(call ti_c54x_add_test,add_sub_acc_shift_metadata,isa/catalog,test_add_s
 $(eval $(call ti_c54x_add_test,add_sub_dual_metadata,isa/catalog,test_add_sub_dual_metadata.c))
 # W51C RED contract: non-MOD0/MOD0 dual ADD/SUB row metadata.
 $(eval $(call ti_c54x_add_test,add_sub_dual_modes_metadata,isa/catalog,test_add_sub_dual_modes_metadata.c))
+# W52C RED contract: MOD3-involving dual ADD/SUB row metadata.
+$(eval $(call ti_c54x_add_test,add_sub_dual_mod3_metadata,isa/catalog,test_add_sub_dual_mod3_metadata.c))

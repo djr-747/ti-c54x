@@ -41,7 +41,7 @@ ti_c54x_op_status ti_c54x_trusted_op_sub_dual_mod0(
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 
-/* Non-MOD0/MOD0 rows across X/Y MOD0/MOD1/MOD2 addressing. Each checked and
+/* Non-MOD0/MOD0 rows across X/Y MOD0/MOD1/MOD2/MOD3 addressing. Each checked and
  * trusted pair proves its exact decoded identity and stages its row modes. */
 ti_c54x_op_status ti_c54x_op_add_dual_m0_m1(
     const ti_c54x_decoded_instruction *instruction,
@@ -89,6 +89,48 @@ ti_c54x_op_status ti_c54x_op_sub_dual_m2_m1(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 ti_c54x_op_status ti_c54x_op_sub_dual_m2_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m0_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m0_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m1_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m1_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m2_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m2_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m3_m0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m3_m0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m3_m1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m3_m1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m3_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m3_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_add_dual_m3_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_op_sub_dual_m3_m3(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 ti_c54x_op_status ti_c54x_trusted_op_add_dual_m0_m1(
@@ -152,6 +194,62 @@ ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m2_m1(
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m2_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m0_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m0_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m1_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m1_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m2_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m2_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m3_m0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m3_m0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m3_m1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m3_m1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m3_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m3_m2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_add_dual_m3_m3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+ti_c54x_op_status ti_c54x_trusted_op_sub_dual_m3_m3(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);

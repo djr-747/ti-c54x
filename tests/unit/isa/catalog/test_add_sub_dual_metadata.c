@@ -48,11 +48,13 @@ int main(void)
 {
     check_row(TI_C54X_OPCODE_ID_ADD_DUAL_MOD0, UINT16_C(0xA000));
     check_row(TI_C54X_OPCODE_ID_SUB_DUAL_MOD0, UINT16_C(0xA200));
-    /* Non-MOD0/MOD0 combinations live in sibling rows; every MOD3-involving
-     * neighborhood stays undecoded. */
+    /* Non-MOD0/MOD0 combinations live in sibling rows; W52C activates the
+     * MOD3-involving rows. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xA0CC)) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0xA0CC)) ==
+                       TI_C54X_OPCODE_ID_ADD_DUAL_M3_M3);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xA2CC)) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0xA2CC)) ==
+                       TI_C54X_OPCODE_ID_SUB_DUAL_M3_M3);
     return 0;
 }

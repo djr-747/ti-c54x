@@ -42,8 +42,8 @@ DUAL_ARITHMETIC_SUBSET = {
     "SUB_DUAL_MOD0",
     *(f"{mnemonic}_DUAL_M{x}_M{y}"
       for mnemonic in ("ADD", "SUB")
-      for x in range(3)
-      for y in range(3)
+      for x in range(4)
+      for y in range(4)
       if (x, y) != (0, 0)),
 }
 
@@ -60,10 +60,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 120)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 120)
+        self.assertEqual(len(bindings), 134)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 134)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 27)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 93)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 107)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET

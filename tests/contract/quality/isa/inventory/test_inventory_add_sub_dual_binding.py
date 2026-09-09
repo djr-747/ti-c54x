@@ -1,4 +1,4 @@
-"""Inventory projection contract for the dual ADD/SUB MOD0-MOD2 forms."""
+"""Inventory projection contract for the dual ADD/SUB MOD0-MOD3 forms."""
 
 from __future__ import annotations
 
@@ -29,6 +29,13 @@ class AddSubDualInventoryTest(unittest.TestCase):
                 "ADD_DUAL_M2_M0",
                 "ADD_DUAL_M2_M1",
                 "ADD_DUAL_M2_M2",
+                "ADD_DUAL_M0_M3",
+                "ADD_DUAL_M1_M3",
+                "ADD_DUAL_M2_M3",
+                "ADD_DUAL_M3_M0",
+                "ADD_DUAL_M3_M1",
+                "ADD_DUAL_M3_M2",
+                "ADD_DUAL_M3_M3",
             ],
         )
         self.assertEqual(
@@ -43,6 +50,13 @@ class AddSubDualInventoryTest(unittest.TestCase):
                 "SUB_DUAL_M2_M0",
                 "SUB_DUAL_M2_M1",
                 "SUB_DUAL_M2_M2",
+                "SUB_DUAL_M0_M3",
+                "SUB_DUAL_M1_M3",
+                "SUB_DUAL_M2_M3",
+                "SUB_DUAL_M3_M0",
+                "SUB_DUAL_M3_M1",
+                "SUB_DUAL_M3_M2",
+                "SUB_DUAL_M3_M3",
             ],
         )
         for form_id in ("FORM-T2-01-06", "FORM-T2-02-06"):
@@ -55,8 +69,8 @@ class AddSubDualInventoryTest(unittest.TestCase):
             for binding in self.inventory["catalog_bindings"]
         }
         for mnemonic, form_id in (("ADD", "FORM-T2-01-06"), ("SUB", "FORM-T2-02-06")):
-            for x_mode in range(3):
-                for y_mode in range(3):
+            for x_mode in range(4):
+                for y_mode in range(4):
                     if x_mode == 0 and y_mode == 0:
                         symbol = f"{mnemonic}_DUAL_MOD0"
                     else:
@@ -70,7 +84,7 @@ class AddSubDualInventoryTest(unittest.TestCase):
                             "addressing_subset": f"DUAL_INDIRECT_MOD{x_mode}_MOD{y_mode}",
                         },
                     )
-        self.assertEqual(len(self.inventory["catalog_bindings"]), 120)
+        self.assertEqual(len(self.inventory["catalog_bindings"]), 134)
         report = report_inventory(self.root)
         self.assertEqual(
             report["catalog_family_progress"], {"covered": 44, "denominator": 205}

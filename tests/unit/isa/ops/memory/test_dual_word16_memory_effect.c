@@ -105,10 +105,10 @@ check_rejections_are_transactional(void)
         TI_C54X_TEST_CHECK(memcmp(&effect, &before, sizeof(effect)) == 0);       \
     } while (0)
 
-    CHECK_REJECT(address_spec.dual.x_mode, UINT8_C(3));
+    CHECK_REJECT(address_spec.dual.x_mode, UINT8_C(4));
     CHECK_REJECT(address_spec.dual.x_ar, UINT8_C(1));
     CHECK_REJECT(address_spec.dual.x_ar, UINT8_C(6));
-    CHECK_REJECT(address_spec.dual.y_mode, UINT8_C(3));
+    CHECK_REJECT(address_spec.dual.y_mode, UINT8_C(4));
     CHECK_REJECT(address_spec.dual.y_ar, UINT8_C(1));
     CHECK_REJECT(address_spec.dual.y_ar, UINT8_C(6));
     CHECK_REJECT(address_spec.dual.reserved_word0, UINT32_C(1));

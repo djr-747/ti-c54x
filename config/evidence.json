@@ -3297,6 +3297,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52B: dual MOD3 AR0/BK planning checkpoint (planned)"},
       "assertion": "W52B is the planned dual-indirect MOD3 planning contract: MOD3 sides plan from copied AR0/BK snapshots with BK=0 indexed addition and nonzero-BK circular movement under the section-5.5.3.4 step rules, same-selector Xmod precedence, lazy AR0/BK resolution reads with CMPT/ARP invariance, and a 48-to-52-byte snapshot widening for root revalidation. No opcode row, CPU branch, catalog, inventory, or public API change is admitted; MOD3 opcode activation remains W52C."
+    },
+    {
+      "id": "E-PROJECT-P2-W52C-DUAL-MOD3-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52C: dual MOD3 ADD/SUB activation (planned)"},
+      "assertion": "W52C is the planned syntax-6 activation contract: fourteen MOD3-involving dual-memory ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2,3}^2 minus the nine MOD0-MOD2 combinations, each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share the operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change."
+    },
+    {
+      "id": "E-PROJECT-P2-W52C-DUAL-MOD3-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W52C: dual MOD3 ADD/SUB activation (planned)"},
+      "assertion": "W52C activates fourteen MOD3-involving syntax-6 dual-memory ADD/SUB rows through the W52B root with per-row first words under mask 0xFECC, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share the operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change; all seven MOD3-involving combinations per form are inventory SUBSET while the MOD0 benchmark roster stays frozen. Realized 134 catalog rows, ID_COUNT 135, 3,991 lookup entries, 134 bindings, and unchanged 27/205 strict complete-form coverage."
     }
   ],
   "requirements": [
@@ -7011,6 +7033,66 @@
       "claim": "Validate MOD3 snapshot commits against copied mode, selector, address, AR0, and BK shadows and publish them atomically only after both reads; widen the persistent dual snapshot from 48 to 52 bytes with AR0/BK shadows while the root carriers hold at 336/308.",
       "evidence_ids": ["E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3", "E-TI-C54X-SPRU131G-S5-5-4-2-P5-21-5-22-DUAL-MOD3-INDEXED", "E-TI-C54X-SPRU131G-S5-5-4-3-P5-21-5-22-DUAL-MOD3-CIRCULAR", "E-TI-C54X-SPRU131G-S5-5-3-4-P5-15-5-16-CIRCULAR-STEP-RULE"],
       "test_ids": ["T-COMMON-P2-W52B-DUAL-MOD3-ROOT"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52C-DUAL-MOD3-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Declare the fourteen MOD3-involving syntax-6 dual-memory ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2,3}^2 minus the nine MOD0-MOD2 combinations, each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16", "E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3"],
+      "test_ids": ["T-COMMON-P2-W52C-DUAL-MOD3-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52C-DUAL-MOD3-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every new row across the full destination/selector fan-out to its exact identity with D/Xar/Yar operand extraction.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16"],
+      "test_ids": ["T-COMMON-P2-W52C-DUAL-MOD3-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W52C-DUAL-MOD3-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Stage the row's exact X/Y modes in checked and trusted leaves that share one operation/mode-parameterized core with per-row identity validation and completion validators, with transactional wrong-identity rejection.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-ADD-SUB-P4-4-7-P4-187-190-DUAL-WORD16", "E-TI-C54X-SPRU131G-S5-5-4-T5-8-P5-20-5-21-DUAL-MOD3", "E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS", "E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION"],
+      "test_ids": ["T-COMMON-P2-W52C-DUAL-MOD3-OPS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind all fourteen new rows through the macro-driven checked and trusted dispatch tables with no opcode-specific CPU branch and no public ABI change.",
+      "evidence_ids": ["E-PROJECT-P2-W52C-DUAL-MOD3-PLAN-ANCHOR", "E-PROJECT-P2-W52C-DUAL-MOD3-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W52C-DUAL-MOD3-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire every new row through the generic W52B root with atomic per-row address publication, single X-owned commits for same-AR aliases, WAIT persistence of staged commits, and destination routing.",
+      "evidence_ids": ["E-PROJECT-P2-W52C-DUAL-MOD3-PLAN-ANCHOR", "E-PROJECT-P2-W52C-DUAL-MOD3-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W52C-DUAL-MOD3-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W52C-DUAL-MOD3-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind all seven MOD3-involving combinations per syntax-6 form as inventory SUBSET under per-row DUAL_INDIRECT_MOD{m}_MOD{n} addressing while the MOD0 benchmark roster stays frozen.",
+      "evidence_ids": ["E-PROJECT-P2-W52C-DUAL-MOD3-PLAN-ANCHOR", "E-PROJECT-P2-W52C-DUAL-MOD3-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY"]
     }
   ],
   "tests": [
@@ -8355,7 +8437,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9331,7 +9413,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_add_sub_dual_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY", "REQ-PROJECT-P2-W51C-DUAL-MODES-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-INVENTORY", "REQ-PROJECT-P2-W51C-DUAL-MODES-INVENTORY", "REQ-PROJECT-P2-W52C-DUAL-MOD3-INVENTORY"]
     },
     {
       "id": "T-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-HOT-PATH",
@@ -9412,6 +9494,38 @@
       "path": "tests/unit/sequencer/instruction/test_dual_mod3_root.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.dual_mod3_root"},
       "requirement_ids": ["REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT"]
+    },
+    {
+      "id": "T-COMMON-P2-W52C-DUAL-MOD3-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_add_sub_dual_mod3_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_mod3_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W52C-DUAL-MOD3-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W52C-DUAL-MOD3-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_add_sub_dual_mod3_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_mod3_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W52C-DUAL-MOD3-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W52C-DUAL-MOD3-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_sub_dual_mod3.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.add_sub_dual_mod3"},
+      "requirement_ids": ["REQ-COMMON-P2-W52C-DUAL-MOD3-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W52C-DUAL-MOD3-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_add_sub_dual_mod3.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_add_sub_dual_mod3"},
+      "requirement_ids": ["REQ-PROJECT-P2-W52C-DUAL-MOD3-CPU-RETIREMENT"]
     }
   ]
 }

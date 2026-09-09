@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: root orchestration for one dual-indirect MOD0/MOD1/MOD2 WORD16 read
+ * Owns: root orchestration for one dual-indirect MOD0/MOD1/MOD2/MOD3 WORD16 read
  * pair. It reserves two consecutive IDs, serializes the X then Y endpoint
  * calls, and delegates the READY commit to the dual-commit owner only after
  * both values are ready. The W51B persistent snapshot carries both
@@ -59,8 +59,8 @@ bool ti_c54x_memory_instruction_dual_prepare_snapshot(
     spec = &memory->address_spec;
     if (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
         memory->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
-        memory->complete_dual == NULL || spec->dual.x_mode > UINT8_C(2) ||
-        spec->dual.y_mode > UINT8_C(2) || spec->dual.x_ar < UINT8_C(2) ||
+        memory->complete_dual == NULL || spec->dual.x_mode > UINT8_C(3) ||
+        spec->dual.y_mode > UINT8_C(3) || spec->dual.x_ar < UINT8_C(2) ||
         spec->dual.x_ar > UINT8_C(5) || spec->dual.y_ar < UINT8_C(2) ||
         spec->dual.y_ar > UINT8_C(5) || spec->dual.reserved_word0 != 0U ||
         spec->dual.reserved_word1 != 0U || spec->dual.reserved_word2 != 0U ||
@@ -94,8 +94,8 @@ static bool candidate_snapshot_matches(
     memory = &transaction->candidate.effect.payload.memory;
     spec = &memory->address_spec;
     return spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 &&
-           spec->dual.x_mode <= UINT8_C(2) &&
-           spec->dual.y_mode <= UINT8_C(2) &&
+           spec->dual.x_mode <= UINT8_C(3) &&
+           spec->dual.y_mode <= UINT8_C(3) &&
            spec->dual.x_ar >= UINT8_C(2) && spec->dual.x_ar <= UINT8_C(5) &&
            spec->dual.y_ar >= UINT8_C(2) && spec->dual.y_ar <= UINT8_C(5) &&
            spec->dual.reserved_word0 == 0U &&
