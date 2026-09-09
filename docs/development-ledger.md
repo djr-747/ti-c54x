@@ -7337,3 +7337,49 @@ rewritten after publication.
   remain the next LD block; the ordinal mapping is confirmed
   (05=Smem-SHIFT, 06=Xmem-SHFT dual, 07=#K, 08=#lk-SHFT, 09=#lk-16,
   10=src-ASM, 11=src-SHIFT).
+
+## 2026-09-09 — P2-W54 LD src[,SHIFT],dst vertical slice
+
+- Implementation commit `d3d53c5` activates Table 2-19 form
+  `FORM-T2-19-11`, TI SPRU172C §4 LD syntax 10: one row `LD_SRC_SHIFT`
+  at first-word value `0xF440` under mask `0xFCE0` (128 encodings),
+  one program word with source in bit 9, destination in bit 8, and
+  signed five-bit SHIFT in bits 4-0, reusing the
+  `ACCUMULATOR_SOURCE_DESTINATION_SHIFT5` layout, `UNRESOLVED`
+  repeatability, and `ACCUMULATORS_STATUS_SXM_OVM` resources.
+- Semantics is `dst = src40 << SHIFT` with no SXM widening of the
+  40-bit source: SXM=0 right shifts are logical, SXM=1 arithmetic;
+  guard-vs-bit31 overflow detection drives OVM saturation to
+  `0x007FFFFFFF`/`0xFF80000000` with sticky destination overflow, and
+  C/TC stay preserved. D==S encodings produce the documented OVsrc
+  case through the destination-selected OV bit. No memory is touched:
+  no AR dependency, no endpoint traffic, single-word PC advance.
+- Evidence: three new TI records (syntax-10 opcode, shift semantics,
+  T2-28 repeatability boundary), plan anchor plus activation records,
+  six requirements, and four RED contracts (metadata, decode, ops with
+  an independent oracle, CPU with a 4096-combination sweep plus
+  OVM-off and unknown-source rejection proofs).
+  `FORM-T2-19-11` is inventory COMPLETE; the trusted-binding and
+  inventory-catalog-binding tests extend their back-links.
+- Decisions: the RED plan text predicted `STATUS_SXM_OVM` and
+  unchanged 27/205 strict coverage; implementation corrects both
+  (`ACCUMULATORS_STATUS_SXM_OVM` is required or collection leaves
+  both accumulators unknown and every execution rejects; the new
+  COMPLETE form moves strict coverage to 28/205). Two test-side bugs
+  were fixed, not production: the CPU word builder placed SHIFT at
+  bits 10:6 instead of 4:0, and the untouched-accumulator oracle
+  wrongly expected the shifted value when src==dst.
+- Validation is GREEN: fast C suite 283/283 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries (521 files), manifests, evidence (365 requirements with
+  334 IMPLEMENTED, 307 tests all PASSING), inventory (46/205 family
+  22.439%, 28/205 strict), and observer-disabled structure pass.
+  Fresh CMake/CTest with ASan/UBSan passes 289/289 excluding
+  `quality.python` (`ASAN_OPTIONS=detect_leaks=0`; LSan itself cannot
+  run under this container's ptrace). Registry closure is 229
+  immutable evidence records. No knob was added or changed. Nothing
+  was pushed.
+- Follow-up work: LD syntaxes 5-9 (`FORM-T2-19-06` through `-10`)
+  remain the next LD block, then ST/STH/STL stores; ADD/SUB remainder
+  and MAC/MPY families follow.
