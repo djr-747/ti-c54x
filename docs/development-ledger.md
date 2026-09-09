@@ -7297,3 +7297,43 @@ rewritten after publication.
 - Follow-up work: ISA family expansion — LD (17 unimplemented forms)
   and ST/STH/STL stores (20) are the biggest coverage blocks, followed
   by the ADD/SUB remainder and the MAC/MPY families.
+
+## 2026-09-09 — P2-W53 LD Smem[,SHIFT],dst vertical slice
+
+- Implementation commit `b059acd` activates Table 2-19 form
+  `FORM-T2-19-05`, TI SPRU172C §4 LD syntax 4: one row `LD_SMEM_SHIFT`
+  at first-word value `0x6F80` under mask `0xFFE0` (32 encodings), two
+  program words with D in second-word bit 8 and signed five-bit SHIFT
+  in bits 4-0, a dedicated `ACCUMULATOR_ARF_MOD_SHIFT5` layout,
+  `UNRESOLVED` repeatability, and new `STATUS_SXM_OVM` resources.
+- Semantics is `dst = SXM-widened Smem << SHIFT` with guard-vs-bit31
+  overflow detection (proven by the TI `LD A,8,B` example), OVM
+  saturation to `0x007FFFFFFF`/`0xFF80000000`, sticky destination
+  overflow, and C/TC preserved. MOD0-MOD2 admit through the W42A seam;
+  MOD3 rejects `INVALID_OPERAND` before any MEMORY effect. The
+  second-word fixed pattern (`0xFEE0`/`0x0C40`) is enforced on both the
+  checked leaf and the trusted leaf, which receives the full bundle via
+  the execution packet — this closes a real hole, since production CPU
+  execution runs the trusted fast path.
+- Evidence: three new TI records (syntax-4 opcode, shift semantics,
+  T2-28 repeatability boundary), plan anchor plus activation records,
+  six requirements, and four RED contracts (metadata, decode, ops with
+  an independent saturation oracle and four-way parity, CPU with a
+  local two-word fixture). FORM-T2-19-05 is inventory SUBSET; the
+  trusted-binding and inventory-catalog-binding tests extend their
+  back-links. SHIFT=0 decodings are admitted (the TI assembler note
+  records assembly equivalence, not a decode rejection).
+- Validation is GREEN: fast C suite 279/279 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source boundaries
+  (515 files), manifests, evidence (359 requirements with 328
+  IMPLEMENTED, 303 tests all PASSING), inventory (45/205 family,
+  27/205 strict), and observer-disabled structure pass. Fresh
+  CMake/CTest with ASan/UBSan passes 285/285 excluding
+  `quality.python` (`LSAN_OPTIONS=detect_leaks=0`). Registry closure is
+  224 immutable evidence records. No knob was added or changed
+  (STATUS_SXM_OVM is a resource token, not a knob). Nothing was pushed.
+- Follow-up work: LD syntaxes 5-10 (`FORM-T2-19-06` through `-11`)
+  remain the next LD block; the ordinal mapping is confirmed
+  (05=Smem-SHIFT, 06=Xmem-SHFT dual, 07=#K, 08=#lk-SHFT, 09=#lk-16,
+  10=src-ASM, 11=src-SHIFT).
