@@ -7164,3 +7164,60 @@ rewritten after publication.
   or changed. The next documented work is AR0/BK indexed/circular
   addressing including MOD3 dual, then reset/MMR edges
   (`T-COMMON-RESET-SUBSET` and `T-COMMON-BK-MMR-ROUTING` stay `PLANNED`).
+
+## 2026-09-09 — P2-W52B dual MOD3 AR0/BK planning checkpoint
+
+- State: implementation commit
+  `21ff12ce3203b4e8d9ba2037dcb52a0a3e7bc7a1` admits dual-indirect MOD3
+  (`*ARx+0%`) through the address planner, the sequencer resolution seam,
+  and the root commit validator with no opcode row, CPU branch, catalog,
+  inventory, or public API change. MOD3 sides plan `addr = ARx` with a
+  post-access AR0/BK update: BK=0 stages plain signed `ARx + AR0`
+  addition, nonzero BK stages section-5.5.3.4 circular movement, and
+  BK=0/AR0=0 plans the documented no-modification read with no update.
+  Same-selector aliases keep Xmod precedence with one X-owned update.
+  Resolution reads AR0/BK lazily with knownness (unknown rejects; BK is
+  never read without a MOD3 side) and proves byte-identical resolution
+  under CMPT=0/ARP=0 versus CMPT=1/ARP=7. The persistent dual snapshot
+  widens 48 to 52 bytes with AR0/BK shadows for root revalidation while
+  the root carriers hold at 336/308 (candidate union dominates).
+- Evidence and architecture decisions: the MOD3 gap was closed with five
+  new TI SPRU131G records verified against the official Rev G PDF (Table
+  5-8 MOD3 row; §§5.5.4.2/5.5.4.3 indexed/circular; Tables 5-6/5-7 plus
+  §5.5.5 direct-selector facts bounding the compatibility question; and
+  the §5.5.3.4 step rules pinning a signed AR0 step bounded by BK with
+  first access inside the buffer). AR0 is read as a signed 16-bit step:
+  this makes the pinned algorithm's add-BK branch reachable and matches
+  the documented negative-AR0 practice; unsigned-only readings would
+  leave decrement use undefined. Indexed overflow/underflow, oversized
+  steps, out-of-buffer starts, and results above `0xffff` reject as
+  boundaries with no wrap inference. The shared MOD3 computation lives in
+  `src/address/indirect_dual_mod3.[ch]` (used by planner and validator);
+  dual effects keep kind AR with `STATE_POLICY_NONE`, so every generic
+  intrinsic/dependency/apply seam passes unchanged. The full Table 5-8
+  text also notes a Y-side MMR read caveat, recorded for the later
+  reset/MMR phase.
+- TDD and review: three RED contracts went green (planner matrix,
+  resolution plus CMPT-invariance, root accept/reject matrix). GREEN
+  caught and updated three obsolete MOD3-rejection pins in pre-existing
+  tests (planner mode-3 loop, resolution INVALID_SPEC pins) and two size
+  pins (snapshot 48 to 52 in two tests); the root carriers needed no
+  re-freeze. One self-authored test bug was fixed during GREEN (a
+  duplicated check line). A missing `Does not own:` line in the new
+  module, caught by the source-boundary gate, was fixed before commit.
+  Validation is GREEN: full compiled C suite 269/269 including `minimal`;
+  contract quality unittest 265/268 with only the three pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source boundaries
+  (503 files), manifests, evidence, inventory, and observer-disabled
+  structure pass. Fresh CMake/CTest with ASan/UBSan passes 275/275
+  excluding `quality.python`, which fails only on those same three
+  environmental probes (`LSAN_OPTIONS=detect_leaks=0`). No GitHub or
+  other hosted runner was invoked, and nothing was pushed.
+- Closure accounting is 217 immutable evidence records; 347 requirements
+  (314 IMPLEMENTED, 2 PLANNED, 31 UNRESOLVED); 295 tests (293 PASSING, 2
+  PLANNED); and 7 sources. Catalog/ISA counts remain 120 rows,
+  `ID_COUNT=121`, 3,543 lookup entries, 120 trusted bindings, 44/205
+  family coverage (21.463%), and 27/205 strict coverage. No knob was added
+  or changed. The next documented work is W52C MOD3 dual ADD/SUB
+  activation (fourteen rows: all `(m,n)` in `{0..3}^2` minus the nine done
+  in W50B/W51C), then reset/MMR edges.
