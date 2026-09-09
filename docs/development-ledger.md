@@ -7052,3 +7052,63 @@ rewritten after publication.
   changed. The next architecture-forcing seam is broader dual-mode opcode
   activation through this root; `memory_instruction_dual.c` at 448 lines
   stays under review if it approaches 500 again.
+
+## 2026-09-09 — P2-W51C dual ADD/SUB MOD0–MOD2 activation
+
+- State: implementation commit
+  `48ef75dde535993bd94f439d2046c76065125758` activates the sixteen
+  non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows through the W51B root.
+  Each row fixes one (Xmode, Ymode) combination at
+  `0xA000|(m<<6)|(n<<2)` (ADD) or `0xA200|(m<<6)|(n<<2)` (SUB) under mask
+  `0xFECC`, with the existing `DUAL_DESTINATION_XAR_YAR` layout,
+  `UNRESOLVED` repeatability, and
+  `AUXILIARY_REGISTERS_STATUS_C_SXM_OVM` resources. Checked and trusted
+  leaves share one operation/mode-parameterized core with per-row identity
+  validation and completion validators; macro-driven dispatch binds all
+  rows with no opcode-specific CPU branch and no public ABI change; all
+  nine MOD0–MOD2 combinations per form are inventory `SUBSET` while MOD3
+  neighborhoods stay undecoded and deferred. No addressing mode, CPU
+  wiring, layout, timing, or benchmark-roster change is admitted.
+- Evidence and architecture decisions: the W50B syntax-6 first-word
+  evidence remains the source for D/Xar/Yar positions and the ADD/SUB
+  discriminator, and the W51A mode evidence for MOD0–MOD2 update behavior
+  with Xmod precedence; a clean-decode probe proved all sixteen
+  neighborhoods unclaimed before activation. Registry ownership follows the
+  W50B per-module split (catalog/decode/effects carry TI evidence;
+  trusted-binding/CPU-retirement/inventory carry the project anchor), after
+  the evidence gate rejected a single `src/isa/`-owned requirement.
+  Dispatch and inventory were already green through shared generic proofs
+  and are recorded `IMPLEMENTED` against the all-ID dispatch test and the
+  nine-combo binding projection. Each new row carries thirty-two encodings
+  (D by XAR by YAR), not sixteen as first estimated; the realized lookup
+  grows by 512 to 3,543 populated words. `op_dual_arithmetic.c` grows to
+  487 lines and stays under review against the 500-line quality bound.
+- Performance is part of closure. The frozen MOD0 roster smoke re-runs
+  unchanged as the shared-path characterization with preserved semantic
+  hash `b40823092c0aa605` across 320,000 retirements per scenario
+  (731.5–791.7 ns/instruction on this host, no threshold or TI-cycle
+  claim). No new hosted scenarios were added.
+- TDD and review: the four RED contracts (undeclared row identities at
+  compile time) went green row by row — metadata, full decode fan-out,
+  checked/trusted mode carriage with parity and wrong-identity rejection,
+  and public-CPU retirement with per-row AR publication, same-AR Xmod
+  precedence, and WAIT persistence. Two self-authored test bugs were caught
+  and fixed during GREEN (an accumulator enum unavailable to the ops test,
+  and an alias value spot that must read one address twice). Validation is
+  GREEN: full compiled C suite 262/262 including `minimal`; focused and
+  full CMake/CTest with ASan/UBSan green except the quality.python
+  `-m32`/ILP32 probes, which fail with SIGSYS identically at clean HEAD
+  and are pre-existing environmental failures (LSan itself fatals under
+  sandbox ptrace, so sanitizer runs use `LSAN_OPTIONS=detect_leaks=0`);
+  evidence, manifests, inventory, source boundaries, knobs, and
+  observer-disabled structure pass. No GitHub or other hosted runner was
+  invoked, and nothing was pushed.
+- Closure accounting is 210 immutable evidence records; 344 requirements
+  (306 IMPLEMENTED, 7 PLANNED, 31 UNRESOLVED); 292 tests (285 PASSING, 7
+  PLANNED); and 7 sources. Catalog/ISA counts are 120 rows, `ID_COUNT=121`,
+  3,543 lookup entries, 120 trusted bindings, 44/205 family coverage, and
+  27/205 strict coverage. No knob was added or changed. The next documented
+  work is the repeat-machinery phase (RPT immediate, single-repeat
+  cardinality/gating/eligibility, and per-opcode repeatability), then
+  AR0/BK indexed/circular addressing including MOD3 dual, then reset/MMR
+  edges.
