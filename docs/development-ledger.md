@@ -8578,3 +8578,84 @@ rewritten after publication.
   `run.c` at 667 approaching review range); `make test`
   recipe order still lets C regressions hide behind quality
   failures.
+
+## 2026-09-11 — P2-W69 BCD delayed-conditional-branch slice
+
+- Implementation commit `e0b3a3c` binds one Table 2-12 row
+  under `FORM-T2-12-04`: `BCD` at first-word value `0xFA00`
+  under mask `0xFF00`, two program words, 256 encodings, copied
+  condition code plus 16-bit pmad, reusing `BRANCH_COND_PMAD16`
+  with `ACCUMULATORS_STATUS_C_TC` inputs and `INELIGIBLE`
+  repeatability (manual note; TI evidence reused from the W63
+  `BC[D]` opcode, semantics, and nonrepeatable records, so no
+  new TI record was needed). The sixteen image-evidenced single
+  conditions evaluate through a new shared branch-condition
+  helper (`src/isa/ops/branch/op_branch_cond_common.[ch]`);
+  the `BC` leaf is refactored onto it with zero behavior change
+  (its exhaustive ops plus CPU suites pass unmodified).
+  Taken branches emit `DELAYED_PC_WRITE`, not-taken ones emit
+  `NONE`; the W68 `run.c` delayed-PC route and the sequential
+  bridge retire them, so no `run.c` change was admitted.
+  `FORM-T2-12-04` stays `SUBSET` with an
+  `ABSOLUTE_PMAD_COND_DELAYED` binding.
+- The W63 `REQ-COMMON-P2-W63-BC-PMAD-DECODE` registry claim is
+  corrected in place (it pinned the Z=1 words to
+  `UNKNOWN_WORD`, which this slice falsifies): it now states
+  `0xFA00`-`0xFAFF` decode through the `BCD` row, backed by the
+  existing `E-TI-C54X-SPRU172C-S4-BC-OPCODE-P4-18` record. The
+  old PINNED opcode assertion ("Z=1 ... stays deferred to the
+  delay seam") is retained under its still-true reading: `BCD`
+  runs through the W68 delayed-PC route. Nothing else
+  historical was rewritten.
+- The masked `BCD` row claimed one near-miss word each from
+  three earlier audits, all updated under the cross-slice
+  hazard rule and pinned as genuine `BCD` siblings after
+  catalog cross-checks: `RETD` bit-10 (`0xFA00`), `CALLD`
+  bit-11 (`0xFA74`), `BD` bit-11 (`0xFA73`). The new decode
+  test pins its own genuine siblings (`BC_PMAD` bit-9,
+  `LD_IMMEDIATE_DP` bit-12 at `0xEA00` — not `LD_K` as the
+  `BC` audit has at `0xE800` — and `RETD` bit-10 at `0xFE00`).
+- Evidence: plan-anchor plus activation records, six
+  requirements (`REQ-COMMON-P2-W69-BCD-CATALOG`, `-DECODE`,
+  `-EFFECTS`, `REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING`,
+  `-CPU-RETIREMENT`, `-INVENTORY`), and four RED contracts
+  (`tests/unit/isa/catalog/test_bcd_metadata.c`,
+  `tests/unit/isa/decode/test_bcd_decode.c`,
+  `tests/unit/isa/ops/branch/test_bcd.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_bcd.c`) covering
+  metadata with 256-encoding disjointness, decode with three
+  genuine siblings, handler staging with taken/not-taken
+  parity over all sixteen conditions, and CPU retirement
+  (taken deferral with countdown drain, not-taken fallthrough,
+  worked-example shapes, 2-word slot execution, inner-branch
+  takeover, slot-fault hold, unknown-input and second-word
+  fault transactionality, full preservation, no endpoint
+  traffic by construction). Registry closure is 303 evidence
+  records, 469 requirements (438 `IMPLEMENTED`, 0 `PLANNED`,
+  31 `UNRESOLVED`), and 378 tests (378 `PASSING`, 0
+  `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 350 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK; knobs, source boundaries
+  (no new SIZE_REVIEW warnings; the shared helper, `BCD`
+  leaf, and refactored `BC` leaf total 465 lines across three
+  small modules), manifests, evidence, inventory (realized 152
+  catalog rows, `ID_COUNT=153`, 5,827 lookup entries, 152
+  bindings, 119 SUBSET bindings, family coverage 56/205 at
+  27.317%, 33/205 strict), and observer-disabled structure
+  pass. Focused ASan/UBSan GREEN for the four new tests plus
+  the refactored `BC` suites (instrumentation verified).
+  Fresh CMake/CTest Debug passes 357/357; full sanitizer
+  CMake/CTest passes 356/356 excluding `quality.python`
+  (sanitizer tree on home disk; scratch removed). Row-count
+  pins advanced to 152 rows, 152 bindings, 5,827 entries, and
+  119 SUBSET across the contract suites plus `ID_COUNT=153`
+  across the C metadata suites. No knob was added or changed.
+  Nothing was pushed.
+- Follow-up work: `BANZD` (66 image occurrences), `CCD`
+  (29), `RETE`/`RETF` remain deferred with cross-slice hazard
+  pins. Open: split decision for
+  `memory_instruction_transaction.c` before 800 lines (and
+  `run.c` at 667 approaching review range); `make test`
+  recipe order still lets C regressions hide behind quality
+  failures.
