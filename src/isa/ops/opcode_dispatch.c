@@ -23,6 +23,7 @@
 #include "load/op_ld_src_shift.h"
 #include "load/op_ld_k.h"
 #include "load/op_ld_lk16.h"
+#include "load/op_ld_lk_shift.h"
 #include "load/op_ld_src_asm.h"
 #include "load/op_dld_long32.h"
 #include "load/op_ld_status_smem.h"

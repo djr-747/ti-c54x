@@ -8,5 +8,6 @@ $(eval $(call ti_c54x_add_test,cpu_ld_smem_shift,cpu/isa/load,test_cpu_ld_smem_s
 $(eval $(call ti_c54x_add_test,cpu_ld_src_shift,cpu/isa/load,test_cpu_ld_src_shift.c))
 $(eval $(call ti_c54x_add_test,cpu_ld_k,cpu/isa/load,test_cpu_ld_k.c))
 $(eval $(call ti_c54x_add_test,cpu_ld_lk16,cpu/isa/load,test_cpu_ld_lk16.c))
+$(eval $(call ti_c54x_add_test,cpu_ld_lk_shift,cpu/isa/load,test_cpu_ld_lk_shift.c))
 $(eval $(call ti_c54x_add_test,cpu_ld_src_asm,cpu/isa/load,test_cpu_ld_src_asm.c))
 $(eval $(call ti_c54x_add_test,cpu_ld_smem_ts,cpu/isa/load,test_cpu_ld_smem_ts.c))

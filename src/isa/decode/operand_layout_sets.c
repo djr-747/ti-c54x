@@ -338,3 +338,25 @@ static const ti_c54x_operand_field_layout
 const ti_c54x_operand_layout_set
     ti_c54x_dual_destination_xar_yar_set = {
         ti_c54x_dual_destination_xar_yar_operands, UINT8_C(3)};
+
+/* Syntax-7 long-immediate fields: D[8], unsigned SHFT[3:0], lk[+1]. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_immediate_shift4_lk16_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_immediate_shift4_lk16_shift_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_immediate_shift4_lk16_immediate_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_immediate_shift4_lk16_operands[3] = {
+        {&ti_c54x_accumulator_immediate_shift4_lk16_destination_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_accumulator_immediate_shift4_lk16_shift_piece, UINT8_C(1),
+         UINT8_C(4)},
+        {&ti_c54x_accumulator_immediate_shift4_lk16_immediate_piece,
+         UINT8_C(1), UINT8_C(16)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_accumulator_immediate_shift4_lk16_set = {
+        ti_c54x_accumulator_immediate_shift4_lk16_operands, UINT8_C(3)};

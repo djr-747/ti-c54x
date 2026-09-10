@@ -16,5 +16,6 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_src_shift.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_k.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_lk16.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_ld_lk_shift.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_src_asm.c"
 )
