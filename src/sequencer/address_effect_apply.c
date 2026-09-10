@@ -31,6 +31,13 @@ ti_c54x_sequencer_apply_address_result(
     if (commit.target == TI_C54X_ADDRESS_UPDATE_NONE) {
         return TI_C54X_ADDRESS_APPLY_OK;
     }
+    if (commit.target == TI_C54X_ADDRESS_UPDATE_SP) {
+        if (ti_c54x_arch_state_write_sp(state, commit.value_after) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        return TI_C54X_ADDRESS_APPLY_OK;
+    }
     if (commit.target != TI_C54X_ADDRESS_UPDATE_AR ||
         ti_c54x_arch_state_write_ar(state, commit.ar_index,
                                     commit.value_after) !=

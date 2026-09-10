@@ -4,7 +4,8 @@
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates, including exact address-resolution snapshots for
  * single-indirect, AR0-indexed, circular, reverse-carry, LONG32, dual
- * MOD0/MOD1/MOD2, and X-only dual MOD0--MOD3 operands.
+ * MOD0/MOD1/MOD2, X-only dual MOD0--MOD3, and mode-independent STACK_PUSH
+ * operands.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -385,6 +386,32 @@ address_resolution_is_valid(
                    address_effect->update.value_after;
     }
 
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+        const ti_c54x_address_source_stack_push *const source =
+            &address_effect->source.value.stack_push;
+        /* Wrapping TOS arithmetic mirrors the planner exactly, so a forged
+         * boundary-crossing commit cannot validate here either. */
+        const uint16_t expected_tos =
+            (uint16_t)(source->sp_before - UINT16_C(1));
+
+        if (address_effect->source.kind !=
+            TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
+            return false;
+        }
+        return address_effect->operand.first_word == expected_tos &&
+               address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_SP &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+               address_effect->update.ar_index == UINT8_C(0) &&
+               address_effect->update.value_before == source->sp_before &&
+               address_effect->update.value_after == expected_tos &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_SP &&
+               address_commit->ar_index == UINT8_C(0) &&
+               address_commit->value_after == expected_tos;
+    }
+
     return false;
 }
 
@@ -509,6 +536,29 @@ x_only_candidate_matches_live(
     return selected == candidate->address_resolution.bk_shadow;
 }
 
+static bool
+stack_push_candidate_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const ti_c54x_arch_state *state)
+{
+    const ti_c54x_address_effect *address_effect;
+    uint16_t live_sp = UINT16_C(0);
+
+    /* Pushes observe no CMPT/ARP state: only the live PC anchor plus the
+     * frozen SP snapshot. The shape check above already pins the
+     * STACK_PUSH operand/update contract. */
+    address_effect = &candidate->address_resolution.address_result.effect;
+    if (!pc_candidate_matches_live(&candidate->pc_effect, state) ||
+        address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
+        return false;
+    }
+    if (ti_c54x_arch_state_read_sp(state, &live_sp) !=
+        TI_C54X_ARCH_STATE_OK) {
+        return false;
+    }
+    return live_sp == address_effect->source.value.stack_push.sp_before;
+}
+
 bool
 ti_c54x_memory_instruction_candidate_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
@@ -536,6 +586,10 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY) {
         return x_only_candidate_matches_live(candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+        return stack_push_candidate_matches_live(candidate, state);
     }
     address_effect = &candidate->address_resolution.address_result.effect;
 

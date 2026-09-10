@@ -3,7 +3,8 @@
  *
  * Owns: the allocation-free root transaction that composes memory address
  * resolution, the WORD16 reducer, static opcode completion, ordinary effects,
- * dual-WORD16 and LONG32 reducers, and sequential PC/counter candidates.
+ * dual-WORD16 and LONG32 reducers, sequential PC/counter candidates, and
+ * stack-push return-address staging with atomic SP plus pmad-target commit.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -15,6 +16,7 @@
 
 #include "bus/adapter/word16_adapter.h"
 #include "sequencer/effect_transaction.h"
+#include "sequencer/program_pc_target.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
 #include "memory_instruction_dual.h"
@@ -72,6 +74,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_program_pc_bridge_effect pc_effect = {0};
     ti_c54x_memory_instruction_transaction *target = transaction;
     bool dual_read;
+    bool stack_push;
 
     if (target == NULL || instruction == NULL || input == NULL ||
         effect == NULL || state == NULL) {
@@ -92,7 +95,45 @@ ti_c54x_memory_instruction_transaction_prepare(
     }
     dual_read = effect->payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
-    if (dual_read) {
+    stack_push = effect->payload.memory.address_spec.kind ==
+                 TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16;
+    if (stack_push) {
+        ti_c54x_program_pc_target_effect call_target = {0};
+        uint16_t pmad;
+
+        /* Two-word push forms carry pmad in the second bundle word. The
+         * row catalog pins the count; this defense keeps a forged
+         * candidate from reading past the frozen bundle. */
+        if (instruction->bundle.program_word_count != UINT8_C(2)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        pmad = instruction->bundle.program_words[1];
+        /* Prove the commit-time pmad target plan before any bus issue.
+         * Commit re-plans deterministically from the same frozen pmad and
+         * the stable live PC, so the discarded effect is validation only. */
+        if (ti_c54x_program_pc_target_plan(state->pc_word, pmad,
+                                           &call_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        /* The bridge successor doubles as the pushed return address. Plan
+         * it before resolution: the TOS WRITE carries PC+2 while commit
+         * redirects PC to pmad. Top-of-memory calls inherit the shared
+         * no-wrap sequential boundary. */
+        if (ti_c54x_program_pc_bridge_plan(
+                state->pc_word, instruction->bundle.program_word_count,
+                &pc_effect) != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (ti_c54x_sequencer_resolve_memory_address(
+                state, &effect->payload.memory.address_spec,
+                effect->payload.memory.access,
+                pc_effect.common_pc_word_after,
+                &resolution) != TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        candidate.address_resolution = resolution;
+    } else if (dual_read) {
         if (ti_c54x_sequencer_resolve_dual_memory_address(
                 state, &effect->payload.memory.address_spec,
                 effect->payload.memory.access, UINT16_C(0),
@@ -113,14 +154,23 @@ ti_c54x_memory_instruction_transaction_prepare(
         }
         candidate.address_resolution = resolution;
     }
-    if (ti_c54x_program_pc_bridge_plan(
-            state->pc_word, instruction->bundle.program_word_count,
-            &pc_effect) != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    if (!stack_push) {
+        if (ti_c54x_program_pc_bridge_plan(
+                state->pc_word, instruction->bundle.program_word_count,
+                &pc_effect) != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
     }
     candidate.instruction = *instruction;
     candidate.input = *input;
     candidate.effect = *effect;
+    if (stack_push) {
+        /* Stage the live return address into the frozen copy. The pure
+         * handler cannot know PC, and the shape check requires the frozen
+         * effect value to equal the issued TOS WRITE value. */
+        candidate.effect.payload.memory.value_word =
+            pc_effect.common_pc_word_after;
+    }
     if (dual_read) {
         candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
         candidate.dual_address_snapshot.y_request = dual_resolution.y_request;
@@ -171,8 +221,36 @@ commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
         state->ar[address_commit->ar_index] = address_commit->value_after;
         state->ar_known_mask |=
             (uint8_t)(UINT8_C(1) << address_commit->ar_index);
+    } else if (address_commit->target == TI_C54X_ADDRESS_UPDATE_SP) {
+        state->sp = address_commit->value_after;
+        state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
     }
-    state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+        /* Pushes redirect PC to the frozen pmad instead of the sequential
+         * successor. Re-plan deterministically from the frozen bundle word
+         * and the stable live PC; prepare already proved this plan, so a
+         * failure here is unreachable but still transactional. */
+        const ti_c54x_instruction_word_bundle *bundle_words =
+            &transaction->candidate.instruction.bundle;
+        ti_c54x_program_pc_target_effect call_target = {0};
+        uint32_t live_pc = state->pc_word;
+        uint16_t pmad;
+
+        if (bundle_words->program_word_count != UINT8_C(2)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        pmad = bundle_words->program_words[1];
+        if (ti_c54x_program_pc_target_plan(live_pc, pmad, &call_target) !=
+                TI_C54X_PROGRAM_PC_TARGET_OK ||
+            ti_c54x_program_pc_target_apply(&live_pc, &call_target) !=
+                TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        state->pc_word = live_pc;
+    } else {
+        state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
+    }
     transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
 }

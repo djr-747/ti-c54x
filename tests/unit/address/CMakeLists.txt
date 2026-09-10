@@ -19,3 +19,5 @@ ti_c54x_add_unit_test(indirect_reverse_carry_word test_indirect_reverse_carry_wo
 ti_c54x_add_unit_test(indirect_reverse_carry_contract test_indirect_reverse_carry_contract.c)
 ti_c54x_add_unit_test(indirect_circular_word test_indirect_circular_word.c)
 ti_c54x_add_unit_test(indirect_circular_contract test_indirect_circular_contract.c)
+# W65A RED contract: stack-push WORD16 planner over the full SP domain.
+ti_c54x_add_unit_test(stack_push_planner test_stack_push_planner.c)

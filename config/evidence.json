@@ -3935,6 +3935,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W56: LD src,ASM[,dst] vertical slice (planned)"},
       "assertion": "W56 activates the LD src,ASM[,dst] row with signed ASM shifts, SXM-dependent right shifts, OVM saturation, and sticky destination overflow through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-10 is inventory COMPLETE. Realized 138 catalog rows, ID_COUNT 139, 4,667 lookup entries, 138 bindings, family coverage 48/205, and 30/205 strict complete-form coverage."
+    },
+    {
+      "id": "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65A: stack-push MEMORY transaction seam (planned)"},
+      "assertion": "W65A is the planned generic stack-push MEMORY seam: a STACK_PUSH_WORD16 address kind with an all-zero spec, a pure src/address planner mapping old SP to the TOS DATA WORD16 at SP-1 with a PRE_ACCESS SP update, an SP update target through the intrinsic/dependency/validate/apply chain with no mode read, a DATA WRITE resolution arm, and root prepare/commit support that stages the live return address into the frozen effect copy and commits SP plus the frozen pmad target atomically at READY. SP arithmetic wraps mod 65536 as a project-interpretation pin. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65A: stack-push MEMORY transaction seam (planned)"},
+      "assertion": "W65A activates the stack-push MEMORY seam with planner, SP commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
     }
   ],
   "requirements": [
@@ -8389,6 +8411,46 @@
       "claim": "Bind FORM-T2-19-10 as inventory COMPLETE under ALL addressing with the LD_SRC_ASM catalog symbol.",
       "evidence_ids": ["E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR", "E-PROJECT-P2-W56-LD-SRC-ASM-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "Plan one TOS DATA WORD16 at SP-1 with a PRE_ACCESS SP update to SP-1 under wrapping 16-bit arithmetic through a pure value-owned leaf with no state, mode, or bus dependency.",
+      "evidence_ids": ["E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W65A-STACK-PUSH-PLANNER"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Validate STACK_PUSH effects through the intrinsic/dependency/validate/apply chain with an SP update target, no CMPT/ARP/CPL read, unknown-SP rejection, live-SP snapshot agreement, and transactional SP application.",
+      "evidence_ids": ["E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION", "T-PROJECT-P2-W65A-STACK-PUSH-ROOT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65A-STACK-PUSH-MEMORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Carry the STACK_PUSH_WORD16 address kind with an all-zero spec and WRITE-only access shape, and resolve it to one DATA WRITE request at the planned TOS address with a staged SP commit.",
+      "evidence_ids": ["E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire stack pushes through the persistent MEMORY root by staging the live return address into the frozen effect copy at prepare and committing SP plus the frozen pmad target atomically at READY with WAIT/FAULT/resume unchanged.",
+      "evidence_ids": ["E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W65A-STACK-PUSH-ROOT"]
     }
   ],
   "tests": [
@@ -11190,6 +11252,30 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_src_asm.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_src_asm"},
       "requirement_ids": ["REQ-PROJECT-P2-W56-LD-SRC-ASM-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W65A-STACK-PUSH-PLANNER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_stack_push_planner.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_push_planner"},
+      "requirement_ids": ["REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_stack_push_resolution.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_push_resolution"},
+      "requirement_ids": ["REQ-PROJECT-P2-W65A-STACK-PUSH-MEMORY", "REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W65A-STACK-PUSH-ROOT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_stack_push_root.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_push_root"},
+      "requirement_ids": ["REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT", "REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE"]
     }
   ]
 }

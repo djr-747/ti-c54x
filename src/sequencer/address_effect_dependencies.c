@@ -208,6 +208,22 @@ ti_c54x_sequencer_validate_address_effect_dependencies(
         }
         break;
     }
+    case TI_C54X_ADDRESS_SOURCE_STACK_PUSH: {
+        /* Pushes are mode-independent: only the SP snapshot is observed,
+         * with no CMPT/ARP/CPL read. */
+        uint16_t sp = UINT16_C(0);
+        read_status = ti_c54x_arch_state_read_sp(state, &sp);
+        if (read_status == TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_ADDRESS_APPLY_UNKNOWN_SOURCE;
+        }
+        if (read_status != TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_ARGUMENT;
+        }
+        if (sp != effect->source.value.stack_push.sp_before) {
+            return TI_C54X_ADDRESS_APPLY_STALE_SOURCE;
+        }
+        break;
+    }
     default:
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }

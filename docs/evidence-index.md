@@ -323,6 +323,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W63: BC pmad,cond conditional-branch vertical slice (planned)` |
 | `E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W64: stack-pointer input seam vertical slice (planned)` |
 | `E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W64: stack-pointer input seam vertical slice (planned)` |
+| `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W65A: stack-push MEMORY transaction seam (planned)` |
+| `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W65A: stack-push MEMORY transaction seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -847,6 +849,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W63-BC-PMAD-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | `T-PROJECT-P2-W63-BC-PMAD-CPU` |
 | `REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
 | `REQ-PROJECT-P2-W64-SP-INPUT-SEAM` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION` | `T-PROJECT-P2-W64-SP-INPUT-SEAM` |
+| `REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION` | `T-PROJECT-P2-W65A-STACK-PUSH-PLANNER` |
+| `REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION` | `T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION`, `T-PROJECT-P2-W65A-STACK-PUSH-ROOT` |
+| `REQ-PROJECT-P2-W65A-STACK-PUSH-MEMORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION` | `T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION` |
+| `REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION` | `T-PROJECT-P2-W65A-STACK-PUSH-ROOT` |
 
 ## Tests
 
@@ -1198,6 +1204,9 @@ exist in the repository.
 | `T-COMMON-P2-W63-BC-PMAD-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_bc_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bc_pmad"}` | `REQ-COMMON-P2-W63-BC-PMAD-EFFECTS` |
 | `T-PROJECT-P2-W63-BC-PMAD-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/branch/test_cpu_bc_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_bc_pmad"}` | `REQ-PROJECT-P2-W63-BC-PMAD-CPU-RETIREMENT` |
 | `T-PROJECT-P2-W64-SP-INPUT-SEAM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_stack_pointer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.collect_stack_pointer"}` | `REQ-PROJECT-P2-W64-SP-INPUT-SEAM` |
+| `T-PROJECT-P2-W65A-STACK-PUSH-PLANNER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_stack_push_planner.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_push_planner"}` | `REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER` |
+| `T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_stack_push_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_push_resolution"}` | `REQ-PROJECT-P2-W65A-STACK-PUSH-MEMORY`, `REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE` |
+| `T-PROJECT-P2-W65A-STACK-PUSH-ROOT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_stack_push_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_push_root"}` | `REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT`, `REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-PLAN` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_mod3.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_mod3"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` | PASSING | COMMON_TI | `tests/unit/sequencer/memory/test_dual_mod3_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_resolution"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-ROOT` | PASSING | COMMON_TI | `tests/unit/sequencer/instruction/test_dual_mod3_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_root"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT` |

@@ -3433,6 +3433,107 @@ is 273→275 evidence records, 421 requirements (390 `IMPLEMENTED`,
 `PLANNED`) with catalog, lookup, bindings, and family coverage
 unchanged. These numbers are projections until the slice lands.
 
+### P2-W65A: stack-push MEMORY transaction seam (planned)
+
+This immutable `(planned)` heading is the durable W65A FIT/ownership
+anchor. W65A is a generic project-contract seam only, mirroring the
+W42A precedent: it adds no catalog row, opcode handler, layout, CPU
+opcode branch, inventory form, or TI claim. It gives the W65B `CALL`
+row a stack transaction that pushes one WORD16 through the existing
+MEMORY root with commit-at-READY atomicity.
+
+The seam adds one address kind
+`TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16` with an all-zero spec
+(arf zero; every mode field zero), one pure planner leaf
+`src/address/stack_push.[ch]` mapping old SP to the TOS DATA WORD16
+at `SP-1` with a `PRE_ACCESS` SP update to `SP-1` (the access address
+is the post-update register, mirroring the MOD3 precedent), one
+update target `TI_C54X_ADDRESS_UPDATE_SP` through the
+intrinsic/dependency/validate/apply chain (mode-independent: no
+CMPT/ARP/CPL read; unknown live SP rejects; live SP must match the
+frozen snapshot), a `STACK_PUSH` resolution arm issuing the DATA
+WRITE request, and root prepare/commit support: prepare stages the
+live return address (bridge successor) into the frozen effect copy
+(the pure handler cannot know PC; the shape check requires request
+value == frozen effect value), commit writes SP and the frozen pmad
+target atomically at READY with the existing WAIT/FAULT/resume
+machinery unchanged. 16-bit SP arithmetic wraps mod 65536
+(`SP=0` pushes at `0xFFFF` with SP after `0xFFFF`); the manual states
+no stack-overflow status, so wrap is an explicit
+project-interpretation pin, not a TI claim. No `run.c` change is
+admitted; the existing MEMORY route retires the push.
+
+Ownership: `REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER`
+(`src/address/`), `REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE`
+(`src/sequencer/` intrinsic/dependency/validate/apply),
+`REQ-PROJECT-P2-W65A-STACK-PUSH-MEMORY`
+(`src/isa/ops/memory/`, `src/sequencer/memory/`), and
+`REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT`
+(`src/sequencer/instruction/`) carry the project contract. The three
+RED executable contracts are
+`tests/unit/address/test_stack_push_planner.c`
+(CTest `ti_c54x.stack_push_planner`),
+`tests/unit/sequencer/memory/test_stack_push_resolution.c`
+(CTest `ti_c54x.stack_push_resolution`), and
+`tests/unit/sequencer/instruction/test_stack_push_root.c`
+(CTest `ti_c54x.stack_push_root`), driven with hand-built effects and
+bundles; no catalog identity is consumed. Projected closure is 277
+evidence records, 425 requirements (394 `IMPLEMENTED`, 0 `PLANNED`,
+31 `UNRESOLVED`), and 348 tests (348 `PASSING`, 0 `PLANNED`) with
+catalog, lookup, bindings, and family coverage unchanged. These
+numbers are projections until the slice lands.
+
+### P2-W65B: CALL pmad vertical slice (planned)
+
+This immutable `(planned)` heading is the durable W65B FIT/ownership
+anchor. W65B activates one Table 2-13 row under `FORM-T2-13-02`, TI
+SPRU172C §4 `CALL[D]` (printed pp. 4-27–4-28, cross-checked against
+the SPRU179C algebraic volume `call pmad`, class 29B, §4-27, which
+agrees on `SP-1 → SP`, `PC+2 → TOS`, `pmad → PC`, and the worked
+example): one row `CALL_PMAD` at first-word value `0xF074` under mask
+`0xFFFF` (bits `1111_00Z0_0111_0100` with Z=0; Z=1 word `0xF274` is
+the deferred delayed `CALLD` variant and decodes `UNKNOWN_WORD`),
+two program words, one encoding. (An early research misread of the
+diagram as `0xF034` was corrected against the `re/dsp` disassembly,
+which renders `f074` as `call`; `0xF074` is unclaimed by every
+existing row.) The row reuses the `BRANCH_PMAD16` layout, declares
+`STACK_POINTER` input resources (consuming the W64 seam; `collect.c`
+arms it generically), and is `INELIGIBLE` on the manual's explicit
+"not repeatable" note plus the Table 2-28 absence boundary. The
+handler demands known SP (`INVALID_OPERAND` otherwise) and stages a
+MEMORY `STACK_PUSH` WRITE with a zero value placeholder; the W65A
+root derives the `PC+2` return address at prepare and commits SP,
+TOS, and `PC = pmad` atomically. The worked example pins `CALL
+3333h` with `PC=0025,SP=1111` to `TOS[1110]=0027,SP=1110,PC=3333`.
+The form lands `SUBSET` (delayed `CALLD` deferred to the delay
+seam).
+
+Ownership: `REQ-COMMON-P2-W65B-CALL-PMAD-CATALOG`
+(`src/isa/catalog/`), `REQ-COMMON-P2-W65B-CALL-PMAD-DECODE`
+(`src/isa/decode/`), and `REQ-COMMON-P2-W65B-CALL-PMAD-EFFECTS`
+(`src/isa/ops/branch/`) carry the TI architectural evidence;
+`REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING`
+(`src/isa/ops/dispatch/`),
+`REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT` (`src/cpu/`), and
+`REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY` (`tools/quality/`) carry
+the project contract. The four RED executable contracts are
+`tests/unit/isa/catalog/test_call_pmad_metadata.c`
+(CTest `ti_c54x.call_pmad_metadata`),
+`tests/unit/isa/decode/test_call_pmad_decode.c`
+(CTest `ti_c54x.call_pmad_decode`),
+`tests/unit/isa/ops/branch/test_call_pmad.c`
+(CTest `ti_c54x.call_pmad`), and
+`tests/unit/cpu/isa/branch/test_cpu_call_pmad.c`
+(CTest `ti_c54x.cpu_call_pmad`). The decode contract pins Z=1 to
+`UNKNOWN_WORD` under the cross-slice hazard rule (the future CALLD
+slice updates this test). Projected closure is 147 catalog rows,
+`ID_COUNT=148`, 5,567 lookup entries, 147 trusted bindings, family
+coverage 55/205 (26.829%), and 33/205 strict complete-form coverage
+(`FORM-T2-13-02` stays `SUBSET`); 279 evidence records, 431
+requirements (400 `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), and
+352 tests (352 `PASSING`, 0 `PLANNED`). These numbers are projections
+until the slice lands.
+
 ### P2-W21: shared-memory transaction foundation
 
 State: P2-W21A, P2-W21B, and P2-W21C implemented and green. External adapter

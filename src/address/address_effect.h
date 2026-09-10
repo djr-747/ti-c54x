@@ -38,7 +38,8 @@ typedef enum ti_c54x_address_access {
 
 typedef enum ti_c54x_address_update_target {
     TI_C54X_ADDRESS_UPDATE_NONE = 0,
-    TI_C54X_ADDRESS_UPDATE_AR = 1
+    TI_C54X_ADDRESS_UPDATE_AR = 1,
+    TI_C54X_ADDRESS_UPDATE_SP = 2
 } ti_c54x_address_update_target;
 
 typedef enum ti_c54x_address_update_phase {
@@ -68,7 +69,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_AR_INDEXED = 4,
     TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5,
     TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6,
-    TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR = 7
+    TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR = 7,
+    TI_C54X_ADDRESS_SOURCE_STACK_PUSH = 8
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -126,6 +128,14 @@ typedef struct ti_c54x_address_source_direct_sp {
     uint8_t dma7;
 } ti_c54x_address_source_direct_sp;
 
+/* Snapshot for stack-push WORD16 forms. `sp_before` is the old stack
+ * pointer; the operand address is `sp_before - 1` mod 65536 and the
+ * single update rewrites SP to that address. Unlike DIRECT_SP this
+ * carries no dma page and no CPL policy: pushes are mode-independent. */
+typedef struct ti_c54x_address_source_stack_push {
+    uint16_t sp_before;
+} ti_c54x_address_source_stack_push;
+
 /* The active union arm is selected by kind.  All fields are copied into the
  * effect; no source pointer or caller-owned storage is retained. */
 typedef struct ti_c54x_address_source {
@@ -138,6 +148,7 @@ typedef struct ti_c54x_address_source {
         ti_c54x_address_source_ar_circular ar_circular;
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
+        ti_c54x_address_source_stack_push stack_push;
     } value;
 } ti_c54x_address_source;
 

@@ -15,3 +15,6 @@ ti_c54x_add_unit_test(dual_address_resolution
 # W52B RED contract: dual-indirect MOD3 resolution and CMPT/ARP invariance.
 ti_c54x_add_unit_test(dual_mod3_resolution
                       test_dual_mod3_resolution.c)
+# W65A RED contract: stack-push WORD16 resolution and mode independence.
+ti_c54x_add_unit_test(stack_push_resolution
+                      test_stack_push_resolution.c)

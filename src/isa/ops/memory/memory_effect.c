@@ -4,9 +4,9 @@
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
  * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
  * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, dual-indirect
- * MOD0/MOD1/MOD2 WORD16, and X-only dual-indirect WORD16 memory effect
- * carriers. Dual MOD3 remains deferred with the AR0/BK indexed/circular
- * dependency.
+ * MOD0/MOD1/MOD2 WORD16, X-only dual-indirect WORD16, and mode-independent
+ * STACK_PUSH WORD16 memory effect carriers. Dual MOD3 remains deferred
+ * with the AR0/BK indexed/circular dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -186,6 +186,19 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY:
         return ti_c54x_op_memory_effect_x_only_shape_is_valid(effect);
+
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16:
+        /* All-zero spec with no AR selector; WRITE-only with no RMW and no
+         * completion. The staged value rides the TOS WRITE verbatim. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf != UINT8_C(0)) {
+            return false;
+        }
+        return ti_c54x_op_memory_effect_access_shape_is_valid(effect) &&
+               effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:

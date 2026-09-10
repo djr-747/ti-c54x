@@ -32,7 +32,8 @@ typedef struct ti_c54x_sequencer_address_commit {
  * borrowed for this call and `out_commit` is caller-owned.  A non-NULL output
  * is zeroed before validation and remains zero on every rejection.  A NONE
  * effect returns an all-zero commit on success; an AR effect returns the
- * single selected-AR write that the application layer may perform.
+ * single selected-AR write, and a STACK_PUSH effect the single SP write,
+ * that the application layer may perform.
  */
 ti_c54x_address_apply_status ti_c54x_sequencer_validate_address_effect(
     const ti_c54x_arch_state *state,

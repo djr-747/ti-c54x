@@ -46,6 +46,7 @@ static bool valid_source_kind(ti_c54x_address_source_kind kind)
     case TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET:
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
     case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
+    case TI_C54X_ADDRESS_SOURCE_STACK_PUSH:
         return true;
     default:
         return false;
@@ -70,7 +71,9 @@ static bool valid_state_policy_for_source(
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_SP &&
-            policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL1);
+            policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL1) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_STACK_PUSH &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_NONE);
 }
 
 static bool source_supports_ar_update(ti_c54x_address_source_kind source_kind)
@@ -202,6 +205,14 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
         }
         break;
     }
+    case TI_C54X_ADDRESS_SOURCE_STACK_PUSH:
+        /* Every 16-bit snapshot is in-domain; the TOS wrap arithmetic is
+         * proven by the root candidate check, mirroring AR-indirect
+         * layering. Only the WORD16 shape is intrinsic here. */
+        if (effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+        break;
     default:
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
@@ -231,6 +242,14 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
             update->value_before != source_ar_value_before(&effect->source)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
+    } else if (update->target == TI_C54X_ADDRESS_UPDATE_SP) {
+        if (update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS ||
+            update->ar_index != UINT8_C(0) ||
+            effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH ||
+            update->value_before !=
+                effect->source.value.stack_push.sp_before) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
     } else {
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }
@@ -250,10 +269,21 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     }
+    if (update->target == TI_C54X_ADDRESS_UPDATE_SP) {
+        /* Pushes address the post-update register, mirroring MOD3 PRE. */
+        if (effect->operand.first_word != update->value_after) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+    }
 
     if (update->target == TI_C54X_ADDRESS_UPDATE_AR) {
         out_commit->target = TI_C54X_ADDRESS_UPDATE_AR;
         out_commit->ar_index = update->ar_index;
+        out_commit->value_after = update->value_after;
+    }
+    if (update->target == TI_C54X_ADDRESS_UPDATE_SP) {
+        out_commit->target = TI_C54X_ADDRESS_UPDATE_SP;
+        out_commit->ar_index = UINT8_C(0);
         out_commit->value_after = update->value_after;
     }
     return TI_C54X_ADDRESS_APPLY_OK;
