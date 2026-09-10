@@ -7798,3 +7798,81 @@ rewritten after publication.
   port I/O ahead of remaining LD-family variants. Open: fix the
   `make test` recipe order so C regressions cannot hide behind the
   environmental quality failure.
+
+## 2026-09-11 — P2-W62 B pmad unconditional-branch vertical slice
+
+- Implementation commit `84b23a1` activates Table 2-12 form
+  `FORM-T2-12-01` as `SUBSET`, TI SPRU172C §4 `B[D]` (printed
+  p. 4-14, cross-checked against the SPRU179C algebraic volume
+  `goto pmad`, class 29A, §4-14, which agrees on opcode diagram,
+  `PC = pmad(15-0)` execution, and the worked example): one row
+  `B_PMAD` at first-word value `0xF073` as an `EXACT` row (bits
+  `1111_00Z0_0011_0011` with Z=0; the lookup generator rejects a
+  full `0xFFFF` mask, so the single encoding is exact rather than
+  masked), two program words. The new `BRANCH_PMAD16` layout
+  carries the copied 16-bit pmad from the second bundle word;
+  repeatability is `INELIGIBLE` on the manual's explicit "not
+  repeatable" note plus the Table 2-28 absence boundary; input
+  resources are `NONE`.
+- Semantics is `PC = pmad` with all other state preserved; the
+  worked example pins `B 2000h` with `PC=1F45` to `PC=2000`, and
+  the CPU test retires exactly that vector from a nonzero origin.
+  Z=1 (deferred delayed `BD`) decodes `UNKNOWN_WORD` under the
+  cross-slice hazard rule. The slice adds the first PC-target
+  seam: a new `TI_C54X_OP_EFFECT_PC_WRITE` kind carrying one
+  copied `uint16_t` pmad, a `src/isa/ops/branch/op_b_pmad.[ch]`
+  pure checked/trusted leaf, a
+  `src/sequencer/program_pc_target.[ch]` planner in the bridge's
+  transactional style, and a `run.c` route that commits the target
+  atomically with the staged effect transaction instead of the
+  sequential bridge plan. `effect_transaction` is untouched: its
+  default arm safely rejects the new kind, keeping its
+  no-program-counter-effects contract true. No MEMORY endpoint,
+  new address kind, status/accumulator/T effect, public ABI,
+  timing, device/MMR, or delay-slot claim is admitted.
+- Evidence: three new TI records (opcode, semantics, explicit
+  nonrepeatable note), plan anchor plus activation records, six
+  requirements, and four RED contracts (metadata with 65,536-word
+  disjointness sweep and single-encoding population, decode with
+  Z=1 and four probed sibling pins plus twelve UNKNOWN flips,
+  ops exhaustive over all 65,536 pmads with five-path parity and
+  NONE-resource input independence, CPU with verbatim-target
+  retirement, worked-example origin, and second-word fault
+  transactionality). `FORM-T2-12-01` is inventory `SUBSET` under
+  `ABSOLUTE_PMAD_NONDELAYED`; the subset schema forbids `ALL` for
+  SUBSET bindings, so the absolute mode carries its own token.
+- Review findings during construction: the generator's partial-mask
+  rule forced the `EXACT` representation (recorded above, not a
+  semantic change); a RED ops-test sequencing bug overwrote the
+  rejection baseline with the OK-case effect and was fixed in the
+  test, not the product; the frozen inventory binding test needed
+  its SUBSET symbol set, count 111→112, and a `B_PMAD` addressing
+  arm. The `make ... | head` SIGPIPE truncation that hid a build
+  is recorded as a session-hygiene note: always log builds to a
+  file, never filter through `head`.
+- Validation is GREEN with one recorded baseline deviation: all
+  312 C test binaries pass; contract quality unittest passes
+  except the single pre-existing `test_supported_m32_assertions`
+  `-m32`/ILP32 failure carried as baseline since W61 (W49A-owned,
+  outside this diff); knobs, source boundaries (568 files, review
+  warnings only), manifests, evidence (268 records, 414
+  requirements with 383 `IMPLEMENTED`, 340 tests all
+  `PASSING`), inventory (53/205 family 25.854%, 33/205 strict),
+  and observer-disabled structure pass. Focused ASan/UBSan 4/4
+  GREEN (`ASAN_OPTIONS=detect_leaks=0`, then `make clean` plus a
+  normal rebuild). Fresh CMake/CTest Debug passes 318/319 with
+  only `quality.python` failing (the same single unittest
+  failure); full sanitizer CMake/CTest passes 318/318 excluding
+  `quality.python`. Registry closure is 268 immutable evidence
+  records, 414 requirements (383 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 340 tests (340 `PASSING`, 0 `PLANNED`).
+  Coverage is 145 catalog rows, `ID_COUNT=146`, 5,310 lookup
+  entries, 145 trusted bindings, family coverage 53/205 (25.854%),
+  and 33/205 strict complete-form coverage (`FORM-T2-12-01` stays
+  `SUBSET`). No knob was added or changed. Nothing was pushed.
+- Follow-up work: wave-1 control flow continues with `BC`
+  (conditional target selection over status conditions), then
+  `CALL` (stack-link seam) and `RET` (return path); the deferred
+  delayed `BD` variant waits on the delay-slot seam. Open: fix the
+  `make test` recipe order so C regressions cannot hide behind the
+  environmental quality failure.
