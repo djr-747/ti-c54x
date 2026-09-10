@@ -7655,3 +7655,76 @@ rewritten after publication.
   follow. Open: fix the `make test` recipe order so C
   regressions cannot hide behind the environmental quality
   failure.
+
+## 2026-09-10 — P2-W60 LDR Smem,dst vertical slice
+
+- Implementation commit `c913f37` activates Table 2-19 form
+  `FORM-T2-19-19` as `SUBSET`, TI SPRU172C §4 LDR (printed p. 4-78,
+  cross-checked against the SPRU179C algebraic volume p. 4-78,
+  which agrees on opcode diagram, execution, and worked example):
+  one row `LDR` at first-word value `0x1680` under mask `0xFEE0`
+  (destination in bit 8, MOD0--MOD2 single-indirect Smem byte
+  mirroring the `LD_SMEM` row, one program word, 64 encodings
+  with MOD3 patterns admitted at decode and rejected
+  transactionally at effect validation as write-only). The
+  existing `ACCUMULATOR_ARF_MOD` layout carries destination, ARF,
+  and MOD; repeatability is `UNRESOLVED` (Table 2-28 lists only
+  `LD ARP`/`LD DP` among loads); input resources are
+  `STATUS_SXM` (status bits say SXM only: no OVM input, no
+  saturation, no OV effect).
+- Semantics is `dst = (SXM-widen(Smem) << 16) + 0x8000` with bits
+  14:0 cleared, i.e. the guard bits are the SXM sign extension,
+  bits 31:16 are Smem verbatim, and bits 15:0 are always `0x8000`;
+  C, TC, and OV stay preserved. The worked example pins
+  `LDR *AR1,A` with Smem `0xFEDC` and SXM 0 to `00 FEDC 8000`.
+  The checked/trusted leaves reuse the Smem common
+  identity/mode validation and single-indirect staging with an
+  LDR-specific rounding completion. Unknown SXM rejects
+  transactionally. No new layout, address kind, effect kind, CPU
+  branch, public ABI, timing, or device/MMR claim is admitted.
+  MOD4--MOD15 Smem variants stay deferred to later slices
+  following the W43B/W44B pattern.
+- Evidence: three new TI records (opcode, semantics, T2-28
+  repeatability boundary), plan anchor plus activation records,
+  six requirements, and four RED contracts (metadata with
+  65,536-word disjointness sweep, decode exhaustive over all 64
+  encodings with fixed-bit pins onto `LDU_SMEM`/`LD_SMEM_TS`,
+  ops exhaustive over 48 MOD0--MOD2 forms with independent
+  rounding oracle plus MOD3 write-only rejection and
+  checked/trusted/dispatched/trusted-packet parity, CPU with
+  commit/rounding/fault/boundary coverage and no-overflow
+  assertion). `FORM-T2-19-19` is inventory `SUBSET` under
+  `STANDARD_INDIRECT_MOD0_MOD3`.
+- Review findings during construction: the LDU decode near-miss
+  pin on bit 10 flipped onto the new LDR row and was repinned
+  as the W60 sibling (cross-slice near-miss rule); strict
+  complete-form coverage correctly stays 33/205 because the form
+  lands as `SUBSET` (family coverage advances to 52/205); the
+  frozen SUBSET symbol set and `MOD0_MOD3` addressing expectation
+  gained `LDR`.
+- Correction to the W59 entry: the delegated adversarial review
+  verdict arrived after the W59 commits landed and reports no
+  correctness defects in the four focus areas (X-only resolver
+  branch, candidate validator arms, effect shape check, LDR is
+  out of its scope). The W59 ledger note claiming the result
+  proved unretrievable is superseded by this verdict.
+- Validation is GREEN: all 308 C test binaries pass; contract
+  quality unittest 264/268 with only the four pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries, manifests, evidence (402 requirements with 371
+  IMPLEMENTED and 31 UNRESOLVED, 332 tests all PASSING),
+  inventory (52/205 family 25.366%, 33/205 strict), and
+  observer-disabled structure pass. Focused ASan/UBSan 4/4 GREEN
+  (`ASAN_OPTIONS=detect_leaks=0`, then `make clean`). Fresh
+  CMake/CTest Debug passes 314/315 excluding `quality.python`
+  (same four environmental subfailures); full sanitizer
+  CMake/CTest passes 314/314 excluding `quality.python`.
+  Registry closure is 260 immutable evidence records. No knob was
+  added or changed. Nothing was pushed.
+- Follow-up work: LDR MOD4--MOD15 variants, remaining LD Smem
+  MOD9/MOD11 circular-AR0 plus MOD12--MOD15 long/absolute seams,
+  LDM/ST MMR (device seam), LTD/MACD (delay seam), then
+  ST/STH/STL stores; ADD/SUB remainder (ADDM/SUBM need RMW
+  ADD/SUB) and MAC/MPY families follow. Open: fix the `make
+  test` recipe order so C regressions cannot hide behind the
+  environmental quality failure.
