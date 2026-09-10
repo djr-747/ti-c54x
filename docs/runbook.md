@@ -195,7 +195,42 @@ struct-padding sensitivity that fails there (CI uses Debug).
   slices with new semantics; a caught finding (W57's bit-1
   misread) is recorded in the ledger, not hidden.
 
-## 8. Live follow-ups (update as they close)
+## 8. README step when finishing a slice
+
+Read this section top to bottom every time a slice is ready to
+land. It is the definition of done; a slice is not finished until
+every line checks out.
+
+1. **Numbers agree.** The plan anchor projections (§1, step 2) now match
+   reality: rows, `ID_COUNT`, lookup entries, bindings, family
+   N/205 + 3-decimal %, strict N/205, evidence/requirement/test
+   counts. `grep` the anchor numbers against
+   `config/evidence.json`, `config/isa/inventory.json`, and the
+   test output; fix the anchor, never the tests.
+2. **All gates green** (§6). No gate may be skipped because an
+   earlier one passed; record the actual commands and results
+   for the ledger entry.
+3. **Diff review.** `git status --short` shows only files the
+   slice owns; `git diff --check` is clean; no stray debug,
+   no `git clean` of user-untracked files. New handwritten
+   files carry module contracts; no file silently passed 500
+   lines without a split decision.
+4. **Implementation commit.** Stage files by name, commit
+   `feat: <what> (P2-Wnn)` with the realized numbers in the
+   body. Full suite green at this commit.
+5. **Ledger commit.** Append one entry to
+   `docs/development-ledger.md` (hash, evidence, decisions,
+   knobs, follow-ups) and commit alone as
+   `docs: ledger Wnn <what> checkpoint`. Never rewrite history.
+6. **Runbook + plan hygiene.** Move the slice's line out of §9
+   below (or mark it closed with the landing hash); flip the
+   plan anchor heading from `(planned)` to the landed state
+   only if that slice's convention says so. If the slice taught
+   a new bug class, fixture, or gate caveat, add it to this
+   runbook in the same commit as the lesson (separate docs
+   commit, never folded into the next slice).
+
+## 9. Live follow-ups (update as they close)
 
 - LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT, P2-W59): needs the
   X-only dual address seam (pair machinery always issues two
