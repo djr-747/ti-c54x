@@ -8485,3 +8485,96 @@ rewritten after publication.
   `memory_instruction_transaction.c` before 800 lines;
   `make test` recipe order still lets C regressions hide
   behind quality failures.
+
+## 2026-09-11 — P2-W68 BD delayed-branch slice
+
+- Implementation commit `d756fe0` binds one Table 2-12 row under
+  `FORM-T2-12-01`: `BD` at first-word value `0xF273` under mask
+  `0xFFFF`, two program words, one encoding, copied 16-bit pmad,
+  reusing `BRANCH_PMAD16` with no input resources and
+  `INELIGIBLE` repeatability (manual note; TI evidence reused
+  from the W62 `B[D]` opcode, semantics, and nonrepeatable
+  records, so no new TI record was needed). The slice adds the
+  first non-MEMORY deferred-branch seam: a new
+  `TI_C54X_OP_EFFECT_DELAYED_PC_WRITE` kind carrying one copied
+  pmad (`src/isa/ops/op_effect.h`), a pure handler
+  (`src/isa/ops/branch/op_bd.[ch]`) emitting it verbatim, macro
+  dispatch binding with no per-row wiring, and a `run.c` route
+  that validates the absolute target through the existing
+  target planner, commits the sequential successor, retires,
+  and arms the CPU-owned countdown with pmad, replacing any
+  pending countdown under the last-wins rule. `FORM-T2-12-01`
+  stays `SUBSET` with an `ABSOLUTE_PMAD_DELAYED` binding. The
+  W62 `test_b_pmad_decode.c` deferred pin now decodes `BD`
+  under the cross-slice hazard rule (bit-9 near-miss updated;
+  the new decode test pins the genuine `SFTL_ACC`,
+  `AND_IMMEDIATE_SHIFT`, `XOR_IMMEDIATE_SHIFT`, and
+  `AND_IMMEDIATE_SHIFT16` siblings, each verified against the
+  catalog rows).
+- The perf contract
+  (`test_trusted_hot_path_has_one_preparation_plan_and_generic_dispatch`)
+  pins a single `bridge_plan_trusted` site in `run.c`; the
+  first route draft added a second and failed it honestly. The
+  fix hoists the sequential-successor preparation before kind
+  dispatch so the ordinary and delayed-PC routes share it, with
+  failure reported only by the routes that advance
+  sequentially (top-of-memory MEMORY and immediate branches
+  keep exact behavior). Folding apply into the shared status is
+  exact: every apply failure maps through
+  `bridge_status_to_stop` to the same `INVALID_STATE` the split
+  checks produced. The pin was not bumped. `MEMORY`/`PC_WRITE`
+  retirements now compute one discarded pure bridge plan; noted
+  as accepted hot-path cost, no benchmark gate covers it.
+- The W62 `REQ-COMMON-P2-W62-B-PMAD-DECODE` registry claim is
+  corrected in place (it pinned `0xF273` to `UNKNOWN_WORD`,
+  which this slice falsifies): it now states the Z=1 word
+  decodes through the `BD` row, backed by the existing
+  `E-TI-C54X-SPRU172C-S4-B-OPCODE-P4-14` record. The old PINNED
+  opcode assertion ("Z=1 ... stays deferred to the delay
+  seam") is retained under its still-true reading: `BD` runs
+  through the new delayed-PC route. Nothing else historical was
+  rewritten.
+- Evidence: plan-anchor plus activation records, six
+  requirements (`REQ-COMMON-P2-W68-BD-CATALOG`, `-DECODE`,
+  `-EFFECTS`, `REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING`,
+  `-CPU-RETIREMENT`, `-INVENTORY`), and four RED contracts
+  (`tests/unit/isa/catalog/test_bd_metadata.c`,
+  `tests/unit/isa/decode/test_bd_decode.c`,
+  `tests/unit/isa/ops/branch/test_bd.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_bd.c`) covering
+  metadata/disjointness, decode with four genuine siblings,
+  handler staging with checked/trusted/dispatch parity, and CPU
+  retirement (verbatim deferral sweep, two 1-word slots, one
+  2-word slot with real `LD` execution, inner-branch takeover,
+  inner-delayed replacement, oversize saturation, budget-split
+  persistence, reset clearing, slot-fetch fault hold,
+  second-word fault transactionality, full preservation, no
+  endpoint traffic by construction). Registry closure is 301
+  evidence records, 463 requirements (432 `IMPLEMENTED`, 0
+  `PLANNED`, 31 `UNRESOLVED`), and 374 tests (374 `PASSING`, 0
+  `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 346 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK; knobs, source boundaries
+  (only SIZE_REVIEW warnings; `run.c` at 667 lines stays under
+  the 800-line split bar), manifests, evidence, inventory
+  (realized 151 catalog rows, `ID_COUNT=152`, 5,571 lookup
+  entries, 151 bindings, 118 SUBSET bindings, family coverage
+  56/205 at 27.317%, 33/205 strict), and observer-disabled
+  structure pass. Focused ASan/UBSan GREEN for the four new
+  tests plus the updated B decode pin. Fresh CMake/CTest Debug
+  passes 353/353; full sanitizer CMake/CTest passes 352/352
+  excluding `quality.python` (sanitizer tree on home disk;
+  scratch removed; `/tmp` too small for the sanitizer link).
+  Row-count pins advanced to 151 rows, 151 bindings, 5,571
+  entries, and 118 SUBSET across the contract suites plus
+  `ID_COUNT=152` across the C metadata suites. No knob was
+  added or changed. Nothing was pushed.
+- Follow-up work: delayed conditional `BCD` (303 image
+  occurrences) reuses the `DELAYED_PC_WRITE` route unchanged;
+  `BANZD`, `CCD`, `RETE`/`RETF` remain deferred with
+  cross-slice hazard pins. Open: split decision for
+  `memory_instruction_transaction.c` before 800 lines (and now
+  `run.c` at 667 approaching review range); `make test`
+  recipe order still lets C regressions hide behind quality
+  failures.
