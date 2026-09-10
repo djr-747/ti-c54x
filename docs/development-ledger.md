@@ -8948,3 +8948,41 @@ rewritten after publication.
   `memory_instruction_transaction.c` (now 728);
   `make test` recipe order still lets C regressions hide
   behind quality failures.
+
+## 2026-09-11 — Wave-1 control-flow evidence audit and split decisions
+
+- Evidence audit: the evidenced wave-1 control flow is
+  complete through W73 (`B`, `BC`, `BCD`, `BANZ`, `BANZD`,
+  `CALL`, `CALLD`, `CC`, `CCD`, `RET`, `RETD`, `BD`). Every
+  remaining wave-1 control-flow form is evidence-blocked and
+  stays `UNRESOLVED`/`UNIMPLEMENTED` with zero TI evidence
+  records and no repo-evidenced encodings: `RETE`/`RETF`
+  (additionally need nonexistent shadow state for `RETF`
+  and a first status-mutating branch for `RETE`),
+  `BACC`/`FBACC`/`CALA`/`FCALA`/`FCALL`/`FB`,
+  `FRET`/`FRETE`, `XC`, `MAR`, `IDLE`, `RESET`. The `RC`
+  mention count (34) is the repeat counter, not conditional
+  return. Per the TDD rule no slice is opened for any of
+  these until TI requirement, evidence, and executable test
+  exist; nothing was fabricated.
+- Split decision `src/cpu/execution/run.c` (765 lines):
+  KEEP. The file is one orchestrating loop plus small
+  helpers; fetch, input collection, dispatch, effect
+  transaction, PC bridge/target, and the memory root are
+  already separate modules. The loop grows only on new
+  effect-kind routes (five arms today), and every remaining
+  effect kind retires through an existing arm, so growth is
+  capped. Extracting route blocks would only re-home loop
+  locals into a context struct with no ownership boundary.
+  Re-evaluate at 800 lines or on arrival of a sixth route.
+- Split decision
+  `src/sequencer/instruction/memory_instruction_transaction.c`
+  (728 lines): KEEP. Dual/long32/RMW/pair-dispatch/candidate
+  validation already live in six companion modules; the
+  remainder is the irreducible prepare/commit/advance core
+  whose arms share validation ordering and frozen-candidate
+  state. Same re-evaluation triggers: 800 lines or a new
+  address kind.
+- No production, test, inventory, evidence, or plan change
+  in this entry; `git diff --check` passes. Nothing was
+  pushed.
