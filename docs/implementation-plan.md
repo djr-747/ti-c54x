@@ -3216,8 +3216,10 @@ registry is 263 immutable evidence records, 408 requirements (377
 `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), and 336 tests (336
 `PASSING`, 0 `PLANNED`). Coverage is 144 catalog rows,
 `ID_COUNT=145`, 5,309 lookup entries, 144 trusted bindings,
-family coverage 53/205 (25.854%), and 33/205 strict
-complete-form coverage (`FORM-T2-19-19` stays `SUBSET`). The rows
+family coverage 52/205 (25.366%), and 33/205 strict
+complete-form coverage (`FORM-T2-19-19` stays `SUBSET`; W61 adds
+rows to an already-covered family, so family coverage is unchanged
+from W60). The rows
 are reset-runnable (SXM is reset-known, no memory or accumulator
 input required).
 
