@@ -3957,6 +3957,61 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65A: stack-push MEMORY transaction seam (planned)"},
       "assertion": "W65A activates the stack-push MEMORY seam with planner, SP commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CALL[D]", "printed_page_start": "4-27", "printed_page_end": "4-27"},
+      "assertion": "The CALL[D] description defines syntax CALL[D] pmad with operand 0 <= pmad <= 65535 as a two-word form: word0 1111_00Z0_0111_0100 with the delayed flag in bit 9, giving first-word value 0xF074 under mask 0xFFFF for the non-delayed CALL variant with one encoding, followed by a 16-bit pmad constant word. Z=1 selects the delayed CALLD variant, which stays deferred to the delay seam. The SPRU179C algebraic volume (call pmad, class 29B, section 4-27) agrees on the opcode diagram. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CALL-SEMANTICS-P4-27-4-28",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CALL[D]", "printed_page_start": "4-27", "printed_page_end": "4-28"},
+      "assertion": "The CALL[D] description defines nondelayed execution as (SP) - 1 -> SP with (PC) + 2 -> TOS followed by pmad -> PC, with no affected status bits. The delayed CALLD form instead pushes (PC) + 4 and stays deferred with the delay seam. The worked example pins CALL 3333h with PC 0025 and SP 1111 to TOS[1110] 0027, SP 1110, and PC 3333; the CALLD example pins CALLD 1000h with PC 0025 and SP 1111 to TOS[1110] 0029, SP 1110, and PC 1000. The SPRU179C algebraic volume agrees on SP - 1 -> SP, PC + 2 -> TOS, and PC = pmad(15-0)."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CALL-NONREPEATABLE-P4-27",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CALL[D]", "printed_page_start": "4-27", "printed_page_end": "4-27"},
+      "assertion": "The CALL[D] description carries an explicit note that the instruction is not repeatable. This record is positive evidence for the INELIGIBLE repeatability classification of the CALL_PMAD row; Table 2-28 absence remains a boundary only and is not needed for this classification."
+    },
+    {
+      "id": "E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65B: CALL pmad vertical slice (planned)"},
+      "assertion": "W65B is the planned CALL pmad vertical slice: one CALL_PMAD row at first-word value 0xF074 under mask 0xFFFF reusing the BRANCH_PMAD16 layout with STACK_POINTER input resources and INELIGIBLE repeatability, a pure branch handler staging a MEMORY STACK_PUSH WRITE with a zero value placeholder, trusted dispatch binding, and CPU retirement through the W65A stack-push root with atomic SP, TOS, and pmad-target commit. FORM-T2-13-02 lands SUBSET with delayed CALLD deferred."
+    },
+    {
+      "id": "E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65B: CALL pmad vertical slice (planned)"},
+      "assertion": "W65B activates the CALL_PMAD row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 147 catalog rows, ID_COUNT 148, 5,567 lookup entries, 147 bindings, family coverage 55/205, and 33/205 strict complete-form coverage with FORM-T2-13-02 SUBSET."
     }
   ],
   "requirements": [
@@ -8451,6 +8506,66 @@
       "claim": "Retire stack pushes through the persistent MEMORY root by staging the live return address into the frozen effect copy at prepare and committing SP plus the frozen pmad target atomically at READY with WAIT/FAULT/resume unchanged.",
       "evidence_ids": ["E-PROJECT-P2-W65A-STACK-PUSH-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W65A-STACK-PUSH-SEAM-ACTIVATION"],
       "test_ids": ["T-PROJECT-P2-W65A-STACK-PUSH-ROOT"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W65B-CALL-PMAD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the CALL_PMAD row at first-word value 0xF074 under mask 0xFFFF with two program words, the BRANCH_PMAD16 layout, INELIGIBLE repeatability, and STACK_POINTER resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27"],
+      "test_ids": ["T-COMMON-P2-W65B-CALL-PMAD-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W65B-CALL-PMAD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the CALL_PMAD first word through the generic decoder with copied bundle and scalar metadata, extracting the raw 16-bit pmad extension and pinning the deferred delayed word 0xF274 to UNKNOWN_WORD.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27"],
+      "test_ids": ["T-COMMON-P2-W65B-CALL-PMAD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W65B-CALL-PMAD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Stage a MEMORY STACK_PUSH WRITE with a zero return-address placeholder from the copied pmad under per-row identity validation with transactional unknown-SP rejection and no status effect.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-SEMANTICS-P4-27-4-28", "E-TI-C54X-SPRU172C-S4-CALL-NONREPEATABLE-P4-27"],
+      "test_ids": ["T-COMMON-P2-W65B-CALL-PMAD-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the CALL_PMAD row through the macro-driven checked and trusted dispatch tables with no opcode-specific branch.",
+      "evidence_ids": ["E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire CALL pmad through the existing MEMORY route with the worked-example vector, WAIT resume, DATA fault rollback, and unknown-SP rejection.",
+      "evidence_ids": ["E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W65B-CALL-PMAD-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-13-02 as inventory SUBSET under the CALL_PMAD catalog symbol.",
+      "evidence_ids": ["E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -9795,7 +9910,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -10259,7 +10374,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -11276,6 +11391,38 @@
       "path": "tests/unit/sequencer/instruction/test_stack_push_root.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_push_root"},
       "requirement_ids": ["REQ-PROJECT-P2-W65A-STACK-PUSH-ROOT", "REQ-PROJECT-P2-W65A-STACK-PUSH-VALIDATE"]
+    },
+    {
+      "id": "T-COMMON-P2-W65B-CALL-PMAD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_call_pmad_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.call_pmad_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W65B-CALL-PMAD-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W65B-CALL-PMAD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_call_pmad_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.call_pmad_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W65B-CALL-PMAD-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W65B-CALL-PMAD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_call_pmad.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.call_pmad"},
+      "requirement_ids": ["REQ-COMMON-P2-W65B-CALL-PMAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W65B-CALL-PMAD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_call_pmad.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_call_pmad"},
+      "requirement_ids": ["REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT"]
     }
   ]
 }

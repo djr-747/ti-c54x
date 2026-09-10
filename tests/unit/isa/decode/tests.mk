@@ -49,3 +49,5 @@ $(eval $(call ti_c54x_add_test,add_sub_dual_modes_decode,isa/decode,test_add_sub
 $(eval $(call ti_c54x_add_test,add_sub_dual_mod3_decode,isa/decode,test_add_sub_dual_mod3_decode.c))
 # W52A COMMON repeat-truth closure: TI-evidence-bound RPT decode contract.
 $(eval $(call ti_c54x_add_test,rpt_immediate_decode_common,isa/decode,test_rpt_immediate_decode.c))
+# W65B RED contract: CALL pmad decode with near-miss audit.
+$(eval $(call ti_c54x_add_test,call_pmad_decode,isa/decode,test_call_pmad_decode.c))

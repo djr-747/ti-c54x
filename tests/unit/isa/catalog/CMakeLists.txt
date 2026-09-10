@@ -52,3 +52,6 @@ ti_c54x_add_unit_test(add_sub_dual_modes_metadata
 # W52C RED contract: MOD3-involving dual ADD/SUB row metadata.
 ti_c54x_add_unit_test(add_sub_dual_mod3_metadata
                       test_add_sub_dual_mod3_metadata.c)
+# W65B RED contract: CALL pmad row metadata.
+ti_c54x_add_unit_test(call_pmad_metadata
+                      test_call_pmad_metadata.c)

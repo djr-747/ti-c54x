@@ -55,3 +55,5 @@ ti_c54x_add_unit_test(add_sub_dual_modes_decode test_add_sub_dual_modes_decode.c
 ti_c54x_add_unit_test(add_sub_dual_mod3_decode test_add_sub_dual_mod3_decode.c)
 # W52A COMMON repeat-truth closure: TI-evidence-bound RPT decode contract.
 ti_c54x_add_unit_test(rpt_immediate_decode_common test_rpt_immediate_decode.c)
+# W65B RED contract: CALL pmad decode with near-miss audit.
+ti_c54x_add_unit_test(call_pmad_decode test_call_pmad_decode.c)
