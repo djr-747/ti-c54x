@@ -1314,7 +1314,8 @@
       "scope": "UNRESOLVED",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "BANZ"
+        "BANZ",
+        "BANZD"
       ]
     },
     {
@@ -3076,6 +3077,7 @@
     {"catalog_symbol": "BC_PMAD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND"},
     {"catalog_symbol": "BCD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND_DELAYED"},
     {"catalog_symbol": "BANZ", "form_id": "FORM-T2-12-03", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_AUXILIARY"},
+    {"catalog_symbol": "BANZD", "form_id": "FORM-T2-12-03", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_AUXILIARY_DELAYED"},
     {"catalog_symbol": "CALL_PMAD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"},
     {"catalog_symbol": "CALLD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
     {"catalog_symbol": "RET", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},

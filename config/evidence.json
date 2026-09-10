@@ -4318,6 +4318,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W70: BANZ auxiliary-register-branch vertical slice (planned)"},
       "assertion": "W70 activates the BANZ row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 153 rows with 6,083 lookup entries and 153 trusted bindings, family coverage at 57/205 with strict unchanged at 33/205, FORM-T2-12-03 at SUBSET, and the bit-9 BANZD words still pinned UNKNOWN for W71."
+    },
+    {
+      "id": "E-PROJECT-P2-W71-BANZD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)"},
+      "assertion": "W71 is the planned BANZD vertical slice: one Table 2-12 row under FORM-T2-12-03 at first-word value 0x6E00 under mask 0xFF00 with two program words, 256 encodings, and the copied Sind byte plus 16-bit pmad, reusing the W70 BRANCH_SIND_PMAD16 layout with AUXILIARY_REGISTERS inputs and INELIGIBLE repeatability; a BANZD leaf emitting taken/not-taken BRANCH_AUXILIARY with the delay flag set over the image-evidenced I=1/MOD0 and I=1/MOD1 Sind subset with shared Sind evaluation hoisted into a branch-Sind helper and the BANZ leaf refactored onto it at zero behavior change; catalog macro dispatch binding; CPU retirement through the unchanged W70 auxiliary-branch route with taken-delayed countdown arming now covered; and FORM-T2-12-03 inventory staying SUBSET with BANZ and BANZD symbols. No knob, layout, effect, timing, device, MEMORY, or status claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W71-BANZD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)"},
+      "assertion": "W71 activates the BANZD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated BANZ decode pin, with row-count pins advanced to 154 rows with 6,339 lookup entries and 154 trusted bindings, family coverage unchanged at 57/205 with strict unchanged at 33/205, and FORM-T2-12-03 remaining SUBSET with BANZ and BANZD symbols."
     }
   ],
   "requirements": [
@@ -9384,6 +9406,66 @@
       "claim": "Carry the BANZ symbol in FORM-T2-12-03 with SUBSET coverage and an ABSOLUTE_PMAD_AUXILIARY binding through the inventory registry.",
       "evidence_ids": ["E-PROJECT-P2-W70-BANZ-PLAN-ANCHOR", "E-PROJECT-P2-W70-BANZ-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W71-BANZD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the BANZD row at first-word value 0x6E00 under mask 0xFF00 with two program words, 256 encodings, and the BRANCH_SIND_PMAD16 layout with AUXILIARY_REGISTERS inputs and INELIGIBLE repeatability.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-BANZ-OPCODE-P4-16"],
+      "test_ids": ["T-COMMON-P2-W71-BANZD-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W71-BANZD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every BANZD first word through the generic decoder with copied bundle and scalar metadata, extracting the Sind byte then the raw 16-bit pmad extension.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-BANZ-OPCODE-P4-16"],
+      "test_ids": ["T-COMMON-P2-W71-BANZD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W71-BANZD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Evaluate the image-evidenced I=1/MOD0 and I=1/MOD1 BANZD Sind combinations through the shared branch-Sind helper with always-applied post-decrement side effects, staging taken/not-taken BRANCH_AUXILIARY with the delay flag set and copied pmad with selected-AR-only knownness and transactional deferred-Sind rejection.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-BANZ-SEMANTICS-P4-16-4-17", "E-TI-C54X-SPRU172C-S4-BANZ-NONREPEATABLE-P4-17"],
+      "test_ids": ["T-COMMON-P2-W71-BANZD-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the BANZD catalog row to its checked and trusted leaves through the macro dispatch tables with no per-row handwritten wiring.",
+      "evidence_ids": ["E-PROJECT-P2-W71-BANZD-PLAN-ANCHOR", "E-PROJECT-P2-W71-BANZD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W71-BANZD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire BANZD on the CPU through the unchanged W70 auxiliary-branch route with a CMPT=0 gate, flagged AR writeback, sequential advance with countdown arming for taken branches, immediate sequential advance for not-taken ones, unknown-AR and CMPT=1 transactionality, and two-slot drain before the deferred branch takes effect.",
+      "evidence_ids": ["E-PROJECT-P2-W71-BANZD-PLAN-ANCHOR", "E-PROJECT-P2-W71-BANZD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W71-BANZD-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W71-BANZD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Carry the BANZD symbol in FORM-T2-12-03 with SUBSET coverage and an ABSOLUTE_PMAD_AUXILIARY_DELAYED binding through the inventory registry.",
+      "evidence_ids": ["E-PROJECT-P2-W71-BANZD-PLAN-ANCHOR", "E-PROJECT-P2-W71-BANZD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -10728,7 +10810,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING", "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -11192,7 +11274,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY", "REQ-PROJECT-P2-W71-BANZD-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -12489,6 +12571,38 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_banz.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_banz"},
       "requirement_ids": ["REQ-PROJECT-P2-W70-BANZ-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W71-BANZD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_banzd_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.banzd_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W71-BANZD-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W71-BANZD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_banzd_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.banzd_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W71-BANZD-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W71-BANZD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_banzd.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.banzd"},
+      "requirement_ids": ["REQ-COMMON-P2-W71-BANZD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W71-BANZD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_banzd.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_banzd"},
+      "requirement_ids": ["REQ-PROJECT-P2-W71-BANZD-CPU-RETIREMENT"]
     }
   ]
 }

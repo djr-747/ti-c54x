@@ -147,16 +147,15 @@ test_malformed_inputs_reject_transactionally(void)
 }
 
 static void
-test_delayed_word_is_unknown(void)
+test_delayed_word_decodes_banzd(void)
 {
-    /* The deferred delayed BANZD variant decodes UNKNOWN_WORD today;
-     * the future BANZD slice updates this pin under the cross-slice
-     * hazard rule. */
+    /* The W71 BANZD row claims the deferred delayed word this pin
+     * held UNKNOWN through W70. */
     const ti_c54x_decode_result result =
         ti_c54x_decode_first_word(BANZ_DELAYED_WORD);
 
-    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_BANZD);
 }
 
 static void
@@ -199,7 +198,7 @@ main(void)
         }
     }
     test_malformed_inputs_reject_transactionally();
-    test_delayed_word_is_unknown();
+    test_delayed_word_decodes_banzd();
     test_fixed_bit_near_misses();
     return 0;
 }

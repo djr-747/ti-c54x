@@ -1,16 +1,13 @@
 /*
  * Module contract
  *
- * Owns: pure checked/trusted BANZ pmad,Sind semantics over the
- * image-evidenced I=1/MOD0 (*ARx) and I=1/MOD1 (*ARx-)
- * combinations with always-applied side effects (post-decrement
- * value-after on MOD1, observation on MOD0, even when not taken)
- * and taken/not-taken BRANCH_AUXILIARY emission with a clear
- * delayed flag, gated on known selected AR. All other Sind
- * combinations reject as deferred before any input is consumed.
- * Does not own: catalog lookup generation, program-counter commit,
- * AR writeback, countdown arming, CPU sequencing, timing, buses,
- * memory, diagnostics, or public ABI declarations.
+ * Owns: pure checked/trusted BANZ pmad,Sind identity validation
+ * and operand extraction, delegating Sind evaluation to the
+ * shared branch-Sind helper with a clear delay flag.
+ * Does not own: Sind evaluation, catalog lookup generation,
+ * program-counter commit, AR writeback, countdown arming, CPU
+ * sequencing, timing, buses, memory, diagnostics, or public ABI
+ * declarations.
  */
 
 #include "op_banz.h"
@@ -22,67 +19,10 @@
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
 #include "isa/ops/dispatch/trusted_semantics.h"
+#include "op_branch_sind_common.h"
 
 #define BANZ_FIRST_WORD_VALUE UINT16_C(0x6C00)
 #define BANZ_FIRST_WORD_MASK UINT16_C(0xFF00)
-#define BANZ_SIND_INDIRECT_BIT UINT8_C(0x80)
-#define BANZ_SIND_MOD_SHIFT UINT8_C(3)
-#define BANZ_SIND_MOD_MASK UINT8_C(0x0F)
-#define BANZ_SIND_MOD_OBSERVE UINT8_C(0)
-#define BANZ_SIND_MOD_POSTDECREMENT UINT8_C(1)
-#define BANZ_SIND_ARX_MASK UINT8_C(0x07)
-
-static ti_c54x_op_status banz_parse_sind(uint8_t sind, uint8_t *ar_index,
-                                         bool *decrement)
-{
-    uint8_t mod;
-
-    if (ar_index == NULL || decrement == NULL) {
-        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-    if ((uint8_t)(sind & BANZ_SIND_INDIRECT_BIT) == UINT8_C(0)) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
-    mod = (uint8_t)((uint8_t)(sind >> BANZ_SIND_MOD_SHIFT) &
-                    BANZ_SIND_MOD_MASK);
-    if (mod != BANZ_SIND_MOD_OBSERVE &&
-        mod != BANZ_SIND_MOD_POSTDECREMENT) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
-    *ar_index = (uint8_t)(sind & BANZ_SIND_ARX_MASK);
-    *decrement = mod == BANZ_SIND_MOD_POSTDECREMENT;
-    return TI_C54X_OP_STATUS_OK;
-}
-
-static ti_c54x_op_status banz_emit(
-    const ti_c54x_op_input_snapshot *input, uint8_t ar_index,
-    bool decrement, uint16_t pmad, ti_c54x_op_effect *effect)
-{
-    uint16_t value;
-    ti_c54x_op_effect staged;
-
-    if (input == NULL || effect == NULL || ar_index >= UINT8_C(8)) {
-        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-    if (((uint8_t)(input->auxiliary_registers_known_mask >>
-                   ar_index) &
-         UINT8_C(1)) == UINT8_C(0)) {
-        return TI_C54X_OP_STATUS_UNKNOWN_INPUT;
-    }
-    value = input->auxiliary_registers_raw16[ar_index];
-    staged = (ti_c54x_op_effect){
-        .kind = TI_C54X_OP_EFFECT_BRANCH_AUXILIARY,
-        .payload.branch_auxiliary = {
-            .ar_index = ar_index,
-            .value_after = (uint16_t)(decrement ? value - UINT16_C(1)
-                                                : value),
-            .update = decrement,
-            .taken = value != UINT16_C(0),
-            .delayed = false,
-            .pmad = pmad}};
-    *effect = staged;
-    return TI_C54X_OP_STATUS_OK;
-}
 
 static ti_c54x_op_status banz_extract(
     const ti_c54x_decoded_instruction *instruction, uint8_t *sind,
@@ -153,8 +93,6 @@ ti_c54x_op_status ti_c54x_op_banz(
 {
     uint8_t sind;
     uint16_t pmad;
-    uint8_t ar_index;
-    bool decrement;
     ti_c54x_op_status status;
 
     if (instruction == NULL || input == NULL || effect == NULL) {
@@ -164,11 +102,8 @@ ti_c54x_op_status ti_c54x_op_banz(
     if (status != TI_C54X_OP_STATUS_OK) {
         return status;
     }
-    status = banz_parse_sind(sind, &ar_index, &decrement);
-    if (status != TI_C54X_OP_STATUS_OK) {
-        return status;
-    }
-    return banz_emit(input, ar_index, decrement, pmad, effect);
+    return ti_c54x_branch_sind_evaluate(sind, pmad, input, false,
+                                        effect);
 }
 
 ti_c54x_op_status ti_c54x_trusted_op_banz(
@@ -179,9 +114,6 @@ ti_c54x_op_status ti_c54x_trusted_op_banz(
 {
     uint8_t sind;
     uint16_t pmad;
-    uint8_t ar_index;
-    bool decrement;
-    ti_c54x_op_status status;
 
     (void)instruction;
     if (operands == NULL || input == NULL || effect == NULL) {
@@ -196,9 +128,6 @@ ti_c54x_op_status ti_c54x_trusted_op_banz(
     }
     sind = (uint8_t)operands->values[0].raw_value;
     pmad = (uint16_t)operands->values[1].raw_value;
-    status = banz_parse_sind(sind, &ar_index, &decrement);
-    if (status != TI_C54X_OP_STATUS_OK) {
-        return status;
-    }
-    return banz_emit(input, ar_index, decrement, pmad, effect);
+    return ti_c54x_branch_sind_evaluate(sind, pmad, input, false,
+                                        effect);
 }
