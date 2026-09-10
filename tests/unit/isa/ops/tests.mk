@@ -12,3 +12,4 @@ include tests/unit/isa/ops/store/tests.mk
 include tests/unit/isa/ops/status/tests.mk
 include tests/unit/isa/ops/repeat/tests.mk
 include tests/unit/isa/ops/arithmetic/tests.mk
+include tests/unit/isa/ops/branch/tests.mk

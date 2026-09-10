@@ -32,6 +32,7 @@
 #include "load/op_ld_t_smem.h"
 #include "load/op_ldu_smem.h"
 #include "load/op_ld_status_fields.h"
+#include "branch/op_b_pmad.h"
 #include "op_nop.h"
 #include "rotate/op_rotate.h"
 #include "rotate/op_roltc.h"

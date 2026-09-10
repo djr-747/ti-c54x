@@ -14,3 +14,4 @@ include src/isa/ops/shift/sources.mk
 include src/isa/ops/logical/sources.mk
 include src/isa/ops/arithmetic/sources.mk
 include src/isa/ops/memory/sources.mk
+include src/isa/ops/branch/sources.mk

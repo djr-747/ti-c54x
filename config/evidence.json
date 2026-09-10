@@ -3783,6 +3783,61 @@
       "assertion": "W61 activates the LDR_MOD5/LDR_MOD6 rows with AR0-indexed Smem reads, AR update commits, rounding writeback, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 stays inventory SUBSET. Realized 143 catalog rows, ID_COUNT 144, 5,341 lookup entries, 144 bindings, family coverage 53/205, and 33/205 strict complete-form coverage."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-B-OPCODE-P4-14",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "B[D]", "printed_page_start": "4-14", "printed_page_end": "4-14"},
+      "assertion": "The B[D] description defines syntax B[D] pmad with operand 0 <= pmad <= 65535 as a two-word form: word0 1111_00Z0_0011_0011 with the delayed flag in bit 9, giving first-word value 0xF073 under mask 0xFFFF for the non-delayed B variant with one encoding, followed by a 16-bit pmad constant word. Z=1 selects the delayed BD variant, which stays deferred to the delay seam. The SPRU179C algebraic volume (goto pmad, class 29A, section 4-14) agrees on the opcode diagram. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-B-SEMANTICS-P4-14",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "B[D]", "printed_page_start": "4-14", "printed_page_end": "4-14"},
+      "assertion": "The B[D] description defines execution as pmad -> PC with no affected status bits: control passes to the designated 16-bit program-memory address and all other state is preserved. The worked example pins B 2000h with PC 1F45 to PC 2000. The SPRU179C algebraic volume agrees on PC = pmad(15-0). The delayed BD example and its delay-slot fetch/execute rule stay deferred with the delay seam."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-B-NONREPEATABLE-P4-14",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "B[D]", "printed_page_start": "4-14", "printed_page_end": "4-14"},
+      "assertion": "The B[D] description carries an explicit note that the instruction is not repeatable. This record is positive evidence for the INELIGIBLE repeatability classification of the B_PMAD row; Table 2-28 absence remains a boundary only and is not needed for this classification."
+    },
+    {
+      "id": "E-PROJECT-P2-W62-B-PMAD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W62: B pmad unconditional-branch vertical slice (planned)"},
+      "assertion": "W62 is the planned Table 2-12 form FORM-T2-12-01 activation contract: one B_PMAD row at first-word value 0xF073 under mask 0xFFFF with two program words, the new BRANCH_PMAD16 layout carrying the copied second-word pmad, INELIGIBLE repeatability, and NONE input resources. Semantics is PC = pmad with all other state preserved; Z=1 decodes UNKNOWN_WORD with BD deferred. A new PC_WRITE effect kind, a program_pc_target planner, and a run.c target-commit route retire the branch atomically instead of the sequential bridge plan. No MEMORY endpoint, new address kind, status/accumulator/T effect, public ABI, timing, device/MMR, or delay-slot claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W62-B-PMAD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W62: B pmad unconditional-branch vertical slice (planned)"},
+      "assertion": "W62 activates the B_PMAD row with second-word pmad fetch, per-row identity validation, pure PC_WRITE effect emission, transactional target planning, and atomic CPU target commit with no opcode-specific MEMORY branch and no public ABI change. FORM-T2-12-01 stays inventory SUBSET. Realized 145 catalog rows, ID_COUNT 146, 5,310 lookup entries, 145 bindings, family coverage 53/205, and 33/205 strict complete-form coverage."
+    },
+    {
       "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
       "immutable": true,
       "state": "PINNED",
@@ -8059,6 +8114,66 @@
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
+      "id": "REQ-COMMON-P2-W62-B-PMAD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the B_PMAD row at first-word value 0xF073 under mask 0xFFFF with two program words, the BRANCH_PMAD16 layout, INELIGIBLE repeatability, and NONE resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-B-OPCODE-P4-14"],
+      "test_ids": ["T-COMMON-P2-W62-B-PMAD-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W62-B-PMAD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the B_PMAD first word through the generic decoder with a complete two-word bundle, scalar metadata, and copied second-word pmad extraction; the Z=1 delayed word and malformed inputs reject transactionally as UNKNOWN_WORD.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-B-OPCODE-P4-14"],
+      "test_ids": ["T-COMMON-P2-W62-B-PMAD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W62-B-PMAD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute B_PMAD as a pure PC_WRITE effect carrying the copied second-word pmad with no status, accumulator, T-register, or memory effect; enforce per-row identity on checked and trusted leaves with transactional rejection of invalid inputs.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-B-SEMANTICS-P4-14", "E-TI-C54X-SPRU172C-S4-B-NONREPEATABLE-P4-14"],
+      "test_ids": ["T-COMMON-P2-W62-B-PMAD-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the B_PMAD row through macro-driven dispatch with the same identity, metadata, and handler presence as the canonical catalog.",
+      "evidence_ids": ["E-PROJECT-P2-W62-B-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W62-B-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W62-B-PMAD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire B_PMAD through the generic CPU path with two-word fetch, no input collection, no endpoint traffic, and atomic PC-target commit instead of the sequential bridge plan, preserving all other architectural state.",
+      "evidence_ids": ["E-PROJECT-P2-W62-B-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W62-B-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W62-B-PMAD-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-12-01 with the B_PMAD catalog symbol, keeping the form at inventory SUBSET with the delayed BD variant deferred.",
+      "evidence_ids": ["E-PROJECT-P2-W62-B-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W62-B-PMAD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
       "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -9471,7 +9586,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9935,7 +10050,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -10816,6 +10931,38 @@
       "path": "tests/unit/cpu/memory/test_cpu_indexed_standard_indirect.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_indexed_standard_indirect"},
       "requirement_ids": ["REQ-PROJECT-P2-W61-LDR-INDEXED-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W62-B-PMAD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_b_pmad_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.b_pmad_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W62-B-PMAD-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W62-B-PMAD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_b_pmad_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.b_pmad_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W62-B-PMAD-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W62-B-PMAD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_b_pmad.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.b_pmad"},
+      "requirement_ids": ["REQ-COMMON-P2-W62-B-PMAD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W62-B-PMAD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_b_pmad.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_b_pmad"},
+      "requirement_ids": ["REQ-PROJECT-P2-W62-B-PMAD-CPU-RETIREMENT"]
     },
     {
       "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",

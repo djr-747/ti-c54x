@@ -7,6 +7,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/sequential_pc.c"
     "${CMAKE_CURRENT_LIST_DIR}/program_pc_bridge.c"
     "${CMAKE_CURRENT_LIST_DIR}/effect_transaction.c"
+    "${CMAKE_CURRENT_LIST_DIR}/program_pc_target.c"
 )
 include(${CMAKE_CURRENT_LIST_DIR}/repeat/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/interrupt/sources.cmake)

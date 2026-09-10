@@ -81,6 +81,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_LK16,
     /* Two-word destination-accumulator plus 4-bit shift and 16-bit extension. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_SHIFT4_LK16,
+    /* Two-word branch with copied 16-bit program-memory target. */
+    TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

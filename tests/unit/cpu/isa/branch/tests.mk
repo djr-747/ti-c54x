@@ -1,0 +1,2 @@
+# Test ownership: this leaf owns only public-CPU branch proofs.
+$(eval $(call ti_c54x_add_test,cpu_b_pmad,cpu/isa/branch,test_cpu_b_pmad.c))

@@ -20,6 +20,7 @@
 #include "isa/ops/dispatch/trusted_opcode_binding.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_bridge.h"
+#include "sequencer/program_pc_target.h"
 
 static ti_c54x_run_result result_from_cpu(const ti_c54x_cpu *cpu,
                                           ti_c54x_stop_reason reason,
@@ -104,6 +105,21 @@ bridge_status_to_stop(ti_c54x_program_pc_bridge_status status)
 static bool memory_status_ok(ti_c54x_memory_instruction_status status)
 {
     return status == TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+}
+
+static ti_c54x_stop_reason
+target_status_to_stop(ti_c54x_program_pc_target_status status)
+{
+    switch (status) {
+    case TI_C54X_PROGRAM_PC_TARGET_UNSUPPORTED_CARRIER:
+        return TI_C54X_STOP_UNSUPPORTED_PROGRAM_ADDRESS;
+    case TI_C54X_PROGRAM_PC_TARGET_OK:
+    case TI_C54X_PROGRAM_PC_TARGET_INVALID_ARGUMENT:
+    case TI_C54X_PROGRAM_PC_TARGET_INVALID_EFFECT:
+    case TI_C54X_PROGRAM_PC_TARGET_STALE_SOURCE:
+    default:
+        return TI_C54X_STOP_INVALID_STATE;
+    }
 }
 
 ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu)
@@ -399,6 +415,38 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);
             }
+            continue;
+        }
+
+        /* PC_WRITE effects carry no status, accumulator, or T-register
+         * payload, so they bypass the effect transaction and the
+         * sequential bridge plan. The target planner validates the
+         * absolute successor and the apply step commits it only when
+         * the live carrier still matches the frozen source, which is
+         * the whole atomic commit for this effect kind. */
+        if (effect.kind == TI_C54X_OP_EFFECT_PC_WRITE) {
+            ti_c54x_program_pc_target_effect target_effect;
+            ti_c54x_program_pc_target_status target_status;
+
+            target_status = ti_c54x_program_pc_target_plan(
+                cpu->arch_state.pc_word, effect.payload.pc_write.pmad,
+                &target_effect);
+            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
+                return stop_result(cpu, target_status_to_stop(target_status),
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            candidate_pc = cpu->arch_state.pc_word;
+            target_status = ti_c54x_program_pc_target_apply(
+                &candidate_pc, &target_effect);
+            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            cpu->arch_state.pc_word = candidate_pc;
+            cpu->instructions_retired++;
+            instructions_retired++;
             continue;
         }
 

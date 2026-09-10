@@ -389,3 +389,13 @@ static const ti_c54x_operand_field_layout
 const ti_c54x_operand_layout_set
     ti_c54x_accumulator_immediate_shift4_lk16_set = {
         ti_c54x_accumulator_immediate_shift4_lk16_operands, UINT8_C(3)};
+
+static const ti_c54x_operand_field_piece
+    ti_c54x_branch_pmad16_pmad_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_branch_pmad16_operands[1] = {
+        {&ti_c54x_branch_pmad16_pmad_piece, UINT8_C(1),
+         UINT8_C(16)}};
+const ti_c54x_operand_layout_set ti_c54x_branch_pmad16_set = {
+    ti_c54x_branch_pmad16_operands, UINT8_C(1)};
