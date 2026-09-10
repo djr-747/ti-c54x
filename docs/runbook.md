@@ -232,8 +232,8 @@ every line checks out.
 
 ## 9. Live follow-ups (update as they close)
 
-- LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT, P2-W59): needs the
-  X-only dual address seam (pair machinery always issues two
-  reads + two commits; single-indirect translation rejected).
+- LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT, P2-W59): CLOSED by
+  `fcc9ead` — X-only dual seam landed (one D-bus read, X commit
+  only, no CMPT/ARP observation).
 - ST/STH/STL stores; ADD/SUB remainder; MAC/MPY families.
 - Consider fixing the `make test` recipe order (§6 caveat).
