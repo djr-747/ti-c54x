@@ -8010,3 +8010,64 @@ rewritten after publication.
   then `RET`. Open: fix the `make test` recipe order so C
   regressions cannot hide behind the environmental quality
   failure.
+
+## 2026-09-11 — P2-W65A stack-push MEMORY transaction seam
+
+- Implementation commit `635c6ce` adds the generic stack-push
+  MEMORY seam that W65B `CALL` will consume, mirroring the W42A
+  seam precedent: one address kind `STACK_PUSH_WORD16` with an
+  all-zero spec, a pure `src/address/stack_push.[ch]` planner
+  mapping old SP to the TOS DATA WORD16 at `SP-1` with a
+  `PRE_ACCESS` SP update, an `ADDRESS_UPDATE_SP` target through
+  the intrinsic/dependency/validate/apply chain with no
+  CMPT/ARP/CPL read, a DATA WRITE resolution arm, and root
+  prepare/commit support that stages the live return address
+  (bridge successor) into the frozen effect copy and commits SP
+  plus the frozen pmad target atomically at READY. SP arithmetic
+  wraps mod 65536 as a project-interpretation pin (the manual
+  states no stack-overflow status). No catalog row, handler,
+  layout, `run.c` change, inventory form, or TI claim is
+  admitted; the root transaction size pins are untouched.
+- Research correction: an early opcode misread (`0xF034`,
+  which would have collided with `AND_IMMEDIATE_SHIFT`) was
+  caught by cross-checking the `re/dsp` disassembly, which
+  renders `f074` as `call`. `CALL` is `0xF074` (Z=0; `0xF274`
+  `CALLD` deferred) and is unclaimed by every existing row, so
+  W65B needs no generator precedence change.
+- Evidence: plan-anchor plus activation records, four
+  requirements (`REQ-PROJECT-P2-W65A-STACK-PUSH-PLANNER`,
+  `-VALIDATE`, `-MEMORY`, `-ROOT`), and three RED contracts
+  (`T-PROJECT-P2-W65A-STACK-PUSH-PLANNER`,
+  `tests/unit/address/test_stack_push_planner.c`, CTest
+  `ti_c54x.stack_push_planner`;
+  `T-PROJECT-P2-W65A-STACK-PUSH-RESOLUTION`,
+  `tests/unit/sequencer/memory/test_stack_push_resolution.c`,
+  CTest `ti_c54x.stack_push_resolution`;
+  `T-PROJECT-P2-W65A-STACK-PUSH-ROOT`,
+  `tests/unit/sequencer/instruction/test_stack_push_root.c`,
+  CTest `ti_c54x.stack_push_root`) covering the full SP domain
+  with the `SP=0` wrap pin, mode independence under unknown
+  CMPT/ARP/CPL, WRITE-only rejection, WAIT/READY retirement
+  with atomic SP plus pmad-target commit, FAULT rollback,
+  stale-SP rejection, and return-address staging. Registry
+  closure is 277 evidence records, 425 requirements (394
+  `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), and 348 tests
+  (348 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 320 C test
+  binaries pass; contract quality unittest fully OK; knobs,
+  source boundaries, manifests, evidence, inventory (unchanged
+  54/205 family 26.341%, 33/205 strict), and observer-disabled
+  structure pass. Focused ASan/UBSan GREEN for the three new
+  tests (`ASAN_OPTIONS=detect_leaks=0`, then `make clean`).
+  Fresh CMake/CTest Debug passes 327/327; full sanitizer
+  CMake/CTest passes 326/326 excluding `quality.python`. An
+  `evidence.json` full-file reformat was caught before commit
+  and repaired to a +86-line append. No knob was added or
+  changed. Nothing was pushed.
+- Follow-up work: W65B `CALL pmad` (`FORM-T2-13-02`, row
+  `CALL_PMAD` at `0xF074` reusing `BRANCH_PMAD16` with
+  `STACK_POINTER` input) binds the catalog row, handler,
+  dispatch, CPU retirement, and inventory through this seam,
+  then `RET`. Open: fix the `make test` recipe order so C
+  regressions cannot hide behind the environmental quality
+  failure.
