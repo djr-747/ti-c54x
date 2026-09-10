@@ -30,3 +30,6 @@ compile_commands.json
 *.dspimg
 *.rom
 *.bin
+
+# Vendored TI reference PDFs (see vendor/ti/README.md); never committed
+/vendor/ti/*.pdf
