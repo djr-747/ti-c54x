@@ -7584,3 +7584,74 @@ rewritten after publication.
 - Follow-up work: LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT dual,
   needs the dual-addressing seam) remains, then ST/STH/STL
   stores; ADD/SUB remainder and MAC/MPY families follow.
+
+## 2026-09-10 — P2-W59 LD Xmem,SHFT,dst vertical slice
+
+- Implementation commit `fcc9ead` activates Table 2-19 form
+  `FORM-T2-19-06`, TI SPRU172C §4 LD syntax 5 (pp. 4-66–4-68,
+  cross-checked against SPRU179C p. 4-67): one row
+  `LD_XMEM_SHIFT` at first-word value `0x9400` under mask `0xFE00`
+  (destination bit 8, Xmod bits 7:6, Xar bits 5:4, unsigned 4-bit
+  SHFT bits 3:0, 512 encodings), one program word, a new
+  `ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4` layout, `UNRESOLVED`
+  repeatability, and new `AUXILIARY_REGISTERS_STATUS_SXM_OVM`
+  input resources (no carry is read, so the existing
+  `..._STATUS_C_SXM_OVM` combo would be dishonest).
+- Semantics is `dst = SXM-widen(Xmem) << SHFT` in canonical
+  40-bit space with OVM saturation and sticky destination
+  overflow on guard-bit overflow following the variable-shift
+  precedent; C/TC stay preserved. SHFT spans 0..15 at decode
+  (the assembler's SHFT=0 redirect to syntax 1 constrains the
+  assembler, never decode).
+- W59A seam: new `DUAL_INDIRECT_WORD16_X_ONLY` address kind
+  reusing the pair planner with Y self-aliased, packaged as a
+  single WORD16 read through the single-read child (one D-bus
+  DATA read, X commit only, no CMPT/ARP observation, AR0/BK
+  shadows for MOD3). Wiring: spec validation in `memory_effect`
+  and the single resolver, per-mode operand/update forgery
+  rechecks plus a CMPT/ARP-free live-match arm in the candidate
+  validator, and a CHILD_WORD16 flow-through with no endpoint
+  change. The dual-pair instruction path stays untouched for the
+  parallel forms.
+- Evidence: four new TI records (syntax-5 opcode, shift
+  semantics, SPRU131G §5.5.4/Figure 5-11/Tables 5-6–5-8 dual
+  addressing with the D-bus note, T2-28 repeatability boundary),
+  plan anchor plus activation records, six requirements, and four
+  RED contracts (metadata with 65,536-word disjointness sweep,
+  decode exhaustive over all 512 encodings with raw-Xar
+  extraction, ops exhaustive over 512 forms with independent
+  saturation oracle and checked/trusted/dispatched/trusted-packet
+  parity, CPU with X-commit-only, MOD3 indexed/circular, fault,
+  and boundary rejection). Anchor corrected 254→255 evidence
+  records; the staged plan assertion was fixed to admit the one
+  X-only address kind. `FORM-T2-19-06` is inventory COMPLETE.
+- Review findings during construction: the RED decode test first
+  asserted mapped AR2..AR5 extraction until the dual-arithmetic
+  sibling showed decode exposes the raw Xar field with the +2
+  mapping in the handler; the RED ops forgery flip hit variable
+  bit 6 and was moved to fixed bit 9; the first CPU run exposed
+  the `matches_live` CMPT0/ARP0 gate rejecting policy-NONE
+  candidates, fixed with the dedicated live-match arm. A
+  delegated adversarial review was spawned but its result proved
+  unretrievable; the orchestrator performed the read-only seam
+  review pass directly instead. No finding survived.
+- Validation is GREEN: all 304 C test binaries pass; contract
+  quality unittest 264/268 with only the four pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries, manifests, evidence (396 requirements with 365
+  IMPLEMENTED and 31 UNRESOLVED, 328 tests all PASSING),
+  inventory (51/205 family 24.878%, 33/205 strict), and
+  observer-disabled structure pass. Focused ASan/UBSan 4/4 GREEN
+  (`ASAN_OPTIONS=detect_leaks=0`, then `make clean`). Fresh
+  CMake/CTest Debug passes 310/311 excluding `quality.python`
+  (same four environmental subfailures); full sanitizer
+  CMake/CTest passes 310/310 excluding `quality.python`.
+  Registry closure is 255 immutable evidence records. No knob was
+  added or changed. Nothing was pushed.
+- Follow-up work: remaining LD syntax (LDM/ST MMR need the
+  device seam; LTD/MACD need the delay seam), then ST/STH/STL
+  stores (parallel ST needs the proven dual-pair path); ADD/SUB
+  remainder (ADDM/SUBM need RMW ADD/SUB) and MAC/MPY families
+  follow. Open: fix the `make test` recipe order so C
+  regressions cannot hide behind the environmental quality
+  failure.
