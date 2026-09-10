@@ -7961,3 +7961,52 @@ rewritten after publication.
   their seams. Open: fix the `make test` recipe order so C
   regressions cannot hide behind the environmental quality
   failure.
+
+## 2026-09-11 — P2-W64 stack-pointer input seam vertical slice
+
+- Implementation commit `f4fa283` adds the stack-pointer input
+  seam that W65 `CALL` will consume, mirroring the SST seam
+  precedent (`d21b884`): one new input resource bit
+  `STACK_POINTER` (512U) with snapshot fields
+  `stack_pointer_raw16` plus `stack_pointer_known`, a `collect.c`
+  arm reading the architectural SP through
+  `ti_c54x_arch_state_read_sp` with explicit knownness, and
+  `KNOWN_MASK` inclusion. Common reset leaves SP unknown per the
+  zero-plus-unknown policy; no catalog row, layout, handler,
+  effect, inventory form, or retirement change is admitted.
+- Measured ABI outcome: the carrier stays 56 bytes on LP64
+  (padding reflow absorbs the new fields) and grows 52 to 56 on
+  ILP32. That growth resolves the `-m32` assertion failure
+  carried as baseline since W61 (the ILP32 probe now meets the
+  56-byte assert, and the stale 48-byte messages are corrected to
+  56 as part of this ABI change), and moves the ILP32
+  root-transaction pin 316 to 320 (the root embeds the snapshot;
+  attribution verified, not assumed). The new 0x0200 bit forces
+  seven invalid-mask probes to 0x0400. The full contract quality
+  suite is green with zero failures for the first time.
+- Evidence: plan-anchor plus activation records, one requirement
+  (`REQ-PROJECT-P2-W64-SP-INPUT-SEAM`), and one RED contract
+  (`T-PROJECT-P2-W64-SP-INPUT-SEAM`,
+  `tests/unit/cpu/input/test_collect_stack_pointer.c`, CTest
+  `ti_c54x.collect_stack_pointer`) covering reset-unknown
+  canonicalization, typed-write knownness with SXM independence,
+  and transactional rejection. Registry closure is 275 evidence
+  records, 421 requirements (390 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 345 tests (345 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 317 C test
+  binaries pass; contract quality unittest fully OK; knobs,
+  source boundaries (575 files, review warnings only),
+  manifests, evidence, inventory (unchanged 54/205 family
+  26.341%, 33/205 strict), and observer-disabled structure pass.
+  Focused ASan/UBSan GREEN for the new collect test
+  (`ASAN_OPTIONS=detect_leaks=0`, then `make clean` plus a normal
+  rebuild). Fresh CMake/CTest Debug passes 324/324; full
+  sanitizer CMake/CTest passes 323/323 excluding
+  `quality.python`. No knob was added or changed. Nothing was
+  pushed.
+- Follow-up work: W65 `CALL pmad` (Table 2-13 form
+  `FORM-T2-13-02`) consumes this seam with a stack transaction
+  (endpoint write of `PC+2` at `SP-1`, atomic `SP`/`PC` commit),
+  then `RET`. Open: fix the `make test` recipe order so C
+  regressions cannot hide behind the environmental quality
+  failure.
