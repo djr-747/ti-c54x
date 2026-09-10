@@ -117,6 +117,70 @@ W51B root with atomic address publication. Catalog, lookup, binding, family,
 and strict-complete coverage are 120, 3,543, 120, 44/205, and 27/205; MOD3
 neighborhoods stay undecoded and the MOD0 benchmark roster stays frozen.
 
+### P3: 5110 DSP-image execution focus (planned)
+
+This immutable `(planned)` heading is the FIT/ownership anchor for
+re-sequencing remaining work by what the 5110 DSP image needs. The
+input is a mnemonic census (counts only, no sibling source, tables,
+comments, or structure copied) over the 21 big-endian disassembly
+blocks in the sibling `re/dsp-5110` set (`block*.asm`, 36,202 static
+instruction words), joined against `config/isa/inventory.json` on the
+normalized uppercase mnemonic on 2026-09-10. Headline: 21,850 static
+words (60.4%) use mnemonics with no COMPLETE/SUBSET form, and 14,352
+(39.6%) use mnemonics with at least one covered form. Mnemonic-level
+coverage is an upper bound only: a covered mnemonic (LD, ST, ADD,
+SUB) may still use exact syntaxes with no implemented form, and
+static words include data disassembled as code, so dynamic
+reachability remains unproven.
+
+Priority waves by static count (numbers are census facts, not
+implementation targets):
+
+1. Control flow (~6,500 words): BC 1,754, CALL 1,278, RET 763, XC
+   523, B 499, CC 74, BANZ 74, BACC 14, CALA 7, RETE 7, FB 4, FCALL
+   3, RETF 1; plus delayed-slot variants with no inventory form at
+   all: CALLD 707, BCD 303, BD 222, RETD 174, BANZD 66, CCD 29,
+   RCD 20, FBD/CALAD/BACCD/RETED (few each).
+2. Immediate/status stores (~5,500): STM 4,260, STH 780, STLM 487.
+3. Repeat machinery (~1,500): RPT 653, RPTBD 378 (no form), RC 251,
+   RPTB 177, RPTZ 36. Runtime RPT activation still waits on the
+   recorded P2-W48C prerequisites (single-repeat PC flow, predecode
+   interrupt arbitration, positive body-eligibility evidence).
+4. MAC/MPY data path (~1,600): MAC 515, MPY 301, MPYA 188, MAS 146,
+   MACR 87, MACA 64, SQUR/SQURA/SQDST/SQURS ~140, MPYR 51, MPYU 34,
+   DELAY 24, small counts down to FIRS 1. LTD/MACD keep their
+   recorded delay-seam dependency.
+5. MMR/stack moves (~2,600): LDM 232, MVMM 288, MVDK 207, MVDM 205,
+   MVKD 204, MVMD 139, MVPD 19, MVDP 5, POPM 447, PSHM 430, PSHD 24,
+   POPD 18, MVDD 408. LDM/ST MMR keep the recorded device-seam
+   dependency.
+6. Bit/field ops (~1,200): BITF 714, CMPM 367, CMPS 40, BITT 23,
+   BIT 21, SACCD 39, SRCCD 13, STRCD 8.
+7. Shifts and misc (~2,300): SFTA 553, NORM 119, SAT 36, NEG 138,
+   ABS 82, MAR 473, ADD/SUB satellites (ADDM 186, DADD 134, ADDS 73,
+   DSUB 49, DADST 48, SUBC 39, DSADT 34, ADDC 33, SUBS 31, SUBB 26,
+   DRSUB 21, DSUBT 7, ABDST 4), FRAME 26, READA 47, WRITA 46, IDLE
+   12, TRAP 73, INTR 2.
+8. Port I/O (~500, new seam): PORTW 322, PORTR 186. No port seam
+   exists yet; it is admitted as future work with no timing claim.
+
+Already covered at mnemonic level (14,352 words): LD 4,078, SUB
+1,675, ADD 1,402, STL 1,367, ST 1,308, NOP 880, AND 789, ANDM 389,
+ORM 372, OR 357, DST 254, SSBX 200, DLD 188, ROL 187, LDU 186, RSBX
+178, SFTL 148, XOR 136, MAX 65, MIN 55, EXP 51, LDR 24, ROR 22, plus
+small counts (XORM, CMPL, ROLTC, CMPR).
+
+Structural findings admitted by this focus. The delayed-branch
+family (~1,900 words) is real TI syntax (CALLD/RPTBD appear in the
+vendored SPRU172C text, e.g. §4 CALL and RPTBD sections) but has no
+inventory form, so the 205-form denominator needs a scope audit for
+delayed variants before it can measure branch readiness. The image
+`.bin` bytes are not ingested as test vectors: permitted use of DSP
+images stays open under the P0-W4 owner/legal follow-up, and
+emulator integration stays deferred per repository policy. Slice
+order follows waves 1–8 above; remaining LD-family MOD variants
+yield to wave-1 control flow.
+
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for this
