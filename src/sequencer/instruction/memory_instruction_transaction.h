@@ -82,6 +82,12 @@ typedef struct ti_c54x_memory_instruction_result {
     uint64_t transaction_id;
     uint64_t instructions_attempted;
     uint64_t instructions_retired;
+    /* Delayed-branch report: armed only by a retiring delayed stack
+     * push/pop, carrying the 16-bit deferred PC target (frozen pmad
+     * for pushes, TOS READ observation for pops). The CPU loop arms
+     * its two-word countdown from this report. */
+    bool deferred_branch_armed;
+    uint16_t deferred_branch_pc_word;
 } ti_c54x_memory_instruction_result;
 
 typedef struct ti_c54x_memory_instruction_transaction {

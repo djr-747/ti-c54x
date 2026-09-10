@@ -25,6 +25,7 @@ $(eval $(call ti_c54x_add_test,effect_transaction,sequencer,test_effect_transact
 $(eval $(call ti_c54x_add_test,reset,sequencer,test_reset.c))
 include tests/unit/sequencer/pc/tests.mk
 include tests/unit/sequencer/accumulator/tests.mk
+include tests/unit/sequencer/delayed_branch/tests.mk
 include tests/unit/sequencer/repeat/tests.mk
 include tests/unit/sequencer/interrupt/tests.mk
 include tests/unit/sequencer/status/tests.mk

@@ -24,6 +24,7 @@ ti_c54x_add_unit_test(program_pc_bridge_multiword test_program_pc_bridge_multiwo
 ti_c54x_add_unit_test(effect_transaction test_effect_transaction.c)
 ti_c54x_add_unit_test(reset test_reset.c)
 add_subdirectory(pc)
+add_subdirectory(delayed_branch)
 add_subdirectory(repeat)
 add_subdirectory(interrupt)
 add_subdirectory(status)

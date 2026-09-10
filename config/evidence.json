@@ -4089,6 +4089,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66B: RET vertical slice (planned)"},
       "assertion": "W66B activates the RET row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 148 catalog rows, ID_COUNT 149, 5,568 lookup entries, 148 bindings, family coverage 56/205, and 33/205 strict complete-form coverage with FORM-T2-15-04 SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P2-W67A-DELAY-SEAM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W67A: delayed-branch MEMORY transaction seam (planned)"},
+      "assertion": "W67A is the planned generic delayed-branch MEMORY seam: STACK_PUSH_DELAYED_WORD16 and STACK_POP_DELAYED_WORD16 address kinds sharing the immediate stack planning and all-zero spec shapes, a pure src/sequencer/delayed_branch two-word countdown value with saturating consume and replace-on-arm, root prepare support staging PC+4 for delayed pushes (rejected past 0xFFFF) with the sequential successor otherwise, root commit support writing SP plus the TOS value atomically at READY with PC advanced to the sequential successor, and a deferred-target report in the retirement result. One CPU-owned countdown cleared by init and reset. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W67A-DELAY-SEAM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W67A: delayed-branch MEMORY transaction seam (planned)"},
+      "assertion": "W67A activates the delayed-branch MEMORY seam with the pure countdown value, delayed-kind validity and resolution parity, PC+4 return staging with top-of-memory rejection, and root commit deferral with deferred-target reporting green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
     }
   ],
   "requirements": [
@@ -8743,6 +8765,67 @@
       "claim": "Bind FORM-T2-15-04 as inventory SUBSET under the RET catalog symbol.",
       "evidence_ids": ["E-PROJECT-P2-W66B-RET-PLAN-ANCHOR", "E-PROJECT-P2-W66B-RET-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/delayed_branch/",
+      "claim": "Own one pure value-owned delayed-branch countdown through a disarmed idle state, arming with a 16-bit deferred target and a two-program-word countdown, saturating word-count consume with take-effect reporting, replace-on-arm, and strict rejection of disarmed, zero-width, and null calls.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67A-DELAY-SEAM-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67A-DELAY-SEAM-ACTIVATION"
+      ],
+      "test_ids": ["T-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALIDATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Validate delayed stack effects through the intrinsic chain with the shared SP update targets in PRE_ACCESS and POST_ACCESS shape, forged-spec rejection, no CMPT/ARP/CPL read, unknown-SP rejection, live-SP snapshot agreement, and transactional SP application.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67A-DELAY-SEAM-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67A-DELAY-SEAM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-POP-ROOT",
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-PUSH-ROOT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-MEMORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Carry the STACK_PUSH_DELAYED_WORD16 and STACK_POP_DELAYED_WORD16 address kinds with all-zero specs and the immediate WRITE-only and READ-only access shapes, and resolve them to the planned TOS requests with staged SP commits.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67A-DELAY-SEAM-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67A-DELAY-SEAM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-POP-ROOT",
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-PUSH-ROOT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire delayed stack branches through the persistent MEMORY root by proving the sequential successor and, for pushes, the PC+4 return address at prepare with top-of-memory rejection, committing SP plus the TOS value atomically at READY with PC advanced sequentially, and reporting the deferred target (TOS for pops, pmad for pushes) while ordinary retirements stay disarmed, with WAIT/FAULT/resume unchanged.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67A-DELAY-SEAM-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67A-DELAY-SEAM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-POP-ROOT",
+        "T-PROJECT-P2-W67A-DELAYED-BRANCH-PUSH-ROOT"
+      ]
     }
   ],
   "tests": [
@@ -11656,6 +11739,38 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_ret.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ret"},
       "requirement_ids": ["REQ-PROJECT-P2-W66B-RET-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/delayed_branch/test_delayed_branch.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.delayed_branch"},
+      "requirement_ids": ["REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W67A-DELAYED-BRANCH-POP-ROOT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_delayed_stack_pop_root.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.delayed_stack_pop_root"},
+      "requirement_ids": [
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALIDATE",
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-MEMORY",
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-ROOT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P2-W67A-DELAYED-BRANCH-PUSH-ROOT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_delayed_stack_push_root.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.delayed_stack_push_root"},
+      "requirement_ids": [
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALIDATE",
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-MEMORY",
+        "REQ-PROJECT-P2-W67A-DELAYED-BRANCH-ROOT"
+      ]
     }
   ]
 }

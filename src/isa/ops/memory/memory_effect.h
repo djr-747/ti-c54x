@@ -9,7 +9,9 @@
  * MOD8/MOD10, ARF-selected reverse-carry MOD4/MOD7, and CMPT=0
  * MOD13 LONG32 and dual-indirect MOD0/MOD1/MOD2/MOD3 WORD16 address
  * specifications, the mode-independent STACK_PUSH/STACK_POP WORD16
- * address kinds, and static completion callback shapes.
+ * address kinds with their delayed-branch counterparts (identical
+ * stack planning; only the root PC commit timing differs), and
+ * static completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -53,7 +55,19 @@ typedef enum ti_c54x_op_memory_address_kind {
      * with a POST_ACCESS SP update. The access is READ-only with null
      * completion; the pop commit consumes the READ observation
      * directly instead of the ordinary accumulator/status staging. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 = 9
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 = 9,
+    /* Delayed-branch stack push: identical TOS planning to the
+     * immediate push (old SP - 1 with a PRE_ACCESS SP update,
+     * WRITE-only), but the root commits the sequential PC successor
+     * and reports the frozen pmad as the deferred branch target. The
+     * staged return address is PC+4 per SPRU172C §4 CALL[D]. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 = 10,
+    /* Delayed-branch stack pop: identical TOS planning to the
+     * immediate pop (old SP with a POST_ACCESS SP update,
+     * READ-only with null completion), but the root commits the
+     * sequential PC successor and reports the TOS READ observation
+     * as the deferred branch target. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 = 11
 } ti_c54x_op_memory_address_kind;
 
 /*

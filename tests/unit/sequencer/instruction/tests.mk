@@ -24,3 +24,6 @@ $(eval $(call ti_c54x_add_test,dld_dst_long32_failure_lifecycle,sequencer/instru
 $(eval $(call ti_c54x_add_test,stack_push_root,sequencer/instruction,test_stack_push_root.c))
 # W66A RED contract: stack-pop WORD16 root transaction lifecycle.
 $(eval $(call ti_c54x_add_test,stack_pop_root,sequencer/instruction,test_stack_pop_root.c))
+# W67A RED contracts: delayed stack-pop/push WORD16 root lifecycles.
+$(eval $(call ti_c54x_add_test,delayed_stack_pop_root,sequencer/instruction,test_delayed_stack_pop_root.c))
+$(eval $(call ti_c54x_add_test,delayed_stack_push_root,sequencer/instruction,test_delayed_stack_push_root.c))

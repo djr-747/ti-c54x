@@ -189,8 +189,11 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         return ti_c54x_op_memory_effect_x_only_shape_is_valid(effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16:
         /* All-zero spec with no AR selector; WRITE-only with no RMW and no
-         * completion. The staged value rides the TOS WRITE verbatim. */
+         * completion. The staged value rides the TOS WRITE verbatim.
+         * The delayed kind shares this shape exactly: only the root PC
+         * commit timing differs. */
         if (effect->address_spec.mode != 0 ||
             effect->address_spec.indexed_mode != 0 ||
             effect->address_spec.circular_mode != 0 ||
@@ -202,10 +205,12 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
 
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16:
         /* All-zero spec with no AR selector; READ-only with a zero staged
          * value, no RMW, and null completion. The generic READ shape
          * demands a completion callback, but pops consume the READ
-         * observation in the pop commit, so null completion is exact. */
+         * observation in the pop commit, so null completion is exact.
+         * The delayed kind shares this shape exactly. */
         if (effect->address_spec.mode != 0 ||
             effect->address_spec.indexed_mode != 0 ||
             effect->address_spec.circular_mode != 0 ||

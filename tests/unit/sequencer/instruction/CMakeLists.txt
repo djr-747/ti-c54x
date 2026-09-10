@@ -41,3 +41,8 @@ ti_c54x_add_unit_test(stack_push_root
 # W66A RED contract: stack-pop WORD16 root transaction lifecycle.
 ti_c54x_add_unit_test(stack_pop_root
                       test_stack_pop_root.c)
+# W67A RED contracts: delayed stack-pop/push WORD16 root lifecycles.
+ti_c54x_add_unit_test(delayed_stack_pop_root
+                      test_delayed_stack_pop_root.c)
+ti_c54x_add_unit_test(delayed_stack_push_root
+                      test_delayed_stack_push_root.c)

@@ -5,7 +5,9 @@
  * resolution, the WORD16 reducer, static opcode completion, ordinary effects,
  * dual-WORD16 and LONG32 reducers, sequential PC/counter candidates,
  * stack-push return-address staging with atomic SP plus pmad-target
- * commit, and stack-pop TOS-target commit from the READ observation.
+ * commit, stack-pop TOS-target commit from the READ observation, and
+ * the delayed-branch twins that commit the sequential successor while
+ * reporting the deferred target in the retirement result.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -73,6 +75,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_memory_address_resolution resolution = {0};
     ti_c54x_dual_memory_address_resolution dual_resolution = {0};
     ti_c54x_program_pc_bridge_effect pc_effect = {0};
+    uint16_t push_return_value = UINT16_C(0);
     ti_c54x_memory_instruction_transaction *target = transaction;
     bool dual_read;
     bool stack_push;
@@ -98,9 +101,13 @@ ti_c54x_memory_instruction_transaction_prepare(
     dual_read = effect->payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
     stack_push = effect->payload.memory.address_spec.kind ==
-                 TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16;
+                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+                 effect->payload.memory.address_spec.kind ==
+                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16;
     stack_pop = effect->payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16;
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+                effect->payload.memory.address_spec.kind ==
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16;
     if (stack_pop) {
         ti_c54x_program_pc_target_effect pop_target = {0};
 
@@ -116,7 +123,11 @@ ti_c54x_memory_instruction_transaction_prepare(
     }
     if (stack_push) {
         ti_c54x_program_pc_target_effect call_target = {0};
+        const bool push_delayed =
+            effect->payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16;
         uint16_t pmad;
+        uint32_t return_address_word;
 
         /* Two-word push forms carry pmad in the second bundle word. The
          * row catalog pins the count; this defense keeps a forged
@@ -142,14 +153,29 @@ ti_c54x_memory_instruction_transaction_prepare(
                 &pc_effect) != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+        return_address_word = pc_effect.common_pc_word_after;
+        if (push_delayed) {
+            /* Delayed calls push PC+4 per SPRU172C §4 CALL[D]
+             * ((PC)+4 → TOS with the §4-27 worked example pushing
+             * 0029 for CALLD at 0025). The successor stays the
+             * commit-time sequential PC; only the staged TOS value
+             * moves by two more words. A return address outside
+             * 16-bit program space is malformed: TI code always has
+             * two slot words after the call. */
+            return_address_word += UINT32_C(2);
+            if (return_address_word > UINT32_C(0xFFFF)) {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+        }
         if (ti_c54x_sequencer_resolve_memory_address(
                 state, &effect->payload.memory.address_spec,
                 effect->payload.memory.access,
-                pc_effect.common_pc_word_after,
+                (uint16_t)return_address_word,
                 &resolution) != TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
         candidate.address_resolution = resolution;
+        push_return_value = (uint16_t)return_address_word;
     } else if (dual_read) {
         if (ti_c54x_sequencer_resolve_dual_memory_address(
                 state, &effect->payload.memory.address_spec,
@@ -184,9 +210,10 @@ ti_c54x_memory_instruction_transaction_prepare(
     if (stack_push) {
         /* Stage the live return address into the frozen copy. The pure
          * handler cannot know PC, and the shape check requires the frozen
-         * effect value to equal the issued TOS WRITE value. */
-        candidate.effect.payload.memory.value_word =
-            pc_effect.common_pc_word_after;
+         * effect value to equal the issued TOS WRITE value. Delayed
+         * pushes stage PC+4 (bounds-proved in the push arm above);
+         * immediate pushes stage the sequential successor. */
+        candidate.effect.payload.memory.value_word = push_return_value;
     }
     if (dual_read) {
         candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
@@ -243,11 +270,17 @@ commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
         state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
         /* Pushes redirect PC to the frozen pmad instead of the sequential
          * successor. Re-plan deterministically from the frozen bundle word
          * and the stable live PC; prepare already proved this plan, so a
-         * failure here is unreachable but still transactional. */
+         * failure here is unreachable but still transactional. Delayed
+         * pushes only prove the deferred pmad target here: the two
+         * delay-slot words execute first, so PC advances to the frozen
+         * sequential successor and the W67B CPU loop reports pmad from
+         * the retirement result. */
         const ti_c54x_instruction_word_bundle *bundle_words =
             &transaction->candidate.instruction.bundle;
         ti_c54x_program_pc_target_effect call_target = {0};
@@ -259,12 +292,20 @@ commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
         }
         pmad = bundle_words->program_words[1];
         if (ti_c54x_program_pc_target_plan(live_pc, pmad, &call_target) !=
-                TI_C54X_PROGRAM_PC_TARGET_OK ||
-            ti_c54x_program_pc_target_apply(&live_pc, &call_target) !=
-                TI_C54X_PROGRAM_PC_TARGET_OK) {
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
-        state->pc_word = live_pc;
+        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+            state->pc_word =
+                transaction->candidate.pc_effect.public_pc_word_after;
+        } else {
+            if (ti_c54x_program_pc_target_apply(&live_pc, &call_target) !=
+                TI_C54X_PROGRAM_PC_TARGET_OK) {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            state->pc_word = live_pc;
+        }
     } else {
         state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
     }
@@ -283,17 +324,28 @@ commit_pop_architecture(ti_c54x_memory_instruction_transaction *transaction,
 
     /* Plan the TOS target before mutating anything: a failure here is
      * unreachable (prepare proved plannability with the same live PC)
-     * but stays transactional. */
+     * but stays transactional. Delayed pops only prove the deferred
+     * TOS target here: the two delay-slot words execute first, so PC
+     * advances to the frozen sequential successor and the W67B CPU
+     * loop reports TOS from the retirement result. */
     if (address_commit->target != TI_C54X_ADDRESS_UPDATE_SP ||
         ti_c54x_program_pc_target_plan(live_pc, tos_value, &pop_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK ||
-        ti_c54x_program_pc_target_apply(&live_pc, &pop_target) !=
             TI_C54X_PROGRAM_PC_TARGET_OK) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
     state->sp = address_commit->value_after;
     state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
-    state->pc_word = live_pc;
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+        state->pc_word =
+            transaction->candidate.pc_effect.public_pc_word_after;
+    } else {
+        if (ti_c54x_program_pc_target_apply(&live_pc, &pop_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        state->pc_word = live_pc;
+    }
     transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
 }
@@ -311,7 +363,9 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
         &transaction->candidate.effect.payload.memory;
 
     if (memory->address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+        memory->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         return commit_pop_architecture(transaction, state, read_value_word);
     }
     if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
@@ -551,10 +605,32 @@ ti_c54x_memory_instruction_transaction_advance(
         return advance_rmw_write(transaction, endpoint, state, result,
                                  first_issue);
     }
-    operation_status = commit_ready(transaction, state, accumulators,
-                                     t_register, adapter_result.read_value_word);
-    if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
-        return operation_status;
+    {
+        const uint16_t ready_read_word = adapter_result.read_value_word;
+
+        operation_status = commit_ready(transaction, state, accumulators,
+                                        t_register, ready_read_word);
+        if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+            return operation_status;
+        }
+        /* Delayed stack branches retire their stack update here but
+         * defer the PC transfer: report the deferred target so the
+         * CPU loop can arm the two-word countdown. Pops defer the
+         * TOS READ observation; pushes defer the frozen pmad word.
+         * All other retirements leave the report disarmed. */
+        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+            result->deferred_branch_armed = true;
+            result->deferred_branch_pc_word = ready_read_word;
+        } else if (transaction->candidate.effect.payload.memory.address_spec
+                       .kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+            /* The two-word count is proved by the commit above before
+             * any mutation, so the frozen pmad read is exact here. */
+            result->deferred_branch_armed = true;
+            result->deferred_branch_pc_word =
+                transaction->candidate.instruction.bundle.program_words[1];
+        }
     }
     result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
     result->bus_status = TI_C54X_BUS_OK;

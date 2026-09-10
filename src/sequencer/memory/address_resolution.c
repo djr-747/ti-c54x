@@ -94,13 +94,17 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
-    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+               spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
-    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+               spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
@@ -179,7 +183,8 @@ ti_c54x_sequencer_resolve_memory_address(
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
-    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         uint16_t sp_value = UINT16_C(0);
 
         /* Pops observe only SP: no CMPT/ARP/CPL read, so unknown mode
@@ -270,7 +275,8 @@ ti_c54x_sequencer_resolve_memory_address(
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
-    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
         uint16_t sp_value = UINT16_C(0);
 
         /* Pushes observe only SP: no CMPT/ARP/CPL read, so unknown mode

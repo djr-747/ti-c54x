@@ -145,6 +145,10 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     cpu->last_fetch_valid = false;
     cpu->instructions_attempted = 0U;
     cpu->instructions_retired = 0U;
+    if (ti_c54x_sequencer_delayed_branch_init(&cpu->delayed_branch) !=
+        TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
     if (ti_c54x_accumulator_reset(&cpu->accumulators) !=
         TI_C54X_ACCUMULATOR_OK) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;

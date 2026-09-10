@@ -5,7 +5,7 @@
  * instruction candidates, including exact address-resolution snapshots for
  * single-indirect, AR0-indexed, circular, reverse-carry, LONG32, dual
  * MOD0/MOD1/MOD2, X-only dual MOD0--MOD3, and mode-independent
- * STACK_PUSH/STACK_POP operands.
+ * STACK_PUSH/STACK_POP operands with their delayed-branch twins.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -387,7 +387,9 @@ address_resolution_is_valid(
     }
 
     if (effect->address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
         const ti_c54x_address_source_stack_push *const source =
             &address_effect->source.value.stack_push;
         /* Wrapping TOS arithmetic mirrors the planner exactly, so a forged
@@ -413,7 +415,9 @@ address_resolution_is_valid(
     }
 
     if (effect->address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         const ti_c54x_address_source_stack_push *const source =
             &address_effect->source.value.stack_push;
         /* Wrapping SP+1 arithmetic mirrors the planner exactly, so a
@@ -616,7 +620,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         return stack_candidate_matches_live(candidate, state);
     }
     address_effect = &candidate->address_resolution.address_result.effect;
