@@ -8805,3 +8805,67 @@ rewritten after publication.
   this slice) and `memory_instruction_transaction.c`;
   `make test` recipe order still lets C regressions hide
   behind quality failures.
+
+## 2026-09-11 — P2-W72 CCD delayed-conditional-call slice
+
+- Implementation commit `3d8e063` binds one Table 2-13 row
+  under `FORM-T2-13-03`: `CCD` at first-word value `0xFB00`
+  under mask `0xFF00`, two program words, 256 encodings, copied
+  condition byte plus 16-bit pmad, reusing `BRANCH_COND_PMAD16`
+  with the new `ACCUMULATORS_STATUS_C_TC` plus `STACK_POINTER`
+  inputs and `INELIGIBLE` repeatability (three new TI records:
+  opcode diagram, delayed PC+4 push with worked examples,
+  nonrepeatable note; SPRU172C §4 `CC[D]`, pp. 4-29–4-31).
+  The sixteen evidenced single conditions evaluate through the
+  shared branch-condition helper; taken branches stage the
+  `CALLD`-shaped `MEMORY` stack-push-delayed effect while
+  not-taken branches emit `NONE`. Taken branches gate known SP
+  per the `CALLD` convention; not-taken branches consume
+  condition inputs only. The `CALLD` `MEMORY` route and the
+  sequential bridge retire both outcomes, so no `run.c` change
+  was admitted. `FORM-T2-13-03` lands `SUBSET` with a lone
+  `CCD` symbol under an `ABSOLUTE_PMAD_COND_DELAYED` binding
+  shared with `BCD`.
+- Correction: the `3d8e063` message claims the `CCD` row takes
+  a near-miss word each from the `BCD` and `LD_SMEM_SHIFT`
+  audits. Only the `BCD` claim is real (`0xFB00` is `BCD`'s
+  bit-8 flip, pinned as a genuine `CCD` sibling there). No
+  `LD_SMEM_SHIFT` audit word moved; `CCD`'s own audit instead
+  pins two genuine siblings (`BCD` at `0xFA00`,
+  `LD_IMMEDIATE_DP` at `0xEB00`).
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_ccd_metadata.c`,
+  `tests/unit/isa/decode/test_ccd_decode.c`,
+  `tests/unit/isa/ops/branch/test_ccd.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_ccd.c`) covering
+  metadata with 256-encoding disjointness and variant
+  separation, decode with the deferred-`CC` pin and fixed-bit
+  near-miss audit, handler staging with taken `MEMORY`
+  push-delayed versus not-taken `NONE` over all sixteen
+  conditions plus SP gating and transactional rejection, and
+  CPU retirement (taken deferral with PC+4 TOS WRITE, SP
+  commit, and countdown drain; not-taken fallthrough with no
+  endpoint traffic; unknown-condition, taken-with-unknown-SP,
+  and not-taken-with-unknown-SP cases; full preservation).
+- Validation is GREEN with no baseline deviation: all 362 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK (268); knobs, source
+  boundaries, manifests, evidence, inventory (realized 155
+  catalog rows, `ID_COUNT=156`, 6,595 lookup entries, 155
+  bindings, 122 SUBSET bindings, family coverage 58/205 at
+  28.293%, 33/205 strict), and observer-disabled structure
+  pass. Focused ASan/UBSan GREEN for the four new tests
+  (instrumentation verified). Fresh CMake/CTest Debug passes
+  369/369; full sanitizer CMake/CTest passes 368/368
+  excluding `quality.python`. Row-count pins advanced to 155
+  rows, 155 bindings, 6,595 entries, 122 SUBSET, and 58/205
+  family across the contract suites plus `ID_COUNT=156`
+  across the C metadata suites.
+  `generate_opcode_lookup.py --check` and `git diff --check`
+  pass. No knob was added or changed. Nothing was pushed.
+- Follow-up work: non-delayed `CC` (74 image occurrences),
+  `RETE`/`RETF` remain deferred with cross-slice hazard pins.
+  Open: split decision for `run.c` before 800 lines
+  (unchanged at 765; no `run.c` edit this slice) and
+  `memory_instruction_transaction.c`; `make test` recipe order
+  still lets C regressions hide behind quality failures.
