@@ -7728,3 +7728,73 @@ rewritten after publication.
   ADD/SUB) and MAC/MPY families follow. Open: fix the `make
   test` recipe order so C regressions cannot hide behind the
   environmental quality failure.
+
+## 2026-09-10 — P2-W61 LDR Smem,dst indexed MOD5/MOD6 vertical slice
+
+- Implementation commit `798c453` activates two Table 2-19 rows under
+  `FORM-T2-19-19` as `SUBSET`, TI SPRU172C §4 LDR (printed p. 4-78,
+  cross-checked against the SPRU179C algebraic volume p. 4-78) with
+  AR0-indexed Smem per SPRU131G Table 5-4 (printed pp. 5-10–5-11):
+  `LDR_MOD5` at first-word value `0x16A8` (MOD5 `*ARx-AR0` with
+  `ARx = ARx - AR0`) and `LDR_MOD6` at `0x16B0` (MOD6 `*ARx+AR0`),
+  both under mask `0xFEF8` with the `ACCUMULATOR_ARF_MOD4` layout
+  (destination, ARF, 4-bit mode), one program word, `UNRESOLVED`
+  repeatability, and `STATUS_SXM` resources, 16 encodings each.
+  Semantics reuses the W60 rounding completion
+  (`dst = (SXM-widen(Smem) << 16) + 0x8000`, C/TC/OV preserved, no
+  OVM input) over the existing `INDEXED_AR0_WORD16` transaction
+  seam with selected-AR post-update; borrow/carry boundary rejects,
+  AR0 must be known, and unknown SXM rejects transactionally. One
+  program word retires at `PC+1`. No new layout, address kind,
+  effect kind, CPU branch, public ABI, timing, or device/MMR claim
+  is admitted. The form stays `SUBSET` (MOD4/MOD7 reverse-carry and
+  MOD8–MOD15 remain deferred).
+- Evidence: TI opcode/addressing records reused from W60 plus the
+  indexed MOD5/MOD6 composition records, six requirements
+  (`REQ-COMMON-P2-W61-LDR-INDEXED-CATALOG/DECODE/EFFECTS`,
+  `REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING/CPU-RETIREMENT/
+  INVENTORY`), and four RED contracts extending the shared indexed
+  tables (metadata rows 20→22, decode, load effects, CPU
+  retirement) instead of adding new files, per the W43B
+  shared-family convention. Registry closure is 263 immutable
+  evidence records, 408 requirements (377 `IMPLEMENTED`, 0
+  `PLANNED`, 31 `UNRESOLVED`), and 336 tests (336 `PASSING`).
+  Coverage is 144 catalog rows, `ID_COUNT=145`, 5,309 lookup
+  entries, 144 trusted bindings, family coverage 52/205 (25.366%),
+  and 33/205 strict complete-form coverage (`FORM-T2-19-19` stays
+  `SUBSET`; W61 adds rows to an already-covered family, so family
+  coverage is unchanged from W60).
+- Anchor correction: the W61 `(planned)` anchor as committed claims
+  family coverage 53/205 (25.854%); the inventory checker and the
+  covered-form count both prove 52/205 (25.366%). The anchor is
+  corrected in the follow-up docs commit, never the tests or the
+  checker. No sibling-slice finding was raised against W61.
+- Validation is GREEN with one recorded baseline deviation: all
+  308 C test binaries pass; contract quality unittest 267/268 with
+  the single failure `test_supported_m32_assertions_compile`
+  (W49A carrier-ABI probe), which compiles
+  `tests/unit/cpu/input/test_collect_ovm_status.c` under `-m32`
+  and trips its `sizeof(ti_c54x_op_input_snapshot) == 56U` ILP32
+  assertion (message text still says 48 bytes). That file and
+  `src/isa/ops/op_input.h` were last touched in the W56 era and
+  are outside the W61 diff, and the failing test belongs to the
+  known-good `-m32`/ILP32 family recorded in the runbook, so it is
+  carried as baseline, not a W61 regression; the stale 48-byte
+  messages and the optimistic ILP32 size expectation stay open as
+  W49A-owner follow-up and were deliberately not fixed in this
+  closure. Knobs, source boundaries (with the standing
+  SIZE_REVIEW warning on the 620-line RMW transaction test),
+  manifests, evidence, inventory, and observer-disabled structure
+  pass. Focused ASan/UBSan 4/4 GREEN
+  (`ASAN_OPTIONS=detect_leaks=0`, then `make clean` plus a normal
+  rebuild). Fresh CMake/CTest Debug passes 314/315 with only
+  `quality.python` failing (the same single unittest failure);
+  full sanitizer CMake/CTest passes 314/314 excluding
+  `quality.python`. `git diff --check` is clean. No knob was added
+  or changed. Nothing was pushed.
+- Follow-up work: LDR MOD4/MOD7 reverse-carry and MOD8–MOD15
+  variants; the P3 5110-DSP execution focus section now sequences
+  control flow, STM/STH, repeat, MAC/MPY, MMR/stack, bit ops, and
+  port I/O ahead of remaining LD-family variants. Open: fix the
+  `make test` recipe order so C regressions cannot hide behind the
+  environmental quality failure.
