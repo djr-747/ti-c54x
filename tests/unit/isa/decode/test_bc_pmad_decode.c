@@ -160,18 +160,22 @@ static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 leaves only the condition byte variable. Flipping
-     * fixed bit 12 lands on the LD_K sibling; all other fixed-bit
-     * flips (including the deferred delayed bit 9) must miss every
-     * row. */
+     * fixed bit 12 lands on the LD_K sibling and flipping fixed bit 10
+     * lands on the RET sibling; all other fixed-bit flips (including
+     * the deferred delayed bit 9) must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
+        UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0800), UINT16_C(0x2000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result ld_k_sibling =
         ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x1000)));
+    const ti_c54x_decode_result ret_sibling =
+        ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x0400)));
 
     TI_C54X_TEST_CHECK(ld_k_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(ld_k_sibling.id == TI_C54X_OPCODE_ID_LD_K);
+    TI_C54X_TEST_CHECK(ret_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(ret_sibling.id == TI_C54X_OPCODE_ID_RET);
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);

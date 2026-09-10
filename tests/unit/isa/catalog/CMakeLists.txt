@@ -55,3 +55,6 @@ ti_c54x_add_unit_test(add_sub_dual_mod3_metadata
 # W65B RED contract: CALL pmad row metadata.
 ti_c54x_add_unit_test(call_pmad_metadata
                       test_call_pmad_metadata.c)
+# W66B RED contract: RET row metadata.
+ti_c54x_add_unit_test(ret_metadata
+                      test_ret_metadata.c)

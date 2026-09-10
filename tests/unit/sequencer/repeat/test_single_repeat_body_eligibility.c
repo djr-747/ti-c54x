@@ -91,7 +91,7 @@ test_full_catalog_sweep_maps(void)
 {
     ti_c54x_opcode_id id;
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 148);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 149);
     for (id = (ti_c54x_opcode_id)1; id < TI_C54X_OPCODE_ID_COUNT; ++id) {
         const ti_c54x_opcode_metadata *metadata =
             ti_c54x_opcode_metadata_for_id(id);

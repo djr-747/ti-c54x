@@ -4034,6 +4034,61 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66A: stack-pop MEMORY transaction seam (planned)"},
       "assertion": "W66A activates the stack-pop MEMORY seam with planner, SP POST commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RET-OPCODE-P4-139",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "RET[D]", "printed_page_start": "4-139", "printed_page_end": "4-139"},
+      "assertion": "The RET[D] description defines syntax RET[D] with no operands as a one-word form: word 1111_11Z0_0000_0000 with the delayed flag in bit 9, giving first-word value 0xFC00 under mask 0xFFFF for the non-delayed RET variant with one encoding. Z=1 selects the delayed RETD variant, which stays deferred to the delay seam. The SPRU179C instruction list ([d]return, Unconditional return) agrees on the mnemonic family. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RET-SEMANTICS-P4-139",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "RET[D]", "printed_page_start": "4-139", "printed_page_end": "4-139"},
+      "assertion": "The RET[D] description defines execution as (TOS) -> PC with (SP) + 1 -> SP, with no affected status bits. The worked example pins RET with PC 2112 and SP 0300 with data memory 0300h holding 1000 to PC 1000 and SP 0301."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RET-NONREPEATABLE-P4-139",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "RET[D]", "printed_page_start": "4-139", "printed_page_end": "4-139"},
+      "assertion": "The RET[D] description carries an explicit note that the instruction is not repeatable. This record is positive evidence for the INELIGIBLE repeatability classification of the RET row; Table 2-28 absence remains a boundary only and is not needed for this classification."
+    },
+    {
+      "id": "E-PROJECT-P2-W66B-RET-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66B: RET vertical slice (planned)"},
+      "assertion": "W66B is the planned RET vertical slice: one RET row at first-word value 0xFC00 under mask 0xFFFF reusing the OPERAND_LAYOUT_NONE layout with STACK_POINTER input resources and INELIGIBLE repeatability, a pure branch handler staging a MEMORY STACK_POP READ with zero value and null completion, trusted dispatch binding, and CPU retirement through the W66A stack-pop root with atomic SP-plus-TOS-target commit. FORM-T2-15-04 lands SUBSET with delayed RETD deferred."
+    },
+    {
+      "id": "E-PROJECT-P2-W66B-RET-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66B: RET vertical slice (planned)"},
+      "assertion": "W66B activates the RET row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 148 catalog rows, ID_COUNT 149, 5,568 lookup entries, 148 bindings, family coverage 56/205, and 33/205 strict complete-form coverage with FORM-T2-15-04 SUBSET."
     }
   ],
   "requirements": [
@@ -8628,6 +8683,66 @@
       "claim": "Retire stack pops through the persistent MEMORY root by proving target plannability at prepare and committing SP plus the TOS target from the READ observation atomically at READY with WAIT/FAULT/resume unchanged.",
       "evidence_ids": ["E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION"],
       "test_ids": ["T-PROJECT-P2-W66A-STACK-POP-ROOT"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W66B-RET-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the RET row at first-word value 0xFC00 under mask 0xFFFF with one program word, the OPERAND_LAYOUT_NONE layout, INELIGIBLE repeatability, and STACK_POINTER resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RET-OPCODE-P4-139"],
+      "test_ids": ["T-COMMON-P2-W66B-RET-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W66B-RET-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the RET first word through the generic decoder with copied bundle and scalar metadata and no operand extraction, pinning the deferred delayed word 0xFE00 to UNKNOWN_WORD.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RET-OPCODE-P4-139"],
+      "test_ids": ["T-COMMON-P2-W66B-RET-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W66B-RET-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Stage a MEMORY STACK_POP READ with zero value and null completion under per-row identity validation with transactional unknown-SP rejection and no status effect.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-RET-SEMANTICS-P4-139", "E-TI-C54X-SPRU172C-S4-RET-NONREPEATABLE-P4-139"],
+      "test_ids": ["T-COMMON-P2-W66B-RET-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the RET row through the macro-driven checked and trusted dispatch tables with no opcode-specific branch.",
+      "evidence_ids": ["E-PROJECT-P2-W66B-RET-PLAN-ANCHOR", "E-PROJECT-P2-W66B-RET-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66B-RET-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire RET through the existing MEMORY route with the worked-example vector, WAIT resume, DATA fault rollback, and unknown-SP rejection.",
+      "evidence_ids": ["E-PROJECT-P2-W66B-RET-PLAN-ANCHOR", "E-PROJECT-P2-W66B-RET-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W66B-RET-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66B-RET-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-15-04 as inventory SUBSET under the RET catalog symbol.",
+      "evidence_ids": ["E-PROJECT-P2-W66B-RET-PLAN-ANCHOR", "E-PROJECT-P2-W66B-RET-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -9972,7 +10087,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -10436,7 +10551,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -11509,6 +11624,38 @@
       "path": "tests/unit/sequencer/instruction/test_stack_pop_root.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_pop_root"},
       "requirement_ids": ["REQ-PROJECT-P2-W66A-STACK-POP-ROOT", "REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE"]
+    },
+    {
+      "id": "T-COMMON-P2-W66B-RET-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ret_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ret_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W66B-RET-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W66B-RET-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ret_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ret_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W66B-RET-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W66B-RET-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_ret.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ret"},
+      "requirement_ids": ["REQ-COMMON-P2-W66B-RET-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W66B-RET-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_ret.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ret"},
+      "requirement_ids": ["REQ-PROJECT-P2-W66B-RET-CPU-RETIREMENT"]
     }
   ]
 }
