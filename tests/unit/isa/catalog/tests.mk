@@ -30,6 +30,8 @@ $(eval $(call ti_c54x_add_test,banz_metadata,isa/catalog,test_banz_metadata.c))
 $(eval $(call ti_c54x_add_test,banzd_metadata,isa/catalog,test_banzd_metadata.c))
 # W72 RED contract: CCD catalog row.
 $(eval $(call ti_c54x_add_test,ccd_metadata,isa/catalog,test_ccd_metadata.c))
+# W73 RED contract: CC catalog row.
+$(eval $(call ti_c54x_add_test,cc_metadata,isa/catalog,test_cc_metadata.c))
 $(eval $(call ti_c54x_add_test,ldr_smem_metadata,isa/catalog,test_ldr_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_xmem_shift_metadata,isa/catalog,test_ld_xmem_shift_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_src_asm_metadata,isa/catalog,test_ld_src_asm_metadata.c))

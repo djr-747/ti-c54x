@@ -23,7 +23,7 @@
 #include <string.h>
 
 static const uint16_t CCD_VALUE = UINT16_C(0xFB00);
-/* Bit 9 clear selects the deferred non-delayed CC variant. */
+/* Bit 9 clear selects the non-delayed CC sibling. */
 static const uint16_t CC_WORD = UINT16_C(0xF900);
 
 static uint16_t
@@ -117,8 +117,8 @@ test_malformed_inputs_reject_transactionally(void)
     TI_C54X_TEST_CHECK(valid.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_CCD);
 
-    /* 0xF930 is the deferred non-delayed CC word: valid pattern
-     * shape, wrong identity while deferred. */
+    /* 0xF930 is the non-delayed CC sibling word: valid pattern
+     * shape, wrong identity for this row. */
     bundle.program_words[0] =
         (uint16_t)(CC_WORD | UINT16_C(0x0030));
     check_transactional_failure(
@@ -147,25 +147,24 @@ test_malformed_inputs_reject_transactionally(void)
 }
 
 static void
-test_non_delayed_word_is_unknown(void)
+test_non_delayed_sibling_is_cc(void)
 {
-    /* The deferred non-delayed CC variant decodes UNKNOWN_WORD
-     * today; a future CC slice updates this pin under the
-     * cross-slice hazard rule. */
+    /* Clearing fixed bit 9 reaches the non-delayed CC sibling
+     * word, claimed by the W73 slice. */
     const ti_c54x_decode_result result =
         ti_c54x_decode_first_word(
             (uint16_t)(CC_WORD | UINT16_C(0x0030)));
 
-    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_CC);
 }
 
 static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the condition byte
-     * variable. Clearing fixed bit 9 lands on the deferred CC
-     * word (pinned UNKNOWN above), clearing fixed bit 8 lands on
+     * variable. Clearing fixed bit 9 lands on the non-delayed
+     * CC sibling (pinned above), clearing fixed bit 8 lands on
      * the BCD sibling, and clearing fixed bit 12 lands on
      * LD_IMMEDIATE_DP (both pinned below); all other fixed-bit
      * flips must miss every row. */
@@ -222,7 +221,7 @@ main(void)
         }
     }
     test_malformed_inputs_reject_transactionally();
-    test_non_delayed_word_is_unknown();
+    test_non_delayed_sibling_is_cc();
     test_fixed_bit_near_misses();
     return 0;
 }

@@ -21,7 +21,7 @@
 
 static const uint16_t CCD_VALUE = UINT16_C(0xFB00);
 static const uint16_t CCD_MASK = UINT16_C(0xFF00);
-/* Bit 9 clear selects the deferred non-delayed CC variant. */
+/* Bit 9 clear selects the non-delayed CC sibling. */
 static const uint16_t CC_VALUE = UINT16_C(0xF900);
 
 static void
@@ -30,7 +30,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_CCD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 156);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 157);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_CCD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == CCD_VALUE);
@@ -70,9 +70,10 @@ test_exact_population_and_disjointness(void)
 static void
 test_non_delayed_variant_separation(void)
 {
-    /* Clearing bit 9 reaches the deferred CC word, never this row. */
+    /* Clearing bit 9 reaches the non-delayed CC sibling, never
+     * this row. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           CC_VALUE) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           CC_VALUE) == TI_C54X_OPCODE_ID_CC);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(CCD_VALUE | UINT16_C(0x0030))) ==
                        TI_C54X_OPCODE_ID_CCD);

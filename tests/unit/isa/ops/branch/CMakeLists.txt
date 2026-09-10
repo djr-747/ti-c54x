@@ -11,6 +11,8 @@ ti_c54x_add_unit_test(banz test_banz.c)
 ti_c54x_add_unit_test(banzd test_banzd.c)
 # W72 RED contract: CCD effects.
 ti_c54x_add_unit_test(ccd test_ccd.c)
+# W73 RED contract: CC effects.
+ti_c54x_add_unit_test(cc test_cc.c)
 ti_c54x_add_unit_test(call_pmad test_call_pmad.c)
 ti_c54x_add_unit_test(ret test_ret.c)
 # W67B RED contract: RETD effects.

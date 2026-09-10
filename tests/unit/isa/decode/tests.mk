@@ -39,6 +39,8 @@ $(eval $(call ti_c54x_add_test,banz_decode,isa/decode,test_banz_decode.c))
 $(eval $(call ti_c54x_add_test,banzd_decode,isa/decode,test_banzd_decode.c))
 # W72 RED contract: CCD decode.
 $(eval $(call ti_c54x_add_test,ccd_decode,isa/decode,test_ccd_decode.c))
+# W73 RED contract: CC decode.
+$(eval $(call ti_c54x_add_test,cc_decode,isa/decode,test_cc_decode.c))
 $(eval $(call ti_c54x_add_test,ldr_smem_decode,isa/decode,test_ldr_smem_decode.c))
 $(eval $(call ti_c54x_add_test,ld_xmem_shift_decode,isa/decode,test_ld_xmem_shift_decode.c))
 $(eval $(call ti_c54x_add_test,ld_src_asm_decode,isa/decode,test_ld_src_asm_decode.c))
