@@ -8194,3 +8194,47 @@ rewritten after publication.
   the delay seam. Open: fix the `make test` recipe order so C
   regressions cannot hide behind the environmental quality
   failure.
+
+## 2026-09-11 — P2-W66B RET subroutine-return slice
+
+- Implementation commit `dd17dc9` binds one Table 2-15 row under
+  `FORM-T2-15-04`: `RET` at first-word value `0xFC00` under mask
+  `0xFFFF`, one program word, one encoding, no operands, reusing
+  the `OPERAND_LAYOUT_NONE` layout with `STACK_POINTER` input
+  resources and `INELIGIBLE` repeatability (manual note). The
+  pure branch handler demands known SP and stages a `MEMORY`
+  `STACK_POP` READ with zero value and null completion; the W66A
+  root reads TOS at old SP and commits SP+1 and PC=TOS
+  atomically through the existing `MEMORY` route with no `run.c`
+  change. Dispatch binds through the macro tables; the deferred
+  delayed word `0xFE00` decodes `UNKNOWN_WORD`.
+  `FORM-T2-15-04` lands `SUBSET`. The BC near-miss audit now
+  names RET as the bit-10 sibling. A BC decode sibling collision
+  at `0xFC00` and row-count pins (147→148, 5567→5568, 55→56)
+  were fixed with a lookup regen during the slice.
+- Evidence: plan-anchor plus activation records, one requirement
+  (`REQ-BRANCH-RET-NONDELAYED`), and four RED contracts
+  (`tests/unit/isa/catalog/test_ret_metadata.c`,
+  `tests/unit/isa/decode/test_ret_decode.c`,
+  `tests/unit/isa/ops/branch/test_ret.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_ret.c`) covering metadata,
+  decode (including `RETD` still unknown), handler staging, and
+  CPU retirement with atomic SP+1/PC=TOS commit. Registry
+  closure is 289 evidence records, 441 requirements (410
+  `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), and 359 tests
+  (359 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 331 C test
+  binaries pass including the 4 new focused contracts; contract
+  quality unittest fully OK; knobs, source boundaries,
+  manifests, evidence, inventory (realized 148 catalog rows,
+  `ID_COUNT=149`, 5,568 lookup entries, 148 bindings, family
+  coverage 56/205 at 27.317%, 33/205 strict), and
+  observer-disabled structure pass. Focused ASan/UBSan GREEN for
+  the four new tests. Fresh CMake/CTest Debug passes 338/338;
+  full sanitizer CMake/CTest passes 337/337 excluding
+  `quality.python`. No knob was added or changed. Nothing was
+  pushed.
+- Follow-up work: delayed `RETD`/`CALLD` in the delay seam, then
+  `RETE`/`RETF` which stay deferred with cross-slice hazard
+  pins. Open: fix the `make test` recipe order so C regressions
+  cannot hide behind the environmental quality failure.
