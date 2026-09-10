@@ -8333,3 +8333,78 @@ rewritten after publication.
   lines) needs an explicit split decision before 800 lines;
   `make test` recipe order still lets C regressions hide behind
   quality failures.
+
+## 2026-09-11 — P2-W67B RETD delayed-return slice
+
+- Implementation commit `ac428c8` binds one Table 2-15 row under
+  `FORM-T2-15-04`: `RETD` at first-word value `0xFE00` under
+  mask `0xFFFF`, one program word, one encoding, no operands,
+  reusing `OPERAND_LAYOUT_NONE` with `STACK_POINTER` inputs and
+  `INELIGIBLE` repeatability (manual note). The pure handler
+  (`src/isa/ops/branch/op_retd.[ch]`) demands known SP and
+  stages a `MEMORY` `STACK_POP_DELAYED` READ; dispatch binds
+  through the macro tables with no per-row wiring. The W67A
+  root commits `SP+1` with sequential PC and reports TOS
+  deferred. `run.c` adopts the report into the CPU-owned
+  countdown (replacing any pending branch) and, after every
+  retirement that arms nothing new, disarms on an inner
+  PC-discontinuity (non-delayed stack branch or `PC_WRITE`
+  wins; TI forbids these in slots per SPRU131G §6.3.1 p. 6-6)
+  or consumes the retired word count, publishing TOS to PC at
+  zero with saturating consume. WAIT/FAULT/budget gaps leave
+  the instance countdown untouched; reset clears it.
+  `FORM-T2-15-04` stays `SUBSET` with a `STACK_POP_DELAYED`
+  binding. The W66B `test_ret_decode.c` deferred pin now
+  decodes `RETD` under the cross-slice hazard rule (bit-9
+  near-miss updated; the bit-11 flip pins the genuine
+  `ADD_ACC_SHIFT` sibling at `0xF600` in the new decode test).
+- The W66B `REQ-COMMON-P2-W66B-RET-DECODE` registry claim is
+  corrected in place (it pinned `0xFE00` to `UNKNOWN_WORD`,
+  which this slice falsifies): it now states the Z=1 word
+  decodes through the `RETD` row, backed by the new
+  `E-TI-C54X-SPRU172C-S4-RETD-OPCODE-P4-139` alongside the old
+  opcode record. The old PINNED opcode assertion ("Z=1 ...
+  stays deferred to the delay seam") is retained under its
+  still-true reading: `RETD` runs through the delay seam built
+  in W67A. Nothing else historical was rewritten.
+- Evidence: plan-anchor plus activation records, four TI
+  records (opcode, semantics, nonrepeatable, §6.3.1 slots),
+  six requirements (`REQ-COMMON-P2-W67B-RETD-CATALOG`,
+  `-DECODE`, `-EFFECTS`,
+  `REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING`,
+  `-CPU-RETIREMENT`, `-INVENTORY`), and four RED contracts
+  (`tests/unit/isa/catalog/test_retd_metadata.c`,
+  `tests/unit/isa/decode/test_retd_decode.c`,
+  `tests/unit/isa/ops/branch/test_retd.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_retd.c`) covering
+  metadata/disjointness, decode with the `ADD_ACC_SHIFT`
+  sibling, handler staging with checked/trusted/dispatch
+  parity, and CPU retirement (two 1-word slots, one 2-word
+  slot with real `LD` execution, inner-branch takeover,
+  oversize saturation, WAIT resume, budget-split persistence,
+  reset clearing, slot-fetch fault hold, unknown-SP
+  transactionality, full preservation). Registry closure is
+  297 evidence records, 451 requirements (420 `IMPLEMENTED`, 0
+  `PLANNED`, 31 `UNRESOLVED`), and 366 tests (366 `PASSING`, 0
+  `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 338 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK; knobs, source boundaries
+  (only pre-existing SIZE_REVIEW warnings),
+  manifests, evidence, inventory (realized 149 catalog rows,
+  `ID_COUNT=150`, 5,569 lookup entries, 149 bindings, 116
+  SUBSET bindings, family coverage 56/205 at 27.317%, 33/205
+  strict), and observer-disabled structure pass. Focused
+  ASan/UBSan GREEN for the four new tests. Fresh CMake/CTest
+  Debug passes 345/345; full sanitizer CMake/CTest passes
+  344/344 excluding `quality.python` (sanitizer tree on home
+  disk; scratch removed). Row-count pins advanced to 149 rows,
+  149 bindings, 5,569 entries, and 116 SUBSET across the
+  contract suites plus `ID_COUNT=150` across the C metadata
+  suites. No knob was added or changed. Nothing was pushed.
+- Follow-up work: W67C `CALLD` (two-word row at `0xF274` with
+  `BRANCH_PMAD16`, PC+4 return staging already in the seam)
+  reuses the run.c wiring unchanged. Open: split decision for
+  `memory_instruction_transaction.c` before 800 lines;
+  `make test` recipe order still lets C regressions hide
+  behind quality failures.
