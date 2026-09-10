@@ -8238,3 +8238,20 @@ rewritten after publication.
   `RETE`/`RETF` which stay deferred with cross-slice hazard
   pins. Open: fix the `make test` recipe order so C regressions
   cannot hide behind the environmental quality failure.
+
+## 2026-09-11 — Correction: W66B ledger requirement citation
+
+- The W66B entry above cites `REQ-BRANCH-RET-NONDELAYED`. That
+  ID was never registered; the W66B slice actually registered
+  six requirements, all `IMPLEMENTED` in `config/evidence.json`:
+  `REQ-COMMON-P2-W66B-RET-CATALOG`,
+  `REQ-COMMON-P2-W66B-RET-DECODE`,
+  `REQ-COMMON-P2-W66B-RET-EFFECTS`,
+  `REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING`,
+  `REQ-PROJECT-P2-W66B-RET-CPU-RETIREMENT`, and
+  `REQ-PROJECT-P2-W66B-RET-INVENTORY`, proven by four `PASSING`
+  tests (`T-COMMON-P2-W66B-RET-METADATA`,
+  `T-COMMON-P2-W66B-RET-DECODE`,
+  `T-COMMON-P2-W66B-RET-SEMANTICS`,
+  `T-PROJECT-P2-W66B-RET-CPU`). The validation evidence, pins,
+  and follow-up notes in the W66B entry stand unchanged.
