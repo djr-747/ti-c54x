@@ -11,4 +11,5 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/indirect_reverse_carry.c"
     "${CMAKE_CURRENT_LIST_DIR}/indirect_circular.c"
     "${CMAKE_CURRENT_LIST_DIR}/stack_push.c"
+    "${CMAKE_CURRENT_LIST_DIR}/stack_pop.c"
 )

@@ -22,3 +22,5 @@ $(eval $(call ti_c54x_add_test,dual_mod3_root,sequencer/instruction,test_dual_mo
 $(eval $(call ti_c54x_add_test,dld_dst_long32_failure_lifecycle,sequencer/instruction,test_dld_dst_long32_failure_lifecycle.c))
 # W65A RED contract: stack-push WORD16 root transaction lifecycle.
 $(eval $(call ti_c54x_add_test,stack_push_root,sequencer/instruction,test_stack_push_root.c))
+# W66A RED contract: stack-pop WORD16 root transaction lifecycle.
+$(eval $(call ti_c54x_add_test,stack_pop_root,sequencer/instruction,test_stack_pop_root.c))

@@ -38,3 +38,6 @@ ti_c54x_add_unit_test(dld_dst_long32_failure_lifecycle
 # W65A RED contract: stack-push WORD16 root transaction lifecycle.
 ti_c54x_add_unit_test(stack_push_root
                       test_stack_push_root.c)
+# W66A RED contract: stack-pop WORD16 root transaction lifecycle.
+ti_c54x_add_unit_test(stack_pop_root
+                      test_stack_pop_root.c)

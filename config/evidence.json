@@ -4012,6 +4012,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W65B: CALL pmad vertical slice (planned)"},
       "assertion": "W65B activates the CALL_PMAD row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 147 catalog rows, ID_COUNT 148, 5,567 lookup entries, 147 bindings, family coverage 55/205, and 33/205 strict complete-form coverage with FORM-T2-13-02 SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66A: stack-pop MEMORY transaction seam (planned)"},
+      "assertion": "W66A is the planned generic stack-pop MEMORY seam: a STACK_POP_WORD16 address kind with an all-zero spec, a pure src/address planner mapping old SP to the TOS DATA WORD16 at old SP with a POST_ACCESS SP update, the POST_ACCESS shape through the existing SP update target with the shared STACK_PUSH source kind, a DATA READ resolution arm with no mode read, and root prepare/commit support that proves 16-bit target plannability before bus issue and commits SP plus the TOS target from the READ observation atomically at READY. SP arithmetic wraps mod 65536 as a project-interpretation pin. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W66A: stack-pop MEMORY transaction seam (planned)"},
+      "assertion": "W66A activates the stack-pop MEMORY seam with planner, SP POST commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
     }
   ],
   "requirements": [
@@ -8566,6 +8588,46 @@
       "claim": "Bind FORM-T2-13-02 as inventory SUBSET under the CALL_PMAD catalog symbol.",
       "evidence_ids": ["E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR", "E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66A-STACK-POP-PLANNER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/address/",
+      "claim": "Plan one TOS DATA WORD16 at old SP with a POST_ACCESS SP update to SP+1 under wrapping 16-bit arithmetic through a pure value-owned leaf with no state, mode, or bus dependency.",
+      "evidence_ids": ["E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W66A-STACK-POP-PLANNER"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Validate STACK_POP effects through the intrinsic chain with the shared SP update target in POST_ACCESS shape, no CMPT/ARP/CPL read, unknown-SP rejection, live-SP snapshot agreement, and transactional SP application.",
+      "evidence_ids": ["E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W66A-STACK-POP-RESOLUTION", "T-PROJECT-P2-W66A-STACK-POP-ROOT"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66A-STACK-POP-MEMORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Carry the STACK_POP_WORD16 address kind with an all-zero spec and READ-only access shape with null completion, and resolve it to one DATA READ request at the planned TOS address with a staged SP commit.",
+      "evidence_ids": ["E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W66A-STACK-POP-RESOLUTION"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W66A-STACK-POP-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire stack pops through the persistent MEMORY root by proving target plannability at prepare and committing SP plus the TOS target from the READ observation atomically at READY with WAIT/FAULT/resume unchanged.",
+      "evidence_ids": ["E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W66A-STACK-POP-ROOT"]
     }
   ],
   "tests": [
@@ -11423,6 +11485,30 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_call_pmad.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_call_pmad"},
       "requirement_ids": ["REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W66A-STACK-POP-PLANNER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/address/test_stack_pop_planner.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_pop_planner"},
+      "requirement_ids": ["REQ-PROJECT-P2-W66A-STACK-POP-PLANNER"]
+    },
+    {
+      "id": "T-PROJECT-P2-W66A-STACK-POP-RESOLUTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_stack_pop_resolution.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_pop_resolution"},
+      "requirement_ids": ["REQ-PROJECT-P2-W66A-STACK-POP-MEMORY", "REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE"]
+    },
+    {
+      "id": "T-PROJECT-P2-W66A-STACK-POP-ROOT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_stack_pop_root.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.stack_pop_root"},
+      "requirement_ids": ["REQ-PROJECT-P2-W66A-STACK-POP-ROOT", "REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE"]
     }
   ]
 }

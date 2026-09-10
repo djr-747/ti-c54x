@@ -330,6 +330,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-CALL-NONREPEATABLE-P4-27` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CALL[D], `4-27` |
 | `E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W65B: CALL pmad vertical slice (planned)` |
 | `E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W65B: CALL pmad vertical slice (planned)` |
+| `E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W66A: stack-pop MEMORY transaction seam (planned)` |
+| `E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W66A: stack-pop MEMORY transaction seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -864,6 +866,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/dispatch/` | `E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION` | `T-PROJECT-TRUSTED-OPCODE-BINDING` |
 | `REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION` | `T-PROJECT-P2-W65B-CALL-PMAD-CPU` |
 | `REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W65B-CALL-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W65B-CALL-PMAD-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-PROJECT-P2-W66A-STACK-POP-PLANNER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/address/` | `E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION` | `T-PROJECT-P2-W66A-STACK-POP-PLANNER` |
+| `REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/` | `E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION` | `T-PROJECT-P2-W66A-STACK-POP-RESOLUTION`, `T-PROJECT-P2-W66A-STACK-POP-ROOT` |
+| `REQ-PROJECT-P2-W66A-STACK-POP-MEMORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION` | `T-PROJECT-P2-W66A-STACK-POP-RESOLUTION` |
+| `REQ-PROJECT-P2-W66A-STACK-POP-ROOT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P2-W66A-STACK-POP-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W66A-STACK-POP-SEAM-ACTIVATION` | `T-PROJECT-P2-W66A-STACK-POP-ROOT` |
 
 ## Tests
 
@@ -1222,6 +1228,9 @@ exist in the repository.
 | `T-COMMON-P2-W65B-CALL-PMAD-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_call_pmad_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.call_pmad_decode"}` | `REQ-COMMON-P2-W65B-CALL-PMAD-DECODE` |
 | `T-COMMON-P2-W65B-CALL-PMAD-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_call_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.call_pmad"}` | `REQ-COMMON-P2-W65B-CALL-PMAD-EFFECTS` |
 | `T-PROJECT-P2-W65B-CALL-PMAD-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/branch/test_cpu_call_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_call_pmad"}` | `REQ-PROJECT-P2-W65B-CALL-PMAD-CPU-RETIREMENT` |
+| `T-PROJECT-P2-W66A-STACK-POP-PLANNER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/address/test_stack_pop_planner.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_pop_planner"}` | `REQ-PROJECT-P2-W66A-STACK-POP-PLANNER` |
+| `T-PROJECT-P2-W66A-STACK-POP-RESOLUTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_stack_pop_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_pop_resolution"}` | `REQ-PROJECT-P2-W66A-STACK-POP-MEMORY`, `REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE` |
+| `T-PROJECT-P2-W66A-STACK-POP-ROOT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_stack_pop_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.stack_pop_root"}` | `REQ-PROJECT-P2-W66A-STACK-POP-ROOT`, `REQ-PROJECT-P2-W66A-STACK-POP-VALIDATE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-PLAN` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_mod3.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_mod3"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` | PASSING | COMMON_TI | `tests/unit/sequencer/memory/test_dual_mod3_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_resolution"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-ROOT` | PASSING | COMMON_TI | `tests/unit/sequencer/instruction/test_dual_mod3_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_root"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT` |

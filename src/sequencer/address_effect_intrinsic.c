@@ -243,11 +243,12 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     } else if (update->target == TI_C54X_ADDRESS_UPDATE_SP) {
-        if (update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS ||
-            update->ar_index != UINT8_C(0) ||
+        if (update->ar_index != UINT8_C(0) ||
             effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH ||
             update->value_before !=
-                effect->source.value.stack_push.sp_before) {
+                effect->source.value.stack_push.sp_before ||
+            (update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+             update->phase != TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     } else {
@@ -270,8 +271,12 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
         }
     }
     if (update->target == TI_C54X_ADDRESS_UPDATE_SP) {
-        /* Pushes address the post-update register, mirroring MOD3 PRE. */
-        if (effect->operand.first_word != update->value_after) {
+        /* Pushes address the post-update register (MOD3 PRE shape);
+         * pops address the pre-update register (MOD0 POST shape). */
+        if ((update->phase == TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+             effect->operand.first_word != update->value_after) ||
+            (update->phase == TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS &&
+             effect->operand.first_word != update->value_before)) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
     }

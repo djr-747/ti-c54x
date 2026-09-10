@@ -4,9 +4,10 @@
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
  * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
  * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, dual-indirect
- * MOD0/MOD1/MOD2 WORD16, X-only dual-indirect WORD16, and mode-independent
- * STACK_PUSH WORD16 memory effect carriers. Dual MOD3 remains deferred
- * with the AR0/BK indexed/circular dependency.
+ * MOD0/MOD1/MOD2 WORD16, X-only dual-indirect WORD16, and
+ * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers.
+ * Dual MOD3 remains deferred with the AR0/BK indexed/circular
+ * dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
@@ -199,6 +200,25 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         }
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect) &&
                effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
+
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16:
+        /* All-zero spec with no AR selector; READ-only with a zero staged
+         * value, no RMW, and null completion. The generic READ shape
+         * demands a completion callback, but pops consume the READ
+         * observation in the pop commit, so null completion is exact. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf != UINT8_C(0)) {
+            return false;
+        }
+        return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+               effect->value_word == UINT16_C(0) &&
+               effect->rmw_operation ==
+                   (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+               effect->transfer_reserved == UINT8_C(0) &&
+               effect->complete == NULL;
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:

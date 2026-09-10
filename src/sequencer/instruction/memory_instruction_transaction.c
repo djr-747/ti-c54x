@@ -3,8 +3,9 @@
  *
  * Owns: the allocation-free root transaction that composes memory address
  * resolution, the WORD16 reducer, static opcode completion, ordinary effects,
- * dual-WORD16 and LONG32 reducers, sequential PC/counter candidates, and
- * stack-push return-address staging with atomic SP plus pmad-target commit.
+ * dual-WORD16 and LONG32 reducers, sequential PC/counter candidates,
+ * stack-push return-address staging with atomic SP plus pmad-target
+ * commit, and stack-pop TOS-target commit from the READ observation.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -75,6 +76,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_memory_instruction_transaction *target = transaction;
     bool dual_read;
     bool stack_push;
+    bool stack_pop;
 
     if (target == NULL || instruction == NULL || input == NULL ||
         effect == NULL || state == NULL) {
@@ -97,6 +99,21 @@ ti_c54x_memory_instruction_transaction_prepare(
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
     stack_push = effect->payload.memory.address_spec.kind ==
                  TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16;
+    stack_pop = effect->payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16;
+    if (stack_pop) {
+        ti_c54x_program_pc_target_effect pop_target = {0};
+
+        /* Prove any 16-bit TOS value is plannable against the live PC
+         * carrier before any bus issue. Commit re-plans deterministically
+         * from the transaction's own READ observation, so the discarded
+         * effect is validation only. */
+        if (ti_c54x_program_pc_target_plan(state->pc_word, UINT16_C(0),
+                                           &pop_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    }
     if (stack_push) {
         ti_c54x_program_pc_target_effect call_target = {0};
         uint16_t pmad;
@@ -256,6 +273,32 @@ commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
 }
 
 static ti_c54x_memory_instruction_status
+commit_pop_architecture(ti_c54x_memory_instruction_transaction *transaction,
+                        ti_c54x_arch_state *state, uint16_t tos_value)
+{
+    const ti_c54x_sequencer_address_commit *const address_commit =
+        &transaction->candidate.address_resolution.address_commit;
+    ti_c54x_program_pc_target_effect pop_target = {0};
+    uint32_t live_pc = state->pc_word;
+
+    /* Plan the TOS target before mutating anything: a failure here is
+     * unreachable (prepare proved plannability with the same live PC)
+     * but stays transactional. */
+    if (address_commit->target != TI_C54X_ADDRESS_UPDATE_SP ||
+        ti_c54x_program_pc_target_plan(live_pc, tos_value, &pop_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK ||
+        ti_c54x_program_pc_target_apply(&live_pc, &pop_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    state->sp = address_commit->value_after;
+    state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
+    state->pc_word = live_pc;
+    transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
+    return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+}
+
+static ti_c54x_memory_instruction_status
 commit_ready(ti_c54x_memory_instruction_transaction *transaction,
              ti_c54x_arch_state *state,
              ti_c54x_accumulator_state *accumulators,
@@ -267,6 +310,10 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
     const ti_c54x_op_memory_effect *memory =
         &transaction->candidate.effect.payload.memory;
 
+    if (memory->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16) {
+        return commit_pop_architecture(transaction, state, read_value_word);
+    }
     if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
         (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
          transaction->bus_transaction.request.access ==

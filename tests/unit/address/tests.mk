@@ -21,3 +21,5 @@ $(eval $(call ti_c54x_add_test,indirect_circular_word,address,test_indirect_circ
 $(eval $(call ti_c54x_add_test,indirect_circular_contract,address,test_indirect_circular_contract.c))
 # W65A RED contract: stack-push WORD16 planner over the full SP domain.
 $(eval $(call ti_c54x_add_test,stack_push_planner,address,test_stack_push_planner.c))
+# W66A RED contract: stack-pop WORD16 planner over the full SP domain.
+$(eval $(call ti_c54x_add_test,stack_pop_planner,address,test_stack_pop_planner.c))

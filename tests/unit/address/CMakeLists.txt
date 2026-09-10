@@ -21,3 +21,5 @@ ti_c54x_add_unit_test(indirect_circular_word test_indirect_circular_word.c)
 ti_c54x_add_unit_test(indirect_circular_contract test_indirect_circular_contract.c)
 # W65A RED contract: stack-push WORD16 planner over the full SP domain.
 ti_c54x_add_unit_test(stack_push_planner test_stack_push_planner.c)
+# W66A RED contract: stack-pop WORD16 planner over the full SP domain.
+ti_c54x_add_unit_test(stack_pop_planner test_stack_pop_planner.c)
