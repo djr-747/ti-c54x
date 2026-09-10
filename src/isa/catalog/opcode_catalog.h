@@ -109,6 +109,7 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STATUS_SST ((ti_c54x_input_resource_mask)64U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_OVM ((ti_c54x_input_resource_mask)128U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_ASM ((ti_c54x_input_resource_mask)256U)
+#define TI_C54X_INPUT_RESOURCES_STACK_POINTER ((ti_c54x_input_resource_mask)512U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
@@ -157,7 +158,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_T_REGISTER | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SST | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM | \
-                                   TI_C54X_INPUT_RESOURCES_STATUS_ASM))
+                                   TI_C54X_INPUT_RESOURCES_STATUS_ASM | \
+                                   TI_C54X_INPUT_RESOURCES_STACK_POINTER))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

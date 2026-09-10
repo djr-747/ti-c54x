@@ -6,8 +6,9 @@
  *
  * Owns: the private, copied read-only input carrier supplied to every opcode
  * handler. The snapshot is borrowed for one call and no handler may retain
- * its address; raw40 values, auxiliary-register raw16 values, T raw16, and
- * status C/TC/SXM/SST/OVM values are canonical and knownness is explicit.
+ * its address; raw40 values, auxiliary-register raw16 values, T raw16,
+ * stack-pointer raw16, and status C/TC/SXM/SST/OVM values are canonical
+ * and knownness is explicit.
  * Does not own: architectural storage, decode, effects, sequencing, CPU
  * lifecycle, buses, timing, diagnostics, or public persistence formats.
  */
@@ -22,6 +23,8 @@ typedef struct ti_c54x_op_input_snapshot {
     ti_c54x_u40_t accumulator_b_raw40;
     uint16_t auxiliary_registers_raw16[8];
     uint16_t t_register_raw16;
+    uint16_t stack_pointer_raw16;
+    bool stack_pointer_known;
     uint8_t auxiliary_registers_known_mask;
     bool accumulator_a_known;
     bool accumulator_b_known;

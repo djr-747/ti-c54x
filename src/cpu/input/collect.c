@@ -1,6 +1,6 @@
 /* Module contract
  * Owns: transactional collection of catalog-declared accumulator, auxiliary,
- * T, and status C, TC, SXM, SST, or OVM resources into a copied opcode input snapshot.
+ * T, stack-pointer, and status C, TC, SXM, SST, or OVM resources into a copied opcode input snapshot.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, sequencing,
  * timing, buses, diagnostics, allocation, or global state.
  */
@@ -192,6 +192,23 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
             } else if (status != TI_C54X_ARCH_STATE_UNKNOWN) {
                 return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
             }
+        }
+    }
+
+    if ((resources & TI_C54X_INPUT_RESOURCES_STACK_POINTER) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        uint16_t raw_value = 0U;
+        const ti_c54x_arch_state_status status =
+            sources == NULL || sources->arch_state == NULL
+                ? TI_C54X_ARCH_STATE_INVALID_ARGUMENT
+                : ti_c54x_arch_state_read_sp(sources->arch_state,
+                                             &raw_value);
+
+        if (status == TI_C54X_ARCH_STATE_OK) {
+            staged.stack_pointer_raw16 = raw_value;
+            staged.stack_pointer_known = true;
+        } else if (status != TI_C54X_ARCH_STATE_UNKNOWN) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
         }
     }
 

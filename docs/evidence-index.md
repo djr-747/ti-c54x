@@ -321,6 +321,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W62-B-PMAD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W62: B pmad unconditional-branch vertical slice (planned)` |
 | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W63: BC pmad,cond conditional-branch vertical slice (planned)` |
 | `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W63: BC pmad,cond conditional-branch vertical slice (planned)` |
+| `E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W64: stack-pointer input seam vertical slice (planned)` |
+| `E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W64: stack-pointer input seam vertical slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -844,6 +846,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/dispatch/` | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | `T-PROJECT-TRUSTED-OPCODE-BINDING` |
 | `REQ-PROJECT-P2-W63-BC-PMAD-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | `T-PROJECT-P2-W63-BC-PMAD-CPU` |
 | `REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W63-BC-PMAD-PLAN-ANCHOR`, `E-PROJECT-P2-W63-BC-PMAD-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-PROJECT-P2-W64-SP-INPUT-SEAM` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/input/` | `E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR`, `E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION` | `T-PROJECT-P2-W64-SP-INPUT-SEAM` |
 
 ## Tests
 
@@ -1194,6 +1197,7 @@ exist in the repository.
 | `T-COMMON-P2-W63-BC-PMAD-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_bc_pmad_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bc_pmad_decode"}` | `REQ-COMMON-P2-W63-BC-PMAD-DECODE` |
 | `T-COMMON-P2-W63-BC-PMAD-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_bc_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bc_pmad"}` | `REQ-COMMON-P2-W63-BC-PMAD-EFFECTS` |
 | `T-PROJECT-P2-W63-BC-PMAD-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/branch/test_cpu_bc_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_bc_pmad"}` | `REQ-PROJECT-P2-W63-BC-PMAD-CPU-RETIREMENT` |
+| `T-PROJECT-P2-W64-SP-INPUT-SEAM` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/input/test_collect_stack_pointer.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.collect_stack_pointer"}` | `REQ-PROJECT-P2-W64-SP-INPUT-SEAM` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-PLAN` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_mod3.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_mod3"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` | PASSING | COMMON_TI | `tests/unit/sequencer/memory/test_dual_mod3_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_resolution"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-ROOT` | PASSING | COMMON_TI | `tests/unit/sequencer/instruction/test_dual_mod3_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_root"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT` |

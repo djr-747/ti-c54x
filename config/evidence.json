@@ -3893,6 +3893,28 @@
       "assertion": "W63 activates the BC_PMAD row with condition-code extraction, per-row identity validation, conditional PC_WRITE/NONE effect emission, and generic CPU retirement through the W62 target route and the sequential bridge with no opcode-specific MEMORY branch, no run.c change, and no public ABI change. FORM-T2-12-04 stays inventory SUBSET. Realized 146 catalog rows, ID_COUNT 147, 5,566 lookup entries, 146 bindings, family coverage 54/205, and 33/205 strict complete-form coverage."
     },
     {
+      "id": "E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W64: stack-pointer input seam vertical slice (planned)"},
+      "assertion": "W64 is the planned stack-pointer input seam contract: one new input resource bit STACK_POINTER with snapshot stack_pointer_raw16 plus stack_pointer_known fields, a collect.c arm reading the architectural SP with explicit knownness, and KNOWN_MASK inclusion. The op-input carrier ABI grows to the verified LP64/ILP32 sizes. Common reset leaves SP unknown per the zero-plus-unknown policy, and invalid collection requests leave caller-owned output unchanged. No catalog, layout, handler, effect, inventory, or retirement change is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W64: stack-pointer input seam vertical slice (planned)"},
+      "assertion": "W64 activates stack-pointer input collection with copied SP snapshots and transactional unknown-SP rejection at collection time, with catalog, lookup, bindings, and family coverage unchanged."
+    },
+    {
       "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
       "immutable": true,
       "state": "PINNED",
@@ -8289,6 +8311,16 @@
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
+      "id": "REQ-PROJECT-P2-W64-SP-INPUT-SEAM",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect the architectural stack pointer into copied stack_pointer_raw16 plus stack_pointer_known snapshot fields under the STACK_POINTER resource bit with transactional unknown-SP rejection and no invented reset value.",
+      "evidence_ids": ["E-PROJECT-P2-W64-SP-INPUT-SEAM-PLAN-ANCHOR", "E-PROJECT-P2-W64-SP-INPUT-SEAM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W64-SP-INPUT-SEAM"]
+    },
+    {
       "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -11110,6 +11142,14 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_bc_pmad.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_bc_pmad"},
       "requirement_ids": ["REQ-PROJECT-P2-W63-BC-PMAD-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-PROJECT-P2-W64-SP-INPUT-SEAM",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_stack_pointer.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.collect_stack_pointer"},
+      "requirement_ids": ["REQ-PROJECT-P2-W64-SP-INPUT-SEAM"]
     },
     {
       "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",
