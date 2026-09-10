@@ -8408,3 +8408,80 @@ rewritten after publication.
   `memory_instruction_transaction.c` before 800 lines;
   `make test` recipe order still lets C regressions hide
   behind quality failures.
+
+## 2026-09-11 — P2-W67C CALLD delayed-call slice
+
+- Implementation commit `b487f05` binds one Table 2-13 row under
+  `FORM-T2-13-02`: `CALLD` at first-word value `0xF274` under
+  mask `0xFFFF`, two program words, one encoding, copied 16-bit
+  pmad, reusing `BRANCH_PMAD16` with `STACK_POINTER` inputs and
+  `INELIGIBLE` repeatability (manual note; TI evidence reused
+  from the W65B `CALL[D]` opcode, semantics, and nonrepeatable
+  records, so no new TI record was needed). The pure handler
+  (`src/isa/ops/branch/op_calld.[ch]`) demands known SP and
+  stages a `MEMORY` `STACK_PUSH_DELAYED` WRITE; dispatch binds
+  through the macro tables with no per-row wiring. The W67A
+  root stages `PC+4` into TOS with immediate SP commit and
+  sequential PC advance, reporting pmad deferred; the W67B run
+  loop adopts the report into the CPU-owned countdown unchanged,
+  so no `run.c` change was admitted. `FORM-T2-13-02` stays
+  `SUBSET` with an `ABSOLUTE_PMAD_DELAYED` binding (a
+  `COMPLETE` form remains one production catalog row per the
+  inventory schema). The W65B `test_call_pmad_decode.c`
+  deferred pin now decodes `CALLD` under the cross-slice hazard
+  rule (bit-9 near-miss updated; the new decode test pins the
+  genuine `SFTL_ACC`, `AND_IMMEDIATE_SHIFT`,
+  `XOR_IMMEDIATE_SHIFT`, and `OR_IMMEDIATE_SHIFT16` siblings,
+  each verified against the catalog rows).
+- The W65B `REQ-COMMON-P2-W65B-CALL-PMAD-DECODE` registry claim
+  is corrected in place (it pinned `0xF274` to `UNKNOWN_WORD`,
+  which this slice falsifies): it now states the Z=1 word
+  decodes through the `CALLD` row, backed by the existing
+  `E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27` record. The old
+  PINNED opcode assertion ("Z=1 ... stays deferred to the delay
+  seam") is retained under its still-true reading: `CALLD` runs
+  through the delay seam built in W67A. Nothing else historical
+  was rewritten.
+- Evidence: plan-anchor plus activation records, six
+  requirements (`REQ-COMMON-P2-W67C-CALLD-CATALOG`, `-DECODE`,
+  `-EFFECTS`, `REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING`,
+  `-CPU-RETIREMENT`, `-INVENTORY`), and four RED contracts
+  (`tests/unit/isa/catalog/test_calld_metadata.c`,
+  `tests/unit/isa/decode/test_calld_decode.c`,
+  `tests/unit/isa/ops/branch/test_calld.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_calld.c`) covering
+  metadata/disjointness, decode with four genuine siblings,
+  handler staging with checked/trusted/dispatch parity, and CPU
+  retirement (worked-example PC+4 capture, two 1-word slots,
+  one 2-word slot with real `LD` execution, inner-branch
+  takeover, oversize saturation, WAIT resume, budget-split
+  persistence, reset clearing, slot-fetch fault hold, DATA and
+  second-word fault transactionality, unknown-SP rejection,
+  full preservation). Registry closure is 299 evidence records,
+  457 requirements (426 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 370 tests (370 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 342 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK; knobs, source boundaries
+  (only pre-existing SIZE_REVIEW warnings plus the new
+  648-line `test_cpu_calld.c` warning, under the 800-line
+  split bar), manifests, evidence, inventory (realized 150
+  catalog rows, `ID_COUNT=151`, 5,570 lookup entries, 150
+  bindings, 117 SUBSET bindings, family coverage 56/205 at
+  27.317%, 33/205 strict), and observer-disabled structure
+  pass. Focused ASan/UBSan GREEN for the four new tests plus
+  the updated decode pin (instrumentation verified in the
+  binaries; an early flag-only rebuild attempt that relinked
+  nothing was discarded for a forced `-B` rebuild). Fresh
+  CMake/CTest Debug passes 349/349; full sanitizer CMake/CTest
+  passes 348/348 excluding `quality.python` (sanitizer tree on
+  home disk; scratch removed). Row-count pins advanced to 150
+  rows, 150 bindings, 5,570 entries, and 117 SUBSET across the
+  contract suites plus `ID_COUNT=151` across the C metadata
+  suites. No knob was added or changed. Nothing was pushed.
+- Follow-up work: wave-67 delay family is complete (`RETD` +
+  `CALLD`); `RETE`/`RETF` remain deferred with cross-slice
+  hazard pins. Open: split decision for
+  `memory_instruction_transaction.c` before 800 lines;
+  `make test` recipe order still lets C regressions hide
+  behind quality failures.
