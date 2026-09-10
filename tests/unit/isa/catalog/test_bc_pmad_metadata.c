@@ -21,7 +21,7 @@
 
 static const uint16_t BC_PMAD_VALUE = UINT16_C(0xF800);
 static const uint16_t BC_PMAD_MASK = UINT16_C(0xFF00);
-/* Bit 9 set selects the deferred delayed BCD variant. */
+/* Bit 9 set selects the BCD sibling row bound in W69. */
 static const uint16_t BC_DELAYED_WORD = UINT16_C(0xFA00);
 
 static bool
@@ -36,7 +36,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_BC_PMAD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 152);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 153);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_BC_PMAD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == BC_PMAD_VALUE);

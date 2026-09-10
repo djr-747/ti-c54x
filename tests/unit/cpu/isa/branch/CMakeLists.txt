@@ -3,6 +3,8 @@ ti_c54x_add_unit_test(cpu_b_pmad test_cpu_b_pmad.c)
 # W68 RED contract: BD CPU retirement.
 ti_c54x_add_unit_test(cpu_bd test_cpu_bd.c)
 ti_c54x_add_unit_test(cpu_bc_pmad test_cpu_bc_pmad.c)
+# W69 RED contract: BCD CPU retirement.
+ti_c54x_add_unit_test(cpu_bcd test_cpu_bcd.c)
 ti_c54x_add_unit_test(cpu_call_pmad test_cpu_call_pmad.c)
 ti_c54x_add_unit_test(cpu_ret test_cpu_ret.c)
 # W67B RED contract: RETD CPU retirement.

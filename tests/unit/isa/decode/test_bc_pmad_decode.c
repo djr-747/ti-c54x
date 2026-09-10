@@ -4,8 +4,8 @@
  * Owns: executable proof that all 256 two-word BC pmad,cond first
  * words classify through the generic decoder, copy their complete
  * bundles and scalar metadata, extract the condition code then the
- * raw 16-bit pmad extension, pin the deferred delayed word to
- * UNKNOWN_WORD, and reject malformed inputs transactionally.
+ * raw 16-bit pmad extension, pin the delayed BCD sibling word,
+ * and reject malformed inputs transactionally.
  * Does not own: catalog generation, condition evaluation, PC writes,
  * CPU/state mutation, fetch or bus behavior, sequencing, timing, or
  * handler bodies.
@@ -22,7 +22,7 @@
 #include <string.h>
 
 static const uint16_t BC_PMAD_VALUE = UINT16_C(0xF800);
-/* Bit 9 set selects the deferred delayed BCD variant. */
+/* Bit 9 set selects the BCD sibling row bound in W69. */
 static const uint16_t BC_DELAYED_WORD = UINT16_C(0xFA00);
 
 static uint16_t
@@ -144,38 +144,44 @@ test_malformed_inputs_reject_transactionally(void)
 }
 
 static void
-test_delayed_word_is_unknown(void)
+test_delayed_word_decodes_bcd(void)
 {
-    /* The deferred delayed BCD variant decodes UNKNOWN_WORD today; the
-     * future BCD slice updates this pin under the cross-slice hazard
-     * rule. */
+    /* The W69 BCD row claims the bit-9 word; the W63 UNKNOWN pin
+     * updated here under the cross-slice hazard rule. */
     const ti_c54x_decode_result result =
         ti_c54x_decode_first_word(BC_DELAYED_WORD);
 
-    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_BCD);
+    TI_C54X_TEST_CHECK(result.first_word == BC_DELAYED_WORD);
+    TI_C54X_TEST_CHECK(result.program_word_count == UINT8_C(2));
 }
 
 static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 leaves only the condition byte variable. Flipping
-     * fixed bit 12 lands on the LD_K sibling and flipping fixed bit 10
-     * lands on the RET sibling; all other fixed-bit flips (including
-     * the deferred delayed bit 9) must miss every row. */
+     * fixed bit 12 lands on the LD_K sibling, flipping fixed bit 10
+     * lands on the RET sibling, and flipping fixed bit 9 lands on
+     * the W69 BCD sibling; all other fixed-bit flips must miss
+     * every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x0200),
+        UINT16_C(0x0100),
         UINT16_C(0x0800), UINT16_C(0x2000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result ld_k_sibling =
         ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x1000)));
     const ti_c54x_decode_result ret_sibling =
         ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x0400)));
+    const ti_c54x_decode_result bcd_sibling =
+        ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x0200)));
 
     TI_C54X_TEST_CHECK(ld_k_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(ld_k_sibling.id == TI_C54X_OPCODE_ID_LD_K);
     TI_C54X_TEST_CHECK(ret_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(ret_sibling.id == TI_C54X_OPCODE_ID_RET);
+    TI_C54X_TEST_CHECK(bcd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(bcd_sibling.id == TI_C54X_OPCODE_ID_BCD);
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -205,7 +211,7 @@ main(void)
         }
     }
     test_malformed_inputs_reject_transactionally();
-    test_delayed_word_is_unknown();
+    test_delayed_word_decodes_bcd();
     test_fixed_bit_near_misses();
     return 0;
 }

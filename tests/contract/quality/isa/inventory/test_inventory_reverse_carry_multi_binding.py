@@ -11,7 +11,7 @@ class ReverseCarryInventoryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls): cls.root=Path(__file__).resolve().parents[5]; cls.path=cls.root/"config/isa/inventory.json"
  def test_projection_and_bindings(self):
-  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),151)
+  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),152)
   by={f["id"]:f for f in d["forms"]}
   for fam,fid in FAMILIES.items():
    self.assertEqual(len([b for b in d["catalog_bindings"] if b["form_id"]==fid]),7)

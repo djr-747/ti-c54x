@@ -1325,7 +1325,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "BC_PMAD"
+        "BC_PMAD",
+        "BCD"
       ]
     },
     {
@@ -3071,6 +3072,7 @@
     {"catalog_symbol": "B_PMAD", "form_id": "FORM-T2-12-01", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"},
     {"catalog_symbol": "BD", "form_id": "FORM-T2-12-01", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
     {"catalog_symbol": "BC_PMAD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND"},
+    {"catalog_symbol": "BCD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND_DELAYED"},
     {"catalog_symbol": "CALL_PMAD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"},
     {"catalog_symbol": "CALLD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
     {"catalog_symbol": "RET", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},

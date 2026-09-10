@@ -153,7 +153,8 @@ static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFFFF leaves no operand bit variable. Clearing fixed bit
-     * 9 lands on the CALL_PMAD sibling, flipping fixed bit 7 lands
+     * 9 lands on the CALL_PMAD sibling, flipping fixed bit 11 lands
+     * on the W69 BCD sibling, flipping fixed bit 7 lands
      * on SFTL_ACC, flipping fixed bit 6 lands on
      * AND_IMMEDIATE_SHIFT, flipping fixed bit 5 lands on
      * XOR_IMMEDIATE_SHIFT, and flipping fixed bit 4 lands on
@@ -162,7 +163,7 @@ test_fixed_bit_near_misses(void)
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result call_sibling =
         ti_c54x_decode_first_word(
@@ -182,6 +183,15 @@ test_fixed_bit_near_misses(void)
 
     TI_C54X_TEST_CHECK(call_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(call_sibling.id == TI_C54X_OPCODE_ID_CALL_PMAD);
+    {
+        const ti_c54x_decode_result bcd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(CALLD_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(bcd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(bcd_sibling.id == TI_C54X_OPCODE_ID_BCD);
+    }
     TI_C54X_TEST_CHECK(sftl_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sftl_sibling.id == TI_C54X_OPCODE_ID_SFTL_ACC);
     TI_C54X_TEST_CHECK(and_sibling.status == TI_C54X_DECODE_STATUS_OK);

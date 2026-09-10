@@ -24,6 +24,8 @@ ti_c54x_add_unit_test(b_pmad_metadata test_b_pmad_metadata.c)
 # W68 RED contract: BD row metadata.
 ti_c54x_add_unit_test(bd_metadata test_bd_metadata.c)
 ti_c54x_add_unit_test(bc_pmad_metadata test_bc_pmad_metadata.c)
+# W69 RED contract: BCD row metadata.
+ti_c54x_add_unit_test(bcd_metadata test_bcd_metadata.c)
 ti_c54x_add_unit_test(ldr_smem_metadata test_ldr_smem_metadata.c)
 ti_c54x_add_unit_test(ld_xmem_shift_metadata test_ld_xmem_shift_metadata.c)
 ti_c54x_add_unit_test(ld_src_asm_metadata test_ld_src_asm_metadata.c)
