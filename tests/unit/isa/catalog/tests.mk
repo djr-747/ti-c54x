@@ -24,6 +24,8 @@ $(eval $(call ti_c54x_add_test,b_pmad_metadata,isa/catalog,test_b_pmad_metadata.
 $(eval $(call ti_c54x_add_test,bc_pmad_metadata,isa/catalog,test_bc_pmad_metadata.c))
 # W69 RED contract: BCD catalog row.
 $(eval $(call ti_c54x_add_test,bcd_metadata,isa/catalog,test_bcd_metadata.c))
+# W70 RED contract: BANZ catalog row.
+$(eval $(call ti_c54x_add_test,banz_metadata,isa/catalog,test_banz_metadata.c))
 $(eval $(call ti_c54x_add_test,ldr_smem_metadata,isa/catalog,test_ldr_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_xmem_shift_metadata,isa/catalog,test_ld_xmem_shift_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_src_asm_metadata,isa/catalog,test_ld_src_asm_metadata.c))

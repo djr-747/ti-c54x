@@ -94,6 +94,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16] = {
             TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16, UINT8_C(2),
             &ti_c54x_branch_cond_pmad16_set},
+        [TI_C54X_OPERAND_LAYOUT_BRANCH_SIND_PMAD16] = {
+            TI_C54X_OPERAND_LAYOUT_BRANCH_SIND_PMAD16, UINT8_C(2),
+            &ti_c54x_branch_sind_pmad16_set},
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
             UINT8_C(2), &ti_c54x_accumulator_source_destination_shift4_extension16_set},
@@ -246,6 +249,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_branch_cond_pmad16_set;
+    case TI_C54X_OPERAND_LAYOUT_BRANCH_SIND_PMAD16:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_branch_sind_pmad16_set;
     case TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_max_min_destination_set;

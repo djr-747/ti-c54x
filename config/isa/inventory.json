@@ -1312,8 +1312,10 @@
       "mnemonic": "BANZ",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "BANZ"
+      ]
     },
     {
       "id": "FORM-T2-12-04",
@@ -3073,6 +3075,7 @@
     {"catalog_symbol": "BD", "form_id": "FORM-T2-12-01", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
     {"catalog_symbol": "BC_PMAD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND"},
     {"catalog_symbol": "BCD", "form_id": "FORM-T2-12-04", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND_DELAYED"},
+    {"catalog_symbol": "BANZ", "form_id": "FORM-T2-12-03", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_AUXILIARY"},
     {"catalog_symbol": "CALL_PMAD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"},
     {"catalog_symbol": "CALLD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
     {"catalog_symbol": "RET", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},

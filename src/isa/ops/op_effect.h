@@ -24,9 +24,16 @@
  * address for a delayed branch; sequential-PC commit plus countdown
  * arming belongs to the CPU retirement route, which replaces any
  * pending countdown under the last-wins rule.
- * Callers own each effect object.
+ * BRANCH_AUXILIARY carries one auxiliary-register index with its
+ * staged post-decrement value-after, an update flag, the taken
+ * outcome, the delayed-branch discriminator (always false: BANZ is
+ * non-delayed), and the copied 16-bit pmad; AR writeback and the
+ * taken ? pmad : sequential PC commit belong to the CPU retirement
+ * route, which advances the pending countdown with the taken
+ * outcome as the redirect flag. Callers own each effect object.
  */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "foundation/arithmetic40.h"
@@ -45,7 +52,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_MEMORY = 5,
     TI_C54X_OP_EFFECT_STATUS_BIT_WRITE = 6,
     TI_C54X_OP_EFFECT_PC_WRITE = 7,
-    TI_C54X_OP_EFFECT_DELAYED_PC_WRITE = 8
+    TI_C54X_OP_EFFECT_DELAYED_PC_WRITE = 8,
+    TI_C54X_OP_EFFECT_BRANCH_AUXILIARY = 9
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -113,6 +121,15 @@ typedef struct ti_c54x_op_delayed_pc_write_effect {
     uint16_t pmad;
 } ti_c54x_op_delayed_pc_write_effect;
 
+typedef struct ti_c54x_op_branch_auxiliary_effect {
+    uint8_t ar_index;
+    uint16_t value_after;
+    bool update;
+    bool taken;
+    bool delayed;
+    uint16_t pmad;
+} ti_c54x_op_branch_auxiliary_effect;
+
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
     ti_c54x_op_status_field_write_effect status_field_write;
@@ -122,6 +139,7 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_memory_effect memory;
     ti_c54x_op_pc_write_effect pc_write;
     ti_c54x_op_delayed_pc_write_effect delayed_pc_write;
+    ti_c54x_op_branch_auxiliary_effect branch_auxiliary;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {
