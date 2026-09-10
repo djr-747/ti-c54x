@@ -75,6 +75,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5,
     /* One-word destination-accumulator plus unsigned 8-bit immediate. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_K8,
+    /* Two-word destination-accumulator plus copied 16-bit extension. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_LK16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

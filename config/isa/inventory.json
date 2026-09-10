@@ -1804,9 +1804,11 @@
       "table_ordinal": 9,
       "mnemonic": "LD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_LK_16"
+      ]
     },
     {
       "id": "FORM-T2-19-10",
@@ -2702,6 +2704,12 @@
     {
       "catalog_symbol": "LD_SRC_ASM",
       "form_id": "FORM-T2-19-10",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_LK_16",
+      "form_id": "FORM-T2-19-09",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     },
