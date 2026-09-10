@@ -29,6 +29,11 @@ because the direct TI fetch was not attempted first; prefer
 re-fetching those two from the official URLs above when refreshing,
 and update the hashes here.
 
-Text extraction used for evidence work:
+Text extractions (`spru172c.txt`, `spru179c.txt`, `spru131g.txt`,
+74,350 lines total) are pre-generated here with the same command and
+are equally git-ignored — evidence work greps them directly instead
+of re-extracting every turn:
 
-    pdftotext -layout vendor/ti/spru172c.pdf /tmp/spru172c.txt
+    pdftotext -layout vendor/ti/spru172c.pdf vendor/ti/spru172c.txt
+    pdftotext -layout vendor/ti/spru179c.pdf vendor/ti/spru179c.txt
+    pdftotext -layout vendor/ti/spru131g.pdf vendor/ti/spru131g.txt
