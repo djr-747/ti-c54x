@@ -3,8 +3,9 @@
  * orchestration, and the ordinary opcode execution loop. It resumes the
  * embedded memory root before fetching and accounts root deltas exactly once.
  * It also adopts deferred-branch reports into the CPU-owned two-word
- * countdown and advances that countdown after retirements that arm
- * nothing new.
+ * countdown, retires delayed PC writes with sequential advance plus
+ * countdown arming, and advances that countdown after retirements
+ * that arm nothing new.
  * Does not own: CPU lifetime/storage, bus descriptor validation, lifecycle
  * cancellation, trace assembly, or opcode semantics.
  */
@@ -415,6 +416,27 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
+        /* The sequential successor is prepared once per retirement for
+         * every effect kind; the ordinary and delayed-PC routes commit
+         * it while the MEMORY and immediate-PC routes ignore it. The
+         * trusted hot path keeps a single preparation plan: failure is
+         * reported only by the routes that advance sequentially, so
+         * top-of-memory MEMORY and immediate branches keep their
+         * existing behavior. Folding apply into the shared status is
+         * exact: every apply failure maps through bridge_status_to_stop
+         * to the same INVALID_STATE the split checks produced. */
+        bridge_status = ti_c54x_program_pc_bridge_plan_trusted(
+            cpu->arch_state.pc_word,
+            packet.instruction.bundle.program_word_count,
+            &pc_effect);
+        candidate_pc = cpu->arch_state.pc_word;
+        if (bridge_status == TI_C54X_PROGRAM_PC_BRIDGE_OK &&
+            ti_c54x_program_pc_bridge_apply_trusted(
+                &candidate_pc, &pc_effect) !=
+                TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+            bridge_status = TI_C54X_PROGRAM_PC_BRIDGE_STALE_SOURCE;
+        }
+
         /* MEMORY effects own the persistent root transaction. The fetch-side
          * attempt was accounted immediately before the program read, so the
          * root receives the pre-attempt totals and publishes only its READY
@@ -559,6 +581,42 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             continue;
         }
 
+        /* Delayed PC writes retire with sequential advance and arm the
+         * CPU-owned countdown with the copied pmad, replacing any
+         * pending countdown under the last-wins rule; the arming
+         * instruction consumes no delay-slot words itself. The target
+         * planner validates the absolute successor before any commit;
+         * a full 16-bit pmad is always encodable, so planning fails
+         * only on caller-argument defects. A delayed branch inside
+         * delay slots is TI-forbidden; the inner arming wins
+         * deterministically here. No MEMORY endpoint, no WAIT/FAULT,
+         * and no status/accumulator/T effect is admitted. */
+        if (effect.kind == TI_C54X_OP_EFFECT_DELAYED_PC_WRITE) {
+            ti_c54x_program_pc_target_effect target_effect;
+            ti_c54x_program_pc_target_status target_status;
+
+            target_status = ti_c54x_program_pc_target_plan(
+                cpu->arch_state.pc_word,
+                effect.payload.delayed_pc_write.pmad, &target_effect);
+            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
+                return stop_result(cpu, target_status_to_stop(target_status),
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+                return stop_result(cpu, bridge_status_to_stop(bridge_status),
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            cpu->arch_state.pc_word = candidate_pc;
+            cpu->instructions_retired++;
+            instructions_retired++;
+            (void)ti_c54x_sequencer_delayed_branch_arm(
+                &cpu->delayed_branch,
+                effect.payload.delayed_pc_write.pmad);
+            continue;
+        }
+
         if (ti_c54x_effect_transaction_stage(
                 &effect, &cpu->arch_state.status, &cpu->accumulators,
                 &cpu->t_register, &transaction) !=
@@ -567,21 +625,8 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
-        candidate_pc = cpu->arch_state.pc_word;
-
-        bridge_status = ti_c54x_program_pc_bridge_plan_trusted(
-            cpu->arch_state.pc_word,
-            packet.instruction.bundle.program_word_count,
-            &pc_effect);
         if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
             return stop_result(cpu, bridge_status_to_stop(bridge_status),
-                               TI_C54X_BUS_OK, instructions_attempted,
-                               instructions_retired);
-        }
-        bridge_status = ti_c54x_program_pc_bridge_apply_trusted(
-            &candidate_pc, &pc_effect);
-        if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }

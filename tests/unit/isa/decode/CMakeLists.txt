@@ -28,6 +28,8 @@ ti_c54x_add_unit_test(ld_k_decode test_ld_k_decode.c)
 ti_c54x_add_unit_test(ld_lk16_decode test_ld_lk16_decode.c)
 ti_c54x_add_unit_test(ld_lk_shift_decode test_ld_lk_shift_decode.c)
 ti_c54x_add_unit_test(b_pmad_decode test_b_pmad_decode.c)
+# W68 RED contract: BD decode with near-miss audit.
+ti_c54x_add_unit_test(bd_decode test_bd_decode.c)
 ti_c54x_add_unit_test(bc_pmad_decode test_bc_pmad_decode.c)
 ti_c54x_add_unit_test(ldr_smem_decode test_ldr_smem_decode.c)
 ti_c54x_add_unit_test(ld_xmem_shift_decode test_ld_xmem_shift_decode.c)
