@@ -5,3 +5,5 @@ $(eval $(call ti_c54x_add_test,call_pmad,isa/ops/branch,test_call_pmad.c))
 $(eval $(call ti_c54x_add_test,ret,isa/ops/branch,test_ret.c))
 # W67B RED contract: RETD effects.
 $(eval $(call ti_c54x_add_test,retd,isa/ops/branch,test_retd.c))
+# W67C RED contract: CALLD effects.
+$(eval $(call ti_c54x_add_test,calld,isa/ops/branch,test_calld.c))

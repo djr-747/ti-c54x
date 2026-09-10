@@ -5,3 +5,5 @@ ti_c54x_add_unit_test(call_pmad test_call_pmad.c)
 ti_c54x_add_unit_test(ret test_ret.c)
 # W67B RED contract: RETD effects.
 ti_c54x_add_unit_test(retd test_retd.c)
+# W67C RED contract: CALLD effects.
+ti_c54x_add_unit_test(calld test_calld.c)

@@ -4197,6 +4197,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W67B: RETD vertical slice (planned)"},
       "assertion": "W67B activates the RETD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated RET decode pin, with the bit-9 word claimed from UNKNOWN, row-count pins advanced to 149 rows with 5,569 lookup entries and 149 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-15-04 remaining SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P2-W67C-CALLD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W67C: CALLD vertical slice (planned)"},
+      "assertion": "W67C is the planned CALLD vertical slice: one Table 2-13 row under FORM-T2-13-02 at first-word value 0xF274 under mask 0xFFFF with two program words, one encoding, and the copied 16-bit pmad, reusing BRANCH_PMAD16 with STACK_POINTER inputs and INELIGIBLE repeatability; a pure branch handler staging a MEMORY STACK_PUSH_DELAYED WRITE; catalog macro dispatch binding; CPU retirement through the unchanged W67A root and W67B countdown wiring; and FORM-T2-13-02 inventory at SUBSET. No knob, layout, timing, or device claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W67C-CALLD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W67C: CALLD vertical slice (planned)"},
+      "assertion": "W67C activates the CALLD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated CALL decode pin, with the bit-9 word claimed from UNKNOWN, row-count pins advanced to 150 rows with 5,570 lookup entries and 150 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-13-02 remaining SUBSET."
     }
   ],
   "requirements": [
@@ -8708,7 +8730,7 @@
       "target_id": "C54X_CORE_COMMON_V1",
       "claim_kind": "ARCHITECTURAL",
       "owner_path": "src/isa/decode/",
-      "claim": "Decode the CALL_PMAD first word through the generic decoder with copied bundle and scalar metadata, extracting the raw 16-bit pmad extension and pinning the deferred delayed word 0xF274 to UNKNOWN_WORD.",
+      "claim": "Decode the CALL_PMAD first word through the generic decoder with copied bundle and scalar metadata, extracting the raw 16-bit pmad extension; the Z=1 word 0xF274 decodes through the CALLD row bound in W67C.",
       "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27"],
       "test_ids": ["T-COMMON-P2-W65B-CALL-PMAD-DECODE"]
     },
@@ -8985,6 +9007,78 @@
       "evidence_ids": [
         "E-PROJECT-P2-W67B-RETD-PLAN-ANCHOR",
         "E-PROJECT-P2-W67B-RETD-ACTIVATION"
+      ],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W67C-CALLD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the CALLD row at first-word value 0xF274 under mask 0xFFFF with two program words, one encoding, and the BRANCH_PMAD16 pmad layout with STACK_POINTER input resources and INELIGIBLE repeatability.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27"],
+      "test_ids": ["T-COMMON-P2-W67C-CALLD-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W67C-CALLD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the CALLD first word through the generic decoder with copied bundle and scalar metadata, extracting the raw 16-bit pmad extension.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CALL-OPCODE-P4-27"],
+      "test_ids": ["T-COMMON-P2-W67C-CALLD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W67C-CALLD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Stage the CALLD effect as a MEMORY STACK_PUSH_DELAYED WRITE with a zero staged value and null completion, gated on a known stack pointer, staging no status, accumulator, or T-register effect.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CALL-SEMANTICS-P4-27-4-28",
+        "E-TI-C54X-SPRU172C-S4-CALL-NONREPEATABLE-P4-27"
+      ],
+      "test_ids": ["T-COMMON-P2-W67C-CALLD-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the CALLD catalog row to its checked and trusted leaves through the macro dispatch tables with no per-row handwritten wiring.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67C-CALLD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67C-CALLD-ACTIVATION"
+      ],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67C-CALLD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire CALLD on the CPU through the unchanged W67A delayed-push root and W67B countdown wiring, staging PC+4 into TOS with immediate SP commit and sequential PC advance, draining two slot words before taking the pmad branch, with WAIT/FAULT/budget persistence, reset clearing, inner-branch takeover, and saturation defined.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67C-CALLD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67C-CALLD-ACTIVATION"
+      ],
+      "test_ids": ["T-PROJECT-P2-W67C-CALLD-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W67C-CALLD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Carry the CALLD symbol in FORM-T2-13-02 with SUBSET coverage and an ABSOLUTE_PMAD_DELAYED binding through the inventory registry.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W67C-CALLD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W67C-CALLD-ACTIVATION"
       ],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
@@ -10331,7 +10425,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -10795,7 +10889,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -11964,6 +12058,38 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_retd.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_retd"},
       "requirement_ids": ["REQ-PROJECT-P2-W67B-RETD-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W67C-CALLD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_calld_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.calld_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W67C-CALLD-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W67C-CALLD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_calld_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.calld_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W67C-CALLD-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W67C-CALLD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_calld.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.calld"},
+      "requirement_ids": ["REQ-COMMON-P2-W67C-CALLD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W67C-CALLD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_calld.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_calld"},
+      "requirement_ids": ["REQ-PROJECT-P2-W67C-CALLD-CPU-RETIREMENT"]
     }
   ]
 }

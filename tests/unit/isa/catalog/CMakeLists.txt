@@ -61,3 +61,6 @@ ti_c54x_add_unit_test(ret_metadata
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)
+# W67C RED contract: CALLD row metadata.
+ti_c54x_add_unit_test(calld_metadata
+                      test_calld_metadata.c)

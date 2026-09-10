@@ -35,6 +35,7 @@
 #include "branch/op_b_pmad.h"
 #include "branch/op_bc_pmad.h"
 #include "branch/op_call_pmad.h"
+#include "branch/op_calld.h"
 #include "branch/op_ret.h"
 #include "branch/op_retd.h"
 #include "op_nop.h"

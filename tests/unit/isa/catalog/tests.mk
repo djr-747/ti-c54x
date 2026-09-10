@@ -47,3 +47,5 @@ $(eval $(call ti_c54x_add_test,call_pmad_metadata,isa/catalog,test_call_pmad_met
 $(eval $(call ti_c54x_add_test,ret_metadata,isa/catalog,test_ret_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))
+# W67C RED contract: CALLD catalog row.
+$(eval $(call ti_c54x_add_test,calld_metadata,isa/catalog,test_calld_metadata.c))

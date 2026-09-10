@@ -61,3 +61,5 @@ ti_c54x_add_unit_test(call_pmad_decode test_call_pmad_decode.c)
 ti_c54x_add_unit_test(ret_decode test_ret_decode.c)
 # W67B RED contract: RETD decode with near-miss audit.
 ti_c54x_add_unit_test(retd_decode test_retd_decode.c)
+# W67C RED contract: CALLD decode with near-miss audit.
+ti_c54x_add_unit_test(calld_decode test_calld_decode.c)

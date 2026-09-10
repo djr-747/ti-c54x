@@ -55,3 +55,5 @@ $(eval $(call ti_c54x_add_test,call_pmad_decode,isa/decode,test_call_pmad_decode
 $(eval $(call ti_c54x_add_test,ret_decode,isa/decode,test_ret_decode.c))
 # W67B RED contract: RETD decode.
 $(eval $(call ti_c54x_add_test,retd_decode,isa/decode,test_retd_decode.c))
+# W67C RED contract: CALLD decode.
+$(eval $(call ti_c54x_add_test,calld_decode,isa/decode,test_calld_decode.c))
