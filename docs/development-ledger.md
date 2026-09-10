@@ -8659,3 +8659,85 @@ rewritten after publication.
   `run.c` at 667 approaching review range); `make test`
   recipe order still lets C regressions hide behind quality
   failures.
+
+## 2026-09-11 — P2-W70 BANZ auxiliary-register-branch slice
+
+- Implementation commit `1b0efb6` binds one Table 2-12 row
+  under `FORM-T2-12-03`: `BANZ` at first-word value `0x6C00`
+  under mask `0xFF00`, two program words, 256 encodings, copied
+  Sind byte plus 16-bit pmad, using the new
+  `BRANCH_SIND_PMAD16` layout (own set object; piece shape
+  mirrors the condition layout so Sind/cond namespaces stay
+  separate) with `AUXILIARY_REGISTERS` inputs and `INELIGIBLE`
+  repeatability. Three new TI records carry the opcode diagram,
+  the always-applied Sind side effect with worked examples, and
+  the nonrepeatable note (SPRU172C §4 `BANZ[D]`, pp. 4-16–4-17).
+- Decision and correction: the W70 plan anchor draft cited mask
+  `0xFD00` alongside "256 encodings" and "Z=0 fixed". The
+  catalog schema rejects overlapping rows, so a future `BANZD`
+  `0x6E00`/`0xFF00` row could not coexist with an `0xFD00`
+  `BANZ` row; the Z bit stays fixed per the `BC`/`BCD`
+  precedent, and the anchor heading is left immutable with this
+  correction recorded here. The bit-9 `BANZD` words stay pinned
+  `UNKNOWN` for W71, which reuses the seam unchanged. A second
+  correction: the `1b0efb6` message parenthetical misstates the
+  requirement tally; the true closure is 475 requirements (444
+  `IMPLEMENTED`, 0 `PLANNED`, 31 `UNRESOLVED`), 308 evidence
+  records, 382 tests (382 `PASSING`, 0 `PLANNED`).
+- Semantics: the Sind side effect always applies
+  (post-decrement value-after on MOD1, observation on MOD0,
+  even when not taken); taken/not-taken emit
+  `BRANCH_AUXILIARY` carrying AR index, value-after, update,
+  taken, clear delayed flag, and pmad over the image-evidenced
+  I=1/MOD0 and I=1/MOD1 subset, with all other Sinds rejected
+  as deferred and selected-AR-only knownness (`UNKNOWN_INPUT`
+  per the branch-condition helper convention). The new `run.c`
+  auxiliary-branch route gates CMPT=0, validates the absolute
+  target, commits the flagged AR write, retires taken branches
+  to the verbatim pmad and not-taken ones sequentially with no
+  countdown, advances the pending countdown with taken as the
+  redirect flag, and arms it for taken-delayed. Macro dispatch
+  binds both leaves with no per-row wiring.
+  `FORM-T2-12-03` lands `SUBSET` with an
+  `ABSOLUTE_PMAD_AUXILIARY` binding.
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_banz_metadata.c`,
+  `tests/unit/isa/decode/test_banz_decode.c`,
+  `tests/unit/isa/ops/branch/test_banz.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_banz.c`) covering
+  metadata with 256-encoding disjointness, decode with the
+  deferred-`BANZD` pin and fixed-bit near-miss audit, handler
+  staging with taken/not-taken parity over all eight ARs in
+  both Sind modes plus deferred-Sind and transactional
+  rejection, and CPU retirement (verbatim-target commit with
+  writeback, not-taken fallthrough with wrap writeback,
+  observation-only retirement, unknown-AR and CMPT=1
+  transactionality, full preservation outside PC/selected AR,
+  no endpoint traffic by construction).
+- Validation is GREEN with no baseline deviation: all 354 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK (268); knobs, source
+  boundaries, manifests, evidence, inventory (realized 153
+  catalog rows, `ID_COUNT=154`, 6,083 lookup entries, 153
+  bindings, 120 SUBSET bindings, family coverage 57/205 at
+  27.805%, 33/205 strict), and observer-disabled structure
+  pass. Focused ASan/UBSan GREEN for the four new tests
+  (instrumentation verified). Fresh CMake/CTest Debug passes
+  361/361; full sanitizer CMake/CTest passes 360/360
+  excluding `quality.python` (scratch `/tmp` cleared of stale
+  prior-slice build dirs to relieve disk pressure; current
+  scratch retained). Row-count pins advanced to 153 rows, 153
+  bindings, 6,083 entries, 120 SUBSET, and 57/205 family
+  across the contract suites plus `ID_COUNT=154` across the C
+  metadata suites. `generate_opcode_lookup.py --check` and
+  `git diff --check` pass. No knob was added or changed.
+  Nothing was pushed.
+- Follow-up work: `BANZD` (delayed variant, reuses this seam;
+  insert the `0x6E00`/`0xFF00` row and a delayed-emitting
+  handler, then cover the taken-delayed route arm path which
+  is currently exercised only by construction), `CCD` (29),
+  `RETE`/`RETF` remain deferred with cross-slice hazard pins.
+  Open: split decision for `run.c` before 800 lines (now 765
+  after this route; was 667 at W69) and
+  `memory_instruction_transaction.c`; `make test` recipe order
+  still lets C regressions hide behind quality failures.
