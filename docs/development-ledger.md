@@ -8741,3 +8741,67 @@ rewritten after publication.
   after this route; was 667 at W69) and
   `memory_instruction_transaction.c`; `make test` recipe order
   still lets C regressions hide behind quality failures.
+
+## 2026-09-11 — P2-W71 BANZD delayed auxiliary-register-branch slice
+
+- Implementation commit `c33409a` binds one Table 2-12 row
+  under `FORM-T2-12-03`: `BANZD` at first-word value `0x6E00`
+  under mask `0xFF00`, two program words, 256 encodings, copied
+  Sind byte plus 16-bit pmad, reusing the W70
+  `BRANCH_SIND_PMAD16` layout with `AUXILIARY_REGISTERS`
+  inputs and `INELIGIBLE` repeatability (TI records reused from
+  W70, so no new TI record was needed). Shared Sind evaluation
+  hoists into `src/isa/ops/branch/op_branch_sind_common.[ch]`
+  (always-applied post-decrement, taken/not-taken
+  `BRANCH_AUXILIARY` with selected-AR-only knownness,
+  deferred-Sind rejection, caller-selected delay flag); the
+  `BANZ` leaf is refactored onto it with zero behavior change
+  (its exhaustive op plus CPU suites pass unmodified) and the
+  new `BANZD` leaf emits with the delay flag set. The W70
+  `run.c` auxiliary-branch route already retires taken-delayed
+  and not-taken, so no `run.c` change was admitted; W71 covers
+  the taken-delayed arm path W70 exercised only by
+  construction. `FORM-T2-12-03` stays `SUBSET` with `BANZ` plus
+  `BANZD` under an `ABSOLUTE_PMAD_AUXILIARY_DELAYED` binding.
+- Cross-slice hazard notes: the W70 `BANZ` decode deferred pin
+  now decodes `BANZD`, and the `BANZD` masked row claims one
+  near-miss word (`0x6E80`) from the `LD_SMEM_SHIFT` audit,
+  pinned as a genuine `BANZD` sibling. No other audit word
+  moved.
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_banzd_metadata.c`,
+  `tests/unit/isa/decode/test_banzd_decode.c`,
+  `tests/unit/isa/ops/branch/test_banzd.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_banzd.c`) covering
+  metadata with 256-encoding disjointness and variant
+  separation, decode with the non-delayed sibling pin and
+  fixed-bit near-miss audit, handler staging with the delay
+  flag set and taken/not-taken parity over all eight ARs in
+  both Sind modes plus deferred-Sind and transactional
+  rejection, and CPU retirement (taken deferral with countdown
+  drain and writeback, not-taken fallthrough, observation-only
+  retirement, unknown-AR and CMPT=1 transactionality, full
+  preservation, no endpoint traffic by construction).
+- Validation is GREEN with no baseline deviation: all 358 C
+  test binaries pass including the 4 new focused contracts;
+  contract quality unittest fully OK (268); knobs, source
+  boundaries, manifests, evidence, inventory (realized 154
+  catalog rows, `ID_COUNT=155`, 6,339 lookup entries, 154
+  bindings, 121 SUBSET bindings, family coverage unchanged at
+  57/205, 33/205 strict), and observer-disabled structure
+  pass. Focused ASan/UBSan GREEN for the four new tests plus
+  the refactored `BANZ` op/CPU suites (instrumentation
+  verified). Fresh CMake/CTest Debug passes 365/365; full
+  sanitizer CMake/CTest passes 364/364 excluding
+  `quality.python`. Row-count pins advanced to 154 rows, 154
+  bindings, 6,339 entries, 121 SUBSET, family 57/205 across
+  the contract suites plus `ID_COUNT=155` across the C metadata
+  suites. `generate_opcode_lookup.py --check` and
+  `git diff --check` pass. No knob was added or changed.
+  Nothing was pushed.
+- Follow-up work: `CCD` (29), `RETE`/`RETF` remain deferred
+  with cross-slice hazard pins. Open: split decision for
+  `run.c` before 800 lines (unchanged at 765; no `run.c` edit
+  this slice) and `memory_instruction_transaction.c`;
+  `make test` recipe order still lets C regressions hide
+  behind quality failures.
