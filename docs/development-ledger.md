@@ -8139,3 +8139,58 @@ rewritten after publication.
   then delayed `CALLD`/`RETD` in the delay seam. Open: fix the
   `make test` recipe order so C regressions cannot hide behind
   the environmental quality failure.
+
+## 2026-09-11 — P2-W66A stack-pop MEMORY transaction seam
+
+- Implementation commit `8bc7209` adds the generic stack-pop
+  MEMORY seam that W66B `RET` will consume, mirroring the W65A
+  seam precedent: one address kind `STACK_POP_WORD16` with an
+  all-zero spec, a pure `src/address/stack_pop.[ch]` planner
+  mapping old SP to the TOS DATA WORD16 at old SP with a
+  `POST_ACCESS` SP update, the POST shape through the existing
+  `ADDRESS_UPDATE_SP` target with the shared `STACK_PUSH`
+  source kind (the snapshot is identical; only the phase
+  differs), a DATA READ resolution arm with no mode read, and
+  root prepare/commit support that proves 16-bit target
+  plannability against the live PC carrier before any bus issue
+  and commits SP plus the TOS target from the transaction's own
+  READ observation atomically at READY. The READ value never
+  routes through ordinary accumulator/status completion: null
+  completion is exact for this kind. `SP=0xFFFF` pops to
+  `SP=0x0000` as a project-interpretation pin. No catalog row,
+  handler, layout, `run.c` change, inventory form, or TI claim
+  is admitted; the root transaction size pins are untouched.
+- Evidence: plan-anchor plus activation records, four
+  requirements (`REQ-PROJECT-P2-W66A-STACK-POP-PLANNER`,
+  `-VALIDATE`, `-MEMORY`, `-ROOT`), and three RED contracts
+  (`T-PROJECT-P2-W66A-STACK-POP-PLANNER`,
+  `tests/unit/address/test_stack_pop_planner.c`, CTest
+  `ti_c54x.stack_pop_planner`;
+  `T-PROJECT-P2-W66A-STACK-POP-RESOLUTION`,
+  `tests/unit/sequencer/memory/test_stack_pop_resolution.c`,
+  CTest `ti_c54x.stack_pop_resolution`;
+  `T-PROJECT-P2-W66A-STACK-POP-ROOT`,
+  `tests/unit/sequencer/instruction/test_stack_pop_root.c`,
+  CTest `ti_c54x.stack_pop_root`) covering the full SP domain
+  with the `SP=0xFFFF` wrap pin, mode independence under unknown
+  CMPT/ARP/CPL, READ-only rejection, WAIT/READY retirement with
+  atomic SP plus TOS-target commit, FAULT rollback, and stale-SP
+  rejection. Registry closure is 284 evidence records, 435
+  requirements (404 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 355 tests (355 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 327 C test
+  binaries pass; contract quality unittest fully OK; knobs,
+  source boundaries, manifests, evidence, inventory (unchanged
+  55/205 family 26.829%, 33/205 strict), and observer-disabled
+  structure pass. Focused ASan/UBSan GREEN for the three new
+  tests (`ASAN_OPTIONS=detect_leaks=0`, then `make clean`).
+  Fresh CMake/CTest Debug passes 334/334; full sanitizer
+  CMake/CTest passes 333/333 excluding `quality.python`. No
+  knob was added or changed. Nothing was pushed.
+- Follow-up work: W66B `RET` (one-word row `RET` at `0xFC00`
+  reusing `OPERAND_LAYOUT_NONE` with `STACK_POINTER` input)
+  binds the catalog row, handler, dispatch, CPU retirement, and
+  inventory through this seam, then delayed `CALLD`/`RETD` in
+  the delay seam. Open: fix the `make test` recipe order so C
+  regressions cannot hide behind the environmental quality
+  failure.
