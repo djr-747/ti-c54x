@@ -36,6 +36,37 @@ typedef struct ti_c54x_operand_layout_plan {
     const ti_c54x_operand_layout_set *descriptor;
 } ti_c54x_operand_layout_plan;
 
+/* Layout set tables live in operand_layout_sets.c; the plan table
+ * and resolver borrow them for the process lifetime. */
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_extension16_mod4_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod4_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod_shift5_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_immediate_k8_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_immediate_lk16_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_source_destination_extension16_shift16_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_source_destination_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_source_destination_shift4_extension16_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_source_destination_shift5_set;
+extern const ti_c54x_operand_layout_set ti_c54x_accumulator_source_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_extension16_mod4_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_extension16_mod_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_extension16_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_mod4_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_mod_set;
+extern const ti_c54x_operand_layout_set ti_c54x_arf_set;
+extern const ti_c54x_operand_layout_set ti_c54x_condition_arf_set;
+extern const ti_c54x_operand_layout_set ti_c54x_dual_destination_xar_yar_set;
+extern const ti_c54x_operand_layout_set ti_c54x_ld_arp_set;
+extern const ti_c54x_operand_layout_set ti_c54x_ld_asm_set;
+extern const ti_c54x_operand_layout_set ti_c54x_ld_dp_set;
+extern const ti_c54x_operand_layout_set ti_c54x_max_min_destination_set;
+extern const ti_c54x_operand_layout_set ti_c54x_operand_layout_none;
+extern const ti_c54x_operand_layout_set ti_c54x_rpt_k_set;
+extern const ti_c54x_operand_layout_set ti_c54x_rpt_lk_set;
+extern const ti_c54x_operand_layout_set ti_c54x_status_bit_set;
+
 /* The binding table borrows these immutable plans for the process lifetime. */
 extern const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
     TI_C54X_OPERAND_LAYOUT_COUNT];
