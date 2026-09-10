@@ -8071,3 +8071,71 @@ rewritten after publication.
   then `RET`. Open: fix the `make test` recipe order so C
   regressions cannot hide behind the environmental quality
   failure.
+
+## 2026-09-11 — P2-W65B CALL pmad vertical slice
+
+- Implementation commit `dc14075` activates one Table 2-13 row
+  under `FORM-T2-13-02`: `CALL_PMAD` at first-word value `0xF074`
+  under mask `0xFFFF`, two program words, one encoding, reusing
+  the `BRANCH_PMAD16` layout with `STACK_POINTER` input
+  resources and `INELIGIBLE` repeatability on the manual's
+  explicit note. The pure `src/isa/ops/branch/op_call_pmad.[ch]`
+  handler validates identity and operands, demands known SP
+  (`INVALID_OPERAND` otherwise), and stages a MEMORY
+  `STACK_PUSH` WRITE with a zero return-address placeholder;
+  the W65A root derives `PC+2` at prepare and commits SP, TOS,
+  and `PC = pmad` atomically through the existing MEMORY route
+  with no `run.c` change. Dispatch binds through the macro
+  tables; the deferred delayed word `0xF274` decodes
+  `UNKNOWN_WORD`. `FORM-T2-13-02` lands `SUBSET` with the
+  `CALL_PMAD` symbol bound as `ABSOLUTE_PMAD_NONDELAYED`.
+- The generator's input-resource token set lacked
+  `STACK_POINTER` (W64 added the C bit but no row consumed
+  it); the token is registered in
+  `tools/isa/catalog/opcode_catalog_schema.py` and the lookup
+  regenerates as a clean +1 line with the overlap validator
+  passing.
+- Evidence: three TI section records (opcode, semantics with
+  the `CALL 3333h` worked example, nonrepeatable note) plus
+  plan-anchor and activation records; six requirements
+  (`REQ-COMMON-P2-W65B-CALL-PMAD-CATALOG/DECODE/EFFECTS` plus
+  `REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING/CPU-RETIREMENT/INVENTORY`);
+  four RED contracts
+  (`T-COMMON-P2-W65B-CALL-PMAD-METADATA`,
+  `tests/unit/isa/catalog/test_call_pmad_metadata.c`, CTest
+  `ti_c54x.call_pmad_metadata`;
+  `T-COMMON-P2-W65B-CALL-PMAD-DECODE`,
+  `tests/unit/isa/decode/test_call_pmad_decode.c`, CTest
+  `ti_c54x.call_pmad_decode`;
+  `T-COMMON-P2-W65B-CALL-PMAD-SEMANTICS`,
+  `tests/unit/isa/ops/branch/test_call_pmad.c`, CTest
+  `ti_c54x.call_pmad`;
+  `T-PROJECT-P2-W65B-CALL-PMAD-CPU`,
+  `tests/unit/cpu/isa/branch/test_cpu_call_pmad.c`, CTest
+  `ti_c54x.cpu_call_pmad`) covering exact disjointness over the
+  full first-word space, the delayed-word pin, the fixed-bit
+  near-miss audit (BC/SFTL/AND/XOR/OR16 siblings, matching B's
+  neighborhood), full-pmad checked/trusted/dispatch parity,
+  SP-knownness gating, the CPU worked example with TOS capture,
+  WAIT resume, DATA fault rollback, unknown-SP rejection, and
+  end-to-end mode independence with CMPT/ARP unknown. Registry
+  closure is 282 evidence records (the W65B anchor projected
+  279, undercounting the three TI section records), 431
+  requirements (400 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 352 tests (352 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 324 C test
+  binaries pass; contract quality unittest fully OK; knobs,
+  source boundaries, manifests, evidence, inventory (55/205
+  family 26.829%, 33/205 strict), and observer-disabled
+  structure pass. Focused ASan/UBSan GREEN for the four new
+  tests (`ASAN_OPTIONS=detect_leaks=0`, then `make clean`).
+  Fresh CMake/CTest Debug passes 331/331; full sanitizer
+  CMake/CTest passes 330/330 excluding `quality.python`. The
+  per-row count pins (`ID_COUNT` 148, 5,567 lookup entries,
+  147 bindings, 55/205 family, 114 SUBSET bindings) were
+  updated across the contract suites. No knob was added or
+  changed. Nothing was pushed.
+- Follow-up work: `RET` (the return half of the call pair),
+  then delayed `CALLD`/`RETD` in the delay seam. Open: fix the
+  `make test` recipe order so C regressions cannot hide behind
+  the environmental quality failure.
