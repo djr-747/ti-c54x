@@ -1387,8 +1387,10 @@
       "mnemonic": "CC",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "CCD"
+      ]
     },
     {
       "id": "FORM-T2-13-04",
@@ -3080,6 +3082,7 @@
     {"catalog_symbol": "BANZD", "form_id": "FORM-T2-12-03", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_AUXILIARY_DELAYED"},
     {"catalog_symbol": "CALL_PMAD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"},
     {"catalog_symbol": "CALLD", "form_id": "FORM-T2-13-02", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_DELAYED"},
+    {"catalog_symbol": "CCD", "form_id": "FORM-T2-13-03", "coverage": "SUBSET", "addressing_subset": "ABSOLUTE_PMAD_COND_DELAYED"},
     {"catalog_symbol": "RET", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},
     {"catalog_symbol": "RETD", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_DELAYED"}
   ]

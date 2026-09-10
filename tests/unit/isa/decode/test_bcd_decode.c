@@ -159,11 +159,11 @@ static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 leaves only the condition byte variable. Clearing
-     * fixed bit 9 lands on the BC_PMAD sibling, flipping fixed bit
-     * 12 lands on LD_IMMEDIATE_DP, and flipping fixed bit 10 lands
-     * on RETD; all other fixed-bit flips must miss every row. */
+     * fixed bit 9 lands on the BC_PMAD sibling, setting fixed bit 8
+     * lands on the W72 CCD row, flipping fixed bit 12 lands on
+     * LD_IMMEDIATE_DP, and flipping fixed bit 10 lands on RETD;
+     * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100),
         UINT16_C(0x0800),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result bc_sibling =
@@ -175,9 +175,14 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result retd_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(BCD_VALUE ^ UINT16_C(0x0400)));
+    const ti_c54x_decode_result ccd_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(BCD_VALUE ^ UINT16_C(0x0100)));
 
     TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
+    TI_C54X_TEST_CHECK(ccd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(ccd_sibling.id == TI_C54X_OPCODE_ID_CCD);
     TI_C54X_TEST_CHECK(ld_dp_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(ld_dp_sibling.id ==
                        TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP);

@@ -9,6 +9,8 @@ $(eval $(call ti_c54x_add_test,bcd,isa/ops/branch,test_bcd.c))
 $(eval $(call ti_c54x_add_test,banz,isa/ops/branch,test_banz.c))
 # W71 RED contract: BANZD effects.
 $(eval $(call ti_c54x_add_test,banzd,isa/ops/branch,test_banzd.c))
+# W72 RED contract: CCD effects.
+$(eval $(call ti_c54x_add_test,ccd,isa/ops/branch,test_ccd.c))
 $(eval $(call ti_c54x_add_test,call_pmad,isa/ops/branch,test_call_pmad.c))
 $(eval $(call ti_c54x_add_test,ret,isa/ops/branch,test_ret.c))
 # W67B RED contract: RETD effects.

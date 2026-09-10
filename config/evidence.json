@@ -4340,6 +4340,61 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)"},
       "assertion": "W71 activates the BANZD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated BANZ decode pin, with row-count pins advanced to 154 rows with 6,339 lookup entries and 154 trusted bindings, family coverage unchanged at 57/205 with strict unchanged at 33/205, and FORM-T2-12-03 remaining SUBSET with BANZ and BANZD symbols."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CC-OPCODE-P4-29",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CC[D]", "printed_page_start": "4-29", "printed_page_end": "4-29"},
+      "assertion": "The CC[D] description defines syntax CC[D] pmad,cond[,cond[,cond]] with operand 0 <= pmad <= 65535 as a two-word form: word0 1111_10Z1_CCCCCCCC with the delayed flag in bit 9 and the 8-bit condition code in bits 7-0, giving first-word value 0xFB00 under mask 0xFF00 for the delayed CCD variant with 256 encodings, followed by a 16-bit pmad constant word. Z=0 selects the non-delayed CC variant, which stays deferred. The sixteen single conditions match the BC[D] set with BIO/NBIO, UNC, overflow, and multi-condition combinations beyond them. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CC-SEMANTICS-P4-29-4-31",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CC[D]", "printed_page_start": "4-29", "printed_page_end": "4-31"},
+      "assertion": "The CC[D] delayed semantics specify that a taken CCD pushes PC+4 past the two delay slots onto the stack and branches to pmad after the slots drain, while a not-taken CCD advances PC+2 at once; SP decrements by one on the taken path only. The worked examples show the PC+4 TOS write on the taken delayed path and the plain PC+2 advance on the not-taken path."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CC-NONREPEATABLE-P4-31",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "CC[D]", "printed_page_start": "4-31", "printed_page_end": "4-31"},
+      "assertion": "The CC[D] description carries the explicit not-repeatable note, so the row is repeatability INELIGIBLE and single-repeat bodies never admit it."
+    },
+    {
+      "id": "E-PROJECT-P2-W72-CCD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W72: CCD delayed-conditional-call vertical slice (planned)"},
+      "assertion": "W72 is the planned CCD vertical slice: one Table 2-13 row under FORM-T2-13-03 at first-word value 0xFB00 under mask 0xFF00 with two program words, 256 encodings, and the copied condition byte plus 16-bit pmad, reusing the BRANCH_COND_PMAD16 layout with the new ACCUMULATORS_STATUS_C_TC plus STACK_POINTER inputs and INELIGIBLE repeatability; a pure call leaf evaluating the sixteen evidenced single conditions through the shared branch-condition helper with taken CALLD-shaped MEMORY stack-push-delayed emission versus not-taken NONE and taken-only SP knownness gating; catalog macro dispatch binding; CPU retirement through the unchanged CALLD MEMORY route and sequential bridge; and FORM-T2-13-03 inventory at SUBSET with a lone CCD symbol. No knob, layout, effect, timing, device, status, or ABI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W72-CCD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W72: CCD delayed-conditional-call vertical slice (planned)"},
+      "assertion": "W72 activates the CCD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 155 rows with 6,595 lookup entries and 155 trusted bindings, family coverage at 58/205 with strict unchanged at 33/205, and FORM-T2-13-03 at SUBSET with a lone CCD symbol."
     }
   ],
   "requirements": [
@@ -9466,6 +9521,66 @@
       "claim": "Carry the BANZD symbol in FORM-T2-12-03 with SUBSET coverage and an ABSOLUTE_PMAD_AUXILIARY_DELAYED binding through the inventory registry.",
       "evidence_ids": ["E-PROJECT-P2-W71-BANZD-PLAN-ANCHOR", "E-PROJECT-P2-W71-BANZD-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W72-CCD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the CCD row at first-word value 0xFB00 under mask 0xFF00 with two program words, 256 encodings, and the BRANCH_COND_PMAD16 layout with ACCUMULATORS_STATUS_C_TC_STACK_POINTER inputs and INELIGIBLE repeatability.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CC-OPCODE-P4-29"],
+      "test_ids": ["T-COMMON-P2-W72-CCD-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W72-CCD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every CCD first word through the generic decoder with copied bundle and scalar metadata, extracting the condition byte then the raw 16-bit pmad extension.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CC-OPCODE-P4-29"],
+      "test_ids": ["T-COMMON-P2-W72-CCD-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W72-CCD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Evaluate the sixteen evidenced single CCD conditions through the shared branch-condition helper with taken CALLD-shaped MEMORY stack-push-delayed emission versus not-taken NONE, taken-only SP knownness gating, consumed-input-only knownness, and transactional deferred-code rejection.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-CC-SEMANTICS-P4-29-4-31", "E-TI-C54X-SPRU172C-S4-CC-NONREPEATABLE-P4-31"],
+      "test_ids": ["T-COMMON-P2-W72-CCD-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W72-CCD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the CCD catalog row to its checked and trusted leaves through the macro dispatch tables with no per-row handwritten wiring.",
+      "evidence_ids": ["E-PROJECT-P2-W72-CCD-PLAN-ANCHOR", "E-PROJECT-P2-W72-CCD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W72-CCD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire CCD on the CPU through the unchanged CALLD MEMORY route and sequential bridge with taken PC+4 TOS WRITE, SP commit, and two-slot drain before the deferred call takes effect, not-taken sequential advance with no endpoint traffic, unknown-condition and taken-with-unknown-SP transactionality, and not-taken retirement with unknown SP.",
+      "evidence_ids": ["E-PROJECT-P2-W72-CCD-PLAN-ANCHOR", "E-PROJECT-P2-W72-CCD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W72-CCD-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W72-CCD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Carry the CCD symbol in FORM-T2-13-03 with SUBSET coverage and an ABSOLUTE_PMAD_COND_DELAYED binding through the inventory registry.",
+      "evidence_ids": ["E-PROJECT-P2-W72-CCD-PLAN-ANCHOR", "E-PROJECT-P2-W72-CCD-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -10810,7 +10925,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING", "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING", "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING", "REQ-PROJECT-P2-W72-CCD-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -11274,7 +11389,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY", "REQ-PROJECT-P2-W71-BANZD-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY", "REQ-PROJECT-P2-W71-BANZD-INVENTORY", "REQ-PROJECT-P2-W72-CCD-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -12603,6 +12718,38 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_banzd.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_banzd"},
       "requirement_ids": ["REQ-PROJECT-P2-W71-BANZD-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W72-CCD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ccd_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ccd_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W72-CCD-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W72-CCD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ccd_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ccd_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W72-CCD-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W72-CCD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_ccd.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ccd"},
+      "requirement_ids": ["REQ-COMMON-P2-W72-CCD-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W72-CCD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_ccd.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ccd"},
+      "requirement_ids": ["REQ-PROJECT-P2-W72-CCD-CPU-RETIREMENT"]
     }
   ]
 }

@@ -37,6 +37,8 @@ ti_c54x_add_unit_test(bcd_decode test_bcd_decode.c)
 ti_c54x_add_unit_test(banz_decode test_banz_decode.c)
 # W71 RED contract: BANZD decode with near-miss audit.
 ti_c54x_add_unit_test(banzd_decode test_banzd_decode.c)
+# W72 RED contract: CCD decode with near-miss audit.
+ti_c54x_add_unit_test(ccd_decode test_ccd_decode.c)
 ti_c54x_add_unit_test(ldr_smem_decode test_ldr_smem_decode.c)
 ti_c54x_add_unit_test(ld_xmem_shift_decode test_ld_xmem_shift_decode.c)
 ti_c54x_add_unit_test(ld_src_asm_decode test_ld_src_asm_decode.c)

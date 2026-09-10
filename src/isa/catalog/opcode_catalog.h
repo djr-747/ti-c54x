@@ -146,6 +146,12 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* Delayed conditional calls read condition inputs plus SP. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC_STACK_POINTER \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_TC | \
+                                   TI_C54X_INPUT_RESOURCES_STACK_POINTER))
 /* Dual Xmem loads read ARs plus SXM/OVM but never carry. */
 #define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_SXM_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \

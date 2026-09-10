@@ -30,6 +30,8 @@ ti_c54x_add_unit_test(bcd_metadata test_bcd_metadata.c)
 ti_c54x_add_unit_test(banz_metadata test_banz_metadata.c)
 # W71 RED contract: BANZD row metadata.
 ti_c54x_add_unit_test(banzd_metadata test_banzd_metadata.c)
+# W72 RED contract: CCD row metadata.
+ti_c54x_add_unit_test(ccd_metadata test_ccd_metadata.c)
 ti_c54x_add_unit_test(ldr_smem_metadata test_ldr_smem_metadata.c)
 ti_c54x_add_unit_test(ld_xmem_shift_metadata test_ld_xmem_shift_metadata.c)
 ti_c54x_add_unit_test(ld_src_asm_metadata test_ld_src_asm_metadata.c)
