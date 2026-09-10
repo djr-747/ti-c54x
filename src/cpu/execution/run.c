@@ -2,6 +2,9 @@
  * Owns: public step/run execution, per-call result construction, fetch/decode
  * orchestration, and the ordinary opcode execution loop. It resumes the
  * embedded memory root before fetching and accounts root deltas exactly once.
+ * It also adopts deferred-branch reports into the CPU-owned two-word
+ * countdown and advances that countdown after retirements that arm
+ * nothing new.
  * Does not own: CPU lifetime/storage, bus descriptor validation, lifecycle
  * cancellation, trace assembly, or opcode semantics.
  */
@@ -122,6 +125,62 @@ target_status_to_stop(ti_c54x_program_pc_target_status status)
     }
 }
 
+/* Adopt an armed deferred-branch report from a retired MEMORY root,
+ * replacing any pending countdown. The arming instruction consumes no
+ * delay-slot words itself. Arming a live instance cannot fail. */
+static void adopt_deferred_branch(
+    ti_c54x_cpu *cpu, const ti_c54x_memory_instruction_result *result)
+{
+    if (result->deferred_branch_armed) {
+        (void)ti_c54x_sequencer_delayed_branch_arm(
+            &cpu->delayed_branch, result->deferred_branch_pc_word);
+    }
+}
+
+/* An inner PC redirection cancels the pending countdown: a non-delayed
+ * stack branch or PC_WRITE effect inside the delay slots wins under the
+ * documented last-wins rule (TI forbids these outright). */
+static bool memory_effect_redirects_pc(const ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_memory_address_kind kind;
+
+    if (effect == NULL || effect->kind != TI_C54X_OP_EFFECT_MEMORY) {
+        return false;
+    }
+    kind = effect->payload.memory.address_spec.kind;
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16;
+}
+
+/* Maintain the pending countdown after a retirement that armed nothing
+ * new. Reports through took_effect whether the deferred target now
+ * applies; the caller publishes it to the live PC. A zero word count
+ * is rejected without mutation. */
+static ti_c54x_sequencer_delayed_branch_status advance_delayed_branch(
+    ti_c54x_cpu *cpu, uint8_t word_count, bool redirected_pc,
+    bool *took_effect)
+{
+    if (!ti_c54x_sequencer_delayed_branch_is_armed(&cpu->delayed_branch)) {
+        *took_effect = false;
+        return TI_C54X_SEQUENCER_DELAYED_BRANCH_OK;
+    }
+    if (redirected_pc) {
+        (void)ti_c54x_sequencer_delayed_branch_disarm(&cpu->delayed_branch);
+        *took_effect = false;
+        return TI_C54X_SEQUENCER_DELAYED_BRANCH_OK;
+    }
+    return ti_c54x_sequencer_delayed_branch_consume(
+        &cpu->delayed_branch, word_count, took_effect);
+}
+
+/* Publish a taken deferred branch to the live PC. The countdown keeps
+ * the 16-bit deferred target through the take-effect consume. */
+static void apply_deferred_branch(ti_c54x_cpu *cpu)
+{
+    cpu->arch_state.pc_word =
+        (ti_c54x_program_word_address)cpu->delayed_branch.deferred_pc_word;
+}
+
 ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu)
 {
     return ti_c54x_cpu_run(cpu, 1U);
@@ -221,6 +280,27 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             cpu->instructions_retired += memory_result.instructions_retired;
             instructions_retired += memory_result.instructions_retired;
+            adopt_deferred_branch(cpu, &memory_result);
+            if (!memory_result.deferred_branch_armed) {
+                const uint8_t retired_words =
+                    cpu->instruction_transaction.candidate.instruction.bundle
+                        .program_word_count;
+                const bool retired_redirects = memory_effect_redirects_pc(
+                    &cpu->instruction_transaction.candidate.effect);
+                bool took_effect = false;
+
+                if (advance_delayed_branch(cpu, retired_words,
+                                           retired_redirects,
+                                           &took_effect) !=
+                    TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                    return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                if (took_effect) {
+                    apply_deferred_branch(cpu);
+                }
+            }
             if (!memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
                     &cpu->instruction_transaction,
                     &cpu->bus.data_endpoint))) {
@@ -408,6 +488,24 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             cpu->instructions_retired++;
             instructions_retired++;
+            adopt_deferred_branch(cpu, &memory_result);
+            if (!memory_result.deferred_branch_armed) {
+                const bool retired_redirects =
+                    memory_effect_redirects_pc(&effect);
+                bool took_effect = false;
+
+                if (advance_delayed_branch(
+                        cpu, packet.instruction.bundle.program_word_count,
+                        retired_redirects, &took_effect) !=
+                    TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                    return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                if (took_effect) {
+                    apply_deferred_branch(cpu);
+                }
+            }
             if (!memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
                     &cpu->instruction_transaction,
                     &cpu->bus.data_endpoint))) {
@@ -423,10 +521,13 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
          * sequential bridge plan. The target planner validates the
          * absolute successor and the apply step commits it only when
          * the live carrier still matches the frozen source, which is
-         * the whole atomic commit for this effect kind. */
+         * the whole atomic commit for this effect kind. A PC_WRITE
+         * inside delay slots is TI-forbidden; the inner redirect
+         * deterministically cancels any pending countdown. */
         if (effect.kind == TI_C54X_OP_EFFECT_PC_WRITE) {
             ti_c54x_program_pc_target_effect target_effect;
             ti_c54x_program_pc_target_status target_status;
+            bool took_effect = false;
 
             target_status = ti_c54x_program_pc_target_plan(
                 cpu->arch_state.pc_word, effect.payload.pc_write.pmad,
@@ -447,6 +548,14 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             cpu->arch_state.pc_word = candidate_pc;
             cpu->instructions_retired++;
             instructions_retired++;
+            if (advance_delayed_branch(
+                    cpu, packet.instruction.bundle.program_word_count,
+                    true, &took_effect) !=
+                TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
             continue;
         }
 
@@ -487,6 +596,23 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         cpu->arch_state.pc_word = candidate_pc;
         cpu->instructions_retired++;
         instructions_retired++;
+        /* Ordinary effects always advance sequentially, so a retired
+         * delay-slot instruction consumes its word count here. */
+        {
+            bool took_effect = false;
+
+            if (advance_delayed_branch(
+                    cpu, packet.instruction.bundle.program_word_count,
+                    false, &took_effect) !=
+                TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (took_effect) {
+                apply_deferred_branch(cpu);
+            }
+        }
     }
 
     cpu->execution_active = false;

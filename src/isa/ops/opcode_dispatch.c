@@ -36,6 +36,7 @@
 #include "branch/op_bc_pmad.h"
 #include "branch/op_call_pmad.h"
 #include "branch/op_ret.h"
+#include "branch/op_retd.h"
 #include "op_nop.h"
 #include "rotate/op_rotate.h"
 #include "rotate/op_roltc.h"
