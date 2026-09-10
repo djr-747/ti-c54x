@@ -8255,3 +8255,81 @@ rewritten after publication.
   `T-COMMON-P2-W66B-RET-SEMANTICS`,
   `T-PROJECT-P2-W66B-RET-CPU`). The validation evidence, pins,
   and follow-up notes in the W66B entry stand unchanged.
+
+## 2026-09-11 — P2-W67A delayed-branch MEMORY transaction seam
+
+- Implementation commit `fdaa89a` adds the generic delay seam
+  that W67B `RETD` and W67C `CALLD` will consume, mirroring the
+  W65A/W66A precedent: two address kinds
+  `STACK_PUSH_DELAYED_WORD16` (10) and
+  `STACK_POP_DELAYED_WORD16` (11) sharing the immediate stack
+  planning, all-zero specs, and access shapes through widened
+  validity, resolution, and candidate-validation arms; one pure
+  `src/sequencer/delayed_branch/delayed_branch.[ch]` countdown
+  value (disarmed idle, arm with 16-bit deferred target and
+  two-word countdown, saturating consume with take-effect
+  reporting, replace-on-arm, strict rejection of disarmed,
+  zero-width, and null calls); root prepare staging PC+4 for
+  delayed pushes with `INVALID_CANDIDATE` past `0xFFFF` and the
+  sequential successor otherwise; root commit writing SP plus
+  the TOS value atomically at READY with PC advanced to the
+  frozen sequential successor; and a `deferred_branch_armed`
+  plus 16-bit deferred-PC report in the retirement result
+  (TOS for pops, frozen pmad for pushes; ordinary retirements
+  stay disarmed). One CPU-owned countdown lives in `struct
+  ti_c54x_cpu` as pipeline state, cleared by init (memset) and
+  reset. No catalog row, handler, layout, `run.c` change,
+  inventory form, or TI claim is admitted; no knob was added or
+  changed.
+- TI semantics split (SPRU172C §4 `RET[D]` p. 4-139 and §4
+  `CALL[D]` p. 4-27 with SPRU131G §6.3.1): stack effects publish
+  at the delayed branch's own retirement; only the PC transfer
+  waits two program words. The slice resolves a genuine TI
+  conflict for the CALLD return address: SPRU131G Example 7-5
+  labels the early return register `a3` (into the delay slots),
+  while the §4-27 Execution block (`(PC)+4` → TOS) and its
+  worked example (pushing `0029` for `CALLD` at `0025`) agree on
+  after-the-slots. The Execution block plus example are
+  normative here; the pipeline narrative is not adopted for the
+  pushed value.
+- Evidence: plan-anchor plus activation records, four
+  requirements (`REQ-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE`,
+  `-VALIDATE`, `-MEMORY`, `-ROOT`), and three RED contracts
+  (`T-PROJECT-P2-W67A-DELAYED-BRANCH-VALUE`,
+  `tests/unit/sequencer/delayed_branch/test_delayed_branch.c`,
+  CTest `ti_c54x.delayed_branch`;
+  `T-PROJECT-P2-W67A-DELAYED-BRANCH-POP-ROOT`,
+  `tests/unit/sequencer/instruction/test_delayed_stack_pop_root.c`,
+  CTest `ti_c54x.delayed_stack_pop_root`;
+  `T-PROJECT-P2-W67A-DELAYED-BRANCH-PUSH-ROOT`,
+  `tests/unit/sequencer/instruction/test_delayed_stack_push_root.c`,
+  CTest `ti_c54x.delayed_stack_push_root`) covering countdown
+  arm/consume/replace/saturation/rejection, delayed
+  WAIT/READY/FAULT lifecycles with sequential-PC advance and
+  deferred reporting, `SP=0xFFFF` wrap, forged-spec rejection,
+  stale-SP rejection, PC+4 staging with top-of-memory
+  rejection, and immediate-kind disarmed regression. The root
+  proofs split pop/push one file per kind after a SIZE_REVIEW
+  warning on the combined 513-line draft (each file now under
+  500 lines). Registry closure is 291 evidence records, 445
+  requirements (414 `IMPLEMENTED`, 0 `PLANNED`, 31
+  `UNRESOLVED`), and 362 tests (362 `PASSING`, 0 `PLANNED`).
+- Validation is GREEN with no baseline deviation: all 334 C test
+  binaries pass including the 3 new focused contracts; contract
+  quality unittest fully OK; knobs, source boundaries (only
+  pre-existing SIZE_REVIEW warnings remain),
+  manifests, evidence, inventory (unchanged), and
+  observer-disabled structure pass. Make ASan/UBSan GREEN for
+  the three new tests. Fresh CMake/CTest Debug passes 341/341;
+  full sanitizer CMake/CTest passes 340/340 excluding
+  `quality.python` (sanitizer tree built on home disk after
+  tmpfs quota failure; scratch removed). Nothing was pushed.
+- Follow-up work: W67B `RETD` (one-word row `RETD` at `0xFE00`
+  reusing `OPERAND_LAYOUT_NONE` with `STACK_POINTER` input)
+  wires the run.c adopt/advance loop plus catalog, handler,
+  dispatch, CPU retirement, and inventory through this seam;
+  W67C `CALLD` (two-word row at `0xF274` with `BRANCH_PMAD16`)
+  follows. Open: `memory_instruction_transaction.c` (728
+  lines) needs an explicit split decision before 800 lines;
+  `make test` recipe order still lets C regressions hide behind
+  quality failures.
