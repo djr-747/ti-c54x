@@ -53,6 +53,8 @@ static const indexed_case cases[] = {
               TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, 0U, 1U, 2U, 0U),
     CASE_PAIR(ST_T_SMEM, 0x8CA8, 0x8CB0, 1U,
               TI_C54X_OPERAND_LAYOUT_ARF_MOD4, 0U, 0U, 1U, 0U),
+    CASE_PAIR(LDR, 0x16A8, 0x16B0, 1U,
+              TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, 0U, 1U, 2U, 0U),
 };
 
 static void

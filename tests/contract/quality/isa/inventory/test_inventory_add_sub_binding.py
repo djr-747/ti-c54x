@@ -45,9 +45,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 142)
-        self.assertEqual(len(rows) + 1, 143)
-        self.assertEqual(len(inventory["catalog_bindings"]), 142)
+        self.assertEqual(len(rows), 144)
+        self.assertEqual(len(rows) + 1, 145)
+        self.assertEqual(len(inventory["catalog_bindings"]), 144)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -74,7 +74,7 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                 self.assertEqual(binding["coverage"], "COMPLETE")
                 self.assertEqual(binding["addressing_subset"], "ALL")
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 5277)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 5309)
         report = report_inventory(self.root)
         self.assertEqual(
             report["catalog_family_progress"], {"covered": 52, "denominator": 205}

@@ -1,7 +1,7 @@
 /*
  * Module contract
  *
- * Owns: executable proof for all seven indexed standard-indirect WORD16 load
+ * Owns: executable proof for all eight indexed standard-indirect WORD16 load
  * families. Each MOD5/MOD6 checked and trusted leaf must stage an
  * INDEXED_AR0_WORD16 read and complete to the family-specific architectural
  * effect. Does not own: catalog generation, decode/layout implementation,
@@ -75,6 +75,12 @@ extern ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod5(
 extern ti_c54x_op_status ti_c54x_op_ld_smem_shift16_mod6(
     const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
     ti_c54x_op_effect *);
+extern ti_c54x_op_status ti_c54x_op_ldr_mod5(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
+extern ti_c54x_op_status ti_c54x_op_ldr_mod6(
+    const ti_c54x_decoded_instruction *, const ti_c54x_op_input_snapshot *,
+    ti_c54x_op_effect *);
 
 typedef enum load_transform {
     LOAD_SIGNED = 0,
@@ -83,7 +89,8 @@ typedef enum load_transform {
     LOAD_T = 3,
     LOAD_DP = 4,
     LOAD_ASM = 5,
-    LOAD_SHIFT16 = 6
+    LOAD_SHIFT16 = 6,
+    LOAD_ROUNDED = 7
 } load_transform;
 
 typedef struct load_case {
@@ -145,6 +152,12 @@ static const load_case cases[] = {
      ti_c54x_op_ld_smem_shift16_mod5, ti_c54x_op_ld_smem_shift16_mod6,
      ti_c54x_trusted_op_ld_smem_shift16_mod5,
      ti_c54x_trusted_op_ld_smem_shift16_mod6},
+    {TI_C54X_OPCODE_ID_LDR_MOD5, TI_C54X_OPCODE_ID_LDR_MOD6,
+     UINT16_C(0x16A8), UINT16_C(0x16B0),
+     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM, true, LOAD_ROUNDED,
+     ti_c54x_op_ldr_mod5, ti_c54x_op_ldr_mod6,
+     ti_c54x_trusted_op_ldr_mod5, ti_c54x_trusted_op_ldr_mod6},
 };
 
 static ti_c54x_decoded_instruction
@@ -292,6 +305,23 @@ assert_completion(const load_case *test_case,
         TI_C54X_TEST_CHECK(completed.payload.accumulator_write.destination == 1U);
         TI_C54X_TEST_CHECK(completed.payload.accumulator_write.value_raw40 ==
                            ((signed_value << 16U) & TI_C54X_U40_MASK));
+        break;
+    case LOAD_ROUNDED:
+        TI_C54X_TEST_CHECK(completed.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+        TI_C54X_TEST_CHECK(completed.payload.accumulator_write.destination == 1U);
+        TI_C54X_TEST_CHECK(completed.payload.accumulator_write.value_raw40 ==
+                           (((signed_value << 16U) + UINT64_C(0x8000)) &
+                            TI_C54X_U40_MASK));
+        TI_C54X_TEST_CHECK(
+            completed.payload.accumulator_write.status_delta.c_action ==
+            TI_C54X_OP_STATUS_BIT_PRESERVE);
+        TI_C54X_TEST_CHECK(
+            completed.payload.accumulator_write.status_delta.tc_action ==
+            TI_C54X_OP_STATUS_BIT_PRESERVE);
+        TI_C54X_TEST_CHECK(
+            completed.payload.accumulator_write.status_delta
+                .destination_overflow_action ==
+            TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE);
         break;
     }
 }

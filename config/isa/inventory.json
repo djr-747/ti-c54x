@@ -1957,7 +1957,9 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "LDR"
+        "LDR",
+        "LDR_MOD5",
+        "LDR_MOD6"
       ]
     },
     {
@@ -2735,7 +2737,19 @@
       "catalog_symbol": "LDR",
       "form_id": "FORM-T2-19-19",
       "coverage": "SUBSET",
-      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LDR_MOD5",
+      "form_id": "FORM-T2-19-19",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
+    },
+    {
+      "catalog_symbol": "LDR_MOD6",
+      "form_id": "FORM-T2-19-19",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
     },
     {
       "catalog_symbol": "ST_T_SMEM",

@@ -1,8 +1,8 @@
 /*
  * Module contract
  *
- * Owns: executable metadata and generated-lookup proof for the twenty private
- * CMPT=0 AR0-indexed standard-indirect catalog rows. Does not own: decode
+ * Owns: executable metadata and generated-lookup proof for the twenty-two
+ * private CMPT=0 AR0-indexed standard-indirect catalog rows. Does not own: decode
  * extraction, address arithmetic, semantic effects, CPU transactions, or
  * inventory quality policy.
  */
@@ -78,6 +78,12 @@ static const indexed_row rows[] = {
      TI_C54X_OPERAND_LAYOUT_ARF_MOD4, TI_C54X_INPUT_RESOURCES_T_REGISTER, 1U, 8U},
     {TI_C54X_OPCODE_ID_ST_T_SMEM_MOD6, UINT16_C(0x8CB0), UINT16_C(0xFFF8),
      TI_C54X_OPERAND_LAYOUT_ARF_MOD4, TI_C54X_INPUT_RESOURCES_T_REGISTER, 1U, 8U},
+    {TI_C54X_OPCODE_ID_LDR_MOD5, UINT16_C(0x16A8), UINT16_C(0xFEF8),
+     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM, 1U, 16U},
+    {TI_C54X_OPCODE_ID_LDR_MOD6, UINT16_C(0x16B0), UINT16_C(0xFEF8),
+     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM, 1U, 16U},
 };
 
 static const ti_c54x_trusted_op_handler indexed_handlers[] = {
@@ -94,6 +100,7 @@ static const ti_c54x_trusted_op_handler indexed_handlers[] = {
     ti_c54x_trusted_op_ld_smem_shift16_mod5,
     ti_c54x_trusted_op_ld_smem_shift16_mod6,
     ti_c54x_trusted_op_st_t_smem_mod5, ti_c54x_trusted_op_st_t_smem_mod6,
+    ti_c54x_trusted_op_ldr_mod5, ti_c54x_trusted_op_ldr_mod6,
 };
 
 static void
@@ -101,10 +108,10 @@ test_exact_rows_and_projection(void)
 {
     unsigned expected = 0U;
 
-    TI_C54X_TEST_CHECK(sizeof(rows) / sizeof(rows[0]) == 20U);
+    TI_C54X_TEST_CHECK(sizeof(rows) / sizeof(rows[0]) == 22U);
     TI_C54X_TEST_CHECK(sizeof(indexed_handlers) /
-                           sizeof(indexed_handlers[0]) == 20U);
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 143);
+                           sizeof(indexed_handlers[0]) == 22U);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 145);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const indexed_row *row = &rows[index];
         const ti_c54x_opcode_metadata *metadata =
@@ -119,7 +126,7 @@ test_exact_rows_and_projection(void)
         TI_C54X_TEST_CHECK(indexed_handlers[index] != NULL);
         expected += row->encodings;
     }
-    TI_C54X_TEST_CHECK(expected == 240U);
+    TI_C54X_TEST_CHECK(expected == 272U);
 }
 
 static void
@@ -139,7 +146,7 @@ test_lookup_population_and_mask_identity(void)
             }
         }
     }
-    TI_C54X_TEST_CHECK(populated == 5277U);
+    TI_C54X_TEST_CHECK(populated == 5309U);
 }
 
 int

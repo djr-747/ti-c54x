@@ -3750,6 +3750,39 @@
       "assertion": "W60 activates the LDR Smem,dst row with single-indirect Smem reads, AR update commit, SXM widening, shift 16, rounding constant, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 is inventory SUBSET. Realized 142 catalog rows, ID_COUNT 143, 5,277 lookup entries, 142 bindings, family coverage 52/205, and 33/205 strict complete-form coverage."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-S5-4-INDEXED-MOD5-MOD6-P5-12",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.4/Table 5‑4", "printed_page_start": "5-12", "printed_page_end": "5-13"},
+      "assertion": "Table 5-4 defines single-indirect MOD5 *ARx-AR0 with addr ARx and post-access ARx ARx - AR0, and MOD6 *ARx+AR0 with addr ARx and post-access ARx ARx + AR0. The planner rejects the borrow/carry boundary. MOD9/MOD11 circular-AR0 and MOD12--MOD15 long/absolute forms are separate seams and stay out of scope."
+    },
+    {
+      "id": "E-PROJECT-P2-W61-LDR-INDEXED-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)"},
+      "assertion": "W61 is the planned Table 2-19 FORM-T2-19-19 indexed activation contract: two LDR rows LDR_MOD5 at 0x16A8 and LDR_MOD6 at 0x16B0 under mask 0xFEF8 with one program word, the reused ACCUMULATOR_ARF_MOD4 layout, UNRESOLVED repeatability, and STATUS_SXM resources. Indexed Smem reads use the existing INDEXED_AR0_WORD16 seam with selected-AR post-update, followed by the W60 rounding completion; C/TC/OV stay preserved with no OVM input, AR0 must be known, and unknown SXM rejects transactionally. No new layout, address kind, effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W61-LDR-INDEXED-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)"},
+      "assertion": "W61 activates the LDR_MOD5/LDR_MOD6 rows with AR0-indexed Smem reads, AR update commits, rounding writeback, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 stays inventory SUBSET. Realized 143 catalog rows, ID_COUNT 144, 5,341 lookup entries, 144 bindings, family coverage 53/205, and 33/205 strict complete-form coverage."
+    },
+    {
       "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
       "immutable": true,
       "state": "PINNED",
@@ -7966,6 +7999,66 @@
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
+      "id": "REQ-COMMON-P2-W61-LDR-INDEXED-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the LDR_MOD5 row at 0x16A8 and the LDR_MOD6 row at 0x16B0, both under mask 0xFEF8 with one program word, the ACCUMULATOR_ARF_MOD4 layout, UNRESOLVED repeatability, and STATUS_SXM resources, each disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-4-INDEXED-MOD5-MOD6-P5-12"],
+      "test_ids": ["T-COMMON-P2-W61-LDR-INDEXED-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W61-LDR-INDEXED-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every LDR indexed first word through the generic decoder with complete one-word bundles, scalar metadata, and destination/ARF/mode extraction; malformed inputs reject transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-4-INDEXED-MOD5-MOD6-P5-12"],
+      "test_ids": ["T-COMMON-P2-W61-LDR-INDEXED-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W61-LDR-INDEXED-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute LDR MOD5/MOD6 as AR0-indexed Smem D-bus reads with selected-AR post-update commit, SXM-widened value shifted left 16 with rounding constant 0x8000 and bits 14-0 cleared, C/TC/OV preservation with no OVM input, and transactional unknown-SXM/unknown-AR0 rejection; enforce per-row identity on checked and trusted leaves with transactional rejection of invalid inputs.",
+      "evidence_ids": ["E-TI-C54X-SPRU131G-S5-4-INDEXED-MOD5-MOD6-P5-12", "E-TI-C54X-SPRU172C-S4-LDR-SEMANTICS-P4-78"],
+      "test_ids": ["T-COMMON-P2-W61-LDR-INDEXED-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the LDR indexed rows through macro-driven dispatch with the same identity, metadata, and handler presence as the canonical catalog.",
+      "evidence_ids": ["E-PROJECT-P2-W61-LDR-INDEXED-PLAN-ANCHOR", "E-PROJECT-P2-W61-LDR-INDEXED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W61-LDR-INDEXED-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LDR MOD5/MOD6 through the generic CPU path with one-word PC advance, SXM/AR0 input collection, one D-bus DATA read, selected-AR post-update commit, rounding writeback, C/TC/OV preservation, and no other endpoint traffic.",
+      "evidence_ids": ["E-PROJECT-P2-W61-LDR-INDEXED-PLAN-ANCHOR", "E-PROJECT-P2-W61-LDR-INDEXED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W61-LDR-INDEXED-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-19-19 indexed addressing with the LDR_MOD5 and LDR_MOD6 catalog symbols, keeping the form at inventory SUBSET.",
+      "evidence_ids": ["E-PROJECT-P2-W61-LDR-INDEXED-PLAN-ANCHOR", "E-PROJECT-P2-W61-LDR-INDEXED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
       "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -9378,7 +9471,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9842,7 +9935,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -10691,6 +10784,38 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ldr_smem.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ldr_smem"},
       "requirement_ids": ["REQ-PROJECT-P2-W60-LDR-SMEM-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W61-LDR-INDEXED-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_indexed_standard_indirect_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indexed_standard_indirect_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W61-LDR-INDEXED-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W61-LDR-INDEXED-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_indexed_standard_indirect_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indexed_standard_indirect_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W61-LDR-INDEXED-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W61-LDR-INDEXED-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_indexed_standard_indirect_load_effects.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.indexed_standard_indirect_load_effects"},
+      "requirement_ids": ["REQ-COMMON-P2-W61-LDR-INDEXED-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W61-LDR-INDEXED-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/memory/test_cpu_indexed_standard_indirect.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_indexed_standard_indirect"},
+      "requirement_ids": ["REQ-PROJECT-P2-W61-LDR-INDEXED-CPU-RETIREMENT"]
     },
     {
       "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",
