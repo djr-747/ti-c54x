@@ -83,6 +83,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_SHIFT4_LK16,
     /* Two-word branch with copied 16-bit program-memory target. */
     TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16,
+    /* Two-word branch with copied 8-bit condition and 16-bit target. */
+    TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -112,6 +114,10 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_TC))
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_TC))
 #define TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_SXM | \

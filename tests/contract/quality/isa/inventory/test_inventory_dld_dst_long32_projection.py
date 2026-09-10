@@ -50,9 +50,9 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 145)
-        self.assertEqual(len(rows) + 1, 146)  # UNKNOWN retains identity zero.
-        self.assertEqual(len(inventory["catalog_bindings"]), 145)
+        self.assertEqual(len(rows), 146)
+        self.assertEqual(len(rows) + 1, 147)  # UNKNOWN retains identity zero.
+        self.assertEqual(len(inventory["catalog_bindings"]), 146)
         self.assertEqual(
             {symbol for symbol in SYMBOLS if symbol in by_symbol},
             set(SYMBOLS),
@@ -75,11 +75,11 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
                 self.assertEqual(row.input_resources, RESOURCES[symbol])
 
         rendered_lookup = render_lookup(rows)
-        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 5310)
+        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 5566)
         report = report_inventory(self.root)
-        self.assertEqual(report["catalog_family_progress"], {"covered": 53, "denominator": 205})
+        self.assertEqual(report["catalog_family_progress"], {"covered": 54, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"], {"covered": 33, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 25.854, places=3)
+        self.assertAlmostEqual(report["catalog_family_percent"], 26.341, places=3)
         self.assertAlmostEqual(report["strict_complete_percent"], 16.098, places=3)
 
 

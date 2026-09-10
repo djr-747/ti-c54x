@@ -152,17 +152,20 @@ test_delayed_word_is_unknown(void)
 static void
 test_fixed_bit_near_misses(void)
 {
-    /* Mask 0xFFFF leaves no operand bit variable. Flipping fixed bit 7
-     * lands on the SFTL_ACC sibling, flipping fixed bit 6 lands on
-     * AND_IMMEDIATE_SHIFT, flipping fixed bit 5 lands on
-     * XOR_IMMEDIATE_SHIFT, and flipping fixed bit 4 lands on
-     * AND_IMMEDIATE_SHIFT16; all other fixed-bit flips (including the
-     * deferred delayed bit 9) must miss every row. */
+    /* Mask 0xFFFF leaves no operand bit variable. Flipping fixed bit 11
+     * lands on the BC_PMAD sibling, flipping fixed bit 7 lands on
+     * SFTL_ACC, flipping fixed bit 6 lands on AND_IMMEDIATE_SHIFT,
+     * flipping fixed bit 5 lands on XOR_IMMEDIATE_SHIFT, and flipping
+     * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16; all other fixed-bit
+     * flips (including the deferred delayed bit 9) must miss every
+     * row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100), UINT16_C(0x0200),
-        UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x0400), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x4000), UINT16_C(0x8000)};
+    const ti_c54x_decode_result bc_sibling =
+        ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0800)));
     const ti_c54x_decode_result sftl_sibling =
         ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0080)));
     const ti_c54x_decode_result and_sibling =
@@ -172,6 +175,8 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result and16_sibling =
         ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0010)));
 
+    TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
     TI_C54X_TEST_CHECK(sftl_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sftl_sibling.id == TI_C54X_OPCODE_ID_SFTL_ACC);
     TI_C54X_TEST_CHECK(and_sibling.status == TI_C54X_DECODE_STATUS_OK);

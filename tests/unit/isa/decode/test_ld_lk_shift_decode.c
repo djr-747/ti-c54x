@@ -155,7 +155,7 @@ test_fixed_bit_near_misses(void)
      * SUB_ACC_SHIFT; all other fixed-bit flips must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0200),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result and_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
@@ -166,6 +166,11 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result sub_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
                                             UINT16_C(0x0400)));
+    /* 0xF820 (fixed bit 11 set) is the BC_PMAD encoding with
+     * cond=0x20 (NTC): valid row, wrong identity. */
+    const ti_c54x_decode_result bc_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
+                                            UINT16_C(0x0800)));
 
     TI_C54X_TEST_CHECK(and_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(and_sibling.id ==
@@ -174,6 +179,8 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(or_sibling.id == TI_C54X_OPCODE_ID_OR_ACC_SHIFT);
     TI_C54X_TEST_CHECK(sub_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sub_sibling.id == TI_C54X_OPCODE_ID_SUB_ACC_SHIFT);
+    TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

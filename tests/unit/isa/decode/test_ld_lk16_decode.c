@@ -153,7 +153,7 @@ test_fixed_bit_near_misses(void)
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0002), UINT16_C(0x0004), UINT16_C(0x0008),
         UINT16_C(0x0010), UINT16_C(0x0200),
-        UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
+        UINT16_C(0x0400), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result sftl_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0080)));
@@ -165,6 +165,10 @@ test_fixed_bit_near_misses(void)
      * D=0, SHFT=2: valid row, wrong identity. */
     const ti_c54x_decode_result lk_shift_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0040)));
+    /* 0xF862 (fixed bit 11 set) is the BC_PMAD encoding with
+     * cond=0x62: valid row, wrong identity. */
+    const ti_c54x_decode_result bc_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0800)));
 
     TI_C54X_TEST_CHECK(sftl_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sftl_sibling.id == TI_C54X_OPCODE_ID_SFTL_ACC);
@@ -175,6 +179,8 @@ test_fixed_bit_near_misses(void)
                        TI_C54X_OPCODE_ID_AND_IMMEDIATE_SHIFT16);
     TI_C54X_TEST_CHECK(lk_shift_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(lk_shift_sibling.id == TI_C54X_OPCODE_ID_LD_LK_SHIFT);
+    TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

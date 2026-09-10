@@ -399,3 +399,18 @@ static const ti_c54x_operand_field_layout
          UINT8_C(16)}};
 const ti_c54x_operand_layout_set ti_c54x_branch_pmad16_set = {
     ti_c54x_branch_pmad16_operands, UINT8_C(1)};
+
+static const ti_c54x_operand_field_piece
+    ti_c54x_branch_cond_pmad16_cond_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_branch_cond_pmad16_pmad_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_branch_cond_pmad16_operands[2] = {
+        {&ti_c54x_branch_cond_pmad16_cond_piece, UINT8_C(1),
+         UINT8_C(8)},
+        {&ti_c54x_branch_cond_pmad16_pmad_piece, UINT8_C(1),
+         UINT8_C(16)}};
+const ti_c54x_operand_layout_set ti_c54x_branch_cond_pmad16_set = {
+    ti_c54x_branch_cond_pmad16_operands, UINT8_C(2)};

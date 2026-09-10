@@ -148,13 +148,17 @@ test_fixed_bit_near_misses(void)
      * lands on the LD_IMMEDIATE_DP sibling; all other fixed-bit flips
      * must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
+        UINT16_C(0x0400), UINT16_C(0x0800),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_K_VALUE ^ UINT16_C(0x0200)));
+    const ti_c54x_decode_result bc_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_K_VALUE ^ UINT16_C(0x1000)));
 
     TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP);
+    TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
