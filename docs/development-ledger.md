@@ -7468,3 +7468,63 @@ rewritten after publication.
 - Follow-up work: LD syntaxes 5, 7, 8 (`FORM-T2-19-06`, `-08`,
   `-09`: Xmem dual, #lk immediate pair) remain, then ST/STH/STL
   stores; ADD/SUB remainder and MAC/MPY families follow.
+
+## 2026-09-10 — P2-W57 LD #lk,16,dst vertical slice
+
+- Implementation commit `8389161` activates Table 2-19 form
+  `FORM-T2-19-09`, TI SPRU172C §4 LD syntax 8: one row `LD_LK_16` at
+  first-word value `0xF062` under mask `0xFEFF` (two encodings),
+  two program words with destination in bit 8 and the copied raw
+  16-bit `lk` in word 1, a new `ACCUMULATOR_IMMEDIATE_LK16` layout,
+  `UNRESOLVED` repeatability, and `STATUS_SXM` input resources.
+  Ground truth is dual-sourced: the SPRU172C mnemonic mirror (printed
+  pp. 4-66–4-68) and the SPRU179C algebraic volume (p. 4-67) agree on
+  all ten LD opcode diagrams.
+- Semantics is `dst = SXM-widen(lk) << 16`: SXM=0 zero-extends,
+  SXM=1 sign-extends bit 15, followed by logical left shift 16 in
+  canonical 40-bit space. Pinned vectors mirror the fixed-16 W38
+  precedent (`0000` zero both modes; `7fff` `0x007fff0000`;
+  `8000` `0x0080000000`/`0xff80000000`; `ffff`
+  `0x00ffff0000`/`0xffffff0000`). C/TC/OV stay preserved with no OVM
+  input; unknown SXM rejects transactionally. No memory touched.
+- Evidence: three new TI records (syntax-8 opcode, shift-16
+  semantics with the no-worked-lk-example caveat, T2-28
+  repeatability boundary), plan anchor plus activation records, six
+  requirements, and four RED contracts (metadata with 65,536-word
+  disjointness sweep, decode with SFTL/OR/AND-immediate sibling
+  pins, ops exhaustive over D×65536 lk×SXM with five-way parity
+  and an independent oracle, CPU sweep with unknown-SXM
+  rejection). `FORM-T2-19-09` is inventory COMPLETE; the
+  trusted-binding and inventory-catalog-binding tests extend their
+  back-links. The row is reset-runnable (SXM is reset-known).
+- Review correction: independent review caught a bit-1 misread in
+  the first implementation (`0xF060`; the diagram low byte
+  `0110_0010` is `0x62`). The value, handler identity checks,
+  near-miss pins (now SFTL/OR/AND-immediate siblings), and all
+  evidence/plan assertions were corrected to `0xF062`/`0xF162`
+  before commit; the corrected lookup nests cleanly between the
+  XOR/AND immediate rows.
+- Validation is GREEN: fast C suite (all binaries incl. the four
+  new runners); contract quality unittest 264/268 with only the
+  four pre-existing `-m32`/ILP32 SIGSYS environmental failures;
+  knobs, source boundaries (540 files, SIZE_REVIEW warnings only),
+  manifests, evidence (384 requirements with 353 IMPLEMENTED, 320
+  tests all PASSING), inventory (49/205 family 23.902%, 31/205
+  strict), and observer-disabled structure pass. Focused
+  ASan/UBSan 4/4 GREEN (`ASAN_OPTIONS=detect_leaks=0`; LSan
+  cannot run under this container's ptrace). Fresh CMake/CTest
+  Debug passes 302/303 excluding `quality.python` (same four
+  environmental subfailures); full sanitizer CMake/CTest passes
+  302/302 excluding `quality.python`. Registry closure is 244
+  immutable evidence records. No knob was added or changed.
+  Nothing was pushed.
+- Decisions: `operand_layout.c` retained cohesive at 731 lines
+  (+21); the standing split-before-800 rule binds, so W58 must
+  split before adding another layout. A `repeat_pending_request`
+  CTest failure seen only under a non-CI `-O3` Release configure
+  is a pre-existing struct-padding sensitivity unrelated to this
+  slice (no state/sequencer file touched); the CI `Debug`
+  configure is GREEN.
+- Follow-up work: LD syntaxes 5, 7 (`FORM-T2-19-06` Xmem/SHFT
+  dual, `FORM-T2-19-08` #lk/SHFT pair) remain, then ST/STH/STL
+  stores; ADD/SUB remainder and MAC/MPY families follow.
