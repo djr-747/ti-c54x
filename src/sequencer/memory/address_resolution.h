@@ -6,9 +6,11 @@
  *
  * Owns: pure resolution of the generic W16 data-memory address descriptor
  * against caller-owned architectural state, including CMPT=0 single-indirect
- * MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step circular MOD8/MOD10, and
- * reverse-carry MOD4/MOD7 forms, a value-owned address result, prevalidated
- * AR commit, and DATA bus request.
+ * MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step circular MOD8/MOD10,
+ * reverse-carry MOD4/MOD7, and X-only dual-indirect MOD0--MOD3 forms, a
+ * value-owned address result, prevalidated AR commit, and DATA bus request.
+ * The AR0/BK shadows are populated only by the X-only MOD3 path and stay
+ * zero otherwise.
  * Does not own: opcode identity, memory visibility, endpoint callbacks,
  * architectural mutation, timing, CPU lifecycle, or diagnostics. State and
  * descriptor inputs are borrowed for one call; output owns no pointers and
@@ -40,6 +42,9 @@ typedef struct ti_c54x_memory_address_resolution {
     ti_c54x_address_result address_result;
     ti_c54x_sequencer_address_commit address_commit;
     ti_c54x_bus_word16_request request;
+    /* Copied AR0/BK observed only by the X-only MOD3 path; zero otherwise. */
+    uint16_t ar0_shadow;
+    uint16_t bk_shadow;
 } ti_c54x_memory_address_resolution;
 
 /* Resolve one supported generic address and stage all fallible candidates. */

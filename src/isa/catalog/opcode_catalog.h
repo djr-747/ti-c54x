@@ -65,6 +65,8 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
     /* One-word dual-memory ADD/SUB fields: destination, X AR, Y AR. */
     TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR,
+    /* One-word LD Xmem fields: destination, Xmod, raw Xar, SHFT. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4,
     /* Indexed standard-indirect fields retain existing operands and widen
      * MOD [4:3] to carry the MOD5/MOD6 discriminator in bits [6:3]. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4,
@@ -131,6 +133,11 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_C_SXM_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* Dual Xmem loads read ARs plus SXM/OVM but never carry. */
+#define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_SXM_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \

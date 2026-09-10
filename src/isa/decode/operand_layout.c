@@ -97,6 +97,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR] = {
             TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, UINT8_C(1),
             &ti_c54x_dual_destination_xar_yar_set},
+        [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4] = {
+            TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4,
+            UINT8_C(1), &ti_c54x_accumulator_dual_xmod_xar_shift4_set},
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, UINT8_C(1),
             &ti_c54x_accumulator_arf_mod4_set},
@@ -252,6 +255,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_dual_destination_xar_yar_set;
+    case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_accumulator_dual_xmod_xar_shift4_set;
     case TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_accumulator_arf_mod4_set;

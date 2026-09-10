@@ -339,6 +339,35 @@ const ti_c54x_operand_layout_set
     ti_c54x_dual_destination_xar_yar_set = {
         ti_c54x_dual_destination_xar_yar_operands, UINT8_C(3)};
 
+/* Syntax-5 LD Xmem fields: D[8], Xmod[7:6], raw Xar[5:4], SHFT[3:0].
+ * The handler maps the raw Xar field to AR2..AR5; decode exposes raw
+ * bits exactly like the dual syntax-6 family. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_dual_xmod_xar_shift4_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_dual_xmod_xar_shift4_xmod_piece = {
+        UINT8_C(0), UINT8_C(6), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_dual_xmod_xar_shift4_xar_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_accumulator_dual_xmod_xar_shift4_shift_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_dual_xmod_xar_shift4_operands[4] = {
+        {&ti_c54x_accumulator_dual_xmod_xar_shift4_destination_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_accumulator_dual_xmod_xar_shift4_xmod_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_accumulator_dual_xmod_xar_shift4_xar_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_accumulator_dual_xmod_xar_shift4_shift_piece, UINT8_C(1),
+         UINT8_C(4)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_accumulator_dual_xmod_xar_shift4_set = {
+        ti_c54x_accumulator_dual_xmod_xar_shift4_operands, UINT8_C(4)};
+
 /* Syntax-7 long-immediate fields: D[8], unsigned SHFT[3:0], lk[+1]. */
 static const ti_c54x_operand_field_piece
     ti_c54x_accumulator_immediate_shift4_lk16_destination_piece = {

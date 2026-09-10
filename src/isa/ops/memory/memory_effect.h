@@ -40,7 +40,10 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16 = 3,
     TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16 = 4,
     TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 = 5,
-    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 = 6
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 = 6,
+    /* Single X-side read through the dual planner with Y self-aliased;
+     * only the X read is issued and only the X update commits. */
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY = 7
 } ti_c54x_op_memory_address_kind;
 
 /*

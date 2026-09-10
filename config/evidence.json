@@ -3442,6 +3442,50 @@
       "assertion": "The LD description defines execution 7 as dst = lk << SHFT and states status bits are affected by SXM in all accumulator loads, affected by OVM in loads with SHIFT or ASM shift, and affect OVdst in loads with SHIFT or ASM shift. No worked example pins a signed lk vector for syntax 7 or 8; Examples 1-6 cover syntaxes 1, 2, 3, 6, and 10 only."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-SYNTAX5-OPCODE-P4-66-4-68",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-68"},
+      "assertion": "The LD description defines syntax 5 LD Xmem,SHFT,dst as a single-word form: word0 1001_010D_XXXX_SHFT with the destination accumulator in bit 8, the dual-addressing XXXX field in bits 7-4, and an unsigned 4-bit SHFT in bits 3-0 spanning 0 to 15, giving first-word value 0x9400 under mask 0xFE00 with 512 encodings. The SPRU179C algebraic volume page 4-67 agrees on all ten LD opcode diagrams. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-SYNTAX5-SEMANTICS-P4-66-4-68",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LD", "printed_page_start": "4-66", "printed_page_end": "4-68"},
+      "assertion": "The LD description defines execution 5 as dst = Xmem << SHFT and states status bits are affected by SXM in all accumulator loads, affected by OVM in loads with SHIFT or ASM shift, and affect OVdst in loads with SHIFT or ASM shift. No worked example pins an Xmem vector for syntax 5."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S5-5-4-LD-XMEM-ADDRESSING-P5-19-5-22",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "5", "section": "5.5.4/Figure 5‑11/Tables 5‑6–5‑8", "printed_page_start": "5-19", "printed_page_end": "5-22"},
+      "assertion": "Figure 5-11 and Table 5-6 allocate dual-format bits 7-6 to Xmod and bits 5-4 to Xar; Table 5-7 maps Xar 00/01/10/11 to AR2/AR3/AR4/AR5; Table 5-8 defines Xmod 00/01/10 as *ARx, *ARx- with post-decrement, *ARx+ with post-increment, and Xmod 11 as *ARx+0% circular with AR0/BK. Section 5.5.4.4 states single-operand dual-format instructions (including LD Xmem,SHFT,dst) expose only Xmem with Xmod/Xar defining the mode, and the Xmem read travels the D bus."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-XMEM-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "2", "section": "2.5/Table 2‑28", "printed_page_start": "2-19", "printed_page_end": "2-21"},
+      "assertion": "The repeat section states that instructions listed in Table 2-28 cannot be repeated with RPT or RPTZ; Table 2-28 lists only LD ARP and LD DP among loads, and LD Xmem,SHFT,dst is not listed. The source does not provide a positive all-unlisted-forms rule, so this record is a repeatability boundary only and does not authorize an ELIGIBLE classification."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-LK-SHIFT-REPEATABILITY-BOUNDARY",
       "immutable": true,
       "state": "PINNED",
@@ -3627,6 +3671,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W58: LD #lk[,SHFT],dst vertical slice (planned)"},
       "assertion": "W58 activates the LD #lk[,SHFT],dst row with SXM widening, unsigned 4-bit shift, OVM saturation, sticky destination overflow, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-08 is inventory COMPLETE. Realized 140 catalog rows, ID_COUNT 141, 4,701 lookup entries, 140 bindings, family coverage 50/205, and 32/205 strict complete-form coverage."
+    },
+    {
+      "id": "E-PROJECT-P2-W59-LD-XMEM-SHIFT-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W59: LD Xmem,SHFT,dst vertical slice (planned)"},
+      "assertion": "W59 is the planned Table 2-19 form FORM-T2-19-06 activation contract: one LD Xmem,SHFT,dst row at first-word value 0x9400 under mask 0xFE00 with one program word, a new ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4 operand layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_SXM_OVM input resources. The Xmem D-bus read uses Xmod/Xar dual-indirect addressing with AR update through one X-only address kind reusing the pair planner with Y self-aliased (single WORD16 read through the single-read child, X commit only), followed by SXM widening, unsigned 4-bit shift, OVM saturation, and sticky destination overflow; C/TC stay preserved and unknown AR/SXM/OVM rejects transactionally. No new effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted beyond the single X-only address kind."
+    },
+    {
+      "id": "E-PROJECT-P2-W59-LD-XMEM-SHIFT-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W59: LD Xmem,SHFT,dst vertical slice (planned)"},
+      "assertion": "W59 activates the LD Xmem,SHFT,dst row with dual-indirect Xmem reads, AR update commit, SXM widening, unsigned 4-bit shift, OVM saturation, sticky destination overflow, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-06 is inventory COMPLETE. Realized 141 catalog rows, ID_COUNT 142, 5,213 lookup entries, 141 bindings, family coverage 51/205, and 33/205 strict complete-form coverage."
     },
     {
       "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
@@ -7725,6 +7791,66 @@
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
+      "id": "REQ-COMMON-P2-W59-LD-XMEM-SHIFT-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the LD Xmem,SHFT,dst row with first-word value 0x9400 under mask 0xFE00, one program word, the ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4 layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_SXM_OVM resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX5-OPCODE-P4-66-4-68", "E-TI-C54X-SPRU131G-S5-5-4-LD-XMEM-ADDRESSING-P5-19-5-22"],
+      "test_ids": ["T-COMMON-P2-W59-LD-XMEM-SHIFT-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W59-LD-XMEM-SHIFT-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every LD Xmem,SHFT,dst first word through the generic decoder with complete one-word bundles, scalar metadata, and destination/Xmod/Xar/SHFT extraction; malformed inputs reject transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX5-OPCODE-P4-66-4-68", "E-TI-C54X-SPRU131G-S5-5-4-LD-XMEM-ADDRESSING-P5-19-5-22"],
+      "test_ids": ["T-COMMON-P2-W59-LD-XMEM-SHIFT-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W59-LD-XMEM-SHIFT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute LD Xmem,SHFT,dst as a dual-indirect Xmem D-bus read with AR update commit, SXM-widened value shifted left by the unsigned SHFT with OVM saturation, sticky destination overflow, C/TC preservation, and transactional unknown-AR/SXM/OVM rejection; enforce per-row identity on checked and trusted leaves with transactional rejection of invalid inputs.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LD-SYNTAX5-SEMANTICS-P4-66-4-68", "E-TI-C54X-SPRU131G-S5-5-4-LD-XMEM-ADDRESSING-P5-19-5-22", "E-TI-C54X-SPRU172C-S2-5-T2-28-LD-XMEM-REPEATABILITY-BOUNDARY"],
+      "test_ids": ["T-COMMON-P2-W59-LD-XMEM-SHIFT-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the LD Xmem,SHFT,dst row through macro-driven dispatch with the same identity, metadata, and handler presence as the canonical catalog.",
+      "evidence_ids": ["E-PROJECT-P2-W59-LD-XMEM-SHIFT-PLAN-ANCHOR", "E-PROJECT-P2-W59-LD-XMEM-SHIFT-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LD Xmem,SHFT,dst through the generic CPU path with one-word PC advance, AR/SXM/OVM input collection, one D-bus DATA read, AR update commit, saturation/overflow effects, C/TC preservation, and no other endpoint traffic.",
+      "evidence_ids": ["E-PROJECT-P2-W59-LD-XMEM-SHIFT-PLAN-ANCHOR", "E-PROJECT-P2-W59-LD-XMEM-SHIFT-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W59-LD-XMEM-SHIFT-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-19-06 as inventory COMPLETE under ALL addressing with the LD_XMEM_SHIFT catalog symbol.",
+      "evidence_ids": ["E-PROJECT-P2-W59-LD-XMEM-SHIFT-PLAN-ANCHOR", "E-PROJECT-P2-W59-LD-XMEM-SHIFT-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
       "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -9137,7 +9263,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9601,7 +9727,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -10386,6 +10512,38 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_lk_shift.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_lk_shift"},
       "requirement_ids": ["REQ-PROJECT-P2-W58-LD-LK-SHIFT-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W59-LD-XMEM-SHIFT-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ld_xmem_shift_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_xmem_shift_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W59-LD-XMEM-SHIFT-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W59-LD-XMEM-SHIFT-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ld_xmem_shift_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_xmem_shift_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W59-LD-XMEM-SHIFT-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W59-LD-XMEM-SHIFT-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ld_xmem_shift.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ld_xmem_shift"},
+      "requirement_ids": ["REQ-COMMON-P2-W59-LD-XMEM-SHIFT-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W59-LD-XMEM-SHIFT-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ld_xmem_shift.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_xmem_shift"},
+      "requirement_ids": ["REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-CPU-RETIREMENT"]
     },
     {
       "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",

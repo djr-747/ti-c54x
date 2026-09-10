@@ -3,7 +3,8 @@
  *
  * Owns: ordered, non-mutating resolution of a generic CMPT=0 W16 data
  * address (single-indirect MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step
- * circular MOD8/MOD10, or reverse-carry MOD4/MOD7) into the existing checked
+ * circular MOD8/MOD10, reverse-carry MOD4/MOD7, or X-only dual-indirect
+ * MOD0--MOD3) into the existing checked
  * address planner and request constructor.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
  * mutation, timing, lifecycle, or diagnostics.
@@ -13,6 +14,7 @@
 
 #include <stddef.h>
 
+#include "address/indirect_dual.h"
 #include "address/indirect_long_offset.h"
 #include "address/indirect_reverse_carry.h"
 #include "state/block_size_register.h"
@@ -90,6 +92,18 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
+    } else if (spec->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY) {
+        if (spec->dual.x_mode > UINT8_C(3) || spec->dual.x_ar < UINT8_C(2) ||
+            spec->dual.x_ar > UINT8_C(5) ||
+            spec->dual.y_mode != spec->dual.x_mode ||
+            spec->dual.y_ar != spec->dual.x_ar ||
+            spec->dual.reserved_word0 != UINT32_C(0) ||
+            spec->dual.reserved_word1 != UINT32_C(0) ||
+            spec->dual.reserved_word2 != UINT32_C(0) ||
+            spec->dual.reserved_word3 != UINT32_C(0)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
     } else {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
     }
@@ -148,6 +162,63 @@ ti_c54x_sequencer_resolve_memory_address(
         out->address_result = address_result;
         out->address_commit = address_commit;
         out->request = request_result.request;
+        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
+    }
+
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY) {
+        uint16_t x_ar_value = UINT16_C(0);
+        uint16_t ar0_value = UINT16_C(0);
+        uint16_t bk_value = UINT16_C(0);
+        ti_c54x_indirect_dual_result dual_result;
+
+        /* X-only reads observe no CMPT/ARP state: the selector stays
+         * directly encoded and AR0/BK are read lazily for MOD3 only. */
+        if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
+            write_value_word != UINT16_C(0)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
+        }
+        if (ti_c54x_arch_state_read_ar(state, spec->dual.x_ar,
+                                       &x_ar_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+        if (spec->dual.x_mode == UINT8_C(3)) {
+            if (ti_c54x_arch_state_read_ar(state, UINT8_C(0), &ar0_value) !=
+                    TI_C54X_ARCH_STATE_OK ||
+                ti_c54x_arch_state_read_bk(state, &bk_value) !=
+                    TI_C54X_ARCH_STATE_OK) {
+                return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+            }
+        }
+        dual_result = ti_c54x_indirect_dual_word16(
+            spec->dual.x_ar, x_ar_value, spec->dual.x_ar, x_ar_value,
+            (ti_c54x_indirect_dual_mode)spec->dual.x_mode,
+            (ti_c54x_indirect_dual_mode)spec->dual.x_mode, ar0_value,
+            bk_value, TI_C54X_ADDRESS_ACCESS_READ);
+        if (dual_result.status != TI_C54X_ADDRESS_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        /* Only the X side is issued: validate its effect at the phase
+         * selected by the actual planner result. The self-aliased Y side
+         * carries no independent update by planner contract and is
+         * discarded here, so exactly one read commits exactly one update. */
+        address_status = ti_c54x_sequencer_validate_address_effect(
+            state, &dual_result.x, dual_result.x.effect.update.phase,
+            &address_commit);
+        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        request_result = ti_c54x_bus_word16_request_read(
+            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+            dual_result.x.effect.operand.first_word);
+        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
+        }
+        out->address_result = dual_result.x;
+        out->address_commit = address_commit;
+        out->request = request_result.request;
+        out->ar0_shadow = ar0_value;
+        out->bk_shadow = bk_value;
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
