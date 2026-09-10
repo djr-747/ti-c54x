@@ -7528,3 +7528,59 @@ rewritten after publication.
 - Follow-up work: LD syntaxes 5, 7 (`FORM-T2-19-06` Xmem/SHFT
   dual, `FORM-T2-19-08` #lk/SHFT pair) remain, then ST/STH/STL
   stores; ADD/SUB remainder and MAC/MPY families follow.
+
+## 2026-09-10 — P2-W58 LD #lk[,SHFT],dst vertical slice
+
+- Prerequisite refactor commit `30388b8` splits `operand_layout.c`
+  (731 lines) into the static piece/set tables file
+  `operand_layout_sets.c` (340 lines) and the plans/resolver file
+  (410 lines), with set objects externed via
+  `operand_layout_internal.h`. Behavior-preserving: full suite
+  green modulo the four pre-existing `-m32`/ILP32 environmental
+  failures before and after.
+- Implementation commit `d4cc3fe` activates Table 2-19 form
+  `FORM-T2-19-08`, TI SPRU172C §4 LD syntax 7: one row
+  `LD_LK_SHIFT` at first-word value `0xF020` under mask `0xFEF0`
+  (destination bit 8, unsigned 4-bit SHFT bits 3:0, 32 encodings),
+  two program words with the copied raw 16-bit `lk` in word 1, a
+  new `ACCUMULATOR_IMMEDIATE_SHIFT4_LK16` layout, `UNRESOLVED`
+  repeatability, and `STATUS_SXM_OVM` input resources. Ground
+  truth is dual-sourced (SPRU172C pp. 4-66–4-68, SPRU179C p. 4-67).
+- Semantics is `dst = SXM-widen(lk) << SHFT` with OVM saturation
+  and sticky destination overflow on guard-bit overflow following
+  the variable-shift W53/W54 precedent; C/TC stay preserved and
+  unknown SXM/OVM rejects transactionally. Omitted SHFT is 0; the
+  assembler redirect of SHFT=0 small lk to syntax 6 does not
+  narrow decode.
+- Evidence: three new TI records (syntax-7 opcode with assembler
+  notes, shift semantics, T2-28 repeatability boundary), plan
+  anchor plus activation records, six requirements, and four RED
+  contracts (metadata with 65,536-word disjointness sweep, decode
+  with AND/OR-ACC/SUB-ACC sibling pins, ops exhaustive over
+  2×16×65536×2×2 with five-way parity and an independent
+  saturation oracle, CPU sweep with unknown-SXM/OVM rejection).
+  `FORM-T2-19-08` is inventory COMPLETE; the trusted-binding and
+  inventory-catalog-binding tests extend their back-links. The W57
+  decode test converts its `^0x0040` pin to an `LD_LK_SHIFT`
+  sibling (`0xF022`, D=0 SHFT=2) as anticipated.
+- Validation is GREEN: all 300 C test binaries pass; contract
+  quality unittest 264/268 with only the four pre-existing
+  `-m32`/ILP32 SIGSYS environmental failures; knobs, source
+  boundaries (547 files, SIZE_REVIEW warnings only), manifests,
+  evidence (390 requirements with 359 IMPLEMENTED, 324 tests all
+  PASSING), inventory (50/205 family 24.390%, 32/205 strict), and
+  observer-disabled structure pass. Focused ASan/UBSan 4/4 GREEN
+  (`ASAN_OPTIONS=detect_leaks=0`). Fresh CMake/CTest Debug passes
+  306/307 excluding `quality.python` (same four environmental
+  subfailures); full sanitizer CMake/CTest passes 306/306
+  excluding `quality.python`. Registry closure is 249 immutable
+  evidence records. No knob was added or changed. Nothing was
+  pushed.
+- Process finding: the Makefile `test` recipe runs the Python
+  quality gate before the C binaries, so a C regression hides
+  behind the known environmental quality failure. Full C
+  validation here ran all 300 binaries explicitly plus CTest;
+  future slices must do the same until the recipe order is fixed.
+- Follow-up work: LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT dual,
+  needs the dual-addressing seam) remains, then ST/STH/STL
+  stores; ADD/SUB remainder and MAC/MPY families follow.
