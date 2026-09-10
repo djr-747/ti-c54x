@@ -7876,3 +7876,88 @@ rewritten after publication.
   delayed `BD` variant waits on the delay-slot seam. Open: fix the
   `make test` recipe order so C regressions cannot hide behind the
   environmental quality failure.
+
+## 2026-09-11 — P2-W63 BC pmad,cond conditional-branch vertical slice
+
+- Implementation commit `d276feb` activates Table 2-12 form
+  `FORM-T2-12-04` as `SUBSET`, TI SPRU172C §4 `BC[D]` (printed
+  pp. 4-18–4-20, cross-checked against the SPRU179C algebraic
+  volume `if (cond(s)) goto pmad`, class 31A, §4-18, which agrees
+  on the opcode diagram, conditional `PC = pmad(15-0)` execution,
+  and the worked examples): one row `BC_PMAD` at first-word value
+  `0xF800` under mask `0xFF00` (bits `1111_10Z0` with Z=0 plus the
+  8-bit condition code; Z=1 is the deferred delayed `BCD` variant
+  and decodes `UNKNOWN_WORD`), two program words, 256 encodings.
+  The new `BRANCH_COND_PMAD16` layout carries the copied condition
+  code and second-word pmad; repeatability is `INELIGIBLE` on the
+  manual's explicit "not repeatable" note; input resources are the
+  new `ACCUMULATORS_STATUS_C_TC` combination (schema token set
+  extended alongside the header macro).
+- Semantics implements the 16 image-evidenced single conditions
+  covering 1,752 of 1,754 static uses: TC/NTC/C/NC plus the twelve
+  A/B compares as full-40-bit two's-complement signed
+  project-interpretation pins (guard bits included; TI shows no
+  guard-nonzero vector — the residual risk is recorded here, not
+  hidden). Taken emits `PC_WRITE(pmad)` through the W62 route;
+  not-taken emits effect `NONE` through the proven sequential
+  bridge, so `run.c` is unchanged. Knownness is demanded only for
+  consumed inputs (a TC condition ignores unknown accumulators).
+  BIO/NBIO (external-pin seam), UNC, AOV/BOV/ANOV/BNOV (OVA/OVB
+  effect seam), multi-condition combinations, and delayed `BCD`
+  reject `INVALID_OPERAND` transactionally. Worked examples pin
+  `BC 2000h,AGT` with `A=00 0000 0053,PC=1000` to `PC=2000` and
+  with `A=FF FFFF FFFF` to `PC=1002`, both retired at CPU level.
+- Evidence: three new TI records (opcode, semantics with condition
+  table and combination rules, explicit nonrepeatable note), plan
+  anchor plus activation records, six requirements, and four RED
+  contracts (metadata with 65,536-word disjointness sweep and
+  256-encoding population, decode exhaustive over all 256 codes
+  with Z=1 and LD_K pins, ops exhaustive over 16 conditions with
+  accumulator boundaries plus all-256-code classification against
+  an independent oracle, CPU with taken/not-taken retirement,
+  worked-example origins, unknown-input and second-word-fault
+  transactionality). `FORM-T2-12-04` is inventory `SUBSET` under
+  the `ABSOLUTE_PMAD_COND` token.
+- Review findings during construction: the lookup generator's
+  resource-token set needed the new combo alongside the header
+  macro (a second registration site the W62 slice did not need);
+  a bulk sed with a placeholder token damaged three
+  symbol-count lines and was repaired line-by-line before
+  re-running (recorded as a session-hygiene note: never bulk-sed
+  without a repairing grep); the new BC range forced
+  cross-slice-hazard updates to four earlier decode tests
+  (`b_pmad`, `ld_k`, `ld_lk16`, `ld_lk_shift`), each pinning the
+  overlapping word to `BC_PMAD` by identity; two RED-test
+  expectation bugs (an UNKNOWN mask containing the LD_K overlap,
+  a cond-bit flip expecting INVALID_DECODE instead of
+  INVALID_OPERAND) were fixed in the tests, not the product; a
+  `/tmp` disk-full from accumulated CMake build dirs blocked the
+  sanitizer gate until stale dirs were removed (scratch build
+  dirs are now cleaned after each slice). Split decision for the
+  509-line ops test: kept whole — oracle, classification sweep,
+  and rejection pins form one contract; no split before 800.
+- Validation is GREEN with one recorded baseline deviation: all
+  316 C test binaries pass; contract quality unittest passes
+  except the single pre-existing `test_supported_m32_assertions`
+  `-m32`/ILP32 failure carried as baseline since W61 (W49A-owned,
+  outside this diff); knobs, source boundaries (574 files, review
+  warnings only), manifests, evidence (273 records, 420
+  requirements with 389 `IMPLEMENTED`, 344 tests all `PASSING`),
+  inventory (54/205 family 26.341%, 33/205 strict), and
+  observer-disabled structure pass. Focused ASan/UBSan 4/4 GREEN
+  (`ASAN_OPTIONS=detect_leaks=0`, then `make clean` plus a normal
+  rebuild). Fresh CMake/CTest Debug passes 322/323 with only
+  `quality.python` failing (the same single unittest failure);
+  full sanitizer CMake/CTest passes 322/322 excluding
+  `quality.python`. Coverage is 146 catalog rows, `ID_COUNT=147`,
+  5,566 lookup entries, 146 trusted bindings, family coverage
+  54/205 (26.341%), and 33/205 strict complete-form coverage
+  (`FORM-T2-12-04` stays `SUBSET`). No knob was added or changed.
+  Nothing was pushed.
+- Follow-up work: wave-1 control flow continues with `CALL`
+  (stack-link seam) and `RET` (return path); the deferred delayed
+  `BCD` variant, BIO/NBIO pin conditions, UNC, OV/NOV with
+  OVA/OVB effects, and multi-condition combinations wait on
+  their seams. Open: fix the `make test` recipe order so C
+  regressions cannot hide behind the environmental quality
+  failure.
