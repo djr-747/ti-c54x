@@ -1954,9 +1954,11 @@
       "table_ordinal": 19,
       "mnemonic": "LDR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "LDR"
+      ]
     },
     {
       "id": "FORM-T2-19-20",
@@ -2728,6 +2730,12 @@
       "form_id": "FORM-T2-19-06",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LDR",
+      "form_id": "FORM-T2-19-19",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
     },
     {
       "catalog_symbol": "ST_T_SMEM",

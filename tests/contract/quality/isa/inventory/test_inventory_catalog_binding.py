@@ -60,10 +60,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 141)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 141)
+        self.assertEqual(len(bindings), 142)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 142)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 108)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 109)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -71,7 +71,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | ATOMIC_LOGICAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT"},
+            | {"LD_SMEM_SHIFT", "LDR"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -92,7 +92,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                 expected = (
                     "STANDARD_INDIRECT_MOD0_MOD3"
                     if binding["catalog_symbol"] in ATOMIC_LOGICAL_SUBSET
-                    or binding["catalog_symbol"] == "LD_SMEM_SHIFT"
+                    or binding["catalog_symbol"]
+                    in {"LD_SMEM_SHIFT", "LDR"}
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
                 )
                 self.assertEqual(binding["addressing_subset"], expected)

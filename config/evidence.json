@@ -3695,6 +3695,61 @@
       "assertion": "W59 activates the LD Xmem,SHFT,dst row with dual-indirect Xmem reads, AR update commit, SXM widening, unsigned 4-bit shift, OVM saturation, sticky destination overflow, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-06 is inventory COMPLETE. Realized 141 catalog rows, ID_COUNT 142, 5,213 lookup entries, 141 bindings, family coverage 51/205, and 33/205 strict complete-form coverage."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-LDR-OPCODE-P4-78",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LDR", "printed_page_start": "4-78", "printed_page_end": "4-78"},
+      "assertion": "The LDR description defines syntax LDR Smem,dst as a single-word form: word0 0001_011D_IAAAAAAA with the destination accumulator in bit 8 and the MOD0--MOD2 single-indirect Smem byte in bits 7-0, giving first-word value 0x1680 under mask 0xFEE0 with 64 encodings. The SPRU179C algebraic volume page 4-78 agrees on the opcode diagram. The manual notes one extra word and cycle for long-offset or absolute Smem; those variants stay deferred. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LDR-SEMANTICS-P4-78",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "4", "section": "LDR", "printed_page_start": "4-78", "printed_page_end": "4-78"},
+      "assertion": "The LDR description defines execution as (Smem) << 16 + 1 << 15 into dst(31-16): Smem is rounded by adding 2^15 with the 15 LSBs (14-0) cleared to 0 and bit 15 set to 1, so bits 31-16 are Smem verbatim, bits 15-0 are always 0x8000, and the guard bits are the SXM sign extension. Status bits are affected by SXM only: no OVM input, no saturation, and no OV effect. The worked example pins LDR *AR1,A with Smem 0xFEDC and SXM 0 to A 00 FEDC 8000."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S2-5-T2-28-LDR-REPEATABILITY-BOUNDARY",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"chapter": "2", "section": "2.5/Table 2‑28", "printed_page_start": "2-19", "printed_page_end": "2-21"},
+      "assertion": "The repeat section states that instructions listed in Table 2-28 cannot be repeated with RPT or RPTZ; Table 2-28 lists only LD ARP and LD DP among loads, and LDR Smem,dst is not listed. The source does not provide a positive all-unlisted-forms rule, so this record is a repeatability boundary only and does not authorize an ELIGIBLE classification."
+    },
+    {
+      "id": "E-PROJECT-P2-W60-LDR-SMEM-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W60: LDR Smem,dst vertical slice (planned)"},
+      "assertion": "W60 is the planned Table 2-19 form FORM-T2-19-19 activation contract: one LDR Smem,dst row at first-word value 0x1680 under mask 0xFEE0 with one program word, the reused ACCUMULATOR_ARF_MOD operand layout, UNRESOLVED repeatability, and STATUS_SXM input resources. The Smem read uses MOD0--MOD2 single-indirect addressing with AR update commit, followed by SXM widening, left shift 16, rounding constant 0x8000, and clearing of bits 14-0; C/TC stay preserved with no OVM input and unknown SXM rejects transactionally. No new layout, address kind, effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W60-LDR-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W60: LDR Smem,dst vertical slice (planned)"},
+      "assertion": "W60 activates the LDR Smem,dst row with single-indirect Smem reads, AR update commit, SXM widening, shift 16, rounding constant, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 is inventory SUBSET. Realized 142 catalog rows, ID_COUNT 143, 5,277 lookup entries, 142 bindings, family coverage 52/205, and 33/205 strict complete-form coverage."
+    },
+    {
       "id": "E-PROJECT-P2-W56-LD-SRC-ASM-PLAN-ANCHOR",
       "immutable": true,
       "state": "PINNED",
@@ -7851,6 +7906,66 @@
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     },
     {
+      "id": "REQ-COMMON-P2-W60-LDR-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the LDR Smem,dst row with first-word value 0x1680 under mask 0xFEE0, one program word, the ACCUMULATOR_ARF_MOD layout, UNRESOLVED repeatability, and STATUS_SXM resources, disjoint from all existing rows.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LDR-OPCODE-P4-78"],
+      "test_ids": ["T-COMMON-P2-W60-LDR-SMEM-METADATA"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W60-LDR-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every LDR Smem,dst first word through the generic decoder with complete one-word bundles, scalar metadata, and destination/ARF/MOD extraction; malformed inputs reject transactionally.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LDR-OPCODE-P4-78"],
+      "test_ids": ["T-COMMON-P2-W60-LDR-SMEM-DECODE"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W60-LDR-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute LDR Smem,dst as a single-indirect Smem D-bus read with AR update commit, SXM-widened value shifted left 16 with rounding constant 0x8000 and bits 14-0 cleared, C/TC preservation with no OVM input, and transactional unknown-SXM rejection; enforce per-row identity on checked and trusted leaves with transactional rejection of invalid inputs.",
+      "evidence_ids": ["E-TI-C54X-SPRU172C-S4-LDR-SEMANTICS-P4-78", "E-TI-C54X-SPRU172C-S2-5-T2-28-LDR-REPEATABILITY-BOUNDARY"],
+      "test_ids": ["T-COMMON-P2-W60-LDR-SMEM-SEMANTICS"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the LDR Smem,dst row through macro-driven dispatch with the same identity, metadata, and handler presence as the canonical catalog.",
+      "evidence_ids": ["E-PROJECT-P2-W60-LDR-SMEM-PLAN-ANCHOR", "E-PROJECT-P2-W60-LDR-SMEM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W60-LDR-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LDR Smem,dst through the generic CPU path with one-word PC advance, SXM input collection, one D-bus DATA read, AR update commit, rounding writeback, C/TC preservation, and no other endpoint traffic.",
+      "evidence_ids": ["E-PROJECT-P2-W60-LDR-SMEM-PLAN-ANCHOR", "E-PROJECT-P2-W60-LDR-SMEM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W60-LDR-SMEM-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind FORM-T2-19-19 as inventory SUBSET under MOD0--MOD2 single-indirect addressing with the LDR catalog symbol.",
+      "evidence_ids": ["E-PROJECT-P2-W60-LDR-SMEM-PLAN-ANCHOR", "E-PROJECT-P2-W60-LDR-SMEM-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
       "id": "REQ-COMMON-P2-W56-LD-SRC-ASM-CATALOG",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -9263,7 +9378,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -9727,7 +9842,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -10544,6 +10659,38 @@
       "path": "tests/unit/cpu/isa/load/test_cpu_ld_xmem_shift.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ld_xmem_shift"},
       "requirement_ids": ["REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W60-LDR-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ldr_smem_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldr_smem_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W60-LDR-SMEM-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W60-LDR-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ldr_smem_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldr_smem_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W60-LDR-SMEM-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W60-LDR-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ldr_smem.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.ldr_smem"},
+      "requirement_ids": ["REQ-COMMON-P2-W60-LDR-SMEM-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W60-LDR-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/load/test_cpu_ldr_smem.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_ldr_smem"},
+      "requirement_ids": ["REQ-PROJECT-P2-W60-LDR-SMEM-CPU-RETIREMENT"]
     },
     {
       "id": "T-COMMON-P2-W56-LD-SRC-ASM-METADATA",

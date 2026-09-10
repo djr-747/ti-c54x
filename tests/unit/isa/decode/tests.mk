@@ -27,6 +27,7 @@ $(eval $(call ti_c54x_add_test,ld_src_shift_decode,isa/decode,test_ld_src_shift_
 $(eval $(call ti_c54x_add_test,ld_k_decode,isa/decode,test_ld_k_decode.c))
 $(eval $(call ti_c54x_add_test,ld_lk16_decode,isa/decode,test_ld_lk16_decode.c))
 $(eval $(call ti_c54x_add_test,ld_lk_shift_decode,isa/decode,test_ld_lk_shift_decode.c))
+$(eval $(call ti_c54x_add_test,ldr_smem_decode,isa/decode,test_ldr_smem_decode.c))
 $(eval $(call ti_c54x_add_test,ld_xmem_shift_decode,isa/decode,test_ld_xmem_shift_decode.c))
 $(eval $(call ti_c54x_add_test,ld_src_asm_decode,isa/decode,test_ld_src_asm_decode.c))
 $(eval $(call ti_c54x_add_test,ld_smem_ts_decode,isa/decode,test_ld_smem_ts_decode.c))
