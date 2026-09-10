@@ -8869,3 +8869,82 @@ rewritten after publication.
   (unchanged at 765; no `run.c` edit this slice) and
   `memory_instruction_transaction.c`; `make test` recipe order
   still lets C regressions hide behind quality failures.
+
+## 2026-09-11 — P2-W73 CC non-delayed-conditional-call slice
+
+- Implementation commit `7072c0a` binds one Table 2-13 row
+  under `FORM-T2-13-03`: `CC` at first-word value `0xF900`
+  under mask `0xFF00` (bit 9 clear selects the non-delayed
+  variant; delayed `CCD` shipped in W72), two program words,
+  256 encodings, copied condition byte plus 16-bit pmad,
+  reusing `BRANCH_COND_PMAD16` with the W72
+  `ACCUMULATORS_STATUS_C_TC` plus `STACK_POINTER` inputs and
+  `INELIGIBLE` repeatability (no new TI records: opcode
+  diagram, semantics, and nonrepeatable note are the W72
+  records `E-TI-C54X-SPRU172C-S4-CC-OPCODE-P4-29`,
+  `E-TI-C54X-SPRU172C-S4-CC-SEMANTICS-P4-29-4-31`, and
+  `E-TI-C54X-SPRU172C-S4-CC-NONREPEATABLE-P4-31`; SPRU172C §4
+  `CC[D]`, pp. 4-29–4-31). The sixteen evidenced single
+  conditions evaluate through the shared branch-condition
+  helper; taken branches stage the `CALL`-shaped `MEMORY`
+  stack-push effect (the root transaction pushes PC+2, plans
+  the absolute pmad target, and retires PC=pmad at once with
+  no countdown) while not-taken branches emit `NONE`. Taken
+  branches gate known SP per the `CALL` convention;
+  not-taken branches consume condition inputs only. The
+  `CALL` `MEMORY` route and the sequential bridge retire both
+  outcomes, so no `run.c` change was admitted.
+  `FORM-T2-13-03` stays `SUBSET` with `CCD` and `CC` symbols
+  under a new `ABSOLUTE_PMAD_COND` binding shared with
+  `BC_PMAD`.
+- No correction: the `7072c0a` message's near-miss claims
+  verify exactly — the `BC_PMAD` audit's bit-8 flip word
+  `0xF900` and the `CCD` metadata/decode deferred pins
+  (`0xF900`/`0xF930`) moved to genuine `CC` sibling pins,
+  and `CC`'s own audit pins genuine `CCD` (`0xFB00`),
+  `BC_PMAD` (`0xF800`), and `LD_K` (`0xE900`) siblings.
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_cc_metadata.c`,
+  `tests/unit/isa/decode/test_cc_decode.c`,
+  `tests/unit/isa/ops/branch/test_cc.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_cc.c`) covering
+  metadata with 256-encoding disjointness and delayed-sibling
+  separation, decode with the `CCD` sibling pin and
+  fixed-bit near-miss audit, handler staging with taken
+  `MEMORY` push versus not-taken `NONE` over all sixteen
+  conditions plus SP gating and transactional rejection, and
+  CPU retirement (taken immediate call with PC+2 TOS WRITE,
+  SP commit, and direct PC=pmad with no countdown;
+  not-taken fallthrough with no endpoint traffic;
+  unknown-condition, taken-with-unknown-SP, and
+  not-taken-with-unknown-SP cases; full preservation).
+- Validation is GREEN with no baseline deviation: `make
+  test` exits 0 with all 366 C test binaries passing
+  including the 4 new focused contracts; contract quality
+  unittest fully OK (268); knobs, source boundaries,
+  manifests, evidence, inventory (realized 156 catalog rows,
+  `ID_COUNT=157`, 6,851 lookup entries, 156 bindings, 123
+  SUBSET bindings, family coverage unchanged at 58/205 at
+  28.293%, 33/205 strict), and observer-disabled structure
+  pass. Fresh CMake/CTest Debug passes 373/373; full
+  sanitizer CMake/CTest passes 372/372 excluding
+  `quality.python`, with the four new `CC` contracts
+  confirmed passing under ASan/UBSan. Row-count pins
+  advanced to 156 rows, 156 bindings, 6,851 entries, 123
+  SUBSET, and unchanged 58/205 family across the contract
+  suites plus `ID_COUNT=157` across the C metadata suites
+  (including the spaceless repeat-eligibility sweep).
+  `generate_opcode_lookup.py --check` and `git diff --check`
+  pass. No knob was added or changed. Nothing was pushed.
+- Decisions: family coverage counts distinct bound forms, so
+  the second binding under `FORM-T2-13-03` correctly leaves
+  58/205 unchanged; the new row takes `ABSOLUTE_PMAD_COND`
+  (shared with `BC_PMAD`) rather than a new subset token;
+  RED was observed as a build failure on the undeclared
+  `TI_C54X_OPCODE_ID_CC` before the catalog row landed.
+- Follow-up work: `RETE`/`RETF` remain deferred. Open:
+  split decision for `run.c` before 800 lines (unchanged at
+  765; no `run.c` edit this slice) and
+  `memory_instruction_transaction.c` (now 728);
+  `make test` recipe order still lets C regressions hide
+  behind quality failures.
