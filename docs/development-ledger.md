@@ -9064,3 +9064,68 @@ rewritten after publication.
   (800 lines or a new effect/address kind); `make test`
   recipe order still lets C regressions hide behind quality
   failures.
+
+## 2026-09-11 — P2-W75 RETED delayed-interrupt-return slice
+
+- Implementation commit `509ee6b` binds one Table 2-15 row
+  under `FORM-T2-15-05`: `RETED` at first-word value `0xF6EB`
+  under mask `0xFFFF`, one program word, one encoding, no
+  operands, reusing `NONE` with `STACK_POINTER` inputs and
+  `INELIGIBLE` repeatability (no new TI records: opcode with
+  the Z delayed bit, semantics, and nonrepeatable note are
+  the W74 records from SPRU172C p. 4-139). The pure leaf
+  stages a `MEMORY` `STACK_POP_DELAYED` READ with the shared
+  INTM-clearing completion now owned once in the new
+  `op_rete_common` module (`op_rete.c` refactored onto it;
+  all `RET`/`RETD`/`RETE` siblings hold). The root commits
+  the completion through the generic pop-completion seam
+  before the pop architecture commit. No `run.c` change, no
+  new effect kind, no new address kind. `FORM-T2-15-05`
+  stays `SUBSET` with `RETE` and `RETED` symbols under a
+  `STACK_POP_DELAYED` binding shared with `RETD`.
+- No correction: the `509ee6b` message's audit claims verify
+  exactly — the deferred word moved from the `RETE`
+  metadata/decode tests as a genuine `RETED` sibling, and
+  `RETED`'s own audit pins genuine `CMPR_AR` (`0xF6AB`),
+  `RETE` (`0xF4EB`), and `SFTL_ACC` (`0xF2EB`) siblings.
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_reted_metadata.c`,
+  `tests/unit/isa/decode/test_reted_decode.c`,
+  `tests/unit/isa/ops/branch/test_reted.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_reted.c`) covering
+  metadata with single-encoding disjointness and RETE
+  separation, decode with the non-delayed-`RETE` pin and
+  fixed-bit near-miss audit, handler staging with the
+  shared completion plus SP gating and parity, and CPU
+  retirement (slots with retire-time INTM clear, WAIT with
+  INTM untouched until commit, slot-fault and unknown-SP
+  transactionality, inner-branch takeover keeping the
+  retire-time clear, preservation outside SP/PC/INTM).
+- Validation is GREEN with no baseline deviation: `make
+  test` exits 0 with all 374 C test binaries passing
+  including the 4 new focused contracts; contract quality
+  unittest fully OK (268); knobs, source boundaries,
+  manifests, evidence, inventory (realized 158 catalog rows,
+  `ID_COUNT=159`, 6,853 lookup entries, 158 bindings, 125
+  SUBSET bindings, family coverage unchanged at 59/205 at
+  28.780%, 33/205 strict), and observer-disabled structure
+  pass. Fresh CMake/CTest Debug passes 381/381; full
+  sanitizer CMake/CTest passes 380/380 excluding
+  `quality.python`, with the four new `RETED` contracts
+  confirmed passing under ASan/UBSan. Row-count pins
+  advanced to 158 rows, 158 bindings, 6,853 entries, 125
+  SUBSET, and unchanged 59/205 family across the contract
+  suites plus `ID_COUNT=159` across the C metadata suites.
+  `generate_opcode_lookup.py --check` and `git diff --check`
+  pass. No knob was added or changed. Nothing was pushed.
+- Decisions: the INTM completion is owned once in
+  `op_rete_common` rather than duplicated across the two
+  leaves; INTM clears at retire alongside SP with only the
+  TOS redirect deferred (the `RETD`-proven eager/deferred
+  split); RED was observed as a build failure on the
+  undeclared `TI_C54X_OPCODE_ID_RETED` before the catalog
+  row landed.
+- Follow-up work: `RETF` (needs RTN-state scoping first)
+  and the remaining wave-1 tail stay deferred. Open: split
+  re-evaluation triggers unchanged; `make test` recipe order
+  still lets C regressions hide behind quality failures.
