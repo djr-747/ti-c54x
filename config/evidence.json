@@ -4472,6 +4472,28 @@
       "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
       "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W74: RETE interrupt-return vertical slice (planned)"},
       "assertion": "W74 activates the RETE row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 157 rows with 6,852 lookup entries and 157 trusted bindings, family coverage at 59/205 with strict unchanged at 33/205, and FORM-T2-15-05 at SUBSET with a lone RETE symbol."
+    },
+    {
+      "id": "E-PROJECT-P2-W75-RETED-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W75: RETED delayed-interrupt-return vertical slice (planned)"},
+      "assertion": "W75 is the planned RETED vertical slice: one Table 2-15 row under FORM-T2-15-05 at first-word value 0xF6EB under mask 0xFFFF with one program word, one encoding, and no operands, reusing the NONE layout with STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf staging a MEMORY STACK_POP_DELAYED READ with the shared INTM-clearing completion through the generic pop-completion seam; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route with TOS capture, SP and INTM commit at retire, and the deferred TOS redirect after the delay slots; and FORM-T2-15-05 inventory at SUBSET with RETE and RETED symbols. No knob, layout, effect-kind, timing, device, or ABI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W75-RETED-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": ["C54X_CORE_COMMON_V1"],
+      "locator": {"path": "docs/implementation-plan.md", "anchor": "P2-W75: RETED delayed-interrupt-return vertical slice (planned)"},
+      "assertion": "W75 activates the RETED row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 158 rows with 6,853 lookup entries and 158 trusted bindings, family coverage unchanged at 59/205 with strict unchanged at 33/205, and FORM-T2-15-05 at SUBSET with RETE and RETED symbols."
     }
   ],
   "requirements": [
@@ -9804,6 +9826,79 @@
       "claim": "Carry the RETE symbol in FORM-T2-15-05 with SUBSET coverage and a STACK_POP_NONDELAYED binding through the inventory registry.",
       "evidence_ids": ["E-PROJECT-P2-W74-RETE-PLAN-ANCHOR", "E-PROJECT-P2-W74-RETE-ACTIVATION"],
       "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
+    },
+    {
+      "id": "REQ-COMMON-P2-W75-RETED-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the RETED row at first-word value 0xF6EB under mask 0xFFFF with one program word, one encoding, and the NONE layout with STACK_POINTER inputs and INELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RETE-OPCODE-P4-139"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W75-RETED-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P2-W75-RETED-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the RETED first word through the generic decoder with copied bundle and scalar metadata and no operand extraction.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RETE-OPCODE-P4-139"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W75-RETED-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P2-W75-RETED-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Stage the RETED MEMORY STACK_POP_DELAYED READ with a zero value and the shared INTM-clearing completion, gated on known SP with transactional unknown-SP rejection.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RETE-SEMANTICS-P4-139",
+        "E-TI-C54X-SPRU172C-S4-RETE-NONREPEATABLE-P4-139"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W75-RETED-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W75-RETED-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the RETED catalog row to its checked and trusted leaves through the macro dispatch tables with no per-row handwritten wiring.",
+      "evidence_ids": ["E-PROJECT-P2-W75-RETED-PLAN-ANCHOR", "E-PROJECT-P2-W75-RETED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-TRUSTED-OPCODE-BINDING"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W75-RETED-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire RETED on the CPU through the unchanged MEMORY route with TOS capture, SP and INTM commit at retire, the deferred TOS redirect after the delay slots, WAIT resume atomicity, slot-fault and unknown-SP transactionality, and preservation outside SP/PC/INTM.",
+      "evidence_ids": ["E-PROJECT-P2-W75-RETED-PLAN-ANCHOR", "E-PROJECT-P2-W75-RETED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-P2-W75-RETED-CPU"]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W75-RETED-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Carry the RETED symbol in FORM-T2-15-05 with SUBSET coverage and a STACK_POP_DELAYED binding through the inventory registry.",
+      "evidence_ids": ["E-PROJECT-P2-W75-RETED-PLAN-ANCHOR", "E-PROJECT-P2-W75-RETED-ACTIVATION"],
+      "test_ids": ["T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"]
     }
   ],
   "tests": [
@@ -11148,7 +11243,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/unit/isa/ops/dispatch/test_trusted_opcode_binding.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.trusted_opcode_binding"},
-      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING", "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING", "REQ-PROJECT-P2-W72-CCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W73-CC-TRUSTED-BINDING", "REQ-PROJECT-P2-W74-RETE-TRUSTED-BINDING"]
+      "requirement_ids": ["REQ-PROJECT-TRUSTED-OPCODE-BINDING", "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-TRUSTED-BINDING", "REQ-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-TRUSTED-BINDING", "REQ-PROJECT-P2-W51C-DUAL-MODES-TRUSTED-BINDING", "REQ-PROJECT-P2-W52C-DUAL-MOD3-TRUSTED-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W55-LD-K-TRUSTED-BINDING", "REQ-PROJECT-P2-W56-LD-SRC-ASM-TRUSTED-BINDING", "REQ-PROJECT-P2-W57-LD-LK16-TRUSTED-BINDING", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-TRUSTED-BINDING", "REQ-PROJECT-P2-W60-LDR-SMEM-TRUSTED-BINDING", "REQ-PROJECT-P2-W61-LDR-INDEXED-TRUSTED-BINDING", "REQ-PROJECT-P2-W62-B-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W63-BC-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W65B-CALL-PMAD-TRUSTED-BINDING", "REQ-PROJECT-P2-W66B-RET-TRUSTED-BINDING", "REQ-PROJECT-P2-W67B-RETD-TRUSTED-BINDING", "REQ-PROJECT-P2-W67C-CALLD-TRUSTED-BINDING", "REQ-PROJECT-P2-W68-BD-TRUSTED-BINDING", "REQ-PROJECT-P2-W69-BCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W70-BANZ-TRUSTED-BINDING", "REQ-PROJECT-P2-W71-BANZD-TRUSTED-BINDING", "REQ-PROJECT-P2-W72-CCD-TRUSTED-BINDING", "REQ-PROJECT-P2-W73-CC-TRUSTED-BINDING", "REQ-PROJECT-P2-W74-RETE-TRUSTED-BINDING", "REQ-PROJECT-P2-W75-RETED-TRUSTED-BINDING"]
     },
     {
       "id": "T-PROJECT-TRUSTED-EXECUTION-PACKET",
@@ -11612,7 +11707,7 @@
       "scope": "PROJECT_CONTRACT_ONLY",
       "path": "tests/contract/quality/isa/inventory/test_inventory_catalog_binding.py",
       "runner": {"kind": "PYTHON_UNITTEST_DISCOVERY", "make_goal": "test", "ctest_name": "ti_c54x.quality.python"},
-      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY", "REQ-PROJECT-P2-W71-BANZD-INVENTORY", "REQ-PROJECT-P2-W72-CCD-INVENTORY", "REQ-PROJECT-P2-W73-CC-INVENTORY", "REQ-PROJECT-P2-W74-RETE-INVENTORY"]
+      "requirement_ids": ["REQ-PROJECT-ISA-INVENTORY-CATALOG-BINDING", "REQ-PROJECT-P2-W53-LD-SMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W54-LD-SRC-SHIFT-INVENTORY", "REQ-PROJECT-P2-W55-LD-K-INVENTORY", "REQ-PROJECT-P2-W56-LD-SRC-ASM-INVENTORY", "REQ-PROJECT-P2-W57-LD-LK16-INVENTORY", "REQ-PROJECT-P2-W58-LD-LK-SHIFT-INVENTORY", "REQ-PROJECT-P2-W59-LD-XMEM-SHIFT-INVENTORY", "REQ-PROJECT-P2-W60-LDR-SMEM-INVENTORY", "REQ-PROJECT-P2-W61-LDR-INDEXED-INVENTORY", "REQ-PROJECT-P2-W62-B-PMAD-INVENTORY", "REQ-PROJECT-P2-W63-BC-PMAD-INVENTORY", "REQ-PROJECT-P2-W65B-CALL-PMAD-INVENTORY", "REQ-PROJECT-P2-W66B-RET-INVENTORY", "REQ-PROJECT-P2-W67B-RETD-INVENTORY", "REQ-PROJECT-P2-W67C-CALLD-INVENTORY", "REQ-PROJECT-P2-W68-BD-INVENTORY", "REQ-PROJECT-P2-W69-BCD-INVENTORY", "REQ-PROJECT-P2-W70-BANZ-INVENTORY", "REQ-PROJECT-P2-W71-BANZD-INVENTORY", "REQ-PROJECT-P2-W72-CCD-INVENTORY", "REQ-PROJECT-P2-W73-CC-INVENTORY", "REQ-PROJECT-P2-W74-RETE-INVENTORY", "REQ-PROJECT-P2-W75-RETED-INVENTORY"]
     },
     {
       "id": "T-PROJECT-ISA-INVENTORY-REPORT",
@@ -13037,6 +13132,38 @@
       "path": "tests/unit/cpu/isa/branch/test_cpu_rete.c",
       "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_rete"},
       "requirement_ids": ["REQ-PROJECT-P2-W74-RETE-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P2-W75-RETED-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_reted_metadata.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reted_metadata"},
+      "requirement_ids": ["REQ-COMMON-P2-W75-RETED-CATALOG"]
+    },
+    {
+      "id": "T-COMMON-P2-W75-RETED-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_reted_decode.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reted_decode"},
+      "requirement_ids": ["REQ-COMMON-P2-W75-RETED-DECODE"]
+    },
+    {
+      "id": "T-COMMON-P2-W75-RETED-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_reted.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.reted"},
+      "requirement_ids": ["REQ-COMMON-P2-W75-RETED-EFFECTS"]
+    },
+    {
+      "id": "T-PROJECT-P2-W75-RETED-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_reted.c",
+      "runner": {"kind": "C_EXECUTABLE", "make_goal": "test", "ctest_name": "ti_c54x.cpu_reted"},
+      "requirement_ids": ["REQ-PROJECT-P2-W75-RETED-CPU-RETIREMENT"]
     }
   ]
 }

@@ -66,6 +66,8 @@ $(eval $(call ti_c54x_add_test,call_pmad_decode,isa/decode,test_call_pmad_decode
 # W66B RED contract: RET decode with near-miss audit.
 $(eval $(call ti_c54x_add_test,ret_decode,isa/decode,test_ret_decode.c))
 # W74 RED contract: RETE decode.
+# W75 RED contract: RETED decode.
+$(eval $(call ti_c54x_add_test,reted_decode,isa/decode,test_reted_decode.c))
 $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))
 # W67B RED contract: RETD decode.
 $(eval $(call ti_c54x_add_test,retd_decode,isa/decode,test_retd_decode.c))

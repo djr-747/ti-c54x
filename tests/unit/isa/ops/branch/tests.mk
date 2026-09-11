@@ -16,6 +16,8 @@ $(eval $(call ti_c54x_add_test,cc,isa/ops/branch,test_cc.c))
 $(eval $(call ti_c54x_add_test,call_pmad,isa/ops/branch,test_call_pmad.c))
 $(eval $(call ti_c54x_add_test,ret,isa/ops/branch,test_ret.c))
 # W74 RED contract: RETE effects.
+# W75 RED contract: RETED effects.
+$(eval $(call ti_c54x_add_test,reted,isa/ops/branch,test_reted.c))
 $(eval $(call ti_c54x_add_test,rete,isa/ops/branch,test_rete.c))
 # W67B RED contract: RETD effects.
 $(eval $(call ti_c54x_add_test,retd,isa/ops/branch,test_retd.c))

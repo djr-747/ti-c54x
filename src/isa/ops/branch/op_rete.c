@@ -15,6 +15,7 @@
  */
 
 #include "op_rete.h"
+#include "op_rete_common.h"
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -23,31 +24,6 @@
 #include "isa/catalog/opcode_catalog.h"
 #include "isa/decode/operand_layout.h"
 #include "isa/ops/dispatch/trusted_semantics.h"
-
-/* ST1 bit 11 is INTM per the ST1 register layout; RETE clears it
- * to enable interrupts (SPRU172C p. 4-139). */
-#define RETE_INTM_BIT_INDEX UINT8_C(11)
-
-static ti_c54x_op_status rete_complete_intm(
-    const ti_c54x_decoded_instruction *instruction,
-    const ti_c54x_op_input_snapshot *input,
-    uint16_t read_value_word,
-    ti_c54x_op_effect *next_effect)
-{
-    (void)instruction;
-    (void)input;
-    (void)read_value_word;
-    if (next_effect == NULL) {
-        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
-    }
-    *next_effect = (ti_c54x_op_effect){
-        .kind = TI_C54X_OP_EFFECT_STATUS_BIT_WRITE,
-        .payload.status_bit_write = {
-            .target_register = TI_C54X_OP_STATUS_REGISTER_ST1,
-            .bit_index = RETE_INTM_BIT_INDEX,
-            .raw_value = UINT8_C(0)}};
-    return TI_C54X_OP_STATUS_OK;
-}
 
 static ti_c54x_op_status rete_values(
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
@@ -69,7 +45,7 @@ static ti_c54x_op_status rete_values(
             .rmw_operation = (uint8_t)
                 TI_C54X_OP_MEMORY_RMW_OPERATION_NONE,
             .transfer_reserved = UINT8_C(0),
-            .complete = rete_complete_intm,
+            .complete = ti_c54x_rete_complete_intm,
         }};
     *effect = staged;
     return TI_C54X_OP_STATUS_OK;

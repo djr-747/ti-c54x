@@ -60,10 +60,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 157)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 157)
+        self.assertEqual(len(bindings), 158)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 158)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 124)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 125)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -71,7 +71,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | ATOMIC_LOGICAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE"},
+            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -105,7 +105,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     else "STACK_POP_NONDELAYED"
                     if binding["catalog_symbol"] in ("RET", "RETE")
                     else "STACK_POP_DELAYED"
-                    if binding["catalog_symbol"] == "RETD"
+                    if binding["catalog_symbol"] in ("RETD", "RETED")
                     else "STANDARD_INDIRECT_MOD0_MOD3"
                     if binding["catalog_symbol"] in ATOMIC_LOGICAL_SUBSET
                     or binding["catalog_symbol"] == "LD_SMEM_SHIFT"

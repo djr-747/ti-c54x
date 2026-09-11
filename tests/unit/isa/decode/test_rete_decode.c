@@ -116,33 +116,35 @@ test_malformed_inputs_reject_transactionally(void)
 }
 
 static void
-test_delayed_word_is_unknown(void)
+test_delayed_sibling_is_reted(void)
 {
-    /* The deferred delayed RETED variant decodes UNKNOWN_WORD
-     * today; a future RETED slice updates this pin under the
-     * cross-slice hazard rule. */
+    /* Setting fixed bit 9 reaches the delayed RETED sibling
+     * word, claimed by the W75 slice. */
     const ti_c54x_decode_result result =
         ti_c54x_decode_first_word(RETED_WORD);
 
-    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_RETED);
 }
 
 static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFFFF leaves no operand bit variable. Setting fixed
-     * bit 9 lands on the deferred RETED word (pinned UNKNOWN
-     * above), clearing fixed bit 6 lands on the CMPR_AR sibling,
-     * and clearing fixed bit 10 lands on the SFTL_ACC sibling
-     * (both pinned below); all other fixed-bit flips must miss
-     * every row. */
+     * bit 9 lands on the delayed RETED sibling (pinned above),
+     * clearing fixed bit 6 lands on the CMPR_AR sibling, and
+     * clearing fixed bit 10 lands on the SFTL_ACC sibling (all
+     * pinned below); all other fixed-bit flips must miss every
+     * row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
         UINT16_C(0x0080), UINT16_C(0x0100),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
+    const ti_c54x_decode_result reted_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(RETE_VALUE ^ UINT16_C(0x0200)));
     const ti_c54x_decode_result cmpr_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RETE_VALUE ^ UINT16_C(0x0040)));
@@ -150,6 +152,8 @@ test_fixed_bit_near_misses(void)
         ti_c54x_decode_first_word(
             (uint16_t)(RETE_VALUE ^ UINT16_C(0x0400)));
 
+    TI_C54X_TEST_CHECK(reted_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(reted_sibling.id == TI_C54X_OPCODE_ID_RETED);
     TI_C54X_TEST_CHECK(cmpr_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(cmpr_sibling.id == TI_C54X_OPCODE_ID_CMPR_AR);
     TI_C54X_TEST_CHECK(sftl_sibling.status == TI_C54X_DECODE_STATUS_OK);
@@ -173,7 +177,7 @@ main(void)
 {
     check_case();
     test_malformed_inputs_reject_transactionally();
-    test_delayed_word_is_unknown();
+    test_delayed_sibling_is_reted();
     test_fixed_bit_near_misses();
     return 0;
 }

@@ -21,7 +21,7 @@
 
 static const uint16_t RET_VALUE = UINT16_C(0xF4EB);
 static const uint16_t RET_MASK = UINT16_C(0xFFFF);
-/* Bit 9 set selects the deferred RETED variant. */
+/* Bit 9 set selects the delayed RETED sibling. */
 static const uint16_t RET_DELAYED_WORD = UINT16_C(0xF6EB);
 
 static bool
@@ -36,7 +36,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_RETE);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 158);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 159);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_RETE);
     TI_C54X_TEST_CHECK(metadata->first_word_value == RET_VALUE);
@@ -74,8 +74,10 @@ test_exact_population_and_disjointness(void)
     }
 
     TI_C54X_TEST_CHECK(encoded_count == 1U);
+    /* Setting bit 9 reaches the delayed RETED sibling, never this
+     * row. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           RET_DELAYED_WORD) != TI_C54X_OPCODE_ID_RETE);
+                           RET_DELAYED_WORD) == TI_C54X_OPCODE_ID_RETED);
 }
 
 int main(void)
