@@ -15,6 +15,8 @@ $(eval $(call ti_c54x_add_test,cpu_ccd,cpu/isa/branch,test_cpu_ccd.c))
 $(eval $(call ti_c54x_add_test,cpu_cc,cpu/isa/branch,test_cpu_cc.c))
 $(eval $(call ti_c54x_add_test,cpu_call_pmad,cpu/isa/branch,test_cpu_call_pmad.c))
 $(eval $(call ti_c54x_add_test,cpu_ret,cpu/isa/branch,test_cpu_ret.c))
+# W74 RED contract: RETE CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_rete,cpu/isa/branch,test_cpu_rete.c))
 # W67B RED contract: RETD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_retd,cpu/isa/branch,test_cpu_retd.c))
 # W67C RED contract: CALLD CPU retirement.

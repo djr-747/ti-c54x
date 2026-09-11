@@ -366,6 +366,33 @@ commit_ready(ti_c54x_memory_instruction_transaction *transaction,
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         memory->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+        /* Pops consume the READ observation in the pop commit. A
+         * non-null completion additionally stages one follow-on effect
+         * (for example a status clear) committed here before the pop
+         * architecture commit; failures stay transactional exactly
+         * like the load completion path below. */
+        if (memory->complete != NULL) {
+            ti_c54x_effect_transaction pop_ordinary = {0};
+            ti_c54x_op_effect pop_next_effect = {0};
+
+            if (memory->complete(&transaction->candidate.instruction,
+                                 &transaction->candidate.input,
+                                 read_value_word,
+                                 &pop_next_effect) != TI_C54X_OP_STATUS_OK) {
+                transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            if (ti_c54x_effect_transaction_stage(
+                    &pop_next_effect, &state->status, accumulators,
+                    t_register,
+                    &pop_ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
+                ti_c54x_effect_transaction_commit(
+                    &pop_ordinary, &state->status, accumulators,
+                    t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
+                transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+        }
         return commit_pop_architecture(transaction, state, read_value_word);
     }
     if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||

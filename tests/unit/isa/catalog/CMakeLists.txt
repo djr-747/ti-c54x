@@ -70,6 +70,9 @@ ti_c54x_add_unit_test(call_pmad_metadata
 # W66B RED contract: RET row metadata.
 ti_c54x_add_unit_test(ret_metadata
                       test_ret_metadata.c)
+# W74 RED contract: RETE row metadata.
+ti_c54x_add_unit_test(rete_metadata
+                      test_rete_metadata.c)
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)

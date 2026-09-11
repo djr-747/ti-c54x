@@ -207,9 +207,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16:
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16:
         /* All-zero spec with no AR selector; READ-only with a zero staged
-         * value, no RMW, and null completion. The generic READ shape
-         * demands a completion callback, but pops consume the READ
-         * observation in the pop commit, so null completion is exact.
+         * value and no RMW. Pops consume the READ observation in the pop
+         * commit, so a null completion is exact; a non-null completion
+         * additionally stages one follow-on effect the root commits
+         * before the pop architecture commit (the pop-completion seam).
          * The delayed kind shares this shape exactly. */
         if (effect->address_spec.mode != 0 ||
             effect->address_spec.indexed_mode != 0 ||
@@ -222,8 +223,7 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                effect->value_word == UINT16_C(0) &&
                effect->rmw_operation ==
                    (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
-               effect->transfer_reserved == UINT8_C(0) &&
-               effect->complete == NULL;
+               effect->transfer_reserved == UINT8_C(0);
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
