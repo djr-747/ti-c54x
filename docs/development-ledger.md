@@ -8986,3 +8986,81 @@ rewritten after publication.
 - No production, test, inventory, evidence, or plan change
   in this entry; `git diff --check` passes. Nothing was
   pushed.
+
+## 2026-09-11 — P2-W74 RETE interrupt-return slice
+
+- Unblocked by the TI manual shelf: `vendor/ti/` already
+  held SPRU172C/SPRU179C/SPRU131G with text conversions, and
+  a fresh ti.com download verified the 172C/179C mirror
+  copies byte-identical to official (hashes match; README
+  caveat updated in `5520c6d`). RETE evidence is new TI
+  records `E-TI-C54X-SPRU172C-S4-RETE-OPCODE-P4-139`,
+  `E-TI-C54X-SPRU172C-S4-RETE-SEMANTICS-P4-139`, and
+  `E-TI-C54X-SPRU172C-S4-RETE-NONREPEATABLE-P4-139` from the
+  vendored text (p. 4-139).
+- Implementation commit `212f21c` binds one Table 2-15 row
+  under `FORM-T2-15-05`: `RETE` at first-word value `0xF4EB`
+  under mask `0xFFFF`, one program word, one encoding, no
+  operands, reusing `NONE` with `STACK_POINTER` inputs and
+  `INELIGIBLE` repeatability. The pure leaf stages a
+  `MEMORY` `STACK_POP` READ with an INTM-clearing completion
+  (`STATUS_BIT_WRITE` to ST1 bit 11); the root commits it
+  through the generic pop-completion seam before the pop
+  architecture commit. Shared-seam changes: pops honor a
+  non-null completion exactly like loads
+  (`memory_instruction_transaction.c` `commit_ready`) and
+  pop validation accepts completions (`memory_effect.c`).
+  No `run.c` change, no new effect kind, no new address
+  kind. `FORM-T2-15-05` lands `SUBSET` with a lone `RETE`
+  symbol under a `STACK_POP_NONDELAYED` binding shared with
+  `RET`; delayed `RETED` stays deferred with cross-slice
+  hazard pins.
+- No correction: the `212f21c` message's audit claims verify
+  exactly — no sibling audit word moved; `RETE`'s own audit
+  pins genuine `CMPR_AR` (`0xF4AB`) and `SFTL_ACC`
+  (`0xF0EB`) siblings.
+- Four new executable contracts
+  (`tests/unit/isa/catalog/test_rete_metadata.c`,
+  `tests/unit/isa/decode/test_rete_decode.c`,
+  `tests/unit/isa/ops/branch/test_rete.c`,
+  `tests/unit/cpu/isa/branch/test_cpu_rete.c`) covering
+  metadata with single-encoding disjointness and RETED
+  separation, decode with the deferred-`RETED` pin and
+  fixed-bit near-miss audit, handler staging with the
+  INTM-clearing completion (TOS-independent, transactional
+  NULL rejection) plus SP gating and parity, and CPU
+  retirement (worked-example vector with TOS capture and
+  INTM clear; WAIT resume with INTM untouched until commit;
+  DATA fault, unknown-SP, and program-fault
+  transactionality; preservation outside SP/PC/INTM).
+- Validation is GREEN with no baseline deviation: `make
+  test` exits 0 with all 370 C test binaries passing
+  including the 4 new focused contracts; contract quality
+  unittest fully OK (268); knobs, source boundaries,
+  manifests, evidence, inventory (realized 157 catalog rows,
+  `ID_COUNT=158`, 6,852 lookup entries, 157 bindings, 124
+  SUBSET bindings, family coverage 59/205 at 28.780%,
+  33/205 strict), and observer-disabled structure pass.
+  Fresh CMake/CTest Debug passes 377/377; full sanitizer
+  CMake/CTest passes 376/376 excluding `quality.python`,
+  with the four new `RETE` contracts confirmed passing
+  under ASan/UBSan. Row-count pins advanced to 157 rows,
+  157 bindings, 6,852 entries, 124 SUBSET, and 59/205
+  family across the contract suites plus `ID_COUNT=158`
+  across the C metadata suites.
+  `generate_opcode_lookup.py --check` and `git diff --check`
+  pass. No knob was added or changed. Nothing was pushed.
+- Decisions: pop completions generalize the load seam
+  instead of a new effect kind or address kind; `RETE`
+  inputs stay `STACK_POINTER` only (the INTM write consumes
+  no input); RED was observed as a build failure on the
+  undeclared `TI_C54X_OPCODE_ID_RETE` before the catalog row
+  landed. A `-Wshadow` break on the first seam draft
+  (locals shadowing the load path's) was fixed by
+  pop-prefixed names before any test ran.
+- Follow-up work: delayed `RETED`, `RETF` (needs RTN-state
+  scoping first), and the remaining wave-1 tail stay
+  deferred. Open: split re-evaluation triggers unchanged
+  (800 lines or a new effect/address kind); `make test`
+  recipe order still lets C regressions hide behind quality
+  failures.
