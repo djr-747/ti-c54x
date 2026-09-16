@@ -6,3 +6,4 @@ include tests/unit/cpu/isa/status/tests.mk
 include tests/unit/cpu/isa/compare/tests.mk
 include tests/unit/cpu/isa/arithmetic/tests.mk
 include tests/unit/cpu/isa/branch/tests.mk
+include tests/unit/cpu/isa/repeat/tests.mk

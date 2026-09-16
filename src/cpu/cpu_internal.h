@@ -21,6 +21,8 @@
 #include "../debug/observer.h"
 #include "../sequencer/delayed_branch/delayed_branch.h"
 #include "../sequencer/instruction/memory_instruction_transaction.h"
+#include "../sequencer/interrupt/repeat_pending_request.h"
+#include "../sequencer/repeat/repeat_progress.h"
 #include "../state/arch_state.h"
 #include "../state/accumulator/accumulator.h"
 #include "../state/temporary/t_register.h"
@@ -41,6 +43,11 @@ struct ti_c54x_cpu {
      * stack branch (W67B wires the adopt/advance loop), cleared by
      * init and reset. Pipeline state, not architectural state. */
     ti_c54x_sequencer_delayed_branch_state delayed_branch;
+    /* Single-repeat pipeline state: ACTIVE progress plus one latched
+     * maskable request (S2 wires the start/predecode loop), cleared
+     * by init and reset. Pipeline state, not architectural state. */
+    ti_c54x_repeat_progress repeat_progress;
+    ti_c54x_repeat_pending_request repeat_pending;
     bool execution_active;
 };
 

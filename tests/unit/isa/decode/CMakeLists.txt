@@ -81,6 +81,9 @@ ti_c54x_add_unit_test(retf_decode test_retf_decode.c)
 ti_c54x_add_unit_test(rc_decode test_rc_decode.c)
 # P3-S7 RED contract: STM decode.
 ti_c54x_add_unit_test(stm_decode test_stm_decode.c)
+# P3-S2 RED contract: RPT immediate rows.
+ti_c54x_add_unit_test(rpt_k_decode test_rpt_k_decode.c)
+ti_c54x_add_unit_test(rpt_lk_decode test_rpt_lk_decode.c)
 # W78 RED contract: RCD decode.
 ti_c54x_add_unit_test(rcd_decode test_rcd_decode.c)
 # W67B RED contract: RETD decode with near-miss audit.

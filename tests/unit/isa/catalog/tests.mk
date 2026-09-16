@@ -68,6 +68,9 @@ $(eval $(call ti_c54x_add_test,rc_metadata,isa/catalog,test_rc_metadata.c))
 $(eval $(call ti_c54x_add_test,rcd_metadata,isa/catalog,test_rcd_metadata.c))
 # P3-S7 RED contract: STM catalog row.
 $(eval $(call ti_c54x_add_test,stm_metadata,isa/catalog,test_stm_metadata.c))
+# P3-S2 RED contract: RPT immediate rows.
+$(eval $(call ti_c54x_add_test,rpt_k_metadata,isa/catalog,test_rpt_k_metadata.c))
+$(eval $(call ti_c54x_add_test,rpt_lk_metadata,isa/catalog,test_rpt_lk_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))

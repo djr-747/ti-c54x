@@ -6003,6 +6003,38 @@
         "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
       },
       "assertion": "S7 is implemented and green: the STM catalog row, DIRECT7_EXTENSION16 decode, pure direct-store handler with deferred indirect form, trusted dispatch binding, page-0 DIRECT liveness arm in candidate validation, MMR and DP0 CPU retirement proofs, and SUBSET inventory binding are executable through the five RED contracts with the authoritative standalone gates passing."
+    },
+    {
+      "id": "E-PROJECT-P3-S2-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S2: RPT activation seam (planned)"
+      },
+      "assertion": "S2 activates single-repeat on the W48A/W48B seam: RPT #K at 0xEC00 under mask 0xFF00 and exact RPT #lk at 0xF070, both INELIGIBLE with no inputs, reusing the RPT_IMMEDIATE_K/LK layouts and the immediate core; a repeat_single driver owns guarded start, predecode arbitration plus body admission, and HOLD versus ADVANCE; run.c wires start plus predecode with the retirement-tail HOLD sites deferred to the first ELIGIBLE body. RPT Smem, ELIGIBLE flips, vectors, take paths, NMI sources, timing, and RPTB/RPTZ/RPTBD stay deferred."
+    },
+    {
+      "id": "E-PROJECT-P3-S2-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S2: RPT activation seam (planned)"
+      },
+      "assertion": "S2 is implemented and green: the RPT_K and RPT_LK catalog rows, immediate decode, pure repeat-start leaves with deferred Smem form, trusted dispatch bindings, the repeat_single driver composition, RPT retirement with RC load plus transactional body blocks plus latched-request persistence, and SUBSET inventory bindings are executable through the eight RED contracts with the authoritative standalone gates passing."
     }
   ],
   "requirements": [
@@ -13669,6 +13701,150 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-K-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the RPT_K row at first-word value 0xEC00 under mask 0xFF00 with one program word, 256 encodings, and the RPT_IMMEDIATE_K layout with no inputs and INELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-K-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-K-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the 8-bit K field of the one-word RPT_K bundle through the RPT_IMMEDIATE_K layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-K-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-K-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/repeat/",
+      "claim": "Evaluate RPT #K into a REPEAT_START effect carrying the 8-bit operand; NULL inputs reject and the effect stages RC load downstream.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-K-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-LK-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the RPT_LK row at exact first word 0xF070 with two program words and the RPT_IMMEDIATE_LK layout with no inputs and INELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-LK-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-LK-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the 16-bit extension lk field of the two-word RPT_LK bundle through the RPT_IMMEDIATE_LK layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-LK-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S2-RPT-LK-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/repeat/",
+      "claim": "Evaluate RPT #lk into a REPEAT_START effect carrying the 16-bit operand; NULL inputs reject and the effect stages RC load downstream.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S2-RPT-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S2-RPT-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the RPT_K and RPT_LK catalog rows through the generic trusted dispatch seam with single-pass operand extraction and no opcode-specific CPU branch.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S2-PLAN-ANCHOR",
+        "E-PROJECT-P3-S2-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-TRUSTED-OPCODE-BINDING"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S2-SINGLE-FLOW",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/repeat/",
+      "claim": "Compose guarded repeat start, predecode arbitration plus body admission, and body-retired HOLD versus ADVANCE in the repeat_single driver with no retained state and no partial mutation on reject.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S2-PLAN-ANCHOR",
+        "E-PROJECT-P3-S2-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S2-SINGLE-FLOW"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S2-RPT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire RPT through the driver route with RC load and sequential advance; UNRESOLVED bodies block and INELIGIBLE bodies reject as transactional INVALID_STATE stops, latched maskable requests persist untaken across activation and blocks, and reset clears repeat pipeline state.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S2-PLAN-ANCHOR",
+        "E-PROJECT-P3-S2-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S2-RPT-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S2-RPT-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the RPT_K and RPT_LK production symbols to FORM-T2-16-02 and FORM-T2-16-03 at SUBSET with audit-only inventory metadata; the deferred Smem form and unrealized repetition keep them from COMPLETE.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S2-PLAN-ANCHOR",
+        "E-PROJECT-P3-S2-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -16004,7 +16180,8 @@
         "REQ-PROJECT-P2-W75-RETED-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W77-RC-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING",
-        "REQ-PROJECT-P3-S7-STM-TRUSTED-BINDING"
+        "REQ-PROJECT-P3-S7-STM-TRUSTED-BINDING",
+        "REQ-PROJECT-P3-S2-RPT-TRUSTED-BINDING"
       ]
     },
     {
@@ -16842,7 +17019,8 @@
         "REQ-PROJECT-P2-W75-RETED-INVENTORY",
         "REQ-PROJECT-P2-W77-RC-INVENTORY",
         "REQ-PROJECT-P2-W78-RCD-INVENTORY",
-        "REQ-PROJECT-P3-S7-STM-INVENTORY"
+        "REQ-PROJECT-P3-S7-STM-INVENTORY",
+        "REQ-PROJECT-P3-S2-RPT-INVENTORY"
       ]
     },
     {
@@ -19612,6 +19790,118 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S7-STM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-K-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_rpt_k_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_k_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-K-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-K-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rpt_k_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_k_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-K-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-K-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/repeat/test_rpt_k.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_k_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-K-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-LK-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_rpt_lk_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_lk_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-LK-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rpt_lk_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_lk_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-LK-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S2-RPT-LK-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/repeat/test_rpt_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rpt_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S2-RPT-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S2-SINGLE-FLOW",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/repeat/test_repeat_single_flow.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.repeat_single_flow"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S2-SINGLE-FLOW"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S2-RPT-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/repeat/test_cpu_rpt.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_rpt"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S2-RPT-CPU-RETIREMENT"
       ]
     }
   ]

@@ -134,8 +134,10 @@ test_rpt_lk_resolution_and_extraction(void)
 }
 
 static void
-test_resolution_ids_widths_and_no_production_rpt_lookup(void)
+test_resolution_ids_and_widths(void)
 {
+    /* Production RPT rows landed with the P3-S2 activation slice;
+     * their first words are pinned by the rpt_k/rpt_lk lanes. */
     TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_resolve(
                            TI_C54X_OPERAND_LAYOUT_NONE, 1U, NULL) ==
                        TI_C54X_OPERAND_LAYOUT_STATUS_INVALID_ARGUMENT);
@@ -151,10 +153,6 @@ test_resolution_ids_widths_and_no_production_rpt_lookup(void)
                           TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_MISMATCH);
     check_resolve_failure(TI_C54X_OPERAND_LAYOUT_NONE, 3U,
                           TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_INVALID);
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xEC00)).status ==
-                       TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xF070)).status ==
-                       TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
 }
 
 static void
@@ -246,7 +244,7 @@ main(void)
     test_none_resolution_and_width();
     test_rpt_k_resolution_and_extraction();
     test_rpt_lk_resolution_and_extraction();
-    test_resolution_ids_widths_and_no_production_rpt_lookup();
+    test_resolution_ids_and_widths();
     test_nulls_indexes_and_output_transactionality();
     test_local_multi_operand_descriptor_validation();
     puts("operand_layout_binding: ok");

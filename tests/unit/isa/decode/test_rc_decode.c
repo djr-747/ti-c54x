@@ -167,11 +167,12 @@ test_fixed_bit_near_misses(void)
      * variable. Bits 0:7 stay inside this row (pinned by the
      * exhaustive loop, except the RET shadow word). Setting
      * fixed bit 9 lands on RETD (pinned above), clearing fixed
-     * bit 10 lands on the BC sibling, and clearing fixed bit 11
-     * lands on ADD_ACC_SHIFT; all other fixed-bit flips must
-     * miss every row. */
+     * bit 10 lands on the BC sibling, clearing fixed bit 11
+     * lands on ADD_ACC_SHIFT, and clearing fixed bit 12 lands on
+     * the RPT_K row; all other fixed-bit flips must miss every
+     * row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x0100), UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -214,6 +215,16 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(add_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(add_sibling.id == TI_C54X_OPCODE_ID_ADD_ACC_SHIFT);
+    }
+
+    /* Clearing fixed bit 12 lands on the RPT_K row. */
+    {
+        const ti_c54x_decode_result rpt_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RC_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(rpt_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rpt_sibling.id == TI_C54X_OPCODE_ID_RPT_K);
     }
 }
 

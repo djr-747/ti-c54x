@@ -3,13 +3,13 @@
  *
  * Owns: executable COMMON_TI proof that the decode-owned immutable layout
  * set carries both immediate-RPT forms exactly as TI SPRU172C documents
- * them, and that production first-word lookup claims neither form while
- * RPT rows stay inactive under the W20F deferral.
+ * them. Production first-word rows landed with the P3-S2 activation
+ * slice and are pinned by the rpt_k/rpt_lk decode lanes.
  * Evidence: E-TI-C54X-SPRU172C-T2-16-P2-12-RPT-WIDTHS and
  * E-TI-C54X-SPRU172C-S4-RPT-P4-146-4-147.
- * Does not own: RPT catalog rows or first-word value/mask metadata (both
- * deferred to the later activation slice), the RPT operation, repeat state,
- * CPU sequencing, timing, buses, or diagnostics.
+ * Does not own: RPT catalog rows or first-word value/mask metadata
+ * (pinned by the activation slice lanes), the RPT operation, repeat
+ * state, CPU sequencing, timing, buses, or diagnostics.
  */
 
 #include "../../../../src/isa/decode/opcode_decode.h"
@@ -103,30 +103,12 @@ test_word_count_mismatch_rejected(void)
         TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_MISMATCH);
 }
 
-/* No production RPT row exists while W20F is deferred: the full K
- * neighborhood and the exact lk first word stay explicitly unknown. */
-static void
-test_no_production_rpt_lookup(void)
-{
-    uint32_t first_word;
-
-    for (first_word = UINT32_C(0xEC00); first_word <= UINT32_C(0xECFF);
-         ++first_word) {
-        TI_C54X_TEST_CHECK(
-            ti_c54x_decode_first_word((uint16_t)first_word).status ==
-            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    }
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0xF070)).status ==
-                       TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-}
-
 int
 main(void)
 {
     test_k_neighborhood_exhaustive();
     test_lk_extension_word_range();
     test_word_count_mismatch_rejected();
-    test_no_production_rpt_lookup();
     puts("rpt_immediate_decode_common: ok");
     return 0;
 }

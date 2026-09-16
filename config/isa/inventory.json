@@ -1532,9 +1532,11 @@
       "table_ordinal": 2,
       "mnemonic": "RPT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RPT_K"
+      ]
     },
     {
       "id": "FORM-T2-16-03",
@@ -1543,9 +1545,11 @@
       "table_ordinal": 3,
       "mnemonic": "RPT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RPT_LK"
+      ]
     },
     {
       "id": "FORM-T2-16-04",
@@ -3494,6 +3498,18 @@
       "form_id": "FORM-T2-20-14",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "RPT_K",
+      "form_id": "FORM-T2-16-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_K"
+    },
+    {
+      "catalog_symbol": "RPT_LK",
+      "form_id": "FORM-T2-16-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_LK"
     }
   ]
 }

@@ -74,6 +74,9 @@ $(eval $(call ti_c54x_add_test,retf_decode,isa/decode,test_retf_decode.c))
 $(eval $(call ti_c54x_add_test,rc_decode,isa/decode,test_rc_decode.c))
 # P3-S7 RED contract: STM decode.
 $(eval $(call ti_c54x_add_test,stm_decode,isa/decode,test_stm_decode.c))
+# P3-S2 RED contract: RPT immediate rows.
+$(eval $(call ti_c54x_add_test,rpt_k_decode,isa/decode,test_rpt_k_decode.c))
+$(eval $(call ti_c54x_add_test,rpt_lk_decode,isa/decode,test_rpt_lk_decode.c))
 # W78 RED contract: RCD decode.
 $(eval $(call ti_c54x_add_test,rcd_decode,isa/decode,test_rcd_decode.c))
 $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))

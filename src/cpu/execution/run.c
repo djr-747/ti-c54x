@@ -27,6 +27,7 @@
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_bridge.h"
 #include "sequencer/program_pc_target.h"
+#include "repeat_activate.h"
 
 static ti_c54x_run_result result_from_cpu(const ti_c54x_cpu *cpu,
                                           ti_c54x_stop_reason reason,
@@ -363,6 +364,15 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         if (binding == NULL ||
             binding->metadata.id == TI_C54X_OPCODE_ID_UNKNOWN) {
             return stop_result(cpu, TI_C54X_STOP_UNIMPLEMENTED_OPCODE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
+        /* Single-repeat predecode: only ELIGIBLE bodies execute
+         * while ACTIVE (wired in repeat_activate.c). */
+        if (ti_c54x_cpu_repeat_predecode_blocks(
+                cpu, binding->metadata.repeatability)) {
+            return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
@@ -714,6 +724,25 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                 apply_deferred_branch(cpu);
             }
             continue;
+        }
+
+        /* RPT retires through the single-repeat wiring in
+         * repeat_activate.c; the HOLD tails land with the first
+         * ELIGIBLE body. */
+        {
+            const ti_c54x_cpu_repeat_route_status route_status =
+                ti_c54x_cpu_repeat_route(cpu, &effect, bridge_status,
+                                         candidate_pc);
+            if (route_status != TI_C54X_CPU_REPEAT_ROUTE_NOT_REPEAT) {
+                if (route_status != TI_C54X_CPU_REPEAT_ROUTE_RETIRED) {
+                    return stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                cpu->instructions_retired++;
+                instructions_retired++;
+                continue;
+            }
         }
 
         if (ti_c54x_effect_transaction_stage(

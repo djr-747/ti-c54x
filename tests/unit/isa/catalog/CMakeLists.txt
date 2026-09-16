@@ -88,6 +88,11 @@ ti_c54x_add_unit_test(rcd_metadata
 # P3-S7 RED contract: STM catalog row.
 ti_c54x_add_unit_test(stm_metadata
                       test_stm_metadata.c)
+# P3-S2 RED contract: RPT immediate rows.
+ti_c54x_add_unit_test(rpt_k_metadata
+                      test_rpt_k_metadata.c)
+ti_c54x_add_unit_test(rpt_lk_metadata
+                      test_rpt_lk_metadata.c)
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)
