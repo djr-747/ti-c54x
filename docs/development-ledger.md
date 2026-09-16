@@ -9563,3 +9563,58 @@ rewritten after publication.
   with metadata, decode, ops, CPU retirement, `ELIGIBLE`
   classification, and `RPT MAC` end-to-end replay; then
   S3c `MPY` Smem and `MPYA`/`MAS`/`MACR` in census order.
+
+## 2026-09-16 — P3-S3b MAC Smem row slice (slice 10)
+
+- Commit `eb50b85` lands the first `MAC` family row on the S3a
+  seam: `MAC_SMEM` at `0x2800` under mask `0xFC00` (1024
+  encodings, one program word) with the new shared
+  `ROUND_SELECT_INDIRECT_ADDR7` layout (round, select,
+  indirect, addr7), `ELIGIBLE` repeatability by the Table
+  2-28 omission pin (pp. 2-20–2-21), and the
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM` inputs. Checked
+  and trusted leaves stage direct page-0 and
+  standard-indirect MOD0–MOD3 reads (arf `addr[2:0]`, 4-bit
+  mode `addr[6:3]`), defer exotic modes as `INVALID_OPERAND`
+  per the `STM` precedent, and complete the read value
+  through the multiply core into an accumulator write with
+  `OVdst` disposition. `FORM-T2-04-01` binds at `SUBSET`
+  over `DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3`.
+- Five RED lanes green (`ti_c54x.mac_smem_metadata`,
+  `ti_c54x.mac_smem_decode`, `ti_c54x.mac_smem_ops`,
+  `ti_c54x.cpu_mac_smem`, `ti_c54x.cpu_rpt_mac_replay`);
+  registry adds 2 evidence, 6 requirements, 5 test records
+  (350/545/433). `RPT #2` plus three `MAC` bodies replays
+  end-to-end (`A` = `0x1800`, `RC` = 0, phase `COMPLETE`)
+  through the new retirement-tail `HOLD` wiring: a body-PC
+  latch set at `REPEAT_START` retire, `ADVANCE`/`HOLD`/`INVALID`
+  recording at all three retirement sites (MEMORY fresh,
+  MEMORY resume, ordinary), latch cleared on `ADVANCE`,
+  `COMPLETE`, init, and reset. This closes the S2 `HOLD`-tail
+  item; delayed-branch/repeat composition stays deferred.
+- Validation is GREEN: full CMake CTest 418/418; `make
+  test` exits 0 (101/101); ASan/UBSan `make test` exits 0
+  (101/101); python `unittest discover`, evidence registry,
+  ISA inventory, source-boundary, opcode-lookup golden, knob
+  registry, and `git diff --check` pass. No knob was added
+  or changed. Coverage 65/205 (31.707%), strict 33/205; 165
+  bindings, 166 rows, 8,901 lookup entries.
+- Decisions: overflow stays 32-bit (uniform with `ADD` and
+  the `OVM` values); `MPY`-style store is not special-cased
+  in the shared leaf. Neighbor pins move to ID 166, 165
+  bindings/rows, 8,901 entries, 65/205 with 31.707%,
+  including the frozen SUBSET set plus addressing token.
+  The evidence gate needed two fixup rounds (scope leak of
+  TI evidence into a project requirement, then a locator
+  parse that ate `2-28` out of `Table 2-28` as a page —
+  reworded to the digit-free chapter name).
+- Split review: the `HOLD` sites pushed `run.c` to 816
+  lines, so its static result/stop/branch plumbing moves to
+  the new `run_support` module (`run.c` 816 → 657,
+  `run_support` 164). `op_mac_smem.c` is 227 lines;
+  remaining new files stay small; test files are exempt.
+- Follow-up work: S3c `MPY` Smem row (`FORM-T2-03-01`)
+  reusing the shared layout with `STORE` completion and a
+  `D`-destination select, then `MPYA`/`MAS`/`MACR` in census
+  order; deferred exotic indirect modes, `MACA`/`MACD`/
+  `MACP`, dual `#lk` words, and far/XPC/timing.
