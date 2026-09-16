@@ -9205,3 +9205,39 @@ rewritten after publication.
   the approved P3 slice order. Open: `make test` recipe
   order still lets C regressions hide behind quality
   failures.
+
+## 2026-09-16 — P3 slice 1 denominator audit
+
+- Implementation commit `fae90e0` closes the approved
+  slice-1 scope audit with docs plus one executable
+  contract; no production, catalog, inventory, or evidence
+  change.
+- Decision: Tables 2-12 through 2-16 hold 24 family forms
+  with no delayed-variant row, so the 205-form denominator
+  needs no expansion. All seven implemented delayed rows
+  share their family form through a `_DELAYED`
+  addressing-subset token, and every future delayed row
+  composes the same way (`RPTBD`→`FORM-T2-16-04`,
+  `FBD`→`FORM-T2-12-05`, `RETFD`→`FORM-T2-15-06`,
+  `BACCD`→`FORM-T2-12-02`, `CALAD`→`FORM-T2-13-01`,
+  `RCD`→`FORM-T2-15-03`). The new
+  `test_inventory_delayed_family_binding.py` contract pins
+  today's seven delayed symbols to their family forms and
+  requires a non-delayed same-form sibling, so a
+  delayed-only form ID fails the gate first. Branch
+  readiness baseline is 8/24 `SUBSET` family forms.
+- Correction to the 2026-09-11 wave-1 audit entry, which
+  dismissed `RC` as a repeat-counter reference: `RC`
+  (`FORM-T2-15-03`, in the Table 2-15 returns neighborhood
+  between `FRETE` and `RET`, with the `RCD` delayed
+  companion paralleling `BC`/`BCD` and `CC`/`CCD`) is the
+  conditional-return instruction. Its 251 census words move
+  from wave 3 to the wave-1 tail, and approved slice 5 now
+  covers `RC`/`RCD` together.
+- Validation: contract quality unittest fully OK (269,
+  including the new lock); `git diff --check` passes. Full
+  `make test` and sanitizer gates are unchanged from the
+  W76 landing (both EXIT=0) since this slice touches no
+  production or catalog surface. No knob was added or
+  changed.
+- Follow-up work: approved slice 2 (`XC`) is next.
