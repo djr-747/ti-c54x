@@ -9677,3 +9677,69 @@ rewritten after publication.
 - Follow-up work: `MPYA`/`MAS`/`MACR` in census order;
   deferred exotic indirect modes, `MACA`/`MACD`/`MACP`,
   dual `#lk` words, and far/XPC/timing.
+
+## 2026-09-16 — P3-S3d MPYA Smem row slice (slice 12)
+
+- Commit `d5b49af` lands `MPYA` Smem syntax 1
+  (`FORM-T2-03-06`): `MPYA_SMEM` at `0x3100` under mask
+  `0xFF00` (256 encodings, one program word) with the new
+  `INDIRECT_ADDR7` layout, `ELIGIBLE` repeatability by the
+  Table 2-28 omission pin, and the new
+  `ACCUMULATORS_STATUS_FRCT_OVM` inputs (T is written, not
+  read). Checked and trusted `op_mpya_smem` leaves stage
+  direct page-0 and standard-indirect MOD0–MOD3 reads with
+  the read-phase T load, defer exotic modes as
+  `INVALID_OPERAND`, and complete the read value through
+  the multiply core `STORE` path as Smem times A-high into
+  fixed B with `OVdst` disposition.
+- Six RED lanes green (`ti_c54x.indirect_addr7_layout`,
+  `ti_c54x.mpya_smem_metadata`, `ti_c54x.mpya_smem_decode`,
+  `ti_c54x.mpya_smem_ops`, `ti_c54x.cpu_mpya_smem`,
+  `ti_c54x.memory_instruction_commit` T-load lanes);
+  registry adds 2 evidence, 7 requirements, 6 test records
+  (352/557/443). The ops and CPU lanes retire the TI
+  oracle: MPYA Example 1 (`MPYA *AR2`, `A` =
+  `FF 8765 1111`, `T` = `1234`, mem = `5678`, `FRCT` = 0
+  yields `B` = `FF D743 6558`, `T` = `5678`). A-high is
+  bits 31:16 as signed 16-bit, verified by hand-computed
+  decimal (`-30875 * 22136 = -683449000`) against both
+  printed examples before the leaf existed. No dedicated
+  `RPT MPYA` replay lane: `ELIGIBLE` replay stays proven
+  generically.
+- The T-write/B-store dual commit is the slice's seam:
+  the completion returns one effect, so the memory effect
+  grows one `load_t_with_read` flag (LP64 40→48, outer
+  effect 48→56, transaction root 352→360; ILP32 36→40,
+  40→44, 324→328, with the ILP32 root confirmed by the
+  `-m32` perf probe) and the read commit loads T after the
+  read-value completion commits, transactionally on a
+  candidate. The flag validates READ-only without RMW;
+  unflagged reads preserve T by test.
+- Validation is GREEN: full CMake CTest 427/427; `make
+  test` 101 ok with no failures; ASan/UBSan `make test`
+  with no failures; evidence registry, ISA inventory,
+  source-boundary, opcode-lookup `--check`, and `git
+  diff --check` pass. No knob was added or changed.
+  Coverage 67/205 (32.683%), strict 33/205; 167 bindings,
+  168 rows, 10,181 lookup entries.
+- Decisions: mask first drafted as `0xFF80` would have
+  pinned I=0 and excluded indirect `*AR2`; writing the RED
+  metadata test forced the bit math to `0xFF00`/256
+  before any production edit. The `LD_T` fixed-bit
+  `0x0100` flip (`0x3090` → `0x3190`) lands in the MPYA
+  row, so both `LD_T` near-miss loops carve it out as the
+  named P3-S3d sibling (`0x0080` → `0x3010` stays
+  unknown; an early carve-out of the wrong mask was
+  caught by the tests and reverted). Neighbor pins move
+  to ID 168, 167 bindings/rows, 10,181 entries, 67/205
+  with 32.683%, including the frozen `SUBSET` set (plus
+  `MPYA_SMEM`) and the addressing token.
+- Split review: `op_mpya_smem.c` is 248 lines and
+  `op_mpya_smem.h` is 47 lines; no split required. The
+  commit-path T load is 17 lines inside the existing
+  commit module; no split required.
+- Follow-up work: `MAS`/`MACR` in census order (plus
+  `MPYA` syntax 2, the exact `0xF48C`/`0xF49C` rows with
+  no memory seam); deferred exotic indirect modes,
+  `MACA`/`MACD`/`MACP`, dual `#lk` words, and
+  far/XPC/timing.
