@@ -10015,3 +10015,73 @@ rewritten after publication.
   neighborhoods, dual replay classification; deferred
   exotic indirect modes, dual `#lk` words, and
   far/XPC/timing.
+
+## 2026-09-17 — P3-S3j MPYA-dst register-only slice (slice 18)
+
+- Commit `f53e120` lands `FORM-T2-03-07` (TI SPRU172C
+  `MPYA` syntax 2, opcode `1111 010D 1000 1100`,
+  dual-sourced against the SPRU179C algebraic
+  `dst = T * hi(A)`) as one `MPYA_DST` catalog row at
+  `0xF48C` under mask `0xFEFF` carrying both D
+  encodings through the reused `MAX_MIN_ACC`
+  single-destination-bit layout with `ELIGIBLE`
+  repeatability (Table 2-28 lists no MPYA entry, the
+  recorded S3d omission basis) — no new layout,
+  resource, effect, address, state, CPU, public-API,
+  or manifest seam. Checked/trusted leaves complete
+  `(T) x (A(32-16))` into dst through the multiply
+  core with STORE select and no rounding (the S3d
+  `hi(A)` feed with T and multiplicand roles
+  swapped); no memory effect, no T update, C/TC
+  preserved, `OVdst` follows the core. CPU
+  retirement proves TI MPYA Example 2 (`A FF 8765
+  1111`, `T 4567`, FRCT 0 yield `B FF DF4D B2A3`
+  with A and T unchanged; the vector was recomputed
+  independently before pinning). New TI record
+  `E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105`
+  plus activation, five owner-split requirements, and
+  four test records (361/570/455→363/575/459); the
+  PROJECT INVENTORY requirement rides the shared
+  `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` test per
+  the S3e convention, and the binding uses the new
+  `REGISTER_DST` subset token (SUBSET bindings may
+  not use `ALL`).
+- RED was observed on the stub (absent
+  `TI_C54X_OPCODE_ID_MPYA_DST` identity). One
+  author-side trip: the fresh-CPU FRCT bit is
+  unknown, so the CPU test clears FRCT and marks it
+  known for the FRCT=0 oracle (the S3h lesson). A
+  second: `fixture.h`'s `seed_address` helper is
+  unused by the register-only form and trips
+  `-Werror`, silenced with the `(void)` precedent.
+  `git diff --check` clean. New files peak at 238
+  lines (`test_mpya_dst_ops.c`); no split required.
+- Neighbor pins move to 197 IDs, 196 rows/bindings
+  (163 SUBSET plus 33 COMPLETE), 13,799 lookup
+  entries, 72/205 (35.122%), SUBSET bindings 163
+  with the `FORM-T2-03-07` contract set; strict stays
+  33/205 (16.098%). The 0xF48C near-miss sweep
+  (decode plus metadata tests) is clean — two exact
+  rows would collide on the unmasked D bit, so the
+  single masked row is the honest shape.
+- Validation is GREEN: full CMake CTest 441/441 on
+  the working build; fresh Debug configure plus full
+  CTest 441/441 in `/tmp/ti-c54x-s3j-debug`; full
+  sanitizer CMake/CTest 440/440 (quality.python
+  excluded, green separately); `make test` exit 0
+  with observer artifact OK; focused ASan/UBSan
+  `mpya_dst` tests rc=0 with `detect_leaks=0`;
+  Python `unittest discover` OK (272); evidence
+  (363/575/459), inventory (72/205), source-boundary,
+  knob, manifest, and lookup gates pass. No knob was
+  added or changed. README snapshot now reads
+  P3-S3j complete. A mid-slice `/tmp` disk-quota
+  failure from accumulated scratch builds was
+  resolved by removing this session's superseded
+  `/tmp/ti-c54x-*` configure dirs; no repo state was
+  touched.
+- Follow-up work: `MACR` Smem lock-in, `MPYU`,
+  `SQUR` family, `MACA`/`MACD`/`MACP` family,
+  AR6/AR7 dual-Y widening, MOD3 neighborhoods, dual
+  replay classification; deferred exotic indirect
+  modes, dual `#lk` words, and far/XPC/timing.
