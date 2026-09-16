@@ -9743,3 +9743,57 @@ rewritten after publication.
   no memory seam); deferred exotic indirect modes,
   `MACA`/`MACD`/`MACP`, dual `#lk` words, and
   far/XPC/timing.
+
+## 2026-09-16 — P3-S3e MAS Smem row slice (slice 13)
+
+- Commit `a5d0670` lands `MAS` Smem syntax 1
+  (`FORM-T2-04-14`): `MAS_SMEM` at `0x2C00` under mask
+  `0xFC00` (1024 encodings, one program word) reusing the
+  shared `ROUND_SELECT_INDIRECT_ADDR7` layout, `ELIGIBLE`
+  repeatability by the Table 2-28 omission pin, and the
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM` inputs.
+  Checked and trusted `op_mas_smem` leaves stage direct
+  page-0 and standard-indirect MOD0–MOD3 reads, defer
+  exotic modes as `INVALID_OPERAND`, and complete the read
+  value through the multiply core `SUBTRACT` path as
+  destination minus T times Smem with `OVdst` disposition
+  and R-suffix rounding applied to the
+  multiply-subtract result.
+- Four RED lanes green (`ti_c54x.mas_smem_metadata`,
+  `ti_c54x.mas_smem_decode`, `ti_c54x.mas_smem_ops`,
+  `ti_c54x.cpu_mas_smem`); registry adds 2 evidence, 5
+  requirements, 4 test records (353/562/447). The ops and
+  CPU lanes retire the TI oracles: MAS Example 1 (`MAS
+  *AR5+`, `A` = `1000`, `T` = `0400`, mem = `1234`,
+  `FRCT` = 0 yields `A` = `FF FFB7 4000`, `AR5` = `0101`)
+  and MAS Example 3 (`MASR`, same pre-state yields `A` =
+  `FF FFB7 0000`). Example 3 distinguishes
+  result-after-subtract rounding (which the shared core
+  already implements) from product rounding, and is
+  verified by hand decimal before the leaf existed. No
+  dedicated `RPT MAS` replay lane: `ELIGIBLE` replay stays
+  proven generically.
+- Validation is GREEN: full CMake CTest 431/431; `make
+  test` 101 ok with no failures; ASan/UBSan `make test`
+  with no failures; evidence registry, ISA inventory,
+  source-boundary, opcode-lookup `--check`, and `git
+  diff --check` pass. No knob was added or changed.
+  Coverage 68/205 (33.171%), strict 33/205; 168 bindings,
+  169 rows, 11,205 lookup entries.
+- Decisions: the `MASR` R variant shares the base row
+  encoding (MAC precedent), so only `FORM-T2-04-14` binds
+  and `-15` stays `UNIMPLEMENTED`. The `BANZ`/`BANZD`
+  fixed-bit `0x4000` flips (`0x6C00` → `0x2C00`,
+  `0x6E00` → `0x2E00`) land in the MAS row, so both
+  near-miss loops carve them out as named P3-S3e
+  siblings. A dropped nibble in hand-computed 40-bit
+  expectations (`0xFFFB7…` vs `0xFFFFB7…`) was caught by
+  re-deriving the two's complement width before GREEN.
+  Neighbor pins move to ID 169, 168 bindings/rows,
+  11,205 entries, 68/205 with 33.171%.
+- Split review: `op_mas_smem.c` is 269 lines and
+  `op_mas_smem.h` is 46 lines; no split required.
+- Follow-up work: `MACR` in census order (plus `MPYA`
+  syntax 2 and dual `Xmem`/`Ymem` syntaxes); deferred
+  exotic indirect modes, `MACA`/`MACD`/`MACP`, dual `#lk`
+  words, and far/XPC/timing.
