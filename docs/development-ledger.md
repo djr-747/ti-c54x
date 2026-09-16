@@ -9241,3 +9241,89 @@ rewritten after publication.
   production or catalog surface. No knob was added or
   changed.
 - Follow-up work: approved slice 2 (`XC`) is next.
+
+## 2026-09-16 — P2-W77A catalog exact-word shadow seam
+
+- Implementation commit `fc8c87d` admits the one overlap
+  exception the pairwise catalog gate needs for
+  conditional-return composition: an exact row declared
+  before a covering masked row keeps its single word under
+  the first-match lookup order, with the reversed order and
+  all other collision classes still rejected. Three RED
+  schema contracts pin accept/reversed-order-reject/
+  partial-mask-reject. Production catalog output is
+  byte-identical (`generate_opcode_lookup.py --check`
+  green before and after). No knob, no C change.
+- Decision: the unconditional word shared by an exact
+  return row and a masked conditional-return row (for
+  example `0xFC00` for `RET`/`RC`) behaves identically
+  either way, so exact-wins is the faithful model; the
+  declaration-order rule keeps generation deterministic
+  without touching the flat 65,536-entry lookup.
+
+## 2026-09-16 — P2-W77B RC conditional-return slice
+
+- Implementation commit `f72e629` binds one Table 2-15 row
+  under `FORM-T2-15-03`: `RC` at first-word value `0xFC00`
+  under mask `0xFF00`, one program word, 256 encodings with
+  the `0xFC00` word keeping its `RET` identity through the
+  W77A seam, the new 1-word `BRANCH_COND8` layout, the
+  `ACCUMULATORS_STATUS_C_TC_STACK_POINTER` input
+  combination, and `INELIGIBLE` repeatability on the
+  manual's explicit note. The pure leaf evaluates the
+  sixteen image-evidenced single conditions through the
+  shared seam (BIO/NBIO, UNC, overflow, multi-condition
+  combinations reject as deferred, exactly like `BC`/`CC`),
+  stages a `MEMORY` `STACK_POP` READ gated on known SP when
+  taken and `NONE` when not taken, with no status effects.
+  Taken retires through the unchanged `RET`-proven pop
+  route; not-taken advances sequentially with no endpoint
+  traffic. No `run.c` change, no new effect or address
+  kind. `FORM-T2-15-03` lands `SUBSET` with the `RC` symbol
+  under the shared `STACK_POP_NONDELAYED` binding (delayed
+  `RCD` waits for W78).
+- Composition costs the shadow exposed: (1) trusted slow
+  prepare now verifies the bundle resolves to the
+  binding's lookup identity instead of only matching its
+  pattern, so the `RET` word can never prepare as `RC`
+  (the fast path is untouched — its precondition already
+  guarantees lookup provenance); (2) the shared
+  trusted-packet test builds canonical bundles from the
+  lowest lookup-resolving word; (3) five sibling
+  near-miss lists now pin their `RC`-range flips
+  (`LD_SRC_SHIFT`, `LD_SRC_ASM`, `RET` low byte,
+  `RETE`/`RETF` bit 11) instead of UNKNOWN.
+- Seven new executable contracts (catalog with 255+shadow
+  population proof, decode with exhaustive 256-word loop
+  and transactional rejection, handler with oracle parity
+  across four routes, CPU retirement with taken-pop/
+  not-taken-sequential/unknown-rejection cases) plus the
+  W77A seam tests; evidence adds 3 TI plus 2 project
+  records, 6 requirements, and 4 test records with index
+  rows and shared-test reverse links.
+- Validation is GREEN with no baseline deviation: `make
+  test` exits 0 with all 383 C test binaries passing;
+  contract quality unittest fully OK (272); knobs, source
+  boundaries, manifests, evidence (329 records, 511
+  requirements with 480 `IMPLEMENTED`, 406 tests all
+  `PASSING`), inventory (realized 160 catalog rows,
+  `ID_COUNT=161`, 7,109 lookup entries, 160 bindings, 127
+  SUBSET bindings, family coverage 61/205 at 29.756%,
+  33/205 strict), and observer-disabled structure pass.
+  ASan/UBSan `make test` exits 0 with no findings.
+  `generate_opcode_lookup.py --check` and `git diff
+  --check` pass. No knob was added or changed. All touched
+  handwritten files stay far below the split triggers.
+- Decisions: `RC` reuses the `RET` pop seam and the
+  `BC`/`CC` condition seam unchanged; deferred-condition
+  rejection (rather than partial multi-condition support)
+  matches the evidenced-code precedent; the plan's slice 5
+  now reads `RC`/`RCD`; the approved P3 track is
+  re-sequenced seam-first (S1 MMR/device routing leads
+  after W78) with the arch-completeness criterion
+  excluding only far/XPC per the baseline.
+- Follow-up work: W78 `RCD` (delayed conditional return,
+  evidence in hand: Z=1 selects `0xFE00`/`0xFF00`, two slot
+  words execute) is next, then the S1 MMR/device seam.
+  Open: `make test` recipe order still lets C regressions
+  hide behind quality failures.
