@@ -9408,3 +9408,51 @@ rewritten after publication.
 - Follow-up work: slice 7 `STM` composes on this seam (2
   words, `0111_011I_AAAAAAAA` plus `lk`, 9-MSB-clear address
   formation is family-slice work), then S2 RPT activation.
+
+## 2026-09-16 — P3-S7 STM immediate-MMR-store slice (slice 7)
+
+- Commit `8ceff88` lands the first family slice on the S1
+  seam: one catalog row `STM` at `0x7700` under mask `0xFF00`
+  (256 encodings, two program words) with the new
+  `DIRECT7_EXTENSION16` layout (`I` flag, `addr7`, `lk16`),
+  a DP-independent page-0 planner behind the new `DIRECT`
+  memory address kind, and checked plus trusted
+  direct-store leaves that defer the `I=1` indirect form as
+  `INVALID_OPERAND`. `FORM-T2-20-14` lands `SUBSET` with
+  the `STM` symbol.
+- Five RED lanes green (`ti_c54x.stm_metadata`,
+  `ti_c54x.stm_decode`, `ti_c54x.stm_ops`, `ti_c54x.cpu_stm`,
+  `ti_c54x.direct_page0`); registry adds 2 evidence, 6
+  requirements, 4 test records (339/527/418). The CPU lane
+  proves MMR retirement with zero endpoint calls, DP0-RAM
+  retirement with one endpoint WRITE, page-0
+  CMPT-independence, and the deferred indirect-form stop.
+- Validation is GREEN: full CMake CTest 403/403; `make
+  test` exits 0 (101 plus 272 python plus evidence/knob
+  suites); ASan/UBSan `make test` exits 0;
+  `generate_opcode_lookup.py --check`, evidence registry,
+  and `git diff --check` pass. No knob was added or
+  changed. Coverage 62/205 (30.244%), strict 33/205;
+  `ID_COUNT=163`, 7,620 lookup entries.
+- Decisions: the `DIRECT` kind needed a page-0 liveness arm
+  in `matches_live` (`NONE` policy plus dma echo plus
+  sequential PC, no CMPT/ARP read per the page-0
+  no-state contract) — without it every direct `STM`
+  retired `INVALID_STATE` despite a valid shape, plan, and
+  route; the arm rejects forged dma and stale PC
+  transactionally. The two `ST #lk,Smem` fixed-bit-8
+  near-miss flips (`0x7780`/`0x7790`) genuinely resolve
+  into the `STM` row (indirect form) and now pin `STM`
+  identity per the RETD/RETED sibling precedent; the
+  61/205 inventory pins bumped to 62/205 with strict
+  unchanged at 33/205.
+- Split review: `memory_instruction_candidate_validate.c`
+  is 767 lines and `memory_instruction_transaction.c`
+  stays 792 (untouched this slice) — neither exceeds 800,
+  so no split; the next slice touching either file must
+  re-evaluate, with the MMR-branch/RMW extraction noted
+  under S1 still open. All other touched files stay far
+  below triggers.
+- Follow-up work: S2 RPT activation is next (the repeat
+  seam `STM` leaves `UNRESOLVED`), then the deferred
+  `STM` indirect Smem form and `STH`/`STLM` family slices.
