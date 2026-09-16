@@ -101,7 +101,7 @@ static void check_prior_rows_still_decode(void)
 
 int main(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 187);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 196);
     check_all_rows(add_rows, sizeof(add_rows) / sizeof(add_rows[0]));
     check_all_rows(sub_rows, sizeof(sub_rows) / sizeof(sub_rows[0]));
     check_prior_rows_still_decode();

@@ -20,11 +20,11 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3h complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
-`MAC`/`MPY` dual `Xmem`,`Ymem`).
+Current snapshot: P3-S3i complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
+`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`).
 
-- 187 runnable catalog rows under 12,645 populated first-word lookup entries.
-  Inventory coverage is 70/205 forms SUBSET-or-better (34.146%) and 33/205
+- 196 runnable catalog rows under 13,797 populated first-word lookup entries.
+  Inventory coverage is 71/205 forms SUBSET-or-better (34.634%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -56,9 +56,15 @@ Current snapshot: P3-S3h complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
   retire through the leaf with AR2–AR5 dual addressing). S3h lands
   the `MPY` dual `Xmem`,`Ymem` rows (`FORM-T2-03-03`, nine MOD0–MOD2
   combinations) reusing the shared dual layout with STORE overwrite
-  and read-phase T load (TI MPY Example 2 retires through the leaf).
-- Major remaining work is the `MAS` dual `Xmem`/`Ymem` rows (the `R`
-  variants share the dual row encodings; `MPYA` syntax 2 also waits),
+  and read-phase T load (TI MPY Example 2 retires through the leaf). S3i lands
+  the `MAS` dual `Xmem`,`Ymem` rows (`FORM-T2-04-16`, nine MOD0–MOD2
+  combinations) reusing the RSD/XAR/YAR layout with `(src)` minus
+  `(Xmem)`x`(Ymem)` completion and read-phase T load (the TI MAS Example
+  2/4-derived silicon vectors retire through the leaf; TI's printed
+  accumulators equal the FRCT=0 computation, and a dedicated lane pins
+  that value while FRCT=1 executes the SPRU131-shifted product).
+- Major remaining work is the `MACA`/`MACD`/`MACP` family and `MPYA`
+  syntax 2 (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

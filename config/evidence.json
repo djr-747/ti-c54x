@@ -6261,6 +6261,24 @@
       "assertion": "MAS[R] syntax 1 is MAS[R] Smem, src with opcode bits 15:10 001011 (R bit 9, S bit 8, I bit 7, Smem field 6:0), one program word, and execution (src) minus (Smem) x (T) into src. The operation is affected by FRCT and OVM and affects OVdst. The R suffix rounds the multiply-subtract result by adding 2^15 and clearing bits 15:0. Example 1 (MAS *AR5+, A 1000, T 0400, mem[0100] 1234, FRCT 0) yields A FF FFB7 4000 and AR5 0101; Example 3 (MASR, same pre-state) yields A FF FFB7 0000."
     },
     {
+      "id": "E-TI-C54X-SPRU131G-ST1-FRCT-P4-5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "4.1.1",
+        "printed_page_start": "4-5",
+        "printed_page_end": "4-5"
+      },
+      "assertion": "ST1 bit 6 is FRCT (fractional mode, reset 0): when FRCT is 1, the multiplier output is left-shifted by one bit to compensate for an extra sign bit. The shift sits at the multiplier output, upstream of the accumulate/subtract select shared by the MAC/MAS/MPY datapaths, so MAS with FRCT=1 subtracts the shifted product. This norm resolves the SPRU172C MAS Example 2/4 printed accumulators (FF F9DA 0FA0/0000), which equal the FRCT=0 computation exactly, in favor of the shifted silicon behavior stated in the Example 2 prose."
+    },
+    {
       "id": "E-PROJECT-P3-S3E-MAS-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6341,6 +6359,22 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3h is implemented and green: nine MPY_DUAL_Mx_My catalog rows at 0xA400|xm<<6|ym<<2 under mask 0xFECC reusing the DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y) with STORE overwrite, and CPU retirement proving TI MPY Example 2 (X 0010 at AR2 01FF, Y 0002 at AR4 0300, B before FF FFFF FFE0, FRCT 0 yield B 00 0000 0020, T 0010, AR2 01FE, AR4 0301). Syntax 2 carries no R bit, so MPYR stays a syntax-1 row sharing; MOD3 neighborhoods, MAS dual rows, and dual replay classification stay deferred."
+    },
+    {
+      "id": "E-PROJECT-P3-S3I-MAS-DUAL-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3i is implemented and green: nine MAS_DUAL_Mx_My catalog rows at 0xB800|xm<<6|ym<<2 under mask 0xF8CC reusing the DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (src) minus (X)x(Y) with FRCT/OVM handling and R rounding, and CPU retirement proving the TI Example 2/4-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B FF F3B4 0F40 unrounded and FF F3B4 0000 rounded, T 5678). TI prints B FF F9DA 0FA0/0000 for these examples, which equals the FRCT=0 computation exactly; per SPRU131 ST1 FRCT (multiplier output left-shifts one bit), the Example 2 prose, and the MAC Example 4 / MPY Example 1 oracles, the silicon behavior with FRCT=1 is the shifted product, and a dedicated FRCT=0 lane pins TI's printed value. The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MASR dual form retirement (R=1 words execute through the MAS_DUAL rows), and dual replay classification."
     }
   ],
   "requirements": [
@@ -14613,6 +14647,36 @@
       "test_ids": [
         "T-COMMON-P3-S3H-MPY-DUAL-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3I-MAS-DUAL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MAS Xmem,Ymem through the MAS_DUAL rows as (src) minus (Xmem) x (Ymem) with FRCT-shifted product, read-phase T load of the X-side word, and R rounding per the TI Example 2/4-derived silicon vectors at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96",
+        "E-TI-C54X-SPRU131G-ST1-FRCT-P4-5"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3I-MAS-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3I-MAS-DUAL-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MAS Xmem,Ymem on the CPU per the TI Example 2/4-derived silicon vectors with accumulator, T-register, AR post-updates, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96",
+        "E-TI-C54X-SPRU131G-ST1-FRCT-P4-5"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3I-MAS-DUAL-CPU"
+      ]
     }
   ],
   "tests": [
@@ -21052,6 +21116,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3H-MPY-DUAL-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3I-MAS-DUAL-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mas_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mas_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3I-MAS-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3I-MAS-DUAL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mas_dual.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mas_dual"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3I-MAS-DUAL-CPU-RETIREMENT"
       ]
     }
   ]

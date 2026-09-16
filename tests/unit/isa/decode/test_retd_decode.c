@@ -134,10 +134,13 @@ test_fixed_bit_near_misses(void)
      * ADD_ACC_SHIFT, and flipping fixed bit 10 lands on the W69 BCD
      * sibling; flipping any low-byte bit lands in the RCD row
      * (pinned below, 0xFE00 itself stays RETD); all other
-     * fixed-bit flips must miss every row. */
+     * fixed-bit flips must miss every row, except clearing
+     * fixed bit 14 lands on MAS_DUAL_M0_M0 (S3i claims the 0xB8xx
+     * neighborhood; the UNKNOWN loop drops that mask under the
+     * cross-slice hazard rule). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0100), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x2000), UINT16_C(0x8000)};
     static const uint16_t rcd_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
@@ -182,6 +185,16 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Clearing fixed bit 14 lands on the S3i MAS dual row. */
+    {
+        const ti_c54x_decode_result mas_dual_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETD_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(mas_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mas_dual_sibling.id == TI_C54X_OPCODE_ID_MAS_DUAL_M0_M0);
     }
 }
 

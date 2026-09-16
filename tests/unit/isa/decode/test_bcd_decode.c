@@ -165,7 +165,7 @@ test_fixed_bit_near_misses(void)
      * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0800),
-        UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x2000), UINT16_C(0x8000)};
     const ti_c54x_decode_result bc_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(BCD_VALUE ^ UINT16_C(0x0200)));
@@ -199,6 +199,16 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Clearing fixed bit 14 lands on the S3i MAS dual row. */
+    {
+        const ti_c54x_decode_result mas_dual_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BCD_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(mas_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mas_dual_sibling.id == TI_C54X_OPCODE_ID_MAS_DUAL_M0_M0);
     }
 }
 

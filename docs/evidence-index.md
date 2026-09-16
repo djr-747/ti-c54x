@@ -402,11 +402,13 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MPYA, `4-104`–`4-105` |
 | `E-PROJECT-P3-S3D-MPYA-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MAS, `4-94`–`4-96` |
+| `E-TI-C54X-SPRU131G-ST1-FRCT-P4-5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-5` |
 | `E-PROJECT-P3-S3E-MAS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 | `E-PROJECT-P3-S3F-MACR-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 | `E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MAC, `4-83`–`4-84` |
 | `E-PROJECT-P3-S3G-MAC-DUAL-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 | `E-PROJECT-P3-S3H-MPY-DUAL-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
+| `E-PROJECT-P3-S3I-MAS-DUAL-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1078,6 +1080,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S3G-MAC-DUAL-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84` | `T-COMMON-P3-S3G-MAC-DUAL-CPU` |
 | `REQ-COMMON-P3-S3H-MPY-DUAL-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103` | `T-COMMON-P3-S3H-MPY-DUAL-SEMANTICS` |
 | `REQ-COMMON-P3-S3H-MPY-DUAL-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103` | `T-COMMON-P3-S3H-MPY-DUAL-CPU` |
+| `REQ-COMMON-P3-S3I-MAS-DUAL-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96`, `E-TI-C54X-SPRU131G-ST1-FRCT-P4-5` | `T-COMMON-P3-S3I-MAS-DUAL-SEMANTICS` |
+| `REQ-COMMON-P3-S3I-MAS-DUAL-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96`, `E-TI-C54X-SPRU131G-ST1-FRCT-P4-5` | `T-COMMON-P3-S3I-MAS-DUAL-CPU` |
 
 ## Tests
 
@@ -1538,6 +1542,8 @@ exist in the repository.
 | `T-COMMON-P3-S3G-MAC-DUAL-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mac_dual.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mac_dual"}` | `REQ-COMMON-P3-S3G-MAC-DUAL-CPU-RETIREMENT` |
 | `T-COMMON-P3-S3H-MPY-DUAL-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mpy_dual_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mpy_dual_ops"}` | `REQ-COMMON-P3-S3H-MPY-DUAL-SEMANTICS` |
 | `T-COMMON-P3-S3H-MPY-DUAL-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mpy_dual.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mpy_dual"}` | `REQ-COMMON-P3-S3H-MPY-DUAL-CPU-RETIREMENT` |
+| `T-COMMON-P3-S3I-MAS-DUAL-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mas_dual_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_dual_ops"}` | `REQ-COMMON-P3-S3I-MAS-DUAL-SEMANTICS` |
+| `T-COMMON-P3-S3I-MAS-DUAL-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mas_dual.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mas_dual"}` | `REQ-COMMON-P3-S3I-MAS-DUAL-CPU-RETIREMENT` |
 | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_indirect_addr7_layout.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_addr7_layout"}` | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` |
 | `T-PROJECT-P3-S3D-T-LOAD-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_commit"}` | `REQ-PROJECT-P3-S3D-MPYA-T-LOAD` |
 
