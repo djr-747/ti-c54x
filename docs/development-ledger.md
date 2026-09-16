@@ -9129,3 +9129,79 @@ rewritten after publication.
   and the remaining wave-1 tail stay deferred. Open: split
   re-evaluation triggers unchanged; `make test` recipe order
   still lets C regressions hide behind quality failures.
+
+## 2026-09-16 — P2-W76 RETF fast-return slice
+
+- Implementation commit `1f98043` binds one Table 2-15 row
+  under `FORM-T2-15-06`: `RETF` at first-word value `0xF49B`
+  under mask `0xFFFF`, one program word, one encoding, no
+  operands, reusing `NONE` with the new
+  `STACK_POINTER_RETURN_REGISTER` inputs and `INELIGIBLE`
+  repeatability. The slice adds the CPU-internal 16-bit RTN
+  fast-return register (SPRU131G §6, SPRU172C §4 RETF[D]):
+  checked read/write/knownness accessors, common-reset
+  zero-but-unknown seeding, copied input collection, and a
+  `STACK_POP_RTN_WORD16` MEMORY kind whose planned READ never
+  issues. Push commits stage the pushed return address into
+  RTN atomically (CALL PC+2, delayed calls PC+4); `RETF`
+  retires with no bus traffic, PC from frozen RTN, SP+1, and
+  the shared INTM-clearing completion. No new effect kind
+  beyond the RTN pop address kind, no new address kind
+  beyond it, no timing claim. `FORM-T2-15-06` lands `SUBSET`
+  with a lone `RETF` symbol under an `RTN_POP_NONDELAYED`
+  binding.
+- Landing corrections by the orchestrator on the in-flight
+  tree: (1) `is_valid` split the RTN pop into its own arm
+  accepting the prepare-frozen RTN value — the shared arm's
+  zero-staged-value rule rejected every frozen candidate, so
+  no `RETF` could retire; (2) transaction reset accepts the
+  no-traffic COMPLETE-plus-IDLE-bus pairing — retirement
+  succeeded but the run ended INVALID_STATE at reset;
+  (3) the CALL-then-RETF chain fixture's pmad corrected
+  `0x1001` to `0x1002` so the second fetch lands on the
+  `RETF` word as the test's own expectations require;
+  (4) ten stale quality pins advanced (rows 158→159,
+  lookup 6,853→6,854, family 59→60, percent 28.780→29.268);
+  (5) four call-sibling preservation proofs now pin the
+  staged RTN value and known bit; (6) ID_COUNT 159→160 and
+  the transaction size freeze 344/316→352/324 (LP64 executed
+  here; ILP32 via headers-only `-m32` probe — that arm never
+  executes on a 64-bit host and already measured 320 before
+  this slice against its stale 316 pin).
+- Seven new executable contracts (`op_retf.c/h`, the READY
+  commit split `memory_instruction_commit.c/h`, catalog,
+  decode, pure-handler, CPU retirement, input collection,
+  plus extended state knownness) covering metadata with
+  single-encoding disjointness, decode with near-miss audit,
+  handler staging with SP/RTN gating, CPU retirement
+  (worked-example vector, CALL-then-RETF chain, unknown-RTN
+  and unknown-SP transactionality, preservation outside
+  SP/PC/INTM), and RTN knownness lifecycle.
+- Validation is GREEN with no baseline deviation: `make
+  test` exits 0 with all 379 C test binaries passing;
+  contract quality unittest fully OK (268); knobs, source
+  boundaries, manifests, evidence, inventory (realized 159
+  catalog rows, `ID_COUNT=160`, 6,854 lookup entries, 159
+  bindings, 126 SUBSET bindings, family coverage 60/205 at
+  29.268%, 33/205 strict), and observer-disabled structure
+  pass. ASan/UBSan `make test` exits 0 with no findings.
+  `generate_opcode_lookup.py --check` (inside the gate)
+  and `git diff --check` pass. No knob was added or
+  changed. The split leaves `memory_instruction_transaction.c`
+  at 648 lines and the candidate validator at 727 lines;
+  both stay KEEP with re-evaluation at 800 lines or on a
+  new address kind.
+- Decisions: RTN is sequencer-commit/test-only state — no
+  ISA operand reads or writes it; calls staging RTN is
+  evidenced TI behavior (SPRU131G §6), so the sibling
+  preservation updates pin the new value rather than
+  weaken; the frozen-RTN-in-value_word reuse is deliberate
+  (no new carrier field, no size growth beyond the input
+  resource); RED was the in-flight tree itself, completed
+  here.
+- Follow-up work: `RETFD` (delayed fast return) stays
+  deferred, as does the remaining wave-1 tail (`XC`,
+  far-branch, accumulator-addressed, `RCD` families) per
+  the approved P3 slice order. Open: `make test` recipe
+  order still lets C regressions hide behind quality
+  failures.
