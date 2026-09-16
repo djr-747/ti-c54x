@@ -20,42 +20,30 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P2-W51C complete.
+Current snapshot: P3-S2 complete, P3-S3a multiply seam landed (no rows).
 
-- 120 runnable catalog rows cover 3,543 first-word encodings. Inventory coverage
-  is 44/205 instruction forms touched (21.463%) and 27/205 strict-complete
-  (13.171%); lookup encodings are not instruction counts.
-- Dual-memory ADD/SUB MOD0/MOD0 forms are active through the generic trusted
-  path. Each instruction reads X then Y as WORD16 operands, applies SXM-aware
-  40-bit arithmetic with directional C and sticky destination overflow, and
-  commits the result transactionally after both reads.
+- 165 runnable catalog rows under 7,877 populated first-word lookup entries.
+  Inventory coverage is 64/205 forms SUBSET-or-better (31.220%) and 33/205
+  strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
-  execution; there is no seen-before promotion. The observer-off dual-memory
-  benchmark is a hosted characterization and makes no TI cycle claim.
-- W51A now plans dual-indirect MOD0/MOD1/MOD2 directly from AR2–AR5 selectors,
-  including same-AR Xmod precedence, without changing the 32-byte persistent
-  snapshot, root size, CPU wiring, or catalog projection. MOD3 remains deferred.
-- W51B persists two value-owned commit descriptors in the 48-byte dual snapshot,
-  validates mode/selector/address/live-state identity before issue and at every
-  resume boundary, and publishes address updates atomically after both reads
-  and ordinary-effect staging: two updates for distinct ARs, one X-owned update
-  for same-AR aliases, none on WAIT/FAULT. Root sizes remain frozen at 336/308
-  with no opcode activation. W51C activates sixteen non-MOD0/MOD0 syntax-6
-  ADD/SUB rows through the same root: per-row first words under mask
-  `0xFECC`, shared parameterized checked/trusted leaves, macro-driven
-  dispatch with no CPU branch, and per-row SUBSET bindings. MOD3 stays
-  deferred with the AR0/BK dependency; the repeat-machinery phase is next.
-- Performance remains a release constraint. Execution uses immutable direct
-  lookup, one-pass trusted packets, allocation-free opcode leaves, and dedicated
-  observer-off CPU benchmarks. These are host-performance checks, not TI
-  machine-cycle claims.
-- RC progression and pending IFR deferral are modeled transactionally, but runtime
-  RPT activation still waits on positive repeatability evidence, repeated-body PC
-  flow, and predecode interrupt arbitration. No catalog row is currently proven
-  repeat-eligible.
-- Major remaining work is broader arithmetic coverage, dual/parallel opcode
-  activation, control/repeat/IRQ execution, profiles/devices, and evidenced
-  machine timing. Emulator integration remains deferred.
+  execution; there is no seen-before promotion. Performance remains a release
+  constraint: one-pass trusted packets, allocation-free opcode leaves, and
+  dedicated observer-off CPU benchmarks. These are host-performance checks,
+  not TI machine-cycle claims.
+- P3 works the Nokia 5110 DSP-image census seam-first. Wave-1 tail control
+  flow is done (branch/return families with delayed companions, RC/RCD,
+  RETF). The S1 MMR/device routing seam unlocks the S7 `STM` immediate-MMR
+  store. S2 activates single-instruction repeat (`RPT_K`/`RPT_LK`,
+  `INELIGIBLE`): CPU progress plus pending latch, predecode IRQ arbitration,
+  and a body-eligibility gate. No catalog row is currently proven
+  repeat-eligible, so end-to-end repeat replay waits on the first `ELIGIBLE`
+  classification. S3a adds the pure multiply-accumulate datapath core (signed
+  16x16 product, FRCT shift, R rounding, OVM saturation, SMUL-0 baseline)
+  with the `STATUS_FRCT` input resource; MAC/MPY rows follow.
+- Major remaining work is the MAC/MPY rows with the first repeat-eligible
+  body, MMR/stack moves, bit/field ops, shifts/misc, the port seam, far/XPC
+  addressing, profiles/devices, and evidenced machine timing. Emulator
+  integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

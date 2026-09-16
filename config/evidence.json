@@ -6035,6 +6035,128 @@
         "anchor": "P3-S2: RPT activation seam (planned)"
       },
       "assertion": "S2 is implemented and green: the RPT_K and RPT_LK catalog rows, immediate decode, pure repeat-start leaves with deferred Smem form, trusted dispatch bindings, the repeat_single driver composition, RPT retirement with RC load plus transactional body blocks plus latched-request persistence, and SUBSET inventory bindings are executable through the eight RED contracts with the authoritative standalone gates passing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MAC",
+        "printed_page_start": "4-81",
+        "printed_page_end": "4-83"
+      },
+      "assertion": "MAC[R] syntax 1 is MAC[R] Smem, src with opcode bits 15:10 001010 (R bit 9, S bit 8, I bit 7, Smem field 6:0), one program word, and execution (Smem) x (T) + (src) into src or dst. The operation is affected by FRCT and OVM and affects OVdst (or OVsrc when dst is unspecified). The R suffix rounds by adding 2^15 and clearing bits 15:0. Example 1 (MAC *AR5+, A with A 00 0000 1000, T 0400, mem 1234, FRCT 0) yields A 00 0048 E000."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MPY",
+        "printed_page_start": "4-101",
+        "printed_page_end": "4-103"
+      },
+      "assertion": "MPY[R] syntax 1 is MPY[R] Smem, dst with opcode bits 15:10 001000 (R bit 9, D bit 8, I bit 7, Smem field 6:0), one program word, and execution (T) x (Smem) into dst. The operation is affected by FRCT and OVM and affects OVdst, and the R suffix rounds the multiply result by adding 2^15 and clearing bits 15:0. Example 1 (T 6, mem 7, FRCT 1) stores 84; Example 3 (T 2000, #0FFFE, FRCT 0) stores FF FFFF C000; Example 4 (MPYR, T 1234, mem 5678) stores 00 0626 0000."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-T4-2-OVM-P4-5",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST1",
+        "printed_page_start": "4-5",
+        "printed_page_end": "4-5"
+      },
+      "assertion": "ST1 bit 9 OVM selects overflow handling for results from the ALU or the multiplier adder: OVM 0 loads the overflowed result unmodified into the destination accumulator, and OVM 1 loads 00 7FFF FFFFh on positive overflow or FF 8000 0000h on negative overflow."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PMST",
+        "printed_page_start": "4-7",
+        "printed_page_end": "4-9"
+      },
+      "assertion": "PMST bit 1 SMUL saturates a multiplication result to 7FFF FFFFh before MAC/MAS accumulation only when OVM 1 and FRCT 1; without SMUL only the MAC/MAS result saturates. Example 4-1 pins both outcomes for 8000h x 8000h with FRCT 1 and OVM 1 (SMUL 1 yields 00 7FFF FFFEh, SMUL 0 yields 00 7FFF FFFFh). SMUL exists only on revision-A or later devices, so the device-neutral common target models the SMUL 0 baseline."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "Overflow Handling",
+        "printed_page_start": "4-11",
+        "printed_page_end": "4-12"
+      },
+      "assertion": "On overflow with OVM 0 the accumulator loads the ALU result unmodified, and with OVM 1 it loads the most positive 32-bit value 00 7FFF FFFFh or the most negative 32-bit value FF 8000 0000h by overflow direction. The destination OVA/OVB flag is set and stays set until reset, an overflow-conditional instruction, or an explicit clear."
+    },
+    {
+      "id": "E-PROJECT-P3-S3-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3 builds the multiply-accumulate datapath on the S2 repeat seam: a pure core over copied raw40, u16 T, u16 multiplicand, FRCT/OVM bits, rounding flag, and add/sub/store select stages accumulator plus overflow effects with no addressing, rows, or CPU. Slices land the seam, then MAC Smem with ELIGIBLE plus RPT-MAC replay, then MPY Smem, then MPYA/MAS/MACR in census order. Dual Xmem/Ymem, #lk words, MACA/MACD/MACP, and PMST product-shift claims beyond FRCT stay deferred."
+    },
+    {
+      "id": "E-PROJECT-P3-S3-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3a is implemented and green: the pure multiply-accumulate core proves the TI MAC and MPY example vectors, FRCT shift, R rounding, OVM saturation with OVdst disposition, MAS subtraction, STORE accumulator independence, and transactional unknown/invalid stops; the STATUS_FRCT input resource carries ST1.FRCT with canonical unknownness beside FRCT/OVM selection; no catalog row lands."
     }
   ],
   "requirements": [
@@ -13845,6 +13967,39 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3-MULTIPLY-CORE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Evaluate signed 16x16 T-times-multiplicand products with FRCT left shift, R rounding of the accumulate/store result, MAC add and MAS subtract over a copied raw40 accumulator, MPY store independent of accumulator knownness, 32-bit overflow detection with OVM saturation to 00 7FFF FFFF or FF 8000 0000 and OVdst disposition, SMUL 0 baseline, and transactional unknown/invalid stops with no staged output.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83",
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103",
+        "E-TI-C54X-SPRU131G-T4-2-OVM-P4-5",
+        "E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9",
+        "E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3-MULTIPLY-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect the ST1.FRCT field through a STATUS_FRCT input resource bit with canonical unknownness, independent FRCT/OVM knownness, and transactional rejection, keeping the input snapshot at 64 bytes.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER"
+      ]
     }
   ],
   "tests": [
@@ -19902,6 +20057,34 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S2-RPT-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3-MULTIPLY-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_multiply_core.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.multiply_core"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3-MULTIPLY-CORE"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_frct_status.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_input_collect_frct_status"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER"
       ]
     }
   ]

@@ -8,5 +8,6 @@ $(eval $(call ti_c54x_add_test,collect_stack_pointer,cpu/input,test_collect_stac
 $(eval $(call ti_c54x_add_test,collect_return_register,cpu/input,test_collect_return_register.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_ovm_status,cpu/input,test_collect_ovm_status.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_asm_status,cpu/input,test_collect_asm_status.c))
+$(eval $(call ti_c54x_add_test,cpu_input_collect_frct_status,cpu/input,test_collect_frct_status.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_auxiliary_registers,cpu/input,test_collect_auxiliary_registers.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_t_register,cpu/input,test_collect_t_register.c))

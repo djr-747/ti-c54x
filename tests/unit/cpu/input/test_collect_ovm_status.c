@@ -98,7 +98,7 @@ int main(void)
     output.status_ovm_known = true;
     before = output;
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
-                           (ti_c54x_input_resource_mask)0x0800U, &sources,
+                           (ti_c54x_input_resource_mask)0x1000U, &sources,
                            &output) == TI_C54X_INPUT_COLLECT_INVALID_RESOURCE_MASK);
     TI_C54X_TEST_CHECK(memcmp(&before, &output, sizeof(output)) == 0);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(

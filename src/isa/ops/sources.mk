@@ -4,6 +4,7 @@ ti_c54x_core_sources += \
     src/isa/ops/opcode_dispatch.c
 include src/isa/ops/dispatch/sources.mk
 include src/isa/ops/repeat/sources.mk
+include src/isa/ops/multiply/sources.mk
 include src/isa/ops/load/sources.mk
 include src/isa/ops/store/sources.mk
 include src/isa/ops/status/sources.mk

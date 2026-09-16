@@ -164,7 +164,7 @@ int main(void)
 
     /* Existing invalid-resource and null-output contracts remain intact. */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)UINT32_C(0x0800), &sources,
+    expect_rejected((ti_c54x_input_resource_mask)UINT32_C(0x1000), &sources,
                     &output);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_T_REGISTER, &sources,

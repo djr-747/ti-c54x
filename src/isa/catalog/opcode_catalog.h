@@ -104,7 +104,7 @@ typedef enum ti_c54x_repeatability_class {
 
 typedef uint16_t ti_c54x_input_resource_mask;
 /* Resource values are powers of two; RETURN_REGISTER is the eleventh
- * resource (1024). */
+ * resource (1024) and STATUS_FRCT is the twelfth resource (2048). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -120,6 +120,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STACK_POINTER ((ti_c54x_input_resource_mask)512U)
 #define TI_C54X_INPUT_RESOURCES_RETURN_REGISTER \
     ((ti_c54x_input_resource_mask)1024U)
+#define TI_C54X_INPUT_RESOURCES_STATUS_FRCT \
+    ((ti_c54x_input_resource_mask)2048U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
@@ -169,6 +171,12 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* Multiply-accumulate bodies read accumulators plus T plus FRCT/OVM. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
@@ -180,7 +188,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_ASM | \
                                    TI_C54X_INPUT_RESOURCES_STACK_POINTER | \
-                                   TI_C54X_INPUT_RESOURCES_RETURN_REGISTER))
+                                   TI_C54X_INPUT_RESOURCES_RETURN_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

@@ -156,6 +156,23 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
             asm_result.status == TI_C54X_STATUS_REGISTER_OK;
     }
 
+    if ((resources & TI_C54X_INPUT_RESOURCES_STATUS_FRCT) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        ti_c54x_status_register_field_result frct_result;
+
+        if (sources == NULL || sources->status == NULL) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        frct_result = ti_c54x_status_register_read_frct(sources->status);
+        if (frct_result.status != TI_C54X_STATUS_REGISTER_OK &&
+            frct_result.status != TI_C54X_STATUS_REGISTER_UNKNOWN) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        staged.status_frct = (uint8_t)frct_result.raw_value;
+        staged.status_frct_known =
+            frct_result.status == TI_C54X_STATUS_REGISTER_OK;
+    }
+
     if ((resources & TI_C54X_INPUT_RESOURCES_T_REGISTER) !=
         TI_C54X_INPUT_RESOURCES_NONE) {
         uint16_t raw_value = 0U;
