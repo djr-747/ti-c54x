@@ -254,7 +254,7 @@ follows 5110 static weight behind each seam:
 | Seam | Unlocks (static words) | Status |
 |---|---|---|
 | S1 MMR/device routing (MMR file, ST/LD MMR routing, knownness) | `STM` 4,260 + MMR/stack moves ~1,400 + `STH`/`STLM` 1,267 | next after W77B/W78 |
-| S2 RPT activation (single-repeat PC flow, predecode IRQ arbitration, body eligibility — the W48C prerequisites) | `RPT`/`RPTB`/`RPTBD`/`RPTZ` ~1,244 | after S1 |
+| S2 RPT activation (single-repeat PC flow, predecode IRQ arbitration, body eligibility — the W48C prerequisites) | `RPT`/`RPTB`/`RPTBD`/`RPTZ` ~1,244 | landed `6cf9924` (2026-09-16) |
 | S3 MAC/MPY datapath (accumulator x T, repeat interplay) | MAC family ~1,550 | after S2 |
 | S4 conditional execution (skip/NOP following words, uninterruptible window vs arbitration) | `XC` 523 + its follow-word coverage | after S3 |
 | S5 accumulator-addressed branch target | `BACC`/`CALA` + delayed companions ~30 | with S1 or S4 |

@@ -9456,3 +9456,59 @@ rewritten after publication.
 - Follow-up work: S2 RPT activation is next (the repeat
   seam `STM` leaves `UNRESOLVED`), then the deferred
   `STM` indirect Smem form and `STH`/`STLM` family slices.
+
+## 2026-09-16 — P3-S2 single-instruction repeat slice (slice 8)
+
+- Commit `6cf9924` activates the S2 repeat seam: two catalog
+  rows `RPT_K` at `0xEC00` under mask `0xFF00` (256
+  encodings, one program word, `FORM-T2-16-02`) and
+  `RPT_LK` exact at `0xF070` (16-bit extension, two
+  program words, `FORM-T2-16-03`), both `INELIGIBLE` with
+  no inputs, reusing the `RPT_IMMEDIATE_K`/`RPT_IMMEDIATE_LK`
+  layouts and the `op_rpt_immediate` core behind checked and
+  trusted leaves. `RPT Smem` (`FORM-T2-16-01`) stays
+  `UNIMPLEMENTED`; `RPTB`/`RPTBD`/`RPTZ` are untouched.
+- The CPU owns `ti_c54x_repeat_progress` plus the W48B
+  pending latch and a body-PC word. The `REPEAT_START`
+  route starts progress, rejects `RPT` in delay slots and
+  nested `RPT` while `ACTIVE`, and retires sequentially
+  onto the body. The predecode gate admits only `ELIGIBLE`
+  bodies; a new `repeat_single` driver under
+  `src/sequencer/repeat/` owns start, predecode, and
+  body-retired decisions while `run.c` owns no repeat
+  policy. No row is `ELIGIBLE` yet, so end-to-end replay
+  still waits on the first positively-evidenced `ELIGIBLE`
+  classification.
+- Eight RED lanes green (`ti_c54x.rpt_k_metadata`,
+  `ti_c54x.rpt_lk_metadata`, `ti_c54x.rpt_k_decode`,
+  `ti_c54x.rpt_lk_decode`, `ti_c54x.rpt_k_ops`,
+  `ti_c54x.rpt_lk_ops`, `ti_c54x.repeat_single_flow`,
+  `ti_c54x.cpu_rpt`); registry adds 2 evidence, 10
+  requirements, 8 test records (341/537/426).
+- Validation is GREEN: full CMake CTest 411/411; `make
+  test` exits 0 (101/101); ASan/UBSan `make test` exits 0
+  (101/101); python `unittest discover`, evidence registry,
+  ISA inventory, source-boundary, opcode-lookup golden, and
+  `git diff --check` pass. No knob was added or changed.
+  Coverage 64/205 (31.220%), strict 33/205 unchanged; 164
+  inventory bindings.
+- Decisions: the RPT-neighbor single-bit flips re-pin
+  `RPTZ`/`RPTB` identity as rejected non-collisions (the
+  `STM` near-miss precedent applied to the repeat word
+  family). The shared `op_rpt_immediate` core is reused
+  behind per-row checked/trusted leaves with the layout
+  split (`RPT_IMMEDIATE_K` vs `RPT_IMMEDIATE_LK`) rather
+  than a forked core. The commit message's draft
+  759-line note was amended pre-push to the true counts
+  (`run.c` 766 → 795, helper 61 + 54 header).
+- Split review: `run.c` is 795 lines after extracting
+  `repeat_activate.c` (61 + 54 header) — under 800, so no
+  split; the next slice touching `run.c` must re-evaluate.
+  `test_repeat_single_flow.c` is 398 lines (test, exempt
+  from the handwritten-source split rule). All other new
+  files stay under 110 lines.
+- Follow-up work: S3 MAC/MPY datapath is next, then the
+  first `ELIGIBLE` classification with its retirement-tail
+  `HOLD` call sites; deferred `RPT Smem`, `RPTB`/`RPTZ`,
+  vectors/take-path/NMI/timing, and the `STM` indirect
+  Smem form.
