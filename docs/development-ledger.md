@@ -9959,3 +9959,59 @@ rewritten after publication.
   classification; deferred exotic indirect modes,
   `MACA`/`MACD`/`MACP`, dual `#lk` words, and
   far/XPC/timing.
+
+## 2026-09-17 — P3-S3i MAS Xmem,Ymem dual slice (slice 17)
+
+- Commit `bb7c419` lands `FORM-T2-03-03`-sibling
+  `FORM-T2-04-16` (TI SPRU172C `MAS` syntax 2, opcode
+  `1011 1RSD XXXX YYYY`) as nine `MAS_DUAL_Mx_My` rows
+  at `0xB800|xmode<<6|ymode<<2` under mask `0xF8CC`,
+  reusing the `DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR`
+  layout with `UNRESOLVED` repeatability and
+  `ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM`
+  resources — no new layout, no trusted-capacity
+  pressure. Checked/trusted leaves stage dual-indirect
+  MOD0–MOD2 reads with `load_t_with_read` (TI Execution
+  loads `(Xmem)` into T) and complete `(src)` minus
+  `(X)x(Y)` through the multiply core with FRCT/OVM
+  and R rounding; R=1 words execute through the same
+  rows, so no separate `MASR` dual form exists. CPU
+  retirement proves the TI Example 2/4-derived silicon
+  vectors (X `5678`, Y `1234`, src A `1000`, FRCT 1
+  yield B `FF F3B4 0F40` unrounded and `FF F3B4 0000`
+  rounded, T `5678`); TI prints B `FF F9DA 0FA0/0000`,
+  which equals the FRCT=0 computation exactly, so a
+  dedicated FRCT=0 lane pins the printed value while
+  FRCT=1 executes the SPRU131-shifted product (new
+  TI record `E-TI-C54X-SPRU131G-ST1-FRCT-P4-5` plus
+  activation, two requirements, and two test records
+  359/568/453→361/570/455).
+- RED was observed on the stub (`mas_dual_ops` fails
+  at staging). Read-only review before commit found no
+  blocking finding: row values follow
+  `0xB800|xmode<<6|ymode<<2` exactly and the full-suite
+  disjointness sweep rules out neighbor collisions.
+  `git diff --check` clean. New files peak at 429
+  lines (`test_mas_dual_ops.c`); no split required.
+- Neighbor pins move to 196 IDs, 195 rows/bindings
+  (162 SUBSET plus 33 COMPLETE), 13,797 lookup
+  entries, 71/205 (34.634%) with the `FORM-T2-04-16`
+  contract set; strict stays 33/205 (16.098%). The
+  0xB8xx near-miss sweep (decode plus metadata tests)
+  is clean — no carve-outs needed.
+- Validation is GREEN: full CMake CTest 437/437 on the
+  working build; fresh Debug configure plus full CTest
+  437/437 in `/tmp/ti-c54x-s3i-debug`; full sanitizer
+  CMake/CTest 436/436 (quality.python excluded, green
+  separately); `make test` exit 0 with no failures;
+  focused ASan/UBSan `mas_dual` tests rc=0 with
+  `detect_leaks=0`; Python `unittest discover` OK
+  (272); evidence, inventory, source-boundary, knob,
+  manifest, observer-artifact, and lookup gates pass.
+  No knob was added or changed. README snapshot now
+  reads P3-S3i complete.
+- Follow-up work: `MPYA` syntax 2, `MACA`/`MACD`/
+  `MACP` family, AR6/AR7 dual-Y widening, MOD3
+  neighborhoods, dual replay classification; deferred
+  exotic indirect modes, dual `#lk` words, and
+  far/XPC/timing.
