@@ -9899,3 +9899,63 @@ rewritten after publication.
   classification; deferred exotic indirect modes,
   `MACA`/`MACD`/`MACP`, dual `#lk` words, and
   far/XPC/timing.
+
+## 2026-09-16 — P3-S3h MPY Xmem,Ymem dual slice (slice 16)
+
+- Commit `58d84a7` lands `FORM-T2-03-03` (TI SPRU172C
+  `MPY` syntax 2, opcode `1010 010D XXXX YYYY`) as
+  nine `MPY_DUAL_Mx_My` rows at
+  `0xA400|xmode<<6|ymode<<2` under mask `0xFECC`,
+  reusing the `DUAL_DESTINATION_XAR_YAR` layout with
+  `UNRESOLVED` repeatability — no new layout, no
+  trusted-capacity pressure. Checked/trusted leaves
+  stage dual-indirect MOD0–MOD2 reads with
+  `load_t_with_read` (TI Execution 2 loads
+  `(Xmem)` into T) and complete `(X)x(Y)` through the
+  multiply core with STORE overwrite; the core
+  accepts unknown accumulator input for STORE, so the
+  new `AUXILIARY_REGISTERS_STATUS_FRCT_OVM` mask
+  drops both accumulators and T. TI MPY Example 2
+  (`MPY *AR2-, *AR4+0%, B`, p. 4-102) retires at leaf
+  and CPU: X `0010`, Y `0002`, B `0020`, T `0010`,
+  AR2 `01FE`, AR4 `0301`. Syntax 2 carries no R bit,
+  so `MPYR` stays a syntax-1 row sharing and
+  `FORM-T2-03-02` stays `UNIMPLEMENTED` by the S3c/S3f
+  convention. The existing TI MPY record already
+  spans pp. 4-101–4-103 (verified per-PDF-page), so
+  no new TI record was needed — only the activation,
+  two owner-split requirements, and two test records
+  (358/566/451→359/568/453).
+- RED was observed on the stub (`mpy_dual_ops` fails
+  at staging). The CPU failure mid-slice was the
+  author's own M0_M0 case, not the leaf: the word
+  `0xA402` selects Y=AR4 while the test seeded AR3,
+  and a stage-by-stage `/tmp` probe then proved the
+  production path retires Example 2 exactly
+  (B=`0x20`, T=`0x10`, AR updates). A second
+  author-side trip: the fresh-CPU FRCT bit is
+  unknown, so the CPU test clears FRCT and marks it
+  known for the FRCT=0 oracle.
+- Neighbor pins move to 187 IDs, 186 rows/bindings,
+  12,645 lookup entries, 70/205 (34.146%), SUBSET
+  bindings 153 with a `MPY_DUAL_SUBSET` contract set.
+  The 0xA4xx near-miss sweep (decode plus metadata
+  tests) is clean — no carve-outs needed, unlike the
+  eleven S3g siblings. `make test` versus CTest
+  accounting: only 101 verbose `: ok` lines print;
+  the multiply suites pass silently (rc=0), so the
+  count is stable while CTest tracks the true total.
+- Validation is GREEN: full CMake CTest 435/435 on a
+  fresh full build; `make test` with no failures;
+  ASan/UBSan `make test` clean; Python `unittest
+  discover` OK (272); evidence, inventory,
+  source-boundary, knob, and lookup `--check` gates
+  pass; `git diff --check` clean. No knob was added
+  or changed. New files peak at 377 lines
+  (`op_mpy_dual.c`); no split required.
+- Follow-up work: `MAS` dual rows reusing the S3g/S3h
+  leaf/commit pattern, `MPYA` syntax 2, AR6/AR7
+  dual-Y widening, MOD3 neighborhoods, dual replay
+  classification; deferred exotic indirect modes,
+  `MACA`/`MACD`/`MACP`, dual `#lk` words, and
+  far/XPC/timing.
