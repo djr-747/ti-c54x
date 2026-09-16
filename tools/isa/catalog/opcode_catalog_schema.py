@@ -4,7 +4,9 @@ Module contract
 ---------------
 Owns: the small, deterministic source schema for exact and masked first-word
 opcode rows, including lexical validation, immutable normalized records, and
-pairwise overlap checks.  It is tooling code used before C compilation.
+pairwise overlap checks.  The one overlap exception is an exact word
+declared before a covering masked row, which keeps its identity under the
+first-match lookup order.  It is tooling code used before C compilation.
 Does not own: opcode generation, C macro consumers, operand extraction,
 instruction semantics, timing, or architectural evidence.  Parsing returns
 new immutable records; no caller-owned mutable object is retained.
@@ -207,12 +209,34 @@ def _overlap_witness(first: OpcodeRow, second: OpcodeRow) -> int | None:
     return first.first_word_value | second.first_word_value
 
 
+def _is_single_word_shadow(first: OpcodeRow, second: OpcodeRow) -> bool:
+    """Whether an exact word keeps its identity inside a later masked row.
+
+    The generated lookup resolves words in catalog declaration order, so
+    an exact row declared before a covering masked row deterministically
+    keeps its single word (for example the unconditional word shared by
+    an exact return row and a masked conditional-return row).  The
+    reversed order stays an overlap error: first-match resolution would
+    hand the word to the masked row instead.
+    """
+
+    if first.form == "EXACT" and second.form == "MASKED":
+        exact, masked = first, second
+    elif first.form == "MASKED" and second.form == "EXACT":
+        exact, masked = second, first
+    else:
+        return False
+    return exact.source_line < masked.source_line
+
+
 def _validate_overlaps(rows: Iterable[OpcodeRow]) -> None:
     ordered = sorted(rows, key=_row_key)
     for index, first in enumerate(ordered):
         for second in ordered[index + 1 :]:
             witness = _overlap_witness(first, second)
             if witness is None:
+                continue
+            if _is_single_word_shadow(first, second):
                 continue
             names = sorted((first.symbol, second.symbol))
             raise OpcodeCatalogError(

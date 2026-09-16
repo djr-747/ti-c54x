@@ -95,15 +95,13 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
 
     def test_all_pattern_collision_classes_are_rejected_with_lowest_witness(self) -> None:
+        # An exact word declared before a covering masked row is the
+        # documented single-word shadow exception (first-match lookup
+        # keeps the exact identity); it moved to the shadow tests above.
         cases = (
             (
                 f"TI_C54X_OPCODE_EXACT(AA, aa, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
                 f"TI_C54X_OPCODE_EXACT(BB, bb, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
-                "0x1234",
-            ),
-            (
-                f"TI_C54X_OPCODE_EXACT(AA, aa, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
-                f"TI_C54X_OPCODE_MASKED(BB, bb, 0x1200, 0xFF00, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})",
                 "0x1234",
             ),
             (
@@ -116,6 +114,32 @@ class OpcodeCatalogSchemaTests(unittest.TestCase):
             with self.subTest(text=text):
                 with self.assertRaisesRegex(OpcodeCatalogError, witness):
                     parse_catalog(text)
+
+    def test_exact_word_shadowed_by_later_masked_row_is_accepted(self) -> None:
+        shadowed = (
+            f"TI_C54X_OPCODE_EXACT(AA, aa, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
+            f"TI_C54X_OPCODE_MASKED(BB, bb, 0x1200, 0xFF00, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})"
+        )
+        rows = parse_catalog(shadowed)
+        self.assertEqual([row.symbol for row in rows], ["AA", "BB"])
+        self.assertEqual(
+            validate_catalog_rows(tuple(rows)), tuple(rows))
+
+    def test_shadow_reversed_order_stays_rejected(self) -> None:
+        reversed_order = (
+            f"TI_C54X_OPCODE_MASKED(BB, bb, 0x1200, 0xFF00, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
+            f"TI_C54X_OPCODE_EXACT(AA, aa, 0x1234, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})"
+        )
+        with self.assertRaisesRegex(OpcodeCatalogError, "0x1234"):
+            parse_catalog(reversed_order)
+
+    def test_shadow_requires_a_single_exact_word(self) -> None:
+        partial = (
+            f"TI_C54X_OPCODE_MASKED(AA, aa, 0x1200, 0xFFF0, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})\n"
+            f"TI_C54X_OPCODE_MASKED(BB, bb, 0x1200, 0xFF00, 1, {LAYOUT_NONE}, {REPEAT_UNRESOLVED}, {RESOURCES_NONE})"
+        )
+        with self.assertRaisesRegex(OpcodeCatalogError, "0x1200"):
+            parse_catalog(partial)
 
     def test_overlap_diagnostic_is_independent_of_declaration_order(self) -> None:
         first = (
