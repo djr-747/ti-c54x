@@ -9327,3 +9327,42 @@ rewritten after publication.
   words execute) is next, then the S1 MMR/device seam.
   Open: `make test` recipe order still lets C regressions
   hide behind quality failures.
+
+## 2026-09-16 — P2-W78 RCD delayed-conditional-return slice
+
+- Commit `47de61a` lands the W78 slice (branch family complete
+  through `RCD`): one catalog row at `0xFE00`/`0xFF00` under
+  `FORM-T2-15-03`, `BRANCH_COND8`, `INELIGIBLE`, sixteen
+  image-evidenced conditions, taken `MEMORY`
+  `STACK_POP_DELAYED` READ through the unchanged W67B RETD
+  route, not-taken `NONE`. The `0xFE00` word keeps `RETD`
+  identity under the W77A shadow seam; 255 encodings decode
+  `RCD`.
+- Four new executable contracts (metadata, decode, handler
+  with trusted/dispatch parity, CPU retirement with
+  taken-pop/not-taken-sequential cases) plus registry
+  records (334 evidence, 517 requirements with 486
+  `IMPLEMENTED`, 410 tests all `PASSING`) with index rows
+  and shared-test reverse links.
+- Validation is GREEN: `make test` exits 0; ASan/UBSan
+  `make test` exits 0 with no findings; `python -m unittest
+  discover -s tests` OK; `generate_opcode_lookup.py --check`
+  and `git diff --check` pass. Closure numbers match the
+  plan projections exactly: 161 catalog rows,
+  `ID_COUNT=162`, 7,364 lookup entries, 161 trusted
+  bindings, 128 SUBSET bindings, family coverage 61/205 at
+  29.756%, 33/205 strict. No knob was added or changed.
+- Decisions: taken CPU retirement advances sequentially
+  (`start+1`) with a two-word delayed-branch countdown per
+  the RETD seam — the test's `+2` skip was fixed, not the
+  route; `RETD`/`RETED` near-miss flips landing in the RCD
+  range are pinned as `RCD` siblings (low-byte flips;
+  `0xFF00` stays UNKNOWN); the `test_rcd.c` trusted-handler
+  check referenced `ti_c54x_trusted_op_rc` by copy-paste and
+  now pins `ti_c54x_trusted_op_rcd`; frozen wave pins bumped
+  160→161 rows, 7109→7364 lookup, 127→128 SUBSET,
+  `EXPECTED_DELAYED` gains `RCD` under `FORM-T2-15-03`.
+- Follow-up work: S1 MMR/device routing seam is next (STM
+  unlock, ~7000 words), then RPT activation. Open: `make
+  test` recipe order still lets C regressions hide behind
+  quality failures.
