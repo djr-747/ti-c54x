@@ -9618,3 +9618,10 @@ rewritten after publication.
   `D`-destination select, then `MPYA`/`MAS`/`MACR` in census
   order; deferred exotic indirect modes, `MACA`/`MACD`/
   `MACP`, dual `#lk` words, and far/XPC/timing.
+
+## 2026-09-16 — Correction to the S3b entry (line count)
+
+- The S3b entry states `op_mac_smem.c` is 227 lines; the
+  committed file is 269 lines. The split conclusion is
+  unaffected (well under triggers), and no other S3b figure
+  changes.
