@@ -9366,3 +9366,45 @@ rewritten after publication.
   unlock, ~7000 words), then RPT activation. Open: `make
   test` recipe order still lets C regressions hide behind
   quality failures.
+
+## 2026-09-16 — P3-S1 MMR/device routing seam (slice 6)
+
+- Commit `6ccd4e7` lands the S1 sealed seam with no catalog rows
+  (W43A pattern): Table 3-3 map plus owner dispatch versus a
+  private 5-cell file (`IMR`/`TRN`/`BRC`/`RSA`/`REA` nested in
+  `arch_state`, zero-plus-unknown under the existing reset),
+  new whole-word `ST0`/`ST1`/`PMST` and accumulator-word
+  accessors with owner-held knownness, a side-effect-free
+  access planner gating READ knownness and guard-range writes,
+  and root-transaction local service with zero endpoint calls,
+  routed RMW support, and the kind-keyed deferred tail
+  replicated. Reserved `02`–`05` and `XPC` decline to the
+  endpoint unchanged.
+- Four RED lanes green (`ti_c54x.mmr_route`,
+  `ti_c54x.mmr_resolver`, `ti_c54x.mmr_transaction`,
+  `ti_c54x.mmr_owner_access`); registry adds 3 evidence, 4
+  requirements, 4 test records (337/521/414). Project
+  requirements cite project evidence only; the TI map/STM
+  records stand alone per the claim-scope rule.
+- Validation is GREEN: `make test` exits 0 (398/398 CTests
+  plus quality suites); ASan/UBSan `make test` exits 0;
+  `generate_opcode_lookup.py --check`, evidence registry, and
+  `git diff --check` pass. No knob was added or changed.
+  Inventory coverage unchanged (seam adds no rows).
+- Decisions: whole-word status knownness requires the full
+  mask; accumulator-word knownness follows the accumulator
+  bit with zero-based RMW writes; `reset_common` seeds `ST0`
+  fully known (test premise corrected, not the owner);
+  unknown MMR reads reject `INVALID_CANDIDATE`
+  transactionally; existing CPU tests whose stacks addressed
+  the file now pin routed behavior (new CALL PMAD
+  push-to-`IMR` case) or use plain-RAM origins (`RET`,
+  `RETE`, `CALLD`, CALL PMAD origin case).
+- Split review: `memory_instruction_transaction.c` is 792
+  lines — the next slice touching it must extract the MMR
+  branch/RMW helper into its own module before 800;
+  `registers.c` is 496 lines — cohesive, no split, revisit
+  at 800. All other touched files stay far below triggers.
+- Follow-up work: slice 7 `STM` composes on this seam (2
+  words, `0111_011I_AAAAAAAA` plus `lk`, 9-MSB-clear address
+  formation is family-slice work), then S2 RPT activation.
