@@ -225,6 +225,26 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                    (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
                effect->transfer_reserved == UINT8_C(0);
 
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16:
+        /* Same all-zero spec and READ-only/no-RMW shape as the immediate
+         * pops, but the staged value is the frozen RTN return address,
+         * not the zero of a handler-staged effect: prepare overwrites
+         * the handler's zero with the live RTN value before the
+         * candidate shape check, and the resume liveness guard pins
+         * the frozen value against the live register. The commit
+         * consumes the frozen value with no bus observation. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf != UINT8_C(0)) {
+            return false;
+        }
+        return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+               effect->rmw_operation ==
+                   (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+               effect->transfer_reserved == UINT8_C(0);
+
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
         return false;

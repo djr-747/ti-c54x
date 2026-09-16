@@ -191,12 +191,16 @@ check_ready_case(uint32_t start_pc, uint16_t sp_before, uint16_t pmad)
         TI_C54X_TEST_CHECK(memcmp(&cpu->t_register, &before_t,
                                   sizeof(before_t)) == 0);
 
-        /* Only SP and the program counter may move. */
+        /* Only SP, the program counter, and the staged RTN may move. */
         {
             ti_c54x_arch_state expect_arch = before_arch;
 
             expect_arch.pc_word = (uint32_t)pmad;
             expect_arch.sp = expected_tos;
+            expect_arch.rtn = expected_return;
+            expect_arch.scalar_known_mask = (uint8_t)(
+                expect_arch.scalar_known_mask |
+                (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN);
             TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
                                       sizeof(expect_arch)) == 0);
         }

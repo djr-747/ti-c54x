@@ -2,12 +2,14 @@
  * Module contract
  *
  * Owns: the allocation-free root transaction that composes memory address
- * resolution, the WORD16 reducer, static opcode completion, ordinary effects,
- * dual-WORD16 and LONG32 reducers, sequential PC/counter candidates,
- * stack-push return-address staging with atomic SP plus pmad-target
- * commit, stack-pop TOS-target commit from the READ observation, and
- * the delayed-branch twins that commit the sequential successor while
- * reporting the deferred target in the retirement result.
+ * resolution, the WORD16 issue/resume reducer, dual-WORD16 and LONG32
+ * reducers, sequential PC/counter candidates, stack-push return-address
+ * staging, no-traffic RTN-pop retirement from the frozen RTN value, and
+ * the delayed-branch twins that report the deferred target in the
+ * retirement result. READY-path architecture commit lives in
+ * memory_instruction_commit.c.
+ * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
+ * dispatch, timing, observers, diagnostics, or global state.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -22,6 +24,7 @@
 #include "sequencer/program_pc_target.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
+#include "memory_instruction_commit.h"
 #include "memory_instruction_dual.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -76,10 +79,12 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_dual_memory_address_resolution dual_resolution = {0};
     ti_c54x_program_pc_bridge_effect pc_effect = {0};
     uint16_t push_return_value = UINT16_C(0);
+    uint16_t rtn_return_value = UINT16_C(0);
     ti_c54x_memory_instruction_transaction *target = transaction;
     bool dual_read;
     bool stack_push;
     bool stack_pop;
+    bool stack_pop_rtn;
 
     if (target == NULL || instruction == NULL || input == NULL ||
         effect == NULL || state == NULL) {
@@ -108,6 +113,8 @@ ti_c54x_memory_instruction_transaction_prepare(
                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
                 effect->payload.memory.address_spec.kind ==
                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16;
+    stack_pop_rtn = effect->payload.memory.address_spec.kind ==
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
     if (stack_pop) {
         ti_c54x_program_pc_target_effect pop_target = {0};
 
@@ -120,6 +127,25 @@ ti_c54x_memory_instruction_transaction_prepare(
             TI_C54X_PROGRAM_PC_TARGET_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+    }
+    if (stack_pop_rtn) {
+        ti_c54x_program_pc_target_effect rtn_target = {0};
+        uint16_t rtn_value = UINT16_C(0);
+
+        /* Fast returns take the PC target from the live RTN register
+         * instead of a stack READ observation. Unknown RTN rejects
+         * before any bus issue; the value freezes into the candidate
+         * below, so the discarded effect is validation only. */
+        if (ti_c54x_arch_state_read_rtn(state, &rtn_value) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (ti_c54x_program_pc_target_plan(state->pc_word, rtn_value,
+                                           &rtn_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        rtn_return_value = rtn_value;
     }
     if (stack_push) {
         ti_c54x_program_pc_target_effect call_target = {0};
@@ -215,6 +241,13 @@ ti_c54x_memory_instruction_transaction_prepare(
          * immediate pushes stage the sequential successor. */
         candidate.effect.payload.memory.value_word = push_return_value;
     }
+    if (stack_pop_rtn) {
+        /* Freeze the live RTN value proved above into the candidate.
+         * Commit consumes this frozen value with no bus observation,
+         * and the liveness guard pins it against the live register
+         * on every resume. */
+        candidate.effect.payload.memory.value_word = rtn_return_value;
+    }
     if (dual_read) {
         candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
         candidate.dual_address_snapshot.y_request = dual_resolution.y_request;
@@ -252,172 +285,6 @@ ti_c54x_memory_instruction_transaction_prepare(
     }
     target->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
-}
-
-static ti_c54x_memory_instruction_status
-commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
-                    ti_c54x_arch_state *state)
-{
-    const ti_c54x_sequencer_address_commit *const address_commit =
-        &transaction->candidate.address_resolution.address_commit;
-
-    if (address_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
-        state->ar[address_commit->ar_index] = address_commit->value_after;
-        state->ar_known_mask |=
-            (uint8_t)(UINT8_C(1) << address_commit->ar_index);
-    } else if (address_commit->target == TI_C54X_ADDRESS_UPDATE_SP) {
-        state->sp = address_commit->value_after;
-        state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
-    }
-    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-        transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
-        /* Pushes redirect PC to the frozen pmad instead of the sequential
-         * successor. Re-plan deterministically from the frozen bundle word
-         * and the stable live PC; prepare already proved this plan, so a
-         * failure here is unreachable but still transactional. Delayed
-         * pushes only prove the deferred pmad target here: the two
-         * delay-slot words execute first, so PC advances to the frozen
-         * sequential successor and the W67B CPU loop reports pmad from
-         * the retirement result. */
-        const ti_c54x_instruction_word_bundle *bundle_words =
-            &transaction->candidate.instruction.bundle;
-        ti_c54x_program_pc_target_effect call_target = {0};
-        uint32_t live_pc = state->pc_word;
-        uint16_t pmad;
-
-        if (bundle_words->program_word_count != UINT8_C(2)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        pmad = bundle_words->program_words[1];
-        if (ti_c54x_program_pc_target_plan(live_pc, pmad, &call_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
-            state->pc_word =
-                transaction->candidate.pc_effect.public_pc_word_after;
-        } else {
-            if (ti_c54x_program_pc_target_apply(&live_pc, &call_target) !=
-                TI_C54X_PROGRAM_PC_TARGET_OK) {
-                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-            }
-            state->pc_word = live_pc;
-        }
-    } else {
-        state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
-    }
-    transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
-    return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
-}
-
-static ti_c54x_memory_instruction_status
-commit_pop_architecture(ti_c54x_memory_instruction_transaction *transaction,
-                        ti_c54x_arch_state *state, uint16_t tos_value)
-{
-    const ti_c54x_sequencer_address_commit *const address_commit =
-        &transaction->candidate.address_resolution.address_commit;
-    ti_c54x_program_pc_target_effect pop_target = {0};
-    uint32_t live_pc = state->pc_word;
-
-    /* Plan the TOS target before mutating anything: a failure here is
-     * unreachable (prepare proved plannability with the same live PC)
-     * but stays transactional. Delayed pops only prove the deferred
-     * TOS target here: the two delay-slot words execute first, so PC
-     * advances to the frozen sequential successor and the W67B CPU
-     * loop reports TOS from the retirement result. */
-    if (address_commit->target != TI_C54X_ADDRESS_UPDATE_SP ||
-        ti_c54x_program_pc_target_plan(live_pc, tos_value, &pop_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    state->sp = address_commit->value_after;
-    state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
-    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
-        state->pc_word =
-            transaction->candidate.pc_effect.public_pc_word_after;
-    } else {
-        if (ti_c54x_program_pc_target_apply(&live_pc, &pop_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        state->pc_word = live_pc;
-    }
-    transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
-    return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
-}
-
-static ti_c54x_memory_instruction_status
-commit_ready(ti_c54x_memory_instruction_transaction *transaction,
-             ti_c54x_arch_state *state,
-             ti_c54x_accumulator_state *accumulators,
-             ti_c54x_t_register_state *t_register,
-             uint16_t read_value_word)
-{
-    ti_c54x_effect_transaction ordinary = {0};
-    ti_c54x_op_effect next_effect = {0};
-    const ti_c54x_op_memory_effect *memory =
-        &transaction->candidate.effect.payload.memory;
-
-    if (memory->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
-        memory->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
-        /* Pops consume the READ observation in the pop commit. A
-         * non-null completion additionally stages one follow-on effect
-         * (for example a status clear) committed here before the pop
-         * architecture commit; failures stay transactional exactly
-         * like the load completion path below. */
-        if (memory->complete != NULL) {
-            ti_c54x_effect_transaction pop_ordinary = {0};
-            ti_c54x_op_effect pop_next_effect = {0};
-
-            if (memory->complete(&transaction->candidate.instruction,
-                                 &transaction->candidate.input,
-                                 read_value_word,
-                                 &pop_next_effect) != TI_C54X_OP_STATUS_OK) {
-                transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-            }
-            if (ti_c54x_effect_transaction_stage(
-                    &pop_next_effect, &state->status, accumulators,
-                    t_register,
-                    &pop_ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
-                ti_c54x_effect_transaction_commit(
-                    &pop_ordinary, &state->status, accumulators,
-                    t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
-                transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-            }
-        }
-        return commit_pop_architecture(transaction, state, read_value_word);
-    }
-    if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
-        (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
-         transaction->bus_transaction.request.access ==
-             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)) {
-        return commit_architecture(transaction, state);
-    }
-    if (memory->complete == NULL || memory->complete(
-                         &transaction->candidate.instruction,
-                         &transaction->candidate.input, read_value_word,
-                         &next_effect) != TI_C54X_OP_STATUS_OK) {
-        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    if (ti_c54x_effect_transaction_stage(
-            &next_effect, &state->status, accumulators, t_register,
-            &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
-        ti_c54x_effect_transaction_commit(
-            &ordinary, &state->status, accumulators, t_register) !=
-            TI_C54X_EFFECT_TRANSACTION_OK) {
-        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    return commit_architecture(transaction, state);
 }
 
 static ti_c54x_memory_instruction_status
@@ -488,7 +355,7 @@ advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
-    operation_status = commit_architecture(transaction, state);
+    operation_status = ti_c54x_memory_instruction_commit_architecture(transaction, state);
     if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
         return operation_status;
     }
@@ -561,6 +428,26 @@ ti_c54x_memory_instruction_transaction_advance(
             &transaction->candidate, state)) {
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+        /* Fast interrupt returns retire with no bus traffic: the PC
+         * target is the RTN value frozen at prepare, so no transaction
+         * issues and no WAIT/FAULT can arise here. The retirement
+         * report mirrors the ordinary READY tail with the deferred
+         * branch disarmed (this kind is never delayed). */
+        operation_status = ti_c54x_memory_instruction_commit_ready(
+            transaction, state, accumulators, t_register,
+            transaction->candidate.effect.payload.memory.value_word);
+        if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+            return operation_status;
+        }
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+        result->bus_status = TI_C54X_BUS_OK;
+        result->instructions_attempted =
+            first_issue ? UINT64_C(1) : UINT64_C(0);
+        result->instructions_retired = UINT64_C(1);
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
     }
     if (first_issue) {
         uint64_t next_id;
@@ -635,7 +522,7 @@ ti_c54x_memory_instruction_transaction_advance(
     {
         const uint16_t ready_read_word = adapter_result.read_value_word;
 
-        operation_status = commit_ready(transaction, state, accumulators,
+        operation_status = ti_c54x_memory_instruction_commit_ready(transaction, state, accumulators,
                                         t_register, ready_read_word);
         if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
             return operation_status;
@@ -732,8 +619,14 @@ ti_c54x_memory_instruction_transaction_reset(
         }
     } else if (transaction->phase ==
                    TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE) {
+        /* The ordinary READY tail pairs COMPLETE with a completed bus
+         * transaction. The no-traffic RTN-pop retirement never issues
+         * a request, so its exact postcondition is COMPLETE with the
+         * bus transaction still IDLE; both pairings reset here. */
         if (transaction->bus_transaction.state !=
-            TI_C54X_BUS_WORD16_TRANSACTION_STATE_COMPLETE) {
+                TI_C54X_BUS_WORD16_TRANSACTION_STATE_COMPLETE &&
+            transaction->bus_transaction.state !=
+                TI_C54X_BUS_WORD16_TRANSACTION_STATE_IDLE) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
         }
     } else if (transaction->phase == TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT) {

@@ -217,9 +217,9 @@ int main(void) {
         self.assertEqual(pointer, ctypes.sizeof(ctypes.c_void_p))
         self.assertEqual(uint64, ctypes.sizeof(ctypes.c_uint64))
         if pointer == 8 and uint64 == 8:
-            self.assertEqual((effect, root), (40, 344))
+            self.assertEqual((effect, root), (40, 352))
         elif pointer == 4 and uint64 == 8:
-            self.assertEqual((effect, root), (36, 320))
+            self.assertEqual((effect, root), (36, 324))
         else:
             self.skipTest(f"unsupported native ABI: pointer={pointer}, uint64={uint64}")
 
@@ -239,7 +239,7 @@ int main(void) {
         if supported.returncode != 0:
             self.skipTest("compiler does not support a complete -m32 probe")
         pointer, uint64, effect, root = self._abi_probe(("-m32",))
-        self.assertEqual((pointer, uint64, effect, root), (4, 8, 36, 320))
+        self.assertEqual((pointer, uint64, effect, root), (4, 8, 36, 324))
 
 
 if __name__ == "__main__":

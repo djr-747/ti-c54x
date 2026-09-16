@@ -417,7 +417,9 @@ address_resolution_is_valid(
     if (effect->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         effect->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         const ti_c54x_address_source_stack_push *const source =
             &address_effect->source.value.stack_push;
         /* Wrapping SP+1 arithmetic mirrors the planner exactly, so a
@@ -576,7 +578,8 @@ stack_candidate_matches_live(
 
     /* Pushes and pops observe no CMPT/ARP state: only the live PC anchor
      * plus the frozen SP snapshot. The shape check above already pins
-     * the operand/update contract. */
+     * the operand/update contract. RTN pops additionally pin the live
+     * RTN register against the value frozen at prepare. */
     address_effect = &candidate->address_resolution.address_result.effect;
     if (!pc_candidate_matches_live(&candidate->pc_effect, state) ||
         address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
@@ -586,7 +589,20 @@ stack_candidate_matches_live(
         TI_C54X_ARCH_STATE_OK) {
         return false;
     }
-    return live_sp == address_effect->source.value.stack_push.sp_before;
+    if (live_sp != address_effect->source.value.stack_push.sp_before) {
+        return false;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+        uint16_t live_rtn = UINT16_C(0);
+
+        if (ti_c54x_arch_state_read_rtn(state, &live_rtn) !=
+            TI_C54X_ARCH_STATE_OK) {
+            return false;
+        }
+        return live_rtn == candidate->effect.payload.memory.value_word;
+    }
+    return true;
 }
 
 bool
@@ -624,7 +640,9 @@ ti_c54x_memory_instruction_candidate_matches_live(
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         return stack_candidate_matches_live(candidate, state);
     }
     address_effect = &candidate->address_resolution.address_result.effect;

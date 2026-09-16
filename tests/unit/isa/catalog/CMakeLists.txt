@@ -76,6 +76,9 @@ ti_c54x_add_unit_test(rete_metadata
 # W75 RED contract: RETED row metadata.
 ti_c54x_add_unit_test(reted_metadata
                       test_reted_metadata.c)
+# W76 RED contract: RETF catalog row.
+ti_c54x_add_unit_test(retf_metadata
+                      test_retf_metadata.c)
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)

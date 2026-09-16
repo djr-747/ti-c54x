@@ -618,10 +618,15 @@ test_architectural_preservation(void)
         TI_C54X_TEST_CHECK(memcmp(&cpu->t_register, &before_t,
                                   sizeof(before_t)) == 0);
 
-        /* Only SP and the program counter may move. */
+        /* Only SP, the program counter, and the staged RTN may move. */
         expect_arch = before_arch;
         expect_arch.pc_word = UINT32_C(0x1000);
         expect_arch.sp = UINT16_C(0x02FF);
+        /* The delayed push stages the PC+4 return address into RTN. */
+        expect_arch.rtn = UINT16_C(0x2116);
+        expect_arch.scalar_known_mask = (uint8_t)(
+            expect_arch.scalar_known_mask |
+            (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN);
         TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
                                   sizeof(expect_arch)) == 0);
     }

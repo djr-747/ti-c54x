@@ -152,7 +152,8 @@ static bool memory_effect_redirects_pc(const ti_c54x_op_effect *effect)
     }
     kind = effect->payload.memory.address_spec.kind;
     return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16;
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
 }
 
 /* Maintain the pending countdown after a retirement that armed nothing

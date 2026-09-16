@@ -60,6 +60,8 @@ $(eval $(call ti_c54x_add_test,ret_metadata,isa/catalog,test_ret_metadata.c))
 # W74 RED contract: RETE catalog row.
 # W75 RED contract: RETED catalog row.
 $(eval $(call ti_c54x_add_test,reted_metadata,isa/catalog,test_reted_metadata.c))
+# W76 RED contract: RETF catalog row.
+$(eval $(call ti_c54x_add_test,retf_metadata,isa/catalog,test_retf_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))

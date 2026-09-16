@@ -187,6 +187,11 @@ check_taken_case(uint32_t start_pc, uint8_t cond, uint16_t sp_before,
 
         expect_arch.pc_word = (uint32_t)pmad;
         expect_arch.sp = expected_tos;
+        /* The taken push stages the PC+2 return address into RTN. */
+        expect_arch.rtn = expected_return;
+        expect_arch.scalar_known_mask = (uint8_t)(
+            expect_arch.scalar_known_mask |
+            (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN);
         TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
                                   sizeof(expect_arch)) == 0);
     }

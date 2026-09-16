@@ -46,6 +46,7 @@
 #include "branch/op_retd.h"
 #include "branch/op_rete.h"
 #include "branch/op_reted.h"
+#include "branch/op_retf.h"
 #include "op_nop.h"
 #include "rotate/op_rotate.h"
 #include "rotate/op_roltc.h"

@@ -25,13 +25,13 @@
 #include <stdio.h>
 
 /* W52B widens the persistent snapshot with AR0/BK shadows: MOD3 commits
- * cannot be rechecked from mode/selector/address shadows alone. The root
- * carriers hold at 336/308 because the candidate union already dominates
- * the dual snapshot arm. */
+ * cannot be rechecked from mode/selector/address shadows alone. W76
+ * grows the candidate with the RTN input snapshot fields, so the root
+ * holds at 352; the dual snapshot arm is unchanged at 52. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 344U,
-               "W52B LP64 root unchanged with AR0/BK shadows");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 352U,
+               "W76 LP64 root grows only with the RTN input snapshot");
 
 static ti_c54x_op_memory_address_spec
 dual_spec_modes(uint8_t x_ar,

@@ -4,11 +4,14 @@
 /* Module contract
  * Owns: private architectural register storage, including the wide public
  * program-word PC carrier, common TI reset seeding, and checked
- * knownness-aware AR/SP and ARP/CMPT status-field access, knownness, and
- * field-limited mutation for ARP, DP, CPL, and CMPT. Status register storage
- * is composed from the status owner; block_size_register.h owns BK access,
- * repeat_counter_register.h owns RC access, and interrupt_flag_register.h
- * owns IFR access.
+ * knownness-aware AR/SP/RTN and ARP/CMPT status-field access, knownness,
+ * and field-limited mutation for ARP, DP, CPL, and CMPT. Status register
+ * storage is composed from the status owner; block_size_register.h owns
+ * BK access, repeat_counter_register.h owns RC access, and
+ * interrupt_flag_register.h owns IFR access. RTN is the CPU-internal
+ * fast-return register (SPRU131G §6, SPRU172C §4 RETF[D]): no ISA
+ * operand reads or writes it, so only sequencer commit paths and
+ * tests use these accessors.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -36,6 +39,7 @@ typedef struct ti_c54x_arch_state {
     uint16_t rc;
     uint16_t bk;
     uint16_t sp;
+    uint16_t rtn;
     uint16_t ar[8];
     ti_c54x_status_register_state status;
     uint8_t scalar_known_mask;
@@ -70,6 +74,19 @@ ti_c54x_arch_state_read_sp(const ti_c54x_arch_state *state,
 ti_c54x_arch_state_status
 ti_c54x_arch_state_write_sp(ti_c54x_arch_state *state,
                             uint16_t value);
+
+/* Checked accessors for the 16-bit CPU-internal RTN fast-return
+ * register. Reads require the RTN knownness bit and preserve *value
+ * on UNKNOWN or INVALID_ARGUMENT. Writes accept any 16-bit value
+ * and mark RTN known. NULL inputs and rejected writes leave the
+ * state unchanged. */
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_rtn(const ti_c54x_arch_state *state,
+                            uint16_t *value);
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_rtn(ti_c54x_arch_state *state,
+                             uint16_t value);
 
 /* Checked accessors for the three-bit ST0 ARP field.  Reads require every
  * ARP knownness bit and preserve *value on UNKNOWN or INVALID_ARGUMENT.

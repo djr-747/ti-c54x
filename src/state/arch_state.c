@@ -1,9 +1,10 @@
 /* Module contract
  * Owns: deterministic construction of the private common reset state,
  * including its wide program-word PC carrier, and checked knownness-aware
- * AR/SP plus delegated ARP/DP/CPL/CMPT status-field access and mutation. BK
- * storage is part of the aggregate but its accessors live in
- * block_size_register.c.
+ * AR/SP/RTN plus delegated ARP/DP/CPL/CMPT status-field access and
+ * mutation. BK storage is part of the aggregate but its accessors live
+ * in block_size_register.c. RTN resets to zero-but-unknown under the
+ * shared SPRU131G §6.9 policy: no reset value is adopted for it.
  * Does not own: CPU lifecycle or configured bootstrap reset, raw ST0/ST1/PMST
  * status-register APIs, address planning or sequencer policy, effect sequencing,
  * bus transfers, opcode semantics, diagnostics, or public ABI declarations.
@@ -93,6 +94,33 @@ ti_c54x_arch_state_write_sp(ti_c54x_arch_state *state,
     state->sp = value;
     state->scalar_known_mask =
         (uint8_t)(state->scalar_known_mask | TI_C54X_ARCH_STATE_KNOWN_SP);
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_read_rtn(const ti_c54x_arch_state *state,
+                            uint16_t *value)
+{
+    if (state == NULL || value == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    if ((state->scalar_known_mask & TI_C54X_ARCH_STATE_KNOWN_RTN) == 0U) {
+        return TI_C54X_ARCH_STATE_UNKNOWN;
+    }
+    *value = state->rtn;
+    return TI_C54X_ARCH_STATE_OK;
+}
+
+ti_c54x_arch_state_status
+ti_c54x_arch_state_write_rtn(ti_c54x_arch_state *state,
+                             uint16_t value)
+{
+    if (state == NULL) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
+    state->rtn = value;
+    state->scalar_known_mask =
+        (uint8_t)(state->scalar_known_mask | TI_C54X_ARCH_STATE_KNOWN_RTN);
     return TI_C54X_ARCH_STATE_OK;
 }
 

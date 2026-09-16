@@ -67,7 +67,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * READ-only with null completion), but the root commits the
      * sequential PC successor and reports the TOS READ observation
      * as the deferred branch target. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 = 11
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 = 11,
+    /* Fast-return register pop: identical SP planning to the
+     * immediate pop (old SP with a POST_ACCESS SP update,
+     * READ-only with a zero staged value), but the root issues no
+     * bus traffic. The PC target is the RTN value the root freezes
+     * at prepare; a non-null completion additionally stages one
+     * follow-on effect the root commits before the pop
+     * architecture commit (the pop-completion seam). */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 = 12
 } ti_c54x_op_memory_address_kind;
 
 /*

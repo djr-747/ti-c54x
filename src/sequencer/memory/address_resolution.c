@@ -4,8 +4,10 @@
  * Owns: ordered, non-mutating resolution of a generic CMPT=0 W16 data
  * address (single-indirect MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step
  * circular MOD8/MOD10, reverse-carry MOD4/MOD7, X-only dual-indirect
- * MOD0--MOD3, or mode-independent STACK_PUSH/STACK_POP) into the
- * existing checked address planner and request constructor.
+ * MOD0--MOD3, or mode-independent STACK_PUSH/STACK_POP/STACK_POP_RTN)
+ * into the existing checked address planner and request constructor.
+ * STACK_POP_RTN additionally gates RTN knownness; its planned READ
+ * is never issued by the root.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
  * mutation, timing, lifecycle, or diagnostics.
  */
@@ -104,7 +106,9 @@ ti_c54x_sequencer_resolve_memory_address(
         }
     } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
                spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+               spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
@@ -184,11 +188,14 @@ ti_c54x_sequencer_resolve_memory_address(
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         uint16_t sp_value = UINT16_C(0);
+        uint16_t rtn_value = UINT16_C(0);
 
         /* Pops observe only SP: no CMPT/ARP/CPL read, so unknown mode
-         * state never rejects a pop. */
+         * state never rejects a pop. RTN pops additionally observe
+         * RTN; the root never issues the planned READ for them. */
         if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
         }
@@ -196,6 +203,14 @@ ti_c54x_sequencer_resolve_memory_address(
             TI_C54X_ARCH_STATE_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
         }
+        if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 &&
+            ti_c54x_arch_state_read_rtn(state, &rtn_value) !=
+                TI_C54X_ARCH_STATE_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
+        }
+        /* The RTN value itself freezes at prepare; resolution only
+         * gates its knownness here. */
+        (void)rtn_value;
         address_result = ti_c54x_stack_pop_word16(sp_value);
         if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;

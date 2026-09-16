@@ -98,7 +98,8 @@ typedef enum ti_c54x_repeatability_class {
 } ti_c54x_repeatability_class;
 
 typedef uint16_t ti_c54x_input_resource_mask;
-/* Resource values are powers of two; STATUS_OVM is the eighth resource (128). */
+/* Resource values are powers of two; RETURN_REGISTER is the eleventh
+ * resource (1024). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -112,6 +113,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STATUS_OVM ((ti_c54x_input_resource_mask)128U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_ASM ((ti_c54x_input_resource_mask)256U)
 #define TI_C54X_INPUT_RESOURCES_STACK_POINTER ((ti_c54x_input_resource_mask)512U)
+#define TI_C54X_INPUT_RESOURCES_RETURN_REGISTER \
+    ((ti_c54x_input_resource_mask)1024U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))
@@ -146,6 +149,10 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* Fast interrupt returns read SP plus the RTN return register. */
+#define TI_C54X_INPUT_RESOURCES_STACK_POINTER_RETURN_REGISTER \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STACK_POINTER | \
+                                   TI_C54X_INPUT_RESOURCES_RETURN_REGISTER))
 /* Delayed conditional calls read condition inputs plus SP. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC_STACK_POINTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
@@ -167,7 +174,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_SST | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_ASM | \
-                                   TI_C54X_INPUT_RESOURCES_STACK_POINTER))
+                                   TI_C54X_INPUT_RESOURCES_STACK_POINTER | \
+                                   TI_C54X_INPUT_RESOURCES_RETURN_REGISTER))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

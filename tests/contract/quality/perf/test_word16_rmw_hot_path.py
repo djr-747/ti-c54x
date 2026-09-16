@@ -61,7 +61,10 @@ class Word16RmwHotPathTests(unittest.TestCase):
         self.assertIn("advance_rmw_write", source)
         helper = self._read(TRANSACTION_DIR / "memory_instruction_rmw.c")
         self.assertEqual(helper.count("ti_c54x_bus_word16_adapter_advance("), 0)
-        self.assertIn("TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE", source)
+        # W76 splits the READY-path commit into memory_instruction_commit.c;
+        # the paired-write arm lives with the new commit owner.
+        commit = self._read(TRANSACTION_DIR / "memory_instruction_commit.c")
+        self.assertIn("TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE", commit)
 
     def test_cpu_route_has_no_opcode_branch_or_handler_fanout(self) -> None:
         run_source = self._read(CPU_RUN_SOURCE)
