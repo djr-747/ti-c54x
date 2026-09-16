@@ -77,6 +77,8 @@ ti_c54x_add_unit_test(rete_decode test_rete_decode.c)
 ti_c54x_add_unit_test(reted_decode test_reted_decode.c)
 # W76 RED contract: RETF decode.
 ti_c54x_add_unit_test(retf_decode test_retf_decode.c)
+# W77 RED contract: RC decode.
+ti_c54x_add_unit_test(rc_decode test_rc_decode.c)
 # W67B RED contract: RETD decode with near-miss audit.
 ti_c54x_add_unit_test(retd_decode test_retd_decode.c)
 # W67C RED contract: CALLD decode with near-miss audit.

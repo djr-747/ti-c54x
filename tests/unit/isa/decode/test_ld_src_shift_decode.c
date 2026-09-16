@@ -148,9 +148,10 @@ test_fixed_bit_near_misses_are_unknown(void)
     /* Mask 0xFCE0 leaves S(9), D(8), SHIFT(4:0) variable; flips of
      * genuinely fixed bits must miss every row. Bit 6 selects the ADD
      * sibling and bit 10 an OR-immediate sibling, so those flips are
-     * covered by sibling rows instead. */
+     * covered by sibling rows instead. Bit 11 lands in the RC row
+     * (pinned below), so it leaves this list as well. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020), UINT16_C(0x0080), UINT16_C(0x0800),
+        UINT16_C(0x0020), UINT16_C(0x0080),
         UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -163,6 +164,16 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Flipping fixed bit 11 lands on the RC sibling. */
+    {
+        const ti_c54x_decode_result rc_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SRC_SHIFT_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(rc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rc_sibling.id == TI_C54X_OPCODE_ID_RC);
     }
 }
 

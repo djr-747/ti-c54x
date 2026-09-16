@@ -135,13 +135,17 @@ test_fixed_bit_near_misses(void)
     /* Mask 0xFFFF leaves no operand bit variable. Flipping fixed bit 9
      * lands on the RETD sibling, flipping fixed bit 10 lands on the
      * BC_PMAD sibling, and flipping fixed bit 11 lands on
-     * ADD_ACC_SHIFT; all other fixed-bit flips must miss every row. */
+     * ADD_ACC_SHIFT. Flipping any low-byte bit lands in the RC row
+     * (pinned below); all other fixed-bit flips must miss every
+     * row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
-        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
-        UINT16_C(0x0040), UINT16_C(0x0080), UINT16_C(0x0100),
+        UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
+    static const uint16_t rc_masks[] = {
+        UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
+        UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
+        UINT16_C(0x0040), UINT16_C(0x0080)};
     const ti_c54x_decode_result retd_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RET_VALUE ^ UINT16_C(0x0200)));
@@ -169,6 +173,18 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Flipping any low-byte bit lands in the RC row. */
+    for (size_t index = 0U;
+         index < sizeof(rc_masks) / sizeof(rc_masks[0]);
+         ++index) {
+        const ti_c54x_decode_result result =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RET_VALUE ^ rc_masks[index]));
+
+        TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_RC);
     }
 }
 

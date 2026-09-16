@@ -160,7 +160,7 @@ test_fixed_bit_near_misses(void)
     };
     static const uint16_t misses[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0008),
-        UINT16_C(0x0040), UINT16_C(0x0800), UINT16_C(0x1000),
+        UINT16_C(0x0040), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
     size_t index;
 
@@ -172,6 +172,15 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(result.id == siblings[index].id);
+    }
+    /* Flipping fixed bit 11 lands in the RC row. */
+    {
+        const ti_c54x_decode_result rc_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SRC_ASM_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(rc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rc_sibling.id == TI_C54X_OPCODE_ID_RC);
     }
     for (index = 0U; index < sizeof(misses) / sizeof(misses[0]); ++index) {
         const ti_c54x_decode_result result =

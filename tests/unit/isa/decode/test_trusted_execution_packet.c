@@ -9,6 +9,7 @@
  */
 
 #include "isa/catalog/opcode_catalog.h"
+#include "isa/catalog/opcode_catalog_internal.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/decode/operand_layout.h"
 #include "isa/decode/trusted_execution_packet.h"
@@ -20,12 +21,31 @@
 #include <string.h>
 
 static ti_c54x_instruction_word_bundle bundle_for(
-    const ti_c54x_opcode_metadata *metadata)
+    ti_c54x_opcode_id id, const ti_c54x_opcode_metadata *metadata)
 {
-    const ti_c54x_instruction_word_bundle bundle = {
-        {metadata->first_word_value, UINT16_C(0xBEEF)},
-        metadata->program_word_count};
-    return bundle;
+    /* The canonical first word is the lowest word the lookup resolves
+     * to this identity. That is the row's value word except under the
+     * single-word shadow seam, where the exact row keeps its word and
+     * the shadowed row starts at the next resolving word. */
+    uint32_t raw;
+
+    for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
+        const uint16_t word = (uint16_t)raw;
+
+        if (ti_c54x_opcode_catalog_lookup_first_word(word) == id) {
+            const ti_c54x_instruction_word_bundle bundle = {
+                {word, UINT16_C(0xBEEF)},
+                metadata->program_word_count};
+            return bundle;
+        }
+    }
+    {
+        const ti_c54x_instruction_word_bundle bundle = {
+            {metadata->first_word_value, UINT16_C(0xBEEF)},
+            metadata->program_word_count};
+        TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_UNKNOWN);
+        return bundle;
+    }
 }
 
 static void test_every_binding_matches_checked_decode_and_extraction(void)
@@ -38,7 +58,7 @@ static void test_every_binding_matches_checked_decode_and_extraction(void)
         const ti_c54x_trusted_opcode_binding *binding =
             ti_c54x_trusted_opcode_binding_for_id(id);
         const ti_c54x_instruction_word_bundle bundle =
-            bundle_for(&binding->metadata);
+            bundle_for(id, &binding->metadata);
         const ti_c54x_decode_result first =
             ti_c54x_decode_first_word(bundle.program_words[0]);
         ti_c54x_decoded_instruction checked = {0};
@@ -109,7 +129,7 @@ static void test_rejections_are_transactional(void)
     const ti_c54x_trusted_opcode_binding *ld_dp =
         ti_c54x_trusted_opcode_binding_for_id(
             TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP);
-    ti_c54x_instruction_word_bundle bundle = bundle_for(&nop->metadata);
+    ti_c54x_instruction_word_bundle bundle = bundle_for(TI_C54X_OPCODE_ID_NOP, &nop->metadata);
 
     check_failure(unknown, &bundle,
                   TI_C54X_TRUSTED_EXECUTION_PACKET_UNKNOWN_OPCODE);
@@ -122,7 +142,7 @@ static void test_rejections_are_transactional(void)
     bundle.program_word_count = UINT8_C(2);
     check_failure(nop, &bundle,
                   TI_C54X_TRUSTED_EXECUTION_PACKET_BUNDLE_COUNT_MISMATCH);
-    bundle = bundle_for(&nop->metadata);
+    bundle = bundle_for(TI_C54X_OPCODE_ID_NOP, &nop->metadata);
     bundle.program_words[0] ^= UINT16_C(1);
     check_failure(nop, &bundle,
                   TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH);
@@ -144,7 +164,7 @@ static void test_fast_and_checked_packets_are_equivalent(void)
         const ti_c54x_trusted_opcode_binding *binding =
             ti_c54x_trusted_opcode_binding_for_id((ti_c54x_opcode_id)raw_id);
         const ti_c54x_instruction_word_bundle bundle =
-            bundle_for(&binding->metadata);
+            bundle_for((ti_c54x_opcode_id)raw_id, &binding->metadata);
         ti_c54x_trusted_execution_packet checked = {0};
         ti_c54x_trusted_execution_packet fast = {0};
 

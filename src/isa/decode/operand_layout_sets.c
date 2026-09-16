@@ -415,6 +415,17 @@ static const ti_c54x_operand_field_layout
 const ti_c54x_operand_layout_set ti_c54x_branch_cond_pmad16_set = {
     ti_c54x_branch_cond_pmad16_operands, UINT8_C(2)};
 
+/* RC condition field: raw cond[7:0] from the single first word. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_branch_cond8_cond_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_branch_cond8_operands[1] = {
+        {&ti_c54x_branch_cond8_cond_piece, UINT8_C(1),
+         UINT8_C(8)}};
+const ti_c54x_operand_layout_set ti_c54x_branch_cond8_set = {
+    ti_c54x_branch_cond8_operands, UINT8_C(1)};
+
 /* BANZ Sind fields: raw Sind[7:0], then the copied pmad[+1].
  * The piece shape matches the condition layout exactly; the
  * distinct set keeps Sind and condition namespaces separate. */

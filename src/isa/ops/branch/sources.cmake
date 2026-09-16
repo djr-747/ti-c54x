@@ -12,6 +12,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_ccd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_calld.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_cc.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_rc.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ret.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_retd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_rete.c"

@@ -3,7 +3,10 @@
  *
  * Owns: checked construction of one value-owned trusted execution packet from
  * a canonical binding and complete instruction bundle, including one-pass
- * extraction through the decode-owned static operand plan. Does not own:
+ * extraction through the decode-owned static operand plan. Construction
+ * verifies the bundle's first word resolves to the binding's identity
+ * through the lookup, so shadowed words never prepare under the
+ * shadowed identity. Does not own:
  * fetch, semantics, architectural state, sequencing, buses, timing,
  * diagnostics, allocation, or mutable global state.
  */
@@ -12,6 +15,7 @@
 
 #include <stddef.h>
 
+#include "isa/catalog/opcode_catalog_internal.h"
 #include "operand_layout_internal.h"
 
 static inline bool ti_c54x_trusted_execution_packet_extract_operands(
@@ -71,6 +75,14 @@ ti_c54x_trusted_execution_packet_prepare(
     }
     if ((uint16_t)(bundle->program_words[0] & metadata->first_word_mask) !=
         metadata->first_word_value) {
+        return TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH;
+    }
+    /* The mask check alone admits shadowed words: an exact row declared
+     * before a covering masked row keeps its word in the lookup, so the
+     * bundle must resolve to this binding's identity, not just match its
+     * pattern. */
+    if (ti_c54x_opcode_catalog_lookup_first_word(bundle->program_words[0]) !=
+        metadata->id) {
         return TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH;
     }
 

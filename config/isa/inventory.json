@@ -1467,8 +1467,10 @@
       "mnemonic": "RC",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RC"
+      ]
     },
     {
       "id": "FORM-T2-15-04",
@@ -3094,6 +3096,7 @@
     {"catalog_symbol": "RETD", "form_id": "FORM-T2-15-04", "coverage": "SUBSET", "addressing_subset": "STACK_POP_DELAYED"},
     {"catalog_symbol": "RETE", "form_id": "FORM-T2-15-05", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},
     {"catalog_symbol": "RETED", "form_id": "FORM-T2-15-05", "coverage": "SUBSET", "addressing_subset": "STACK_POP_DELAYED"},
-    {"catalog_symbol": "RETF", "form_id": "FORM-T2-15-06", "coverage": "SUBSET", "addressing_subset": "RTN_POP_NONDELAYED"}
+    {"catalog_symbol": "RETF", "form_id": "FORM-T2-15-06", "coverage": "SUBSET", "addressing_subset": "RTN_POP_NONDELAYED"},
+    {"catalog_symbol": "RC", "form_id": "FORM-T2-15-03", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"}
   ]
 }
