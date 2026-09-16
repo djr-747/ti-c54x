@@ -492,3 +492,20 @@ static const ti_c54x_operand_field_layout
          UINT8_C(7)}};
 const ti_c54x_operand_layout_set ti_c54x_round_select_indirect_addr7_set = {
     ti_c54x_round_select_indirect_addr7_operands, UINT8_C(4)};
+
+/* MPYA Smem fields: indirect flag I[7:7], then 7-bit Smem
+ * address A[6:0]. The B destination is fixed by the opcode. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_indirect_piece = {
+        UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_address_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_indirect_addr7_operands[2] = {
+        {&ti_c54x_indirect_addr7_indirect_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_indirect_addr7_address_piece, UINT8_C(1),
+         UINT8_C(7)}};
+const ti_c54x_operand_layout_set ti_c54x_indirect_addr7_set = {
+    ti_c54x_indirect_addr7_operands, UINT8_C(2)};

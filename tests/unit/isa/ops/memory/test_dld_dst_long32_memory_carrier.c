@@ -88,13 +88,16 @@ static void check_carrier_shape_and_size(void)
 
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_op_memory_address_spec) == 24U);
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_op_memory_effect) ==
-                       (sizeof(void *) == 8U ? 40U : 36U));
+                       (sizeof(void *) == 8U ? 48U : 40U));
     /* W76 grows the copied input snapshot with the RETURN_REGISTER
      * resource: LP64 moves 344 to 352 (executed here) and ILP32 moves
      * 316 to 324 (headers-only -m32 probe; that arm never executes on
-     * a 64-bit host and already measured 320 before this slice). */
+     * a 64-bit host and already measured 320 before this slice).
+     * S3d adds the read-phase T-load flag to the memory effect:
+     * LP64 moves 40 to 48 and 352 to 360; ILP32 moves 36 to 40 and
+     * 324 to 328. */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 352U : 324U));
+                       (sizeof(void *) == 8U ? 360U : 328U));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&read));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
     TI_C54X_TEST_CHECK(read.first_value_msw == UINT16_C(0));

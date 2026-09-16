@@ -157,6 +157,11 @@ typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_dual_fn)(
 typedef struct ti_c54x_op_memory_effect {
     ti_c54x_op_memory_address_spec address_spec;
     ti_c54x_bus_word16_request_access access;
+    /* Read-phase T load (MPYA): when true on a WORD16 READ, the root
+     * loads T with the read value word after the read-value
+     * completion commits. Only READ access with no RMW transform may
+     * set this; all other carriers leave it false. */
+    bool load_t_with_read;
     union {
         struct {
             /* Ordinary WRITE payload or RMW operand; ordinary READ requires
@@ -181,12 +186,12 @@ typedef struct ti_c54x_op_memory_effect {
 #if UINTPTR_MAX == UINT64_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
                "WORD16 memory address ABI changed on LP64");
-_Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 48,
                "WORD16 memory effect ABI changed on LP64");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
                "WORD16 memory address ABI changed on ILP32");
-_Static_assert(sizeof(ti_c54x_op_memory_effect) == 36,
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
                "WORD16 memory effect ABI changed on ILP32");
 #endif
 

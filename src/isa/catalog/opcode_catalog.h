@@ -95,6 +95,9 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word multiply fields: rounding flag, accumulator select,
      * indirect flag, and 7-bit Smem address. */
     TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7,
+    /* One-word MPYA Smem fields: indirect flag and 7-bit Smem
+     * address; the B destination is fixed and T is written. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -173,6 +176,11 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_SXM_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* MPYA bodies read accumulator A plus FRCT/OVM; T is written, not read. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* Multiply-accumulate bodies read accumulators plus T plus FRCT/OVM. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM \

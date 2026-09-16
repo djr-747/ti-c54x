@@ -87,7 +87,7 @@ static void
 test_fixed_bit_near_misses_and_forged_completion(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0400),
+        UINT16_C(0x0080), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x4000),
         UINT16_C(0x8000)};
     const uint16_t word = LD_T_VALUE;
@@ -133,6 +133,15 @@ test_fixed_bit_near_misses_and_forged_completion(void)
             (uint16_t)(word ^ UINT16_C(0x1000)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_MPY_SMEM);
+    }
+
+    /* This former near-miss is the P3-S3d MPYA Smem sibling:
+     * 0x3090 ^ 0x0100 = 0x3190 classifies into the MPYA_SMEM row. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x0100)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_MPYA_SMEM);
     }
 
     {

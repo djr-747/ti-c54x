@@ -15,14 +15,14 @@
 #include <stdint.h>
 
 #if UINTPTR_MAX == UINT64_MAX
-_Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 48,
                "WORD16 memory effect size changed on a 64-bit ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 48,
+_Static_assert(sizeof(ti_c54x_op_effect) == 56,
                "generic operation effect size changed on a 64-bit ABI");
 #elif UINTPTR_MAX == UINT32_MAX
-_Static_assert(sizeof(ti_c54x_op_memory_effect) == 36,
+_Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
                "WORD16 memory effect size changed on a 32-bit ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 40,
+_Static_assert(sizeof(ti_c54x_op_effect) == 44,
                "generic operation effect size changed on a 32-bit ABI");
 #endif
 

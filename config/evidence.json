@@ -6207,6 +6207,40 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3c is implemented and green: the MPY_SMEM catalog row at 0x2000 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value STORE completion through the multiply core without accumulation (TI MPY Examples 1 and 4), CPU retirement, and the FORM-T2-03-01 SUBSET binding."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MPYA",
+        "printed_page_start": "4-104",
+        "printed_page_end": "4-105"
+      },
+      "assertion": "MPYA syntax 1 is MPYA Smem with opcode bits 15:8 00110001 (I bit 7, Smem field 6:0), one program word, and execution (Smem) x (A(32-16)) into B with (Smem) into T. The operation is affected by FRCT and OVM and affects OVdst (OVB in syntax 1), and T is updated in the read phase. Example 1 (MPYA *AR2, A FF 8765 1111, B 00 0000 0320, T 1234, mem[0200] 5678, FRCT 0) yields B FF D743 6558 and T 5678."
+    },
+    {
+      "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3d is implemented and green: the MPYA_SMEM catalog row at 0x3100 under mask 0xFF00 with the new indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem times A-high into fixed B through the multiply core (TI MPYA Example 1), CPU retirement with T commit, and the FORM-T2-03-06 SUBSET binding."
     }
   ],
   "requirements": [
@@ -14215,6 +14249,111 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3D-MPYA-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the MPYA_SMEM row at first-word value 0x3100 under mask 0xFF00 with one program word, 256 encodings, the INDIRECT_ADDR7 layout, ELIGIBLE repeatability by the Table 2-28 omission, and accumulator/FRCT/OVM inputs without T.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3D-MPYA-SMEM-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3D-MPYA-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the indirect and addr7 fields of the one-word MPYA_SMEM bundle through the INDIRECT_ADDR7 layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3D-MPYA-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3D-MPYA-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Evaluate MPYA Smem into a memory-read effect with the read-phase T load for direct page-0 and standard-indirect MOD0-MOD3 addresses with exotic modes deferred, and complete the read value through the multiply core STORE path as Smem times A-high into fixed B with OVdst disposition; only A, FRCT, and OVM gate staging, NULL inputs reject, and unknown inputs stop.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105",
+        "E-TI-C54X-SPRU131G-T4-2-OVM-P4-5",
+        "E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9",
+        "E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3D-MPYA-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MPYA Smem on the CPU with indirect and direct reads, fixed-B store, read-phase T load commit, and accumulator and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3D-MPYA-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3D-MPYA-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the INDIRECT_ADDR7 operand layout for one-word bundles into indirect and addr7 fields through the shared plan table.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3D-MPYA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3D-MPYA-T-LOAD",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/",
+      "claim": "Commit a WORD16 read carrying the read-phase T load by loading T with the read value word after the read-value completion commits, leaving T untouched without the flag.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3D-MPYA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3D-T-LOAD-COMMIT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3D-MPYA-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MPYA_SMEM catalog row to FORM-T2-03-06 at SUBSET coverage over direct page-0 and standard-indirect MOD0-MOD3 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3D-MPYA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -17392,7 +17531,8 @@
         "REQ-PROJECT-P3-S7-STM-INVENTORY",
         "REQ-PROJECT-P3-S2-RPT-INVENTORY",
         "REQ-PROJECT-P3-S3B-MAC-INVENTORY",
-        "REQ-PROJECT-P3-S3C-MPY-INVENTORY"
+        "REQ-PROJECT-P3-S3C-MPY-INVENTORY",
+        "REQ-PROJECT-P3-S3D-MPYA-INVENTORY"
       ]
     },
     {
@@ -20428,6 +20568,90 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3C-MPY-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3D-MPYA-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mpya_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3D-MPYA-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3D-MPYA-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mpya_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3D-MPYA-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3D-MPYA-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpya_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3D-MPYA-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3D-MPYA-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mpya_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mpya_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_indirect_addr7_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.indirect_addr7_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3D-MPYA-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3D-T-LOAD-COMMIT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_memory_instruction_commit.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.memory_instruction_commit"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3D-MPYA-T-LOAD"
       ]
     }
   ]

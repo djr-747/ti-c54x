@@ -36,6 +36,12 @@ ti_c54x_op_memory_effect_access_shape_is_valid(
     if (effect->transfer_reserved != UINT8_C(0)) {
         return false;
     }
+    if (effect->load_t_with_read &&
+        (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
+         effect->rmw_operation !=
+             (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE)) {
+        return false;
+    }
     if (effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
         if (effect->rmw_operation ==
             (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE) {

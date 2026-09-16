@@ -92,9 +92,83 @@ static void test_write_ready_publishes_before_infallible_arch_commit(void)
     TI_C54X_TEST_CHECK_U64(state.ar[2], UINT16_C(0x2111));
 }
 
+static uint16_t read_t_raw(ti_c54x_t_register_state *t_register)
+{
+    uint16_t raw_value = UINT16_C(0);
+
+    TI_C54X_TEST_CHECK(ti_c54x_t_register_read(t_register, &raw_value) ==
+                       TI_C54X_T_REGISTER_OK);
+    return raw_value;
+}
+
+static void test_read_without_t_load_flag_preserves_t_register(void)
+{
+    ti_c54x_op_effect effect =
+        memory_effect(TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    ti_c54x_memory_instruction_transaction transaction = {0};
+    ti_c54x_arch_state state = known_arch_state();
+    ti_c54x_accumulator_state accumulators = {0};
+    ti_c54x_t_register_state t_register = {0};
+    endpoint_script script = {SCRIPT_WAIT_THEN_READ_READY, 0, 0, 0, 0,
+                              {0}, UINT16_C(0x5678)};
+    ti_c54x_memory_instruction_result result;
+
+    TI_C54X_TEST_CHECK(ti_c54x_accumulator_reset(&accumulators) ==
+                       TI_C54X_ACCUMULATOR_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_t_register_reset(&t_register) ==
+                       TI_C54X_T_REGISTER_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_t_register_write(&t_register,
+                                               UINT16_C(0x1234)) ==
+                       TI_C54X_T_REGISTER_OK);
+    TI_C54X_TEST_CHECK(prepare(&transaction, &effect, &state, 0, 0) ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_OK);
+    result = advance(&transaction, &script, &state, &accumulators,
+                     &t_register);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_MEMORY_INSTRUCTION_STATUS_WAIT);
+    result = advance(&transaction, &script, &state, &accumulators,
+                     &t_register);
+    TI_C54X_TEST_CHECK(result.status ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED);
+    TI_C54X_TEST_CHECK(read_t_raw(&t_register) == UINT16_C(0x1234));
+}
+
+static void test_read_with_t_load_flag_loads_t_register(void)
+{
+    ti_c54x_op_effect effect =
+        memory_effect(TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    ti_c54x_memory_instruction_transaction transaction = {0};
+    ti_c54x_arch_state state = known_arch_state();
+    ti_c54x_accumulator_state accumulators = {0};
+    ti_c54x_t_register_state t_register = {0};
+    endpoint_script script = {SCRIPT_WAIT_THEN_READ_READY, 0, 0, 0, 0,
+                              {0}, UINT16_C(0x5678)};
+    ti_c54x_memory_instruction_result result;
+
+    effect.payload.memory.load_t_with_read = true;
+    TI_C54X_TEST_CHECK(ti_c54x_accumulator_reset(&accumulators) ==
+                       TI_C54X_ACCUMULATOR_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_t_register_reset(&t_register) ==
+                       TI_C54X_T_REGISTER_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_t_register_write(&t_register,
+                                               UINT16_C(0x1234)) ==
+                       TI_C54X_T_REGISTER_OK);
+    TI_C54X_TEST_CHECK(prepare(&transaction, &effect, &state, 0, 0) ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_OK);
+    result = advance(&transaction, &script, &state, &accumulators,
+                     &t_register);
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_MEMORY_INSTRUCTION_STATUS_WAIT);
+    result = advance(&transaction, &script, &state, &accumulators,
+                     &t_register);
+    TI_C54X_TEST_CHECK(result.status ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED);
+    TI_C54X_TEST_CHECK(read_t_raw(&t_register) == UINT16_C(0x5678));
+}
+
 int main(void)
 {
     test_read_wait_resume_completion_and_atomic_commit();
     test_write_ready_publishes_before_infallible_arch_commit();
+    test_read_without_t_load_flag_preserves_t_register();
+    test_read_with_t_load_flag_loads_t_register();
     return 0;
 }

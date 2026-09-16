@@ -20,10 +20,10 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3c complete (`MAC`/`MPY` Smem rows, `ELIGIBLE` repeat).
+Current snapshot: P3-S3d complete (`MAC`/`MPY`/`MPYA` Smem rows).
 
-- 167 runnable catalog rows under 9,925 populated first-word lookup entries.
-  Inventory coverage is 66/205 forms SUBSET-or-better (32.195%) and 33/205
+- 168 runnable catalog rows under 10,181 populated first-word lookup entries.
+  Inventory coverage is 67/205 forms SUBSET-or-better (32.683%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -42,11 +42,14 @@ Current snapshot: P3-S3c complete (`MAC`/`MPY` Smem rows, `ELIGIBLE` repeat).
   end-to-end replay through the retirement-tail HOLD wiring. S3c lands the
   `MPY` Smem row (`FORM-T2-03-01`) reusing the shared
   round/select/indirect/addr7 layout with STORE completion (TI MPY Examples
-  1 and 4 retire through the leaf).
-- Major remaining work is the `MPYA`/`MAS`/`MACR` rows in census order,
-  MMR/stack moves, bit/field ops, shifts/misc, the port seam, far/XPC
-  addressing, profiles/devices, and evidenced machine timing. Emulator
-  integration remains deferred.
+  1 and 4 retire through the leaf). S3d lands the `MPYA` Smem row
+  (`FORM-T2-03-06`) with the new indirect/addr7 layout, fixed-B STORE of
+  Smem times A-high, and the read-phase T-load seam (TI MPYA Example 1
+  retires through the leaf).
+- Major remaining work is the `MAS`/`MACR` rows in census order (plus
+  `MPYA` syntax 2), MMR/stack moves, bit/field ops, shifts/misc, the port
+  seam, far/XPC addressing, profiles/devices, and evidenced machine timing.
+  Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

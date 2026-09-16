@@ -80,6 +80,8 @@ $(eval $(call ti_c54x_add_test,rpt_lk_decode,isa/decode,test_rpt_lk_decode.c))
 # P3-S3 RED contract: MAC Smem row.
 $(eval $(call ti_c54x_add_test,mac_smem_decode,isa/decode,test_mac_smem_decode.c))
 $(eval $(call ti_c54x_add_test,mpy_smem_decode,isa/decode,test_mpy_smem_decode.c))
+$(eval $(call ti_c54x_add_test,indirect_addr7_layout,isa/decode,test_indirect_addr7_layout.c))
+$(eval $(call ti_c54x_add_test,mpya_smem_decode,isa/decode,test_mpya_smem_decode.c))
 # W78 RED contract: RCD decode.
 $(eval $(call ti_c54x_add_test,rcd_decode,isa/decode,test_rcd_decode.c))
 $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))

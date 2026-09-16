@@ -24,6 +24,7 @@
 #include "memory_instruction_rmw.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_target.h"
+#include "state/temporary/t_register.h"
 
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transaction *transaction,
@@ -195,6 +196,25 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
             TI_C54X_EFFECT_TRANSACTION_OK) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    if (memory->load_t_with_read) {
+        /* Read-phase T load (MPYA): T takes the read value word once
+         * the read-value completion has committed. Staged on a
+         * candidate so a rejected write leaves live state
+         * untouched. */
+        ti_c54x_t_register_state t_candidate;
+
+        if (t_register == NULL) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        t_candidate = *t_register;
+        if (ti_c54x_t_register_write(&t_candidate, read_value_word) !=
+            TI_C54X_T_REGISTER_OK) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        *t_register = t_candidate;
     }
     return ti_c54x_memory_instruction_commit_architecture(transaction, state);
 }
