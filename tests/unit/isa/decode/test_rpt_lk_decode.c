@@ -133,14 +133,15 @@ test_fixed_bit_near_misses(void)
     /* The exact row fixes every first-word bit. Flipping bit 2
      * lands on the CALL_PMAD sibling, bit 5 on
      * XOR_IMMEDIATE_SHIFT, bit 6 on AND_IMMEDIATE_SHIFT, bit 7 on
-     * SFTL_ACC, and bit 11 on BC_PMAD (each pinned below); all
+     * SFTL_ACC, and bit 11 on BC_PMAD (each pinned below); bit 14
+     * lands on the P3-S3g MAC_DUAL_M1_M0 sibling (pinned below); all
      * other single-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0008),
         UINT16_C(0x0010),
         UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x2000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -152,6 +153,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* 0xB070 (flipping bit 14) is the MAC_DUAL_M1_M0 encoding with
+     * R=0, S=0 (src A), D=0 (dst A), XMOD1 XAR=AR5, YMOD0 YAR=AR2. */
+    {
+        const ti_c54x_decode_result mac_dual_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RPT_LK_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(mac_dual_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
+                           TI_C54X_OPCODE_ID_MAC_DUAL_M1_M0);
     }
 
     /* Flipping bit 2 lands on the CALL_PMAD sibling. */

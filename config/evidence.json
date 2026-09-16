@@ -6291,6 +6291,40 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3f is implemented and green: MACR Smem retires through the MAC_SMEM row with R=1, locked by TI MAC Example 5 (MACR *AR5+ with A 00 0000 1000, T 0400, mem 1234, FRCT 0 yields A 00 0049 0000) at the semantic leaf and at CPU retirement. No catalog, inventory, or production change was needed; the dual Xmem/Ymem MACR syntaxes stay deferred."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MAC",
+        "printed_page_start": "4-83",
+        "printed_page_end": "4-84"
+      },
+      "assertion": "MAC[R] syntax 2 is MAC[R] Xmem, Ymem, src [, dst] with opcode bits 15:11 10110 (R bit 10, S bit 9, D bit 8, X field 7:4, Y field 3:0), one program word, and execution (Xmem) x (Ymem) + (src) into dst (or src when dst is unspecified) with (Xmem) loaded into T in the read phase. The operation is affected by FRCT and OVM and affects OVdst. The R suffix rounds by adding 2^15 and clearing bits 15:0. Example 4 (MAC *AR5+, *AR6+, A, B with A 00 0000 1000, B 00 0000 0004, T 0008, FRCT 1, mem[0100] 5678, mem[0200] 1234) stores 00 0C4C 10C0 into B and loads T with 5678. Example 6 (MACR over the same state) stores 00 0C4C 0000 into B."
+    },
+    {
+      "id": "E-PROJECT-P3-S3G-MAC-DUAL-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3g is implemented and green: nine MAC_DUAL_Mx_My catalog rows at 0xB000|xm<<6|ym<<2 under mask 0xF8CC with the new RSD/XAR/YAR layout and UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y)+(src), and CPU retirement proving the TI Example 4/6-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B 00 0C4C 10C0 unrounded and 00 0C4C 0000 rounded, T 5678). The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI Example 4 uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MPY/MAS dual rows, and dual replay classification. The three-bit RSD carrier keeps the layout within the frozen trusted-operand capacity."
     }
   ],
   "requirements": [
@@ -14507,6 +14541,34 @@
       "test_ids": [
         "T-COMMON-P3-S3F-MACR-SMEM-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3G-MAC-DUAL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MAC Xmem,Ymem through the MAC_DUAL rows as (Xmem) x (Ymem) + (src) into dst with read-phase T load of the X-side word and R rounding per TI MAC Examples 4 and 6 at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3G-MAC-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3G-MAC-DUAL-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MAC Xmem,Ymem on the CPU per TI MAC Examples 4 and 6 with accumulator, T-register, AR post-update, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3G-MAC-DUAL-CPU"
+      ]
     }
   ],
   "tests": [
@@ -20890,6 +20952,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3F-MACR-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3G-MAC-DUAL-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3G-MAC-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3G-MAC-DUAL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mac_dual.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mac_dual"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3G-MAC-DUAL-CPU-RETIREMENT"
       ]
     }
   ]

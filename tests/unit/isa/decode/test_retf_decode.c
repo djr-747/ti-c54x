@@ -138,14 +138,15 @@ test_fixed_bit_near_misses(void)
      * clearing fixed bit 7 lands on the ADD_ACC_SHIFT sibling,
      * and clearing fixed bit 10 lands on the AND_ACC_SHIFT sibling
      * (all pinned below). Setting fixed bit 11 lands in the RC
-     * row (pinned below); all other fixed-bit flips must miss
-     * every row. */
+     * row (pinned below); setting fixed bit 14 lands on the P3-S3g
+     * MAC_DUAL_M2_M2 sibling (pinned below); all other fixed-bit
+     * flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0010), UINT16_C(0x0040),
         UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x8000)};
     const ti_c54x_decode_result cmpl_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RETF_VALUE ^ UINT16_C(0x0008)));
@@ -176,6 +177,19 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(rc_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(rc_sibling.id == TI_C54X_OPCODE_ID_RC);
+    }
+
+    /* 0xB49B (fixed bit 14 set) is the MAC_DUAL_M2_M2 encoding with
+     * R=1, S=0 (src A), D=0 (dst A), XMOD2 XAR=AR3, YMOD2 YAR=AR5. */
+    {
+        const ti_c54x_decode_result mac_dual_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETF_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(mac_dual_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
+                           TI_C54X_OPCODE_ID_MAC_DUAL_M2_M2);
     }
 
     for (size_t index = 0U;

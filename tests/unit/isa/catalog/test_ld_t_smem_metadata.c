@@ -80,11 +80,12 @@ test_exact_population(void)
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
-    /* These flip fixed bits, including bit 8; the low three ARF bits remain. */
+    /* These flip fixed bits, including bit 8; the low three ARF bits remain.
+     * Flipping bit 15 lands on the P3-S3g MAC_DUAL_M2_M0 sibling
+     * (0xB090: R=0, S=0, D=1, XMOD2 XAR=AR2, YMOD0 YAR=AR2). */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x4000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0800), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -96,6 +97,11 @@ test_fixed_bit_near_misses_are_unknown(void)
             ti_c54x_opcode_catalog_lookup_first_word(word) ==
             TI_C54X_OPCODE_ID_UNKNOWN);
     }
+
+    TI_C54X_TEST_CHECK(
+        ti_c54x_opcode_catalog_lookup_first_word(
+            (uint16_t)(LD_T_VALUE ^ UINT16_C(0x8000))) ==
+        TI_C54X_OPCODE_ID_MAC_DUAL_M2_M0);
 
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0030))) ==

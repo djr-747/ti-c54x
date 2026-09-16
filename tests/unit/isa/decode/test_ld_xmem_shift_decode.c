@@ -154,11 +154,26 @@ static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFE00 leaves D(8), XXXX(7:4), and SHFT(3:0) variable.
-     * Flipping any fixed bit 15:9 misses every catalog row. */
+     * Flipping fixed bit 13 lands on the P3-S3g MAC_DUAL_M0_M0
+     * sibling; all other fixed-bit 15:9 flips miss every catalog
+     * row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0200), UINT16_C(0x0400), UINT16_C(0x0800),
-        UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000),
+        UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
+
+    /* 0xB400 (fixed bit 13 set) is the MAC_DUAL_M0_M0 encoding with
+     * R=1, S=0 (src A), D=0 (dst A), XMOD0 XAR=AR2, YMOD0 YAR=AR2. */
+    {
+        const ti_c54x_decode_result mac_dual_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_XMEM_SHIFT_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(mac_dual_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
+                           TI_C54X_OPCODE_ID_MAC_DUAL_M0_M0);
+    }
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

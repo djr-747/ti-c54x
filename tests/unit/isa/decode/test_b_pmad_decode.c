@@ -158,13 +158,14 @@ test_fixed_bit_near_misses(void)
      * the W68 BD sibling, flipping fixed bit 7 lands on
      * SFTL_ACC, flipping fixed bit 6 lands on AND_IMMEDIATE_SHIFT,
      * flipping fixed bit 5 lands on XOR_IMMEDIATE_SHIFT, and flipping
-     * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16; all other fixed-bit
-     * flips must miss every row. */
+     * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16, and flipping
+     * fixed bit 14 lands on the P3-S3g MAC_DUAL_M1_M0 sibling; all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100),
         UINT16_C(0x0400), UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x8000)};
     const ti_c54x_decode_result bd_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0200)));
@@ -192,6 +193,13 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(and16_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(and16_sibling.id ==
                        TI_C54X_OPCODE_ID_AND_IMMEDIATE_SHIFT16);
+    /* 0xB073 (fixed bit 14 set) is the MAC_DUAL_M1_M0 encoding with
+     * R=0, S=0 (src A), D=0 (dst A), XMOD1 XAR=AR5, YMOD0 YAR=AR5. */
+    const ti_c54x_decode_result mac_dual_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x4000)));
+    TI_C54X_TEST_CHECK(mac_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(mac_dual_sibling.id == TI_C54X_OPCODE_ID_MAC_DUAL_M1_M0);
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);

@@ -2,8 +2,10 @@
  * Module contract
  *
  * Owns: the READY-path commit for one dual-indirect MOD0/MOD1/MOD2 WORD16
- * read pair. It stages the ordinary complete_dual effect and then publishes
- * both validated post-access AR commits and the sequential PC atomically.
+ * read pair. It stages the ordinary complete_dual effect, applies the
+ * read-phase X-side T load when the staged effect requests it, and then
+ * publishes both validated post-access AR commits and the sequential PC
+ * atomically.
  * Does not own: request preparation, endpoint issue/resume, pair lifecycle,
  * cancellation/reset, opcode semantics, address arithmetic, endpoint
  * storage, timing, CPU lifecycle, observers, diagnostics, allocation, I/O,
@@ -17,6 +19,7 @@
 #include <stdint.h>
 
 #include "sequencer/effect_transaction.h"
+#include "state/temporary/t_register.h"
 
 static ti_c54x_memory_instruction_status commit_architecture(
     ti_c54x_memory_instruction_transaction *transaction,
@@ -75,6 +78,25 @@ ti_c54x_memory_instruction_status ti_c54x_memory_instruction_dual_commit_ready(
             TI_C54X_EFFECT_TRANSACTION_OK) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    if (memory->load_t_with_read) {
+        /* Read-phase T load (MAC Xmem,Ymem): T takes the X-side word
+         * once the pair completion has committed. Staged on a
+         * candidate so a rejected write leaves live state
+         * untouched. */
+        ti_c54x_t_register_state t_candidate;
+
+        if (t_register == NULL) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        t_candidate = *t_register;
+        if (ti_c54x_t_register_write(&t_candidate, x_word) !=
+            TI_C54X_T_REGISTER_OK) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        *t_register = t_candidate;
     }
     /* Ordinary-effect staging succeeded after both reads: publish the address
      * updates and PC together with no further fallible step between them. */

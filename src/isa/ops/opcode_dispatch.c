@@ -67,6 +67,7 @@
 #include "logical/immediate/or/op_or.h"
 #include "logical/immediate/xor/op_xor.h"
 #include "memory/op_atomic_logical_memory.h"
+#include "multiply/op_mac_dual.h"
 #include "multiply/op_mac_smem.h"
 #include "multiply/op_mpy_smem.h"
 #include "multiply/op_mpya_smem.h"

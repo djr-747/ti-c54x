@@ -339,6 +339,34 @@ const ti_c54x_operand_layout_set
     ti_c54x_dual_destination_xar_yar_set = {
         ti_c54x_dual_destination_xar_yar_operands, UINT8_C(3)};
 
+/* Syntax-2 dual-memory MAC fields: combined RSD[10:8] (R rounding
+ * flag, S source select, D destination select), Xar[5:4], Yar[1:0].
+ * X/Y MOD bits [7:6]/[3:2] are fixed to one combination by the
+ * catalog mask and therefore are not exposed as operands. The
+ * three-bit RSD carrier keeps the layout within the frozen
+ * trusted-operand capacity. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_round_source_destination_xar_yar_rsd_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(3), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_round_source_destination_xar_yar_xar_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_round_source_destination_xar_yar_yar_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_dual_round_source_destination_xar_yar_operands[3] = {
+        {&ti_c54x_dual_round_source_destination_xar_yar_rsd_piece,
+         UINT8_C(1), UINT8_C(3)},
+        {&ti_c54x_dual_round_source_destination_xar_yar_xar_piece,
+         UINT8_C(1), UINT8_C(2)},
+        {&ti_c54x_dual_round_source_destination_xar_yar_yar_piece,
+         UINT8_C(1), UINT8_C(2)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_dual_round_source_destination_xar_yar_set = {
+        ti_c54x_dual_round_source_destination_xar_yar_operands,
+        UINT8_C(3)};
+
 /* Syntax-5 LD Xmem fields: D[8], Xmod[7:6], raw Xar[5:4], SHFT[3:0].
  * The handler maps the raw Xar field to AR2..AR5; decode exposes raw
  * bits exactly like the dual syntax-6 family. */
