@@ -6275,6 +6275,22 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3e is implemented and green: the MAS_SMEM catalog row at 0x2C00 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value SUBTRACT completion through the multiply core with result-after-subtract rounding (TI MAS Examples 1 and 3), CPU retirement, and the FORM-T2-04-14 SUBSET binding."
+    },
+    {
+      "id": "E-PROJECT-P3-S3F-MACR-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3f is implemented and green: MACR Smem retires through the MAC_SMEM row with R=1, locked by TI MAC Example 5 (MACR *AR5+ with A 00 0000 1000, T 0400, mem 1234, FRCT 0 yields A 00 0049 0000) at the semantic leaf and at CPU retirement. No catalog, inventory, or production change was needed; the dual Xmem/Ymem MACR syntaxes stay deferred."
     }
   ],
   "requirements": [
@@ -14463,6 +14479,34 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3F-MACR-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACR Smem through the MAC_SMEM row with R=1 as rounded accumulate into the selected destination per TI MAC Example 5 at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3F-MACR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3F-MACR-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACR Smem on the CPU per TI MAC Example 5 with accumulator and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3F-MACR-SMEM-CPU"
+      ]
     }
   ],
   "tests": [
@@ -20818,6 +20862,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3E-MAS-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3F-MACR-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3F-MACR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3F-MACR-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mac_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mac_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3F-MACR-SMEM-CPU-RETIREMENT"
       ]
     }
   ]

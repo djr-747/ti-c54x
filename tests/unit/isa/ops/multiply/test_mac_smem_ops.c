@@ -191,6 +191,31 @@ static void test_completion_selects_b_and_rounds(void)
                        UINT64_C(0x10000));
 }
 
+static void test_completion_macr_example5(void)
+{
+    /* 0x2A95: R=1, S=0, I=1, addr=0x15: MACR *AR5+ into A. */
+    ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0x2A95));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_op_effect next = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_mac_smem(&instruction, &input, &staged) ==
+                       TI_C54X_OP_STATUS_OK);
+    /* TI MAC Example 5: round(A + T*Smem) = round(0x48E000). */
+    TI_C54X_TEST_CHECK(staged.payload.memory.complete(
+                           &instruction, &input, UINT16_C(0x1234),
+                           &next) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(next.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(0));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x490000));
+    TI_C54X_TEST_CHECK(
+        next.payload.accumulator_write.status_delta
+            .destination_overflow_action ==
+        TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE);
+}
+
 static void test_null_rejects(void)
 {
     ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0x2834));
@@ -215,6 +240,7 @@ main(void)
     test_trusted_parity();
     test_completion_accumulates();
     test_completion_selects_b_and_rounds();
+    test_completion_macr_example5();
     test_null_rejects();
     return 0;
 }

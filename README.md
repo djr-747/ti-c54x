@@ -49,10 +49,11 @@ Current snapshot: P3-S3e complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows).
   (`FORM-T2-04-14`) reusing the shared layout with SUBTRACT completion
   and result-after-subtract rounding (TI MAS Examples 1 and 3 retire
   through the leaf).
-- Major remaining work is the `MACR` row in census order (plus `MPYA`
-  syntax 2 and dual `Xmem`/`Ymem` syntaxes), MMR/stack moves, bit/field
-  ops, shifts/misc, the port seam, far/XPC addressing, profiles/devices,
-  and evidenced machine timing. Emulator integration remains deferred.
+- Major remaining work is the `MACR`/`MASR` dual `Xmem`/`Ymem` syntaxes
+  (Smem forms retire through the `MAC`/`MAS` rows; `MPYA` syntax 2 also
+  waits), MMR/stack moves, bit/field ops, shifts/misc, the port seam,
+  far/XPC addressing, profiles/devices, and evidenced machine timing.
+  Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

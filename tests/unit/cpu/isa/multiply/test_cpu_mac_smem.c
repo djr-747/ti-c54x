@@ -130,11 +130,44 @@ test_rounded_b_destination(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
 }
 
+static void
+test_macr_example5_retires(void)
+{
+    /* TI MAC Example 5: MACR *AR5+ with A=0x1000, T=0x0400,
+     * mem[0x0100]=0x1234, FRCT=0: A=00 0049 0000, AR5=0x0101. */
+    ti_c54x_cpu_isa_memory_fixture fixture = {
+        .mode = TI_C54X_CPU_ISA_MEMORY_READY,
+        .program_word = UINT16_C(0x2A95),
+        .read_value_word = UINT16_C(0x1234),
+        .fault_status = TI_C54X_BUS_FAULT};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_error status;
+    ti_c54x_cpu *cpu =
+        init_mac(&fixture, storage, UINT16_C(0x0400), UINT64_C(0x1000),
+                 UINT64_C(0), &status);
+    ti_c54x_run_result result;
+    ti_c54x_state state;
+
+    (void)status;
+    ti_c54x_cpu_isa_seed_address(cpu, UINT8_C(5), UINT16_C(0x0100));
+    result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(fixture.requests[0].address_word == UINT16_C(0x0100));
+    TI_C54X_TEST_CHECK(cpu->arch_state.ar[5] == UINT16_C(0x0101));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) ==
+                       TI_C54X_ERROR_OK);
+    TI_C54X_TEST_CHECK(state.accumulator_a_raw40 == UINT64_C(0x490000));
+    TI_C54X_TEST_CHECK(state.accumulator_b_raw40 == UINT64_C(0));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
 int
 main(void)
 {
     test_direct_page0_retires();
     test_indirect_mod2_postincrements();
     test_rounded_b_destination();
+    test_macr_example5_retires();
     return 0;
 }

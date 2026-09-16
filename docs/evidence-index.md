@@ -403,6 +403,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S3D-MPYA-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MAS, `4-94`–`4-96` |
 | `E-PROJECT-P3-S3E-MAS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
+| `E-PROJECT-P3-S3F-MACR-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3: MAC/MPY datapath seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1068,6 +1069,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S3E-MAS-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96`, `E-TI-C54X-SPRU131G-T4-2-OVM-P4-5`, `E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9`, `E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12` | `T-COMMON-P3-S3E-MAS-SMEM-SEMANTICS` |
 | `REQ-COMMON-P3-S3E-MAS-SMEM-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96` | `T-COMMON-P3-S3E-MAS-SMEM-CPU` |
 | `REQ-PROJECT-P3-S3E-MAS-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S3-PLAN-ANCHOR`, `E-PROJECT-P3-S3E-MAS-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-COMMON-P3-S3F-MACR-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83` | `T-COMMON-P3-S3F-MACR-SMEM-SEMANTICS` |
+| `REQ-COMMON-P3-S3F-MACR-SMEM-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83` | `T-COMMON-P3-S3F-MACR-SMEM-CPU` |
 
 ## Tests
 
@@ -1522,6 +1525,8 @@ exist in the repository.
 | `T-COMMON-P3-S3E-MAS-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_mas_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_decode"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-DECODE` |
 | `T-COMMON-P3-S3E-MAS-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mas_smem_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_ops"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-EFFECTS` |
 | `T-COMMON-P3-S3E-MAS-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mas_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mas_smem"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-CPU-RETIREMENT` |
+| `T-COMMON-P3-S3F-MACR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mac_smem_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mac_smem_ops"}` | `REQ-COMMON-P3-S3F-MACR-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S3F-MACR-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mac_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mac_smem"}` | `REQ-COMMON-P3-S3F-MACR-SMEM-CPU-RETIREMENT` |
 | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_indirect_addr7_layout.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_addr7_layout"}` | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` |
 | `T-PROJECT-P3-S3D-T-LOAD-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_commit"}` | `REQ-PROJECT-P3-S3D-MPYA-T-LOAD` |
 
