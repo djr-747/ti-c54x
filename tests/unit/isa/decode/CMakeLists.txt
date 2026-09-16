@@ -89,6 +89,7 @@ ti_c54x_add_unit_test(mac_smem_decode test_mac_smem_decode.c)
 ti_c54x_add_unit_test(mpy_smem_decode test_mpy_smem_decode.c)
 ti_c54x_add_unit_test(indirect_addr7_layout test_indirect_addr7_layout.c)
 ti_c54x_add_unit_test(mpya_smem_decode test_mpya_smem_decode.c)
+ti_c54x_add_unit_test(mas_smem_decode test_mas_smem_decode.c)
 # W78 RED contract: RCD decode.
 ti_c54x_add_unit_test(rcd_decode test_rcd_decode.c)
 # W67B RED contract: RETD decode with near-miss audit.

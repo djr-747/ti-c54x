@@ -70,6 +70,7 @@
 #include "multiply/op_mac_smem.h"
 #include "multiply/op_mpy_smem.h"
 #include "multiply/op_mpya_smem.h"
+#include "multiply/op_mas_smem.h"
 
 /* The catalog handler token remains part of the X-macro consumer contract:
  * ti_c54x_op_##handler is the canonical semantic binding spelling. */

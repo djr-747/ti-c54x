@@ -163,13 +163,14 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the Sind byte
      * variable. Setting fixed bit 9 lands on the deferred BANZD
-     * word (pinned UNKNOWN above) and setting fixed bit 15 lands
-     * on the RPT_K row (pinned below); all other fixed-bit flips
-     * must miss every row. */
+     * word (pinned UNKNOWN above), setting fixed bit 14 lands on
+     * the MAS_SMEM row (pinned below), and setting fixed bit 15
+     * lands on the RPT_K row (pinned below); all other fixed-bit
+     * flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0100),
         UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x4000)};
+        UINT16_C(0x2000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -191,6 +192,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(rpt_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(rpt_sibling.id == TI_C54X_OPCODE_ID_RPT_K);
+    }
+
+    /* Setting fixed bit 14 lands on the P3-S3e MAS Smem row:
+     * 0x6C00 ^ 0x4000 = 0x2C00 classifies as MAS_SMEM. */
+    {
+        const ti_c54x_decode_result mas_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZ_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(mas_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mas_sibling.id == TI_C54X_OPCODE_ID_MAS_SMEM);
     }
 }
 

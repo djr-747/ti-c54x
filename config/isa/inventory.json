@@ -632,9 +632,11 @@
       "table_ordinal": 14,
       "mnemonic": "MAS",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAS_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-15",
@@ -3532,6 +3534,12 @@
     {
       "catalog_symbol": "MPYA_SMEM",
       "form_id": "FORM-T2-03-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MAS_SMEM",
+      "form_id": "FORM-T2-04-14",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }
