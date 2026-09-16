@@ -9625,3 +9625,55 @@ rewritten after publication.
   committed file is 269 lines. The split conclusion is
   unaffected (well under triggers), and no other S3b figure
   changes.
+
+## 2026-09-16 — P3-S3c MPY Smem row slice (slice 11)
+
+- Commit `828e45f` lands the `MPY` Smem row (`FORM-T2-03-01`)
+  on the S3a seam: `MPY_SMEM` at `0x2000` under mask `0xFC00`
+  (1024 encodings, one program word) reusing the shared
+  `ROUND_SELECT_INDIRECT_ADDR7` layout, `ELIGIBLE`
+  repeatability by the Table 2-28 omission pin, and the
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM` inputs. Checked
+  and trusted `op_mpy_smem` leaves stage direct page-0 and
+  standard-indirect MOD0–MOD3 reads, defer exotic modes as
+  `INVALID_OPERAND`, and complete the read value through the
+  multiply core `STORE` path into an accumulator write with
+  `OVdst` disposition and no accumulation.
+- Four RED lanes green (`ti_c54x.mpy_smem_metadata`,
+  `ti_c54x.mpy_smem_decode`, `ti_c54x.mpy_smem_ops`,
+  `ti_c54x.cpu_mpy_smem`); registry adds 1 evidence, 5
+  requirements, 4 test records (351/550/437). The ops lane
+  retires the independent TI oracles: MPY Example 4
+  (`T` = `0x1234`, Smem = `0x5678`, `MPYR` stores
+  `00 0626 0000`) and Example 1 (`T` = 6, Smem = 7,
+  `FRCT` = 1 stores 84). No dedicated `RPT MPY` replay
+  lane: `ELIGIBLE` replay is proven generically by the S3b
+  `RPT MAC` test plus the catalog-wide admission sweep.
+- Validation is GREEN: full CMake CTest 422/422; `make
+  test` exits 0 with no failures; ASan/UBSan `make test`
+  exits 0 with no failures; evidence registry, ISA
+  inventory, source-boundary, opcode-lookup `--check`, and
+  `git diff --check` pass. No knob was added or changed.
+  Coverage 66/205 (32.195%), strict 33/205; 166 bindings,
+  167 rows, 9,925 lookup entries.
+- Decisions: the `STORE` completion passes
+  `accumulator_known = false` with a zeroed raw40 (the core
+  ignores both on the `STORE` path), and the leaf drops the
+  destination-knownness gate — pinned by a dedicated
+  unknown-accumulator-tolerated test that distinguishes
+  `MPY` from `MAC`. The `LD_T` fixed-bit `0x1000` flip
+  (`0x3090` → `0x2090`) now lands in the `MPY` row, so both
+  `LD_T` near-miss loops carve it out as the named P3-S3c
+  sibling after the file-local `MOD6`/`MOD8`/`MOD10`
+  precedent. Neighbor pins move to ID 167, 166
+  bindings/rows, 9,925 entries, 66/205 with 32.195%,
+  including the frozen `SUBSET` set (plus `MPY_SMEM`) and
+  the addressing token. The `README` snapshot was stale
+  since S3a, so it now records S3b (`ELIGIBLE` plus `RPT
+  MAC` replay) and S3c through the live numbers.
+- Split review: `op_mpy_smem.c` is 254 lines and
+  `op_mpy_smem.h` is 46 lines; no split required. Test
+  files are exempt.
+- Follow-up work: `MPYA`/`MAS`/`MACR` in census order;
+  deferred exotic indirect modes, `MACA`/`MACD`/`MACP`,
+  dual `#lk` words, and far/XPC/timing.
