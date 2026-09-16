@@ -6325,6 +6325,22 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3g is implemented and green: nine MAC_DUAL_Mx_My catalog rows at 0xB000|xm<<6|ym<<2 under mask 0xF8CC with the new RSD/XAR/YAR layout and UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y)+(src), and CPU retirement proving the TI Example 4/6-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B 00 0C4C 10C0 unrounded and 00 0C4C 0000 rounded, T 5678). The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI Example 4 uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MPY/MAS dual rows, and dual replay classification. The three-bit RSD carrier keeps the layout within the frozen trusted-operand capacity."
+    },
+    {
+      "id": "E-PROJECT-P3-S3H-MPY-DUAL-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3h is implemented and green: nine MPY_DUAL_Mx_My catalog rows at 0xA400|xm<<6|ym<<2 under mask 0xFECC reusing the DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y) with STORE overwrite, and CPU retirement proving TI MPY Example 2 (X 0010 at AR2 01FF, Y 0002 at AR4 0300, B before FF FFFF FFE0, FRCT 0 yield B 00 0000 0020, T 0010, AR2 01FE, AR4 0301). Syntax 2 carries no R bit, so MPYR stays a syntax-1 row sharing; MOD3 neighborhoods, MAS dual rows, and dual replay classification stay deferred."
     }
   ],
   "requirements": [
@@ -14569,6 +14585,34 @@
       "test_ids": [
         "T-COMMON-P3-S3G-MAC-DUAL-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3H-MPY-DUAL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MPY Xmem,Ymem through the MPY_DUAL rows as (Xmem) x (Ymem) stored into dst with read-phase T load of the X-side word per TI MPY Example 2 at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3H-MPY-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3H-MPY-DUAL-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MPY Xmem,Ymem on the CPU per TI MPY Example 2 with accumulator, T-register, AR post-updates, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3H-MPY-DUAL-CPU"
+      ]
     }
   ],
   "tests": [
@@ -20980,6 +21024,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3G-MAC-DUAL-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3H-MPY-DUAL-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpy_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3H-MPY-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3H-MPY-DUAL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mpy_dual.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mpy_dual"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3H-MPY-DUAL-CPU-RETIREMENT"
       ]
     }
   ]

@@ -20,11 +20,11 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3g complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
-`MAC` dual `Xmem`,`Ymem`).
+Current snapshot: P3-S3h complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
+`MAC`/`MPY` dual `Xmem`,`Ymem`).
 
-- 178 runnable catalog rows under 12,357 populated first-word lookup entries.
-  Inventory coverage is 69/205 forms SUBSET-or-better (33.659%) and 33/205
+- 187 runnable catalog rows under 12,645 populated first-word lookup entries.
+  Inventory coverage is 70/205 forms SUBSET-or-better (34.146%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -53,12 +53,15 @@ Current snapshot: P3-S3g complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
   (`FORM-T2-04-04`, nine MOD0–MOD2 combinations) with a combined
   RSD/XAR/YAR layout, read-phase T load of the X-side word, and
   `(Xmem)`x`(Ymem)`+`(src)` completion (TI MAC Examples 4 and 6
-  retire through the leaf with AR2–AR5 dual addressing).
-- Major remaining work is the `MPY`/`MAS` dual `Xmem`/`Ymem` rows (the
-  `MACR`/`MASR` R variants share the dual row encodings; `MPYA`
-  syntax 2 also waits), MMR/stack moves, bit/field ops, shifts/misc,
-  the port seam, far/XPC addressing, profiles/devices, and evidenced
-  machine timing. Emulator integration remains deferred.
+  retire through the leaf with AR2–AR5 dual addressing). S3h lands
+  the `MPY` dual `Xmem`,`Ymem` rows (`FORM-T2-03-03`, nine MOD0–MOD2
+  combinations) reusing the shared dual layout with STORE overwrite
+  and read-phase T load (TI MPY Example 2 retires through the leaf).
+- Major remaining work is the `MAS` dual `Xmem`/`Ymem` rows (the `R`
+  variants share the dual row encodings; `MPYA` syntax 2 also waits),
+  MMR/stack moves, bit/field ops, shifts/misc, the port seam,
+  far/XPC addressing, profiles/devices, and evidenced machine timing.
+  Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.

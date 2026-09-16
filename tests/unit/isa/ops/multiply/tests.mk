@@ -7,3 +7,4 @@ $(eval $(call ti_c54x_add_test,mpy_smem_ops,isa/ops/multiply,test_mpy_smem_ops.c
 $(eval $(call ti_c54x_add_test,mpya_smem_ops,isa/ops/multiply,test_mpya_smem_ops.c))
 $(eval $(call ti_c54x_add_test,mas_smem_ops,isa/ops/multiply,test_mas_smem_ops.c))
 $(eval $(call ti_c54x_add_test,mac_dual_ops,isa/ops/multiply,test_mac_dual_ops.c))
+$(eval $(call ti_c54x_add_test,mpy_dual_ops,isa/ops/multiply,test_mpy_dual_ops.c))

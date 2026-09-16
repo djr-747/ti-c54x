@@ -49,6 +49,9 @@ DUAL_ARITHMETIC_SUBSET = {
 MAC_DUAL_SUBSET = {
     f"MAC_DUAL_M{x}_M{y}" for x in range(3) for y in range(3)
 }
+MPY_DUAL_SUBSET = {
+    f"MPY_DUAL_M{x}_M{y}" for x in range(3) for y in range(3)
+}
 
 
 class InventoryCatalogBindingTests(unittest.TestCase):
@@ -63,16 +66,17 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 177)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 177)
+        self.assertEqual(len(bindings), 186)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 186)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 144)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 153)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
             | {f"{symbol}_MOD{mode}" for symbol in STANDARD_INDIRECT_SUBSET for mode in (4, 5, 6, 7, 8, 10)}
             | ATOMIC_LOGICAL_SUBSET
             | MAC_DUAL_SUBSET
+            | MPY_DUAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
             | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM"},
@@ -82,7 +86,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                 self.assertEqual(binding["addressing_subset"], "ALL")
             elif binding["catalog_symbol"] in {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}:
                 self.assertEqual(binding["addressing_subset"], "LONG_OFFSET_MOD13_CMPT0")
-            elif binding["catalog_symbol"] in DUAL_ARITHMETIC_SUBSET | MAC_DUAL_SUBSET:
+            elif binding["catalog_symbol"] in DUAL_ARITHMETIC_SUBSET | MAC_DUAL_SUBSET | MPY_DUAL_SUBSET:
                 symbol = binding["catalog_symbol"]
                 if symbol.endswith("_MOD0"):
                     self.assertEqual(binding["addressing_subset"], "DUAL_INDIRECT_MOD0_MOD0")
