@@ -204,7 +204,7 @@ y/205); populated-first-word lookup counts are never ISA coverage.
 | 2 | `XC` conditional execution | 1 tail | Catalog, decode, effect, CPU, inventory binding |
 | 3 | Far branches `FB`/`FCALL` (plus `FBD`/`FRET` if evidenced) | 1 tail | Same four-contract shape |
 | 4 | Accumulator-addressed `BACC`/`CALA` (plus `BACCD`/`CALAD` if evidenced) | 1 tail | Same four-contract shape |
-| 5 | `RCD` delayed conditional return | 1 tail | Same shape over the delayed-return seam |
+| 5 | `RC`/`RCD` conditional returns | 1 tail | Same shape over the delayed-return seam |
 | 6 | MMR/device routing seam, no catalog rows | prerequisite | Sealed seam with RED contracts, W43A pattern |
 | 7 | `STM` MMR store (4,260 static words) | 2 | Four contracts over the slice-6 seam |
 | 8 | `STH` plus `STLM` status stores | 2 | Same shape |
@@ -212,6 +212,36 @@ y/205); populated-first-word lookup counts are never ISA coverage.
 | 10 | MAC/MPY datapath seam plus `MAC`/`MPY` first | 4 | Seam plus first families; `MPYA`/`MAS`/`MACR` follow |
 | 11 | MMR/stack moves in static-count order | 5 | Family slices over the slice-6 seam |
 | 12 | Bit/field ops, shifts/misc, port seam | 6–8 | Closes the census tail; ports get a seam-first treatment |
+
+### P3 denominator audit (closed 2026-09-16)
+
+Tables 2-12 through 2-16 hold 24 family forms and no
+delayed-variant row (Table 2-12, for example, is exactly
+B/BACC/BANZ/BC/FB/FBACC), so the 205-form denominator needs
+no expansion for delayed variants: the seven implemented
+delayed rows (`BD`, `BCD`, `BANZD`, `CALLD`, `CCD`, `RETD`,
+`RETED`) already share their family form through a `_DELAYED`
+addressing-subset token, and every future delayed row
+(`RPTBD` under `FORM-T2-16-04`, `FBD` under `FORM-T2-12-05`,
+`RETFD` under `FORM-T2-15-06`, `BACCD` under `FORM-T2-12-02`,
+`CALAD` under `FORM-T2-13-01`, `RCD` under `FORM-T2-15-03`)
+composes the same way. The contract
+`test_inventory_delayed_family_binding.py` locks this: any
+delayed-only form ID fails the gate before it can move the
+denominator. Branch readiness is therefore measurable as
+family coverage over the 24 branch/repeat rows, currently
+8/24 `SUBSET` (`B`, `BANZ`, `BC`, `CALL`, `CC`, `RET`,
+`RETE`, `RETF`).
+
+Correction to the 2026-09-11 wave-1 audit entry: `RC`
+(`FORM-T2-15-03`, Table 2-15) is the conditional-return
+instruction, not a repeat-counter reference — it parallels
+the `BC`/`BCD` branch and `CC`/`CCD` call pairs with its
+delayed companion `RCD`. The census count of 251 `RC` words
+moves from wave 3 (repeat machinery) to the wave-1 tail, and
+slice 5 above covers `RC`/`RCD` together. `XC`
+(`FORM-T2-18-07`) stays wave-1 tail by control-flow
+ownership, not by table neighborhood.
 
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
