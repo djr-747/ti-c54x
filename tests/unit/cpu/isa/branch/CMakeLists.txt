@@ -23,6 +23,8 @@ ti_c54x_add_unit_test(cpu_reted test_cpu_reted.c)
 ti_c54x_add_unit_test(cpu_retf test_cpu_retf.c)
 # W77 RED contract: RC CPU retirement.
 ti_c54x_add_unit_test(cpu_rc test_cpu_rc.c)
+# W78 RED contract: RCD CPU retirement.
+ti_c54x_add_unit_test(cpu_rcd test_cpu_rcd.c)
 # W67B RED contract: RETD CPU retirement.
 ti_c54x_add_unit_test(cpu_retd test_cpu_retd.c)
 # W67C RED contract: CALLD CPU retirement.

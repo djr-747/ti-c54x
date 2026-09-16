@@ -20,6 +20,7 @@ EXPECTED_DELAYED = {
     "CCD": "FORM-T2-13-03",
     "RETD": "FORM-T2-15-04",
     "RETED": "FORM-T2-15-05",
+    "RCD": "FORM-T2-15-03",
 }
 
 

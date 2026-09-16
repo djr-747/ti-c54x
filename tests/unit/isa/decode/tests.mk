@@ -72,6 +72,8 @@ $(eval $(call ti_c54x_add_test,reted_decode,isa/decode,test_reted_decode.c))
 $(eval $(call ti_c54x_add_test,retf_decode,isa/decode,test_retf_decode.c))
 # W77 RED contract: RC decode.
 $(eval $(call ti_c54x_add_test,rc_decode,isa/decode,test_rc_decode.c))
+# W78 RED contract: RCD decode.
+$(eval $(call ti_c54x_add_test,rcd_decode,isa/decode,test_rcd_decode.c))
 $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))
 # W67B RED contract: RETD decode.
 $(eval $(call ti_c54x_add_test,retd_decode,isa/decode,test_retd_decode.c))

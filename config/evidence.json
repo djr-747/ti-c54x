@@ -5833,6 +5833,92 @@
         "anchor": "P2-W77: RC conditional-return vertical slice (planned)"
       },
       "assertion": "W77 is implemented and green: the RC catalog row, BRANCH_COND8 decode, pure taken-pop/not-taken-NONE handler, trusted dispatch binding, CPU retirement proofs, and SUBSET inventory binding are executable through the four RED contracts with the authoritative standalone gates passing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RCD-OPCODE-P4-133",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RC[D]",
+        "printed_page_start": "4-133",
+        "printed_page_end": "4-133"
+      },
+      "assertion": "The RC[D] description defines syntax RC[D] cond with one 8-bit condition field as a one-word form: opcode bits 1111_11Z0_CCCC_CCCC with the delayed flag in bit 9, giving first-word value 0xFC00 under mask 0xFF00 for the non-delayed RC variant with 256 encodings. Z=1 selects the delayed RCD variant, which stays deferred. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RCD-SEMANTICS-P4-133",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RC[D]",
+        "printed_page_start": "4-133",
+        "printed_page_end": "4-134"
+      },
+      "assertion": "When the given conditions are met, RC replaces PC with the data-memory value from TOS and increments SP by 1; otherwise only PC advances by 1. No status-bit effects are claimed. Delay slots do not affect the tested conditions."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RCD-NONREPEATABLE-P4-134",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RC[D]",
+        "printed_page_start": "4-134",
+        "printed_page_end": "4-134"
+      },
+      "assertion": "The RC[D] description carries an explicit not-repeatable note, so the RCD row is repeatability INELIGIBLE without further evidence."
+    },
+    {
+      "id": "E-PROJECT-P2-W78-RCD-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W78: RCD delayed-conditional-return vertical slice (planned)"
+      },
+      "assertion": "W78 is the planned RC vertical slice: one Table 2-15 row under FORM-T2-15-03 at first-word value 0xFC00 under mask 0xFF00 with one program word, 256 encodings, and the 1-word BRANCH_COND8 layout with ACCUMULATORS_STATUS_C_TC_STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf evaluating the sixteen image-evidenced single conditions and staging a MEMORY STACK_POP READ when taken versus NONE when not taken; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route for taken pops and the generic sequential route for not-taken form; and FORM-T2-15-03 inventory at SUBSET with the RC symbol. The 0xFC00 word keeps its RET identity under the W78A shadow seam. No knob, effect-kind, timing, device, or ABI claim is admitted."
+    },
+    {
+      "id": "E-PROJECT-P2-W78-RCD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P2-W78: RCD delayed-conditional-return vertical slice (planned)"
+      },
+      "assertion": "W78 is implemented and green: the RC catalog row, BRANCH_COND8 decode, pure taken-pop/not-taken-NONE handler, trusted dispatch binding, CPU retirement proofs, and SUBSET inventory binding are executable through the four RED contracts with the authoritative standalone gates passing."
     }
   ],
   "requirements": [
@@ -13268,6 +13354,94 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P2-W78-RCD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the RCD row at first-word value 0xFC00 under mask 0xFF00 with one program word, 256 encodings, and the BRANCH_COND8 layout with ACCUMULATORS_STATUS_C_TC_STACK_POINTER inputs and INELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RCD-OPCODE-P4-133"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W78-RCD-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P2-W78-RCD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the RC 8-bit condition operand from bits 7:0 of the single first word through the BRANCH_COND8 layout with checked operand extraction.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RCD-OPCODE-P4-133"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W78-RCD-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P2-W78-RCD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Evaluate the sixteen image-evidenced single conditions through the shared condition seam, staging a MEMORY STACK_POP READ gated on known SP when taken and NONE when not taken, with no status-bit effects and transactional rejection of deferred conditions.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RCD-SEMANTICS-P4-133",
+        "E-TI-C54X-SPRU172C-S4-RCD-NONREPEATABLE-P4-134"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W78-RCD-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the RCD catalog row through the generic trusted dispatch seam with single-pass operand extraction and no opcode-specific CPU branch.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W78-RCD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W78-RCD-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-TRUSTED-OPCODE-BINDING"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W78-RCD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire taken RC through the unchanged MEMORY pop route with TOS capture and SP commit, and not-taken RC through the generic sequential route with no endpoint traffic, preserving all other architectural state.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W78-RCD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W78-RCD-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P2-W78-RCD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P2-W78-RCD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the RC production symbol to FORM-T2-15-03 at SUBSET under the shared STACK_POP_NONDELAYED addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P2-W78-RCD-PLAN-ANCHOR",
+        "E-PROJECT-P2-W78-RCD-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -15601,7 +15775,8 @@
         "REQ-PROJECT-P2-W73-CC-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W74-RETE-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W75-RETED-TRUSTED-BINDING",
-        "REQ-PROJECT-P2-W77-RC-TRUSTED-BINDING"
+        "REQ-PROJECT-P2-W77-RC-TRUSTED-BINDING",
+        "REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING"
       ]
     },
     {
@@ -16437,7 +16612,8 @@
         "REQ-PROJECT-P2-W73-CC-INVENTORY",
         "REQ-PROJECT-P2-W74-RETE-INVENTORY",
         "REQ-PROJECT-P2-W75-RETED-INVENTORY",
-        "REQ-PROJECT-P2-W77-RC-INVENTORY"
+        "REQ-PROJECT-P2-W77-RC-INVENTORY",
+        "REQ-PROJECT-P2-W78-RCD-INVENTORY"
       ]
     },
     {
@@ -19039,6 +19215,62 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P2-W77-RC-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P2-W78-RCD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_rcd_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rcd_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P2-W78-RCD-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P2-W78-RCD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rcd_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rcd_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P2-W78-RCD-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P2-W78-RCD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_rcd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rcd"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P2-W78-RCD-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P2-W78-RCD-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_rcd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_rcd"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P2-W78-RCD-CPU-RETIREMENT"
       ]
     }
   ]

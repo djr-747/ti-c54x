@@ -12,6 +12,7 @@ ti_c54x_core_sources += src/isa/ops/branch/op_b_pmad.c \
     src/isa/ops/branch/op_calld.c \
     src/isa/ops/branch/op_cc.c \
     src/isa/ops/branch/op_rc.c \
+    src/isa/ops/branch/op_rcd.c \
     src/isa/ops/branch/op_ret.c \
     src/isa/ops/branch/op_retd.c \
     src/isa/ops/branch/op_rete.c \

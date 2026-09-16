@@ -1469,7 +1469,8 @@
       "scope": "UNRESOLVED",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "RC"
+        "RC",
+        "RCD"
       ]
     },
     {
@@ -3097,6 +3098,7 @@
     {"catalog_symbol": "RETE", "form_id": "FORM-T2-15-05", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},
     {"catalog_symbol": "RETED", "form_id": "FORM-T2-15-05", "coverage": "SUBSET", "addressing_subset": "STACK_POP_DELAYED"},
     {"catalog_symbol": "RETF", "form_id": "FORM-T2-15-06", "coverage": "SUBSET", "addressing_subset": "RTN_POP_NONDELAYED"},
-    {"catalog_symbol": "RC", "form_id": "FORM-T2-15-03", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"}
+    {"catalog_symbol": "RC", "form_id": "FORM-T2-15-03", "coverage": "SUBSET", "addressing_subset": "STACK_POP_NONDELAYED"},
+    {"catalog_symbol": "RCD", "form_id": "FORM-T2-15-03", "coverage": "SUBSET", "addressing_subset": "STACK_POP_DELAYED"}
   ]
 }
