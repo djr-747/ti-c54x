@@ -6157,6 +6157,40 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3a is implemented and green: the pure multiply-accumulate core proves the TI MAC and MPY example vectors, FRCT shift, R rounding, OVM saturation with OVdst disposition, MAS subtraction, STORE accumulator independence, and transactional unknown/invalid stops; the STATUS_FRCT input resource carries ST1.FRCT with canonical unknownness beside FRCT/OVM selection; no catalog row lands."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "2",
+        "section": "Instruction Set Summary",
+        "printed_page_start": "2-20",
+        "printed_page_end": "2-21"
+      },
+      "assertion": "Table 2-28 enumerates the nonrepeatable instructions from ADDM through XORM across pp. 2-20 and 2-21 with no MAC, MPY, MAS, MPYA, MPYU, SQUR, or SQURA entry, so the single-word MAC Smem syntaxes are repeatable by omission and admissible as single-repeat bodies."
+    },
+    {
+      "id": "E-PROJECT-P3-S3B-MAC-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3b is implemented and green: the MAC_SMEM catalog row at 0x2800 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value completion through the multiply core, CPU retirement, the FORM-T2-04-01 SUBSET binding, and RPT-MAC end-to-end replay through the retirement-tail HOLD wiring."
     }
   ],
   "requirements": [
@@ -14000,6 +14034,96 @@
       "test_ids": [
         "T-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3B-MAC-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the MAC_SMEM row at first-word value 0x2800 under mask 0xFC00 with one program word, 1024 encodings, the ROUND_SELECT_INDIRECT_ADDR7 layout, ELIGIBLE repeatability by the Table 2-28 omission, and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3B-MAC-SMEM-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3B-MAC-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the round, select, indirect, and addr7 fields of the one-word MAC_SMEM bundle through the ROUND_SELECT_INDIRECT_ADDR7 layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3B-MAC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3B-MAC-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Evaluate MAC Smem into a memory-read effect for direct page-0 and standard-indirect MOD0-MOD3 addresses with exotic modes deferred, and complete the read value through the multiply core into an accumulator write with OVdst disposition; NULL inputs reject and unknown inputs stop.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83",
+        "E-TI-C54X-SPRU131G-T4-2-OVM-P4-5",
+        "E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9",
+        "E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3B-MAC-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3B-MAC-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MAC Smem on the CPU with direct and post-increment indirect reads, accumulator and overflow commit, and transactional stops.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-P4-81-4-83"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3B-MAC-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3B-MAC-ELIGIBLE-REPLAY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Classify MAC_SMEM ELIGIBLE by the Table 2-28 omission, admit it at the ACTIVE predecode gate, and replay repeated bodies through the retirement-tail HOLD wiring with RC countdown, per-iteration accumulation, terminal ADVANCE, and body-PC latch lifecycle.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3B-MAC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3B-MAC-REPLAY"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3B-MAC-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MAC_SMEM catalog row to FORM-T2-04-01 at SUBSET coverage over direct page-0 and standard-indirect MOD0-MOD3 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3B-MAC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -17175,7 +17299,8 @@
         "REQ-PROJECT-P2-W77-RC-INVENTORY",
         "REQ-PROJECT-P2-W78-RCD-INVENTORY",
         "REQ-PROJECT-P3-S7-STM-INVENTORY",
-        "REQ-PROJECT-P3-S2-RPT-INVENTORY"
+        "REQ-PROJECT-P3-S2-RPT-INVENTORY",
+        "REQ-PROJECT-P3-S3B-MAC-INVENTORY"
       ]
     },
     {
@@ -20085,6 +20210,76 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3-FR-CT-INPUT-RESOURCE-CARRIER"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3B-MAC-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mac_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3B-MAC-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3B-MAC-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mac_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3B-MAC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3B-MAC-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3B-MAC-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3B-MAC-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mac_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mac_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3B-MAC-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3B-MAC-REPLAY",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/repeat/test_cpu_rpt_mac_replay.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_rpt_mac_replay"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3B-MAC-ELIGIBLE-REPLAY"
       ]
     }
   ]

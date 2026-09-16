@@ -92,6 +92,9 @@ typedef enum ti_c54x_operand_layout_id {
     /* Two-word direct store with copied indirect flag, 7-bit direct
      * address, and 16-bit extension. */
     TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16,
+    /* One-word multiply fields: rounding flag, accumulator select,
+     * indirect flag, and 7-bit Smem address. */
+    TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

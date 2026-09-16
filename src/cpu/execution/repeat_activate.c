@@ -37,7 +37,42 @@ ti_c54x_cpu_repeat_route_status ti_c54x_cpu_repeat_route(
         return TI_C54X_CPU_REPEAT_ROUTE_REJECTED;
     }
     cpu->arch_state.pc_word = candidate_pc;
+    cpu->repeat_body_pc_word = candidate_pc;
     return TI_C54X_CPU_REPEAT_ROUTE_RETIRED;
+}
+
+ti_c54x_cpu_repeat_retire_step ti_c54x_cpu_repeat_body_retired(
+    ti_c54x_cpu *cpu)
+{
+    ti_c54x_repeat_single_retired_action action =
+        TI_C54X_REPEAT_SINGLE_RETIRED_ACTION_INVALID;
+    ti_c54x_repeat_progress_status status;
+
+    if (cpu == NULL) {
+        return TI_C54X_CPU_REPEAT_RETIRE_INVALID;
+    }
+    if (cpu->repeat_progress.phase !=
+        TI_C54X_REPEAT_PROGRESS_PHASE_ACTIVE) {
+        return TI_C54X_CPU_REPEAT_RETIRE_ADVANCE;
+    }
+    status = ti_c54x_repeat_single_body_retired(
+        &cpu->repeat_progress, &cpu->arch_state, &action);
+    if (status == TI_C54X_REPEAT_PROGRESS_COMPLETE) {
+        cpu->repeat_body_pc_word = UINT32_C(0);
+        return TI_C54X_CPU_REPEAT_RETIRE_ADVANCE;
+    }
+    if (status != TI_C54X_REPEAT_PROGRESS_OK) {
+        return TI_C54X_CPU_REPEAT_RETIRE_INVALID;
+    }
+    if (action == TI_C54X_REPEAT_SINGLE_RETIRED_ACTION_HOLD) {
+        cpu->arch_state.pc_word = cpu->repeat_body_pc_word;
+        return TI_C54X_CPU_REPEAT_RETIRE_HOLD;
+    }
+    if (action == TI_C54X_REPEAT_SINGLE_RETIRED_ACTION_ADVANCE) {
+        cpu->repeat_body_pc_word = UINT32_C(0);
+        return TI_C54X_CPU_REPEAT_RETIRE_ADVANCE;
+    }
+    return TI_C54X_CPU_REPEAT_RETIRE_INVALID;
 }
 
 bool ti_c54x_cpu_repeat_predecode_blocks(

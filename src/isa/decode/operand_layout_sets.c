@@ -465,3 +465,30 @@ static const ti_c54x_operand_field_layout
          UINT8_C(16)}};
 const ti_c54x_operand_layout_set ti_c54x_direct7_extension16_set = {
     ti_c54x_direct7_extension16_operands, UINT8_C(3)};
+
+/* MAC/MPY Smem fields: rounding flag R[9:9], accumulator select
+ * S/D[8:8], indirect flag I[7:7], then 7-bit Smem address A[6:0]. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_select_indirect_addr7_round_piece = {
+        UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_select_indirect_addr7_select_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_select_indirect_addr7_indirect_piece = {
+        UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_select_indirect_addr7_address_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_round_select_indirect_addr7_operands[4] = {
+        {&ti_c54x_round_select_indirect_addr7_round_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_round_select_indirect_addr7_select_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_round_select_indirect_addr7_indirect_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_round_select_indirect_addr7_address_piece, UINT8_C(1),
+         UINT8_C(7)}};
+const ti_c54x_operand_layout_set ti_c54x_round_select_indirect_addr7_set = {
+    ti_c54x_round_select_indirect_addr7_operands, UINT8_C(4)};

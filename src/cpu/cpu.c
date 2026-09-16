@@ -151,6 +151,7 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     }
     cpu->repeat_progress = (ti_c54x_repeat_progress){0};
     cpu->repeat_pending = (ti_c54x_repeat_pending_request){0};
+    cpu->repeat_body_pc_word = UINT32_C(0);
     if (ti_c54x_accumulator_reset(&cpu->accumulators) !=
         TI_C54X_ACCUMULATOR_OK) {
         return TI_C54X_ERROR_INVALID_ARGUMENT;

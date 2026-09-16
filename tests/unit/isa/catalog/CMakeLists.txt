@@ -93,6 +93,9 @@ ti_c54x_add_unit_test(rpt_k_metadata
                       test_rpt_k_metadata.c)
 ti_c54x_add_unit_test(rpt_lk_metadata
                       test_rpt_lk_metadata.c)
+# P3-S3 RED contract: MAC Smem row.
+ti_c54x_add_unit_test(mac_smem_metadata
+                      test_mac_smem_metadata.c)
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)

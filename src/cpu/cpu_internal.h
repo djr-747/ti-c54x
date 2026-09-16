@@ -44,10 +44,13 @@ struct ti_c54x_cpu {
      * init and reset. Pipeline state, not architectural state. */
     ti_c54x_sequencer_delayed_branch_state delayed_branch;
     /* Single-repeat pipeline state: ACTIVE progress plus one latched
-     * maskable request (S2 wires the start/predecode loop), cleared
-     * by init and reset. Pipeline state, not architectural state. */
+     * maskable request (S2 wires the start/predecode loop) plus the
+     * latched body-PC word re-driven on HOLD (S3b wires the
+     * retirement tails), cleared by init and reset. Pipeline state,
+     * not architectural state. */
     ti_c54x_repeat_progress repeat_progress;
     ti_c54x_repeat_pending_request repeat_pending;
+    ti_c54x_program_word_address repeat_body_pc_word;
     bool execution_active;
 };
 

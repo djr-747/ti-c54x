@@ -67,6 +67,7 @@
 #include "logical/immediate/or/op_or.h"
 #include "logical/immediate/xor/op_xor.h"
 #include "memory/op_atomic_logical_memory.h"
+#include "multiply/op_mac_smem.h"
 
 /* The catalog handler token remains part of the X-macro consumer contract:
  * ti_c54x_op_##handler is the canonical semantic binding spelling. */
