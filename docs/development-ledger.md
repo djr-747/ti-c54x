@@ -9512,3 +9512,54 @@ rewritten after publication.
   `HOLD` call sites; deferred `RPT Smem`, `RPTB`/`RPTZ`,
   vectors/take-path/NMI/timing, and the `STM` indirect
   Smem form.
+
+## 2026-09-16 — P3-S3a multiply-accumulate seam slice (slice 9)
+
+- Commit `598cc61` lands the S3 datapath seam with no catalog
+  rows: a pure core under `src/isa/ops/multiply/` evaluating
+  signed 16x16 T-times-multiplicand products with `FRCT`
+  left shift, `R` rounding of the accumulate/store result,
+  `MAC` add and `MAS` subtract over a copied raw40
+  accumulator, `MPY` store independent of accumulator
+  knownness, 32-bit overflow detection with `OVM`
+  saturation (`00 7FFF FFFF` / `FF 8000 0000`) and `OVdst`
+  disposition, and transactional unknown/invalid stops with
+  no staged output. A `STATUS_FRCT` input resource (bit
+  2048) carries `ST1.FRCT` with canonical unknownness plus
+  the `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM` composite;
+  the snapshot stays at 64 bytes.
+- Two RED lanes green (`ti_c54x.multiply_core`,
+  `ti_c54x.cpu_input_collect_frct_status`); registry adds 7
+  evidence, 2 requirements, 2 test records (348/539/428).
+  The core proves the three TI `MAC` vectors (pp. 4-81–4-83)
+  and three `MPY` vectors (pp. 4-101–4-103) digit-for-digit,
+  including the `FRCT` shift and `R` rounding pairs.
+- Validation is GREEN: full CMake CTest 413/413; `make
+  test` exits 0 (101/101); ASan/UBSan `make test` exits 0
+  (101/101, no findings); python `unittest discover`,
+  evidence registry, ISA inventory, source-boundary,
+  opcode-lookup golden, knob registry, and `git diff
+  --check` pass. No knob was added or changed. Coverage
+  stays 64/205 (31.220%), strict 33/205; 164 bindings, 165
+  rows, 7,877 lookup entries. The README `Status` snapshot
+  is refreshed to P3-S2+S3a (it was frozen at P2-W51C).
+- Decisions: overflow is 32-bit signed overflow of the true
+  sum (uniform with the `ADD` precedent and the `OVM`
+  saturation values), not 40-bit; rounding applies before
+  the single overflow determination; `SMUL` product
+  pre-saturation is out of scope with the common target on
+  the `SMUL`-0 baseline (PMST bit, revision-gated
+  devices). Ten neighbor collect tests moved their
+  invalid-mask probe from `0x0800` to `0x1000` (two
+  spellings: `U`/`UINT16_C`/`UINT32_C`); decode-test
+  `0x0800` opcode-bit flips are a different domain and
+  untouched. The index mirror needed one fixup round
+  (missing rows, then runner-cell quoting) before the
+  registry gate passed.
+- Split review: `op_multiply.c` is 102 lines plus a 67-line
+  header; both test files are tests (exempt). No file
+  approaches triggers.
+- Follow-up work: S3b `MAC` Smem row (`FORM-T2-04-01`)
+  with metadata, decode, ops, CPU retirement, `ELIGIBLE`
+  classification, and `RPT MAC` end-to-end replay; then
+  S3c `MPY` Smem and `MPYA`/`MAS`/`MACR` in census order.
