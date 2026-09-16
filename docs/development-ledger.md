@@ -9797,3 +9797,39 @@ rewritten after publication.
   syntax 2 and dual `Xmem`/`Ymem` syntaxes); deferred
   exotic indirect modes, `MACA`/`MACD`/`MACP`, dual `#lk`
   words, and far/XPC/timing.
+
+## 2026-09-16 — P3-S3f MACR Smem lock-in slice (slice 14)
+
+- Commit `45b764f` closes the census `MACR` Smem form
+  without a production change: `MACR` Smem shares the
+  `MAC_SMEM` row encoding with R=1 (verified against the
+  TI `MAS[R]`-style opcode table and the `MAC[R]` section
+  covering Examples 5/6 on pp. 4-82–4-84). Two Example 5
+  vectors lock the previously untested R=1
+  accumulate-into-A combination through the maintained
+  suites: `test_completion_macr_example5` in
+  `test_mac_smem_ops.c` (leaf completion yields
+  `0x490000`) and `test_macr_example5_retires` in
+  `test_cpu_mac_smem.c` (retirement with AR5
+  post-increment). Both passed on the first run against
+  the S3b leaf, so the slice is lock-in, not RED/GREEN.
+- Evidence gains 1 activation record, 2 requirements, and
+  2 test records (354/564/449) over the maintained MAC
+  suites, which share their CTest binaries with the S3b
+  records. The first draft put both vectors under one
+  requirement owned by `src/isa/ops/multiply/` citing the
+  project activation; the gate rejected the owner mirror
+  (CPU test) and the scope leak (contract-only evidence
+  under an architectural claim), so the requirement
+  split by owner with TI-only evidence, matching the S3b
+  shape. No catalog, inventory, or pin changes; the dual
+  `Xmem`/`Ymem` `MACR` syntaxes (`FORM-T2-04-05/06`)
+  stay `UNIMPLEMENTED`.
+- Validation is GREEN: full CMake CTest 431/431; `make
+  test` 101 ok with no failures; ASan/UBSan `make test`
+  with no failures; evidence registry gate passes. No
+  knob was added or changed.
+- Follow-up work: dual `Xmem`/`Ymem` syntaxes
+  (`MACR`/`MASR`/`MAC`/`MPYA` syntax 2); deferred exotic
+  indirect modes, `MACA`/`MACD`/`MACP`, dual `#lk` words,
+  and far/XPC/timing.
