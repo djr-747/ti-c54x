@@ -205,6 +205,31 @@ address_resolution_is_valid(
     }
 
     if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16) {
+        /* Page-0 direct carries no update and no policy: the dma echo
+         * and the zero-extended operand prove the forged-candidate
+         * contract with no state observation. */
+        return address_effect->source.kind ==
+                   TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 &&
+               address_effect->source.value.direct_page0.dma7 ==
+                   effect->address_spec.direct_dma7 &&
+               address_effect->operand.first_word ==
+                   effect->address_spec.direct_dma7 &&
+               address_effect->state_policy ==
+                   TI_C54X_ADDRESS_STATE_POLICY_NONE &&
+               address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_NONE &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_NONE &&
+               address_effect->update.ar_index == UINT8_C(0) &&
+               address_effect->update.value_before == UINT16_C(0) &&
+               address_effect->update.value_after == UINT16_C(0) &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
+               address_commit->ar_index == UINT8_C(0) &&
+               address_commit->value_after == UINT16_C(0);
+    }
+
+    if (effect->address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_CIRCULAR_WORD16) {
         const ti_c54x_address_source_ar_circular *const source =
             &address_effect->source.value.ar_circular;
@@ -647,11 +672,26 @@ ti_c54x_memory_instruction_candidate_matches_live(
     }
     address_effect = &candidate->address_resolution.address_result.effect;
 
+    if (address_effect->source.kind ==
+        TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
+        /* Page-0 direct observes no state: no CMPT/ARP/CPL/DP read,
+         * so the generic CMPT=0/ARP=0 gate below does not apply.
+         * The NONE policy and the dma echo re-prove the frozen
+         * shape; only the sequential PC is live. */
+        return address_effect->state_policy ==
+                   TI_C54X_ADDRESS_STATE_POLICY_NONE &&
+               address_effect->source.value.direct_page0.dma7 ==
+                   candidate->effect.payload.memory.address_spec
+                       .direct_dma7 &&
+               pc_candidate_matches_live(&candidate->pc_effect, state);
+    }
+
     /* All remaining generic memory forms are CMPT=0/ARP=0
-     * plans (dual-pair and X-only forms return through their own arms
-     * above). Read the mode dependencies directly; re-running the resolver
-     * here would redo address arithmetic and could publish a different
-     * candidate after a WAIT. */
+     * plans (dual-pair, X-only, and page-0 direct forms return
+     * through their own arms above). Read the mode dependencies
+     * directly; re-running the resolver here would redo address
+     * arithmetic and could publish a different candidate after
+     * a WAIT. */
     if (ti_c54x_arch_state_read_cmpt(state, &cmpt) !=
             TI_C54X_ARCH_STATE_OK ||
         cmpt != UINT8_C(0) ||

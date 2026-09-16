@@ -245,6 +245,22 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                    (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
                effect->transfer_reserved == UINT8_C(0);
 
+    case TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16:
+        /* DP-independent page-0 direct: all mode selectors zero,
+         * no AR selector, no long offset; the 7-bit address rides
+         * `direct_dma7`. READ and WRITE share the access shape;
+         * RMW staging follows the generic access-shape rule. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf != UINT8_C(0) ||
+            effect->address_spec.long_offset_word != UINT16_C(0) ||
+            effect->address_spec.direct_dma7 > UINT8_C(0x7f)) {
+            return false;
+        }
+        return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
+
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
         return false;

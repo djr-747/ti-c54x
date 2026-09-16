@@ -2,6 +2,7 @@
 ti_c54x_core_sources += \
 	src/address/data_operand.c \
 	src/address/direct_dp.c \
+	src/address/direct_page0.c \
 	src/address/direct_sp.c \
 	src/address/indirect_single.c \
 	src/address/indirect_indexed.c \

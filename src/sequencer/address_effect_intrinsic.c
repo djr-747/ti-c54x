@@ -47,6 +47,7 @@ static bool valid_source_kind(ti_c54x_address_source_kind kind)
     case TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY:
     case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
     case TI_C54X_ADDRESS_SOURCE_STACK_PUSH:
+    case TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0:
         return true;
     default:
         return false;
@@ -73,6 +74,8 @@ static bool valid_state_policy_for_source(
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_SP &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL1) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_STACK_PUSH &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_NONE) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_NONE);
 }
 
@@ -210,6 +213,14 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
          * proven by the root candidate check, mirroring AR-indirect
          * layering. Only the WORD16 shape is intrinsic here. */
         if (effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0:
+        if (effect->source.value.direct_page0.dma7 > UINT8_C(0x7f) ||
+            effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
+            effect->operand.first_word !=
+                effect->source.value.direct_page0.dma7) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
         break;

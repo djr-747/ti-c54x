@@ -75,7 +75,13 @@ typedef enum ti_c54x_op_memory_address_kind {
      * at prepare; a non-null completion additionally stages one
      * follow-on effect the root commits before the pop
      * architecture commit (the pop-completion seam). */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 = 12
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 = 12,
+    /* DP-independent page-0 direct WORD16: the 7-bit direct DATA
+     * address rides `direct_dma7` (0x00-0x7F; 0x00-0x1F route to
+     * the MMR file, 0x20-0x7F reach DP0 endpoint RAM). No AR,
+     * CMPT, CPL, or DP dependence and no post-update; the nine
+     * MSBs of the effective address clear regardless of DP. */
+    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16 = 13
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -106,6 +112,10 @@ typedef struct ti_c54x_op_memory_address_spec {
             /* Used only by LONG_OFFSET_MOD13_LONG32; copied verbatim as `lk`. */
             uint16_t long_offset_word;
             uint8_t arf;
+            /* Used only by DIRECT_WORD16; 7-bit direct DATA address. Must
+             * remain zero for other kinds. Appended last so existing field
+             * offsets and the ABI sizes are unchanged. */
+            uint8_t direct_dma7;
         };
         struct {
             /* Dual-indirect forms carry two MOD0/MOD1/MOD2 AR selectors. */

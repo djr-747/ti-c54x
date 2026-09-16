@@ -1,5 +1,6 @@
 # Test ownership: tests/unit/address owns effective-address planner coverage.
 $(eval $(call ti_c54x_add_test,direct_dp,address,test_direct_dp.c))
+$(eval $(call ti_c54x_add_test,direct_page0,address,test_direct_page0.c))
 $(eval $(call ti_c54x_add_test,direct_sp,address,test_direct_sp.c))
 $(eval $(call ti_c54x_add_test,direct_address_contract,address,test_direct_address_contract.c))
 $(eval $(call ti_c54x_add_test,indirect_single_word,address,test_indirect_single_word.c))

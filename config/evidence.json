@@ -5971,6 +5971,38 @@
         "printed_page_end": "4-176"
       },
       "assertion": "The STM description defines syntax STM #lk, MMR with a 16-bit constant lk stored into a memory-mapped register MMR or a data page 0 location without modifying DP, clearing the nine MSBs of the effective address to 0 regardless of DP. Data-space WORD16 traffic at 0x00-0x1F must therefore route to register state rather than plain endpoint memory. Cycle and timing claims stay deferred."
+    },
+    {
+      "id": "E-PROJECT-P3-S7-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
+      },
+      "assertion": "S7 is the first family slice on the S1 seam: one row STM at 0x7700 under mask 0xFF00 with two program words and the DIRECT7_EXTENSION16 layout (I flag, addr7, lk16), a DP-independent page-0 planner behind the new DIRECT memory address kind, checked and trusted direct-store leaves that defer the I=1 indirect form, trusted dispatch binding with no opcode-specific CPU branch, MMR-routed and DP0-RAM CPU retirement with zero versus one endpoint call, and a SUBSET FORM-T2-20-14 inventory binding. The indirect Smem form, far/XPC, and timing stay deferred."
+    },
+    {
+      "id": "E-PROJECT-P3-S7-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
+      },
+      "assertion": "S7 is implemented and green: the STM catalog row, DIRECT7_EXTENSION16 decode, pure direct-store handler with deferred indirect form, trusted dispatch binding, page-0 DIRECT liveness arm in candidate validation, MMR and DP0 CPU retirement proofs, and SUBSET inventory binding are executable through the five RED contracts with the authoritative standalone gates passing."
     }
   ],
   "requirements": [
@@ -13550,6 +13582,93 @@
       "test_ids": [
         "T-PROJECT-P3-S1-MMR-OWNER-ACCESS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S7-STM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the STM row at first-word value 0x7700 under mask 0xFF00 with two program words, 256 encodings, and the DIRECT7_EXTENSION16 layout with no inputs and UNRESOLVED repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STM-MMR-STORE-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S7-STM-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S7-STM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the 1-bit indirect flag, 7-bit direct address, and 16-bit extension immediate of the two-word STM bundle through the DIRECT7_EXTENSION16 layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STM-MMR-STORE-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S7-STM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S7-STM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Evaluate the direct STM store into a DIRECT WORD16 WRITE memory effect carrying the 7-bit dma and the extension immediate; the I=1 indirect form rejects as deferred INVALID_OPERAND and NULL inputs reject.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STM-MMR-STORE-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S7-STM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S7-STM-TRUSTED-BINDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/dispatch/",
+      "claim": "Bind the STM catalog row through the generic trusted dispatch seam with single-pass operand extraction and no opcode-specific CPU branch.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S7-PLAN-ANCHOR",
+        "E-PROJECT-P3-S7-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-TRUSTED-OPCODE-BINDING"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S7-STM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/",
+      "claim": "Retire direct STM through the unchanged MEMORY route: MMR destinations serve locally with zero endpoint calls, DP0 RAM retires through one endpoint WRITE, page-0 liveness observes no CMPT/ARP/CPL/DP state, and the deferred indirect form stops INVALID_STATE with nothing retired.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S7-PLAN-ANCHOR",
+        "E-PROJECT-P3-S7-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S7-STM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S7-STM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the STM production symbol to FORM-T2-20-14 at SUBSET with audit-only inventory metadata; the deferred indirect form keeps it from COMPLETE.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S7-PLAN-ANCHOR",
+        "E-PROJECT-P3-S7-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -15884,7 +16003,8 @@
         "REQ-PROJECT-P2-W74-RETE-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W75-RETED-TRUSTED-BINDING",
         "REQ-PROJECT-P2-W77-RC-TRUSTED-BINDING",
-        "REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING"
+        "REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING",
+        "REQ-PROJECT-P3-S7-STM-TRUSTED-BINDING"
       ]
     },
     {
@@ -16721,7 +16841,8 @@
         "REQ-PROJECT-P2-W74-RETE-INVENTORY",
         "REQ-PROJECT-P2-W75-RETED-INVENTORY",
         "REQ-PROJECT-P2-W77-RC-INVENTORY",
-        "REQ-PROJECT-P2-W78-RCD-INVENTORY"
+        "REQ-PROJECT-P2-W78-RCD-INVENTORY",
+        "REQ-PROJECT-P3-S7-STM-INVENTORY"
       ]
     },
     {
@@ -19435,6 +19556,62 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S1-MMR-OWNER-ACCESS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S7-STM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_stm_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stm_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S7-STM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S7-STM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_stm_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stm_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S7-STM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S7-STM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_stm.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stm_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S7-STM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S7-STM-CPU",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/isa/store/test_cpu_stm.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_stm"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S7-STM-CPU-RETIREMENT"
       ]
     }
   ]

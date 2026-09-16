@@ -70,7 +70,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_AR_LONG_OFFSET = 5,
     TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6,
     TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR = 7,
-    TI_C54X_ADDRESS_SOURCE_STACK_PUSH = 8
+    TI_C54X_ADDRESS_SOURCE_STACK_PUSH = 8,
+    TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 = 9
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -132,6 +133,13 @@ typedef struct ti_c54x_address_source_direct_sp {
  * pointer; the operand address is `sp_before - 1` mod 65536 and the
  * single update rewrites SP to that address. Unlike DIRECT_SP this
  * carries no dma page and no CPL policy: pushes are mode-independent. */
+/* Snapshot for DP-independent page-0 direct forms (STM/STLM direct).
+ * Unlike DIRECT_DP this carries no dp page and no CPL policy: the
+ * nine MSBs of the effective address are cleared regardless of DP. */
+typedef struct ti_c54x_address_source_direct_page0 {
+    uint8_t dma7;
+} ti_c54x_address_source_direct_page0;
+
 typedef struct ti_c54x_address_source_stack_push {
     uint16_t sp_before;
 } ti_c54x_address_source_stack_push;
@@ -149,6 +157,7 @@ typedef struct ti_c54x_address_source {
         ti_c54x_address_source_direct_dp direct_dp;
         ti_c54x_address_source_direct_sp direct_sp;
         ti_c54x_address_source_stack_push stack_push;
+        ti_c54x_address_source_direct_page0 direct_page0;
     } value;
 } ti_c54x_address_source;
 

@@ -224,6 +224,16 @@ ti_c54x_sequencer_validate_address_effect_dependencies(
         }
         break;
     }
+    case TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0: {
+        /* Page-0 direct observes no state: the nine MSBs of the
+         * effective address clear regardless of DP, CPL, CMPT, or
+         * ARP. Only the dma echo is cross-checked. */
+        (void)state;
+        if (effect->source.value.direct_page0.dma7 > UINT8_C(0x7f)) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+        break;
+    }
     default:
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }

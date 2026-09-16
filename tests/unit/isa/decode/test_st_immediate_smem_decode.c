@@ -151,8 +151,11 @@ test_malformed_two_word_inputs_reject_transactionally(void)
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
+    /* Flipping fixed bit 8 lands in the STM row (0x7790, the
+     * indirect form STM defers at the op layer); all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0400),
+        UINT16_C(0x0080), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
@@ -166,6 +169,14 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    {
+        const ti_c54x_decode_result stm_sibling =
+            ti_c54x_decode_first_word((uint16_t)(ST_IMMEDIATE_VALUE ^
+                                                 UINT16_C(0x0100)));
+        TI_C54X_TEST_CHECK(stm_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(stm_sibling.id == TI_C54X_OPCODE_ID_STM);
     }
 
     {

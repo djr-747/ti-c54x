@@ -89,6 +89,9 @@ typedef enum ti_c54x_operand_layout_id {
     TI_C54X_OPERAND_LAYOUT_BRANCH_COND8,
     /* Two-word branch with copied 8-bit Sind and 16-bit target. */
     TI_C54X_OPERAND_LAYOUT_BRANCH_SIND_PMAD16,
+    /* Two-word direct store with copied indirect flag, 7-bit direct
+     * address, and 16-bit extension. */
+    TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

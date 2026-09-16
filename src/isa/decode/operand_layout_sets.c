@@ -443,3 +443,25 @@ static const ti_c54x_operand_field_layout
          UINT8_C(16)}};
 const ti_c54x_operand_layout_set ti_c54x_branch_sind_pmad16_set = {
     ti_c54x_branch_sind_pmad16_operands, UINT8_C(2)};
+
+/* STM direct fields: raw indirect flag I[7:7], 7-bit direct address
+ * dma[6:0], then the copied lk[+1]. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_direct7_extension16_indirect_piece = {
+        UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_direct7_extension16_address_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_direct7_extension16_lk_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_direct7_extension16_operands[3] = {
+        {&ti_c54x_direct7_extension16_indirect_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_direct7_extension16_address_piece, UINT8_C(1),
+         UINT8_C(7)},
+        {&ti_c54x_direct7_extension16_lk_piece, UINT8_C(1),
+         UINT8_C(16)}};
+const ti_c54x_operand_layout_set ti_c54x_direct7_extension16_set = {
+    ti_c54x_direct7_extension16_operands, UINT8_C(3)};

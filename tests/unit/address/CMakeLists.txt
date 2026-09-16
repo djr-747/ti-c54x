@@ -1,5 +1,6 @@
 # Test ownership: tests/unit/address owns effective-address planner coverage.
 ti_c54x_add_unit_test(direct_dp test_direct_dp.c)
+ti_c54x_add_unit_test(direct_page0 test_direct_page0.c)
 ti_c54x_add_unit_test(direct_sp test_direct_sp.c)
 ti_c54x_add_unit_test(direct_address_contract test_direct_address_contract.c)
 ti_c54x_add_unit_test(indirect_single_word test_indirect_single_word.c)
