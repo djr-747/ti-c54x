@@ -373,9 +373,11 @@
       "table_ordinal": 1,
       "mnemonic": "MPY",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MPY_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-03-02",
@@ -3516,6 +3518,12 @@
     {
       "catalog_symbol": "MAC_SMEM",
       "form_id": "FORM-T2-04-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MPY_SMEM",
+      "form_id": "FORM-T2-03-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }

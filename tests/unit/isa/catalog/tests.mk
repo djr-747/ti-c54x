@@ -73,6 +73,7 @@ $(eval $(call ti_c54x_add_test,rpt_k_metadata,isa/catalog,test_rpt_k_metadata.c)
 $(eval $(call ti_c54x_add_test,rpt_lk_metadata,isa/catalog,test_rpt_lk_metadata.c))
 # P3-S3 RED contract: MAC Smem row.
 $(eval $(call ti_c54x_add_test,mac_smem_metadata,isa/catalog,test_mac_smem_metadata.c))
+$(eval $(call ti_c54x_add_test,mpy_smem_metadata,isa/catalog,test_mpy_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))

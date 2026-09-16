@@ -83,7 +83,7 @@ test_fixed_bit_near_misses_are_unknown(void)
     /* These flip fixed bits, including bit 8; the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
+        UINT16_C(0x0800), UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -103,6 +103,12 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0040))) ==
                        TI_C54X_OPCODE_ID_LD_T_SMEM_MOD8);
+
+    /* This former near-miss is the P3-S3c MPY Smem sibling: 0x3090 ^
+     * 0x1000 = 0x2090 classifies into the MPY_SMEM row. */
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LD_T_VALUE ^ UINT16_C(0x1000))) ==
+                       TI_C54X_OPCODE_ID_MPY_SMEM);
 }
 
 int

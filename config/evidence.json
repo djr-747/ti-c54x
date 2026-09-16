@@ -6191,6 +6191,22 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3b is implemented and green: the MAC_SMEM catalog row at 0x2800 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value completion through the multiply core, CPU retirement, the FORM-T2-04-01 SUBSET binding, and RPT-MAC end-to-end replay through the retirement-tail HOLD wiring."
+    },
+    {
+      "id": "E-PROJECT-P3-S3C-MPY-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+      },
+      "assertion": "S3c is implemented and green: the MPY_SMEM catalog row at 0x2000 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value STORE completion through the multiply core without accumulation (TI MPY Examples 1 and 4), CPU retirement, and the FORM-T2-03-01 SUBSET binding."
     }
   ],
   "requirements": [
@@ -14124,6 +14140,81 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3C-MPY-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog the MPY_SMEM row at first-word value 0x2000 under mask 0xFC00 with one program word, 1024 encodings, the ROUND_SELECT_INDIRECT_ADDR7 layout, ELIGIBLE repeatability by the Table 2-28 omission, and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3C-MPY-SMEM-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3C-MPY-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode the round, select, indirect, and addr7 fields of the one-word MPY_SMEM bundle through the ROUND_SELECT_INDIRECT_ADDR7 layout with checked operand extraction and transactional completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3C-MPY-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3C-MPY-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Evaluate MPY Smem into a memory-read effect for direct page-0 and standard-indirect MOD0-MOD3 addresses with exotic modes deferred, and complete the read value through the multiply core STORE path into an accumulator write with OVdst disposition and no accumulation; destination knownness is not required, NULL inputs reject, and unknown T/FRCT/OVM inputs stop.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103",
+        "E-TI-C54X-SPRU131G-T4-2-OVM-P4-5",
+        "E-TI-C54X-SPRU131G-T4-3-SMUL-P4-7-4-9",
+        "E-TI-C54X-SPRU131G-S4-2-2-OVERFLOW-P4-11-4-12"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3C-MPY-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3C-MPY-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MPY Smem on the CPU with direct and post-increment indirect reads stored without accumulation, B-destination rounding, and accumulator and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3C-MPY-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3C-MPY-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MPY_SMEM catalog row to FORM-T2-03-01 at SUBSET coverage over direct page-0 and standard-indirect MOD0-MOD3 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3C-MPY-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -17300,7 +17391,8 @@
         "REQ-PROJECT-P2-W78-RCD-INVENTORY",
         "REQ-PROJECT-P3-S7-STM-INVENTORY",
         "REQ-PROJECT-P3-S2-RPT-INVENTORY",
-        "REQ-PROJECT-P3-S3B-MAC-INVENTORY"
+        "REQ-PROJECT-P3-S3B-MAC-INVENTORY",
+        "REQ-PROJECT-P3-S3C-MPY-INVENTORY"
       ]
     },
     {
@@ -20280,6 +20372,62 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3B-MAC-ELIGIBLE-REPLAY"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3C-MPY-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mpy_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3C-MPY-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3C-MPY-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mpy_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3C-MPY-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3C-MPY-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpy_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3C-MPY-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3C-MPY-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mpy_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mpy_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3C-MPY-SMEM-CPU-RETIREMENT"
       ]
     }
   ]

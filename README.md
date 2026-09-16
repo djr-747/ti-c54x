@@ -20,10 +20,10 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S2 complete, P3-S3a multiply seam landed (no rows).
+Current snapshot: P3-S3c complete (`MAC`/`MPY` Smem rows, `ELIGIBLE` repeat).
 
-- 165 runnable catalog rows under 7,877 populated first-word lookup entries.
-  Inventory coverage is 64/205 forms SUBSET-or-better (31.220%) and 33/205
+- 167 runnable catalog rows under 9,925 populated first-word lookup entries.
+  Inventory coverage is 66/205 forms SUBSET-or-better (32.195%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -35,13 +35,16 @@ Current snapshot: P3-S2 complete, P3-S3a multiply seam landed (no rows).
   RETF). The S1 MMR/device routing seam unlocks the S7 `STM` immediate-MMR
   store. S2 activates single-instruction repeat (`RPT_K`/`RPT_LK`,
   `INELIGIBLE`): CPU progress plus pending latch, predecode IRQ arbitration,
-  and a body-eligibility gate. No catalog row is currently proven
-  repeat-eligible, so end-to-end repeat replay waits on the first `ELIGIBLE`
-  classification. S3a adds the pure multiply-accumulate datapath core (signed
-  16x16 product, FRCT shift, R rounding, OVM saturation, SMUL-0 baseline)
-  with the `STATUS_FRCT` input resource; MAC/MPY rows follow.
-- Major remaining work is the MAC/MPY rows with the first repeat-eligible
-  body, MMR/stack moves, bit/field ops, shifts/misc, the port seam, far/XPC
+  and a body-eligibility gate. S3a adds the pure multiply-accumulate datapath
+  core (signed 16x16 product, FRCT shift, R rounding, OVM saturation, SMUL-0
+  baseline) with the `STATUS_FRCT` input resource. S3b lands the `MAC` Smem
+  row (`FORM-T2-04-01`) with `ELIGIBLE` classification and `RPT MAC`
+  end-to-end replay through the retirement-tail HOLD wiring. S3c lands the
+  `MPY` Smem row (`FORM-T2-03-01`) reusing the shared
+  round/select/indirect/addr7 layout with STORE completion (TI MPY Examples
+  1 and 4 retire through the leaf).
+- Major remaining work is the `MPYA`/`MAS`/`MACR` rows in census order,
+  MMR/stack moves, bit/field ops, shifts/misc, the port seam, far/XPC
   addressing, profiles/devices, and evidenced machine timing. Emulator
   integration remains deferred.
 
