@@ -382,6 +382,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-RCD-NONREPEATABLE-P4-134` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RC[D], `4-134` |
 | `E-PROJECT-P2-W78-RCD-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W78: RCD delayed-conditional-return vertical slice (planned)` |
 | `E-PROJECT-P2-W78-RCD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W78: RCD delayed-conditional-return vertical slice (planned)` |
+| `E-PROJECT-P3-S1-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S1: MMR/device routing seam (planned)` |
+| `E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-MMR-MAP` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §3.3.4, `3-27` |
+| `E-TI-C54X-SPRU172C-S4-STM-MMR-STORE-P4-175` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §STM, `4-175`, `4-176` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1002,6 +1005,10 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P2-W78-RCD-TRUSTED-BINDING` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/dispatch/` | `E-PROJECT-P2-W78-RCD-PLAN-ANCHOR`, `E-PROJECT-P2-W78-RCD-ACTIVATION` | `T-PROJECT-TRUSTED-OPCODE-BINDING` |
 | `REQ-PROJECT-P2-W78-RCD-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/cpu/` | `E-PROJECT-P2-W78-RCD-PLAN-ANCHOR`, `E-PROJECT-P2-W78-RCD-ACTIVATION` | `T-PROJECT-P2-W78-RCD-CPU` |
 | `REQ-PROJECT-P2-W78-RCD-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P2-W78-RCD-PLAN-ANCHOR`, `E-PROJECT-P2-W78-RCD-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-PROJECT-P3-S1-MMR-FILE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/bus/mmr/` | `E-PROJECT-P3-S1-PLAN-ANCHOR` | `T-PROJECT-P3-S1-MMR-ROUTE` |
+| `REQ-PROJECT-P3-S1-MMR-RESOLVER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P3-S1-PLAN-ANCHOR` | `T-PROJECT-P3-S1-MMR-RESOLVER` |
+| `REQ-PROJECT-P3-S1-MMR-TRANSACTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P3-S1-PLAN-ANCHOR` | `T-PROJECT-P3-S1-MMR-TRANSACTION` |
+| `REQ-PROJECT-P3-S1-MMR-OWNER-ACCESS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-P3-S1-PLAN-ANCHOR` | `T-PROJECT-P3-S1-MMR-OWNER-ACCESS` |
 
 ## Tests
 
@@ -1418,6 +1425,10 @@ exist in the repository.
 | `T-COMMON-P2-W78-RCD-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_rcd_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rcd_decode"}` | `REQ-COMMON-P2-W78-RCD-DECODE` |
 | `T-COMMON-P2-W78-RCD-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_rcd.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.rcd"}` | `REQ-COMMON-P2-W78-RCD-EFFECTS` |
 | `T-PROJECT-P2-W78-RCD-CPU` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/cpu/isa/branch/test_cpu_rcd.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_rcd"}` | `REQ-PROJECT-P2-W78-RCD-CPU-RETIREMENT` |
+| `T-PROJECT-P3-S1-MMR-ROUTE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/bus/test_mmr_route.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mmr_route"}` | `REQ-PROJECT-P3-S1-MMR-FILE` |
+| `T-PROJECT-P3-S1-MMR-RESOLVER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_mmr_address_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mmr_resolver"}` | `REQ-PROJECT-P3-S1-MMR-RESOLVER` |
+| `T-PROJECT-P3-S1-MMR-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_mmr_memory_transaction.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mmr_transaction"}` | `REQ-PROJECT-P3-S1-MMR-TRANSACTION` |
+| `T-PROJECT-P3-S1-MMR-OWNER-ACCESS` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_mmr_owner_access.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mmr_owner_access"}` | `REQ-PROJECT-P3-S1-MMR-OWNER-ACCESS` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-PLAN` | PASSING | COMMON_TI | `tests/unit/address/test_indirect_dual_mod3.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_dual_mod3"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-PLAN` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` | PASSING | COMMON_TI | `tests/unit/sequencer/memory/test_dual_mod3_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_resolution"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-RESOLVE` |
 | `T-COMMON-P2-W52B-DUAL-MOD3-ROOT` | PASSING | COMMON_TI | `tests/unit/sequencer/instruction/test_dual_mod3_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dual_mod3_root"}` | `REQ-COMMON-P2-W52B-DUAL-MOD3-ROOT` |

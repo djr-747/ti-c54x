@@ -224,7 +224,7 @@ test_worked_example(void)
 static void
 test_origins_and_targets(void)
 {
-    check_ready_case(UINT32_C(0x0000), UINT16_C(0x0000),
+    check_ready_case(UINT32_C(0x0000), UINT16_C(0x0020),
                      UINT16_C(0x0000));
     check_ready_case(UINT32_C(0x1F45), UINT16_C(0x8000),
                      UINT16_C(0x2000));

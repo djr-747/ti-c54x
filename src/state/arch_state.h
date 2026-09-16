@@ -24,6 +24,7 @@
 
 #include <ti_c54x/address.h>
 
+#include "mmr_file.h"
 #include "register_layout.h"
 #include "status/registers.h"
 
@@ -42,6 +43,7 @@ typedef struct ti_c54x_arch_state {
     uint16_t rtn;
     uint16_t ar[8];
     ti_c54x_status_register_state status;
+    ti_c54x_mmr_file_state mmr_file;
     uint8_t scalar_known_mask;
     uint8_t ar_known_mask;
 } ti_c54x_arch_state;

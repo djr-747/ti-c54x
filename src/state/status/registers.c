@@ -437,3 +437,60 @@ ti_c54x_status_register_write_bit(ti_c54x_status_register_state *state,
     *known_mask = (uint16_t)(*known_mask | bit_mask);
     return TI_C54X_STATUS_REGISTER_OK;
 }
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_st0(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st0,
+                      state == NULL ? 0U : state->st0_known_mask,
+                      UINT16_C(0xFFFF), 0U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_st1(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->st1,
+                      state == NULL ? 0U : state->st1_known_mask,
+                      UINT16_C(0xFFFF), 0U);
+}
+
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_pmst(const ti_c54x_status_register_state *state)
+{
+    return read_field(state, state == NULL ? 0U : state->pmst,
+                      state == NULL ? 0U : state->pmst_known_mask,
+                      UINT16_C(0xFFFF), 0U);
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_st0(ti_c54x_status_register_state *state,
+                                  uint16_t raw_value)
+{
+    return state == NULL
+               ? TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT
+               : write_field(&state->st0, &state->st0_known_mask,
+                             UINT16_C(0xFFFF), 0U, raw_value,
+                             UINT16_C(0xFFFF));
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_st1(ti_c54x_status_register_state *state,
+                                  uint16_t raw_value)
+{
+    return state == NULL
+               ? TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT
+               : write_field(&state->st1, &state->st1_known_mask,
+                             UINT16_C(0xFFFF), 0U, raw_value,
+                             UINT16_C(0xFFFF));
+}
+
+ti_c54x_status_register_status
+ti_c54x_status_register_write_pmst(ti_c54x_status_register_state *state,
+                                   uint16_t raw_value)
+{
+    return state == NULL
+               ? TI_C54X_STATUS_REGISTER_INVALID_ARGUMENT
+               : write_field(&state->pmst, &state->pmst_known_mask,
+                             UINT16_C(0xFFFF), 0U, raw_value,
+                             UINT16_C(0xFFFF));
+}

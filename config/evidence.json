@@ -5919,6 +5919,58 @@
         "anchor": "P2-W78: RCD delayed-conditional-return vertical slice (planned)"
       },
       "assertion": "W78 is implemented and green: the RC catalog row, BRANCH_COND8 decode, pure taken-pop/not-taken-NONE handler, trusted dispatch binding, CPU retirement proofs, and SUBSET inventory binding are executable through the four RED contracts with the authoritative standalone gates passing."
+    },
+    {
+      "id": "E-PROJECT-P3-S1-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S1: MMR/device routing seam (planned)"
+      },
+      "assertion": "S1 is the sealed MMR/device routing seam with no catalog rows: the Table 3-3 map owns per-address owner dispatch versus private file storage for IMR/TRN/BRC/RSA/REA, reserved words and XPC decline to the endpoint, whole-word owner accessors compose status and accumulator words with owner-held knownness, the resolver gates MMR READ knownness, and the root transaction serves routed traffic locally with atomic WAIT/READY/FAULT/cancel behavior. No knob, timing, IRQ/RPT, wrap, or ABI claim is admitted."
+    },
+    {
+      "id": "E-TI-C54X-SPRU131G-S3.3.4-T3-3-P3-27-MMR-MAP",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU131G",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "3",
+        "section": "3.3.4",
+        "printed_page_start": "3-27",
+        "printed_page_end": "3-27"
+      },
+      "assertion": "Table 3-3 maps the CPU memory-mapped registers to data-memory addresses 0x00-0x1F: IMR 00, IFR 01, reserved 02-05, ST0 06, ST1 07, AL 08, AH 09, AG 0A, BL 0B, BH 0C, BG 0D, T 0E, TRN 0F, AR0-AR7 10-17, SP 18, BK 19, BRC 1A, RSA 1B, REA 1C, PMST 1D, XPC 1E (C548/C549/C5402/C5410/C5420), reserved 1E-1F. This is a mapping record only; it does not implement or claim common-core MMR routing."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-STM-MMR-STORE-P4-175",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "STM",
+        "printed_page_start": "4-175",
+        "printed_page_end": "4-176"
+      },
+      "assertion": "The STM description defines syntax STM #lk, MMR with a 16-bit constant lk stored into a memory-mapped register MMR or a data page 0 location without modifying DP, clearing the nine MSBs of the effective address to 0 regardless of DP. Data-space WORD16 traffic at 0x00-0x1F must therefore route to register state rather than plain endpoint memory. Cycle and timing claims stay deferred."
     }
   ],
   "requirements": [
@@ -13442,6 +13494,62 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S1-MMR-FILE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/bus/mmr/",
+      "claim": "Own the Table 3-3 MMR address map with per-address owner dispatch versus private instance-owned 16-bit storage plus knownness for IMR, TRN, BRC, RSA, and REA; reserved 02-05, XPC 1E, and 1F decline untouched; unknown reads report UNKNOWN with canonical zero; NULL and invalid requests reject.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S1-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S1-MMR-ROUTE"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S1-MMR-RESOLVER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Plan one copied DATA request as endpoint-bound, MMR-routed, or transactionally rejected: serviceable writes route without probing, known reads route through a side-effect-free dry run, unknown reads reject, guard-word writes above 0xFF reject, and planning never touches state.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S1-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S1-MMR-RESOLVER"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S1-MMR-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Serve MMR-routed MEMORY traffic locally in the root transaction with zero endpoint calls and atomic publication: plain READ/WRITE retire through the ordinary READY tail, RMW reads stage locally and retire through the routed RMW write, unknown reads and guard-range writes reject transactionally with state untouched, and non-MMR traffic still reaches the endpoint.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S1-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S1-MMR-TRANSACTION"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S1-MMR-OWNER-ACCESS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Provide checked whole-word ST0/ST1/PMST read/write composed from the status bank with full-mask knownness and checked accumulator low/high/guard word read/write composed from the canonical 40-bit value with accumulator-granularity knownness; unknown owners read UNKNOWN and out-of-range or NULL inputs reject.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S1-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S1-MMR-OWNER-ACCESS"
+      ]
     }
   ],
   "tests": [
@@ -19271,6 +19379,62 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P2-W78-RCD-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S1-MMR-ROUTE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/bus/test_mmr_route.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mmr_route"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S1-MMR-FILE"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S1-MMR-RESOLVER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_mmr_address_resolution.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mmr_resolver"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S1-MMR-RESOLVER"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S1-MMR-TRANSACTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_mmr_memory_transaction.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mmr_transaction"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S1-MMR-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S1-MMR-OWNER-ACCESS",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_mmr_owner_access.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mmr_owner_access"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S1-MMR-OWNER-ACCESS"
       ]
     }
   ]

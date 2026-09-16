@@ -23,6 +23,16 @@ typedef enum ti_c54x_accumulator_id {
     TI_C54X_ACCUMULATOR_INVALID = 2
 } ti_c54x_accumulator_id;
 
+typedef enum ti_c54x_accumulator_word_id {
+    TI_C54X_ACCUMULATOR_WORD_AL = 0,
+    TI_C54X_ACCUMULATOR_WORD_AH = 1,
+    TI_C54X_ACCUMULATOR_WORD_AG = 2,
+    TI_C54X_ACCUMULATOR_WORD_BL = 3,
+    TI_C54X_ACCUMULATOR_WORD_BH = 4,
+    TI_C54X_ACCUMULATOR_WORD_BG = 5,
+    TI_C54X_ACCUMULATOR_WORD_INVALID = 6
+} ti_c54x_accumulator_word_id;
+
 typedef enum ti_c54x_accumulator_status {
     TI_C54X_ACCUMULATOR_OK = 0,
     TI_C54X_ACCUMULATOR_UNKNOWN = 1,
@@ -54,5 +64,16 @@ ti_c54x_accumulator_status ti_c54x_accumulator_write(
 ti_c54x_accumulator_status ti_c54x_accumulator_read_snapshot(
     const ti_c54x_accumulator_state *state,
     ti_c54x_accumulator_snapshot *snapshot);
+/* MMR word access: words compose from the canonical 40-bit value
+ * (AL bits 15:0, AH bits 31:16, AG bits 39:32); reads of an unknown
+ * accumulator report UNKNOWN; writes read-modify-write over a zero
+ * base when unknown and set the accumulator known. Guard writes
+ * above 0xFF reject. */
+ti_c54x_accumulator_status ti_c54x_accumulator_read_word(
+    const ti_c54x_accumulator_state *state,
+    ti_c54x_accumulator_word_id word, uint16_t *value);
+ti_c54x_accumulator_status ti_c54x_accumulator_write_word(
+    ti_c54x_accumulator_state *state, ti_c54x_accumulator_word_id word,
+    uint16_t value);
 
 #endif /* TI_C54X_STATE_ACCUMULATOR_H */

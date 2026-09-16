@@ -7,6 +7,7 @@ $(eval $(call ti_c54x_add_test,block_size_register,state,test_block_size_registe
 $(eval $(call ti_c54x_add_test,block_size_register_contract,state,test_block_size_register_contract.c))
 $(eval $(call ti_c54x_add_test,repeat_counter_register_contract,state,test_repeat_counter_register_contract.c))
 $(eval $(call ti_c54x_add_test,interrupt_flag_register_contract,state,test_interrupt_flag_register_contract.c))
+$(eval $(call ti_c54x_add_test,mmr_owner_access,state,test_mmr_owner_access.c))
 include tests/unit/state/accumulator/tests.mk
 include tests/unit/state/status/tests.mk
 include tests/unit/state/temporary/tests.mk

@@ -20,7 +20,9 @@
 #include <stddef.h>
 
 #include "bus/adapter/word16_adapter.h"
+#include "bus/mmr/mmr_route.h"
 #include "sequencer/effect_transaction.h"
+#include "sequencer/memory/mmr_access_plan.h"
 #include "sequencer/program_pc_target.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
@@ -366,6 +368,75 @@ advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
 }
 
+static ti_c54x_memory_instruction_status
+advance_rmw_write_mmr(ti_c54x_memory_instruction_transaction *transaction,
+                      ti_c54x_arch_state *state,
+                      ti_c54x_accumulator_state *accumulators,
+                      ti_c54x_t_register_state *t_register,
+                      ti_c54x_memory_instruction_result *result)
+{
+    const ti_c54x_bus_word16_request *planned =
+        &transaction->candidate.address_resolution.request;
+    ti_c54x_bus_word16_request write_request;
+    ti_c54x_sequencer_mmr_access write_plan;
+    ti_c54x_bus_mmr_route_result write_result;
+    ti_c54x_memory_instruction_status operation_status;
+
+    /* Mirror the ordinary RMW write preflight: the staged MMR read
+     * value transforms, then the write plans. No bus ID is
+     * allocated and no endpoint issue happens on this path. */
+    if (!candidate_snapshot_matches(transaction) ||
+        !ti_c54x_memory_instruction_rmw_transform(
+                       &transaction->candidate.effect.payload.memory,
+                       transaction->bus_transaction.staged_read_value_word,
+                       &transaction->rmw_write_value_word) ||
+        !ti_c54x_memory_instruction_candidate_matches_live(
+            &transaction->candidate, state)) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    write_plan = ti_c54x_sequencer_plan_mmr_access(
+        state, accumulators, t_register, planned->space,
+        planned->address_word,
+        TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+        transaction->rmw_write_value_word);
+    if (write_plan != TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    write_request = *planned;
+    write_request.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
+    write_request.write_value_word = transaction->rmw_write_value_word;
+    write_result = ti_c54x_bus_mmr_route(&write_request, state,
+                                         accumulators, t_register);
+    if (write_result.status != TI_C54X_BUS_MMR_STATUS_SERVICED) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    /* A served MMR WRITE is locally visible but architectural
+     * publication is still local to this reducer. Recheck the
+     * frozen candidate and live dependencies before committing. */
+    if (!candidate_snapshot_matches(transaction) ||
+        !ti_c54x_memory_instruction_candidate_matches_live(
+            &transaction->candidate, state)) {
+        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+        result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    operation_status = ti_c54x_memory_instruction_commit_architecture(transaction, state);
+    if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+        return operation_status;
+    }
+    result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+    result->bus_status = TI_C54X_BUS_OK;
+    result->instructions_attempted = UINT64_C(1);
+    result->instructions_retired = UINT64_C(1);
+    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+}
+
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_transaction_advance(
     ti_c54x_memory_instruction_transaction *transaction,
@@ -448,6 +519,79 @@ ti_c54x_memory_instruction_transaction_advance(
             first_issue ? UINT64_C(1) : UINT64_C(0);
         result->instructions_retired = UINT64_C(1);
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    }
+    if (first_issue) {
+        /* MMR-routed DATA traffic retires locally with no endpoint
+         * issue: the router serves the register, then the ordinary
+         * READY tail commits address and PC. Unknown reads and
+         * guard-range writes reject transactionally before any
+         * mutation; RMW reads stage locally and retire through the
+         * routed RMW write below. The kind-keyed deferred tail is
+         * replicated because delayed stack kinds can address the
+         * MMR file. */
+        const ti_c54x_bus_word16_request *planned =
+            &transaction->candidate.address_resolution.request;
+        const ti_c54x_sequencer_mmr_access mmr_plan =
+            ti_c54x_sequencer_plan_mmr_access(
+                state, accumulators, t_register, planned->space,
+                planned->address_word, planned->access,
+                planned->write_value_word);
+        if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_UNKNOWN ||
+            mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_INVALID_ARGUMENT) {
+            result->status =
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
+            ti_c54x_bus_mmr_route_result mmr_result =
+                ti_c54x_bus_mmr_route(planned, state, accumulators,
+                                      t_register);
+            uint16_t mmr_read_word;
+
+            if (mmr_result.status != TI_C54X_BUS_MMR_STATUS_SERVICED) {
+                result->status =
+                    TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            mmr_read_word = mmr_result.read_value_word;
+            if (ti_c54x_memory_instruction_memory_is_rmw(
+                    &transaction->candidate.effect.payload.memory) &&
+                planned->access ==
+                    TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+                transaction->bus_transaction.staged_read_value_word =
+                    mmr_read_word;
+                return advance_rmw_write_mmr(transaction, state,
+                                             accumulators, t_register,
+                                             result);
+            }
+            operation_status = ti_c54x_memory_instruction_commit_ready(
+                transaction, state, accumulators, t_register,
+                mmr_read_word);
+            if (operation_status !=
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+                return operation_status;
+            }
+            /* Delayed stack branches retire their stack update here
+             * but defer the transfer exactly like the endpoint tail:
+             * the arming keys off the address kind, which a routed
+             * MMR address can carry. */
+            if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+                result->deferred_branch_armed = true;
+                result->deferred_branch_pc_word = mmr_read_word;
+            } else if (transaction->candidate.effect.payload.memory.address_spec
+                           .kind ==
+                       TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+                result->deferred_branch_armed = true;
+                result->deferred_branch_pc_word =
+                    transaction->candidate.instruction.bundle.program_words[1];
+            }
+            result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+            result->bus_status = TI_C54X_BUS_OK;
+            result->instructions_attempted = UINT64_C(1);
+            result->instructions_retired = UINT64_C(1);
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+        }
     }
     if (first_issue) {
         uint64_t next_id;

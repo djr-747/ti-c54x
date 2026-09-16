@@ -224,12 +224,70 @@ test_worked_example(void)
 static void
 test_origins_and_targets(void)
 {
-    check_ready_case(UINT32_C(0x0000), UINT16_C(0x0001),
+    check_ready_case(UINT32_C(0x0000), UINT16_C(0x0021),
                      UINT16_C(0x0000));
     check_ready_case(UINT32_C(0x1F45), UINT16_C(0x8000),
                      UINT16_C(0x2000));
     check_ready_case(UINT32_C(0x0100), UINT16_C(0x0000),
                      UINT16_C(0xFFFF));
+}
+
+/* A stack push whose TOS lands in the MMR file routes to the
+ * register instead of the data endpoint: no endpoint traffic
+ * issues, the return address lands in IMR with knownness set,
+ * and SP/PC/RTN commit exactly as for an endpoint push. */
+static void
+test_push_into_mmr_file_routes(void)
+{
+    call_pmad_fixture fixture = {.words = {CALL_PMAD_WORD0, UINT16_C(0x0200)},
+                                 .program_calls = 0U,
+                                 .addresses = {0U, 0U},
+                                 .fail_second = false,
+                                 .data_wait_then_ready = false,
+                                 .data_fault = false,
+                                 .data_waited = false,
+                                 .data_calls = 0U};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_cpu *cpu = init_cpu(&fixture, storage, UINT32_C(0x0100));
+    ti_c54x_run_result result;
+    const uint16_t expected_return = UINT16_C(0x0102);
+
+    seed_cpu(cpu, UINT16_C(0x0001));
+    {
+        const ti_c54x_arch_state before_arch = cpu->arch_state;
+
+        result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+        TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+        TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+        TI_C54X_TEST_CHECK(result.instructions_attempted == UINT64_C(1));
+        TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+        TI_C54X_TEST_CHECK(fixture.program_calls == 2U);
+        /* No endpoint traffic: the TOS WRITE serves IMR locally. */
+        TI_C54X_TEST_CHECK(fixture.data_calls == 0U);
+        TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0x0200));
+        TI_C54X_TEST_CHECK(cpu->arch_state.sp == UINT16_C(0x0000));
+        TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.imr ==
+                           expected_return);
+        TI_C54X_TEST_CHECK(
+            (cpu->arch_state.mmr_file.known_mask &
+             (uint8_t)TI_C54X_MMR_FILE_KNOWN_IMR) != 0U);
+        {
+            ti_c54x_arch_state expect_arch = before_arch;
+
+            expect_arch.pc_word = UINT32_C(0x0200);
+            expect_arch.sp = UINT16_C(0x0000);
+            expect_arch.rtn = expected_return;
+            expect_arch.scalar_known_mask = (uint8_t)(
+                expect_arch.scalar_known_mask |
+                (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN);
+            expect_arch.mmr_file.imr = expected_return;
+            expect_arch.mmr_file.known_mask =
+                (uint8_t)TI_C54X_MMR_FILE_KNOWN_IMR;
+            TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
+                                      sizeof(expect_arch)) == 0);
+        }
+        TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+    }
 }
 
 static void
@@ -371,6 +429,7 @@ int main(void)
 {
     test_worked_example();
     test_origins_and_targets();
+    test_push_into_mmr_file_routes();
     test_wait_resumes_with_atomic_commit();
     test_data_fault_is_transactional();
     test_unknown_sp_rejects();

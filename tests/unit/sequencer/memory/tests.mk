@@ -12,3 +12,5 @@ $(eval $(call ti_c54x_add_test,dual_mod3_resolution,sequencer/memory,test_dual_m
 $(eval $(call ti_c54x_add_test,stack_push_resolution,sequencer/memory,test_stack_push_resolution.c))
 # W66A RED contract: stack-pop WORD16 resolution and mode independence.
 $(eval $(call ti_c54x_add_test,stack_pop_resolution,sequencer/memory,test_stack_pop_resolution.c))
+# P3-S1 RED contract: MMR access planning and knownness gating.
+$(eval $(call ti_c54x_add_test,mmr_resolver,sequencer/memory,test_mmr_address_resolution.c))

@@ -21,3 +21,6 @@ ti_c54x_add_unit_test(stack_push_resolution
 # W66A RED contract: stack-pop WORD16 resolution and mode independence.
 ti_c54x_add_unit_test(stack_pop_resolution
                       test_stack_pop_resolution.c)
+# P3-S1 RED contract: MMR access planning and knownness gating.
+ti_c54x_add_unit_test(mmr_resolver
+                      test_mmr_address_resolution.c)

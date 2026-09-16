@@ -77,3 +77,86 @@ ti_c54x_accumulator_status ti_c54x_accumulator_read_snapshot(
                ? TI_C54X_ACCUMULATOR_OK
                : TI_C54X_ACCUMULATOR_UNKNOWN;
 }
+
+static bool valid_word(ti_c54x_accumulator_word_id word)
+{
+    return (int)word >= (int)TI_C54X_ACCUMULATOR_WORD_AL &&
+           word < TI_C54X_ACCUMULATOR_WORD_INVALID;
+}
+
+static ti_c54x_accumulator_id word_accumulator(
+    ti_c54x_accumulator_word_id word)
+{
+    return word <= TI_C54X_ACCUMULATOR_WORD_AG ? TI_C54X_ACCUMULATOR_A
+                                              : TI_C54X_ACCUMULATOR_B;
+}
+
+static uint8_t word_shift(ti_c54x_accumulator_word_id word)
+{
+    switch (word) {
+    case TI_C54X_ACCUMULATOR_WORD_AL:
+    case TI_C54X_ACCUMULATOR_WORD_BL:
+        return UINT8_C(0);
+    case TI_C54X_ACCUMULATOR_WORD_AH:
+    case TI_C54X_ACCUMULATOR_WORD_BH:
+        return UINT8_C(16);
+    case TI_C54X_ACCUMULATOR_WORD_AG:
+    case TI_C54X_ACCUMULATOR_WORD_BG:
+    default:
+        return UINT8_C(32);
+    }
+}
+
+static uint16_t word_mask(ti_c54x_accumulator_word_id word)
+{
+    switch (word) {
+    case TI_C54X_ACCUMULATOR_WORD_AG:
+    case TI_C54X_ACCUMULATOR_WORD_BG:
+        return UINT16_C(0x00FF);
+    default:
+        return UINT16_C(0xFFFF);
+    }
+}
+
+ti_c54x_accumulator_status ti_c54x_accumulator_read_word(
+    const ti_c54x_accumulator_state *state,
+    ti_c54x_accumulator_word_id word, uint16_t *value)
+{
+    uint64_t canonical;
+
+    if (state == NULL || value == NULL || !valid_word(word)) {
+        return TI_C54X_ACCUMULATOR_INVALID_ARGUMENT;
+    }
+    if (ti_c54x_accumulator_read(state, word_accumulator(word),
+                                 &canonical) != TI_C54X_ACCUMULATOR_OK) {
+        return TI_C54X_ACCUMULATOR_UNKNOWN;
+    }
+    *value = (uint16_t)((canonical >> word_shift(word)) & word_mask(word));
+    return TI_C54X_ACCUMULATOR_OK;
+}
+
+ti_c54x_accumulator_status ti_c54x_accumulator_write_word(
+    ti_c54x_accumulator_state *state, ti_c54x_accumulator_word_id word,
+    uint16_t value)
+{
+    ti_c54x_accumulator_id id;
+    uint64_t base = UINT64_C(0);
+    uint64_t cleared;
+    uint64_t composed;
+
+    if (state == NULL || !valid_word(word)) {
+        return TI_C54X_ACCUMULATOR_INVALID_ARGUMENT;
+    }
+    if (value > word_mask(word)) {
+        return TI_C54X_ACCUMULATOR_INVALID_VALUE;
+    }
+    id = word_accumulator(word);
+    if (ti_c54x_accumulator_read(state, id, &base) !=
+        TI_C54X_ACCUMULATOR_OK) {
+        base = UINT64_C(0);
+    }
+    cleared = base & ~(uint64_t)((uint64_t)word_mask(word)
+                                 << word_shift(word));
+    composed = cleared | ((uint64_t)value << word_shift(word));
+    return ti_c54x_accumulator_write(state, id, composed);
+}

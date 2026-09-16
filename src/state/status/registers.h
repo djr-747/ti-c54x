@@ -139,6 +139,24 @@ ti_c54x_status_register_write_bit(ti_c54x_status_register_state *state,
                                    uint8_t bit_index,
                                    uint8_t raw_value);
 
+/* Whole-word MMR access: reads report known only when the full known
+ * mask is set; writes replace the word and set the full known mask. */
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_st0(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_st1(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_field_result
+ti_c54x_status_register_read_pmst(const ti_c54x_status_register_state *state);
+ti_c54x_status_register_status
+ti_c54x_status_register_write_st0(ti_c54x_status_register_state *state,
+                                  uint16_t raw_value);
+ti_c54x_status_register_status
+ti_c54x_status_register_write_st1(ti_c54x_status_register_state *state,
+                                  uint16_t raw_value);
+ti_c54x_status_register_status
+ti_c54x_status_register_write_pmst(ti_c54x_status_register_state *state,
+                                   uint16_t raw_value);
+
 #ifdef __cplusplus
 }
 #endif
