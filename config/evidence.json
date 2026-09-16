@@ -6227,6 +6227,24 @@
       "assertion": "MPYA syntax 1 is MPYA Smem with opcode bits 15:8 00110001 (I bit 7, Smem field 6:0), one program word, and execution (Smem) x (A(32-16)) into B with (Smem) into T. The operation is affected by FRCT and OVM and affects OVdst (OVB in syntax 1), and T is updated in the read phase. Example 1 (MPYA *AR2, A FF 8765 1111, B 00 0000 0320, T 1234, mem[0200] 5678, FRCT 0) yields B FF D743 6558 and T 5678."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MPYA",
+        "printed_page_start": "4-104",
+        "printed_page_end": "4-105"
+      },
+      "assertion": "MPYA syntax 2 is MPYA dst with opcode word 1111 010D 1000 1100 (D bit 8 selects A/B), one program word, and execution (T) x (A(32-16)) into dst with no memory operand and no T update. The operation is affected by FRCT and OVM and affects OVdst. Example 2 (MPYA B, A FF 8765 1111, B 00 0000 0320, T 4567, FRCT 0) yields B FF DF4D B2A3 with A and T unchanged. The SPRU179C algebraic restatement (dst = T * hi(A), p. 4-107) agrees."
+    },
+    {
       "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6375,6 +6393,22 @@
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3i is implemented and green: nine MAS_DUAL_Mx_My catalog rows at 0xB800|xm<<6|ym<<2 under mask 0xF8CC reusing the DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (src) minus (X)x(Y) with FRCT/OVM handling and R rounding, and CPU retirement proving the TI Example 2/4-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B FF F3B4 0F40 unrounded and FF F3B4 0000 rounded, T 5678). TI prints B FF F9DA 0FA0/0000 for these examples, which equals the FRCT=0 computation exactly; per SPRU131 ST1 FRCT (multiplier output left-shifts one bit), the Example 2 prose, and the MAC Example 4 / MPY Example 1 oracles, the silicon behavior with FRCT=1 is the shifted product, and a dedicated FRCT=0 lane pins TI's printed value. The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MASR dual form retirement (R=1 words execute through the MAS_DUAL rows), and dual replay classification."
+    },
+    {
+      "id": "E-PROJECT-P3-S3J-MPYA-DST-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3j: MPYA-dst register-only vertical slice (planned)"
+      },
+      "assertion": "S3j is implemented and green: one MPYA_DST catalog row at 0xF48C under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (T) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (the S3d hi(A) feed with T and multiplicand roles swapped, no memory effect, no T update), and CPU retirement proving TI MPYA Example 2 (A FF 8765 1111, T 4567, FRCT 0 yield B FF DF4D B2A3 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-07 lands SUBSET."
     }
   ],
   "requirements": [
@@ -14677,6 +14711,78 @@
       "test_ids": [
         "T-COMMON-P3-S3I-MAS-DUAL-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3J-MPYA-DST-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog one MPYA_DST row at first-word value 0xF48C under mask 0xFEFF with one program word, two encodings, the reused MAX_MIN_ACC single-destination-bit layout, ELIGIBLE repeatability by the Table 2-28 omission (no MPYA entry), and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3J-MPYA-DST-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3J-MPYA-DST-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode both MPYA_DST encodings with bundle copy and D-bit extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3J-MPYA-DST-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3J-MPYA-DST-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MPYA dst as (T) x (A(32-16)) into dst through the multiply core with STORE select, FRCT/OVM handling, no rounding, no memory effect, and no T update, per TI MPYA Example 2, at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3J-MPYA-DST-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3J-MPYA-DST-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MPYA dst on the CPU per TI MPYA Example 2 with accumulator write, T and source-A preservation, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPYA-DST-P4-104-4-105"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3J-MPYA-DST-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3J-MPYA-DST-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MPYA_DST catalog row to FORM-T2-03-07 at SUBSET coverage over the D-bit register destination select.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3J-MPYA-DST-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -17856,7 +17962,8 @@
         "REQ-PROJECT-P3-S3B-MAC-INVENTORY",
         "REQ-PROJECT-P3-S3C-MPY-INVENTORY",
         "REQ-PROJECT-P3-S3D-MPYA-INVENTORY",
-        "REQ-PROJECT-P3-S3E-MAS-INVENTORY"
+        "REQ-PROJECT-P3-S3E-MAS-INVENTORY",
+        "REQ-PROJECT-P3-S3J-MPYA-DST-INVENTORY"
       ]
     },
     {
@@ -21144,6 +21251,62 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3I-MAS-DUAL-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3J-MPYA-DST-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mpya_dst_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_dst_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3J-MPYA-DST-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3J-MPYA-DST-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mpya_dst_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_dst_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3J-MPYA-DST-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3J-MPYA-DST-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpya_dst_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpya_dst_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3J-MPYA-DST-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3J-MPYA-DST-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mpya_dst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mpya_dst"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3J-MPYA-DST-CPU-RETIREMENT"
       ]
     }
   ]

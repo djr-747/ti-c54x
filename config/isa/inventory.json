@@ -453,9 +453,11 @@
       "table_ordinal": 7,
       "mnemonic": "MPYA",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MPYA_DST"
+      ]
     },
     {
       "id": "FORM-T2-03-08",
@@ -3734,6 +3736,12 @@
       "form_id": "FORM-T2-04-16",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD2"
+    },
+    {
+      "catalog_symbol": "MPYA_DST",
+      "form_id": "FORM-T2-03-07",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
     }
   ]
 }

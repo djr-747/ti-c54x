@@ -7,4 +7,5 @@ ti_c54x_core_sources += \
     src/isa/ops/multiply/op_mas_smem.c \
     src/isa/ops/multiply/op_mac_dual.c \
     src/isa/ops/multiply/op_mpy_dual.c \
-    src/isa/ops/multiply/op_mas_dual.c
+    src/isa/ops/multiply/op_mas_dual.c \
+    src/isa/ops/multiply/op_mpya_dst.c

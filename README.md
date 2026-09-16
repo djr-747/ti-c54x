@@ -20,11 +20,11 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3i complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
-`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`).
+Current snapshot: P3-S3j complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
+`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only `MPYA dst`).
 
-- 196 runnable catalog rows under 13,797 populated first-word lookup entries.
-  Inventory coverage is 71/205 forms SUBSET-or-better (34.634%) and 33/205
+- 197 runnable catalog rows under 13,799 populated first-word lookup entries.
+  Inventory coverage is 72/205 forms SUBSET-or-better (35.122%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -62,9 +62,13 @@ Current snapshot: P3-S3i complete (`MAC`/`MPY`/`MPYA`/`MAS` Smem rows plus
   `(Xmem)`x`(Ymem)` completion and read-phase T load (the TI MAS Example
   2/4-derived silicon vectors retire through the leaf; TI's printed
   accumulators equal the FRCT=0 computation, and a dedicated lane pins
-  that value while FRCT=1 executes the SPRU131-shifted product).
-- Major remaining work is the `MACA`/`MACD`/`MACP` family and `MPYA`
-  syntax 2 (the `R` variants share the dual row encodings),
+  that value while FRCT=1 executes the SPRU131-shifted product). S3j lands
+  the register-only `MPYA dst` row (`FORM-T2-03-07`, both D encodings
+  under one masked row) reusing the MAX/MIN single-destination-bit layout
+  with `(T)`x`(A(32-16))` STORE completion and no T update (TI MPYA
+  Example 2 retires through the leaf with A and T preserved).
+- Major remaining work is the `MACA`/`MACD`/`MACP` family
+  (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

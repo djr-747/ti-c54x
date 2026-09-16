@@ -69,10 +69,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 195)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 195)
+        self.assertEqual(len(bindings), 196)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 196)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 162)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 163)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -83,7 +83,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | MAS_DUAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM"},
+            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYA_DST"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -120,6 +120,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     if binding["catalog_symbol"] in ("RETD", "RETED", "RCD")
                     else "RTN_POP_NONDELAYED"
                     if binding["catalog_symbol"] == "RETF"
+                    else "REGISTER_DST"
+                    if binding["catalog_symbol"] == "MPYA_DST"
                     else "DIRECT_PAGE0"
                     if binding["catalog_symbol"] == "STM"
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
