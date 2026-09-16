@@ -185,6 +185,34 @@ emulator integration stays deferred per repository policy. Slice
 order follows waves 1–8 above; remaining LD-family MOD variants
 yield to wave-1 control flow.
 
+### P3 slice order (approved 2026-09-16)
+
+This heading records the approved continuation order for the P3
+5110-DSP-image track. Slice 0 lands or parks the tree state that
+predates approval; each later slice keeps the standing gates (TDD
+RED-first, evidence plus requirement plus executable test, atomic
+commit followed by a ledger-only commit). If a slice's TI evidence
+is missing it stays `UNRESOLVED` and the next evidenced slice moves
+up; order flexes, gates do not. Coverage is measured only by
+`config/isa/inventory.json` bindings (family x/205, strict-complete
+y/205); populated-first-word lookup counts are never ISA coverage.
+
+| # | Slice | Census wave | Exit |
+|---|---|---|---|
+| 0 | Land or park in-flight `RETF` plus RTN register | 1 tail | Clean tree via atomic commit plus ledger commit, or documented park plus revert |
+| 1 | 205-denominator delayed-variant scope audit | cross-cutting | Documented denominator decision for branch-readiness claims |
+| 2 | `XC` conditional execution | 1 tail | Catalog, decode, effect, CPU, inventory binding |
+| 3 | Far branches `FB`/`FCALL` (plus `FBD`/`FRET` if evidenced) | 1 tail | Same four-contract shape |
+| 4 | Accumulator-addressed `BACC`/`CALA` (plus `BACCD`/`CALAD` if evidenced) | 1 tail | Same four-contract shape |
+| 5 | `RCD` delayed conditional return | 1 tail | Same shape over the delayed-return seam |
+| 6 | MMR/device routing seam, no catalog rows | prerequisite | Sealed seam with RED contracts, W43A pattern |
+| 7 | `STM` MMR store (4,260 static words) | 2 | Four contracts over the slice-6 seam |
+| 8 | `STH` plus `STLM` status stores | 2 | Same shape |
+| 9 | RPT activation: single-repeat PC flow, predecode IRQ arbitration, body eligibility | 3 prerequisite | Closes the P2-W48C items; `RPT`/`RPTB`/`RPTZ` follow, `RPTBD` after delayed-branch composition |
+| 10 | MAC/MPY datapath seam plus `MAC`/`MPY` first | 4 | Seam plus first families; `MPYA`/`MAS`/`MACR` follow |
+| 11 | MMR/stack moves in static-count order | 5 | Family slices over the slice-6 seam |
+| 12 | Bit/field ops, shifts/misc, port seam | 6–8 | Closes the census tail; ports get a seam-first treatment |
+
 ### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for this
