@@ -9833,3 +9833,69 @@ rewritten after publication.
   (`MACR`/`MASR`/`MAC`/`MPYA` syntax 2); deferred exotic
   indirect modes, `MACA`/`MACD`/`MACP`, dual `#lk` words,
   and far/XPC/timing.
+
+## 2026-09-16 — P3-S3g MAC Xmem,Ymem dual slice (slice 15)
+
+- Commit `f24e8ed` lands `FORM-T2-04-04` (TI SPRU172C
+  `MAC[R]` syntax 2, opcode `1011 0RSD XXXX YYYY`,
+  pp. 4-82–4-84) as nine `MAC_DUAL_Mx_My` rows at
+  `0xB000|xmode<<6|ymode<<2` under mask `0xF8CC` with
+  `UNRESOLVED` repeatability. The new
+  `DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR` layout packs
+  the contiguous R/S/D bits into one 3-bit RSD field
+  plus XAR/YAR, after the first draft used five
+  one-bit fields and smashed the stack: the frozen
+  trusted-operand capacity is 4 and the generic
+  trusted extractor refuses wider layouts, while the
+  trusted packet size is pinned against growth. The
+  checked/trusted leaves stage dual-indirect
+  MOD0–MOD2 reads with `load_t_with_read` and complete
+  `(X)x(Y)+(src)` into `dst` through the multiply
+  core; the dual READY commit now honors the T-load
+  flag with the X-side word (mirroring the single-word
+  commit). TI Examples 4/6 retire at leaf and CPU:
+  derived vectors keep TI's values/FRCT/T-load but
+  ride Y on `*AR4+` because TI's `*AR6+` is outside
+  the frozen AR2–AR5 dual root; an M2_M2 lane proves
+  both post-increments and MACR rounding.
+- RED was observed three times: the leaf stub failed
+  `ti_c54x.mac_dual_ops` at staging; the committed
+  T-load was stashed to prove `ti_c54x.cpu_mac_dual`
+  fails exactly at the T assertion without it; and a
+  hand-computed `0x0C4C10C4` expectation in the
+  author's own src-B vector was corrected to
+  `0x0C4C00C4` after the harness printed
+  actual=`0x0C4C00C4` (the leaf was right). The
+  five-field RSD draft also exposed the capacity
+  limit through ASan-visible stack smashing before
+  the three-field redesign.
+- Evidence gains 2 records, 2 requirements (owner
+  split `src/isa/ops/multiply/` vs `src/cpu/`, TI-only
+  evidence), and 2 test records (356/564/449→358/566/451).
+  The first evidence draft
+  cited section `MAC[R]`; the gate's locator parser
+  wants the bare section, so the record uses `MAC`
+  with the `4-83`–`4-84` page range. Neighbor pins
+  move to 178 IDs/rows/bindings, 12,357 lookup
+  entries, 69/205 (33.659%); eleven near-miss flips
+  (`LD_T`/`LD_LK16`/`LD_LK_SHIFT`/`LD_SRC_ASM`/
+  `LD_XMEM_SHIFT`/`B_PMAD`/`BD`/`CALL_PMAD`/`CALLD`/
+  `RETF`/`RPT_LK`) now land in the new rows and are
+  carved out as named S3g siblings. `make test` caught
+  two pin classes the CMake run hid behind stale
+  binaries (`ID_COUNT` and population counts), which
+  is why both harnesses stay in the gate battery.
+- Validation is GREEN: full CMake CTest 433/433 on a
+  fresh full build; `make test` 101 ok; ASan/UBSan
+  `make test` clean; Python `unittest discover` OK;
+  evidence, inventory, source-boundary, and lookup
+  `--check` gates pass; `git diff --check` clean. No
+  knob was added or changed. New files peak at 402
+  lines (`op_mac_dual.c`); no split required.
+- Follow-up work: `MPY`/`MAS` dual rows reusing the
+  S3g leaf/commit pattern, `MPYA` syntax 2, AR6/AR7
+  dual-Y widening against the CPU addressing
+  reference, MOD3 neighborhoods, dual replay
+  classification; deferred exotic indirect modes,
+  `MACA`/`MACD`/`MACP`, dual `#lk` words, and
+  far/XPC/timing.
