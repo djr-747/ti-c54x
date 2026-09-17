@@ -10085,3 +10085,81 @@ rewritten after publication.
   AR6/AR7 dual-Y widening, MOD3 neighborhoods, dual
   replay classification; deferred exotic indirect
   modes, dual `#lk` words, and far/XPC/timing.
+
+## 2026-09-17 — P3-S3k SQUR-Smem square slice (slice 19)
+
+- Commit `d65369d` lands `FORM-T2-03-09` (TI SPRU172C
+  `SQUR` syntax 1, opcode `0010 011D IAAA AAAA`,
+  dual-sourced against the SPRU179C algebraic
+  `B = square(@30)`) as one `SQUR_SMEM` catalog row
+  at `0x2600` under mask `0xFE00` carrying 512
+  D/I/addr7 encodings through the new
+  `DESTINATION_INDIRECT_ADDR7` layout (D destination
+  plus indirect/addr7 with no round or select bits;
+  reusing the shared round/select layout would
+  mislabel fixed bit 9 as rounding) with `ELIGIBLE`
+  repeatability (Table 2-28 lists no SQUR entry).
+  Checked/trusted leaves stage direct page-0 and
+  standard-indirect MOD0–MOD3 reads with read-phase
+  T load and exotic-mode deferral; read-value STORE
+  completion squares Smem into the D-selected
+  accumulator through the multiply core with
+  FRCT/OVM and no rounding. CPU retirement proves
+  TI SQUR Example 1 (mem `000F`, FRCT 0 yield B `00
+  0000 00E1` and T `000F`). New TI record
+  `E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161` plus
+  activation, six owner-split requirements
+  (CATALOG, DECODE, EFFECTS, CPU-RETIREMENT, LAYOUT,
+  INVENTORY), and five test records
+  (363/575/459→365/581/464); the PROJECT INVENTORY
+  requirement rides the shared binding test and the
+  binding uses the `DIRECT_PAGE0_STANDARD_INDIRECT_
+  MOD0_MOD3` subset token shared with the other
+  Smem rows.
+- RED was observed on the stub (absent
+  `TI_C54X_OPCODE_ID_SQUR_SMEM` identity plus
+  absent layout). Two author-side trips, both caught
+  by the slice's own tests before commit: the first
+  mask `0xFE80` wrongly fixed the varying I bit and
+  yielded 256 lookup entries instead of 512 (the
+  generator expansion is the honest oracle here —
+  corrected to `0xFE00` in the row, leaf, tests,
+  and anchor); the decode invalid lane pinned
+  `0x2800`, which is the live `MAC_SMEM` row, and
+  was replaced with verified-unknown `0x2400`.
+  `git diff --check` clean. New files peak at 238
+  lines (`test_squr_smem_ops.c`); no split required.
+  `operand_layout.c` grows by six lines with no
+  split decision (well under 500/800).
+- Neighbor pins move to 198 IDs, 197 rows/bindings
+  (164 SUBSET plus 33 COMPLETE), 14,311 lookup
+  entries, 73/205 (35.610%) with the `FORM-T2-03-09`
+  contract set; strict stays 33/205 (16.098%). The
+  0x26xx near-miss sweep is clean. A manifest-order
+  trip (Make/CMake source lists must agree in set
+  AND order) was caught by the manifest gate and
+  fixed before commit.
+- Validation is GREEN: full CMake CTest 446/446 on
+  the working build; fresh Debug configure plus full
+  CTest 446/446 in `/tmp/ti-c54x-s3k-debug`; full
+  sanitizer CMake/CTest 445/445 (quality.python
+  excluded, green separately); `make test` exit 0
+  with observer artifact OK; focused ASan/UBSan
+  `squr_smem` tests rc=0 with `detect_leaks=0`;
+  Python `unittest discover` OK (272); evidence
+  (365/581/464), inventory (73/205),
+  source-boundary, knob, manifest, and lookup gates
+  pass. No knob was added or changed. README
+  snapshot now reads P3-S3k complete. Scratch-build
+  hygiene from S3j holds: superseded
+  `/tmp/ti-c54x-*` dirs are removed as they are
+  replaced.
+- Follow-up work: SQUR syntax 2 (`SQUR A,dst`,
+  register-only, updates the `test_mpya_dst_decode`
+  UNKNOWN lane), `SQURA`/`SQURS`, `MPYU`
+  (unsigned core support, shares the S3k layout
+  shape), `MACA`/`MACD`/`MACP` family, AR6/AR7
+  dual-Y widening, MOD3 neighborhoods, dual replay
+  classification; deferred exotic indirect modes,
+  dual `#lk` words, and far/XPC/timing.
+
