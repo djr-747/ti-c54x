@@ -1,6 +1,6 @@
-### P3-S3y: MPYR Smem lock-in slice (planned)
+### P3-S3y: MPYR Smem lock-in slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MPYR Smem` (TI SPRU179C §MPY syntax 1 with `rnd()`,
 opcode `0010_00RD_IAAAAAAA` with R=1) shares the `MPY_SMEM` row: no
 new catalog row, layout, production change, inventory binding, or

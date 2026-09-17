@@ -1,6 +1,6 @@
-### P3-S3m: SQURA/SQURS accumulate-squares vertical slice (planned)
+### P3-S3m: SQURA/SQURS accumulate-squares vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `SQURA Smem,src` and `SQURS Smem,src`
 forms from TI SPRU172C §SQURA (printed p. 4-163) and §SQURS (printed
 p. 4-164) are implemented as two catalog rows sharing one leaf file

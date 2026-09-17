@@ -1,6 +1,6 @@
-### P3-S3n: MPYU unsigned-multiply vertical slice (planned)
+### P3-S3n: MPYU unsigned-multiply vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `MPYU Smem,dst` form from TI SPRU172C
 §MPYU (printed p. 4-106, opcode `0010 010D IAAA AAAA`,
 dual-sourced against the TI SPRU307A functional-overview opcode

@@ -1,6 +1,6 @@
-### P3-S5: accumulator-addressed push seam (planned)
+### P3-S5: accumulator-addressed push seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S5 FIT/ownership
+This immutable `(implemented; local verification green)` heading is the durable S5 FIT/ownership
 anchor. S5 is a sealed architectural seam with no catalog rows, no
 opcode identities, no handlers, and no CPU opcode branch, following
 the W43A pattern. TI SPRU172C §4 `CALA[D]` (printed pp. 4-24–4-25)

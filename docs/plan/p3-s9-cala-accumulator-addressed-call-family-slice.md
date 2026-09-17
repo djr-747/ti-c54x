@@ -1,6 +1,6 @@
-### P3-S9: CALA accumulator-addressed call family slice (planned)
+### P3-S9: CALA accumulator-addressed call family slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `CALA[D]` (TI SPRU172C §CALA[D], printed pp. 4-24–
 4-25, opcode `1111_01ZS_1110_0011` with Z at bit 9 selecting
 nondelayed `CALA` (`0`) or delayed `CALAD` (`1`) and S at bit 8

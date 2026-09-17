@@ -266,13 +266,13 @@ model the baseline explicitly keeps in later profiles. A
 lane that hits a missing seam stops and opens the seam
 slice; no family-local workaround is admitted.
 
-- [P3-S1: MMR/device routing seam (planned)](plan/p3-s1-mmr-device-routing-seam.md)
+- [P3-S1: MMR/device routing seam (implemented; local verification green)](plan/p3-s1-mmr-device-routing-seam.md)
 
-- [P3-S7: STM immediate-MMR-store vertical slice (planned)](plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md)
+- [P3-S7: STM immediate-MMR-store vertical slice (implemented; local verification green)](plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md)
 
-- [P3-S2: RPT activation seam (planned)](plan/p3-s2-rpt-activation-seam.md)
+- [P3-S2: RPT activation seam (implemented; local verification green)](plan/p3-s2-rpt-activation-seam.md)
 
-- [P3-S3: MAC/MPY datapath seam (planned)](plan/p3-s3-mac-mpy-datapath-seam.md)
+- [P3-S3: MAC/MPY datapath seam (implemented; local verification green)](plan/p3-s3-mac-mpy-datapath-seam.md)
 
 - [P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)](plan/p2-w38-fixed-mod2-ld-smem-16-vertical-slice.md)
 
@@ -581,51 +581,51 @@ timing remain unresolved until independently evidenced.
 
 - [P2-W78: RCD delayed-conditional-return vertical slice (planned)](plan/p2-w78-rcd-delayed-conditional-return-vertical-slice.md)
 
-- [P3-S3j: MPYA-dst register-only vertical slice (planned)](plan/p3-s3j-mpya-dst-register-only-vertical-slice.md)
+- [P3-S3j: MPYA-dst register-only vertical slice (implemented; local verification green)](plan/p3-s3j-mpya-dst-register-only-vertical-slice.md)
 
-- [P3-S3k: SQUR-Smem square vertical slice (planned)](plan/p3-s3k-squr-smem-square-vertical-slice.md)
+- [P3-S3k: SQUR-Smem square vertical slice (implemented; local verification green)](plan/p3-s3k-squr-smem-square-vertical-slice.md)
 
-- [P3-S3l: SQUR-Adst register-only vertical slice (planned)](plan/p3-s3l-squr-adst-register-only-vertical-slice.md)
+- [P3-S3l: SQUR-Adst register-only vertical slice (implemented; local verification green)](plan/p3-s3l-squr-adst-register-only-vertical-slice.md)
 
-- [P3-S3m: SQURA/SQURS accumulate-squares vertical slice (planned)](plan/p3-s3m-squra-squrs-accumulate-squares-vertical-slice.md)
+- [P3-S3m: SQURA/SQURS accumulate-squares vertical slice (implemented; local verification green)](plan/p3-s3m-squra-squrs-accumulate-squares-vertical-slice.md)
 
-- [P3-S3n: MPYU unsigned-multiply vertical slice (planned)](plan/p3-s3n-mpyu-unsigned-multiply-vertical-slice.md)
+- [P3-S3n: MPYU unsigned-multiply vertical slice (implemented; local verification green)](plan/p3-s3n-mpyu-unsigned-multiply-vertical-slice.md)
 
-- [P3-S3o: MACA Smem accumulate-A slice (planned)](plan/p3-s3o-maca-smem-accumulate-a-slice.md)
+- [P3-S3o: MACA Smem accumulate-A slice (implemented; local verification green)](plan/p3-s3o-maca-smem-accumulate-a-slice.md)
 
-- [P3-S3p: MACA T,src register-only slice (planned)](plan/p3-s3p-maca-t-src-register-only-slice.md)
+- [P3-S3p: MACA T,src register-only slice (implemented; local verification green)](plan/p3-s3p-maca-t-src-register-only-slice.md)
 
-- [P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)](plan/p3-s3q-macp-smem-pmad-program-coefficient-slice.md)
+- [P3-S3q: MACP Smem,Pmad program-coefficient slice (implemented; local verification green)](plan/p3-s3q-macp-smem-pmad-program-coefficient-slice.md)
 
-- [P3-S3r: MACD Smem,Pmad delay-write slice (planned)](plan/p3-s3r-macd-smem-pmad-delay-write-slice.md)
+- [P3-S3r: MACD Smem,Pmad delay-write slice (implemented; local verification green)](plan/p3-s3r-macd-smem-pmad-delay-write-slice.md)
 
-- [P3-S3s: MACSU Xmem,Ymem dual slice (planned)](plan/p3-s3s-macsu-xmem-ymem-dual-slice.md)
+- [P3-S3s: MACSU Xmem,Ymem dual slice (implemented; local verification green)](plan/p3-s3s-macsu-xmem-ymem-dual-slice.md)
 
-- [P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)](plan/p3-s3t-macr-xmem-ymem-dual-lock-in-slice.md)
+- [P3-S3t: MACR Xmem,Ymem dual lock-in slice (implemented; local verification green)](plan/p3-s3t-macr-xmem-ymem-dual-lock-in-slice.md)
 
-- [P3-S3u: MASR Smem and dual lock-in slice (planned)](plan/p3-s3u-masr-smem-and-dual-lock-in-slice.md)
+- [P3-S3u: MASR Smem and dual lock-in slice (implemented; local verification green)](plan/p3-s3u-masr-smem-and-dual-lock-in-slice.md)
 
-- [P3-S3v: MACAR Smem lock-in slice (planned)](plan/p3-s3v-macar-smem-lock-in-slice.md)
+- [P3-S3v: MACAR Smem lock-in slice (implemented; local verification green)](plan/p3-s3v-macar-smem-lock-in-slice.md)
 
-- [P3-S3w: MASA Smem and T slice (planned)](plan/p3-s3w-masa-smem-and-t-slice.md)
+- [P3-S3w: MASA Smem and T slice (implemented; local verification green)](plan/p3-s3w-masa-smem-and-t-slice.md)
 
-- [P3-S3x: MASAR T lock-in slice (planned)](plan/p3-s3x-masar-t-lock-in-slice.md)
+- [P3-S3x: MASAR T lock-in slice (implemented; local verification green)](plan/p3-s3x-masar-t-lock-in-slice.md)
 
-- [P3-S3y: MPYR Smem lock-in slice (planned)](plan/p3-s3y-mpyr-smem-lock-in-slice.md)
+- [P3-S3y: MPYR Smem lock-in slice (implemented; local verification green)](plan/p3-s3y-mpyr-smem-lock-in-slice.md)
 
-- [P3-S3z: ADD Smem slice (planned)](plan/p3-s3z-add-smem-slice.md)
+- [P3-S3z: ADD Smem slice (implemented; local verification green)](plan/p3-s3z-add-smem-slice.md)
 
-- [P3-S4: XC conditional-execution slice (planned)](plan/p3-s4-xc-conditional-execution-slice.md)
+- [P3-S4: XC conditional-execution slice (implemented; local verification green)](plan/p3-s4-xc-conditional-execution-slice.md)
 
-- [P3-S5: accumulator-addressed push seam (planned)](plan/p3-s5-accumulator-addressed-push-seam.md)
+- [P3-S5: accumulator-addressed push seam (implemented; local verification green)](plan/p3-s5-accumulator-addressed-push-seam.md)
 
-- [P3-S8: BACC accumulator-addressed branch family slice (planned)](plan/p3-s8-bacc-accumulator-addressed-branch-family-slice.md)
+- [P3-S8: BACC accumulator-addressed branch family slice (implemented; local verification green)](plan/p3-s8-bacc-accumulator-addressed-branch-family-slice.md)
 
-- [P3-S9: CALA accumulator-addressed call family slice (planned)](plan/p3-s9-cala-accumulator-addressed-call-family-slice.md)
+- [P3-S9: CALA accumulator-addressed call family slice (implemented; local verification green)](plan/p3-s9-cala-accumulator-addressed-call-family-slice.md)
 
-- [P3-S10: STH syntax-1 Smem store slice (planned)](plan/p3-s10-sth-syntax-1-smem-store-slice.md)
+- [P3-S10: STH syntax-1 Smem store slice (implemented; local verification green)](plan/p3-s10-sth-syntax-1-smem-store-slice.md)
 
-- [P3-S11: STH by-ASM Smem store slice (planned)](plan/p3-s11-sth-by-asm-smem-store-slice.md)
+- [P3-S11: STH by-ASM Smem store slice (implemented; local verification green)](plan/p3-s11-sth-by-asm-smem-store-slice.md)
 
 - [P3-S12: STH by-SHFT Xmem store slice (implemented; local verification green)](plan/p3-s12-sth-by-shft-xmem-store-slice.md)
 

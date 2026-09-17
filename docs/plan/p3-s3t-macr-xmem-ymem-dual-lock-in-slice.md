@@ -1,6 +1,6 @@
-### P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)
+### P3-S3t: MACR Xmem,Ymem dual lock-in slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MACR Xmem, Ymem, src [, dst]` (TI SPRU172C §MAC[R]
 syntax 2, opcode `1011_0RSD_XXXX_YYYY`, pp. 4-82–4-84) shares the nine
 `MAC_DUAL_Mx_My` rows with R=1: no new catalog row, layout, production

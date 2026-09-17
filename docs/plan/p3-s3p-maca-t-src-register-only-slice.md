@@ -1,6 +1,6 @@
-### P3-S3p: MACA T,src register-only slice (planned)
+### P3-S3p: MACA T,src register-only slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `MACA[R] T, src [, dst]` syntax-2 form
 from TI SPRU172C §MACA[R] (printed p. 4-85, opcode
 `1111 01SD 1000 100R`) is implemented as one catalog row:

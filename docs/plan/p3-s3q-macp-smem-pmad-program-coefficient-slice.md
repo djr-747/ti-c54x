@@ -1,6 +1,6 @@
-### P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)
+### P3-S3q: MACP Smem,Pmad program-coefficient slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The two-word `MACP Smem, pmad [, dst]` syntax-1 form
 from TI SPRU172C §MACP (printed p. 4-89, word 0
 `0111_100S_IAAA_AAAA` with word 1 `pmad`) is implemented as one

@@ -1,6 +1,6 @@
-### P3-S3s: MACSU Xmem,Ymem dual slice (planned)
+### P3-S3s: MACSU Xmem,Ymem dual slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `MACSU Xmem, Ymem, src` syntax-2 form
 from TI SPRU172C §MACSU (printed p. 4-91, word 0
 `1010_011S_XXXX_YYYY`) is implemented as nine catalog rows (X field 7:4, Y field 3:0):

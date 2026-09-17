@@ -1,6 +1,6 @@
-### P3-S3l: SQUR-Adst register-only vertical slice (planned)
+### P3-S3l: SQUR-Adst register-only vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `SQUR A,dst` form from TI SPRU172C §SQUR
 (printed p. 4-162), dual-sourced against TI SPRU179C §Square
 (printed p. 4-164, algebraic `B = square(hi(A))`), is implemented as

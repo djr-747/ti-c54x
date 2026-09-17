@@ -1,6 +1,6 @@
-### P3-S3u: MASR Smem and dual lock-in slice (planned)
+### P3-S3u: MASR Smem and dual lock-in slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MASR Smem` (TI SPRU172C §MAS[R] Example 3, opcode
 `0010_11RS_IAAAAAAA`) shares the `MAS_SMEM` row with
 R=1, and `MASR Xmem, Ymem, src [, dst]` shares the nine

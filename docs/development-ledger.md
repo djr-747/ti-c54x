@@ -11987,3 +11987,38 @@ entries are not rewritten after publication.
   Smem (needs TI opcode-diagram rows),
   then the next pilot wave over the
   triaged leaf-ready list.
+
+## 2026-09-17 — Status-flip backlog catch-up
+
+- The plan index and 27 slice docs still
+  read `(planned)` for slices whose
+  registry ACTIVATIONs assert implemented
+  and green with IMPLEMENTED requirements
+  and PASSING tests: S1, S2, S3 (plus
+  S3B-S3I ACTIVATIONs anchored to the S3
+  seam doc), S3J-S3Z, S4, S5, S7, S8,
+  S9, S10, S11. A bulk audit verified
+  every ACTIVATION is backed (all linked
+  requirements IMPLEMENTED, all linked
+  tests PASSING with files present, all
+  anchors resolving); the S3F/G/H/I/T/U/V/W/X/Y
+  lock-in slices retire through shared
+  rows with no new modules, which the
+  assertions already state.
+- This commit flips all 27 headings plus
+  their anchor sentences and plan links
+  to `(implemented; local verification
+  green)` and syncs the 38 registry
+  anchors and 38 index cells quoting
+  them (same-commit sync per the S12/S13
+  correction). S12/S15 body sentences
+  get the same quote sync. No code,
+  test, requirement, or inventory change;
+  `check_evidence.py` PASS (420/672/542).
+- True remaining plan: S6 port seam (no
+  slice doc yet), far/XPC (deferred by
+  the arch criterion), the 111-form
+  UNIMPLEMENTED backlog minus landed
+  rows, and SUB/AND Smem catalog
+  binding (blocked on TI opcode-diagram
+  rows).

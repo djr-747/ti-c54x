@@ -1,6 +1,6 @@
-### P3-S3v: MACAR Smem lock-in slice (planned)
+### P3-S3v: MACAR Smem lock-in slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MACAR Smem` (TI SPRU172C §MACA[R] Example 3, opcode
 `0011_01RS_IAAAAAAA`) shares the `MACA_SMEM` row with R=1: no new
 catalog row, layout, production change, inventory binding, or neighbor

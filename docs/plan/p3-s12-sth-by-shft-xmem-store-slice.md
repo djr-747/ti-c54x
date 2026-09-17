@@ -1,6 +1,6 @@
 ### P3-S12: STH by-SHFT Xmem store slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `STH` syntax 3 (`STH src, SHFT, Xmem`, TI SPRU172C §STH,
 printed pp. 4-168–4-171, opcode `1001_101S_XXXXSHFT` with S at bit 8
 selecting accumulator A (`0`) or B (`1`)) lands one row:

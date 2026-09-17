@@ -1,6 +1,6 @@
-### P3-S3x: MASAR T lock-in slice (planned)
+### P3-S3x: MASAR T lock-in slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MASAR T,src` (TI SPRU179C §MASA syntax 2 with
 `rnd()`, opcode `1111_01SD_1000_101R` with R=1) shares the `MASA_T`
 row: no new catalog row, layout, production change, inventory

@@ -1,6 +1,6 @@
-### P3-S3w: MASA Smem and T slice (planned)
+### P3-S3w: MASA Smem and T slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `MASA Smem` (TI SPRU179C §MASA syntax 1, opcode
 `0011_0011_IAAAAAAA`, pp. 4-99–4-100) lands one `MASA_SMEM` row at
 `0x3300` under mask `0xFF00` (256 encodings, one program word)

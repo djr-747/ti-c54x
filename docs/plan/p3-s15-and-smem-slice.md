@@ -1,6 +1,6 @@
 ### P3-S15: AND Smem slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `AND Smem, dst` (TI SPRU172C Sec4 AND, p. 4-11:
 `dst &= Smem`) lands one catalog-free pure leaf:
 `ti_c54x_op_and_smem_values` plus `ti_c54x_trusted_op_and_smem` in

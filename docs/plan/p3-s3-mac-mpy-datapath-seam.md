@@ -1,6 +1,6 @@
-### P3-S3: MAC/MPY datapath seam (planned)
+### P3-S3: MAC/MPY datapath seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S3 FIT/ownership
+This immutable `(implemented; local verification green)` heading is the durable S3 FIT/ownership
 anchor. S3 builds the multiply-accumulate datapath on the S2 repeat
 seam: TI SPRU172C §4 `MAC[R]` (printed pp. 4-81–4-83) syntax 1
 `MAC[R] Smem, src` executes `(Smem) x (T) + (src)` into `src`

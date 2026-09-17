@@ -1,6 +1,6 @@
-### P3-S4: XC conditional-execution slice (planned)
+### P3-S4: XC conditional-execution slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `XC n,cond` (TI SPRU172C §XC, opcode
 `1111_11N1_CCCCCCCC` with N at bit 9 selecting n = 1 (`0`) or n = 2
 (`1`), pp. 4-198–4-200) lands one row: `XC` at `0xFD00` under mask

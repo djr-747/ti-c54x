@@ -1,6 +1,6 @@
-### P3-S8: BACC accumulator-addressed branch family slice (planned)
+### P3-S8: BACC accumulator-addressed branch family slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `BACC[D]` (TI SPRU172C §BACC[D], printed p. 4-15)
 lands two rows on the S5 accumulator-addressed push seam:
 `BACC` at `0xF4E2` and `BACCD` at `0xF6E2`, both under the shared

@@ -1,6 +1,6 @@
-### P3-S3j: MPYA-dst register-only vertical slice (planned)
+### P3-S3j: MPYA-dst register-only vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `MPYA dst` form from TI SPRU172C §MPYA
 (printed pp. 4-104–4-105), dual-sourced against TI SPRU179C §MPYA
 (printed pp. 4-106–4-107, algebraic `dst = T * hi(A)`), is implemented

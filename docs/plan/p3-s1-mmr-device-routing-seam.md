@@ -1,6 +1,6 @@
-### P3-S1: MMR/device routing seam (planned)
+### P3-S1: MMR/device routing seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S1 FIT/ownership
+This immutable `(implemented; local verification green)` heading is the durable S1 FIT/ownership
 anchor. S1 is a sealed architectural seam with no catalog rows, no
 opcode identities, no handlers, and no CPU opcode branch, following
 the W43A pattern. TI SPRU131G §3.3.4/Table 3-3 (printed p. 3-27)

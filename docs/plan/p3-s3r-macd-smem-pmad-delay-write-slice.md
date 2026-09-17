@@ -1,6 +1,6 @@
-### P3-S3r: MACD Smem,Pmad delay-write slice (planned)
+### P3-S3r: MACD Smem,Pmad delay-write slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The two-word `MACD Smem, pmad [, dst]` syntax-1 form
 from TI SPRU172C §MACD (printed p. 4-87, word 0
 `0111_101S_IAAA_AAAA` with word 1 `pmad`) is implemented as one

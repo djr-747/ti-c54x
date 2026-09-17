@@ -1,6 +1,6 @@
-### P3-S2: RPT activation seam (planned)
+### P3-S2: RPT activation seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S2 FIT/ownership
+This immutable `(implemented; local verification green)` heading is the durable S2 FIT/ownership
 anchor. S2 activates single-repeat on the W48A/W48B seam: TI
 SPRU172C §4 `RPT` (printed pp. 4-146–4-147) loads `RC` with
 the iteration count and repeats the following instruction

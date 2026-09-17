@@ -1,6 +1,6 @@
-### P3-S3k: SQUR-Smem square vertical slice (planned)
+### P3-S3k: SQUR-Smem square vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. The one-word `SQUR Smem,dst` form from TI SPRU172C
 §SQUR (printed pp. 4-160–4-161), dual-sourced against the TI SPRU179C
 algebraic restatement, is implemented as `SQUR_SMEM` with value

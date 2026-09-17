@@ -1,6 +1,6 @@
-### P3-S7: STM immediate-MMR-store vertical slice (planned)
+### P3-S7: STM immediate-MMR-store vertical slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S7 FIT/ownership
+This immutable `(implemented; local verification green)` heading is the durable S7 FIT/ownership
 anchor. S7 composes the first family on the S1 seam: TI SPRU172C
 §4 `STM #lk, MMR` (printed pp. 4-175–4-176) stores the second
 program word into the MMR file or DP0 with the nine MSBs of the

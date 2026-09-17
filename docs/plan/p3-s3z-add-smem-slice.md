@@ -1,6 +1,6 @@
-### P3-S3z: ADD Smem slice (planned)
+### P3-S3z: ADD Smem slice (implemented; local verification green)
 
-This immutable `(planned)` heading is the FIT/ownership anchor for this
+This immutable `(implemented; local verification green)` heading is the FIT/ownership anchor for this
 evidence freeze. `ADD Smem` syntaxes 1–3 (TI SPRU179C §ADD,
 opcodes `0000_000S_IAAAAAAA`,
 `0000_010S_IAAAAAAA`, and

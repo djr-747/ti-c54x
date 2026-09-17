@@ -5950,7 +5950,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s1-mmr-device-routing-seam.md",
-        "anchor": "P3-S1: MMR/device routing seam (planned)"
+        "anchor": "P3-S1: MMR/device routing seam (implemented; local verification green)"
       },
       "assertion": "S1 is the sealed MMR/device routing seam with no catalog rows: the Table 3-3 map owns per-address owner dispatch versus private file storage for IMR/TRN/BRC/RSA/REA, reserved words and XPC decline to the endpoint, whole-word owner accessors compose status and accumulator words with owner-held knownness, the resolver gates MMR READ knownness, and the root transaction serves routed traffic locally with atomic WAIT/READY/FAULT/cancel behavior. No knob, timing, IRQ/RPT, wrap, or ABI claim is admitted."
     },
@@ -6002,7 +6002,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md",
-        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
+        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (implemented; local verification green)"
       },
       "assertion": "S7 is the first family slice on the S1 seam: one row STM at 0x7700 under mask 0xFF00 with two program words and the DIRECT7_EXTENSION16 layout (I flag, addr7, lk16), a DP-independent page-0 planner behind the new DIRECT memory address kind, checked and trusted direct-store leaves that defer the I=1 indirect form, trusted dispatch binding with no opcode-specific CPU branch, MMR-routed and DP0-RAM CPU retirement with zero versus one endpoint call, and a SUBSET FORM-T2-20-14 inventory binding. The indirect Smem form, far/XPC, and timing stay deferred."
     },
@@ -6018,7 +6018,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md",
-        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
+        "anchor": "P3-S7: STM immediate-MMR-store vertical slice (implemented; local verification green)"
       },
       "assertion": "S7 is implemented and green: the STM catalog row, DIRECT7_EXTENSION16 decode, pure direct-store handler with deferred indirect form, trusted dispatch binding, page-0 DIRECT liveness arm in candidate validation, MMR and DP0 CPU retirement proofs, and SUBSET inventory binding are executable through the five RED contracts with the authoritative standalone gates passing."
     },
@@ -6034,7 +6034,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s2-rpt-activation-seam.md",
-        "anchor": "P3-S2: RPT activation seam (planned)"
+        "anchor": "P3-S2: RPT activation seam (implemented; local verification green)"
       },
       "assertion": "S2 activates single-repeat on the W48A/W48B seam: RPT #K at 0xEC00 under mask 0xFF00 and exact RPT #lk at 0xF070, both INELIGIBLE with no inputs, reusing the RPT_IMMEDIATE_K/LK layouts and the immediate core; a repeat_single driver owns guarded start, predecode arbitration plus body admission, and HOLD versus ADVANCE; run.c wires start plus predecode with the retirement-tail HOLD sites deferred to the first ELIGIBLE body. RPT Smem, ELIGIBLE flips, vectors, take paths, NMI sources, timing, and RPTB/RPTZ/RPTBD stay deferred."
     },
@@ -6050,7 +6050,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s2-rpt-activation-seam.md",
-        "anchor": "P3-S2: RPT activation seam (planned)"
+        "anchor": "P3-S2: RPT activation seam (implemented; local verification green)"
       },
       "assertion": "S2 is implemented and green: the RPT_K and RPT_LK catalog rows, immediate decode, pure repeat-start leaves with deferred Smem form, trusted dispatch bindings, the repeat_single driver composition, RPT retirement with RC load plus transactional body blocks plus latched-request persistence, and SUBSET inventory bindings are executable through the eight RED contracts with the authoritative standalone gates passing."
     },
@@ -6156,7 +6156,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3 builds the multiply-accumulate datapath on the S2 repeat seam: a pure core over copied raw40, u16 T, u16 multiplicand, FRCT/OVM bits, rounding flag, and add/sub/store select stages accumulator plus overflow effects with no addressing, rows, or CPU. Slices land the seam, then MAC Smem with ELIGIBLE plus RPT-MAC replay, then MPY Smem, then MPYA/MAS/MACR in census order. Dual Xmem/Ymem, #lk words, MACA/MACD/MACP, and PMST product-shift claims beyond FRCT stay deferred."
     },
@@ -6172,7 +6172,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3a is implemented and green: the pure multiply-accumulate core proves the TI MAC and MPY example vectors, FRCT shift, R rounding, OVM saturation with OVdst disposition, MAS subtraction, STORE accumulator independence, and transactional unknown/invalid stops; the STATUS_FRCT input resource carries ST1.FRCT with canonical unknownness beside FRCT/OVM selection; no catalog row lands."
     },
@@ -6206,7 +6206,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3b is implemented and green: the MAC_SMEM catalog row at 0x2800 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value completion through the multiply core, CPU retirement, the FORM-T2-04-01 SUBSET binding, and RPT-MAC end-to-end replay through the retirement-tail HOLD wiring."
     },
@@ -6222,7 +6222,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3c is implemented and green: the MPY_SMEM catalog row at 0x2000 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value STORE completion through the multiply core without accumulation (TI MPY Examples 1 and 4), CPU retirement, and the FORM-T2-03-01 SUBSET binding."
     },
@@ -6400,7 +6400,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3d is implemented and green: the MPYA_SMEM catalog row at 0x3100 under mask 0xFF00 with the new indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem times A-high into fixed B through the multiply core (TI MPYA Example 1), CPU retirement with T commit, and the FORM-T2-03-06 SUBSET binding."
     },
@@ -6452,7 +6452,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3e is implemented and green: the MAS_SMEM catalog row at 0x2C00 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value SUBTRACT completion through the multiply core with result-after-subtract rounding (TI MAS Examples 1 and 3), CPU retirement, and the FORM-T2-04-14 SUBSET binding."
     },
@@ -6468,7 +6468,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3f is implemented and green: MACR Smem retires through the MAC_SMEM row with R=1, locked by TI MAC Example 5 (MACR *AR5+ with A 00 0000 1000, T 0400, mem 1234, FRCT 0 yields A 00 0049 0000) at the semantic leaf and at CPU retirement. No catalog, inventory, or production change was needed; the dual Xmem/Ymem MACR syntaxes stay deferred."
     },
@@ -6502,7 +6502,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3g is implemented and green: nine MAC_DUAL_Mx_My catalog rows at 0xB000|xm<<6|ym<<2 under mask 0xF8CC with the new RSD/XAR/YAR layout and UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y)+(src), and CPU retirement proving the TI Example 4/6-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B 00 0C4C 10C0 unrounded and 00 0C4C 0000 rounded, T 5678). The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI Example 4 uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MPY/MAS dual rows, and dual replay classification. The three-bit RSD carrier keeps the layout within the frozen trusted-operand capacity."
     },
@@ -6518,7 +6518,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3h is implemented and green: nine MPY_DUAL_Mx_My catalog rows at 0xA400|xm<<6|ym<<2 under mask 0xFECC reusing the DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y) with STORE overwrite, and CPU retirement proving TI MPY Example 2 (X 0010 at AR2 01FF, Y 0002 at AR4 0300, B before FF FFFF FFE0, FRCT 0 yield B 00 0000 0020, T 0010, AR2 01FE, AR4 0301). Syntax 2 carries no R bit, so MPYR stays a syntax-1 row sharing; MOD3 neighborhoods, MAS dual rows, and dual replay classification stay deferred."
     },
@@ -6534,7 +6534,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
-        "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
+        "anchor": "P3-S3: MAC/MPY datapath seam (implemented; local verification green)"
       },
       "assertion": "S3i is implemented and green: nine MAS_DUAL_Mx_My catalog rows at 0xB800|xm<<6|ym<<2 under mask 0xF8CC reusing the DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (src) minus (X)x(Y) with FRCT/OVM handling and R rounding, and CPU retirement proving the TI Example 2/4-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B FF F3B4 0F40 unrounded and FF F3B4 0000 rounded, T 5678). TI prints B FF F9DA 0FA0/0000 for these examples, which equals the FRCT=0 computation exactly; per SPRU131 ST1 FRCT (multiplier output left-shifts one bit), the Example 2 prose, and the MAC Example 4 / MPY Example 1 oracles, the silicon behavior with FRCT=1 is the shifted product, and a dedicated FRCT=0 lane pins TI's printed value. The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MASR dual form retirement (R=1 words execute through the MAS_DUAL rows), and dual replay classification."
     },
@@ -6550,7 +6550,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3j-mpya-dst-register-only-vertical-slice.md",
-        "anchor": "P3-S3j: MPYA-dst register-only vertical slice (planned)"
+        "anchor": "P3-S3j: MPYA-dst register-only vertical slice (implemented; local verification green)"
       },
       "assertion": "S3j is implemented and green: one MPYA_DST catalog row at 0xF48C under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (T) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (the S3d hi(A) feed with T and multiplicand roles swapped, no memory effect, no T update), and CPU retirement proving TI MPYA Example 2 (A FF 8765 1111, T 4567, FRCT 0 yield B FF DF4D B2A3 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-07 lands SUBSET."
     },
@@ -6566,7 +6566,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3k-squr-smem-square-vertical-slice.md",
-        "anchor": "P3-S3k: SQUR-Smem square vertical slice (planned)"
+        "anchor": "P3-S3k: SQUR-Smem square vertical slice (implemented; local verification green)"
       },
       "assertion": "S3k is implemented and green: one SQUR_SMEM catalog row at 0x2600 under mask 0xFE80 carrying 512 encodings through the new DESTINATION_INDIRECT_ADDR7 layout (D plus indirect/addr7, no round or select bits) with ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem squared into the D-selected accumulator through the multiply core, and CPU retirement proving TI SQUR Example 1 (mem[031E] 000F, FRCT 0 yield B 00 0000 00E1 and T 000F). FORM-T2-03-09 lands SUBSET; syntax 2 stays UNIMPLEMENTED for its own register-only slice."
     },
@@ -6582,7 +6582,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3l-squr-adst-register-only-vertical-slice.md",
-        "anchor": "P3-S3l: SQUR-Adst register-only vertical slice (planned)"
+        "anchor": "P3-S3l: SQUR-Adst register-only vertical slice (implemented; local verification green)"
       },
       "assertion": "S3l is implemented and green: one SQUR_ADST catalog row at 0xF48D under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (A(32-16)) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (no memory effect, no T update), and CPU retirement proving TI SQUR Example 2 (A 00 000F 0000, FRCT 1 yield B 00 0000 01C2 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape following the S3j MPYA_DST precedent; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-10 lands SUBSET; the test_mpya_dst_decode.c UNKNOWN lane for 0xF48D/0xF58D moves to the new row."
     },
@@ -6598,7 +6598,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3m-squra-squrs-accumulate-squares-vertical-slice.md",
-        "anchor": "P3-S3m: SQURA/SQURS accumulate-squares vertical slice (planned)"
+        "anchor": "P3-S3m: SQURA/SQURS accumulate-squares vertical slice (implemented; local verification green)"
       },
       "assertion": "S3m is implemented and green: SQURA_SMEM at 0x3800 and SQURS_SMEM at 0x3A00, each under mask 0xFE00 with 512 encodings, sharing one leaf file with an ADD/SUBTRACT select through the reused DESTINATION_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, and read-value completion runs (src) plus/minus Smem squared through the multiply core; CPU retirement proves TI SQURA Example 1 (B 00 0320 00E1, T 000F) and TI SQURS Example 1 (A 00 0000 0320, T 1234). FORM-T2-04-21 and FORM-T2-04-22 land SUBSET."
     },
@@ -6614,7 +6614,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3n-mpyu-unsigned-multiply-vertical-slice.md",
-        "anchor": "P3-S3n: MPYU unsigned-multiply vertical slice (planned)"
+        "anchor": "P3-S3n: MPYU unsigned-multiply vertical slice (implemented; local verification green)"
       },
       "assertion": "S3n is implemented and green: one MPYU_SMEM catalog row at 0x2400 under mask 0xFE00 carrying 512 D/I/addr7 encodings through the reused DESTINATION_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and no T load, and read-value completion runs uns(T) x uns(Smem) into the D-selected accumulator through the multiply core with the new unsigned-operands select, STORE select, and no rounding; CPU retirement proves TI MPYU Example 1 (A 00 3F80 0000 with T 4000 unchanged). FORM-T2-03-08 lands SUBSET."
     },
@@ -6630,7 +6630,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3o-maca-smem-accumulate-a-slice.md",
-        "anchor": "P3-S3o: MACA Smem accumulate-A slice (planned)"
+        "anchor": "P3-S3o: MACA Smem accumulate-A slice (implemented; local verification green)"
       },
       "assertion": "S3o is implemented and green: one MACA_SMEM catalog row at 0x3500 under mask 0xFD00 carrying 512 R/I/addr7 encodings through the new ROUND_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-phase T load, and read-value completion runs (B) plus (Smem) x A(32-16) into fixed B through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 1 (B 00 0626 0060 with T 5678) and the MACAR Example 3 rounding lane. The R bit carries the MACAR variant on the shared row. FORM-T2-04-07 lands SUBSET."
     },
@@ -6646,7 +6646,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3p-maca-t-src-register-only-slice.md",
-        "anchor": "P3-S3p: MACA T,src register-only slice (planned)"
+        "anchor": "P3-S3p: MACA T,src register-only slice (implemented; local verification green)"
       },
       "assertion": "S3p is implemented and green: one MACA_T catalog row at 0xF488 under mask 0xFCFE carrying 8 S/D/R encodings through the new SOURCE_DESTINATION_ROUND layout with ELIGIBLE repeatability; checked and trusted register-only leaves complete (src) plus (T) x A(32-16) into the D-selected accumulator through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 2 (B 00 009D 4BA0 with T unchanged) and the MACAR Example 4 rounding lane. The R bit carries the MACAR T,src variant on the shared row. FORM-T2-04-08 lands SUBSET."
     },
@@ -6680,7 +6680,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3q-macp-smem-pmad-program-coefficient-slice.md",
-        "anchor": "P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)"
+        "anchor": "P3-S3q: MACP Smem,Pmad program-coefficient slice (implemented; local verification green)"
       },
       "assertion": "S3q is implemented and green: one MACP_SMEM catalog row at 0x7800 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the new DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000 and AR5 0101) and the FRCT lane (B 00 2000 0000). The DATA+PROGRAM pair seam (carrier, resolution, reducer, root, commit, candidate validation) issues the DATA read then the PROGRAM read with a zeroed PROGRAM commit and X-side T load. FORM-T2-04-12 lands SUBSET; FORM-T2-04-11 (MACD) stays UNIMPLEMENTED."
     },
@@ -6714,7 +6714,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3r-macd-smem-pmad-delay-write-slice.md",
-        "anchor": "P3-S3r: MACD Smem,Pmad delay-write slice (planned)"
+        "anchor": "P3-S3r: MACD Smem,Pmad delay-write slice (implemented; local verification green)"
       },
       "assertion": "S3r is implemented and green: one MACD_SMEM catalog row at 0x7A00 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the shared DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000) and the FRCT lane (B 00 2000 0000). The delay sidecar rides the new write_smem_delay MEMORY carrier flag (48-byte ABI unchanged, DATA+PROGRAM pair kind only): after both reads complete the pair root issues a third-ID DATA WRITE of the Smem word to Smem+1 with 16-bit wraparound through the reused child transaction before the Smem post-access commit and PC publish, with WAIT resume, fault/cancel silence, and reset routing by pair-versus-delay child state. FORM-T2-04-11 lands SUBSET."
     },
@@ -6748,7 +6748,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3s-macsu-xmem-ymem-dual-slice.md",
-        "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (planned)"
+        "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (implemented; local verification green)"
       },
       "assertion": "S3s is implemented and green: nine MACSU_DUAL_Mx_My catalog rows at 0xA800 plus X/Y mode bits under mask 0xFECC carrying 32 S/Xar/Yar encodings each through the shared DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability; checked and trusted leaves stage dual-indirect MOD0-MOD2 reads with read-phase X-side T load, and pair completion runs (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding; CPU retirement proves the recomputed oracle vector (A 00 1000 0000 with T 4000, AR4 0101, AR5 0201), the FRCT lane (A 00 2000 0000), S selection, and the mixed-sign lane. The mixed-sign product rides the new unsigned_t_only multiply-core select (T unsigned, multiplicand signed; both-unsigned keeps precedence; all-signed leaves set it false explicitly). FORM-T2-04-13 lands SUBSET."
     },
@@ -6764,7 +6764,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3t-macr-xmem-ymem-dual-lock-in-slice.md",
-        "anchor": "P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)"
+        "anchor": "P3-S3t: MACR Xmem,Ymem dual lock-in slice (implemented; local verification green)"
       },
       "assertion": "S3t is implemented and green: MACR Xmem,Ymem retires through the shared MAC_DUAL rows with R=1, locked by the 0xB532 leaf completion ((0x5678 shifted by FRCT) x 0x1234 + 4 rounded to 0x0C4C0000 into B), the 0xB5BA CPU retirement with MOD2 post-increments, and trusted R=1 equivalence through the trusted MAC dual entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-05/06 stay UNIMPLEMENTED with empty symbol lists by the recorded S3f R-sharing convention."
     },
@@ -6780,7 +6780,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3u-masr-smem-and-dual-lock-in-slice.md",
-        "anchor": "P3-S3u: MASR Smem and dual lock-in slice (planned)"
+        "anchor": "P3-S3u: MASR Smem and dual lock-in slice (implemented; local verification green)"
       },
       "assertion": "S3u is implemented and green: MASR Smem retires through the shared MAS_SMEM row with R=1 and MASR Xmem,Ymem retires through the shared MAS_DUAL rows with R=1, locked by the 0x2E95 trusted R=1 completion (round(A - T*Smem) to 0xFFFFB70000 into A per TI MAS Example 3), the 0x2E34 CPU retirement, the 0xBD32 trusted R=1 rounding equivalence (rounded 0xFFF3B40000 into B), and the 0xBDBA CPU retirement. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-15/17 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
     },
@@ -6796,7 +6796,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3v-macar-smem-lock-in-slice.md",
-        "anchor": "P3-S3v: MACAR Smem lock-in slice (planned)"
+        "anchor": "P3-S3v: MACAR Smem lock-in slice (implemented; local verification green)"
       },
       "assertion": "S3v is implemented and green: MACAR Smem retires through the shared MACA_SMEM row with R=1, locked by the 0x3734 leaf completion (Example 1 product rounded to 0x6260000 into B per TI MACAR Example 3), the new 0x3734 CPU retirement with read-phase T load, and trusted R=1 completion through the trusted MACA Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-09/10 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
     },
@@ -6812,7 +6812,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3w-masa-smem-and-t-slice.md",
-        "anchor": "P3-S3w: MASA Smem and T slice (planned)"
+        "anchor": "P3-S3w: MASA Smem and T slice (implemented; local verification green)"
       },
       "assertion": "S3w is implemented and green: two new MASA_SMEM (0x3300/0xFF00, shared INDIRECT_ADDR7 layout) and MASA_T (0xF48A/0xFCFE, shared SOURCE_DESTINATION_ROUND layout) catalog rows with 264 added lookup entries and zero neighbor moves, checked and trusted leaves reusing the multiply core with SUBTRACT select and A-high multiplicand, and CPU retirement of the TI Example 1 Smem vector (B FF F9DB FFA0 with T load), the Example 2 T vector (B FF FF66 B460), and the Example 3 rounding vector (B FF FF67 0000). Both rows are UNRESOLVED repeatability with no Table 2-28 MASA fact on record. FORM-T2-04-18/19 land SUBSET; FORM-T2-04-20/21 (MASAR) stay UNIMPLEMENTED with empty symbol lists."
     },
@@ -6828,7 +6828,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3x-masar-t-lock-in-slice.md",
-        "anchor": "P3-S3x: MASAR T lock-in slice (planned)"
+        "anchor": "P3-S3x: MASAR T lock-in slice (implemented; local verification green)"
       },
       "assertion": "S3x is implemented and green: MASAR T,src retires through the shared MASA_T row with R=1, locked by the 0xF78B leaf completion (Example 2 product rounded to 0xFFFF670000 into B per TI MASA Example 3), the 0xF78B CPU retirement with endpoint silence, and trusted R=1 completion through the trusted MASA T entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-20/21 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
     },
@@ -6844,7 +6844,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3y-mpyr-smem-lock-in-slice.md",
-        "anchor": "P3-S3y: MPYR Smem lock-in slice (planned)"
+        "anchor": "P3-S3y: MPYR Smem lock-in slice (implemented; local verification green)"
       },
       "assertion": "S3y is implemented and green: MPYR Smem retires through the shared MPY_SMEM row with R=1, locked by the 0x2200 leaf completion (T 0x1234 times Smem 0x5678 rounded to 0x6260000 into A per TI MPY Example 4), the 0x2320 CPU retirement, and trusted R=1 completion through the trusted MPY Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-03-02 stays UNIMPLEMENTED with an empty symbol list by the recorded R-sharing convention."
     },
@@ -6860,7 +6860,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s3z-add-smem-slice.md",
-        "anchor": "P3-S3z: ADD Smem slice (planned)"
+        "anchor": "P3-S3z: ADD Smem slice (implemented; local verification green)"
       },
       "assertion": "S3z is implemented and green: three new ADD_SMEM (0x0000/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), ADD_SMEM_TS (0x0400/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), and ADD_SMEM_SH16 (0x3C00/0xFC00, shared SOURCE_DESTINATION_INDIRECT_ADDR7 layout) catalog rows with 2048 added lookup entries and zero neighbor moves; checked and trusted leaves over the arithmetic core with SXM extension, T-register and fixed-16 shifts, OVM saturation with sticky OVdst, and per-syntax C rules; and CPU retirement of derived vectors for all three syntaxes (direct plus MOD2 indirect, read-phase behavior, T preservation, C write/preserve). All three rows are UNRESOLVED repeatability with no Table 2-28 ADD-Smem fact on record. FORM-T2-01-01/02/03 land SUBSET."
     },
@@ -6894,7 +6894,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s4-xc-conditional-execution-slice.md",
-        "anchor": "P3-S4: XC conditional-execution slice (planned)"
+        "anchor": "P3-S4: XC conditional-execution slice (implemented; local verification green)"
       },
       "assertion": "S4 is implemented and green: one new XC (0xFD00/0xFD00, new N_CONDITION8 layout with N at bit 9 and cond at bits 7:0) catalog row with 512 added lookup entries and zero neighbor moves; checked and trusted leaves evaluating the sixteen image-evidenced single conditions plus UNC through the shared branch-condition core with taken NONE emission versus not-taken CONDITIONAL_SKIP staging and transactional INVALID_OPERAND rejection of deferred fields; and CPU retirement retiring taken followers normally and not-taken followers as NOP skips with PC advance, delay-slot countdown consumption, T preservation, and no endpoint traffic. The row is INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-18-07 lands SUBSET."
     },
@@ -6928,7 +6928,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s5-accumulator-addressed-push-seam.md",
-        "anchor": "P3-S5: accumulator-addressed push seam (planned)"
+        "anchor": "P3-S5: accumulator-addressed push seam (implemented; local verification green)"
       },
       "assertion": "S5 is the planned accumulator-addressed push seam: two new STACK_PUSH_ACCUMULATOR WORD16 MEMORY address kinds (immediate and delayed) with TOS planning identical to the immediate pushes, the A/B accumulator select riding arf, and the PC target read from the frozen input snapshot gated on accumulator knownness; a pure effect-carrier extension, resolver TOS planning, and root prepare/commit coverage with no catalog rows, opcode identities, handlers, or CPU opcode branch."
     },
@@ -7034,7 +7034,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s8-bacc-accumulator-addressed-branch-family-slice.md",
-        "anchor": "P3-S8: BACC accumulator-addressed branch family slice (planned)"
+        "anchor": "P3-S8: BACC accumulator-addressed branch family slice (implemented; local verification green)"
       },
       "assertion": "S8 is implemented and green: two new accumulator-addressed branch catalog rows BACC (0xF4E2) and BACCD (0xF6E2) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves branching PC to the 16 low bits of the selected accumulator unconditionally with no status, accumulator, T-register, or MEMORY effect; CPU retirement retiring BACC followers normally and BACCD followers through the two-word delay window with T preservation and no endpoint traffic. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-12-02 lands SUBSET with BACC under ACCUMULATOR_NONDELAYED and BACCD under ACCUMULATOR_DELAYED."
     },
@@ -7140,7 +7140,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s9-cala-accumulator-addressed-call-family-slice.md",
-        "anchor": "P3-S9: CALA accumulator-addressed call family slice (planned)"
+        "anchor": "P3-S9: CALA accumulator-addressed call family slice (implemented; local verification green)"
       },
       "assertion": "S9 is implemented and green: two new accumulator-addressed call catalog rows CALA (0xF4E3) and CALAD (0xF6E3) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves staging a MEMORY STACK_PUSH_ACCUMULATOR(_DELAYED) TOS WRITE with the select in arf and a zero return-address placeholder, gated on SP knownness and selected-accumulator knownness; the S5 seam root derives the PC target from the frozen input snapshot and stages PC+1 (CALA) or PC+3 (CALAD) return addresses. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-13-01 lands SUBSET with CALA under ACCUMULATOR_NONDELAYED and CALAD under ACCUMULATOR_DELAYED."
     },
@@ -7192,7 +7192,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s10-sth-syntax-1-smem-store-slice.md",
-        "anchor": "P3-S10: STH syntax-1 Smem store slice (planned)"
+        "anchor": "P3-S10: STH syntax-1 Smem store slice (implemented; local verification green)"
       },
       "assertion": "S10 is implemented and green: seven new STH syntax-1 catalog rows STH_SMEM (0x8280) and STH_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STL_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-05 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
     },
@@ -7244,7 +7244,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s11-sth-by-asm-smem-store-slice.md",
-        "anchor": "P3-S11: STH by-ASM Smem store slice (planned)"
+        "anchor": "P3-S11: STH by-ASM Smem store slice (implemented; local verification green)"
       },
       "assertion": "S11 is implemented and green: seven new STH syntax-2 catalog rows STH_ASM_SMEM (0x8680) and STH_ASM_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STH_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the ASM-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-06 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
     },
