@@ -9,3 +9,7 @@ $(eval $(call ti_c54x_add_test,add_sub_dual_mod3,isa/ops/arithmetic,test_add_sub
 $(eval $(call ti_c54x_add_test,add_smem_ops,isa/ops/arithmetic,test_add_smem_ops.c))
 # P3-S14 RED contract: SUB Smem syntaxes 1-3.
 $(eval $(call ti_c54x_add_test,sub_smem_ops,isa/ops/arithmetic,test_sub_smem.c))
+# FORM-T2-02-13 RED contract: SUBS Smem.
+$(eval $(call ti_c54x_add_test,subs_smem_ops,isa/ops/arithmetic,test_subs_smem.c))
+# FORM-T2-02-11 RED contract: SUBB Smem.
+$(eval $(call ti_c54x_add_test,subb_smem_ops,isa/ops/arithmetic,test_subb_smem.c))

@@ -485,6 +485,10 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S21-OR-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s21-or-smem-rows-slice.md` anchor `P3-S21: OR Smem rows (implemented; local verification green)` |
 | `E-TI-C54X-SPRU172C-S4-XOR-SYNTAX1-OPCODE-P4-201` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §XOR, `4-201`–`4-201` |
 | `E-PROJECT-P3-S22-XOR-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s22-xor-smem-rows-slice.md` anchor `P3-S22: XOR Smem rows (implemented; local verification green)` |
+| `E-TI-C54X-SPRU172C-S4-SUBB-P4-191` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SUBB, `4-191`–`4-191` |
+| `E-TI-C54X-SPRU172C-S4-SUBS-P4-194` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SUBS, `4-194`–`4-194` |
+| `E-PROJECT-P3-S23-SUBS-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s23-subs-smem-leaf-slice.md` anchor `P3-S23: SUBS Smem leaf (planned)` |
+| `E-PROJECT-P3-S24-SUBB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s24-subb-smem-leaf-slice.md` anchor `P3-S24: SUBB Smem leaf (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1271,6 +1275,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P3-S20-AND-SMEM-ROWS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING`, `T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING` |
 | `REQ-PROJECT-P3-S21-OR-SMEM-ROWS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S21-OR-SMEM-ROWS-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING`, `T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING` |
 | `REQ-PROJECT-P3-S22-XOR-SMEM-ROWS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S22-XOR-SMEM-ROWS-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING`, `T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING` |
+| `REQ-COMMON-P3-S23-SUBS-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-SUBS-P4-194` | `T-COMMON-P3-S23-SUBS-SMEM-SEMANTICS` |
+| `REQ-COMMON-P3-S24-SUBB-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-SUBB-P4-191` | `T-COMMON-P3-S24-SUBB-SMEM-SEMANTICS` |
 
 ## Tests
 
@@ -1819,6 +1825,8 @@ exist in the repository.
 | `T-COMMON-P3-S13-STH-SHIFT-SEMANTICS-MOD` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_sth_shift_smem_mod.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sth_shift_smem_mod_ops"}` | `REQ-COMMON-P3-S13-STH-SHIFT-SEMANTICS` |
 | `T-PROJECT-P3-S13-STH-SHIFT-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/store/test_cpu_sth_shift_direct.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_sth_shift_direct"}` | `REQ-COMMON-P3-S13-STH-SHIFT-CPU-RETIREMENT` |
 | `T-COMMON-P3-S14-SUB-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_sub_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sub_smem_ops"}` | `REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S23-SUBS-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_subs_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.subs_smem_ops"}` | `REQ-COMMON-P3-S23-SUBS-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S24-SUBB-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_subb_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.subb_smem_ops"}` | `REQ-COMMON-P3-S24-SUBB-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S15-AND-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_and_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.and_smem_ops"}` | `REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S16-OR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_or_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.or_smem_ops"}` | `REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S17-XOR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_xor_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.xor_smem_ops"}` | `REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS` |
