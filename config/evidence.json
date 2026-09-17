@@ -6813,6 +6813,22 @@
         "anchor": "P3-S3x: MASAR T lock-in slice (planned)"
       },
       "assertion": "S3x is implemented and green: MASAR T,src retires through the shared MASA_T row with R=1, locked by the 0xF78B leaf completion (Example 2 product rounded to 0xFFFF670000 into B per TI MASA Example 3), the 0xF78B CPU retirement with endpoint silence, and trusted R=1 completion through the trusted MASA T entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-20/21 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
+    },
+    {
+      "id": "E-PROJECT-P3-S3Y-MPYR-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3y: MPYR Smem lock-in slice (planned)"
+      },
+      "assertion": "S3y is implemented and green: MPYR Smem retires through the shared MPY_SMEM row with R=1, locked by the 0x2200 leaf completion (T 0x1234 times Smem 0x5678 rounded to 0x6260000 into A per TI MPY Example 4), the 0x2320 CPU retirement, and trusted R=1 completion through the trusted MPY Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-03-02 stays UNIMPLEMENTED with an empty symbol list by the recorded R-sharing convention."
     }
   ],
   "requirements": [
@@ -16093,6 +16109,20 @@
       "test_ids": [
         "T-COMMON-P3-S3X-MASAR-T-TRUSTED"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Y-MPYR-TRUSTED-ROUNDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MPYR Smem through the shared MPY_SMEM row with R rounding per TI MPY Example 4 at the trusted entry point, staging the rounding select from the trusted operands and completing rnd(T*Smem) to 0x6260000 into A.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-P4-101-4-103"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Y-MPYR-TRUSTED"
+      ]
     }
   ],
   "tests": [
@@ -23286,6 +23316,20 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3X-MASAR-T-TRUSTED-ROUNDING"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Y-MPYR-TRUSTED",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpy_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Y-MPYR-TRUSTED-ROUNDING"
       ]
     },
     {

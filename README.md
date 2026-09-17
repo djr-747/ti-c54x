@@ -140,7 +140,8 @@ with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
   locked by the Example 3 vector; `MASA` Smem and T retire through
   the new `MASA_SMEM`/`MASA_T` rows, locked by the Example 1/2/3
   vectors; `MASAR` T retires through the shared `MASA_T` row with
-  R=1),
+  R=1; `MPYR` Smem retires through the shared `MPY_SMEM` row with
+  R=1, locked by the Example 4 vector),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.
