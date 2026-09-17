@@ -10878,3 +10878,61 @@ rewritten after publication.
   STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
   MOD3, dual replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
+
+## 2026-09-17 — P3-S3v MACAR Smem lock-in slice (slice 30)
+
+- Commit `53b0c0c` closes the census MACAR
+  Smem syntaxes (`FORM-T2-04-09`/
+  `FORM-T2-04-10`, TI SPRU172C `MACA[R]`
+  Example 3) through the shared
+  `MACA_SMEM` row with R=1: no catalog,
+  inventory, production, layout, or pin
+  change was needed. The `0x3734` leaf
+  completion (Example 1 product rounded to
+  `0x6260000` into B) already pins the
+  checked path. Two new executable proofs:
+  CPU retirement of the `0x3734` direct
+  word (same pre-state as the Example 1
+  direct lane, B rounded to `0x6260000`
+  with the read-phase T load), and trusted
+  R=1 completion through
+  `ti_c54x_trusted_op_maca_smem` on
+  `0x3734`. The two R-variant forms stay
+  `UNIMPLEMENTED` with empty symbol lists
+  by the recorded R-sharing convention
+  (shared rows cannot double-bind). README
+  remaining-work wording drops `MACAR`.
+  `git diff --check` clean.
+- Unlike the pure lock-ins, S3v carries
+  real new retirement content: no CPU R=1
+  lane existed before this slice.
+- Evidence stands at 384 records, 633
+  requirements, 506 tests (506 `PASSING`,
+  0 `PLANNED`), matching the S3v anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  482/482 on the working Debug build;
+  sanitizer MACA pair clean (clean
+  flagged rebuild, direct runs exit 0);
+  `make test` clean on a fresh unflagged
+  `build-fast/` rebuild (exit 0); evidence
+  gate passes (384/633/506); contract
+  quality suites pass.
+- Build-hygiene note: the mid-slice
+  flagged partial rebuild left an
+  ASan-instrumented `libti_c54x.a` in
+  `build-fast/`, which broke the next
+  unflagged incremental link
+  (`__asan_init` undefined in
+  `test_cpu_api`). Resolved by
+  `rm -rf build-fast` plus a full
+  unflagged `make test`. Rule: never mix
+  flag configurations in one `build-fast/`
+  tree — a flag change always starts with
+  `rm -rf build-fast`.
+- Follow-up work: `MASA` R-variant
+  lock-in, `MPYR` (closed at Smem; dual
+  has no R bit)/`SQDST` leaves, S4 XC, S1
+  STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
+  MOD3, dual replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
