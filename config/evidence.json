@@ -7396,7 +7396,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s16-or-smem-slice.md",
-        "anchor": "P3-S16: OR Smem slice (planned)"
+        "anchor": "P3-S16: OR Smem slice (implemented; local verification green)"
       },
       "assertion": "S16 is implemented and green: the catalog-free OR Smem pure leaf with checked and trusted entry points for dst |= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, ORing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     },
@@ -7412,7 +7412,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s17-xor-smem-slice.md",
-        "anchor": "P3-S17: XOR Smem slice (planned)"
+        "anchor": "P3-S17: XOR Smem slice (implemented; local verification green)"
       },
       "assertion": "S17 is implemented and green: the catalog-free XOR Smem pure leaf with checked and trusted entry points for dst ^= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, XORing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     }

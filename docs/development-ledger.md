@@ -12022,3 +12022,52 @@ entries are not rewritten after publication.
   rows, and SUB/AND Smem catalog
   binding (blocked on TI opcode-diagram
   rows).
+
+## 2026-09-18 — P3-S16 OR Smem and P3-S17 XOR Smem pure leaves (slices 45-46)
+
+- Commit `c906f1c` lands fan-out wave 2.
+  OR Smem (FORM-T2-08-01, TI SPRU172C
+  §OR p. 4-123) and XOR Smem
+  (FORM-T2-09-01, §XOR p. 4-201) as
+  catalog-free pure leaves mirroring the
+  S15 AND pattern: checked-values plus
+  trusted three-operand entry points in
+  `src/isa/ops/logical/op_or_smem.[hc]`
+  and `op_xor_smem.[hc]` (203 lines
+  each), single WORD16 READ over direct
+  page-0 or standard-indirect MOD0-MOD3
+  through the shared MEMORY effect,
+  zero-extended unshifted word combined
+  full-width, C/TC preserved, no SXM/OVM
+  consumed, exotic modes defer as
+  INVALID_OPERAND.
+- Proved by `test_or_smem.c` and
+  `test_xor_smem.c` (13 checks each,
+  CTest `ti_c54x.or_smem_ops` /
+  `ti_c54x.xor_smem_ops`), wired in
+  `sources.mk`/`sources.cmake` and
+  `tests.mk`/`CMakeLists.txt`. Catalog
+  rows plus dispatch binding deferred;
+  both forms remain UNIMPLEMENTED.
+- Registry: `E-PROJECT-P3-S16-OR-SMEM-ACTIVATION`
+  and `E-PROJECT-P3-S17-XOR-SMEM-ACTIVATION`,
+  `REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS`
+  on `E-TI-C54X-SPRU172C-S4-OR-P4-123`,
+  `REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS`
+  on `E-TI-C54X-SPRU172C-S4-XOR-P4-201`,
+  plus the two PASSING test records.
+  Slice docs born `(planned)`, flipped
+  here with anchors synced same-commit.
+- Validation: focused binaries pass
+  standard and ASan/UBSan builds, CMake
+  configure plus `ctest -R` 2/2, full
+  `make test` exit 0. Evidence stands at
+  422 records, 674 requirements, 544
+  tests. No knob change.
+- Wave-3 note: mnemonic-level TI
+  matching is insufficient triage (MPY
+  Smem and MAC Smem rows already landed
+  with dispatch, so T2-03-04/05 and
+  T2-04-02/03 are non-Smem syntaxes).
+  Wave 3 opens with a syntax-level
+  triage child before any leaf dispatch.

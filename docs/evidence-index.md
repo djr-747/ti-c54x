@@ -468,8 +468,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s13-sth-shift-smem-store-slice.md` anchor `P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)` |
 | `E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s14-sub-smem-slice.md` anchor `P3-S14: SUB Smem slice (implemented; local verification green)` |
 | `E-PROJECT-P3-S15-AND-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s15-and-smem-slice.md` anchor `P3-S15: AND Smem slice (implemented; local verification green)` |
-| `E-PROJECT-P3-S16-OR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s16-or-smem-slice.md` anchor `P3-S16: OR Smem slice (planned)` |
-| `E-PROJECT-P3-S17-XOR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s17-xor-smem-slice.md` anchor `P3-S17: XOR Smem slice (planned)` |
+| `E-PROJECT-P3-S16-OR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s16-or-smem-slice.md` anchor `P3-S16: OR Smem slice (implemented; local verification green)` |
+| `E-PROJECT-P3-S17-XOR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s17-xor-smem-slice.md` anchor `P3-S17: XOR Smem slice (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and

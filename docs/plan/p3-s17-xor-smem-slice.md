@@ -1,4 +1,4 @@
-### P3-S17: XOR Smem slice (planned)
+### P3-S17: XOR Smem slice (implemented; local verification green)
 
 `XOR Smem, dst` (TI SPRU172C Sec4 XOR, p. 4-201:
 `dst ^= Smem`) lands one catalog-free pure leaf:

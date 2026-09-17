@@ -1,4 +1,4 @@
-### P3-S16: OR Smem slice (planned)
+### P3-S16: OR Smem slice (implemented; local verification green)
 
 `OR Smem, dst` (TI SPRU172C Sec4 OR, p. 4-123: `dst |= Smem`) lands
 one catalog-free pure leaf: `ti_c54x_op_or_smem_values` plus
