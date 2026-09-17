@@ -13,10 +13,16 @@
   bounded file ownership, must not revert other agents, and must not create commits.
 - Keep commits atomic. Run the local fast test suite once when a coherent work piece
   is ready to commit.
-- Maintain `docs/development-ledger.md` against `docs/implementation-plan.md`.
-  Implementation commits are followed by a ledger-only commit that records the
-  completed commit hash, validation evidence, decisions, knob changes, and follow-up
-  work. Never rewrite an old ledger entry; append a correction.
+- Log slice progress in `docs/plan/`, `docs/implementation-plan.md`, and
+  `docs/development-ledger.md`. Each slice owns one `docs/plan/<id>-<slug>.md`
+  doc whose `###` heading is the FIT/ownership anchor: never reword it, only
+  advance its status parenthetical (`(planned)` →
+  `(implemented; local verification green)`). The plan's slice link mirrors the
+  same parenthetical. Implementation commits carry code, tests,
+  registry/evidence, and generated files only. The follow-up ledger-only commit
+  flips both parentheticals and appends the ledger entry recording the completed
+  commit hash, validation evidence, decisions, knob changes, and follow-up work.
+  Never rewrite an old ledger entry; append a correction.
 - Keep all mutable runtime state instance-owned. No environment reads, file I/O,
   mutable process globals, hidden allocators, or logging in the core execution path.
 - The library must never call `getenv`. Hosted tools may read environment once before

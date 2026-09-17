@@ -14,11 +14,16 @@ Each entry contains:
 - modules and files owned by the change;
 - local validation commands and results;
 - architecture, lifetime, provenance, or knob decisions;
-- deviations from the plan; and
+- deviations from the plan;
+- the slice status flip (`(planned)` to `(implemented; local verification
+  green)` in both the `docs/plan/<id>-<slug>.md` heading and the
+  `docs/implementation-plan.md` slice link); and
 - explicit follow-up work.
 
-Corrections are new entries referencing the original ID. Existing entries are not
-rewritten after publication.
+The ledger-only commit that appends the entry also carries the status flip; the
+implementation commit carries code, tests, registry/evidence, and generated
+files only. Corrections are new entries referencing the original ID. Existing
+entries are not rewritten after publication.
 
 ## 2026-09-05 — P0-W1 — Standalone repository charter
 
