@@ -11014,3 +11014,42 @@ rewritten after publication.
   XC, S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7
   dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+
+## 2026-09-17 — P3-S3x MASAR T lock-in slice (slice 32)
+
+- Commit `da335f9` locks the census MASAR
+  T syntax (TI SPRU179C `MASA` syntax 2
+  with `rnd()`) through the shared
+  `MASA_T` row with R=1: no catalog,
+  inventory, production, layout, or pin
+  change was needed. The `0xF78B` leaf
+  completion (Example 2 product rounded
+  to `0xFFFF670000` into B) and the
+  `0xF78B` CPU retirement with endpoint
+  silence already pin the checked path.
+  One new executable proof: trusted R=1
+  completion through
+  `ti_c54x_trusted_op_masa_t` on
+  `0xF78B`. The two MASAR forms stay
+  `UNIMPLEMENTED` with empty symbol lists
+  by the recorded R-sharing convention
+  (shared rows cannot double-bind).
+  README remaining-work wording drops
+  MASAR T. `git diff --check` clean.
+- Evidence stands at 387 records, 638
+  requirements, 511 tests (511 `PASSING`,
+  0 `PLANNED`), matching the S3x anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  486/486; sanitizer MASA_T lane clean
+  (clean flagged rebuild, direct run
+  exit 0, `build-fast/` removed after);
+  evidence gate passes (387/638/511).
+- Follow-up work: the `MASAR` Smem
+  question (syntax 1 carries no R bit),
+  `MPYR`/`SQDST` leaves (SQDST needs a
+  two-accumulator-write effect channel
+  that does not exist yet), S4 XC, S1
+  STM/MMR, S6 PORTR/PORTW, AR6/AR7
+  dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
