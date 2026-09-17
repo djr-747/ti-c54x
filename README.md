@@ -132,7 +132,9 @@ with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
   retire through the leaf and the CPU; the mixed product rides a new
   unsigned-T-only multiply-core select with both-unsigned
   precedence).
-- Major remaining work is the `MACR`/`MPYR`/`SQDST` families,
+- Major remaining work is the `MPYR`/`SQDST` families (`MACR` Smem
+  and dual retire through the shared `MAC` rows with R=1, locked by
+  the Example 5/6 vectors),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

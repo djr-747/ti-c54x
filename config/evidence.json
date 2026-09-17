@@ -6715,6 +6715,22 @@
         "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (planned)"
       },
       "assertion": "S3s is implemented and green: nine MACSU_DUAL_Mx_My catalog rows at 0xA800 plus X/Y mode bits under mask 0xFECC carrying 32 S/Xar/Yar encodings each through the shared DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability; checked and trusted leaves stage dual-indirect MOD0-MOD2 reads with read-phase X-side T load, and pair completion runs (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding; CPU retirement proves the recomputed oracle vector (A 00 1000 0000 with T 4000, AR4 0101, AR5 0201), the FRCT lane (A 00 2000 0000), S selection, and the mixed-sign lane. The mixed-sign product rides the new unsigned_t_only multiply-core select (T unsigned, multiplicand signed; both-unsigned keeps precedence; all-signed leaves set it false explicitly). FORM-T2-04-13 lands SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P3-S3T-MACR-DUAL-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)"
+      },
+      "assertion": "S3t is implemented and green: MACR Xmem,Ymem retires through the shared MAC_DUAL rows with R=1, locked by the 0xB532 leaf completion ((0x5678 shifted by FRCT) x 0x1234 + 4 rounded to 0x0C4C0000 into B), the 0xB5BA CPU retirement with MOD2 post-increments, and trusted R=1 equivalence through the trusted MAC dual entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-05/06 stay UNIMPLEMENTED with empty symbol lists by the recorded S3f R-sharing convention."
     }
   ],
   "requirements": [
@@ -15841,6 +15857,34 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3T-MACR-DUAL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACR Xmem,Ymem through the shared MAC_DUAL rows as (Xmem) x (Ymem) + (src) into dst with read-phase T load of the X-side word and R rounding per TI MAC Example 6 at the semantic leaf, including trusted-path rounding equivalence.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3T-MACR-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3T-MACR-DUAL-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACR Xmem,Ymem on the CPU per TI MAC Example 6 with accumulator, T-register, AR post-update, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-DUAL-P4-83-4-84"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3T-MACR-DUAL-CPU"
+      ]
     }
   ],
   "tests": [
@@ -22880,6 +22924,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3S-MACSU-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3T-MACR-DUAL-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3T-MACR-DUAL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3T-MACR-DUAL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_mac_dual.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mac_dual"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3T-MACR-DUAL-CPU-RETIREMENT"
       ]
     },
     {
