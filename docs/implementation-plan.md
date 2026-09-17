@@ -639,6 +639,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S17: XOR Smem slice (implemented; local verification green)](plan/p3-s17-xor-smem-slice.md)
 
+- [P3-S18: STH MOD0-MOD3 second-word disambiguation seam (planned)](plan/p3-s18-sth-mod0-3-second-word-seam.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

@@ -12071,3 +12071,34 @@ entries are not rewritten after publication.
   T2-04-02/03 are non-Smem syntaxes).
   Wave 3 opens with a syntax-level
   triage child before any leaf dispatch.
+
+## 2026-09-18 — P3-S18 planning slice and wave-3 triage stop
+
+- The syntax-triage workflow ran ~30
+  turns without delivering, so it was
+  stopped (`work_stop` accepted); its
+  read-only brief, if ever recovered,
+  can only inform wave 5 now. Lesson:
+  timebox delegated triage and keep an
+  independent elimination map (tables
+  2-20/2-01/2-02/2-23/2-24/2-25 decoded
+  from catalog symbols in-session).
+- Maintainer analysis unblocked STH
+  MOD0-MOD3 without TI input: their
+  first words sit inside the
+  `LD_SMEM_SHIFT` slot (`0x6F80/FFE0`),
+  but the second words are disjoint
+  under `0xFEE0` (LD `0x0C40` vs STH
+  `0x0C60`, differing in bit 5), proven
+  from the landed LD trusted handler and
+  the S13 record. Decode is first-word
+  only, so this becomes seam P3-S18
+  (`docs/plan/p3-s18-sth-mod0-3-second-word-seam.md`,
+  planned): word-2-qualified generator
+  rows plus four STH rows reusing the
+  S13 handlers, LD decode bit-identical.
+- This commit carries the planning slice
+  plus its plan link only; no code,
+  registry, or inventory change. The TI
+  request for Smem opcode diagrams,
+  PORT, and variant syntax lists stands.
