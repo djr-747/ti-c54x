@@ -11582,3 +11582,93 @@ rewritten after publication.
   still awaits user approval, so remote
   CI has not yet seen the recent
   fixes.
+
+## 2026-09-17 — P3-S11 STH by-ASM Smem store (slice 40)
+
+- Commit `3d03555` lands STH syntax 2
+  (`STH src, ASM, Smem`, TI SPRU172C
+  §STH, pp. 4-168–4-171, opcode
+  `1000_011S_IAAAAAAA`). Seven rows
+  mirror the `STH_SMEM` family with bit
+  9 set: `STH_ASM_SMEM`
+  (`0x8680`/`0xFEE0`) and MOD4–MOD10
+  (`0x86A0`–`0x86D0`/`0xFEF8`) through
+  the shared `ACCUMULATOR_ARF_MOD`/
+  `MOD4` layouts. Checked and trusted
+  leaves shift the selected accumulator
+  by ASM (0–15 left, 16–31 arithmetic
+  right with sign fill) and stage
+  indirect, indexed, circular, and
+  reverse-carry MEMORY WRITE effects
+  carrying bits 31–16 of the shifted
+  value. All rows `UNRESOLVED`
+  repeatability (no TI note; `STH_SMEM`
+  precedent). `FORM-T2-20-06` lands
+  `SUBSET` with all seven symbols under
+  the reused mode token. No `run.c`
+  change. Syntaxes 3–4 and `STLM` stay
+  for later slices.
+- Decisions: SXM is proven out of the
+  value path — both documented SXM
+  rules coincide with arithmetic fill
+  over the whole ASM domain — so the
+  new `ACCUMULATORS_STATUS_ASM` token
+  claims ASM alone, and SXM rides
+  hostile and unconsumed in every
+  vector. My own CPU-test vector for
+  ASM=15/B was miscomputed (`0x2A19`);
+  the leaf and an independent Python
+  oracle agreed on `0xA190`
+  (`(0xFF87654321 << 15)` mod 2^40 is
+  `0xB2A1908000`), the test was wrong,
+  fixed with a derivation comment. TI
+  worked examples (`STH B,-8` to FF84,
+  `STH A,-4` under SXM=1 to F842)
+  pinned at both lanes. Leaf-first
+  order stands again: the leaf lane was
+  green while the CPU lane carried the
+  bad vector.
+- Debug artifact: throwaway probes that
+  read `effect.payload` inside the same
+  `printf` argument list as the op call
+  observed `0x0000` from unspecified
+  argument evaluation order; the
+  library was correct throughout.
+  Probes now sequence the call before
+  any field read. Scratch probes stay
+  under `/tmp`, never in the repo.
+- Contract pins: rows 231 to 238,
+  `OPCODE_ID_COUNT` 232 to 239, lookup
+  20673 to 20833 (+160 entries, zero
+  neighbor moves), bound forms 91 to
+  92 (44.878%), `SUBSET` 198 to 205.
+  The catalog order test needed a
+  positional shift: `STH_ASM_SMEM` pins
+  rows[7] after `STH_SMEM`, later
+  indices shift by one more (S10
+  precedent). No knob change.
+- Process slip: one more
+  `OPCODE_ID_COUNT` pin missed the
+  first sweep — the reverse-carry
+  metadata file spells it `==232`
+  without spaces. The row-adding
+  checklist now sweeps flexible
+  spacing, not just `== 232`.
+- Evidence stands at 412 records, 664
+  requirements, 535 tests (535
+  `PASSING`, 0 `PLANNED`), matching the
+  S11 projection: two TI source
+  records, one activation record, three
+  requirements, two test records.
+- Validation is GREEN: `make test`
+  clean (exit 0) — 272 quality tests
+  OK, evidence and inventory gates
+  pass, 105 C binaries ok. Both RED
+  lanes observed RED before GREEN.
+- Follow-up work: STH syntaxes 3–4,
+  STLM, S1-family MMR/stack moves, S6
+  PORTR/PORTW, far/XPC/timing. Push of
+  the local stack to `origin/main`
+  still awaits user approval, so remote
+  CI has not yet seen the recent
+  slices.
