@@ -12168,3 +12168,43 @@ entries are not rewritten after publication.
   follow-up. Next is lane 2b (LD row
   qualification with parity probe plus
   trusted re-resolution).
+
+## 2026-09-18 — P3-S18 lane 2b lands as a74cb5a
+
+- Lane 2b qualifies the `0x6F80/FFE0` slot: `LD_SMEM_SHIFT` becomes
+  `MASKED2` (`0x0C40` under `FEE0`) and four `STH_SHIFT_SMEM_MOD0-MOD3`
+  `MASKED2` rows (`0x6F80/0x6F88/0x6F90/0x6F98` under `FFF8`, MOD in
+  first-word bits 6:3, `0x0C60` under `FEE0`) are declared after LD so
+  first-word lookup stays bit-identical LD. The word-2 patterns differ
+  only in bit 5, which is the whole discriminator (parity probe).
+- Decode seam: `ti_c54x_decode_complete_instruction` re-resolves
+  slotted words through a validated `complete_resolved` helper and
+  declines unmatched second words with new status
+  `SECOND_WORD_UNMATCHED`; `ti_c54x_trusted_execution_packet_prepare`
+  re-resolves the same way instead of the first-word table. The fast
+  path is untouched by design (private precondition: no re-resolution).
+- Leaves: eight `sth_shift_smem_mod0-3` checked/trusted wrappers reuse
+  the S13 indirect core; the values core gains a MOD0-MOD3 arm staging
+  `SINGLE_INDIRECT_WORD16` WRITEs through the shared MEMORY effect.
+  Latent break fixed: the trusted-binding `MASKED2` macro emitted nine
+  initializers for the pinned 7-field metadata.
+- RED-first: extended `test_qualified_slots` (match/mismatch/parity),
+  new `test_qualified_slot_decode`, `test_sth_shift_smem_mod0_3_metadata`
+  (pins `ID_COUNT` 251), and `test_sth_shift_smem_mod0_3_ops` (checked,
+  trusted, packet, and checked-dispatch equivalence plus transactional
+  rejection). Two exhaustive suites needed slot-aware canonical bundles
+  (`test_trusted_execution_packet`, `test_trusted_semantic_dispatch`).
+  LD vectors unchanged; the LD decode contract note now points at the
+  qualified-slot test.
+- Registry: `FORM-T2-20-08` advances to `COMMON_CANDIDATE` at `SUBSET`
+  with four bindings under the grown
+  `DIRECT_DP_STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10`
+  token; new `E-PROJECT-P3-S18-STH-MOD0-3-ACTIVATION` plus
+  `REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY` (evidence 423, requirements
+  675). Count pins move to 250 rows / 250 bindings / 216 SUBSET. The S18
+  plan heading stays `(planned)` as the immutable anchor; the S13
+  deferral retires via the superseding S18 record, not an edit.
+- Split commit discipline: impl `a74cb5a`, this ledger-only follow-up.
+  `make test` green (C suite plus quality gate: evidence PASS,
+  inventory, manifests, observer artifact). Next: S18 exit review, then
+  the S6 port seam before agent fan-out.
