@@ -12358,3 +12358,39 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `cd6cfb9`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S20 AND Smem row (slice 48)
+
+- Commit `8d77708` lands AND Smem syntax 1 as AND_SMEM
+  (0x1800/0xFE00) over SELECT_INDIRECT_ADDR7 with a new plain
+  `ti_c54x_op_and_smem` entry (layout-gated 1/1/7 extraction into
+  the landed values core) plus the landed trusted entry. TI basis
+  dual-sourced from vendor/ti/spru172c.txt (§AND opcode diagram,
+  p. 4-11: 0001_100S, class 3A/3B). FORM-T2-07-01 binds at SUBSET
+  under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3.
+- Census pins move with the row (258 rows, ID count 259, lookup
+  24081 to 24593 with zero neighbor moves, SUBSET bindings 223 to
+  224, FORM coverage 99 to 100/205 at 48.780%, strict-complete
+  bound steady at 34). No near-miss absorption: a flip sweep over
+  decode/catalog suites for 0x1800-0x19FF is empty. Full `make
+  test` green (exit 0); evidence registry PASS at 433 evidence,
+  681 requirements, 546 tests; focused ASan/UBSan run of the
+  extended AND suite clean; knobs/boundaries/manifests PASS.
+- Decisions: rows-plus-thin-adapter slice (no layout/decode/CPU
+  change); PROJECT rows requirement cites activation plus the two
+  PROJECT inventory proofs only (scope-leak rule); S15 handler
+  proof stays COMMON-uncited; no knob added; syntaxes 2-4 and
+  ANDM stay as bound.
+- Process notes: a bulk pin script aborted mid-loop with a
+  misleading assert, so all pins were re-audited by direct grep
+  to exact targets (rows 258, bindings 258, ID 259, lookup
+  24593, covered 100, 48.780, SUBSET 224); prefer audited
+  per-file edits over scripted bulk replacement. Cross-slice
+  absorption: the S19 activation locator anchor flips to
+  implemented here (S14 convention: anchor flips in the
+  follow-up, assertion stays PINNED).
+- Follow-up: slices 49-50 (OR/XOR Smem rows, same pattern, one
+  family per commit).
+- Split commit discipline: impl `8d77708`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.

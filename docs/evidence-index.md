@@ -480,7 +480,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S6-PORTW-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s6-port-io-seam.md` anchor `P3-S6: port I/O seam (planned)` |
 | `E-PROJECT-P3-S19-SUB-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s19-sub-smem-rows-slice.md` anchor `P3-S19: SUB Smem rows (implemented; local verification green)` |
 | `E-TI-C54X-SPRU172C-S4-AND-SYNTAX1-OPCODE-P4-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §AND, `4-11`–`4-11` |
-| `E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s20-and-smem-rows-slice.md` anchor `P3-S20: AND Smem rows (planned)` |
+| `E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s20-and-smem-rows-slice.md` anchor `P3-S20: AND Smem rows (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and

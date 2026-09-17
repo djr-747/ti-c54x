@@ -1,4 +1,4 @@
-### P3-S20: AND Smem rows (planned)
+### P3-S20: AND Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S20 evidence freeze. `AND Smem`
 syntax 1 (TI SPRU172C §AND, p. 4-11: `0001_100S_IAAAAAAA`, class
