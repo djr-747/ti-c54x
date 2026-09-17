@@ -341,6 +341,45 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                    &effect->address_spec) &&
                ti_c54x_op_memory_effect_dual_shape_is_valid(effect);
 
+    case TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16:
+        /* Port I/O pair: the DATA-leg direction rides `access` with
+         * the IO leg always inverse; the staged value is zero in both
+         * directions (the second-leg value is a bus observation, and
+         * the reducer replaces the WRITE template before issue). No
+         * RMW and no leaf completion: the reducer owns the chaining
+         * internally. Arm shape mirrors the IO-leg planner. */
+        if (effect->address_spec.port.indirect > UINT8_C(1)) {
+            return false;
+        }
+        if (effect->address_spec.port.indirect == UINT8_C(0)) {
+            if (effect->address_spec.port.smem_mode != UINT8_C(0) ||
+                effect->address_spec.port.smem_arf != UINT8_C(0) ||
+                effect->address_spec.port.smem_dma7 > UINT8_C(0x7F)) {
+                return false;
+            }
+        } else {
+            if (effect->address_spec.port.smem_dma7 != UINT8_C(0) ||
+                effect->address_spec.port.smem_arf > UINT8_C(7) ||
+                effect->address_spec.port.smem_mode > UINT8_C(10)) {
+                return false;
+            }
+        }
+        if (effect->address_spec.port.reserved_half != UINT16_C(0) ||
+            effect->address_spec.port.reserved_word0 != UINT32_C(0) ||
+            effect->address_spec.port.reserved_word1 != UINT32_C(0) ||
+            effect->address_spec.port.reserved_word2 != UINT32_C(0)) {
+            return false;
+        }
+        return (effect->access ==
+                    TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
+                effect->access ==
+                    TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) &&
+               effect->value_word == UINT16_C(0) &&
+               effect->rmw_operation ==
+                   (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+               effect->complete == NULL &&
+               effect->transfer_reserved == UINT8_C(0);
+
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
         return false;

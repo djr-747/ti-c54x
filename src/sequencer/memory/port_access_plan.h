@@ -21,6 +21,7 @@
 #include <ti_c54x/bus_endpoint.h>
 
 #include "isa/ops/memory/memory_effect.h"
+#include "sequencer/memory/address_resolution.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +37,19 @@ typedef struct ti_c54x_port_access {
     ti_c54x_port_access_status status;
     ti_c54x_bus_word16_request request;
 } ti_c54x_port_access;
+
+/* Compact persistent copy retained by a prepared root transaction:
+ * the resolved DATA leg plus the planned IO-leg request and the
+ * second-leg flag. The DATA leg lives here rather than in the
+ * candidate's generic address resolution because that slot shares
+ * union storage with this snapshot; the DATA spec still re-derives
+ * deterministically from the frozen arm and input on every shape
+ * check, and this snapshot binds both legs. */
+typedef struct ti_c54x_port_address_snapshot {
+    ti_c54x_memory_address_resolution data_resolution;
+    ti_c54x_bus_word16_request io_request;
+    uint8_t second_leg_issued;
+} ti_c54x_port_address_snapshot;
 
 /* Plan one copied IO-leg request. NULL specs reject; malformed arms
  * and non-READ/WRITE accesses reject with a zeroed request. */

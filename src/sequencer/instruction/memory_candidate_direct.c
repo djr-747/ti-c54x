@@ -116,16 +116,17 @@ ti_c54x_memory_candidate_direct_shape_is_valid(
 }
 
 bool
-ti_c54x_memory_candidate_direct_matches_live(
+ti_c54x_memory_candidate_direct_resolution_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
-    const ti_c54x_arch_state *state)
+    const ti_c54x_arch_state *state,
+    const struct ti_c54x_memory_address_resolution *resolution)
 {
     const ti_c54x_address_effect *address_effect;
 
-    if (candidate == NULL || state == NULL) {
+    if (candidate == NULL || state == NULL || resolution == NULL) {
         return false;
     }
-    address_effect = &candidate->address_resolution.address_result.effect;
+    address_effect = &resolution->address_result.effect;
 
     if (address_effect->source.kind ==
         TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
@@ -172,4 +173,16 @@ ti_c54x_memory_candidate_direct_matches_live(
     }
 
     return false;
+}
+
+bool
+ti_c54x_memory_candidate_direct_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const ti_c54x_arch_state *state)
+{
+    if (candidate == NULL) {
+        return false;
+    }
+    return ti_c54x_memory_candidate_direct_resolution_matches_live(
+        candidate, state, &candidate->address_resolution);
 }

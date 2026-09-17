@@ -160,9 +160,15 @@ ti_c54x_bus_word16_adapter_result ti_c54x_bus_word16_adapter_advance(
             return result_with_status(endpoint_status, TI_C54X_BUS_OK);
         }
     }
+    /* DATA and IO legs share one endpoint: PORT issues its absolute
+     * IO leg through the same bridge as DATA. PROGRAM and invalid
+     * spaces stay rejected; the request validator below already pins
+     * per-space address ranges. */
     if (!ti_c54x_bus_word16_transaction_is_canonical(transaction) ||
-        transaction->request.space !=
-            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA) {
+        (transaction->request.space !=
+             TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA &&
+         transaction->request.space !=
+             TI_C54X_BUS_WORD16_REQUEST_SPACE_IO)) {
         return result_with_status(
             TI_C54X_BUS_WORD16_ADAPTER_STATUS_INVALID_ARGUMENT, TI_C54X_BUS_OK);
     }

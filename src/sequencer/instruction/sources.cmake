@@ -3,6 +3,7 @@
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_direct.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_single_leg.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_commit.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_data_program_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_data_program_commit.c"
@@ -14,6 +15,8 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_long32.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_dual.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_data_program.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_port.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_port_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_pair_dispatch.c"
     "${CMAKE_CURRENT_LIST_DIR}/data_program_word16_read_transaction.c"
     "${CMAKE_CURRENT_LIST_DIR}/dual_word16_read_transaction.c"

@@ -29,11 +29,13 @@
  * grows the candidate with the RTN input snapshot fields, so the root
  * holds at 352; the dual snapshot arm is unchanged at 52. S3d adds
  * the read-phase T-load flag to the memory effect, so the root holds
- * at 360. */
+ * at 360. S6 grows the PORT pair snapshot with the DATA-leg
+ * resolution (the generic slot aliases the snapshot in the candidate
+ * union), so the root holds at 384. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 360U,
-               "W76 LP64 root grows only with the RTN input snapshot");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 384U,
+               "S6 LP64 root holds the PORT DATA-leg resolution");
 
 static ti_c54x_op_memory_address_spec
 dual_spec_modes(uint8_t x_ar,

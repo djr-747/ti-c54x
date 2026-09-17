@@ -18,6 +18,9 @@ ti_c54x_add_unit_test(word16_rmw_memory_transaction
 # P3-S1 RED contract: MMR-routed root transaction retirement.
 ti_c54x_add_unit_test(mmr_transaction
                       test_mmr_memory_transaction.c)
+# P3-S6 RED contract: PORT root transaction hook.
+ti_c54x_add_unit_test(port_transaction
+                      test_port_memory_transaction.c)
 # W47A RED contracts: canonical LONG32 pair shape and two-word lifecycle.
 ti_c54x_add_unit_test(long32_pair_shape
                       test_long32_pair_shape.c)

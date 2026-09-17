@@ -27,6 +27,7 @@
 #include "isa/ops/op_input.h"
 #include "sequencer/memory/address_resolution.h"
 #include "sequencer/memory/dual_address_resolution.h"
+#include "sequencer/memory/port_access_plan.h"
 #include "sequencer/program_pc_bridge.h"
 #include "state/accumulator/accumulator.h"
 #include "state/arch_state.h"
@@ -62,7 +63,8 @@ typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 = 1,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32 = 2,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ = 3,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ = 4
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ = 4,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_PORT_WORD16_PAIR = 5
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
@@ -72,6 +74,7 @@ typedef struct ti_c54x_memory_instruction_candidate {
     union {
         ti_c54x_memory_address_resolution address_resolution;
         ti_c54x_dual_memory_address_snapshot dual_address_snapshot;
+        ti_c54x_port_address_snapshot port_address_snapshot;
     };
     ti_c54x_program_pc_bridge_effect pc_effect;
     uint64_t instructions_attempted_after;

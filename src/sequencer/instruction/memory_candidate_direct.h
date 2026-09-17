@@ -32,6 +32,15 @@ bool ti_c54x_memory_candidate_direct_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
     const ti_c54x_arch_state *state);
 
+/* Resolution-explicit variant: the frozen dma/page echo still reads the
+ * candidate arm, but the operand/policy/commit contract reads the given
+ * resolution. Pair children whose DATA leg lives outside the generic
+ * slot use this; single-leg candidates keep the wrapper above. */
+bool ti_c54x_memory_candidate_direct_resolution_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const ti_c54x_arch_state *state,
+    const struct ti_c54x_memory_address_resolution *resolution);
+
 bool ti_c54x_memory_candidate_pc_matches_live(
     const ti_c54x_program_pc_bridge_effect *pc_effect,
     const ti_c54x_arch_state *state);

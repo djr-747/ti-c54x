@@ -95,9 +95,16 @@ static void check_carrier_shape_and_size(void)
      * a 64-bit host and already measured 320 before this slice).
      * S3d adds the read-phase T-load flag to the memory effect:
      * LP64 moves 40 to 48 and 352 to 360; ILP32 moves 36 to 40 and
-     * 324 to 328. */
+     * 324 to 328.
+     * S6 grows the PORT pair snapshot with the DATA-leg resolution
+     * (the generic slot shares union storage with the snapshot, so
+     * the pair must own its DATA leg): LP64 moves 360 to 384
+     * (executed here); the -m32 headers probe moves 332 to 352
+     * (executed here); native-32 moves 328 to 348 by construction
+     * (same +20 union delta at 4-alignment, unverifiable on a
+     * 64-bit host). */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 360U : 328U));
+                       (sizeof(void *) == 8U ? 384U : 348U));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&read));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
     TI_C54X_TEST_CHECK(read.first_value_msw == UINT16_C(0));

@@ -4,9 +4,10 @@
 /*
  * Module contract
  *
- * Owns: the private bridge from one copied public DATA WORD16 endpoint to the
- * callback-free transaction reducer, including endpoint-shape validation and
- * status mapping.
+ * Owns: the private bridge from one copied public DATA/IO WORD16 endpoint to
+ * the callback-free transaction reducer, including endpoint-shape validation
+ * and status mapping. DATA and PORT IO legs share the bridge; PROGRAM space
+ * stays rejected at advance.
  * Does not own: physical storage, address mapping, arbitration, byte order,
  * CPU lifecycle, instruction effects, timing, allocation, diagnostics, or
  * environment state.

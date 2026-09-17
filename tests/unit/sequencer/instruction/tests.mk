@@ -10,6 +10,8 @@ $(eval $(call ti_c54x_add_test,reverse_carry_word16_memory_transaction,sequencer
 $(eval $(call ti_c54x_add_test,word16_rmw_memory_transaction,sequencer/instruction,test_word16_rmw_memory_transaction.c))
 # P3-S1 RED contract: MMR-routed root transaction retirement.
 $(eval $(call ti_c54x_add_test,mmr_transaction,sequencer/instruction,test_mmr_memory_transaction.c))
+# P3-S6 RED contract: PORT root transaction hook.
+$(eval $(call ti_c54x_add_test,port_transaction,sequencer/instruction,test_port_memory_transaction.c))
 # W47A RED contracts: canonical LONG32 pair shape and two-word lifecycle.
 $(eval $(call ti_c54x_add_test,long32_pair_shape,sequencer/instruction,test_long32_pair_shape.c))
 $(eval $(call ti_c54x_add_test,long32_pair_read_transaction,sequencer/instruction,test_long32_pair_read_transaction.c))
