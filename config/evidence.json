@@ -7483,6 +7483,58 @@
         "anchor": "P3-S6: port I/O seam (planned)"
       },
       "assertion": "P3-S6 activates the PORTR direct/indirect rows PORTR_DIRECT (0x7400/0xFF80, STATUS_DP) and PORTR_SMEM (0x7480/0xFF80, AUXILIARY_REGISTERS) over the INDIRECT_ADDR7_PA16 layout with plain plus trusted op_portr handlers staging PORT arms (DATA WRITE, zero value). Long-offset and absolute Smem extension words stay undecoded; FORM-T2-26-09 stays SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PORTW-P4-130-OPCODE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PORTW",
+        "printed_page_start": "4-130",
+        "printed_page_end": "4-130"
+      },
+      "assertion": "PORTW Smem, PA is a two-word instruction with word 1 opcode 0111 0101 IAAA AAAA (I at bit 7, 7-bit Smem cookie at bits 6:0) and word 2 carrying the absolute 16-bit I/O port address with 0 <= PA <= 65535. One word is added when using long-offset indirect addressing or absolute addressing with Smem. Classes are 28A and 28B. Summary cycle values are not adopted as common timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PORTW-P4-130-SEMANTICS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PORTW",
+        "printed_page_start": "4-130",
+        "printed_page_end": "4-130"
+      },
+      "assertion": "PORTW writes a 16-bit value from data-memory location Smem to external I/O port PA with (Smem) -> PA execution and no affected status bits. The direct example PORTW OUTDAT, 5h with OUTDAT .equ 07h and DP 001 retires port data 0087BEh at port 0005h from data word 0087h, proving the direct dma offset is DP-relative; the indirect cookie reuses the Smem ARF-plus-MOD shape proved by the ADD Smem opcode record."
+    },
+    {
+      "id": "E-PROJECT-P3-S6-PORTW-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s6-port-io-seam.md",
+        "anchor": "P3-S6: port I/O seam (planned)"
+      },
+      "assertion": "P3-S6 activates the PORTW direct/indirect rows PORTW_DIRECT (0x7500/0xFF80, STATUS_DP) and PORTW_SMEM (0x7580/0xFF80, AUXILIARY_REGISTERS) over the INDIRECT_ADDR7_PA16 layout with plain plus trusted op_portw handlers staging PORT arms (DATA READ, zero value). Long-offset and absolute Smem extension words stay undecoded; FORM-T2-26-10 stays SUBSET."
     }
   ],
   "requirements": [
@@ -17332,6 +17384,35 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S6-PORTW-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/port/",
+      "claim": "Execute the two PORTW rows as memory-to-I/O-port reads: resolve the I flag, 7-bit Smem cookie, and 16-bit absolute port address through the shared INDIRECT_ADDR7_PA16 layout, retire a DP-relative DIRECT_DP READ for direct dma with DP gated at the leaf or an ARF-plus-MOD indirect READ for MOD0-MOD8 plus MOD10, stage the observed memory word into the IO WRITE with a zero template, and leave the rows repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PORTW-P4-130-OPCODE",
+        "E-TI-C54X-SPRU172C-S4-PORTW-P4-130-SEMANTICS"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S6-PORTW-OPS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S6-PORTW-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the two PORTW production symbols to FORM-T2-26-10 at SUBSET under DIRECT_DP and STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S6-PORTW-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20532,7 +20613,8 @@
         "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY",
         "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY",
         "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY",
-        "REQ-PROJECT-P3-S6-PORTR-ROWS"
+        "REQ-PROJECT-P3-S6-PORTR-ROWS",
+        "REQ-PROJECT-P3-S6-PORTW-ROWS"
       ]
     },
     {
@@ -25081,6 +25163,20 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S6-PORTR-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S6-PORTW-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/port/test_portw.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.portw_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S6-PORTW-SEMANTICS"
       ]
     }
   ]

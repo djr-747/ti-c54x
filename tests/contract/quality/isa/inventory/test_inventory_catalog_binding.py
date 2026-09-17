@@ -72,10 +72,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 252)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 252)
+        self.assertEqual(len(bindings), 254)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 254)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 34)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 218)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 220)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -93,7 +93,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "MACSU_DUAL_M0_M2", "MACSU_DUAL_M1_M0",
                "MACSU_DUAL_M1_M1", "MACSU_DUAL_M1_M2",
                "MACSU_DUAL_M2_M0", "MACSU_DUAL_M2_M1",
-               "MACSU_DUAL_M2_M2", "PORTR_DIRECT", "PORTR_SMEM"},
+               "MACSU_DUAL_M2_M2", "PORTR_DIRECT", "PORTR_SMEM",
+               "PORTW_DIRECT", "PORTW_SMEM"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -169,7 +170,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                         "STH_SHIFT_SMEM_MOD7", "STH_SHIFT_SMEM_MOD8",
                         "STH_SHIFT_SMEM_MOD10"}
                     else "DIRECT_DP"
-                    if binding["catalog_symbol"] == "PORTR_DIRECT"
+                    if binding["catalog_symbol"]
+                    in ("PORTR_DIRECT", "PORTW_DIRECT")
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
                 )
                 self.assertEqual(binding["addressing_subset"], expected)

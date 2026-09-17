@@ -144,11 +144,13 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the flag/address byte
      * variable (pinned by the exhaustive loop). Setting fixed
-     * bit 15 lands on the ADD_ACC_SHIFT row (pinned below) and
-     * clearing fixed bit 14 lands on the MACA row (pinned below);
+     * bit 15 lands on the ADD_ACC_SHIFT row (pinned below),
+     * clearing fixed bit 14 lands on the MACA row (pinned below),
+     * and clearing fixed bit 9 lands on the P3-S6 PORTW direct row
+     * (pinned below; TI SPRU172C 4-130 pins PORTW at 0x75xx);
      * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
+        UINT16_C(0x0100), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000)};
 
     for (size_t index = 0U;
@@ -183,6 +185,19 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(maca_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(maca_sibling.id == TI_C54X_OPCODE_ID_MACA_SMEM);
+    }
+
+    /* 0x7700 ^ 0x0200 = 0x7500 classifies into the P3-S6 PORTW
+     * direct row. */
+    {
+        const ti_c54x_decode_result portw_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(STM_VALUE ^ UINT16_C(0x0200)));
+
+        TI_C54X_TEST_CHECK(portw_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(portw_sibling.id ==
+                           TI_C54X_OPCODE_ID_PORTW_DIRECT);
     }
 }
 

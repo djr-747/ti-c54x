@@ -63,6 +63,7 @@
 #include "shift/op_shift.h"
 #include "shift/op_sftc.h"
 #include "port/op_portr.h"
+#include "port/op_portw.h"
 #include "store/op_stl_smem.h"
 #include "store/op_sth_smem.h"
 #include "store/op_sth_shft_xmem.h"
