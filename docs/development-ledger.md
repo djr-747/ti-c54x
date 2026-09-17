@@ -12249,3 +12249,40 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `6321be6`, this ledger-only
   follow-up. Next is lane 2 (PORT child reducer plus transaction
   RED), then PORTR/PORTW family lanes.
+
+## 2026-09-18 — P3-S6 lane 2 lands as 7ecca10
+
+- PORT pair reducer: `CHILD_PORT_WORD16_PAIR` (5) wired through
+  prepare (IO-leg plan plus DATA leg via the single-leg resolver),
+  pair dispatch (advance/cancel/reset), shape, liveness, and commit.
+  PORTR retires IO READ then DATA WRITE; PORTW retires DATA READ
+  then IO WRITE with the observed DATA word replacing the zero
+  template. Leg faults report FAULT with no second issue and no
+  architectural write; in-flight cancel reaches the endpoint.
+- Root causes (all reproduced with throwaway `/tmp` probes before
+  fixing): the candidate union aliases `address_resolution` with
+  `port_address_snapshot`, so the snapshot now owns the DATA-leg
+  `data_resolution` and shape/liveness/commit read it there; the
+  WORD16 bus adapter was DATA-only and now admits IO
+  (PROGRAM/invalid still rejected); the RED fault script carried a
+  stale read value on FAULT and now honors the endpoint contract.
+- SIZE split: single-leg resolution shape moves verbatim to
+  `memory_candidate_single_leg` (459 lines); PORT pair checks move
+  to `memory_instruction_port_candidate_validate` (93 lines); the
+  root validator drops 844 to ~350 lines. Direct-live gains a
+  resolution-explicit variant with the single-leg wrapper
+  preserved. Root grows 360 to 384 LP64 (348 native-32 by
+  construction, 352 measured -m32); all C/Python size pins move
+  with measured values.
+- RED `test_port_memory_transaction` (7 cases): PORTR/PORTW over
+  indirect (AR2 MOD2) and direct-DP legs, malformed-arm prepare
+  reject, leg-fault atomicity (no retire, PC held), in-flight
+  cancel. `make test` green (exit 0, zero failures), observer-on
+  objects compile clean.
+- Decisions: `memory_instruction_port.c` holds at 512 lines with an
+  explicit keep (split when approaching 650 or when PORTW-device
+  work lands); no knob added; no timing/IRQ/RPT claim. Follow-ups:
+  direct/indirect opcode rows plus handlers, FORM-T2-26-09/10
+  registry binding with TI evidence records.
+- Split commit discipline: impl `7ecca10`, this ledger-only
+  follow-up.
