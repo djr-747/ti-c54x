@@ -185,6 +185,39 @@ static void test_trusted_parity(void)
     TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_MEMORY);
 }
 
+static void test_trusted_macar_rounding_completion(void)
+{
+    /* 0x3734: R=1 (MACAR) direct, addr=0x34. The trusted entry
+     * stages the rounding select and completes the rounded value. */
+    ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0x3734));
+    ti_c54x_trusted_operand_values operands = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_op_effect next = {0};
+
+    operands.count = UINT8_C(3);
+    operands.values[0].raw_value = UINT64_C(1);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(0);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(0x34);
+    operands.values[2].width_bits = UINT8_C(7);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_maca_smem(
+                           &instruction, &operands, &input, &staged) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(staged.kind == TI_C54X_OP_EFFECT_MEMORY);
+    /* TI SPRU172C MACAR Example 3 shape: R=1 rounds the Example 1
+     * product to 00 0626 0000 into B. */
+    TI_C54X_TEST_CHECK(staged.payload.memory.complete(
+                           &instruction, &input, UINT16_C(0x5678),
+                           &next) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(next.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(1));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x6260000));
+}
+
 static void test_completion_accumulates_a_product(void)
 {
     /* TI SPRU172C MACA Example 1 shape: B=0 plus 0x1234 * 0x5678
@@ -285,6 +318,7 @@ main(void)
     test_checked_unknown_inputs_stop();
     test_checked_unknown_t_tolerated();
     test_trusted_parity();
+    test_trusted_macar_rounding_completion();
     test_completion_accumulates_a_product();
     test_completion_rounds_macar();
     test_completion_adds_into_b();

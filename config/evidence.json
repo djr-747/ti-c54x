@@ -6747,6 +6747,22 @@
         "anchor": "P3-S3u: MASR Smem and dual lock-in slice (planned)"
       },
       "assertion": "S3u is implemented and green: MASR Smem retires through the shared MAS_SMEM row with R=1 and MASR Xmem,Ymem retires through the shared MAS_DUAL rows with R=1, locked by the 0x2E95 trusted R=1 completion (round(A - T*Smem) to 0xFFFFB70000 into A per TI MAS Example 3), the 0x2E34 CPU retirement, the 0xBD32 trusted R=1 rounding equivalence (rounded 0xFFF3B40000 into B), and the 0xBDBA CPU retirement. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-15/17 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
+    },
+    {
+      "id": "E-PROJECT-P3-S3V-MACAR-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3v: MACAR Smem lock-in slice (planned)"
+      },
+      "assertion": "S3v is implemented and green: MACAR Smem retires through the shared MACA_SMEM row with R=1, locked by the 0x3734 leaf completion (Example 1 product rounded to 0x6260000 into B per TI MACAR Example 3), the new 0x3734 CPU retirement with read-phase T load, and trusted R=1 completion through the trusted MACA Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-09/10 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
     }
   ],
   "requirements": [
@@ -15929,6 +15945,34 @@
       "test_ids": [
         "T-COMMON-P3-S3U-MASR-DUAL-TRUSTED"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3V-MACAR-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACAR Smem through the shared MACA_SMEM row as (T)*(Smem) accumulated into B with R rounding per TI MACAR Example 3 at the semantic leaf, including trusted-path rounding completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3V-MACAR-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3V-MACAR-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACAR Smem on the CPU per TI MACAR Example 3 with read-phase T load, rounded accumulator commit into B, and data-read bus request.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3V-MACAR-CPU"
+      ]
     }
   ],
   "tests": [
@@ -23024,6 +23068,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3U-MASR-DUAL-TRUSTED-ROUNDING"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3V-MACAR-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_maca_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3V-MACAR-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3V-MACAR-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_maca_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_maca_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3V-MACAR-CPU-RETIREMENT"
       ]
     },
     {

@@ -114,10 +114,51 @@ test_maca_indirect_example1_retires(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
 }
 
+static void
+test_macar_direct_example3_retires(void)
+{
+    /* TI MACAR Example 3 direct shape: MACAR dma,B with A=00 1234
+     * 0000, B=0, mem=0x5678, FRCT=0: the product rounds to B=00 0626
+     * 0000 with T=0x5678. dma7 0x34 stays clear of the 0x00-0x1F MMR
+     * window so the read reaches the bus. */
+    ti_c54x_cpu_isa_memory_fixture fixture = {
+        .mode = TI_C54X_CPU_ISA_MEMORY_READY,
+        .program_word = UINT16_C(0x3734),
+        .read_value_word = UINT16_C(0x5678),
+        .fault_status = TI_C54X_BUS_FAULT};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_error status;
+    ti_c54x_cpu *cpu =
+        init_maca_smem(&fixture, storage, UINT64_C(0x0012340000),
+                       UINT64_C(0), &status);
+    ti_c54x_run_result result;
+    ti_c54x_state state;
+
+    (void)status;
+    result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+    TI_C54X_TEST_CHECK(result.instructions_attempted == UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(1));
+    TI_C54X_TEST_CHECK(fixture.requests[0].space ==
+                       TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA);
+    TI_C54X_TEST_CHECK(fixture.requests[0].access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(fixture.requests[0].address_word == UINT16_C(0x0034));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) ==
+                       TI_C54X_ERROR_OK);
+    TI_C54X_TEST_CHECK(state.accumulator_b_raw40 == UINT64_C(0x6260000));
+    TI_C54X_TEST_CHECK(cpu->t_register.raw_value == UINT16_C(0x5678));
+    TI_C54X_TEST_CHECK(cpu->t_register.known == true);
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
 int
 main(void)
 {
     test_maca_direct_example1_retires();
     test_maca_indirect_example1_retires();
+    test_macar_direct_example3_retires();
     return 0;
 }
