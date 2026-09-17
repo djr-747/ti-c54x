@@ -11267,3 +11267,82 @@ rewritten after publication.
   effect seam, S1 STM/MMR, S6 PORTR/PORTW,
   AR6/AR7 dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+
+## 2026-09-17 — P3-S5 accumulator-addressed push seam (slice 36)
+
+- Commit `321a428` lands the S5 seam
+  with no catalog rows, following the
+  W43A pattern. Two new WORD16 MEMORY
+  address kinds,
+  `STACK_PUSH_ACCUMULATOR_WORD16` (15)
+  and
+  `STACK_PUSH_ACCUMULATOR_DELAYED_WORD16`
+  (16), carry accumulator-targeted
+  pushes for the future `CALA[D]` rows
+  (TI SPRU172C §4 `CALA[D]`, printed
+  pp. 4-24–4-25: one-word call to
+  src(15–0), TOS `PC+1` nondelayed and
+  `PC+3` delayed over `SP-1`, no status
+  effects, explicit not-repeatable
+  note). TOS planning is identical to
+  the immediate pushes; the A/B select
+  rides `arf` (0/1) while every other
+  first-arm field stays zero. The PC
+  target is the low 16 bits of the
+  selected accumulator read from the
+  frozen input snapshot gated on
+  accumulator knownness at prepare
+  (unknown rejects before any bus
+  issue); commit re-derives the same
+  target deterministically from the
+  frozen input, so no frozen field
+  grows and root sizes stay frozen.
+  Return addresses reuse the bridge
+  successor. No catalog row, opcode
+  identity, handler, CPU opcode branch,
+  knob, timing, public-ABI, or new
+  public CPU snapshot claim.
+- The slice tripped the 800-line split
+  gate (`memory_instruction_transaction.c`
+  reached 891): the whole stack-push
+  prepare arm plus deferred push
+  reporting moved to the new
+  `memory_instruction_stack_push`
+  owner (root back to 779, owner at
+  168). Behavior is preserved: the
+  three seam lanes plus the existing
+  `CALL[D]` root tests stay green.
+- Evidence stands at 394 records, 651
+  requirements, 522 tests (522
+  `PASSING`, 0 `PLANNED`), matching the
+  S5 projection exactly: one TI source
+  record, one plan-anchor record, three
+  requirements, three test records. No
+  knob change.
+- Correction to the S4 entry above:
+  `REQ-PROJECT-P3-S4-XC-INVENTORY`
+  claims the binding lands "under the
+  `ALL` addressing token"; the bound
+  token is `N_CONDITION` (`ALL` is
+  schema-reserved for `COMPLETE`). The
+  machine record (inventory binding) was
+  always correct; only the requirement
+  prose is off. This correction stands
+  in the ledger instead of an edit.
+- Validation is GREEN: full CMake CTest
+  496/496 on the working Debug build
+  (493 plus the 3 seam lanes); `make
+  test` clean (exit 0); evidence,
+  inventory, and lookup gates pass;
+  contract quality suites pass. The
+  effect-validity lane was observed RED
+  before GREEN (missing kinds at
+  compile); resolver and transaction
+  lanes are new-file coverage of the
+  new kinds.
+- Follow-up work: `BACC`/`BACCD` family
+  on the branch seam (no S5 use),
+  `CALA`/`CALAD` family on this seam,
+  S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7
+  dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
