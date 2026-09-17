@@ -10530,3 +10530,77 @@ rewritten after publication.
   deferred exotic indirect modes, dual `#lk`
   words, and far/XPC/timing.
 
+## 2026-09-17 — P3-S3q MACP Smem,Pmad program-coefficient slice (slice 25)
+
+- Commit `45290af` lands `FORM-T2-04-12` (TI
+  SPRU172C `MACP` p. 4-89, word 0
+  `0111_100S_IAAA_AAAA` plus verbatim `pmad`
+  second word) as one `MACP_SMEM` catalog row
+  at `0x7800` under mask `0xFE00` carrying 512
+  S/I/addr7 encodings through the new
+  `DESTINATION_INDIRECT_ADDR7_PMAD16` layout
+  with `UNRESOLVED` repeatability (two-word STM
+  precedent) and
+  `ACCUMULATORS_STATUS_FRCT_OVM` resources
+  (MPYA_SMEM precedent: T written, not read; no
+  R rounding bit). Checked and trusted leaves
+  stage direct page-0 and standard-indirect
+  MOD0-MOD2 Smem DATA reads paired with an
+  absolute PROGRAM coefficient read with
+  exotic-mode deferral and read-phase Smem T
+  load; pair completion runs `(dst)` plus
+  `(Smem)`x`(pmad)` into the S-selected
+  accumulator with ADD select and no rounding.
+  The new DATA+PROGRAM pair seam (address kind
+  14, resolution delegating the Smem leg to the
+  generic single-leg resolver, X-DATA/Y-PROGRAM
+  reducer, root with commit and candidate
+  validation reusing the snapshot carrier with
+  a zeroed PROGRAM commit) issues the DATA read
+  then the PROGRAM read with X-side T load.
+  Resolution lives in the pair snapshot owner
+  so the shared root transaction stays at 799
+  lines under the 800 gate (one line of
+  margin; the next seam touching that file
+  takes the explicit split decision). No new
+  knob, resource, effect shape beyond the pair
+  carrier, or public API.
+- RED was observed on real contracts throughout:
+  the pair root test failed on the absent kind
+  in the generic shape check (fixed by the
+  pair arm), the CPU test failed on the same
+  root cause, and the consolidation pass
+  exposed a skipped generic-resolve arm plus a
+  bypassed PREPARED phase (fixed by the
+  kind-guard and in-helper phase assignment;
+  the /tmp probe proved DATA-then-PROGRAM
+  order with AR update before the tests
+  re-greened). Two cross-slice near-miss lanes
+  moved: BC/CC bit-15 flips now pin the
+  `MACP_SMEM` sibling. `git diff --check`
+  clean. New files peak at 763 lines (pair
+  root test); no split required.
+- Neighbor pins move to 205 IDs, 204
+  rows/bindings (171 SUBSET plus 33 COMPLETE),
+  16,881 lookup entries, 80/205 (39.024%)
+  with the `FORM-T2-04-12` contract set;
+  strict stays 33/205 (16.098%). The `0x7800`
+  neighborhood borrows no other row (ST/STM
+  live at `0x76xx`-`0x77xx`).
+- Validation is GREEN: full CMake CTest
+  475/475 on the working build; fresh Debug
+  configure plus full CTest 475/475;
+  full sanitizer CMake/CTest 475/475
+  (ASan/UBSan); `make test` clean; focused
+  new-slice binaries green; quality unittest
+  272 OK; evidence gate passes (377/617/493);
+  inventory provisional 80/205 with strict
+  33/205.
+- Follow-up work: `MACD` Smem,Pmad (delay
+  sidecar: Smem+1 write after pair completion;
+  reuses the S3q seam and layout),
+  `MACR`/`MACSU`/`MPYR`/`SQDST` leaves, S4 XC,
+  S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
+  MOD3, dual replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
+
