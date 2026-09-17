@@ -12229,3 +12229,23 @@ entries are not rewritten after publication.
   `ti_c54x.port_transaction`. Follow-ups: direct family lane,
   indirect Smem lane, FORM-T2-26-09/10 binding with TI evidence
   records. Planning commit carries plan plus index plus this entry.
+
+## 2026-09-18 — P3-S6 lane 1 lands as 6321be6
+
+- Seam core: address kind 18 (`PORT_WORD16`) with a `port` arm shaped
+  like the pair arm (indirect select, smem_mode/smem_arf/smem_dma7,
+  16-bit port_address, reserved words; union stays 20 bytes, spec
+  stays 24) plus the pure `ti_c54x_sequencer_plan_port_access`
+  IO-leg planner. DATA-leg access selects the inverse IO leg;
+  PORTW WRITE templates carry zero for the lane-2 reducer to replace.
+  Single-request resolution cannot serve the mixed-direction pair, so
+  the planner (MMR-plan precedent) owns validation plus IO
+  construction; the DATA leg resolves in the lane-2 reducer through
+  existing single-leg planners.
+- RED-first `test_port_resolver`: direct/indirect legs, template
+  rule, nine malformed arms plus wrong-kind/argument rejects. No
+  registry deltas until the seam exits (S18-lane precedent); the plan
+  already names the RESOLVER/TRANSACTION REQs. `make test` green.
+- Split commit discipline: impl `6321be6`, this ledger-only
+  follow-up. Next is lane 2 (PORT child reducer plus transaction
+  RED), then PORTR/PORTW family lanes.
