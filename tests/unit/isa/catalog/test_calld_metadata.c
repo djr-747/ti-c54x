@@ -36,7 +36,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_CALLD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 225);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 232);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_CALLD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == CALLD_VALUE);

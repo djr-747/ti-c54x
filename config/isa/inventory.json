@@ -2180,8 +2180,16 @@
       "mnemonic": "STH",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "STH_SMEM",
+        "STH_SMEM_MOD4",
+        "STH_SMEM_MOD5",
+        "STH_SMEM_MOD6",
+        "STH_SMEM_MOD7",
+        "STH_SMEM_MOD8",
+        "STH_SMEM_MOD10"
+      ]
     },
     {
       "id": "FORM-T2-20-06",
@@ -3150,6 +3158,48 @@
     {
       "catalog_symbol": "STL_SMEM_MOD7",
       "form_id": "FORM-T2-20-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD4",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD5",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD6",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD7",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD8",
+      "form_id": "FORM-T2-20-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STH_SMEM_MOD10",
+      "form_id": "FORM-T2-20-05",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
     },
