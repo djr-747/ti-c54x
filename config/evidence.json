@@ -7383,6 +7383,38 @@
         "anchor": "P3-S15: AND Smem slice (implemented; local verification green)"
       },
       "assertion": "S15 is implemented and green: the catalog-free AND Smem pure leaf with checked and trusted entry points for dst &= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, ANDing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
+    },
+    {
+      "id": "E-PROJECT-P3-S16-OR-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s16-or-smem-slice.md",
+        "anchor": "P3-S16: OR Smem slice (planned)"
+      },
+      "assertion": "S16 is implemented and green: the catalog-free OR Smem pure leaf with checked and trusted entry points for dst |= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, ORing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
+    },
+    {
+      "id": "E-PROJECT-P3-S17-XOR-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s17-xor-smem-slice.md",
+        "anchor": "P3-S17: XOR Smem slice (planned)"
+      },
+      "assertion": "S17 is implemented and green: the catalog-free XOR Smem pure leaf with checked and trusted entry points for dst ^= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, XORing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     }
   ],
   "requirements": [
@@ -17161,6 +17193,34 @@
       "test_ids": [
         "T-COMMON-P3-S15-AND-SMEM-SEMANTICS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/logical/",
+      "claim": "Execute the OR Smem form as a catalog-free pure leaf: resolve destination, indirect, and addr7 for the DESTINATION_INDIRECT_ADDR7 shape, stage a single WORD16 READ over direct page-0 or standard-indirect MOD0-MOD3 through the shared MEMORY effect, combine the zero-extended unshifted word full-width into the destination accumulator with bitwise OR, preserve C and TC, consume no SXM or OVM input, gate on destination-accumulator knownness, and defer exotic indirect modes above MOD3 as INVALID_OPERAND with the caller effect untouched.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-OR-P4-123"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S16-OR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/logical/",
+      "claim": "Execute the XOR Smem form as a catalog-free pure leaf: resolve destination, indirect, and addr7 for the DESTINATION_INDIRECT_ADDR7 shape, stage a single WORD16 READ over direct page-0 or standard-indirect MOD0-MOD3 through the shared MEMORY effect, combine the zero-extended unshifted word full-width into the destination accumulator with bitwise XOR, preserve C and TC, consume no SXM or OVM input, gate on destination-accumulator knownness, and defer exotic indirect modes above MOD3 as INVALID_OPERAND with the caller effect untouched.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-XOR-P4-201"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S17-XOR-SMEM-SEMANTICS"
+      ]
     }
   ],
   "tests": [
@@ -24865,6 +24925,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S16-OR-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/logical/test_or_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.or_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S17-XOR-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/logical/test_xor_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.xor_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS"
       ]
     }
   ]

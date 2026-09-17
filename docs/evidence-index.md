@@ -468,6 +468,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s13-sth-shift-smem-store-slice.md` anchor `P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)` |
 | `E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s14-sub-smem-slice.md` anchor `P3-S14: SUB Smem slice (implemented; local verification green)` |
 | `E-PROJECT-P3-S15-AND-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s15-and-smem-slice.md` anchor `P3-S15: AND Smem slice (implemented; local verification green)` |
+| `E-PROJECT-P3-S16-OR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s16-or-smem-slice.md` anchor `P3-S16: OR Smem slice (planned)` |
+| `E-PROJECT-P3-S17-XOR-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s17-xor-smem-slice.md` anchor `P3-S17: XOR Smem slice (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1243,6 +1245,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
 | `REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5` | `T-COMMON-P3-S14-SUB-SMEM-SEMANTICS` |
 | `REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/logical/` | `E-TI-C54X-SPRU172C-S4-AND-P4-11` | `T-COMMON-P3-S15-AND-SMEM-SEMANTICS` |
+| `REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/logical/` | `E-TI-C54X-SPRU172C-S4-OR-P4-123` | `T-COMMON-P3-S16-OR-SMEM-SEMANTICS` |
+| `REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/logical/` | `E-TI-C54X-SPRU172C-S4-XOR-P4-201` | `T-COMMON-P3-S17-XOR-SMEM-SEMANTICS` |
 
 ## Tests
 
@@ -1792,6 +1796,8 @@ exist in the repository.
 | `T-PROJECT-P3-S13-STH-SHIFT-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/store/test_cpu_sth_shift_direct.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_sth_shift_direct"}` | `REQ-COMMON-P3-S13-STH-SHIFT-CPU-RETIREMENT` |
 | `T-COMMON-P3-S14-SUB-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_sub_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sub_smem_ops"}` | `REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S15-AND-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_and_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.and_smem_ops"}` | `REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S16-OR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_or_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.or_smem_ops"}` | `REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S17-XOR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_xor_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.xor_smem_ops"}` | `REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS` |
 | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_indirect_addr7_layout.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_addr7_layout"}` | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` |
 | `T-PROJECT-P3-S3D-T-LOAD-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_commit"}` | `REQ-PROJECT-P3-S3D-MPYA-T-LOAD` |
 
