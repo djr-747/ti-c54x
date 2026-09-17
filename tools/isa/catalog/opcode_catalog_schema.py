@@ -372,8 +372,8 @@ def validate_catalog_rows(rows: Iterable[OpcodeRow]) -> tuple[OpcodeRow, ...]:
                 )
             if not _is_integer(row.second_word_value) or not 0 <= row.second_word_value <= _WORD_MAX:
                 raise OpcodeCatalogError(f"{location}: second word is outside 16-bit range")
-            if not _is_integer(row.second_word_mask) or not 0 <= row.second_word_mask <= _WORD_MAX:
-                raise OpcodeCatalogError(f"{location}: second mask is outside 16-bit range")
+            if not _is_integer(row.second_word_mask) or not 0 < row.second_word_mask <= _WORD_MAX:
+                raise OpcodeCatalogError(f"{location}: second mask must be nonzero 16-bit")
             if row.second_word_value & ~row.second_word_mask:
                 raise OpcodeCatalogError(f"{location}: second value sets bits outside its mask")
         elif row.second_word_value is not None or row.second_word_mask is not None:

@@ -107,12 +107,19 @@
                               first_word_mask, program_words, operand_layout, \
                               repeatability, input_resources) \
     [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
+#define TI_C54X_OPCODE_MASKED2(symbol, handler, first_word_value, \
+                               first_word_mask, program_words, \
+                               operand_layout, repeatability, \
+                               input_resources, second_word_value, \
+                               second_word_mask) \
+    [TI_C54X_OPCODE_ID_##symbol] = ti_c54x_op_##handler,
 static const ti_c54x_op_handler ti_c54x_handlers[
     TI_C54X_OPCODE_ID_COUNT] = {
 #include "../catalog/opcode_catalog.def"
 };
 #undef TI_C54X_OPCODE_EXACT
 #undef TI_C54X_OPCODE_MASKED
+#undef TI_C54X_OPCODE_MASKED2
 
 ti_c54x_op_status
 ti_c54x_dispatch_decoded(const ti_c54x_decoded_instruction *instruction,

@@ -31,9 +31,16 @@ typedef enum ti_c54x_opcode_id {
                               first_word_mask, program_words, operand_layout, \
                               repeatability, input_resources) \
     TI_C54X_OPCODE_ID_##symbol,
+#define TI_C54X_OPCODE_MASKED2(symbol, handler, first_word_value, \
+                               first_word_mask, program_words, \
+                               operand_layout, repeatability, \
+                               input_resources, second_word_value, \
+                               second_word_mask) \
+    TI_C54X_OPCODE_ID_##symbol,
 #include "opcode_catalog.def"
 #undef TI_C54X_OPCODE_EXACT
 #undef TI_C54X_OPCODE_MASKED
+#undef TI_C54X_OPCODE_MASKED2
     TI_C54X_OPCODE_ID_COUNT
 } ti_c54x_opcode_id;
 

@@ -586,6 +586,11 @@ class Word2QualifiedRowTests(unittest.TestCase):
             parse_catalog(self.LD_W2.replace("0x0C40, 0xFEE0",
                                              "0x0C41, 0xFEE0"))
 
+    def test_masked2_zero_word2_mask_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_catalog(self.LD_W2.replace("0x0C40, 0xFEE0",
+                                             "0x0C40, 0x0000"))
+
     def test_masked2_wrong_field_count_rejected(self) -> None:
         with self.assertRaises(ValueError):
             parse_catalog(self.LD_W2.replace(", 0x0C40, 0xFEE0", ""))

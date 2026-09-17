@@ -42,10 +42,70 @@ static const ti_c54x_opcode_metadata ti_c54x_opcode_metadata_table[
                                     (ti_c54x_operand_layout_id)(operand_layout), \
                                     (ti_c54x_repeatability_class)(repeatability), \
                                     (ti_c54x_input_resource_mask)(input_resources)},
+#define TI_C54X_OPCODE_MASKED2(symbol, handler, first_word_value, \
+                               first_word_mask, program_words, \
+                               operand_layout, repeatability, \
+                               input_resources, second_word_value, \
+                               second_word_mask) \
+    [TI_C54X_OPCODE_ID_##symbol] = {TI_C54X_OPCODE_ID_##symbol, \
+                                    (uint16_t)(first_word_value), \
+                                    (uint16_t)(first_word_mask), \
+                                    (uint8_t)(program_words), \
+                                    (ti_c54x_operand_layout_id)(operand_layout), \
+                                    (ti_c54x_repeatability_class)(repeatability), \
+                                    (ti_c54x_input_resource_mask)(input_resources)},
 #include "opcode_catalog.def"
 #undef TI_C54X_OPCODE_EXACT
 #undef TI_C54X_OPCODE_MASKED
+#undef TI_C54X_OPCODE_MASKED2
 };
+
+/* Second-word qualifiers live only in the slot table below, so the
+ * metadata carrier keeps its pinned 24-byte size; a first word owns a
+ * qualified slot exactly when at least one entry matches it. */
+static const ti_c54x_qualified_slot ti_c54x_qualified_slots[] = {
+#include "../../../generated/isa/catalog/opcode_qualified_slots.inc"
+};
+
+bool
+ti_c54x_first_word_has_qualified_slot(uint16_t first_word)
+{
+    size_t index;
+
+    for (index = 0; index < sizeof(ti_c54x_qualified_slots) /
+                              sizeof(ti_c54x_qualified_slots[0]); ++index) {
+        const ti_c54x_qualified_slot *slot = &ti_c54x_qualified_slots[index];
+        if (slot->id == TI_C54X_OPCODE_ID_UNKNOWN) {
+            break;
+        }
+        if (((uint16_t)(first_word & slot->first_word_mask)) ==
+            slot->first_word_value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+ti_c54x_opcode_id
+ti_c54x_resolve_qualified_slot(uint16_t first_word, uint16_t second_word)
+{
+    size_t index;
+
+    for (index = 0; index < sizeof(ti_c54x_qualified_slots) /
+                              sizeof(ti_c54x_qualified_slots[0]); ++index) {
+        const ti_c54x_qualified_slot *slot = &ti_c54x_qualified_slots[index];
+        if (slot->id == TI_C54X_OPCODE_ID_UNKNOWN) {
+            break;
+        }
+        if (((uint16_t)(first_word & slot->first_word_mask)) ==
+                slot->first_word_value &&
+            ((uint16_t)(second_word & slot->second_word_mask)) ==
+                slot->second_word_value) {
+            return slot->id;
+        }
+    }
+    return TI_C54X_OPCODE_ID_UNKNOWN;
+}
 
 static const uint16_t ti_c54x_opcode_direct_lookup[UINT16_MAX + 1U] = {
 #include "../../../generated/isa/catalog/opcode_first_word.inc"

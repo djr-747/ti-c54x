@@ -1,6 +1,8 @@
 # Test ownership: tests/unit/isa/catalog owns immutable catalog metadata
 # identity/range and copied decode propagation proofs.
 $(eval $(call ti_c54x_add_test,opcode_metadata,isa/catalog,test_opcode_metadata.c))
+# P3-S18 lane 2a RED contract: empty qualified-slot resolution.
+$(eval $(call ti_c54x_add_test,qualified_slots,isa/catalog,test_qualified_slots.c))
 $(eval $(call ti_c54x_add_test,rol_ror_metadata,isa/catalog,test_rol_ror_metadata.c))
 $(eval $(call ti_c54x_add_test,sftl_metadata,isa/catalog,test_sftl_metadata.c))
 $(eval $(call ti_c54x_add_test,logical_accumulator_metadata,isa/catalog,test_logical_accumulator_metadata.c))

@@ -18,6 +18,7 @@ from tools.isa.catalog.generate_opcode_lookup import (
     UINT16_WORD_COUNT,
     build_lookup,
     render_lookup,
+    render_qualified_slots,
 )
 from tools.isa.catalog.opcode_catalog_schema import OpcodeCatalogError, OpcodeRow, parse_catalog
 
@@ -322,6 +323,57 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
             with self.subTest(name=str(relative)):
                 contents = (self.root / relative).read_text(encoding="utf-8")
                 self.assertNotIn("generate_opcode_lookup.py", contents)
+
+
+class QualifiedSlotFragmentTests(unittest.TestCase):
+    """P3-S18 RED lane 2a: second-word-qualified slot fragment."""
+
+    def _slot(self, symbol: str, handler: str, value: int, mask: int,
+              w2_value: int, w2_mask: int, line: int) -> OpcodeRow:
+        return OpcodeRow(symbol, handler, value, mask, 2, LAYOUT_NONE,
+                         REPEAT_UNRESOLVED, "MASKED2", line, RESOURCES_NONE,
+                         w2_value, w2_mask)
+
+    def test_empty_rows_render_comment_plus_sentinel(self) -> None:
+        fragment = render_qualified_slots(())
+        self.assertIn("Generated", fragment)
+        self.assertIn("DO NOT EDIT", fragment)
+        self.assertEqual(fragment.count("TI_C54X_OPCODE_ID_"), 1)
+        self.assertIn("TI_C54X_OPCODE_ID_UNKNOWN", fragment)
+
+    def test_entries_follow_declaration_order(self) -> None:
+        rows = (
+            self._slot("LD_SMEM_SHIFT", "ld_smem_shift", 0x6F80, 0xFFE0,
+                       0x0C40, 0xFEE0, 3),
+            self._slot("STH_SHIFT_SMEM_MOD0", "sth_shift_smem_mod0", 0x6F80,
+                       0xFFE0, 0x0C60, 0xFEE0, 9),
+        )
+        first = render_qualified_slots(rows)
+        second = render_qualified_slots(rows)
+        self.assertEqual(first, second)
+        self.assertLess(first.index("LD_SMEM_SHIFT"),
+                        first.index("STH_SHIFT_SMEM_MOD0"))
+        self.assertIn("(uint16_t)0x6F80", first)
+        self.assertIn("(uint16_t)0x0C40", first)
+        self.assertIn("(uint16_t)0x0C60", first)
+
+    def test_unqualified_rows_emit_no_entries(self) -> None:
+        rows = (
+            _row("PLAIN", "plain", 0x1200, 0xFF00),
+            self._slot("LD_SMEM_SHIFT", "ld_smem_shift", 0x6F80, 0xFFE0,
+                       0x0C40, 0xFEE0, 3),
+        )
+        fragment = render_qualified_slots(rows)
+        self.assertNotIn("PLAIN", fragment)
+        self.assertIn("LD_SMEM_SHIFT", fragment)
+
+    def test_production_qualified_fragment_matches_generator(self) -> None:
+        root = Path(__file__).resolve().parents[5]
+        catalog = root / "src/isa/catalog/opcode_catalog.def"
+        artifact = root / "generated/isa/catalog/opcode_qualified_slots.inc"
+        rows = parse_catalog(catalog.read_text(encoding="utf-8"))
+        self.assertEqual(artifact.read_text(encoding="utf-8"),
+                         render_qualified_slots(rows))
 
 
 if __name__ == "__main__":  # pragma: no cover
