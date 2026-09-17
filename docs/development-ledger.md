@@ -11672,3 +11672,97 @@ rewritten after publication.
   still awaits user approval, so remote
   CI has not yet seen the recent
   slices.
+
+## 2026-09-17 — P3-S12 STH by-SHFT Xmem store (slice 41)
+
+- Commit `0e99faf` lands STH syntax 3
+  (`STH src, SHFT, Xmem`, TI SPRU172C
+  §STH, pp. 4-168–4-171, opcode
+  `1001_101S_XXXXSHFT`). One row,
+  `STH_SHFT_XMEM` (`0x9A00`/`0xFE00`),
+  placed after `LD_XMEM_SHIFT` so the
+  early positional catalog pins do not
+  move. It reuses the shared
+  `ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4`
+  layout (Xmod in bits 7–6, raw Xar in
+  bits 5–4 mapping to AR2–AR5,
+  unsigned SHFT in bits 3–0). Checked
+  and trusted leaves shift the
+  selected accumulator arithmetically
+  right by `(16-SHFT)` and stage
+  dual-indirect X-only MEMORY WRITE
+  effects carrying bits 31–16. Every
+  encoded shift is a right shift of at
+  most 16, so the stored field is pure
+  source bits and SXM rides hostile
+  and unconsumed under the new
+  `ACCUMULATORS_AUXILIARY_REGISTERS`
+  token. The row lands `UNRESOLVED`
+  repeatability (no TI note;
+  `LD_XMEM_SHIFT` precedent). No
+  `run.c` change. Syntax 4 and `STLM`
+  stay for later slices.
+- Seam work: STH syntax-3 is the first
+  Xmem store. The X-only resolver
+  (`address_resolution.c`) and the
+  dual planner (`indirect_dual.c`)
+  were read-only; address arithmetic
+  is direction-independent, so both
+  gained minimal WRITE arms while the
+  full-dual resolver stays read-only.
+  One planner contract test
+  (`test_indirect_dual_mod0.c`) pinned
+  the old read-only gate and was
+  evolved to the new contract with
+  justification, not weakened. The TI
+  manual itself was fetched from
+  ti.com and its STH/STLM bit tables
+  extracted from the PDF to settle
+  syntaxes 3–4 and STLM evidence.
+- Decisions: the manual's
+  `(SHFT-16)` execution formula plus
+  Example 2 (`STH B,-8`, encoded SHFT
+  8, B FF_8421_1234 storing FF84)
+  pin the unsigned-SHFT reading
+  against the glossary (`0-15`);
+  Example 2's `*AR7-` assembles as
+  syntax 4, not syntax 3, so the
+  X-only AR2–AR5 contract stands.
+  `FORM-T2-20-07` lands `COMPLETE`
+  (one row covers the whole syntax;
+  `LD_XMEM_SHIFT` precedent), not
+  `SUBSET`.
+- Contract pins: rows 238 to 239,
+  `OPCODE_ID_COUNT` 239 to 240, lookup
+  20833 to 21345 (+512 entries, zero
+  neighbor moves), bound forms 92 to
+  93 (45.366%), strict complete bound
+  33 to 34 (16.585%), `SUBSET` stays
+  205. No catalog renumber this time.
+  No knob change.
+- Process slip: a `sed` broke a quote
+  in `sources.cmake` (caught by the
+  manifest gate, repaired). The
+  row-adding checklist now verifies
+  the manifest gate explicitly after
+  mechanical edits.
+- Evidence stands at 415 records, 667
+  requirements, 537 tests (537
+  `PASSING`, 0 `PLANNED`), matching the
+  S12 projection: two TI source
+  records, one activation record,
+  three requirements, two test
+  records.
+- Validation is GREEN: `make test`
+  clean (exit 0) — 272 quality tests
+  OK, evidence and inventory gates
+  pass, both S12 lanes plus the
+  evolved planner contract green.
+  Both RED lanes observed RED before
+  GREEN (missing header, then CPU
+  retirement through the read-only
+  seam).
+- Follow-up work: STH syntax 4
+  (2-word SHIFT/Smem), STLM, S1-family
+  MMR/stack moves, S6 PORTR/PORTW,
+  far/XPC/timing.
