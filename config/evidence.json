@@ -7771,6 +7771,76 @@
         "anchor": "P3-S26: SUBS Smem rows (implemented; local verification green)"
       },
       "assertion": "P3-S26 activates the SUBS Smem row SUBS_SMEM (0x0A00/0xFE00) over the shared SELECT_INDIRECT_ADDR7 layout with the landed plain plus trusted op_subs_smem handlers, registering the ACCUMULATORS_STATUS_OVM input combination. Long-offset and absolute Smem extension words stay undecoded; FORM-T2-02-13 stays SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD and SUB",
+        "printed_page_start": "4-3",
+        "printed_page_end": "4-187"
+      },
+      "assertion": "SPRU172C ADD syntax 7 is ADD #lk[,SHFT],src[,dst] with first word 0xF000|S<<9|D<<8|SHFT plus a 16-bit lk extension word executing (lk<<SHFT)+(src) into dst, and syntax 8 is ADD #lk,16,src[,dst] with first word 0xF060|S<<9|D<<8 plus lk executing (lk<<16)+(src) into dst. SUB syntax 7 is SUB #lk[,SHFT],src[,dst] with first word 0xF010|S<<9|D<<8|SHFT plus lk executing (src)-(lk<<SHFT) into dst, and syntax 8 is SUB #lk,16,src[,dst] with first word 0xF061|S<<9|D<<8 plus lk executing (src)-(lk<<16) into dst. lk spans -32768..32767, SHFT spans 0..15, all four forms are two program words of class 2, and the syn7 worked examples pin the shift-add and shift-subtract rules. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN5-XMEM-P4-3-4-186",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD and SUB",
+        "printed_page_start": "4-3",
+        "printed_page_end": "4-186"
+      },
+      "assertion": "SPRU172C ADD syntax 5 is ADD Xmem,SHFT,src with first word 0x9000|S<<8|XXXX|SHFT executing (Xmem<<SHFT)+(src) into src. SUB syntax 5 is SUB Xmem,SHFT,src with first word 0x9200|S<<8|XXXX|SHFT executing (src)-(Xmem<<SHFT) into src. SHFT spans 0..15, both forms are one program word of class 3A with S at bit 8 selecting the accumulator. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD and SUB",
+        "printed_page_start": "4-4",
+        "printed_page_end": "4-187"
+      },
+      "assertion": "SPRU172C ADD syntax 10 is ADD src,ASM[,dst] with first word 0xF480|S<<9|D<<8 executing (src or dst)+(src<<ASM) into dst. SUB syntax 10 is SUB src,ASM[,dst] with first word 0xF481|S<<9|D<<8 executing (dst)-(src<<ASM) into dst. Both forms are one program word of class 1. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-PROJECT-P3-WAVE5-ADD-SUB-LEAVES-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-wave5-add-sub-leaves-slice.md",
+        "anchor": "P3-WAVE5: ADD/SUB leaf fan-out (planned)"
+      },
+      "assertion": "P3-WAVE5 merges the second managed fan-out: six catalog-free ADD/SUB handler leaves (op_add_lk, op_sub_lk, op_add_xmem, op_sub_xmem, op_add_src_asm, op_sub_src_asm) with plain plus trusted entries over the shared 2-word accumulator layouts, the dual-Xmod layout, and the accumulator source-destination layout. No catalog rows, dispatch, decode, or CPU change; all eight #lk/Xmem/src-ASM forms stay UNIMPLEMENTED."
     }
   ],
   "requirements": [
@@ -17767,6 +17837,90 @@
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
         "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-ADD-LK-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ADD #lk syntaxes 7-8 as a catalog-free pure leaf: resolve S, D, SHFT, and the 16-bit lk extension through the shared 2-word accumulator layouts, SXM-widen lk then shift left by SHFT (syn7) or 16 (syn8), add to the S-selected accumulator with checked 40-bit addition, write C from the low-32 carry, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-ADD-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-SUB-LK-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute SUB #lk syntaxes 7-8 as a catalog-free pure leaf: resolve S, D, SHFT, and the 16-bit lk extension through the shared 2-word accumulator layouts, SXM-widen lk then shift left by SHFT (syn7) or 16 (syn8), subtract from the S-selected accumulator with checked 40-bit subtraction, write C 1 iff no borrow, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-SUB-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-ADD-XMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ADD Xmem syntax 5 as a catalog-free pure leaf: resolve S, the dual Xmem address, and SHFT through the shared dual-Xmod layout over the 0x9000 fixed prefix, shift the Xmem word left by SHFT with SXM widening, add to the S-selected accumulator with checked 40-bit addition, write C from the low-32 carry, saturate under OVM with sticky source overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN5-XMEM-P4-3-4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-ADD-XMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute SUB Xmem syntax 5 as a catalog-free pure leaf: resolve S, the dual Xmem address, and SHFT through the shared dual-Xmod layout over the 0x9200 fixed prefix, shift the Xmem word left by SHFT with SXM widening, subtract from the S-selected accumulator with checked 40-bit subtraction, write C 1 iff no borrow, saturate under OVM with sticky source overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN5-XMEM-P4-3-4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ADD src,ASM syntax 10 as a catalog-free pure leaf: resolve S and D through the shared accumulator source-destination layout over the 0xF480 fixed prefix, shift src left by the signed 5-bit ASM count with SXM-dependent behavior, add to src-or-dst with checked 40-bit addition, write C from the low-32 carry, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute SUB src,ASM syntax 10 as a catalog-free pure leaf: resolve S and D through the shared accumulator source-destination layout over the 0xF481 fixed prefix, shift src left by the signed 5-bit ASM count with SXM-dependent behavior, subtract from dst with checked 40-bit subtraction, write C 1 iff no borrow, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS"
+      ]
     }
   ],
   "tests": [
@@ -25571,6 +25725,90 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S24-SUBB-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-ADD-LK-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.add_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-ADD-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-SUB-LK-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sub_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sub_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-SUB-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-ADD-XMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.add_xmem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-ADD-XMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sub_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sub_xmem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_src_asm.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.add_src_asm_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sub_src_asm.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sub_src_asm_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS"
       ]
     }
   ]
