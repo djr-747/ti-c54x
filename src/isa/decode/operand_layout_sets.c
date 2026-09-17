@@ -583,3 +583,25 @@ static const ti_c54x_operand_field_layout
          UINT8_C(7)}};
 const ti_c54x_operand_layout_set ti_c54x_round_indirect_addr7_set = {
     ti_c54x_round_indirect_addr7_operands, UINT8_C(3)};
+
+/* MACA T,src fields: source select S[9:9], destination select D[8:8],
+ * round R[0:0]; fixed bits 15:10 and 7:1 carry no operand. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_source_destination_round_src_piece = {
+        UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_source_destination_round_dst_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_source_destination_round_round_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_source_destination_round_operands[3] = {
+        {&ti_c54x_source_destination_round_src_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_source_destination_round_dst_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_source_destination_round_round_piece, UINT8_C(1),
+         UINT8_C(1)}};
+const ti_c54x_operand_layout_set ti_c54x_source_destination_round_set = {
+    ti_c54x_source_destination_round_operands, UINT8_C(3)};

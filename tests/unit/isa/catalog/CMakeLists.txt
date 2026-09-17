@@ -117,6 +117,9 @@ ti_c54x_add_unit_test(squr_acc_metadata
 # P3-S3 RED contract: MPYU unsigned multiply.
 ti_c54x_add_unit_test(mpyu_smem_metadata
                       test_mpyu_smem_metadata.c)
+# P3-S3 RED contract: MACA T,src register-only row.
+ti_c54x_add_unit_test(maca_t_metadata
+                      test_maca_t_metadata.c)
 # P3-S3 RED contract: MACA Smem accumulate-A row.
 ti_c54x_add_unit_test(maca_smem_metadata
                       test_maca_smem_metadata.c)

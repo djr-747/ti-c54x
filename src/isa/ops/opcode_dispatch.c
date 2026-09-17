@@ -74,6 +74,7 @@
 #include "multiply/op_mpy_smem.h"
 #include "multiply/op_mpyu_smem.h"
 #include "multiply/op_maca_smem.h"
+#include "multiply/op_maca_t.h"
 #include "multiply/op_mpya_smem.h"
 #include "multiply/op_mpya_dst.h"
 #include "multiply/op_squr_adst.h"

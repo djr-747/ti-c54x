@@ -225,6 +225,12 @@ TI_C54X_OPCODE_MASKED(SQURS_SMEM, squrs_smem, 0x3A00, 0xFE00, 1, TI_C54X_OPERAND
  * row carries both encodings; D rides the word through the reused
  * MAX/MIN single-destination-bit layout. */
 TI_C54X_OPCODE_MASKED(MPYA_DST, mpya_dst, 0xF48C, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* Syntax-2 register-only MACA across the S source, D destination, and R
+ * round selects. The single row carries all 8 encodings (the R bit carries
+ * the MACAR T,src variant); S/D/R ride the word through the new
+ * source/destination/round layout. Low bytes 0x88/0x89 keep the row
+ * disjoint from the neighboring MPYA_DST row. */
+TI_C54X_OPCODE_MASKED(MACA_T, maca_t, 0xF488, 0xFCFE, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
 /* Syntax-2 dual WORD16 MAC across X/Y MOD0/MOD1/MOD2 addressing. Each row
  * fixes one mode combination; R/S/D/XAR/YAR ride the word and MOD3
  * neighborhoods stay undecoded. */

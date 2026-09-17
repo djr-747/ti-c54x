@@ -86,6 +86,8 @@ $(eval $(call ti_c54x_add_test,squr_smem_metadata,isa/catalog,test_squr_smem_met
 $(eval $(call ti_c54x_add_test,squr_acc_metadata,isa/catalog,test_squr_acc_metadata.c))
 # P3-S3 RED contract: MPYU unsigned multiply.
 $(eval $(call ti_c54x_add_test,mpyu_smem_metadata,isa/catalog,test_mpyu_smem_metadata.c))
+# P3-S3 RED contract: MACA T,src register-only row.
+$(eval $(call ti_c54x_add_test,maca_t_metadata,isa/catalog,test_maca_t_metadata.c))
 # P3-S3 RED contract: MACA Smem accumulate-A row.
 $(eval $(call ti_c54x_add_test,maca_smem_metadata,isa/catalog,test_maca_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))

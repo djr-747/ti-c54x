@@ -20,12 +20,12 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3o complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
-Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
+Current snapshot: P3-S3p complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
+Smem rows, `MACA` T,src, `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`, register-only
 `MPYA`/`SQUR` dst).
 
-- 203 runnable catalog rows under 16,361 populated first-word lookup entries.
-  Inventory coverage is 78/205 forms SUBSET-or-better (38.049%) and 33/205
+- 204 runnable catalog rows under 16,369 populated first-word lookup entries.
+  Inventory coverage is 79/205 forms SUBSET-or-better (38.537%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -96,9 +96,14 @@ Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
   (TI MACA Example 1 and the MACAR rounding lane retire through
   the leaf; the SQUR-acc/STM near-miss lanes move to the new row
   as recorded cross-slice updates, and the R bit carries the
-  `MACAR` variant on the shared row).
-- Major remaining work is the `MACA` T,src syntax-2 row, the
-  `MACD`/`MACP` family
+  `MACAR` variant on the shared row). S3p lands the register-only
+  `MACA T,src` row (`FORM-T2-04-08`, 8 S/D/R encodings under one
+  masked row) with a new source/destination/round layout and
+  `(src)` plus `(T)`x`A(32-16)` ADD completion with R rounding
+  (TI MACA Example 2 and the MACAR rounding lane retire through
+  the leaf with T preserved; the R bit carries the `MACAR` T,src
+  variant on the shared row).
+- Major remaining work is the `MACD`/`MACP` family
   (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.

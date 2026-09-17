@@ -18,3 +18,5 @@ $(eval $(call ti_c54x_add_test,cpu_squr_acc,cpu/isa/multiply,test_cpu_squr_acc.c
 $(eval $(call ti_c54x_add_test,cpu_mpyu_smem,cpu/isa/multiply,test_cpu_mpyu_smem.c))
 # P3-S3 RED contract: MACA Smem accumulate-A row.
 $(eval $(call ti_c54x_add_test,cpu_maca_smem,cpu/isa/multiply,test_cpu_maca_smem.c))
+# P3-S3 RED contract: MACA T,src register-only row.
+$(eval $(call ti_c54x_add_test,cpu_maca_t,cpu/isa/multiply,test_cpu_maca_t.c))

@@ -6597,6 +6597,22 @@
         "anchor": "P3-S3o: MACA Smem accumulate-A slice (planned)"
       },
       "assertion": "S3o is implemented and green: one MACA_SMEM catalog row at 0x3500 under mask 0xFD00 carrying 512 R/I/addr7 encodings through the new ROUND_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-phase T load, and read-value completion runs (B) plus (Smem) x A(32-16) into fixed B through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 1 (B 00 0626 0060 with T 5678) and the MACAR Example 3 rounding lane. The R bit carries the MACAR variant on the shared row. FORM-T2-04-07 lands SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P3-S3P-MACA-T-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3p: MACA T,src register-only slice (planned)"
+      },
+      "assertion": "S3p is implemented and green: one MACA_T catalog row at 0xF488 under mask 0xFCFE carrying 8 S/D/R encodings through the new SOURCE_DESTINATION_ROUND layout with ELIGIBLE repeatability; checked and trusted register-only leaves complete (src) plus (T) x A(32-16) into the D-selected accumulator through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 2 (B 00 009D 4BA0 with T unchanged) and the MACAR Example 4 rounding lane. The R bit carries the MACAR T,src variant on the shared row. FORM-T2-04-08 lands SUBSET."
     }
   ],
   "requirements": [
@@ -15378,6 +15394,92 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3P-MACA-T-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog MACA_T at 0xF488 under mask 0xFCFE with one program word, 8 encodings, the SOURCE_DESTINATION_ROUND layout, ELIGIBLE repeatability by Class 3A/3B with no Table 2-28 entry, and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3P-MACA-T-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3P-MACA-T-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all MACA_T encodings with bundle copy and S/D/R extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3P-MACA-T-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3P-MACA-T-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACA T,src as (src) plus (T) x A(32-16) into the D-selected accumulator through the multiply core with ADD select, R rounding, and FRCT/OVM handling, per the TI Example 2 and MACAR Example 4 lanes, at the semantic leaves.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3P-MACA-T-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3P-MACA-T-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACA T,src on the CPU per TI MACA Example 2 with accumulator write, T-register preservation, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3P-MACA-T-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3P-MACA-T-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the SOURCE_DESTINATION_ROUND one-word plan with source, destination, and round operands in order.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3P-MACA-T-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3P-SOURCE-DESTINATION-ROUND-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MACA_T catalog row to FORM-T2-04-08 at SUBSET coverage over register T, source, and destination addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3P-MACA-T-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -18564,7 +18666,8 @@
         "REQ-PROJECT-P3-S3M-SQURA-INVENTORY",
         "REQ-PROJECT-P3-S3M-SQURS-INVENTORY",
         "REQ-PROJECT-P3-S3N-MPYU-INVENTORY",
-        "REQ-PROJECT-P3-S3O-MACA-INVENTORY"
+        "REQ-PROJECT-P3-S3O-MACA-INVENTORY",
+        "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY"
       ]
     },
     {
@@ -22216,6 +22319,76 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3O-MACA-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3P-MACA-T-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_maca_t_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_t_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3P-MACA-T-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3P-MACA-T-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_maca_t_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_t_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3P-MACA-T-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3P-MACA-T-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_maca_t_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_t_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3P-MACA-T-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3P-MACA-T-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_maca_t.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_maca_t"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3P-MACA-T-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3P-SOURCE-DESTINATION-ROUND-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_source_destination_round_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.source_destination_round_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3P-MACA-T-LAYOUT"
       ]
     }
   ]
