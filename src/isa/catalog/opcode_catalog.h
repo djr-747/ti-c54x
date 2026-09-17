@@ -104,6 +104,9 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word SQUR Smem fields: D destination bit, indirect flag,
      * and 7-bit Smem address; T is written. */
     TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7,
+    /* One-word MACA Smem fields: round bit, indirect flag, and 7-bit
+     * Smem address; the B destination is fixed and T is written. */
+    TI_C54X_OPERAND_LAYOUT_ROUND_INDIRECT_ADDR7,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

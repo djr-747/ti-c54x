@@ -16,3 +16,5 @@ $(eval $(call ti_c54x_add_test,cpu_squr_smem,cpu/isa/multiply,test_cpu_squr_smem
 $(eval $(call ti_c54x_add_test,cpu_squr_acc,cpu/isa/multiply,test_cpu_squr_acc.c))
 # P3-S3 RED contract: MPYU unsigned multiply.
 $(eval $(call ti_c54x_add_test,cpu_mpyu_smem,cpu/isa/multiply,test_cpu_mpyu_smem.c))
+# P3-S3 RED contract: MACA Smem accumulate-A row.
+$(eval $(call ti_c54x_add_test,cpu_maca_smem,cpu/isa/multiply,test_cpu_maca_smem.c))

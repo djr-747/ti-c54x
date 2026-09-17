@@ -74,6 +74,7 @@ extern const ti_c54x_operand_layout_set
 extern const ti_c54x_operand_layout_set ti_c54x_indirect_addr7_set;
 extern const ti_c54x_operand_layout_set
     ti_c54x_destination_indirect_addr7_set;
+extern const ti_c54x_operand_layout_set ti_c54x_round_indirect_addr7_set;
 extern const ti_c54x_operand_layout_set ti_c54x_ld_arp_set;
 extern const ti_c54x_operand_layout_set ti_c54x_ld_asm_set;
 extern const ti_c54x_operand_layout_set ti_c54x_ld_dp_set;

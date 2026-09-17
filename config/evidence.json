@@ -6335,6 +6335,24 @@
       "assertion": "MPYU is MPYU Smem,dst with opcode bits 15:9 0010010 (D bit 8 selects A/B, I bit 7, Smem field 6:0), one program word, and execution uns(T) x uns(Smem) into dst with T preset and unchanged. The operation is affected by FRCT and OVM and affects OVdst. Example 1 (MPYU *AR0-, A, A FF 8000 0000, T 4000, FRCT 0, AR0 1000, mem[1000] FE00) yields A 00 3F80 0000 with T 4000 and AR0 0FFF. The opcode shape is dual-sourced against the TI SPRU307A functional-overview summary (0010 010D IAAA AAAA)."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-MACA-P4-85",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MACA[R]",
+        "printed_page_start": "4-85",
+        "printed_page_end": "4-85"
+      },
+      "assertion": "MACA[R] syntax 1 is MACA[R] Smem[, B] with opcode bits 15:10 001101, bit 8 fixed 1, R bit 9, I bit 7, Smem field 6:0, one program word, and execution (B) + (Smem) x A(32-16) into B with (Smem) into T. The operation is affected by FRCT and OVM and affects OVdst and OVB in syntax 1. Example 1 (MACA *AR5+, A 00 1234 0000, B 00 0000 0000, FRCT 0, AR5 0100, mem[0100] 5678) yields B 00 0626 0060 with T 5678 and AR5 0101; Example 3 (MACAR *AR5+, B) rounds to B 00 0626 0000. Syntaxes 1 and 2 are Class 3A/3B single-repeatable."
+    },
+    {
       "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6563,6 +6581,22 @@
         "anchor": "P3-S3n: MPYU unsigned-multiply vertical slice (planned)"
       },
       "assertion": "S3n is implemented and green: one MPYU_SMEM catalog row at 0x2400 under mask 0xFE00 carrying 512 D/I/addr7 encodings through the reused DESTINATION_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and no T load, and read-value completion runs uns(T) x uns(Smem) into the D-selected accumulator through the multiply core with the new unsigned-operands select, STORE select, and no rounding; CPU retirement proves TI MPYU Example 1 (A 00 3F80 0000 with T 4000 unchanged). FORM-T2-03-08 lands SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P3-S3O-MACA-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3o: MACA Smem accumulate-A slice (planned)"
+      },
+      "assertion": "S3o is implemented and green: one MACA_SMEM catalog row at 0x3500 under mask 0xFD00 carrying 512 R/I/addr7 encodings through the new ROUND_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-phase T load, and read-value completion runs (B) plus (Smem) x A(32-16) into fixed B through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 1 (B 00 0626 0060 with T 5678) and the MACAR Example 3 rounding lane. The R bit carries the MACAR variant on the shared row. FORM-T2-04-07 lands SUBSET."
     }
   ],
   "requirements": [
@@ -15258,6 +15292,92 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3O-MACA-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog MACA_SMEM at 0x3500 under mask 0xFD00 with one program word, 512 encodings, the ROUND_INDIRECT_ADDR7 layout, ELIGIBLE repeatability by Class 3A/3B with no Table 2-28 entry, and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3O-MACA-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3O-MACA-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all MACA_SMEM encodings with bundle copy and R/I/addr7 extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3O-MACA-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3O-MACA-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACA Smem as (B) plus (Smem) x A(32-16) into fixed B through the multiply core with ADD select, R rounding, FRCT/OVM handling, and read-phase T load, per the TI Example 1 and MACAR Example 3 lanes, at the semantic leaves.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3O-MACA-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3O-MACA-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACA Smem on the CPU per TI MACA Example 1 with B-accumulator write, T-register commit, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACA-P4-85"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3O-MACA-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3O-MACA-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the ROUND_INDIRECT_ADDR7 one-word plan with round, indirect, and addr7 operands in order.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3O-MACA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3O-ROUND-INDIRECT-ADDR7-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3O-MACA-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MACA_SMEM catalog row to FORM-T2-04-07 at SUBSET coverage over direct page-0 and standard-indirect MOD0-MOD3 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3O-MACA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -18443,7 +18563,8 @@
         "REQ-PROJECT-P3-S3L-SQUR-ADST-INVENTORY",
         "REQ-PROJECT-P3-S3M-SQURA-INVENTORY",
         "REQ-PROJECT-P3-S3M-SQURS-INVENTORY",
-        "REQ-PROJECT-P3-S3N-MPYU-INVENTORY"
+        "REQ-PROJECT-P3-S3N-MPYU-INVENTORY",
+        "REQ-PROJECT-P3-S3O-MACA-INVENTORY"
       ]
     },
     {
@@ -22025,6 +22146,76 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3N-MPYU-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3O-MACA-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_maca_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3O-MACA-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3O-MACA-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_maca_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3O-MACA-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3O-MACA-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_maca_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.maca_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3O-MACA-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3O-MACA-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_maca_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_maca_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3O-MACA-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3O-ROUND-INDIRECT-ADDR7-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_round_indirect_addr7_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.round_indirect_addr7_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3O-MACA-LAYOUT"
       ]
     }
   ]

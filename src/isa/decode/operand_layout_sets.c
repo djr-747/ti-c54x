@@ -560,3 +560,26 @@ static const ti_c54x_operand_field_layout
          UINT8_C(7)}};
 const ti_c54x_operand_layout_set ti_c54x_destination_indirect_addr7_set = {
     ti_c54x_destination_indirect_addr7_operands, UINT8_C(3)};
+
+/* MACA Smem fields: round bit R[9:9], indirect flag I[7:7],
+ * then 7-bit Smem address A[6:0]. Unlike the round/select/indirect
+ * shape, fixed bit 8 carries no operand. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_indirect_addr7_round_piece = {
+        UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_indirect_addr7_indirect_piece = {
+        UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_round_indirect_addr7_address_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_round_indirect_addr7_operands[3] = {
+        {&ti_c54x_round_indirect_addr7_round_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_round_indirect_addr7_indirect_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_round_indirect_addr7_address_piece, UINT8_C(1),
+         UINT8_C(7)}};
+const ti_c54x_operand_layout_set ti_c54x_round_indirect_addr7_set = {
+    ti_c54x_round_indirect_addr7_operands, UINT8_C(3)};

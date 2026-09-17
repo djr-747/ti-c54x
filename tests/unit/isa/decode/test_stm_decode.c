@@ -144,12 +144,12 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the flag/address byte
      * variable (pinned by the exhaustive loop). Setting fixed
-     * bit 15 lands on the ADD_ACC_SHIFT row (pinned below); all
-     * other fixed-bit flips must miss every row. */
+     * bit 15 lands on the ADD_ACC_SHIFT row (pinned below) and
+     * clearing fixed bit 14 lands on the MACA row (pinned below);
+     * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x4000)};
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -172,6 +172,17 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(add_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(add_sibling.id ==
                            TI_C54X_OPCODE_ID_ADD_ACC_SHIFT);
+    }
+
+    /* This former near-miss is the P3-S3o MACA Smem sibling:
+     * 0x7700 ^ 0x4000 = 0x3700 classifies into the MACA_SMEM row. */
+    {
+        const ti_c54x_decode_result maca_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(STM_VALUE ^ UINT16_C(0x4000)));
+
+        TI_C54X_TEST_CHECK(maca_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(maca_sibling.id == TI_C54X_OPCODE_ID_MACA_SMEM);
     }
 }
 

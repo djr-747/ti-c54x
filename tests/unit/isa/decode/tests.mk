@@ -88,6 +88,10 @@ $(eval $(call ti_c54x_add_test,destination_indirect_addr7_layout,isa/decode,test
 $(eval $(call ti_c54x_add_test,squr_acc_decode,isa/decode,test_squr_acc_decode.c))
 # P3-S3 RED contract: MPYU unsigned multiply.
 $(eval $(call ti_c54x_add_test,mpyu_smem_decode,isa/decode,test_mpyu_smem_decode.c))
+# P3-S3 RED contract: MACA Smem accumulate-A row.
+$(eval $(call ti_c54x_add_test,maca_smem_decode,isa/decode,test_maca_smem_decode.c))
+# P3-S3 RED contract: MACA Smem round/indirect layout.
+$(eval $(call ti_c54x_add_test,round_indirect_addr7_layout,isa/decode,test_round_indirect_addr7_layout.c))
 $(eval $(call ti_c54x_add_test,mpya_smem_decode,isa/decode,test_mpya_smem_decode.c))
 $(eval $(call ti_c54x_add_test,mas_smem_decode,isa/decode,test_mas_smem_decode.c))
 # P3-S3 RED contract: MPYA dst register-only row.

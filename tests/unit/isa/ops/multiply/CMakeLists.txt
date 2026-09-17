@@ -22,3 +22,5 @@ ti_c54x_add_unit_test(squr_smem_ops test_squr_smem_ops.c)
 ti_c54x_add_unit_test(squr_acc_ops test_squr_acc_ops.c)
 # P3-S3 RED contract: MPYU unsigned multiply.
 ti_c54x_add_unit_test(mpyu_smem_ops test_mpyu_smem_ops.c)
+# P3-S3 RED contract: MACA Smem accumulate-A row.
+ti_c54x_add_unit_test(maca_smem_ops test_maca_smem_ops.c)

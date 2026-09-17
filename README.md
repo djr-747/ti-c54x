@@ -20,12 +20,12 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3n complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`
+Current snapshot: P3-S3o complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
 Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
 `MPYA`/`SQUR` dst).
 
-- 202 runnable catalog rows under 15,849 populated first-word lookup entries.
-  Inventory coverage is 77/205 forms SUBSET-or-better (37.561%) and 33/205
+- 203 runnable catalog rows under 16,361 populated first-word lookup entries.
+  Inventory coverage is 78/205 forms SUBSET-or-better (38.049%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -89,8 +89,16 @@ Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
   `uns(T)`x`uns(Smem)` with no rounding and no T load (TI MPYU
   Example 1 retires through the leaf with T preserved; the SQUR
   0x2400-range near-miss lanes move to the new row as the recorded
-  cross-slice update).
-- Major remaining work is the `MACA`/`MACD`/`MACP` family
+  cross-slice update). S3o lands the `MACA Smem` accumulate-A row
+  (`FORM-T2-04-07`, 512 R/I/addr7 encodings under one masked row)
+  with a new round/indirect/addr7 layout, read-phase T load, and
+  `(B)` plus `(Smem)`x`A(32-16)` ADD completion with R rounding
+  (TI MACA Example 1 and the MACAR rounding lane retire through
+  the leaf; the SQUR-acc/STM near-miss lanes move to the new row
+  as recorded cross-slice updates, and the R bit carries the
+  `MACAR` variant on the shared row).
+- Major remaining work is the `MACA` T,src syntax-2 row, the
+  `MACD`/`MACP` family
   (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
