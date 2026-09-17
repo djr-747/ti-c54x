@@ -10377,3 +10377,81 @@ rewritten after publication.
   indirect modes, dual `#lk` words, and
   far/XPC/timing.
 
+## 2026-09-17 — P3-S3o MACA Smem accumulate-A slice (slice 23)
+
+- Commit `2adba58` lands `FORM-T2-04-07` (TI
+  SPRU172C `MACA[R]` p. 4-85, opcode `0011 01R1
+  IAAA AAAA`) as one `MACA_SMEM` catalog row at
+  `0x3500` under mask `0xFD00` carrying 512
+  R/I/addr7 encodings through the new
+  `ROUND_INDIRECT_ADDR7` layout with `ELIGIBLE`
+  repeatability (Class 3A/3B, no Table 2-28
+  entry) and
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM`
+  resources. The R bit carries the MACAR
+  rounding variant on the shared row by the
+  recorded S3c/S3f R-sharing convention, so
+  `FORM-T2-04-09` stays `UNIMPLEMENTED`.
+  Checked/trusted leaves stage direct page-0
+  and standard-indirect MOD0-MOD3 reads with
+  exotic-mode deferral and read-phase T load,
+  then complete `(B)` plus `(Smem)` times
+  `A(32-16)` into fixed B through the multiply
+  core with ADD select and R rounding; C/TC
+  preserved, `OVdst` follows the core for B.
+  A-high is the multiplicand, so A and B must
+  be known while T needs no prior knownness.
+  CPU retirement proves TI MACA Example 1
+  (`B 00 0626 0060` with `T 5678`, `AR5`
+  post-increment; `0x1234` x `0x5678`
+  recomputed independently before pinning) and
+  the MACAR Example 3 rounding lane
+  (`B 00 0626 0000`). New TI record
+  `E-TI-C54X-SPRU172C-S4-MACA-P4-85` plus
+  activation, six owner-split requirements
+  (including the layout requirement), and five
+  test records (372/597/476→374/603/481); the
+  PROJECT INVENTORY requirement rides the
+  shared binding test with the
+  `DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3`
+  subset token. One new layout; no new
+  resource, effect, address, state, CPU,
+  public-API, or manifest seam beyond the leaf.
+- RED was observed on the stub in two stages:
+  the layout test failed on the absent
+  `ROUND_INDIRECT_ADDR7` token, then the slice
+  tests failed on the absent `MACA_SMEM`
+  identity. A mid-slice value bug put the row
+  at `0x3400` (bit 8 clear) against the TI
+  `0011 01R1` shape (bit 8 fixed 1); the row
+  is now `0x3500` and every test word moved to
+  the `0x35`/`0x37` high bytes. The recorded
+  cross-slice updates landed here: the
+  `test_squr_acc_decode.c` UNKNOWN lane for
+  `0x37FF` and the `test_stm_decode.c` UNKNOWN
+  lane for the `0x4000` flip (`0x3700`) moved
+  to the new `MACA_SMEM` row with explanatory
+  comments. `git diff --check` clean. New
+  files peak at 294 lines
+  (`test_maca_smem_ops.c`); no split required.
+- Neighbor pins move to 203 IDs, 202
+  rows/bindings (169 SUBSET plus 33 COMPLETE),
+  16,361 lookup entries, 78/205 (38.049%)
+  with the `FORM-T2-04-07` contract set;
+  strict stays 33/205 (16.098%).
+- Validation is GREEN: full CMake CTest 463/463
+  on the working build; fresh Debug configure
+  plus full CTest 463/463 in
+  `/tmp/ti-c54x-s3o-debug`; full sanitizer
+  CMake/CTest 463/463 in `/tmp/ti-c54x-s3o-asan`
+  (ASan/UBSan); `make test` clean; focused
+  new-slice binaries green; quality unittest
+  272 OK; evidence gate passes (374/603/481).
+- Follow-up work: `MACA` T,src syntax-2 row,
+  `MACD`/`MACP` family (program-memory
+  operands plus the delay seam), AR6/AR7
+  dual-Y widening, MOD3 neighborhoods, dual
+  replay classification; deferred exotic
+  indirect modes, dual `#lk` words, and
+  far/XPC/timing.
+
