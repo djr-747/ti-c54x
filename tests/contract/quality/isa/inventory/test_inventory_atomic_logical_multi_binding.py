@@ -22,6 +22,10 @@ CASES = {
     "XORM_SMEM_MOD0_3": "FORM-T2-09-05",
 }
 TOKEN = "STANDARD_INDIRECT_MOD0_MOD3"
+SMEM_CASES = {
+    "AND_SMEM": "FORM-T2-07-01",
+}
+SMEM_TOKEN = "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
 
 
 class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
@@ -36,7 +40,7 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_each_atomic_logical_form_has_one_subset_binding(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 257)
+        self.assertEqual(len(bindings), 258)
         by_symbol = {binding["catalog_symbol"]: binding for binding in bindings}
         for symbol, form_id in CASES.items():
             self.assertIn(symbol, by_symbol)
@@ -46,14 +50,22 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
             self.assertEqual(binding["addressing_subset"], TOKEN)
             form = next(item for item in inventory["forms"] if item["id"] == form_id)
             self.assertEqual(form["catalog_symbols"], [symbol])
+        for symbol, form_id in SMEM_CASES.items():
+            self.assertIn(symbol, by_symbol)
+            binding = by_symbol[symbol]
+            self.assertEqual(binding["form_id"], form_id)
+            self.assertEqual(binding["coverage"], "SUBSET")
+            self.assertEqual(binding["addressing_subset"], SMEM_TOKEN)
+            form = next(item for item in inventory["forms"] if item["id"] == form_id)
+            self.assertEqual(form["catalog_symbols"], [symbol])
 
     def test_report_counts_atomic_families_once(self) -> None:
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"],
-                         {"covered": 99, "denominator": 205})
+                         {"covered": 100, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"],
                          {"covered": 34, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 48.293,
+        self.assertAlmostEqual(report["catalog_family_percent"], 48.780,
                                places=3)
         self.assertAlmostEqual(report["strict_complete_percent"], 16.585,
                                places=3)

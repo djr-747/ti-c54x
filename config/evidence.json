@@ -7566,9 +7566,43 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s19-sub-smem-rows-slice.md",
-        "anchor": "P3-S19: SUB Smem rows (planned)"
+        "anchor": "P3-S19: SUB Smem rows (implemented; local verification green)"
       },
       "assertion": "P3-S19 activates the SUB Smem syntax 1-3 rows SUB_SMEM (0x0800/0xFE00), SUB_SMEM_TS (0x0C00/0xFE00), and SUB_SMEM_SH16 (0x4000/0xFC00) over the shared SELECT_INDIRECT_ADDR7 and SOURCE_DESTINATION_INDIRECT_ADDR7 layouts with the landed plain plus trusted op_sub_smem handlers. Long-offset and absolute Smem extension words stay undecoded; FORM-T2-02-01/02/03 stay SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-AND-SYNTAX1-OPCODE-P4-11",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "AND",
+        "printed_page_start": "4-11",
+        "printed_page_end": "4-11"
+      },
+      "assertion": "The AND opcode diagram defines the one-word Smem syntax 1 AND Smem,src as 0001_100S_IAAAAAAA (S at bit 8, I at bit 7, 7-bit Smem cookie at bits 6:0), class 3A/3B, affecting no status bits."
+    },
+    {
+      "id": "E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s20-and-smem-rows-slice.md",
+        "anchor": "P3-S20: AND Smem rows (planned)"
+      },
+      "assertion": "P3-S20 activates the AND Smem syntax-1 row AND_SMEM (0x1800/0xFE00) over the shared SELECT_INDIRECT_ADDR7 layout with the new plain ti_c54x_op_and_smem entry delegating to the landed op_and_smem_values core plus the landed trusted entry. Long-offset and absolute Smem extension words stay undecoded; FORM-T2-07-01 stays SUBSET."
     }
   ],
   "requirements": [
@@ -17462,6 +17496,21 @@
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
         "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S20-AND-SMEM-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the AND Smem production symbol to FORM-T2-07-01 at SUBSET under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3 addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+        "T-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20664,7 +20713,8 @@
         "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY",
         "REQ-PROJECT-P3-S6-PORTR-ROWS",
         "REQ-PROJECT-P3-S6-PORTW-ROWS",
-        "REQ-PROJECT-P3-S19-SUB-SMEM-ROWS"
+        "REQ-PROJECT-P3-S19-SUB-SMEM-ROWS",
+        "REQ-PROJECT-P3-S20-AND-SMEM-ROWS"
       ]
     },
     {
@@ -21126,7 +21176,8 @@
         "ctest_name": "ti_c54x.quality.python"
       },
       "requirement_ids": [
-        "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING"
+        "REQ-PROJECT-P2-W46B-ATOMIC-LOGICAL-INVENTORY-BINDING",
+        "REQ-PROJECT-P3-S20-AND-SMEM-ROWS"
       ]
     },
     {

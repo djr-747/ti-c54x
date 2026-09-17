@@ -76,6 +76,7 @@
 #include "store/op_dst_long32.h"
 #include "status/op_status_bits.h"
 #include "logical/op_logical.h"
+#include "logical/op_and_smem.h"
 #include "logical/immediate/and/op_and.h"
 #include "logical/immediate/or/op_or.h"
 #include "logical/immediate/xor/op_xor.h"

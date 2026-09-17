@@ -163,7 +163,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 257)
+        self.assertEqual(len(catalog_rows), 258)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -342,7 +342,8 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.input_resources, RESOURCES_ACCUMULATORS)
         # P3-S3z inserts the three ADD Smem rows immediately before the
         # immediate logical forms; P3-S19 inserts the three SUB Smem rows
-        # immediately after; later positional indices shift by six.
+        # immediately after; P3-S20 inserts the AND Smem row after those;
+        # later positional indices shift by seven.
         for row, symbol, handler, value, mask, layout, resources in (
             (rows[20], "ADD_SMEM", "add_smem",
              0x0000, 0xFE00,
@@ -368,6 +369,10 @@ class OpcodeCatalogContractTests(unittest.TestCase):
              0x4000, 0xFC00,
              LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
+            (rows[26], "AND_SMEM", "and_smem",
+             0x1800, 0xFE00,
+             LAYOUT_SELECT_INDIRECT_ADDR7,
+             RESOURCES_ACCUMULATORS),
         ):
             with self.subTest(symbol=symbol):
                 self.assertEqual(row.symbol, symbol)
@@ -379,22 +384,22 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, resources)
         for row, symbol, handler, value, mask, layout in (
-            (rows[26], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
+            (rows[27], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
              0xF030, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[27], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
+            (rows[28], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
              0xF063, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
-            (rows[28], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
+            (rows[29], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
              0xF040, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[29], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
+            (rows[30], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
              0xF064, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
-            (rows[30], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
+            (rows[31], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
              0xF050, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[31], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
+            (rows[32], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
              0xF065, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
         ):

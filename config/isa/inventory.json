@@ -1048,9 +1048,11 @@
       "table_ordinal": 1,
       "mnemonic": "AND",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "AND_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-07-02",
@@ -4194,6 +4196,12 @@
     {
       "catalog_symbol": "SUB_SMEM_SH16",
       "form_id": "FORM-T2-02-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "AND_SMEM",
+      "form_id": "FORM-T2-07-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }
