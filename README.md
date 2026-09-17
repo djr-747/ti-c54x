@@ -20,12 +20,12 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3m complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`
+Current snapshot: P3-S3n complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`
 Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
 `MPYA`/`SQUR` dst).
 
-- 201 runnable catalog rows under 15,337 populated first-word lookup entries.
-  Inventory coverage is 76/205 forms SUBSET-or-better (37.073%) and 33/205
+- 202 runnable catalog rows under 15,849 populated first-word lookup entries.
+  Inventory coverage is 77/205 forms SUBSET-or-better (37.561%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -81,7 +81,15 @@ Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
   one masked row) sharing one leaf with ADD/SUBTRACT select through the
   multiply core with read-phase T load (TI SQURA/SQURS Example 1 vectors
   retire through the leaf; the `LD_T` 0x0800 near-miss lane moves to the
-  new `SQURA` row as the recorded cross-slice update).
+  new `SQURA` row as the recorded cross-slice update). S3n lands
+  the `MPYU Smem,dst` unsigned-multiply row (`FORM-T2-03-08`, 512
+  D/I/addr7 encodings under one masked row) reusing the
+  destination/indirect/addr7 layout with a new unsigned-operands
+  select in the shared multiply core, STORE completion of
+  `uns(T)`x`uns(Smem)` with no rounding and no T load (TI MPYU
+  Example 1 retires through the leaf with T preserved; the SQUR
+  0x2400-range near-miss lanes move to the new row as the recorded
+  cross-slice update).
 - Major remaining work is the `MACA`/`MACD`/`MACP` family
   (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,

@@ -3,7 +3,8 @@
 
 /* Module contract
  * Owns: the pure multiply-accumulate datapath core shared by the MAC/MPY
- * family (signed 16x16 product, FRCT shift, R rounding, add/sub/store
+ * family (signed 16x16 product, or unsigned 16x16 product when the
+ * unsigned-operands select is set, FRCT shift, R rounding, add/sub/store
  * select, OVM saturation with overflow disposition) over copied inputs.
  * Inputs are borrowed for one call; the result is written only after
  * complete validation, and nothing is staged on unknown/invalid stops.
@@ -48,6 +49,7 @@ typedef struct ti_c54x_multiply_operands {
     uint8_t ovm;
     bool ovm_known;
     bool rounding;
+    bool unsigned_operands;
     ti_c54x_multiply_select select;
 } ti_c54x_multiply_operands;
 

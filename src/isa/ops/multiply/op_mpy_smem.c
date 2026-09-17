@@ -174,6 +174,7 @@ static ti_c54x_op_status mpy_smem_complete(
     operands.frct_known = true;
     operands.ovm = input->status_ovm;
     operands.ovm_known = true;
+    operands.unsigned_operands = false;
     operands.rounding = fields.round != UINT8_C(0);
     operands.select = TI_C54X_MULTIPLY_STORE;
     multiply_status = ti_c54x_multiply_accumulate(&operands, &result);

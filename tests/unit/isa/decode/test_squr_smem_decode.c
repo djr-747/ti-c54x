@@ -88,9 +88,18 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_squr_smem == 512U);
 
     {
-        /* 0x2800 is MAC_SMEM and 0x2FFF is MAS_SMEM: not UNKNOWN. */
-        const uint16_t invalid[] = {UINT16_C(0x25FF), UINT16_C(0x2400),
+        /* These former near-misses below the SQUR range are the P3-S3n
+         * MPYU_SMEM sibling: 0x2680 ^ 0x0200 = 0x2480. */
+        const uint16_t claimed[] = {UINT16_C(0x25FF), UINT16_C(0x2400),
                                     UINT16_C(0x2680) ^ UINT16_C(0x0200)};
+        for (size_t i = 0U; i < sizeof(claimed) / sizeof(claimed[0]); ++i) {
+            const ti_c54x_decode_result sibling =
+                ti_c54x_decode_first_word(claimed[i]);
+            TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+            TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_MPYU_SMEM);
+        }
+        /* 0x2800 is MAC_SMEM and 0x2FFF is MAS_SMEM: not UNKNOWN. */
+        const uint16_t invalid[] = {UINT16_C(0x3000), UINT16_C(0x0000)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
                                TI_C54X_DECODE_STATUS_UNKNOWN_WORD);

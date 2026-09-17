@@ -17,3 +17,5 @@ $(eval $(call ti_c54x_add_test,squr_adst_ops,isa/ops/multiply,test_squr_adst_ops
 $(eval $(call ti_c54x_add_test,squr_smem_ops,isa/ops/multiply,test_squr_smem_ops.c))
 # P3-S3 RED contract: SQURA/SQURS accumulate squares.
 $(eval $(call ti_c54x_add_test,squr_acc_ops,isa/ops/multiply,test_squr_acc_ops.c))
+# P3-S3 RED contract: MPYU unsigned multiply.
+$(eval $(call ti_c54x_add_test,mpyu_smem_ops,isa/ops/multiply,test_mpyu_smem_ops.c))

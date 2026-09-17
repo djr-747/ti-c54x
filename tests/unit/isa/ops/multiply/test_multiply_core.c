@@ -4,7 +4,8 @@
  * Owns: RED proofs for the S3 multiply-accumulate seam core, including the
  * three TI SPRU172C MAC vectors (pp. 4-81--4-83), the MPY store vectors
  * (pp. 4-101--4-102), R rounding, OVM saturation with OVdst disposition,
- * MAS subtraction, STORE-accumulator independence, and transactional
+ * MAS subtraction, STORE-accumulator independence, the unsigned-operands
+ * select (MPYU vector p. 4-106), and transactional
  * unknown/invalid stops. Does not own: catalog rows, operand layouts,
  * addressing, T/accumulator/status mutation, CPU sequencing, timing,
  * observers, diagnostics, or the production seam core.
@@ -31,6 +32,7 @@ static ti_c54x_multiply_operands base_operands(void)
         true,
         UINT8_C(0),
         true,
+        false,
         false,
         TI_C54X_MULTIPLY_ADD,
     };
@@ -254,6 +256,47 @@ static void test_invalid_rejects(void)
                        TI_C54X_MULTIPLY_INVALID_ARGUMENT);
 }
 
+static void test_unsigned_operands(void)
+{
+    ti_c54x_multiply_operands operands = base_operands();
+    ti_c54x_multiply_result result = {0U, false};
+
+    /* TI SPRU172C MPYU Example 1: uns(0x4000) * uns(0xFE00). */
+    operands.unsigned_operands = true;
+    operands.select = TI_C54X_MULTIPLY_STORE;
+    operands.t_raw16 = UINT16_C(0x4000);
+    operands.multiplicand_raw16 = UINT16_C(0xFE00);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x3F800000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+
+    /* 0xFFFF * 0xFFFF saturates positive under OVM = 1. */
+    operands.t_raw16 = UINT16_C(0xFFFF);
+    operands.multiplicand_raw16 = UINT16_C(0xFFFF);
+    operands.ovm = UINT8_C(1);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x7FFFFFFF));
+    TI_C54X_TEST_CHECK(result.overflow);
+
+    /* OVM = 0 wraps the same unsigned overflow in 40 bits. */
+    operands.ovm = UINT8_C(0);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0xFFFE0001));
+    TI_C54X_TEST_CHECK(result.overflow);
+
+    /* FRCT shifts the unsigned product left by one. */
+    operands.t_raw16 = UINT16_C(0x4000);
+    operands.multiplicand_raw16 = UINT16_C(0x0002);
+    operands.frct = UINT8_C(1);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x10000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+}
+
 int
 main(void)
 {
@@ -265,5 +308,6 @@ main(void)
     test_store_ignores_accumulator();
     test_unknown_stops();
     test_invalid_rejects();
+    test_unsigned_operands();
     return 0;
 }

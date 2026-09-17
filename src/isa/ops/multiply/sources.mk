@@ -11,4 +11,5 @@ ti_c54x_core_sources += \
     src/isa/ops/multiply/op_mpya_dst.c \
     src/isa/ops/multiply/op_squr_smem.c \
     src/isa/ops/multiply/op_squr_adst.c \
-    src/isa/ops/multiply/op_squr_acc.c
+    src/isa/ops/multiply/op_squr_acc.c \
+    src/isa/ops/multiply/op_mpyu_smem.c
