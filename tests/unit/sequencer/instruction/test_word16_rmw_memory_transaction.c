@@ -126,7 +126,7 @@ rmw_memory_effect(ti_c54x_op_memory_rmw_operation operation,
     effect.payload.memory.address_spec.arf = UINT8_C(2);
     effect.payload.memory.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
     effect.payload.memory.value_word = value_word;
-    effect.payload.memory.rmw_operation = operation;
+    effect.payload.memory.rmw_operation = (uint8_t)operation;
     effect.payload.memory.complete = NULL;
     return effect;
 }

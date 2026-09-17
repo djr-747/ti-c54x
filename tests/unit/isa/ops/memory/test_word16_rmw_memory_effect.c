@@ -50,7 +50,7 @@ rmw_effect(ti_c54x_op_memory_rmw_operation operation, uint16_t value_word)
     effect.address_spec.arf = UINT8_C(2);
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
     effect.value_word = value_word;
-    effect.rmw_operation = operation;
+    effect.rmw_operation = (uint8_t)operation;
     effect.complete = NULL;
     return effect;
 }

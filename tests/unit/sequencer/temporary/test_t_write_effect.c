@@ -74,7 +74,8 @@ static void test_unrelated_effects_are_rejected_atomically(void)
         {TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE,
          {.accumulator_write = {0U, UINT64_C(1),
                                 {TI_C54X_OP_STATUS_BIT_PRESERVE,
-                                 TI_C54X_OP_STATUS_BIT_PRESERVE}}}},
+                                 TI_C54X_OP_STATUS_BIT_PRESERVE,
+                                 TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE}}}},
     };
 
     for (size_t i = 0U; i < sizeof(effects) / sizeof(effects[0]); ++i) {
