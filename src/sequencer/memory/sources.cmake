@@ -4,4 +4,5 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/dual_address_resolution.c"
     "${CMAKE_CURRENT_LIST_DIR}/data_program_address_resolution.c"
     "${CMAKE_CURRENT_LIST_DIR}/mmr_access_plan.c"
+    "${CMAKE_CURRENT_LIST_DIR}/port_access_plan.c"
 )

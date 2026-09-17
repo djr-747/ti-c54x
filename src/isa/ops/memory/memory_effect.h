@@ -117,7 +117,16 @@ typedef enum ti_c54x_op_memory_address_kind {
      * 24-byte address ABI is pinned); all other first-arm fields stay
      * zero. No AR, CMPT, CPL, or post-update; DP unknownness is gated
      * at the leaf through STATUS_DP. */
-    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16 = 17
+    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16 = 17,
+    /* Port I/O WORD16: the 16-bit absolute I/O port address rides
+     * `port_address` with the DATA-leg Smem selectors below. The
+     * effect `access` denotes the DATA-leg direction and the IO leg
+     * is always inverse (DATA WRITE plans an IO READ for PORTR;
+     * DATA READ plans an IO WRITE template for PORTW whose zero
+     * value the reducer replaces with the observed DATA word before
+     * issue). No AR, CMPT, CPL, or DP dependence and no post-update;
+     * Smem unknownness is gated at the leaf. */
+    TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16 = 18
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -195,6 +204,29 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } pair;
+        struct {
+            /* PORT pair: the Smem DATA leg selector. Zero selects
+             * the direct-DP leg (`smem_dma7`); one selects the
+             * standard-indirect leg (`smem_mode` with `smem_arf`). */
+            uint8_t indirect;
+            /* Indirect-leg mode MOD0 through MOD10. Must remain zero
+             * for the direct leg. */
+            uint8_t smem_mode;
+            /* Indirect-leg AR selector. Must remain zero for the
+             * direct leg. */
+            uint8_t smem_arf;
+            /* Direct-leg 7-bit DATA offset. Must remain zero for
+             * the indirect leg. */
+            uint8_t smem_dma7;
+            /* Absolute 16-bit I/O port address (0-65535). */
+            uint16_t port_address;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation scalar comparisons. */
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } port;
     };
 } ti_c54x_op_memory_address_spec;
 

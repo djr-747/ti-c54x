@@ -27,3 +27,6 @@ ti_c54x_add_unit_test(stack_pop_resolution
 # P3-S1 RED contract: MMR access planning and knownness gating.
 ti_c54x_add_unit_test(mmr_resolver
                       test_mmr_address_resolution.c)
+# P3-S6 RED contract: PORT IO-leg planning.
+ti_c54x_add_unit_test(port_resolver
+                      test_port_address_resolution.c)

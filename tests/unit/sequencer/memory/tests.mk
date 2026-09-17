@@ -16,3 +16,5 @@ $(eval $(call ti_c54x_add_test,accumulator_push_resolution,sequencer/memory,test
 $(eval $(call ti_c54x_add_test,stack_pop_resolution,sequencer/memory,test_stack_pop_resolution.c))
 # P3-S1 RED contract: MMR access planning and knownness gating.
 $(eval $(call ti_c54x_add_test,mmr_resolver,sequencer/memory,test_mmr_address_resolution.c))
+# P3-S6 RED contract: PORT IO-leg planning.
+$(eval $(call ti_c54x_add_test,port_resolver,sequencer/memory,test_port_address_resolution.c))
