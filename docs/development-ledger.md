@@ -10810,3 +10810,71 @@ rewritten after publication.
   S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
   MOD3, dual replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
+
+## 2026-09-17 — P3-S3u MASR Smem and dual lock-in slice (slice 29)
+
+- Commit `95e4ab3` closes the census MASR
+  Smem and dual syntaxes
+  (`FORM-T2-04-15`/`FORM-T2-04-17`, TI
+  SPRU172C `MAS[R]` Examples 3/4) through
+  the shared `MAS_SMEM`/`MAS_DUAL` rows
+  with R=1: no catalog, inventory,
+  production, layout, or pin change was
+  needed. The R=1 rounding path locks end
+  to end on the maintained suites — the
+  `0x2E95` leaf completion (round(A -
+  T*Smem) to `0xFFFFB70000` into A) and
+  the `0x2E34` CPU retirement already pin
+  the checked Smem path; the `0xBD32` leaf
+  completion (rounded `0xFFF3B40000` into
+  B) and the `0xBDBA` CPU retirement
+  already pin the checked dual path. Two
+  new executable proofs: trusted R=1
+  completion through
+  `ti_c54x_trusted_op_mas_smem` on
+  `0x2E95`, and trusted R=1 rounding
+  equivalence through
+  `ti_c54x_trusted_op_mas_dual_m0_m0` on
+  `0xBD32`. The two R-variant forms stay
+  `UNIMPLEMENTED` with empty symbol lists
+  by the recorded R-sharing convention
+  (shared rows cannot double-bind). README
+  remaining-work wording drops `MASR`.
+  `git diff --check` clean.
+- The slice is lock-in, not RED/GREEN: the
+  checked-path vectors predate it and pass
+  unchanged; the only new executable
+  content is the two trusted rounding
+  lanes.
+- Evidence stands at 383 records, 631
+  requirements, 504 tests (504 `PASSING`,
+  0 `PLANNED`), matching the S3u anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  482/482 on the working Debug build;
+  sanitizer MAS suites clean; `make test`
+  clean; evidence gate passes
+  (383/631/504); contract quality suites
+  pass.
+- Sanitizer method note: a flagged
+  `make TI_C54X_ENABLE_SANITIZERS=1 test`
+  over a warm `build-fast/` tree is a
+  no-op — Make does not rebuild stale
+  objects on a flag change, and the
+  resulting binaries carry no sanitizer
+  symbols. S3u ran genuinely instrumented
+  suites by `rm -rf build-fast`, rebuilding
+  the two MAS targets with the flag set
+  (73 asan/ubsan symbols present), and
+  executing both binaries directly
+  (both exit 0). Earlier "sanitizer suites
+  clean" claims should be re-read with
+  this caveat; re-verify with a clean
+  flagged rebuild when a slice's claim
+  matters.
+- Follow-up work: `MACAR`/`MASA` R-variant
+  lock-ins, `MPYR` (closed at Smem; dual
+  has no R bit)/`SQDST` leaves, S4 XC, S1
+  STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
+  MOD3, dual replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
