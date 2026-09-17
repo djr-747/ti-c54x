@@ -29,6 +29,12 @@ LAYOUT_ACCUMULATOR_ARF_MOD = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD"
 LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5"
 )
+LAYOUT_ACCUMULATOR_ARF_MOD4_SHIFT5 = (
+    "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4_SHIFT5"
+)
+RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS"
+)
 LAYOUT_ACCUMULATOR_SOURCE = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE"
 LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5"
@@ -157,7 +163,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 246)
+        self.assertEqual(len(catalog_rows), 250)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -473,6 +479,32 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_smem_shift.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_smem_shift.input_resources,
                          RESOURCES_STATUS_SXM_OVM)
+        # P3-S18 lane 2b qualifies the LD slot on the second word.
+        self.assertEqual(ld_smem_shift.form, "MASKED2")
+        self.assertEqual(ld_smem_shift.second_word_value, 0x0C40)
+        self.assertEqual(ld_smem_shift.second_word_mask, 0xFEE0)
+
+        for symbol, value, mode in (
+            ("STH_SHIFT_SMEM_MOD0", 0x6F80, 0),
+            ("STH_SHIFT_SMEM_MOD1", 0x6F88, 1),
+            ("STH_SHIFT_SMEM_MOD2", 0x6F90, 2),
+            ("STH_SHIFT_SMEM_MOD3", 0x6F98, 3),
+        ):
+            with self.subTest(symbol=symbol):
+                row = rows_by_symbol[symbol]
+                self.assertEqual(row.form, "MASKED2")
+                self.assertEqual(row.first_word_value, value)
+                self.assertEqual(row.first_word_mask, 0xFFF8)
+                self.assertEqual(row.program_word_count, 2)
+                self.assertEqual(row.operand_layout,
+                                 LAYOUT_ACCUMULATOR_ARF_MOD4_SHIFT5)
+                self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
+                self.assertEqual(
+                    row.input_resources,
+                    RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS)
+                self.assertEqual(row.second_word_value, 0x0C60)
+                self.assertEqual(row.second_word_mask, 0xFEE0)
+                self.assertEqual((value >> 3) & 0xF, mode)
 
         st_t = rows_by_symbol["ST_T_SMEM"]
         self.assertEqual(st_t.symbol, "ST_T_SMEM")

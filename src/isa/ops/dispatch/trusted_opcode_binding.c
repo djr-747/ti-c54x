@@ -54,9 +54,7 @@ static const ti_c54x_trusted_opcode_binding ti_c54x_trusted_bindings[
          (uint16_t)(first_word_mask), (uint8_t)(program_words), \
          (ti_c54x_operand_layout_id)(operand_layout), \
          (ti_c54x_repeatability_class)(repeatability), \
-         (ti_c54x_input_resource_mask)(input_resources), \
-         (uint16_t)(second_word_value), \
-         (uint16_t)(second_word_mask)}, \
+         (ti_c54x_input_resource_mask)(input_resources)}, \
         &ti_c54x_operand_layout_plans[(operand_layout)], \
         ti_c54x_trusted_op_##handler},
 #include "isa/catalog/opcode_catalog.def"

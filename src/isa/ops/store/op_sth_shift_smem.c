@@ -2,8 +2,9 @@
  * Owns: checked and trusted pure two-word STH-by-SHIFT WORD16
  * memory-write effects over one signed-SHIFT-shifted accumulator high
  * word (bits 31-16 of the accumulator shifted arithmetically by the
- * signed 5-bit second-word SHIFT count, -16 to +15), one direct-DP or
- * MOD4-family indirect address, and one source select. SXM is provably
+ * signed 5-bit second-word SHIFT count, -16 to +15), one direct-DP,
+ * MOD0-MOD3 standard-indirect, or MOD4-family indirect address, and one
+ * source select. SXM is provably
  * not an input: every encoded shift is a pure shift-and-extract over
  * source bits, so SXM rides hostile and unconsumed. The two-word form
  * carries no ARP alias, so ARF0 is a plain selector here, unlike the
@@ -315,7 +316,9 @@ static ti_c54x_op_status sth_shift_indirect_values(
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
     if (operands->source > UINT8_C(1) || operands->arf > UINT8_C(7) ||
-        (operands->mode != UINT8_C(4) && operands->mode != UINT8_C(5) &&
+        (operands->mode != UINT8_C(0) && operands->mode != UINT8_C(1) &&
+         operands->mode != UINT8_C(2) && operands->mode != UINT8_C(3) &&
+         operands->mode != UINT8_C(4) && operands->mode != UINT8_C(5) &&
          operands->mode != UINT8_C(6) && operands->mode != UINT8_C(7) &&
          operands->mode != UINT8_C(8) && operands->mode != UINT8_C(10))) {
         return TI_C54X_OP_STATUS_INVALID_OPERAND;
@@ -326,6 +329,21 @@ static ti_c54x_op_status sth_shift_indirect_values(
     }
     value = sth_shift_shifted_high(source_raw40, operands->shift);
     switch (operands->mode) {
+    case UINT8_C(0):
+    case UINT8_C(1):
+    case UINT8_C(2):
+    case UINT8_C(3):
+        *effect = (ti_c54x_op_effect){
+            .kind = TI_C54X_OP_EFFECT_MEMORY,
+            .payload.memory = {
+                .address_spec = {
+                    .kind = TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16,
+                    .mode = (ti_c54x_indirect_single_mode)operands->mode,
+                    .arf = operands->arf},
+                .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                .value_word = value,
+                .complete = NULL}};
+        return TI_C54X_OP_STATUS_OK;
     case UINT8_C(5):
         ti_c54x_store_stage_indexed_write(
             operands->arf, (uint8_t)TI_C54X_INDIRECT_INDEXED_MOD5, value,
@@ -467,6 +485,42 @@ static ti_c54x_op_status sth_shift_indirect_trusted(
     return sth_shift_indirect_values(&trusted, input, effect);
 }
 
+ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_checked(instruction, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD0,
+                                      UINT8_C(0));
+}
+
+ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_checked(instruction, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD1,
+                                      UINT8_C(1));
+}
+
+ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_checked(instruction, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD2,
+                                      UINT8_C(2));
+}
+
+ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_checked(instruction, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD3,
+                                      UINT8_C(3));
+}
+
 ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod4(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
@@ -519,6 +573,46 @@ ti_c54x_op_status ti_c54x_op_sth_shift_smem_mod10(
     return sth_shift_indirect_checked(instruction, input, effect,
                                       TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD10,
                                       UINT8_C(10));
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_sth_shift_smem_mod0(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_trusted(instruction, operands, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD0,
+                                      UINT8_C(0));
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_sth_shift_smem_mod1(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_trusted(instruction, operands, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD1,
+                                      UINT8_C(1));
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_sth_shift_smem_mod2(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_trusted(instruction, operands, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD2,
+                                      UINT8_C(2));
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_sth_shift_smem_mod3(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    return sth_shift_indirect_trusted(instruction, operands, input, effect,
+                                      TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD3,
+                                      UINT8_C(3));
 }
 
 ti_c54x_op_status ti_c54x_trusted_op_sth_shift_smem_mod4(

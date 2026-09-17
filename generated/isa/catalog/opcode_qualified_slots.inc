@@ -3,4 +3,9 @@
  * Source: src/isa/catalog/opcode_catalog.def.
  * DO NOT EDIT: regenerate this tracked fragment from the catalog.
  */
+{(uint16_t)0x6F80, (uint16_t)0xFFE0, (uint16_t)TI_C54X_OPCODE_ID_LD_SMEM_SHIFT, (uint16_t)0x0C40, (uint16_t)0xFEE0},
+{(uint16_t)0x6F80, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD0, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6F88, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD1, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6F90, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD2, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6F98, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD3, (uint16_t)0x0C60, (uint16_t)0xFEE0},
 {(uint16_t)0x0000, (uint16_t)0x0000, (uint16_t)TI_C54X_OPCODE_ID_UNKNOWN, (uint16_t)0x0000, (uint16_t)0x0000},

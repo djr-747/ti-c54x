@@ -23,6 +23,8 @@ $(eval $(call ti_c54x_add_test,ld_t_smem_decode,isa/decode,test_ld_t_smem_decode
 $(eval $(call ti_c54x_add_test,ld_status_smem_decode,isa/decode,test_ld_status_smem_decode.c))
 $(eval $(call ti_c54x_add_test,ld_smem_shift16_decode,isa/decode,test_ld_smem_shift16_decode.c))
 $(eval $(call ti_c54x_add_test,ld_smem_shift_decode,isa/decode,test_ld_smem_shift_decode.c))
+# P3-S18 lane 2b RED contract: qualified-slot completion re-resolution.
+$(eval $(call ti_c54x_add_test,qualified_slot_decode,isa/decode,test_qualified_slot_decode.c))
 $(eval $(call ti_c54x_add_test,ld_src_shift_decode,isa/decode,test_ld_src_shift_decode.c))
 $(eval $(call ti_c54x_add_test,ld_k_decode,isa/decode,test_ld_k_decode.c))
 $(eval $(call ti_c54x_add_test,ld_lk16_decode,isa/decode,test_ld_lk16_decode.c))

@@ -23,6 +23,8 @@ ti_c54x_add_unit_test(ld_t_smem_decode test_ld_t_smem_decode.c)
 ti_c54x_add_unit_test(ld_status_smem_decode test_ld_status_smem_decode.c)
 ti_c54x_add_unit_test(ld_smem_shift16_decode test_ld_smem_shift16_decode.c)
 ti_c54x_add_unit_test(ld_smem_shift_decode test_ld_smem_shift_decode.c)
+# P3-S18 lane 2b RED contract: qualified-slot completion re-resolution.
+ti_c54x_add_unit_test(qualified_slot_decode test_qualified_slot_decode.c)
 ti_c54x_add_unit_test(ld_src_shift_decode test_ld_src_shift_decode.c)
 ti_c54x_add_unit_test(ld_k_decode test_ld_k_decode.c)
 ti_c54x_add_unit_test(ld_lk16_decode test_ld_lk16_decode.c)

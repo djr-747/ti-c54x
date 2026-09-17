@@ -10,6 +10,8 @@ $(eval $(call ti_c54x_add_test,sth_shft_xmem_ops,isa/ops/store,test_sth_shft_xme
 $(eval $(call ti_c54x_add_test,sth_shift_direct_ops,isa/ops/store,test_sth_shift_direct.c))
 # P3 slice 13 RED contract: STH-by-SHIFT MOD effects.
 $(eval $(call ti_c54x_add_test,sth_shift_smem_mod_ops,isa/ops/store,test_sth_shift_smem_mod.c))
+# P3-S18 lane 2b RED contract: STH-by-SHIFT MOD0-MOD3 effects.
+$(eval $(call ti_c54x_add_test,sth_shift_smem_mod0_3_ops,isa/ops/store,test_sth_shift_smem_mod0_3.c))
 $(eval $(call ti_c54x_add_test,st_immediate_smem_ops,isa/ops/store,test_st_immediate_smem.c))
 # P3-S7 RED contract: STM direct store effects.
 $(eval $(call ti_c54x_add_test,stm_ops,isa/ops/store,test_stm.c))

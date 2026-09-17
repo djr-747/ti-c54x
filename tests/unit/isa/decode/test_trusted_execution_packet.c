@@ -20,13 +20,36 @@
 #include <stdio.h>
 #include <string.h>
 
+static uint16_t second_word_for(ti_c54x_opcode_id id, uint16_t first_word)
+{
+    uint32_t raw;
+
+    /* A first word owning a qualified slot needs the lowest second word
+     * the slot resolves to this identity; other words keep the legacy
+     * hostile filler. */
+    if (!ti_c54x_first_word_has_qualified_slot(first_word)) {
+        return UINT16_C(0xBEEF);
+    }
+    for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
+        const uint16_t word = (uint16_t)raw;
+
+        if (ti_c54x_resolve_qualified_slot(first_word, word) == id) {
+            return word;
+        }
+    }
+    return UINT16_C(0xBEEF);
+}
+
 static ti_c54x_instruction_word_bundle bundle_for(
     ti_c54x_opcode_id id, const ti_c54x_opcode_metadata *metadata)
 {
     /* The canonical first word is the lowest word the lookup resolves
      * to this identity. That is the row's value word except under the
      * single-word shadow seam, where the exact row keeps its word and
-     * the shadowed row starts at the next resolving word. */
+     * the shadowed row starts at the next resolving word. Rows shadowed
+     * inside a qualified slot never win the first-word lookup, so they
+     * fall through to their value word with a slot-resolving second
+     * word. */
     uint32_t raw;
 
     for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
@@ -34,16 +57,19 @@ static ti_c54x_instruction_word_bundle bundle_for(
 
         if (ti_c54x_opcode_catalog_lookup_first_word(word) == id) {
             const ti_c54x_instruction_word_bundle bundle = {
-                {word, UINT16_C(0xBEEF)},
+                {word, second_word_for(id, word)},
                 metadata->program_word_count};
             return bundle;
         }
     }
     {
         const ti_c54x_instruction_word_bundle bundle = {
-            {metadata->first_word_value, UINT16_C(0xBEEF)},
+            {metadata->first_word_value,
+             second_word_for(id, metadata->first_word_value)},
             metadata->program_word_count};
-        TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_UNKNOWN);
+        TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_UNKNOWN ||
+                           ti_c54x_first_word_has_qualified_slot(
+                               metadata->first_word_value));
         return bundle;
     }
 }

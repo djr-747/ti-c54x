@@ -5,7 +5,8 @@
  * a canonical binding and complete instruction bundle, including one-pass
  * extraction through the decode-owned static operand plan. Construction
  * verifies the bundle's first word resolves to the binding's identity
- * through the lookup, so shadowed words never prepare under the
+ * through the lookup, or through the qualified slot when the first word
+ * owns one, so shadowed words never prepare under the
  * shadowed identity. Does not own:
  * fetch, semantics, architectural state, sequencing, buses, timing,
  * diagnostics, allocation, or mutable global state.
@@ -80,9 +81,17 @@ ti_c54x_trusted_execution_packet_prepare(
     /* The mask check alone admits shadowed words: an exact row declared
      * before a covering masked row keeps its word in the lookup, so the
      * bundle must resolve to this binding's identity, not just match its
-     * pattern. */
-    if (ti_c54x_opcode_catalog_lookup_first_word(bundle->program_words[0]) !=
-        metadata->id) {
+     * pattern. A first word owning a qualified slot re-resolves on the
+     * second program word instead of the first-word table. */
+    if (ti_c54x_first_word_has_qualified_slot(bundle->program_words[0])) {
+        if (bundle->program_word_count < UINT8_C(2) ||
+            ti_c54x_resolve_qualified_slot(bundle->program_words[0],
+                                          bundle->program_words[1]) !=
+                metadata->id) {
+            return TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH;
+        }
+    } else if (ti_c54x_opcode_catalog_lookup_first_word(
+                   bundle->program_words[0]) != metadata->id) {
         return TI_C54X_TRUSTED_EXECUTION_PACKET_FIRST_WORD_MISMATCH;
     }
 

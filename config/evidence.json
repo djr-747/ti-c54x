@@ -7415,6 +7415,22 @@
         "anchor": "P3-S17: XOR Smem slice (implemented; local verification green)"
       },
       "assertion": "S17 is implemented and green: the catalog-free XOR Smem pure leaf with checked and trusted entry points for dst ^= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, XORing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
+    },
+    {
+      "id": "E-PROJECT-P3-S18-STH-MOD0-3-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s18-sth-mod0-3-second-word-seam.md",
+        "anchor": "P3-S18: STH MOD0-MOD3 second-word disambiguation seam (planned)"
+      },
+      "assertion": "S18 lane 2b is implemented and green: the LD Smem,SHIFT catalog row is second-word-qualified (0x0C40 under FEE0) and four new STH syntax-4 MOD0-MOD3 rows (0x6F80, 0x6F88, 0x6F90, 0x6F98 under FFF8 with MOD in first-word bits 6:3, 0x0C60 under FEE0) share its first-word slot declared after it so first-word lookup stays LD; completion and the trusted packet path re-resolve on the second word with unmatched words declined; checked and trusted MOD0-MOD3 leaves stage MOD0-MOD3 standard-indirect SINGLE_INDIRECT WRITEs through the shared MEMORY effect; FORM-T2-20-08 advances to COMMON_CANDIDATE at SUBSET under the grown DIRECT_DP_STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 token, retiring the S13 MOD0-MOD3 deferral."
     }
   ],
   "requirements": [
@@ -17221,6 +17237,20 @@
       "test_ids": [
         "T-COMMON-P3-S17-XOR-SMEM-SEMANTICS"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the four STH syntax-4 MOD0-MOD3 production symbols to FORM-T2-20-08 at SUBSET under the DIRECT_DP_STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S18-STH-MOD0-3-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20418,7 +20448,8 @@
         "REQ-PROJECT-P3-S9-CALA-INVENTORY",
         "REQ-PROJECT-P3-S10-STH-INVENTORY",
         "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY",
-        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY", "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY"
+        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY", "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY",
+        "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY"
       ]
     },
     {

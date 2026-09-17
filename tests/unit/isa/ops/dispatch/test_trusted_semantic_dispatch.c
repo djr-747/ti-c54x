@@ -8,6 +8,7 @@
  * diagnostics, or benchmark policy.
  */
 
+#include "isa/catalog/opcode_catalog_internal.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/decode/trusted_execution_packet.h"
 #include "isa/ops/opcode_dispatch.h"
@@ -16,6 +17,20 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+static uint16_t slot_witness_second_word(ti_c54x_opcode_id id,
+                                         uint16_t first_word)
+{
+    uint32_t raw;
+
+    for (raw = UINT32_C(0); raw <= (uint32_t)UINT16_MAX; ++raw) {
+        if (ti_c54x_resolve_qualified_slot(first_word, (uint16_t)raw) ==
+            id) {
+            return (uint16_t)raw;
+        }
+    }
+    return UINT16_MAX;
+}
 
 static void test_every_registered_effect_matches(void)
 {
@@ -36,10 +51,19 @@ static void test_every_registered_effect_matches(void)
          ++raw_word) {
         const ti_c54x_trusted_opcode_binding *binding =
             ti_c54x_trusted_opcode_binding_for_first_word((uint16_t)raw_word);
+        /* A first word owning a qualified slot prepares only under the
+         * slot winner, so the sweep uses the lowest second word the
+         * slot resolves to this binding; other two-word rows keep the
+         * hostile extension triple. */
         const uint16_t extensions[] = {
-            UINT16_C(0), UINT16_C(0xA55A), UINT16_MAX};
+            ti_c54x_first_word_has_qualified_slot((uint16_t)raw_word)
+                ? slot_witness_second_word(binding->metadata.id,
+                                           (uint16_t)raw_word)
+                : UINT16_C(0),
+            UINT16_C(0xA55A), UINT16_MAX};
         const size_t extension_count =
-            binding->metadata.program_word_count == UINT8_C(2)
+            binding->metadata.program_word_count == UINT8_C(2) &&
+                !ti_c54x_first_word_has_qualified_slot((uint16_t)raw_word)
                 ? sizeof(extensions) / sizeof(extensions[0])
                 : 1U;
         size_t extension_index;

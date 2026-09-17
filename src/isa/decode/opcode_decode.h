@@ -51,7 +51,9 @@ typedef enum ti_c54x_instruction_completion_status {
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_MISMATCH = 12,
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_FIRST_WORD_PATTERN_MISMATCH = 13,
     TI_C54X_INSTRUCTION_COMPLETION_STATUS_OPERAND_LAYOUT_INVALID = 14,
-    TI_C54X_INSTRUCTION_COMPLETION_STATUS_REPEATABILITY_INVALID = 15
+    TI_C54X_INSTRUCTION_COMPLETION_STATUS_REPEATABILITY_INVALID = 15,
+    /* A first word owning a qualified slot matched no second-word row. */
+    TI_C54X_INSTRUCTION_COMPLETION_STATUS_SECOND_WORD_UNMATCHED = 16
 } ti_c54x_instruction_completion_status;
 
 typedef struct ti_c54x_decoded_instruction {
@@ -67,6 +69,9 @@ ti_c54x_decode_result ti_c54x_decode_first_word(uint16_t first_word);
 
 /*
  * Validate and copy one complete instruction after first-word classification.
+ * A first word owning a qualified slot re-resolves on the second program
+ * word: the completed identity carries the slot winner's metadata, and a
+ * second word no slot row admits declines with SECOND_WORD_UNMATCHED.
  * The first result and bundle are borrowed for this call only; output is
  * caller-owned storage and is unchanged on every non-OK status.
  */

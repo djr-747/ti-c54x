@@ -4,8 +4,9 @@
  * Owns: executable proof that all two-word LD Smem[,SHIFT],dst first words
  * classify through the generic decoder, copy their complete bundles and
  * scalar metadata, extract D then ARF then MOD then raw SHIFT5, and reject
- * malformed inputs transactionally. Second-word fixed-bit admission belongs
- * to the semantic leaf, so decode accepts any second word here.
+ * malformed inputs transactionally. The 0x6F80 slot is second-word
+ * qualified, so completion keeps LD only for 0x0C40 words here; STH and
+ * unmatched second words are covered by the qualified-slot decode test.
  * Does not own: catalog generation, address resolution, memory effects,
  * CPU/state mutation, fetch or bus behavior, sequencing, timing, or
  * handler bodies.
