@@ -1,4 +1,4 @@
-### P3-S13: STH by-SHIFT Smem store slice (planned)
+### P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)
 
 STH syntax 4 (`STH src,SHIFT,Smem`, two words) for the direct-DP word plus
 the MOD4-family single-indirect words (MOD4, MOD5, MOD6, MOD7, MOD8, MOD10).

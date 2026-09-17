@@ -11771,3 +11771,102 @@ entries are not rewritten after publication.
   (2-word SHIFT/Smem), STLM, S1-family
   MMR/stack moves, S6 PORTR/PORTW,
   far/XPC/timing.
+
+## 2026-09-17 — P3-S13 STH by-SHIFT Smem store (slice 42)
+
+- Commit `151486b` lands STH syntax 4
+  (`STH src,SHIFT,Smem`, two words, TI SPRU172C
+  §STH, pp. 4-168–4-171). Seven rows:
+  `STH_SHIFT_DIRECT` (`0x6F00`/`0xFF80`,
+  7-bit dma) plus `STH_SHIFT_SMEM_MOD4`
+  through `STH_SHIFT_SMEM_MOD10`
+  (`0x6FA0`–`0x6FD0`/`0xFFF8`, ARF in
+  bits 2-0, MOD in bits 6-3). The 0xFFF8
+  mask (not 0xFEF8) is forced: the 0x6F
+  high byte sets bit 8, which the mask
+  must fix. MOD0–MOD3 stay deferred on
+  the 0x6F80 LD Smem,SHIFT collision.
+- Checked and trusted leaves in
+  `src/isa/ops/store/op_sth_shift_smem.[hc]`
+  (14 entry points) over two new layouts
+  (`ACCUMULATOR_DIRECT7_SHIFT5`,
+  `ACCUMULATOR_ARF_MOD4_SHIFT5`) with
+  checked sets, trusted plans, and schema
+  tokens. Second-word mask is 0xFEE0:
+  bits 15-9 and 7-5 fixed at 0x0C60,
+  S (bit 8) and SHIFT (bits 4-0) outside
+  (an 0xFFE0/0xFDE0 confusion cost two
+  debug rounds; verified against an
+  independent mask computation).
+- Semantics: arithmetic shift by the
+  signed 5-bit count (-16 to +15),
+  store bits 31-16; SXM hostile and
+  unconsumed; no ARF0 rejection (the
+  two-word form carries no ARP alias).
+  Direct words gate DP unknownness at
+  the leaf through the new
+  `ACCUMULATORS_STATUS_DP` resource
+  (bit 4096, thirteenth resource) with
+  snapshot and collect arms.
+- `DIRECT_DP_WORD16` reuses the shared
+  `long_offset_word` (DP page) and
+  `direct_dma7` (offset): a first attempt
+  with dedicated fields broke the pinned
+  24-byte address ABI (static assert),
+  so the kind reinterprets per-kind with
+  no arm growth. Resolution routes
+  through the shared DP planner;
+  candidate validation gains a shape arm
+  plus a `matches_live` arm re-reading
+  CPL==0 and DP==dp9 (the generic
+  CMPT0/ARP0 gate does not apply).
+- The validator file hit the 800-line
+  split gate (849) and was split: DIRECT
+  shape/live arms plus the shared PC
+  check moved to
+  `memory_candidate_direct.[hc]`
+  (751/175 lines).
+- ABI deltas: address spec stays 24;
+  input snapshot 60 to 64 bytes on
+  ILP32 only (LP64 unchanged at 64);
+  frozen m32 root pin 328 to 332.
+- RED-contract repairs (delegate-authored
+  tests): flat spec shape (no
+  `.dp`/`.offset` sub-struct), layout-id
+  type, CPU budget 1 (budgets count
+  instructions), LD/BANZD near-miss
+  siblings now pin the S13 rows, and the
+  0x1000U unknown-resource-bit pins move
+  to 0x2000U (the DP bit claimed it).
+- Pins carried: rows 239 to 246
+  (COUNT 247), lookup 21345 to 21521,
+  bound forms 93 to 94 of 205 (strict
+  stays 34), SUBSET bindings 205 to 212.
+  FORM-T2-20-08 lands SUBSET (seven
+  symbols). No knob change.
+- Evidence stands at 418 records, 670
+  requirements, 540 tests (540
+  `PASSING`, 0 `PLANNED`), matching the
+  S13 projection: two TI records, one
+  activation, three requirements, three
+  test records.
+- Validation is GREEN: `make test`
+  clean (exit 0) — full C suite plus 272
+  quality tests OK, evidence and
+  inventory gates pass. All three RED
+  lanes observed RED before GREEN
+  (missing header, word-2 mask, CPU
+  retirement through the DP seam).
+- Process: first slice under the new
+  logging process (slice doc born
+  `(planned)` in the docs commit,
+  flipped here). Late correction: the
+  S12 slice doc and plan link still read
+  `(planned)` after its landing; flipped
+  to implemented in this commit.
+- Follow-up work: STH MOD0–MOD3
+  second-word disambiguation, STLM/MMR,
+  S1-family MMR/stack moves, S6
+  PORTR/PORTW, far/XPC/timing, then
+  worktree fan-out for the remaining
+  leaves.
