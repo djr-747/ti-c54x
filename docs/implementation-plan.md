@@ -122,8 +122,7 @@ neighborhoods stay undecoded and the MOD0 benchmark roster stays frozen.
 This immutable `(planned)` heading is the FIT/ownership anchor for
 re-sequencing remaining work by what the 5110 DSP image needs. The
 append-only reconstruction hypotheses, black-box observations, and downstream
-speech acceptance boundary are maintained separately in
-`docs/dsp-reconstruction-hypothesis-evidence-ledger.md`.
+speech acceptance boundary are maintained outside this repository.
 
 The input is a mnemonic census (counts only, no sibling source, tables,
 comments, or structure copied) over the 21 big-endian disassembly
