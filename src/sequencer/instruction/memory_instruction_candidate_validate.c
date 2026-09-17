@@ -6,7 +6,8 @@
  * single-indirect, AR0-indexed, circular, reverse-carry, LONG32, dual
  * MOD0/MOD1/MOD2, X-only dual MOD0--MOD3, DATA+PROGRAM pair, and
  * mode-independent STACK_PUSH/STACK_POP operands with their
- * delayed-branch twins.
+ * delayed-branch twins. Page-0 and DP-relative direct arms live in the
+ * memory_candidate_direct module.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -24,6 +25,7 @@
 #include "sequencer/instruction/memory_instruction_transaction.h"
 #include "memory_instruction_data_program_candidate_validate.h"
 #include "memory_instruction_dual_candidate_validate.h"
+#include "sequencer/instruction/memory_candidate_direct.h"
 
 static bool
 address_resolution_is_valid(
@@ -207,28 +209,11 @@ address_resolution_is_valid(
     }
 
     if (effect->address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16) {
-        /* Page-0 direct carries no update and no policy: the dma echo
-         * and the zero-extended operand prove the forged-candidate
-         * contract with no state observation. */
-        return address_effect->source.kind ==
-                   TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 &&
-               address_effect->source.value.direct_page0.dma7 ==
-                   effect->address_spec.direct_dma7 &&
-               address_effect->operand.first_word ==
-                   effect->address_spec.direct_dma7 &&
-               address_effect->state_policy ==
-                   TI_C54X_ADDRESS_STATE_POLICY_NONE &&
-               address_effect->update.target ==
-                   TI_C54X_ADDRESS_UPDATE_NONE &&
-               address_effect->update.phase ==
-                   TI_C54X_ADDRESS_UPDATE_PHASE_NONE &&
-               address_effect->update.ar_index == UINT8_C(0) &&
-               address_effect->update.value_before == UINT16_C(0) &&
-               address_effect->update.value_after == UINT16_C(0) &&
-               address_commit->target == TI_C54X_ADDRESS_UPDATE_NONE &&
-               address_commit->ar_index == UINT8_C(0) &&
-               address_commit->value_after == UINT16_C(0);
+            TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16) {
+        return ti_c54x_memory_candidate_direct_shape_is_valid(resolution,
+                                                              effect);
     }
 
     if (effect->address_spec.kind ==
@@ -478,24 +463,6 @@ address_resolution_is_valid(
     return false;
 }
 
-static bool
-pc_candidate_matches_live(const ti_c54x_program_pc_bridge_effect *pc,
-                          const ti_c54x_arch_state *state)
-{
-    ti_c54x_program_pc_bridge_effect copy;
-    uint32_t live_pc;
-
-    if (pc == NULL || state == NULL || pc->public_pc_word_before !=
-                                          state->pc_word) {
-        return false;
-    }
-    copy = *pc;
-    live_pc = state->pc_word;
-    return ti_c54x_program_pc_bridge_apply(&live_pc, &copy) ==
-               TI_C54X_PROGRAM_PC_BRIDGE_OK &&
-           live_pc == pc->public_pc_word_after;
-}
-
 bool
 ti_c54x_memory_instruction_candidate_shape_is_valid(
     const struct ti_c54x_memory_instruction_candidate *candidate)
@@ -584,7 +551,7 @@ x_only_candidate_matches_live(
      * plus the MOD3 AR0/BK shadows. */
     address_effect = &candidate->address_resolution.address_result.effect;
     spec = &candidate->effect.payload.memory.address_spec;
-    if (!pc_candidate_matches_live(&candidate->pc_effect, state) ||
+    if (!ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect, state) ||
         address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR ||
         address_effect->source.value.ar.index != spec->dual.x_ar ||
         ti_c54x_arch_state_read_ar(
@@ -621,7 +588,7 @@ stack_candidate_matches_live(
      * the operand/update contract. RTN pops additionally pin the live
      * RTN register against the value frozen at prepare. */
     address_effect = &candidate->address_resolution.address_result.effect;
-    if (!pc_candidate_matches_live(&candidate->pc_effect, state) ||
+    if (!ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect, state) ||
         address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
         return false;
     }
@@ -697,22 +664,15 @@ ti_c54x_memory_instruction_candidate_matches_live(
     address_effect = &candidate->address_resolution.address_result.effect;
 
     if (address_effect->source.kind ==
-        TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
-        /* Page-0 direct observes no state: no CMPT/ARP/CPL/DP read,
-         * so the generic CMPT=0/ARP=0 gate below does not apply.
-         * The NONE policy and the dma echo re-prove the frozen
-         * shape; only the sequential PC is live. */
-        return address_effect->state_policy ==
-                   TI_C54X_ADDRESS_STATE_POLICY_NONE &&
-               address_effect->source.value.direct_page0.dma7 ==
-                   candidate->effect.payload.memory.address_spec
-                       .direct_dma7 &&
-               pc_candidate_matches_live(&candidate->pc_effect, state);
+            TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 ||
+        address_effect->source.kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP) {
+        return ti_c54x_memory_candidate_direct_matches_live(candidate,
+                                                             state);
     }
 
     /* All remaining generic memory forms are CMPT=0/ARP=0
-     * plans (dual-pair, X-only, and page-0 direct forms return
-     * through their own arms above). Read the mode dependencies
+     * plans (dual-pair, X-only, and direct forms return through
+     * their own arms above). Read the mode dependencies
      * directly; re-running the resolver here would redo address
      * arithmetic and could publish a different candidate after
      * a WAIT. */
@@ -726,7 +686,7 @@ ti_c54x_memory_instruction_candidate_matches_live(
             TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) {
         return false;
     }
-    if (!pc_candidate_matches_live(&candidate->pc_effect, state)) {
+    if (!ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect, state)) {
         return false;
     }
     switch (address_effect->source.kind) {

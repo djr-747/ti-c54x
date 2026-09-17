@@ -239,7 +239,7 @@ int main(void) {
         if supported.returncode != 0:
             self.skipTest("compiler does not support a complete -m32 probe")
         pointer, uint64, effect, root = self._abi_probe(("-m32",))
-        self.assertEqual((pointer, uint64, effect, root), (4, 8, 40, 328))
+        self.assertEqual((pointer, uint64, effect, root), (4, 8, 40, 332))
 
 
 if __name__ == "__main__":

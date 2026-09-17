@@ -337,7 +337,7 @@ int main(void)
         )
         self.assertEqual((pointer, uint64), (4, 8), output)
         self.assertEqual(
-            (address, effect, op_effect, dual, root), (24, 40, 44, 72, 328), output
+            (address, effect, op_effect, dual, root), (24, 40, 44, 72, 332), output
         )
 
 

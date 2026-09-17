@@ -173,6 +173,23 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
             frct_result.status == TI_C54X_STATUS_REGISTER_OK;
     }
 
+    if ((resources & TI_C54X_INPUT_RESOURCES_STATUS_DP) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        ti_c54x_status_register_field_result dp_result;
+
+        if (sources == NULL || sources->status == NULL) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        dp_result = ti_c54x_status_register_read_dp(sources->status);
+        if (dp_result.status != TI_C54X_STATUS_REGISTER_OK &&
+            dp_result.status != TI_C54X_STATUS_REGISTER_UNKNOWN) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+        staged.status_dp = (uint16_t)dp_result.raw_value;
+        staged.status_dp_known =
+            dp_result.status == TI_C54X_STATUS_REGISTER_OK;
+    }
+
     if ((resources & TI_C54X_INPUT_RESOURCES_T_REGISTER) !=
         TI_C54X_INPUT_RESOURCES_NONE) {
         uint16_t raw_value = 0U;

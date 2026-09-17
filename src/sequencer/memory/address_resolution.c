@@ -16,6 +16,7 @@
 
 #include <stddef.h>
 
+#include "address/direct_dp.h"
 #include "address/direct_page0.h"
 #include "address/indirect_dual.h"
 #include "address/indirect_long_offset.h"
@@ -136,6 +137,14 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->arf != UINT8_C(0) ||
             spec->long_offset_word != UINT16_C(0) ||
             spec->direct_dma7 > UINT8_C(0x7f)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
+    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16) {
+        if (spec->mode != 0 || spec->indexed_mode != 0 ||
+            spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
+            spec->arf != UINT8_C(0) ||
+            spec->long_offset_word > UINT16_C(0x1FF) ||
+            spec->direct_dma7 > UINT8_C(0x7F)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
     } else if (spec->kind ==
@@ -397,6 +406,47 @@ ti_c54x_sequencer_resolve_memory_address(
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
         }
         out->address_result = address_result;
+        out->address_commit = address_commit;
+        out->request = request_result.request;
+        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
+    }
+
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16) {
+        ti_c54x_direct_dp9 dp;
+        ti_c54x_direct_dma7 dma;
+        ti_c54x_address_result dp_result;
+
+        /* DP-relative direct carries the frozen dispatch-time DP page
+         * in `long_offset_word` with the 7-bit offset in `direct_dma7`:
+         * DP cannot mutate mid-store, so unlike ARs no live state read
+         * is needed. DP unknownness is gated at the leaf through
+         * STATUS_DP. The shared planner owns the source echo, operand
+         * width, and CPL policy exactly as the page-0 planner does. */
+        dp.bits = spec->long_offset_word;
+        dma.bits = spec->direct_dma7;
+        dp_result = ti_c54x_direct_dp_word(dp, dma);
+        if (dp_result.status != TI_C54X_ADDRESS_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        address_status = ti_c54x_sequencer_validate_address_effect(
+            state, &dp_result,
+            TI_C54X_ADDRESS_UPDATE_PHASE_NONE, &address_commit);
+        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        request_result = access ==
+                                 TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? ti_c54x_bus_word16_request_read(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   dp_result.effect.operand.first_word)
+                             : ti_c54x_bus_word16_request_write(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   dp_result.effect.operand.first_word,
+                                   write_value_word);
+        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
+        }
+        out->address_result = dp_result;
         out->address_commit = address_commit;
         out->request = request_result.request;
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;

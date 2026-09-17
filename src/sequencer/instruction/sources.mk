@@ -2,6 +2,7 @@
 # instruction transactions.
 ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_candidate_validate.c \
+	src/sequencer/instruction/memory_candidate_direct.c \
 	src/sequencer/instruction/memory_instruction_commit.c \
 	src/sequencer/instruction/memory_instruction_data_program_candidate_validate.c \
 	src/sequencer/instruction/memory_instruction_data_program_commit.c \

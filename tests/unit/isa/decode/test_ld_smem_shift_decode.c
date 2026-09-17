@@ -168,7 +168,6 @@ static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020), UINT16_C(0x0080),
         UINT16_C(0x1000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -181,6 +180,29 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Flipping bit 5 lands on the STH syntax-4 MOD4 row; flipping bit 7
+     * lands on the STH syntax-4 direct row. */
+    {
+        const ti_c54x_decode_result mod4_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SMEM_SHIFT_VALUE ^ UINT16_C(0x0020)));
+
+        TI_C54X_TEST_CHECK(mod4_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mod4_sibling.id ==
+                           TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD4);
+    }
+    {
+        const ti_c54x_decode_result direct_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SMEM_SHIFT_VALUE ^ UINT16_C(0x0080)));
+
+        TI_C54X_TEST_CHECK(direct_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(direct_sibling.id ==
+                           TI_C54X_OPCODE_ID_STH_SHIFT_DIRECT);
     }
 
     /* Flipping fixed bit 8 lands on the W71 BANZD sibling. */

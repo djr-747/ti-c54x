@@ -677,7 +677,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w16-nop-seeded-opcode-architecture.md",
         "anchor": "P2-W16: NOP-seeded opcode architecture"
       },
       "assertion": "The P2-W16 project contract requires one declarative X-macro opcode catalog as the only instruction inventory, with macro passes generating opcode identity and metadata, a direct 16-bit first-word decoder, and a function-pointer semantic dispatch table. This is a project structure contract, not TI conformance evidence."
@@ -1309,7 +1309,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w17-masked-opcode-catalog-foundation.md",
         "anchor": "P2-W17: masked opcode catalog foundation (active kickoff)"
       },
       "assertion": "The P2-W17 project contract extends the sole opcode catalog with EXACT and MASKED canonical 16-bit value/mask rows, rejects invalid masks, widths, duplicate IDs or handlers, and deterministic pairwise overlaps without priority; a repository-owned generator emits a checked-in immutable 65,536-entry uint16_t direct lookup while normal builds remain compiler-only and runtime performs no initialization, allocation, or global mutation. No masked production instruction, operand-field extraction, extension-word fetch, CPU integration, timing, memory, bus, device, observer, or external table behavior is claimed. This is a project structure contract, not TI conformance evidence."
@@ -1325,7 +1325,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w18-private-program-pc-bridge-and-cpu-nop-transaction.md",
         "anchor": "P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)"
       },
       "assertion": "The P2-W18 project contract defines a standalone CPU transaction from the exact public program-word carrier through one 16-bit program-word fetch, decode, semantic dispatch, private 16-bit sequential-PC staging, and transactional retirement. An attempt begins immediately before the bus read, so bus faults and unknown decoded words count once; high carriers are passed unchanged to the bus and a known NOP above the private 16-bit domain fails bridge validation without truncation. The contract preserves state on failed stages, separates attempted from retired counters, bounds run calls by retirements or the first stop, and treats cumulative counter overflow as an explicit no-mutation stop. It makes no XPC, timing, interrupt, repeat, data-memory, device, observer, or emulator-integration claim. This is a project orchestration contract, not TI conformance evidence."
@@ -1341,7 +1341,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w19a-value-owned-operand-field-extraction.md",
         "anchor": "P2-W19A: value-owned operand-field extraction (active kickoff)"
       },
       "assertion": "The P2-W19A project contract defines a pure, allocation-free extractor over a borrowed view of one or more 16-bit program words and a borrowed immutable field layout; it retains no pointers. Pieces identify a source word index, source LSB, width 1..16, and destination LSB 0..63; fields declare raw width 1..64, require in-word pieces, non-overlapping destination pieces that cover the declared value exactly, and non-overlapping source slices within each source word. Successful extraction publishes a caller-owned uint64_t raw value plus explicit width; invalid views, layouts, outputs, indexes, widths, overlap, or gaps leave output byte-for-byte unchanged. The contract makes no sign-extension, semantic, bus, CPU, state, PC, effect, timing, memory, interrupt, repeat, observer, diagnostic, file, environment, heap, mutable-global, or TI instruction-conformance claim."
@@ -1357,7 +1357,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w19b-transactional-extension-fetch-and-width-aware-program-pc.md",
         "anchor": "P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)"
       },
       "assertion": "The P2-W19B project contract freezes two standalone private seams before any multiword opcode integration. The instruction-fetch owner accepts a copied first program word and exact uint32_t first_program_word_address plus a bus descriptor and context borrowed for the call only, retains no pointer, and returns a fully initialized by-value result whose fixed program_words[2] bundle capacity is a helper limit rather than an ISA-wide maximum. Count zero and counts above two are rejected before I/O. Count one copies and publishes the supplied first word with zero callbacks. Count two admits high carriers, checks first_program_word_address+1 before exactly one callback at that exact carrier, and rejects UINT32_MAX overflow before I/O. Count one, invalid-bus, unsupported-count, and address-overflow results use TI_C54X_BUS_OK because no bus transaction was attempted; a missing count-two callback maps to a bus fault plus TI_C54X_BUS_NO_CALLBACK; callback failure maps to a bus fault while preserving its exact non-OK bus status. Every non-OK result zeroes the named bundle count and both words without retry. The helper owns no first-word fetch, counters, CPU/PC/state mutation, common 16-bit/XPC policy, timing, memory, observers, or diagnostics. Independently, the sequencer bridge and sequential-PC owners accept explicit widths 1..255, convert both operands to uint32_t before addition, reject count zero and sums above UINT16_MAX without wrap or narrowing, preserve one-word boundaries and transactional valid/stale/malformed effect behavior, reject public carriers above UINT16_MAX without XPC inference, and perform no bus I/O. This is a project contract, not TI conformance evidence."
@@ -1589,7 +1589,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
         "anchor": "P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)"
       },
       "assertion": "The P2-W20A project contract requires a value-owned canonical instruction bundle, catalog-bound immutable operand-layout and repeatability metadata, discriminated opcode effects, a pure repeat owner with uint32_t body cardinality, and generic IRQ admission/reset-exception handoff. RPT handlers must not mutate architectural state, PC, interrupt state, memory, buses, observers, diagnostics, or timing directly; CPU integration may consume generic effects only after the explicitly unresolved RC, repeat-PC, and pending-request arbitration rules are resolved. This is a project structure contract, not TI conformance evidence."
@@ -1605,7 +1605,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
         "anchor": "P2-W20E: pure single-repeat policy foundation (active kickoff)"
       },
       "assertion": "The P2-W20E project contract defines three allocation-free, value-only policies under the dedicated repeat sequencer owner: checked uint16_t operand to uint32_t body-cardinality derivation, admission from the catalog's existing tri-state repeatability scalar without opcode inference, and a repeat-only request gate over an explicit remaining-body count plus maskable, NMI, or literal RS/reset class. Invalid inputs are explicit and transactional. These policies do not claim that a body executed, bind concrete opcode restrictions, sample or mutate IFR, progress RC, control PC, integrate CPU execution, or resolve predecode interrupt arbitration."
@@ -1621,7 +1621,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
         "anchor": "P2-W48A: observable RC progression lifecycle (implemented)"
       },
       "assertion": "The P2-W48A project contract introduces typed checked RC access and one fixed-size, allocation-free repeat-progress reducer. A REPEAT_START effect transactionally loads RC and stores an exact uint32_t operand-plus-one remaining count. Each caller-reported successful body retirement validates the authoritative RC snapshot, decrements nonzero RC once, preserves terminal zero, and reaches COMPLETE only after the exact count. Unknown, stale, malformed, unsupported, and extra-completion paths preserve state. The seam owns no CPU dispatch, body PC flow, interrupt arbitration, bus work, timing, observer, diagnostic, environment, allocator, or mutable process state, and adds no branch to the current CPU path."
@@ -1637,7 +1637,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
         "anchor": "P2-W48B: repeat-gated pending IFR latch (implemented)"
       },
       "assertion": "The P2-W48B project contract introduces typed checked IFR access and one fixed-size, caller-owned maskable pending-request reducer. Accepted requests validate a caller-selected one-bit IFR mask, set and preserve that bit while the existing repeat gate reports DEFER, and clear it on an explicit normal-take operation after the gate opens. Separate explicit IFR-write-one and INTR operations clear matching pending state; authoritative reset establishes known-zero IFR and an empty latch even from unknown IFR storage. Validation-dependent unknown, stale, malformed, and invalid-count paths preserve state. NMI representation, predecode arbitration, source and priority selection, CPU dispatch, PC, timing, allocation, I/O, observers, environment access, and mutable globals remain outside the seam, which adds no branch to the current CPU path."
@@ -1653,7 +1653,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
         "anchor": "P2-W48C: DLD repeatability correction (implemented)"
       },
       "assertion": "The P2-W48C project contract corrects DLD_LONG32_MOD13 repeatability from INELIGIBLE to UNRESOLVED. The official negative lists omit DLD and its instruction entry makes no repeatability statement; absence from a negative list is not positive authorization, so ELIGIBLE is also unsupported. DST_LONG32_MOD13 and every other evidenced negative remain INELIGIBLE. The correction changes metadata validation only, not opcode identity, lookup, operand extraction, semantics, CPU execution, inventory coverage, timing, or the current hot path."
@@ -1669,7 +1669,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w49a-bit-32-add-sub-overflow-and-status-foundation.md",
         "anchor": "P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)"
       },
       "assertion": "W49A defines a separate checked modulo-40 ADD/SUB foundation that reports bit-32 carry or no-borrow and signed-32 overflow direction without owning OVM policy. It adds typed OVM/OVA/OVB access, widens the private catalog input-resource mask to sixteen bits before assigning OVM bit 0x0080, preserves the 48-byte input snapshot and trusted carriers, and extends ACCUMULATOR_WRITE with a destination-overflow preserve-or-set action committed atomically with accumulator, C, and TC state. No catalog row, semantic handler, CPU opcode branch, public ABI, runtime repeat behavior, timing claim, allocation, I/O, observation, diagnostics, environment access, or mutable process state is introduced."
@@ -1775,7 +1775,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w49b-register-only-add-sub-syntax-9-activation.md",
         "anchor": "P2-W49B: register-only ADD/SUB syntax-9 activation (planned)"
       },
       "assertion": "P2-W49B composes only the register-only ADD and SUB syntax-9 rows through the existing arithmetic40 ADD/SUB foundation, typed OVM/OVA/OVB status access, ACCUMULATOR_WRITE effect, accumulator input collection, trusted binding, and generic CPU retirement. The bounded forms use values 0xF400 and 0xF420 with mask 0xFCE0, one word, and ACCUMULATOR_SOURCE_DESTINATION_SHIFT5; repeatability remains UNRESOLVED. Activation must preserve fixed-size carriers, allocation-free trusted dispatch, no opcode-specific CPU branch, no public ABI change, no timing/device/profile claim, and an observer-off public-CPU performance proof against the current baseline."
@@ -1791,7 +1791,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w21-shared-memory-transaction-foundation.md",
         "anchor": "P2-W21A: private WORD16 bus-request contract (active kickoff)"
       },
       "assertion": "The P2-W21A project contract defines a private, value-owned request for exactly one architectural 16-bit word. Separate read and write constructors carry an explicit program, data, or I/O space and an exact uint32_t word-address input; program requests preserve the full carrier while data and I/O requests reject values above UINT16_MAX before narrowing. Construction reports exactly OK, INVALID_SPACE, or INVALID_ADDRESS, validating space before its address domain. Read requests have a canonical zero write value, write requests copy the exact uint16_t value, and invalid results zero every named request field without making a bytewise-padding claim. The type itself fixes WORD16 width. The request owns no callback, read result, pointer, byte order, host storage, transaction phase, wait state, issue/completion state, timing, arbitration, CPU state, opcode effect, observer, or diagnostic behavior. This is a project structure contract, not TI conformance evidence."
@@ -1807,7 +1807,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w21-shared-memory-transaction-foundation.md",
         "anchor": "P2-W21B: explicit WORD16 byte-order codec (implemented)"
       },
       "assertion": "The P2-W21B project contract defines private, pure by-value encode and decode results for one uint16_t word and exactly two uint8_t lanes under an explicit BIG or LITTLE byte-order argument. BIG maps 0x1234 to bytes 0x12,0x34 and LITTLE maps it to 0x34,0x12. Decode borrows exactly two readable bytes only until return, checks a null input before byte-order validity, and retains no pointer. Invalid results zero every named payload field without claiming padding-byte values. Implementations use value arithmetic rather than pointer casts, unions, packed objects, memcpy, or host-native order. The codec owns no global current order, program-image format, physical shared-memory lane policy, snapshot/wire format, callback, transaction, CPU state, or TI architectural endian claim."
@@ -1823,7 +1823,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w21-shared-memory-transaction-foundation.md",
         "anchor": "P2-W21C: resumable WORD16 transaction protocol (implemented)"
       },
       "assertion": "The P2-W21C project contract defines a private, callback-free, allocation-free WORD16 reducer under src/bus/transaction/. Caller-declared canonical {0} storage carries lifecycle-only IDLE, ISSUE_READY, IN_FLIGHT, COMPLETION_READY, COMPLETE, and FAULT states plus a fresh nonzero caller-generated uint64_t transaction_id, copied valid W21A request, staged read word, and staged ti_c54x_bus_status. prepare copies a borrowed request only from IDLE; begin authorizes one issue and returns a copied request/id; repeated WAIT polling remains IN_FLIGHT without reissue; one READY or FAULT observation latches COMPLETION_READY; complete publishes canonical payload once; reset may clear only IDLE, COMPLETE, or FAULT and never cancels active work. Statuses are exactly OK, WAIT, FAULT, INVALID_ARGUMENT, INVALID_STATE, and STALE_TRANSACTION. Faults preserve known non-OK public bus statuses as payload, while WAIT and non-success read payloads are zero and writes never publish a read word. Rejected transitions preserve named fields. Exactly-once is a protocol claim only for one authoritative, non-copied active storage instance under caller ownership and unique-ID preconditions; external issue count, physical visibility, arbitration, host memory, device, timing, observer, diagnostic, environment, global, public ABI, CPU, request, and codec behavior are separate future work."
@@ -1893,7 +1893,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w22-immediate-status-field-ld-vertical-slice.md",
         "anchor": "P2-W22: immediate status-field LD vertical slice (implemented; local verification green)"
       },
       "assertion": "P2-W22 is one atomic end-to-end vertical slice for three one-word immediate LD status-field forms. It introduces only the status-register subownership/effect transaction and CPU state-observation/atomic-retirement seams required by these forms. It adds no memory, bus transaction, timing, repeat/IRQ, accumulator, device, or emulator behavior and does not treat binutils corroboration as normative evidence."
@@ -1981,7 +1981,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w23-max-min-accumulator-vertical-slice.md",
         "anchor": "P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)"
       },
       "assertion": "P2-W23 freezes a planned, standalone MAX/MIN vertical slice with four one-word encodings, decode-owned destination extraction, pure compare/select handlers, state-owned full 40-bit accumulators, a transactional sequencer effect, and CPU-owned atomic retirement. It claims no production implementation, repeatability, machine timing, memory, bus, device, emulator, RPT, or IRQ behavior; GNU binutils corroboration remains nonnormative and is not copied or vendored."
@@ -2051,7 +2051,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w24-generic-accumulator-write-effect-and-cmpl-vertical-slice.md",
         "anchor": "P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)"
       },
       "assertion": "P2-W24 freezes a two-step standalone slice: first rename the P2-W23 select-named payload to generic ACCUMULATOR_WRITE with canonical C PRESERVE/WRITE validation and atomic status preservation, then implement CMPL's four 0xF493/0xFCFF forms through the generic ACCUMULATORS resource path without a CPU opcode branch or CPU file growth. Exhaustive decode coverage, full-40-bit one's-complement behavior, repeatability, and machine timing are explicitly separated by evidence status."
@@ -2121,7 +2121,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w25-generic-input-collection-and-rol-ror-vertical-slice.md",
         "anchor": "P2-W25: generic input collection and ROL/ROR vertical slice (planned)"
       },
       "assertion": "P2-W25 freezes a private generic resource-driven input collector with ACCUMULATORS and STATUS_C resources, a typed status_c value and status_c_known flag, transactional validation, and no hot-path environment, allocation, global, or diagnostic behavior; then consumes it for four ROL/ROR forms through the existing ACCUMULATOR_WRITE plus C_WRITE effect path without a CPU opcode branch or new public API."
@@ -2173,7 +2173,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w26-sftl-shifted-accumulator-vertical-slice.md",
         "anchor": "P2-W26: SFTL shifted-accumulator vertical slice (planned)"
       },
       "assertion": "P2-W26 freezes SFTL as a fit for the existing ACCUMULATORS input and ACCUMULATOR_WRITE plus C_WRITE effect path: a generic source/destination/shift5 layout, pure shift semantics, and CPU retirement with no production CPU change or opcode branch. Ownership remains split across catalog, decode, shift operations, existing accumulator sequencing, and CPU orchestration; repeatability and timing remain unresolved."
@@ -2297,7 +2297,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w27-and-or-xor-register-only-logical-accumulator-vertical-slice.md",
         "anchor": "P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)"
       },
       "assertion": "P2-W27 freezes AND/OR/XOR as a strict fit for the existing ACCUMULATORS input, generic accumulator-write effect, and CPU retirement seams: one-word rows, generic source/destination/shift5 extraction, pure logical handlers, canonical full-40-bit results, C_PRESERVE, and transactional PC retirement. Ownership is mirrored by catalog, decode, logical operations, existing input/effect owners, and CPU orchestration; any memory, status, state, effect, sequencing, RPT/IRQ, timing, parallel-execution, public-API, or CPU-branch gap is a hard stop rather than a family workaround."
@@ -2367,7 +2367,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w28-tc-aware-status-foundation-and-roltc-sftc-vertical-slice.md",
         "anchor": "P2-W28: TC-aware status foundation and ROLTC/SFTC vertical slice (planned)"
       },
       "assertion": "P2-W28A is the smallest shared foundation demanded by TC-aware accumulator forms: private typed TC accessors with knownness, a STATUS_TC input resource and copied op-input field, and a value-owned C+TC status delta with independent PRESERVE, WRITE_0, and WRITE_1 actions. Existing accumulator handlers migrate to the delta while the sequencer validates and commits complete accumulator-plus-status candidates atomically. OVA/OVB, OVM/SXM, public API, new effect kinds, memory, RPT/IRQ, parallel issue, timing, and device behavior are excluded."
@@ -2383,7 +2383,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w28-tc-aware-status-foundation-and-roltc-sftc-vertical-slice.md",
         "anchor": "P2-W28B \u2014 ROLTC/SFTC vertical slice"
       },
       "assertion": "P2-W28B freezes ROLTC and SFTC as a post-foundation fit for the existing accumulator-source layout and generic CPU retirement. Rotate and shift family handlers may fan out only under their owning subtrees; catalog, decode, generated lookup, dispatch, manifests, and shared integration remain serialized. A new layout, opcode-specific CPU branch, memory, RPT/IRQ, parallel, timing, or public-API requirement is a hard GAP that must be reported before shared edits."
@@ -2471,7 +2471,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w29-t-register-foundation-and-exp-accumulator-vertical-slice.md",
         "anchor": "P2-W29: T-register foundation and EXP accumulator vertical slice (planned)"
       },
       "assertion": "P2-W29A freezes private 16-bit T storage with explicit knownness and checked access, a value-owned T-register write effect, and a tagged transactional effect router that stages only affected candidate state and commits after validation. State, T-effect, and shared transaction architecture have exclusive ownership; a lane needing a shared seam reports GAP rather than adding a family-specific workaround."
@@ -2487,7 +2487,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w29-t-register-foundation-and-exp-accumulator-vertical-slice.md",
         "anchor": "P2-W29B: EXP accumulator vertical slice (planned)"
       },
       "assertion": "P2-W29B admits EXP only after the T foundation is green: the accumulator family owns its leaf and pure tests, while catalog/decode and CPU proof lanes own tests and the orchestrator serializes rows, generated lookup, dispatch, manifests, and CPU integration. No T input, MMR routing, memory, OVA/OVB, OVM/SXM, RPT/IRQ, parallel, timing, diagnostic, environment, allocation, or emulator seam may be introduced by this slice."
@@ -2593,7 +2593,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w30-two-word-immediate-logical-accumulator-vertical-slice.md",
         "anchor": "P2-W30: two-word immediate logical accumulator vertical slice (planned)"
       },
       "assertion": "P2-W30 freezes two decode-owned two-word operand layouts and reuses the existing extension fetch, complete-instruction bundle, program-PC bridge, accumulator input, accumulator-write effect, tagged transaction, and CPU retirement seams. Common logical-immediate validation, immediate construction, and parameterized computation are owned by src/isa/ops/logical/immediate/common/; AND, OR, and XOR leaves own only their family subtrees and mirrored tests; catalog, generated lookup, dispatch, parent manifests, CPU shared surfaces, and integration remain orchestrator-owned. Any new memory, status, timing, IRQ/RPT, public API, knob, diagnostic, environment, allocation, or emulator seam is a hard GAP."
@@ -2645,7 +2645,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w31a-fixed-mod2-memory-prerequisites.md",
         "anchor": "P2-W31A: fixed-MOD2 memory prerequisites (planned)"
       },
       "assertion": "P2-W31A freezes only three prerequisites for a later fixed-MOD2 LD/STL memory slice: CPU ownership of one canonical ti_c54x_arch_state with the 32-bit public program-word carrier preserved through the existing common 16-bit PC bridge; a private checked SXM read and knownness seam under src/state/status/; and a generic STATUS_SXM input resource copied into op-input state. Accumulators, T, counters, bus, and observers remain separate owners. No memory effect, WAIT/public ABI, shared visibility, byte order, fault, AR wrap, repeatability, timing, or opcode row is admitted; those require later evidence-first freezes."
@@ -2661,7 +2661,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w31b-transactional-data-memory-endpoint-and-fixed-mod2-load-store-pair.md",
         "anchor": "P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)"
       },
       "assertion": "P2-W31B freezes two atomic implementation subphases. W31B1 owns a copied public DATA WORD16 endpoint descriptor with a borrowed caller-owned context, paired advance/cancel callbacks, BEGIN/RESUME phases, stable nonzero uint64 transaction IDs, canonical INVALID/WAIT/READY/FAULT observations, commit-at-READY store visibility, explicit cancellation failure, and a persistent root instruction transaction that resumes before fetch. W31B2 owns only fixed-MOD2 LD *ARx+,dst and STL src,*ARx+ semantics. One tagged MEMORY arm remains the sole opcode-effect channel. Architectural state changes are committed from prevalidated candidates; WAIT, FAULT, and cancellation do not mutate them. The endpoint adapter owns storage mapping, arbitration, and byte-lane conversion but not the borrowed storage itself. Device/MMR/program/IO, posted writes, dual/parallel issue, timing, repeatability, and AR-boundary wrap remain outside this contract."
@@ -2713,7 +2713,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w31p-trusted-execution-hot-path-and-release-performance-contract.md",
         "anchor": "P2-W31P: trusted execution hot path and release-performance contract (planned)"
       },
       "assertion": "P2-W31P freezes a private trusted execution path whose catalog-derived per-ID binding, value-owned execution packet, semantic dispatch, CPU orchestration, and single-plan PC commit are prevalidated once and retain checked bridge/wrapper APIs for boundary and fault paths. The fast family path must not repeat catalog metadata, operand-layout, or one-word extension-helper work; it must preserve generic resource collection, atomic architectural effects, and compile-time observer behavior. Hosted O2/no-LTO and O3/LTO measurements are an advisory same-host performance contract with fixed scenario identity and recorded toolchain context, not machine-cycle timing, a hard cross-host CI threshold, or a claim about W31B2 memory READY performance. W31B2 opcode implementation remains paused behind this contract. No runtime/config knob, environment read, diagnostic surface, or emulator dependency is introduced."
@@ -2781,7 +2781,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w32-ssbx-rsbx-status-bit-vertical-slice.md",
         "anchor": "P2-W32: SSBX/RSBX status-bit vertical slice (planned)"
       },
       "assertion": "P2-W32 freezes SSBX and RSBX as a bounded fit for one private transactional status-bit application seam and the existing generic CPU retirement path. Shared status and CPU owners validate and publish value-owned candidates without opcode-identity branches, while family handlers remain isolated under the status-operations subtree."
@@ -2833,7 +2833,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w33-cmpr-cc-arx-vertical-slice.md",
         "anchor": "P2-W33: CMPR CC,ARx vertical slice (planned)"
       },
       "assertion": "P2-W33 freezes CMPR as a bounded fit for a copied generic AUXILIARY_REGISTERS input snapshot containing all eight AR values and knownness, existing checked architectural-state reads, the STATUS_BIT_WRITE route targeting ST0 bit 12, and generic CPU retirement. The handler reports UNKNOWN_INPUT unless AR0 and selected ARx are known; no opcode-specific CPU branch, public API, memory, timing, interrupt/repeat, device, or environment seam is introduced."
@@ -2885,7 +2885,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w34-fixed-mod2-ldu-vertical-slice.md",
         "anchor": "P2-W34: fixed-MOD2 LDU vertical slice (planned)"
       },
       "assertion": "P2-W34 fits LDU into the existing fixed-MOD2 MEMORY effect/completion and generic CPU retirement paths. CMPT=0 and ARP=0 are inherited from the W31B project contract; old selected AR transfer precedes postincrement, and AR=0xffff remains rejected by the checked planner. No SXM read, new resource/effect/address kind, public ABI, opcode-specific CPU branch, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation is added."
@@ -2937,7 +2937,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w35-fixed-mod2-ld-to-t-vertical-slice.md",
         "anchor": "P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)"
       },
       "assertion": "P2-W35 fits fixed-MOD2 LD-to-T into the existing MEMORY effect/completion and generic CPU retirement paths, adding only the private generic ARF operand layout and reusing the existing T_REGISTER_WRITE effect. CMPT=0 and ARP=0 are inherited from the W31B contract; the old selected AR transfer precedes postincrement, and the checked planner's AR=0xffff boundary remains in force. No new public T/MMR API, resource, address kind, CPU opcode branch, timing, IRQ/RPT, device, environment, diagnostics, allocation, or repeatability behavior is added."
@@ -2989,7 +2989,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w36-fixed-mod2-immediate-store-vertical-slice.md",
         "anchor": "P2-W36: fixed-MOD2 immediate-store vertical slice (planned)"
       },
       "assertion": "P2-W36 fits the two-word fixed-MOD2 immediate ST #lk,*ARx+ form into existing extension fetch, width-aware PC, generic MEMORY WRITE, and generic CPU WAIT/READY/FAULT retirement contracts. The planned private TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16 layout owns ARF plus copied raw lk; CMPT=0 and ARP=0 preserve old-AR write-before-postincrement, with write_value_word and complete=NULL. No public ABI, CPU opcode branch, new resource/effect/address kind, timing, IRQ/RPT, device/MMR, environment, diagnostics, allocation, or repeatability behavior is added. LD Smem,DP/ASM is deferred; ST T, STH, and ALU/control candidates remain blocked by their documented seams."
@@ -3041,7 +3041,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w37-fixed-mod2-memory-to-status-vertical-slice.md",
         "anchor": "P2-W37: fixed-MOD2 memory-to-status vertical slice (planned)"
       },
       "assertion": "P2-W37 fits fixed-MOD2 LD Smem,DP and LD Smem,ASM into the existing MEMORY read/completion, status-field effect/writer, and generic CPU WAIT/READY/FAULT retirement paths. Both forms reuse the existing private TI_C54X_OPERAND_LAYOUT_ARF layout, have no input resources, and add no resource, effect, address kind, opcode-specific CPU branch, public API, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation behavior. CMPT=0 and ARP=0 preserve the old selected-AR address for the read before postincrement; the checked planner's AR=0xffff boundary and generic sequential-PC path remain in force. The DP form's repeatability is explicitly INELIGIBLE by Table 2-28; ASM repeatability remains UNRESOLVED."
@@ -3093,7 +3093,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w38-fixed-mod2-ld-smem-16-vertical-slice.md",
         "anchor": "P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)"
       },
       "assertion": "P2-W38 fits fixed-MOD2 LD Smem,16,dst into existing MEMORY read/completion, ACCUMULATOR_WRITE, STATUS_SXM input, generic fixed-MOD2 address, and CPU WAIT/READY/FAULT sequential-PC retirement paths. The existing private accumulator-ARF layout, status-SXM collection, and generic effects own all inputs and state changes; no new layout, resource, effect, address, state, CPU, public API, source-manifest, timing, IRQ/RPT, device/MMR, environment, diagnostics, or allocation seam is admitted. The bounded semantics are zero-extend when SXM=0 or sign-extend when SXM=1 to canonical 40 bits, then logical left shift 16 within 40 bits, preserving C, TC, OV, and unrelated state. STH, LDR, LD#K, ST T, and TS remain deferred for their recorded gaps."
@@ -3145,7 +3145,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w39-generic-t-input-and-fixed-mod2-st-t-vertical-slice.md",
         "anchor": "P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)"
       },
       "assertion": "P2-W39 adds the project-contract T_REGISTER input resource as a copied raw 16-bit T snapshot with knownness, sourced from the private T state; unrequested T is not read, malformed or unknown input rejects transactionally, and unknown T produces UNKNOWN_INPUT without a MEMORY effect. The fixed-MOD2 ST T, *ARx+ handler is a pure MEMORY WORD16 WRITE with exact copied T, complete=NULL, and no status-bit effects, while generic fixed-MOD2 address resolution and CPU WAIT/READY/FAULT/sequential-PC retirement are reused. No new layout, effect, address, architectural-state, public-API, source-manifest, timing, or opcode-specific CPU branch seam is admitted; STH, LDR, LD#K, and TS remain deferred for their recorded gaps."
@@ -3179,7 +3179,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w40-authoritative-isa-instruction-form-inventory.md",
         "anchor": "P2-W40: authoritative ISA instruction-form inventory (planned)"
       },
       "assertion": "The P2-W40 contract defines config/isa/inventory.json as audit metadata rather than production decode, keeps opcode_catalog.def as the sole opcode value/mask source, requires COMPLETE/SUBSET/UNIMPLEMENTED coverage and COMMON_CANDIDATE/PROFILE_ONLY/OUT_OF_SCOPE/UNRESOLVED scope states, and reports the provisional 34/205 catalog-family progress and strict 25/205 complete-form lower bound without treating 1487/65536 as ISA coverage."
@@ -3267,7 +3267,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w41-fixed-mod2-ld-smem-ts-dst-vertical-slice.md",
         "anchor": "P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)"
       },
       "assertion": "P2-W41 admits only the existing ACCUMULATOR_ARF layout, a combined STATUS_SXM+T_REGISTER input mask, generic MEMORY and ACCUMULATOR_WRITE effects, fixed-MOD2 address resolution, and generic CPU WAIT/READY/FAULT/sequential-PC retirement. The pure transform widens Smem under SXM and applies signed TS to canonical 40-bit state; raw T[5:0] 0x20..0x2F rejects transactionally as INVALID_OPERAND. No new resource bits/state/effect/layout/address/CPU branch/public ABI/timing seam is admitted, and repeatability remains UNRESOLVED."
@@ -3283,7 +3283,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w42a-standard-indirect-mod0-3-memory-transaction-seam.md",
         "anchor": "P2-W42A: standard-indirect MOD0\u20133 memory transaction seam (planned)"
       },
       "assertion": "P2-W42A freezes a generic standard-indirect MOD0\u20133 MEMORY WORD16 transaction seam without changing the catalog or opcode handlers. The existing SINGLE_INDIRECT_WORD16 effect admits MOD0 through MOD3 while a MOD3 read is structurally rejected before address resolution or endpoint issue; the later W42B load-handler slice will select INVALID_OPERAND before endpoint issue. The existing planner records MOD0 NONE with no AR commit, MOD1/MOD2 POST, and MOD3 PRE for writes only. PRE is address-order metadata and does not expose AR mutation before READY. WAIT, FAULT, and cancel preserve architecture, while READY commits the target AR only together with accepted program-counter and effect commits. No public ABI, timing, device/MMR, CPU opcode branch, new effect/address/state kind, or other architectural seam is admitted."
@@ -3299,7 +3299,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w42b-standard-indirect-mod0-3-smem-family-expansion.md",
         "anchor": "P2-W42B: standard-indirect MOD0\u20133 Smem family expansion (planned)"
       },
       "assertion": "P2-W42B freezes replacement of the ten fixed-MOD2 standard-indirect Smem catalog rows with neutral symbols LD_SMEM, LD_SMEM_TS, STL_SMEM, LDU_SMEM, LD_T_SMEM, ST_IMMEDIATE_SMEM, LD_DP_SMEM, LD_ASM_SMEM, LD_SMEM_SHIFT16, and ST_T_SMEM. Their MOD0 base/mask pairs are 0x1080/0xFEE0, 0x1480/0xFEE0, 0x8080/0xFEE0, 0x1280/0xFEE0, 0x3080/0xFFE0, 0x7680/0xFFE0, 0x4680/0xFFE0, 0x3280/0xFFE0, 0x4480/0xFEE0, and 0x8C80/0xFFE0. Neutral layouts ACCUMULATOR_ARF_MOD (D/source, ARF, MOD), ARF_MOD (ARF, MOD), and ARF_EXTENSION16_MOD (ARF, EXTENSION16, MOD) append MOD without changing existing operand indices; mode bits are [4:3], ARF [2:0], and D bit 8. Handlers consume decoded mode fields and never parse raw words. Loads admit MOD0/MOD1/MOD2 and return INVALID_OPERAND for MOD3 before MEMORY effect or endpoint issue; stores admit MOD0\u2013MOD3 through W42A. ID_COUNT remains 36, lookup projects 1503 to 1863, and 480 broadened encodings comprise 392 legal plus 88 rejected load MOD3 forms (+272 legal/+88 rejected). Inventory stays SUBSET with addressing_subset STANDARD_INDIRECT_MOD0_MOD3, family and strict percentages stay 35/205 and 25/205 through this slice, and op_ld_smem.c must be split before growth beyond its reviewed 491 lines. No new effect/address kind, CPU branch, ABI, timing, device/MMR, or architectural state is admitted."
@@ -3333,7 +3333,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w43b-indexed-mod5-mod6-per-family-composition.md",
         "anchor": "P2-W43B: indexed MOD5/MOD6 per-family composition (planned)"
       },
       "assertion": "P2-W43B freezes twenty private catalog identities, ten MOD5 and ten MOD6 rows, using unique handler wrapper tokens over the existing ten family cores. The wrappers consume decoded indexed layouts and reuse the W43A INDEXED_AR0_WORD16 MEMORY transaction seam for WORD16 READ/WRITE, selected-AR post-update, and atomic WAIT/READY/FAULT/cancel behavior. Three appended MOD4 layouts\u2014ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4\u2014preserve existing operand indices while carrying the indexed mode discriminator. Inventory remains audit metadata only and changes its ten subset bindings to the multi-addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6; catalog and decode remain private, and no public ABI, new effect/address/state kind, opcode-specific CPU branch, timing, device/MMR, IRQ/RPT, wrap, allocation, environment, diagnostic, or mutable-global behavior is admitted. Coverage percentages remain unchanged until all bound forms are complete."
@@ -3349,7 +3349,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w44a-generic-circular-word16-memory-seam.md",
         "anchor": "P2-W44A: generic circular WORD16 MEMORY seam (planned)"
       },
       "assertion": "P2-W44A freezes a private CIRCULAR_WORD16 MEMORY specification for CMPT=0 WORD16 MOD8/MOD10 reads and writes, carrying only copied ARF and typed circular-mode inputs at the operation layer. Resolution orders CMPT, ARP, selected AR, then BK, and reuses the existing circular planner: BK=0 is a valid NONE/no-update result, while positive BK applies the documented circular wrap domain. The resolved address effect carries copied AR/BK snapshots; unknown or stale dependencies reject, selected AR0\u2013AR7 are admitted, and WAIT, READY, FAULT, and cancel preserve transactional state with READY atomically committing selected AR, PC, and effect. No catalog row, opcode handler, public ABI, timing, MMR/device, IRQ/RPT, or new public architectural kind is admitted. W44B remains the subsequent twenty-row MOD8/MOD10 family fan-out projected at ID_COUNT=76, lookup=2343, and 75 bindings; those values are not activated by W44A."
@@ -3383,7 +3383,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w44b-circular-mod8-mod10-per-family-composition.md",
         "anchor": "P2-W44B: circular MOD8/MOD10 per-family composition (planned)"
       },
       "assertion": "P2-W44B freezes exactly twenty private MOD8/MOD10 catalog identities and unique handler tokens suffixed _mod8/_mod10 over the ten existing Smem families, reusing the three existing private MOD4 decode layouts and the completed W44A CIRCULAR_WORD16 MEMORY effect, resolver, and transaction seams. The operation layer carries copied ARF and typed circular mode; CMPT=0 resolution admits AR0\u2013AR7, reads CMPT then ARP then selected AR then BK, preserves BK=0 NONE/no-update, and stages the positive-BK post-access wrap update with copied live snapshots. Inventory remains audit metadata only and adds the combined addressing token STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6_MOD8_MOD10 to the ten stable form identities. The projection is ID_COUNT=76, lookup=2343, and 75 catalog bindings with family and strict coverage unchanged at 35/205 and 25/205. No operand_layout edit, public ABI, new architectural kind, timing, device/MMR, IRQ/RPT, unsupported circular mode, or boundary expansion is admitted."
@@ -3399,7 +3399,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w45a-generic-reverse-carry-word16-memory-seam.md",
         "anchor": "P2-W45A: generic reverse-carry WORD16 MEMORY seam (planned)"
       },
       "assertion": "P2-W45A freezes a private REVERSE_CARRY_WORD16 memory address kind with typed MOD4/MOD7 inputs. ARF admits only 1..7; AR0 alias behavior remains unresolved and is rejected by this seam. Unrelated fields are canonical zero and prevalidation completes before architectural reads. Dependency order is CMPT, ARP, selected AR, then AR0; AR0 must be known, nonzero, and one-hot. The reverse-carry planner uses the old selected AR as the operand address and stages a POST update to the selected AR only, without modulo or wrap inference, rejecting boundary cases whose propagation escapes the documented domain. Candidate validation requires exact live snapshots, with WAIT, FAULT, cancel, stale, and no-refetch behavior preserved and READY committing atomically. No BK, root transaction, CPU, catalog, opcode, public ABI, timing, device, or RPT change is admitted. Existing registered TI MOD4/MOD7, reverse-carry primitive, planner, and application evidence is reused; this is a project ownership contract, not additional TI conformance evidence."
@@ -3415,7 +3415,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w45b-reverse-carry-mod4-mod7-per-family-composition.md",
         "anchor": "P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)"
       },
       "assertion": "P2-W45B freezes exactly twenty private reverse-carry MOD4/MOD7 catalog identities over the ten existing Smem families, with unique _mod4/_mod7 handler tokens, reuse of ACCUMULATOR_ARF_MOD4, ARF_MOD4, and ARF_EXTENSION16_MOD4 layouts/resources/word counts, and the completed W45A REVERSE_CARRY_WORD16 seam. The exact rows are LD_SMEM_MOD4/7 0x10A0/0x10B8 mask 0xFEF8, LD_SMEM_TS_MOD4/7 0x14A0/0x14B8 mask 0xFEF8, STL_SMEM_MOD4/7 0x80A0/0x80B8 mask 0xFEF8, LDU_SMEM_MOD4/7 0x12A0/0x12B8 mask 0xFEF8, LD_SMEM_SHIFT16_MOD4/7 0x44A0/0x44B8 mask 0xFEF8, LD_T_SMEM_MOD4/7 0x30A0/0x30B8 mask 0xFFF8, ST_IMMEDIATE_SMEM_MOD4/7 0x76A0/0x76B8 mask 0xFFF8 with two program words, LD_DP_SMEM_MOD4/7 0x46A0/0x46B8 mask 0xFFF8, LD_ASM_SMEM_MOD4/7 0x32A0/0x32B8 mask 0xFFF8, and ST_T_SMEM_MOD4/7 0x8CA0/0x8CB8 mask 0xFFF8. ARF 1..7 executes; ARF0 encodings decode but handlers reject transactionally before endpoint because alias semantics are unresolved. CMPT=0/ARP=0, known nonzero one-hot AR0, old selected AR address, POST selected-AR update, and no BK/wrap inference are required. The projection is 95 rows, ID_COUNT=96, lookup=2583, and 95 bindings with family and strict coverage unchanged at 35/205 and 25/205. No operand-layout, root-transaction, CPU-branch, public-ABI, timing, device, or RPT change is admitted."
@@ -3485,7 +3485,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w46a-generic-word16-same-address-read-modify-write-seam.md",
         "anchor": "P2-W46A: generic WORD16 same-address read-modify-write seam (planned)"
       },
       "assertion": "W46A freezes a private allocation-free WORD16 same-address read-modify-write seam inside the existing TI_C54X_OP_EFFECT_MEMORY carrier. A compact typed transform enum (AND, OR, XOR) and copied WORD16 operand are value-owned; no indirect callback, allocation, new effect kind, CPU opcode branch, or public ABI is admitted. Address resolution occurs once; one READ and one WRITE use the exact cached old address with fresh bus transaction IDs, and the transform runs once on the copied read word. Resume validation uses direct live CMPT/ARP, selected AR, AR0/BK when applicable, and PC snapshots rather than rerunning the planner or refetching. Architectural address and PC commits occur only after WRITE READY; WAIT, FAULT, cancel, stale, and no-refetch behavior are required. This is core architectural commit atomicity and does not promise exclusion against an external bus master. Helpers split before the 500-line review threshold; carrier/candidate growth is minimized and a structural plus observer-off performance gate is required without claiming TI timing."
@@ -3501,7 +3501,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w46b-andm-orm-xorm-neutral-mod0-3-composition.md",
         "anchor": "P2-W46B: ANDM/ORM/XORM neutral MOD0\u20133 composition (planned)"
       },
       "assertion": "W46B freezes three neutral two-word catalog rows over MOD0\u2013MOD3: ANDM_SMEM_MOD0_3 base 0x6880 mask 0xFFE0, ORM_SMEM_MOD0_3 base 0x6980 mask 0xFFE0, and XORM_SMEM_MOD0_3 base 0x6A80 mask 0xFFE0. Existing ARF_EXTENSION16_MOD layout is reused with no input resources or status effects and repeatability INELIGIBLE. MOD0/1/2 are admitted under the current safe boundary policy; MOD3 decodes for metadata but handlers reject before endpoint issue because a read is required and MOD3 is write-only. W46A and generic decode/effects/CPU/inventory seams are reused. Direct, absolute, long-offset, CMPT1, indexed, circular, reverse, MMR/device, wrap, and timing expansion remain deferred. The projection is ID_COUNT=99, lookup=2679, bindings=98, family 38/205, and strict 25/205."
@@ -3517,7 +3517,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w47a-generic-long32-pair-transaction-seam.md",
         "anchor": "P2-W47A: generic LONG32 pair transaction seam (planned)"
       },
       "assertion": "P2-W47A freezes a generic fixed-size LONG32 pair transaction seam that reuses the canonical ti_c54x_data_operand MSW/LSW pair and one private WORD16 reducer. Values are copied before issue; malformed, noncanonical, or overlapping pairs are rejected before any endpoint request. The transaction issues exactly two supplied fresh nonzero strictly increasing IDs in deterministic first/MSW then second/LSW order. WAIT retains the same ID and request, and cancellation addresses only the active word; a failed cancel preserves the exact state. Reads publish only after both words are READY; a first fault never issues the second request, and a second fault publishes no read pair or architectural commit. Writes are externally visible per word, so a first READY remains visible if the second word faults or cancels, while architectural commit is deferred until both words are READY. No rollback or external-master exclusion claim is made. The carrier and reducer are allocation-free and fixed-size for mainstream ABIs, with no replan, public ABI, opcode, catalog, CPU, or effect-carrier change; executable opcode benchmarking is deferred to W47B and no TI timing claim is made."
@@ -3605,7 +3605,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w47b-dld-dst-long32-mod13-composition.md",
         "anchor": "P2-W47B: DLD/DST LONG32 MOD13 composition (planned)"
       },
       "assertion": "P2-W47B freezes exactly two private CMPT=0 MOD13 two-word catalog rows, DLD_LONG32_MOD13 at base 0x56E8/mask 0xFEF8 and DST_LONG32_MOD13 at base 0x4EE8/mask 0xFEF8, reusing a new private ACCUMULATOR_ARF_EXTENSION16_MOD4 layout and the generic LONG32 MEMORY carrier/root over W47A. The full variable patterns are 0101_011D_1110_1AAA and 0100_111S_1110_1AAA, with extension-word lk, MSW/LSW pairing, and MOD13 pre-access AR update composed from the separate TI records. DLD consumes STATUS_SXM and publishes its canonical MSW/LSW read only after both child words are READY; project C16\u00d7SXM vectors must prove the documented C16 lane descriptions converge on the same stored pattern. DST consumes ACCUMULATORS plus STATUS_SXM and STATUS_SST, reads the full source without mutation, and applies the pinned SST/SXM saturation policy before issuing MSW then LSW; it does not unconditionally discard guard bits. Architectural AR/PC pre-access candidates commit only after pair completion; per-word physical write visibility remains the W47A contract, with no external pair atomicity or rollback claim. The root must copy operands and source snapshots, use one discriminated child union, avoid address replanning, instruction refetch, source recomputation, allocation, callback-owned/context state, formatting/fanout, public-ABI/effect-carrier widening, opcode-specific CPU branches, timing, or observer behavior; static completion callbacks may remain process-lifetime function pointers, root and validator helpers split before file-size thresholds, and an observer-off full-CPU benchmark is required before closure."
@@ -3639,7 +3639,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w50a-dual-word16-mod0-read-foundation.md",
         "anchor": "P2-W50A: dual-WORD16 MOD0 read foundation (planned)"
       },
       "assertion": "P2-W50A freezes a private dual-WORD16 MOD0 read foundation: a fixed-size compact effect arm copies encoded X/Y modes and AR selectors plus a static pair-completion callback while preserving the existing outer effect carrier size. Resolved addresses and transaction IDs/pair state belong to the resolver and generic root reducer; a deterministic hosted X-then-Y serializer issues two WORD16 reads over one endpoint. The pair reducer retains WAIT identity, clears unpublished values on FAULT, rejects failed terminal transitions, and publishes the two read values atomically only after both READY observations; generic root integration stages no architectural state before completion. This is a project transaction contract with no TI machine-cycle claim, no opcode activation, no catalog row, no CPU opcode branch, and no device/MMR behavior."
@@ -3709,7 +3709,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w50b-dual-memory-add-sub-mod0-activation.md",
         "anchor": "P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)"
       },
       "assertion": "P2-W50B activates only ADD_DUAL_MOD0 at 0xA000/0xFECC and SUB_DUAL_MOD0 at 0xA200/0xFECC. A one-word D/Xar/Yar layout fixes both mode fields to MOD0; raw selectors map to AR2..AR5. The exact copied inputs are auxiliary registers plus C, SXM, and OVM. Checked and trusted leaves emit W50A's generic dual READ effect; completion independently extends and shifts X/Y, uses W49A modulo-40 arithmetic, applies fixed-shift directional C and OVM/sticky-overflow policy, and stages the existing accumulator effect. Generic X-then-Y WAIT/READY/FAULT sequencing and PC retirement remain unchanged. The slice preserves fixed carrier sizes, allocation-free trusted dispatch, no opcode-specific CPU branch, no public ABI, no physical parallelism or timing claim, and requires an observer-off public-CPU host benchmark. Inventory bindings remain MOD0/MOD0 SUBSET coverage."
@@ -3761,7 +3761,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w51a-dual-indirect-mod0-mod2-planning-checkpoint.md",
         "anchor": "P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)"
       },
       "assertion": "W51A is a durable dual-indirect planning checkpoint: modes 0, 1, and 2 are admitted in the pure planner and resolution seam while MOD3 remains deferred at the AR0/BK circular and CMPT1 unresolved boundary. The persistent dual snapshot remains requests-only at 32 bytes, and root size, CPU wiring, catalog rows, and opcode activation remain unchanged until the later W51B commit/publication seam."
@@ -3777,7 +3777,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w51b-dual-memory-root-commit-publication-contract.md",
         "anchor": "P2-W51B: dual-memory root commit/publication contract (planned)"
       },
       "assertion": "W51B is the planned generic root transaction contract: retain exactly two value-owned dual-address commit descriptors, validate copied mode/selector/address/live-state identity, publish distinct-AR updates atomically only after both DATA reads and ordinary-effect staging succeed, publish one Xmod-owned update for same-AR aliases, and keep WAIT/FAULT non-publishing. Root sizes remain frozen at 336/308 bytes and no opcode activation is admitted. Lifecycle and ABI policy are project contracts; W51A remains the source for architectural mode/update facts."
@@ -3793,7 +3793,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w51b-dual-memory-root-commit-publication-contract.md",
         "anchor": "P2-W51B: dual-memory root commit/publication contract (planned)"
       },
       "assertion": "W51B implements the generic dual-memory root commit/publication seam: the persistent snapshot carries exactly two value-owned commit descriptors (48 bytes) alongside the copied X/Y DATA READ requests, with zeroed no-update commits on MOD0 and aliased-Y sides and exact non-wrapping post-access AR updates on MOD1/MOD2 sides under Xmod precedence. The root validates copied mode/selector/address shadows and live AR/PC identity before issue and at every resume boundary, publishes distinct-AR updates atomically only after both reads are READY and ordinary-effect staging succeeds, and keeps WAIT, FAULT, cancellation, and other nonterminal paths non-publishing. LP64/ILP32 root sizes remain 336/308 bytes; no opcode row, CPU branch, public ABI, catalog, or inventory change is admitted."
@@ -3809,7 +3809,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w51c-dual-add-sub-mod0-mod2-activation.md",
         "anchor": "P2-W51C: dual ADD/SUB MOD0\u2013MOD2 activation (planned)"
       },
       "assertion": "W51C is the planned syntax-6 activation contract: sixteen non-MOD0/MOD0 ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2}^2 minus (0,0), each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. A clean-decode probe proves all sixteen neighborhoods are currently unclaimed while MOD3 neighborhoods stay deferred. Checked and trusted leaves share one core parameterized by operation and both modes; the W51B root publishes the staged updates with no opcode-specific CPU branch; inventory binds all nine combos per form as SUBSET. Lifecycle and ABI policy are project contracts."
@@ -3825,7 +3825,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w51c-dual-add-sub-mod0-mod2-activation.md",
         "anchor": "P2-W51C: dual ADD/SUB MOD0\u2013MOD2 activation (planned)"
       },
       "assertion": "W51C activates sixteen non-MOD0/MOD0 syntax-6 dual-memory ADD/SUB rows through the W51B root with per-row first words under mask 0xFECC, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share one operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change; all nine MOD0-MOD2 combinations per form are inventory SUBSET while MOD3 stays deferred. Realized 120 catalog rows, ID_COUNT 121, 3,543 lookup entries, 120 bindings, 44/205 family coverage, and unchanged 27/205 strict complete-form coverage; the MOD0 benchmark roster is frozen and its smoke preserves semantic hash b40823092c0aa605."
@@ -3841,7 +3841,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w52a-common-repeat-truth-closure.md",
         "anchor": "P2-W52A: COMMON repeat-truth closure (planned)"
       },
       "assertion": "W52A closes the five PLANNED COMMON repeat requirements with executable TI-evidence-bound contracts over the existing immediate-RPT, cardinality, request-gate, eligibility, and observable-progression leaves. No production RPT catalog row, CPU repeat branch, public API, or timing claim is added; the W20F RC-ordering, PC-flow, and predecode-arbitration gaps stay UNRESOLVED; the twenty W49B/W50B/W51C rows stay UNRESOLVED with neither eligibility nor ineligibility inferred. Catalog, lookup, binding, family, and strict-complete coverage are unchanged at 120, 3,543, 120, 44/205, and 27/205."
@@ -3947,7 +3947,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w52b-dual-mod3-ar0-bk-planning-checkpoint.md",
         "anchor": "P2-W52B: dual MOD3 AR0/BK planning checkpoint (planned)"
       },
       "assertion": "W52B is the planned dual-indirect MOD3 planning contract: MOD3 sides plan from copied AR0/BK snapshots with BK=0 indexed addition and nonzero-BK circular movement under the section-5.5.3.4 step rules, same-selector Xmod precedence, lazy AR0/BK resolution reads with CMPT/ARP invariance, and a 48-to-52-byte snapshot widening for root revalidation. No opcode row, CPU branch, catalog, inventory, or public API change is admitted; MOD3 opcode activation remains W52C."
@@ -3963,7 +3963,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w52c-dual-mod3-add-sub-activation.md",
         "anchor": "P2-W52C: dual MOD3 ADD/SUB activation (planned)"
       },
       "assertion": "W52C is the planned syntax-6 activation contract: fourteen MOD3-involving dual-memory ADD/SUB rows at 0xA000|(m<<6)|(n<<2) and 0xA200|(m<<6)|(n<<2) for (m,n) in {0,1,2,3}^2 minus the nine MOD0-MOD2 combinations, each with mask 0xFECC, one program word, thirty-two encodings, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share the operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change."
@@ -3979,7 +3979,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w52c-dual-mod3-add-sub-activation.md",
         "anchor": "P2-W52C: dual MOD3 ADD/SUB activation (planned)"
       },
       "assertion": "W52C activates fourteen MOD3-involving syntax-6 dual-memory ADD/SUB rows through the W52B root with per-row first words under mask 0xFECC, the existing DUAL_DESTINATION_XAR_YAR layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_C_SXM_OVM resources. Checked and trusted leaves share the operation/mode-parameterized core with per-row identity validation and completion validators; macro-driven dispatch binds all rows with no opcode-specific CPU branch and no public ABI change; all seven MOD3-involving combinations per form are inventory SUBSET while the MOD0 benchmark roster stays frozen. Realized 134 catalog rows, ID_COUNT 135, 3,991 lookup entries, 134 bindings, and unchanged 27/205 strict complete-form coverage."
@@ -4319,7 +4319,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w53-ld-smem-shift-dst-vertical-slice.md",
         "anchor": "P2-W53: LD Smem[,SHIFT],dst vertical slice (planned)"
       },
       "assertion": "W53 is the planned Table 2-19 form FORM-T2-19-05 activation contract: one LD Smem[,SHIFT],dst row at first-word value 0x6F80 under mask 0xFFE0 with two program words, a dedicated D/ARF/MOD/SHIFT5 operand layout, UNRESOLVED repeatability, and STATUS_SXM_OVM resources. MOD0-MOD2 admit through the W42A seam with MOD3 rejected INVALID_OPERAND before any MEMORY effect; the second-word fixed pattern is enforced on both checked and trusted leaves. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4335,7 +4335,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w53-ld-smem-shift-dst-vertical-slice.md",
         "anchor": "P2-W53: LD Smem[,SHIFT],dst vertical slice (planned)"
       },
       "assertion": "W53 activates the LD Smem[,SHIFT],dst row with SXM widening, signed five-bit shift, OVM saturation, and sticky destination overflow through the shared load core with per-row identity validation, shift-specific completion validators, and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-05 is inventory SUBSET. Realized 135 catalog rows, ID_COUNT 136, 4,023 lookup entries, 135 bindings, family coverage 45/205, and unchanged 27/205 strict complete-form coverage."
@@ -4405,7 +4405,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w54-ld-src-shift-dst-vertical-slice.md",
         "anchor": "P2-W54: LD src[,SHIFT],dst vertical slice (planned)"
       },
       "assertion": "W54 is the planned Table 2-19 form FORM-T2-19-11 activation contract: one LD src[,SHIFT],dst row at first-word value 0xF440 under mask 0xFCE0 with one program word, reusing the ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 operand layout, UNRESOLVED repeatability, and ACCUMULATORS_STATUS_SXM_OVM resources. The accumulator source needs no widening or address dependency; SXM selects logical versus arithmetic right shift, OVM saturates on guard-bit overflow with sticky destination overflow, and C/TC stay preserved. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4421,7 +4421,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w54-ld-src-shift-dst-vertical-slice.md",
         "anchor": "P2-W54: LD src[,SHIFT],dst vertical slice (planned)"
       },
       "assertion": "W54 activates the LD src[,SHIFT],dst row with SXM-dependent right shifts, signed five-bit shift, OVM saturation, and sticky destination overflow through accumulator-only inputs with per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-11 is inventory COMPLETE. Realized 136 catalog rows, ID_COUNT 137, 4,151 lookup entries, 136 bindings, family coverage 46/205, and 28/205 strict complete-form coverage."
@@ -4455,7 +4455,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w55-ld-k-dst-vertical-slice.md",
         "anchor": "P2-W55: LD #K,dst vertical slice (planned)"
       },
       "assertion": "W55 is the planned Table 2-19 form FORM-T2-19-07 activation contract: one LD #K,dst row at first-word value 0xE800 under mask 0xFE00 with one program word, a new ACCUMULATOR_IMMEDIATE_K8 operand layout, UNRESOLVED repeatability, and NONE input resources. The unsigned 8-bit constant is zero-extended with no SXM effect and no OVM/OV effect, so all status bits stay preserved. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4471,7 +4471,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w55-ld-k-dst-vertical-slice.md",
         "anchor": "P2-W55: LD #K,dst vertical slice (planned)"
       },
       "assertion": "W55 activates the LD #K,dst row with zero extension, full status preservation, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-07 is inventory COMPLETE. Realized 137 catalog rows, ID_COUNT 138, 4,663 lookup entries, 137 bindings, family coverage 47/205, and 29/205 strict complete-form coverage."
@@ -4487,7 +4487,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w57-ld-lk-16-dst-vertical-slice.md",
         "anchor": "P2-W57: LD #lk,16,dst vertical slice (planned)"
       },
       "assertion": "W57 is the planned Table 2-19 form FORM-T2-19-09 activation contract: one LD #lk,16,dst row at first-word value 0xF062 under mask 0xFEFF with two program words, a new ACCUMULATOR_IMMEDIATE_LK16 operand layout, UNRESOLVED repeatability, and STATUS_SXM input resources. The copied lk is SXM-widened then shifted left 16 in canonical 40-bit space with C/TC/OV preserved following the fixed-16 W38 precedent and no OVM input; unknown SXM rejects transactionally. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4503,7 +4503,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w57-ld-lk-16-dst-vertical-slice.md",
         "anchor": "P2-W57: LD #lk,16,dst vertical slice (planned)"
       },
       "assertion": "W57 activates the LD #lk,16,dst row with SXM widening, fixed-16 shift, full C/TC/OV preservation, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-09 is inventory COMPLETE. Realized 139 catalog rows, ID_COUNT 140, 4,669 lookup entries, 139 bindings, family coverage 49/205, and 31/205 strict complete-form coverage."
@@ -4519,7 +4519,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w58-ld-lk-shft-dst-vertical-slice.md",
         "anchor": "P2-W58: LD #lk[,SHFT],dst vertical slice (planned)"
       },
       "assertion": "W58 is the planned Table 2-19 form FORM-T2-19-08 activation contract: one LD #lk[,SHFT],dst row at first-word value 0xF020 under mask 0xFEF0 with two program words, a new ACCUMULATOR_IMMEDIATE_SHIFT4_LK16 operand layout, UNRESOLVED repeatability, and STATUS_SXM_OVM input resources. The copied lk is SXM-widened then shifted left by the unsigned 4-bit SHFT with OVM saturation and sticky destination overflow following the variable-shift precedent; C/TC stay preserved and unknown SXM/OVM rejects transactionally. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4535,7 +4535,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w58-ld-lk-shft-dst-vertical-slice.md",
         "anchor": "P2-W58: LD #lk[,SHFT],dst vertical slice (planned)"
       },
       "assertion": "W58 activates the LD #lk[,SHFT],dst row with SXM widening, unsigned 4-bit shift, OVM saturation, sticky destination overflow, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-08 is inventory COMPLETE. Realized 140 catalog rows, ID_COUNT 141, 4,701 lookup entries, 140 bindings, family coverage 50/205, and 32/205 strict complete-form coverage."
@@ -4551,7 +4551,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w59-ld-xmem-shft-dst-vertical-slice.md",
         "anchor": "P2-W59: LD Xmem,SHFT,dst vertical slice (planned)"
       },
       "assertion": "W59 is the planned Table 2-19 form FORM-T2-19-06 activation contract: one LD Xmem,SHFT,dst row at first-word value 0x9400 under mask 0xFE00 with one program word, a new ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4 operand layout, UNRESOLVED repeatability, and AUXILIARY_REGISTERS_STATUS_SXM_OVM input resources. The Xmem D-bus read uses Xmod/Xar dual-indirect addressing with AR update through one X-only address kind reusing the pair planner with Y self-aliased (single WORD16 read through the single-read child, X commit only), followed by SXM widening, unsigned 4-bit shift, OVM saturation, and sticky destination overflow; C/TC stay preserved and unknown AR/SXM/OVM rejects transactionally. No new effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted beyond the single X-only address kind."
@@ -4567,7 +4567,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w59-ld-xmem-shft-dst-vertical-slice.md",
         "anchor": "P2-W59: LD Xmem,SHFT,dst vertical slice (planned)"
       },
       "assertion": "W59 activates the LD Xmem,SHFT,dst row with dual-indirect Xmem reads, AR update commit, SXM widening, unsigned 4-bit shift, OVM saturation, sticky destination overflow, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-06 is inventory COMPLETE. Realized 141 catalog rows, ID_COUNT 142, 5,213 lookup entries, 141 bindings, family coverage 51/205, and 33/205 strict complete-form coverage."
@@ -4637,7 +4637,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w60-ldr-smem-dst-vertical-slice.md",
         "anchor": "P2-W60: LDR Smem,dst vertical slice (planned)"
       },
       "assertion": "W60 is the planned Table 2-19 form FORM-T2-19-19 activation contract: one LDR Smem,dst row at first-word value 0x1680 under mask 0xFEE0 with one program word, the reused ACCUMULATOR_ARF_MOD operand layout, UNRESOLVED repeatability, and STATUS_SXM input resources. The Smem read uses MOD0--MOD2 single-indirect addressing with AR update commit, followed by SXM widening, left shift 16, rounding constant 0x8000, and clearing of bits 14-0; C/TC stay preserved with no OVM input and unknown SXM rejects transactionally. No new layout, address kind, effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4653,7 +4653,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w60-ldr-smem-dst-vertical-slice.md",
         "anchor": "P2-W60: LDR Smem,dst vertical slice (planned)"
       },
       "assertion": "W60 activates the LDR Smem,dst row with single-indirect Smem reads, AR update commit, SXM widening, shift 16, rounding constant, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 is inventory SUBSET. Realized 142 catalog rows, ID_COUNT 143, 5,277 lookup entries, 142 bindings, family coverage 52/205, and 33/205 strict complete-form coverage."
@@ -4687,7 +4687,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w61-ldr-smem-dst-indexed-mod5-mod6-vertical-slice.md",
         "anchor": "P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)"
       },
       "assertion": "W61 is the planned Table 2-19 FORM-T2-19-19 indexed activation contract: two LDR rows LDR_MOD5 at 0x16A8 and LDR_MOD6 at 0x16B0 under mask 0xFEF8 with one program word, the reused ACCUMULATOR_ARF_MOD4 layout, UNRESOLVED repeatability, and STATUS_SXM resources. Indexed Smem reads use the existing INDEXED_AR0_WORD16 seam with selected-AR post-update, followed by the W60 rounding completion; C/TC/OV stay preserved with no OVM input, AR0 must be known, and unknown SXM rejects transactionally. No new layout, address kind, effect kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4703,7 +4703,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w61-ldr-smem-dst-indexed-mod5-mod6-vertical-slice.md",
         "anchor": "P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)"
       },
       "assertion": "W61 activates the LDR_MOD5/LDR_MOD6 rows with AR0-indexed Smem reads, AR update commits, rounding writeback, and accumulator-only writeback through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-19 stays inventory SUBSET. Realized 143 catalog rows, ID_COUNT 144, 5,341 lookup entries, 144 bindings, family coverage 53/205, and 33/205 strict complete-form coverage."
@@ -4773,7 +4773,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w62-b-pmad-unconditional-branch-vertical-slice.md",
         "anchor": "P2-W62: B pmad unconditional-branch vertical slice (planned)"
       },
       "assertion": "W62 is the planned Table 2-12 form FORM-T2-12-01 activation contract: one B_PMAD row at first-word value 0xF073 under mask 0xFFFF with two program words, the new BRANCH_PMAD16 layout carrying the copied second-word pmad, INELIGIBLE repeatability, and NONE input resources. Semantics is PC = pmad with all other state preserved; Z=1 decodes UNKNOWN_WORD with BD deferred. A new PC_WRITE effect kind, a program_pc_target planner, and a run.c target-commit route retire the branch atomically instead of the sequential bridge plan. No MEMORY endpoint, new address kind, status/accumulator/T effect, public ABI, timing, device/MMR, or delay-slot claim is admitted."
@@ -4789,7 +4789,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w62-b-pmad-unconditional-branch-vertical-slice.md",
         "anchor": "P2-W62: B pmad unconditional-branch vertical slice (planned)"
       },
       "assertion": "W62 activates the B_PMAD row with second-word pmad fetch, per-row identity validation, pure PC_WRITE effect emission, transactional target planning, and atomic CPU target commit with no opcode-specific MEMORY branch and no public ABI change. FORM-T2-12-01 stays inventory SUBSET. Realized 145 catalog rows, ID_COUNT 146, 5,310 lookup entries, 145 bindings, family coverage 53/205, and 33/205 strict complete-form coverage."
@@ -4859,7 +4859,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w63-bc-pmad-cond-conditional-branch-vertical-slice.md",
         "anchor": "P2-W63: BC pmad,cond conditional-branch vertical slice (planned)"
       },
       "assertion": "W63 is the planned Table 2-12 form FORM-T2-12-04 activation contract: one BC_PMAD row at first-word value 0xF800 under mask 0xFF00 with two program words, the new BRANCH_COND_PMAD16 layout carrying the copied condition code and second-word pmad, INELIGIBLE repeatability, and new ACCUMULATORS_STATUS_C_TC resources. Sixteen image-evidenced single conditions (TC/NTC/C/NC plus twelve A/B compares as full-40-bit signed project-interpretation pins) select PC_WRITE(pmad) when true and effect NONE with sequential PC+2 when false; BIO/NBIO, UNC, OV/NOV, combinations, and delayed BCD reject INVALID_OPERAND, and knownness is demanded only for consumed inputs. No MEMORY endpoint, new address kind, status effect, public ABI, timing, device/MMR, run.c change, or delay-slot claim is admitted."
@@ -4875,7 +4875,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w63-bc-pmad-cond-conditional-branch-vertical-slice.md",
         "anchor": "P2-W63: BC pmad,cond conditional-branch vertical slice (planned)"
       },
       "assertion": "W63 activates the BC_PMAD row with condition-code extraction, per-row identity validation, conditional PC_WRITE/NONE effect emission, and generic CPU retirement through the W62 target route and the sequential bridge with no opcode-specific MEMORY branch, no run.c change, and no public ABI change. FORM-T2-12-04 stays inventory SUBSET. Realized 146 catalog rows, ID_COUNT 147, 5,566 lookup entries, 146 bindings, family coverage 54/205, and 33/205 strict complete-form coverage."
@@ -4891,7 +4891,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w64-stack-pointer-input-seam-vertical-slice.md",
         "anchor": "P2-W64: stack-pointer input seam vertical slice (planned)"
       },
       "assertion": "W64 is the planned stack-pointer input seam contract: one new input resource bit STACK_POINTER with snapshot stack_pointer_raw16 plus stack_pointer_known fields, a collect.c arm reading the architectural SP with explicit knownness, and KNOWN_MASK inclusion. The op-input carrier ABI grows to the verified LP64/ILP32 sizes. Common reset leaves SP unknown per the zero-plus-unknown policy, and invalid collection requests leave caller-owned output unchanged. No catalog, layout, handler, effect, inventory, or retirement change is admitted."
@@ -4907,7 +4907,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w64-stack-pointer-input-seam-vertical-slice.md",
         "anchor": "P2-W64: stack-pointer input seam vertical slice (planned)"
       },
       "assertion": "W64 activates stack-pointer input collection with copied SP snapshots and transactional unknown-SP rejection at collection time, with catalog, lookup, bindings, and family coverage unchanged."
@@ -4923,7 +4923,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w56-ld-src-asm-dst-vertical-slice.md",
         "anchor": "P2-W56: LD src,ASM[,dst] vertical slice (planned)"
       },
       "assertion": "W56 is the planned Table 2-19 form FORM-T2-19-10 activation contract: one LD src,ASM[,dst] row at first-word value 0xF482 under mask 0xFCFF with one program word, the reused ACCUMULATOR_SOURCE_DESTINATION operand layout, UNRESOLVED repeatability, and a new ACCUMULATORS_STATUS_SXM_OVM_ASM resource combination built on a new STATUS_ASM input bit. The signed ASM count drives SXM-dependent shifts with OVM saturation and sticky destination overflow. No new effect kind, address kind, CPU branch, public ABI, timing, or device/MMR claim is admitted."
@@ -4939,7 +4939,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w56-ld-src-asm-dst-vertical-slice.md",
         "anchor": "P2-W56: LD src,ASM[,dst] vertical slice (planned)"
       },
       "assertion": "W56 activates the LD src,ASM[,dst] row with signed ASM shifts, SXM-dependent right shifts, OVM saturation, and sticky destination overflow through per-row identity validation and macro-driven dispatch with no opcode-specific CPU branch and no public ABI change. FORM-T2-19-10 is inventory COMPLETE. Realized 138 catalog rows, ID_COUNT 139, 4,667 lookup entries, 138 bindings, family coverage 48/205, and 30/205 strict complete-form coverage."
@@ -4955,7 +4955,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w65a-stack-push-memory-transaction-seam.md",
         "anchor": "P2-W65A: stack-push MEMORY transaction seam (planned)"
       },
       "assertion": "W65A is the planned generic stack-push MEMORY seam: a STACK_PUSH_WORD16 address kind with an all-zero spec, a pure src/address planner mapping old SP to the TOS DATA WORD16 at SP-1 with a PRE_ACCESS SP update, an SP update target through the intrinsic/dependency/validate/apply chain with no mode read, a DATA WRITE resolution arm, and root prepare/commit support that stages the live return address into the frozen effect copy and commits SP plus the frozen pmad target atomically at READY. SP arithmetic wraps mod 65536 as a project-interpretation pin. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
@@ -4971,7 +4971,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w65a-stack-push-memory-transaction-seam.md",
         "anchor": "P2-W65A: stack-push MEMORY transaction seam (planned)"
       },
       "assertion": "W65A activates the stack-push MEMORY seam with planner, SP commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
@@ -5041,7 +5041,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w65b-call-pmad-vertical-slice.md",
         "anchor": "P2-W65B: CALL pmad vertical slice (planned)"
       },
       "assertion": "W65B is the planned CALL pmad vertical slice: one CALL_PMAD row at first-word value 0xF074 under mask 0xFFFF reusing the BRANCH_PMAD16 layout with STACK_POINTER input resources and INELIGIBLE repeatability, a pure branch handler staging a MEMORY STACK_PUSH WRITE with a zero value placeholder, trusted dispatch binding, and CPU retirement through the W65A stack-push root with atomic SP, TOS, and pmad-target commit. FORM-T2-13-02 lands SUBSET with delayed CALLD deferred."
@@ -5057,7 +5057,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w65b-call-pmad-vertical-slice.md",
         "anchor": "P2-W65B: CALL pmad vertical slice (planned)"
       },
       "assertion": "W65B activates the CALL_PMAD row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 147 catalog rows, ID_COUNT 148, 5,567 lookup entries, 147 bindings, family coverage 55/205, and 33/205 strict complete-form coverage with FORM-T2-13-02 SUBSET."
@@ -5073,7 +5073,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w66a-stack-pop-memory-transaction-seam.md",
         "anchor": "P2-W66A: stack-pop MEMORY transaction seam (planned)"
       },
       "assertion": "W66A is the planned generic stack-pop MEMORY seam: a STACK_POP_WORD16 address kind with an all-zero spec, a pure src/address planner mapping old SP to the TOS DATA WORD16 at old SP with a POST_ACCESS SP update, the POST_ACCESS shape through the existing SP update target with the shared STACK_PUSH source kind, a DATA READ resolution arm with no mode read, and root prepare/commit support that proves 16-bit target plannability before bus issue and commits SP plus the TOS target from the READ observation atomically at READY. SP arithmetic wraps mod 65536 as a project-interpretation pin. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
@@ -5089,7 +5089,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w66a-stack-pop-memory-transaction-seam.md",
         "anchor": "P2-W66A: stack-pop MEMORY transaction seam (planned)"
       },
       "assertion": "W66A activates the stack-pop MEMORY seam with planner, SP POST commit chain, resolution, and root support green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
@@ -5159,7 +5159,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w66b-ret-vertical-slice.md",
         "anchor": "P2-W66B: RET vertical slice (planned)"
       },
       "assertion": "W66B is the planned RET vertical slice: one RET row at first-word value 0xFC00 under mask 0xFFFF reusing the OPERAND_LAYOUT_NONE layout with STACK_POINTER input resources and INELIGIBLE repeatability, a pure branch handler staging a MEMORY STACK_POP READ with zero value and null completion, trusted dispatch binding, and CPU retirement through the W66A stack-pop root with atomic SP-plus-TOS-target commit. FORM-T2-15-04 lands SUBSET with delayed RETD deferred."
@@ -5175,7 +5175,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w66b-ret-vertical-slice.md",
         "anchor": "P2-W66B: RET vertical slice (planned)"
       },
       "assertion": "W66B activates the RET row with catalog, decode, pure effect, trusted binding, and CPU retirement green through four focused executable contracts. Realized 148 catalog rows, ID_COUNT 149, 5,568 lookup entries, 148 bindings, family coverage 56/205, and 33/205 strict complete-form coverage with FORM-T2-15-04 SUBSET."
@@ -5191,7 +5191,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67a-delayed-branch-memory-transaction-seam.md",
         "anchor": "P2-W67A: delayed-branch MEMORY transaction seam (planned)"
       },
       "assertion": "W67A is the planned generic delayed-branch MEMORY seam: STACK_PUSH_DELAYED_WORD16 and STACK_POP_DELAYED_WORD16 address kinds sharing the immediate stack planning and all-zero spec shapes, a pure src/sequencer/delayed_branch two-word countdown value with saturating consume and replace-on-arm, root prepare support staging PC+4 for delayed pushes (rejected past 0xFFFF) with the sequential successor otherwise, root commit support writing SP plus the TOS value atomically at READY with PC advanced to the sequential successor, and a deferred-target report in the retirement result. One CPU-owned countdown cleared by init and reset. No catalog, handler, layout, run.c, inventory, or TI claim is admitted."
@@ -5207,7 +5207,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67a-delayed-branch-memory-transaction-seam.md",
         "anchor": "P2-W67A: delayed-branch MEMORY transaction seam (planned)"
       },
       "assertion": "W67A activates the delayed-branch MEMORY seam with the pure countdown value, delayed-kind validity and resolution parity, PC+4 return staging with top-of-memory rejection, and root commit deferral with deferred-target reporting green through three focused executable contracts, with catalog, lookup, bindings, and family coverage unchanged."
@@ -5295,7 +5295,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67b-retd-vertical-slice.md",
         "anchor": "P2-W67B: RETD vertical slice (planned)"
       },
       "assertion": "W67B is the planned RETD vertical slice: one Table 2-15 row under FORM-T2-15-04 at first-word value 0xFE00 under mask 0xFFFF with one program word, one encoding, and no operands, reusing OPERAND_LAYOUT_NONE with STACK_POINTER inputs and INELIGIBLE repeatability; a pure branch handler staging a MEMORY STACK_POP_DELAYED READ; catalog macro dispatch binding; run-loop adoption of the deferred report into the CPU-owned countdown with advance-or-cancel retirement tracking; and FORM-T2-15-04 inventory at SUBSET. No knob, layout, timing, or device claim is admitted."
@@ -5311,7 +5311,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67b-retd-vertical-slice.md",
         "anchor": "P2-W67B: RETD vertical slice (planned)"
       },
       "assertion": "W67B activates the RETD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated RET decode pin, with the bit-9 word claimed from UNKNOWN, row-count pins advanced to 149 rows with 5,569 lookup entries and 149 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-15-04 remaining SUBSET."
@@ -5327,7 +5327,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67c-calld-vertical-slice.md",
         "anchor": "P2-W67C: CALLD vertical slice (planned)"
       },
       "assertion": "W67C is the planned CALLD vertical slice: one Table 2-13 row under FORM-T2-13-02 at first-word value 0xF274 under mask 0xFFFF with two program words, one encoding, and the copied 16-bit pmad, reusing BRANCH_PMAD16 with STACK_POINTER inputs and INELIGIBLE repeatability; a pure branch handler staging a MEMORY STACK_PUSH_DELAYED WRITE; catalog macro dispatch binding; CPU retirement through the unchanged W67A root and W67B countdown wiring; and FORM-T2-13-02 inventory at SUBSET. No knob, layout, timing, or device claim is admitted."
@@ -5343,7 +5343,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w67c-calld-vertical-slice.md",
         "anchor": "P2-W67C: CALLD vertical slice (planned)"
       },
       "assertion": "W67C activates the CALLD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated CALL decode pin, with the bit-9 word claimed from UNKNOWN, row-count pins advanced to 150 rows with 5,570 lookup entries and 150 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-13-02 remaining SUBSET."
@@ -5359,7 +5359,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w68-bd-delayed-branch-vertical-slice.md",
         "anchor": "P2-W68: BD delayed-branch vertical slice (planned)"
       },
       "assertion": "W68 is the planned BD vertical slice: one Table 2-12 row under FORM-T2-12-01 at first-word value 0xF273 under mask 0xFFFF with two program words, one encoding, and the copied 16-bit pmad, reusing BRANCH_PMAD16 with no input resources and INELIGIBLE repeatability; a pure branch handler emitting a new DELAYED_PC_WRITE effect; catalog macro dispatch binding; a run-loop route that validates the absolute target, commits the sequential successor, retires, and arms the CPU-owned countdown with pmad; and FORM-T2-12-01 inventory at SUBSET. No knob, layout, timing, device, MEMORY, or status claim is admitted."
@@ -5375,7 +5375,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w68-bd-delayed-branch-vertical-slice.md",
         "anchor": "P2-W68: BD delayed-branch vertical slice (planned)"
       },
       "assertion": "W68 activates the BD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated B decode pin, with the bit-9 word claimed from UNKNOWN, row-count pins advanced to 151 rows with 5,571 lookup entries and 151 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-12-01 remaining SUBSET."
@@ -5391,7 +5391,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w69-bcd-delayed-conditional-branch-vertical-slice.md",
         "anchor": "P2-W69: BCD delayed-conditional-branch vertical slice (planned)"
       },
       "assertion": "W69 is the planned BCD vertical slice: one Table 2-12 row under FORM-T2-12-04 at first-word value 0xFA00 under mask 0xFF00 with two program words, 256 encodings, and the copied condition code plus 16-bit pmad, reusing BRANCH_COND_PMAD16 with ACCUMULATORS_STATUS_C_TC inputs and INELIGIBLE repeatability; a pure branch handler evaluating the sixteen evidenced conditions through the shared branch-condition helper and emitting taken DELAYED_PC_WRITE versus not-taken NONE; catalog macro dispatch binding; CPU retirement through the unchanged W68 delayed-PC route and sequential bridge; and FORM-T2-12-04 inventory at SUBSET. No knob, layout, timing, device, MEMORY, or status claim is admitted."
@@ -5407,7 +5407,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w69-bcd-delayed-conditional-branch-vertical-slice.md",
         "anchor": "P2-W69: BCD delayed-conditional-branch vertical slice (planned)"
       },
       "assertion": "W69 activates the BCD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated BC decode pin, with the bit-9 words claimed from UNKNOWN, row-count pins advanced to 152 rows with 5,827 lookup entries and 152 trusted bindings, family coverage unchanged at 56/205, and FORM-T2-12-04 remaining SUBSET."
@@ -5477,7 +5477,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w70-banz-auxiliary-register-branch-vertical-slice.md",
         "anchor": "P2-W70: BANZ auxiliary-register-branch vertical slice (planned)"
       },
       "assertion": "W70 is the planned BANZ vertical slice: one Table 2-12 row under FORM-T2-12-03 at first-word value 0x6C00 under mask 0xFF00 with two program words, 256 encodings, and the copied Sind byte plus 16-bit pmad, using the new BRANCH_SIND_PMAD16 layout with AUXILIARY_REGISTERS inputs and INELIGIBLE repeatability; a pure branch handler evaluating the image-evidenced I=1/MOD0 and I=1/MOD1 Sind combinations with always-applied post-decrement and emitting taken/not-taken BRANCH_AUXILIARY; catalog macro dispatch binding; CPU retirement through the new auxiliary-branch route with a CMPT=0 gate, flagged AR writeback, and taken/delay-selected PC commit; and FORM-T2-12-03 inventory at SUBSET. No knob, timing, device, MEMORY, or status claim is admitted."
@@ -5493,7 +5493,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w70-banz-auxiliary-register-branch-vertical-slice.md",
         "anchor": "P2-W70: BANZ auxiliary-register-branch vertical slice (planned)"
       },
       "assertion": "W70 activates the BANZ row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 153 rows with 6,083 lookup entries and 153 trusted bindings, family coverage at 57/205 with strict unchanged at 33/205, FORM-T2-12-03 at SUBSET, and the bit-9 BANZD words still pinned UNKNOWN for W71."
@@ -5509,7 +5509,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w71-banzd-delayed-auxiliary-register-branch-vertical-slice.md",
         "anchor": "P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)"
       },
       "assertion": "W71 is the planned BANZD vertical slice: one Table 2-12 row under FORM-T2-12-03 at first-word value 0x6E00 under mask 0xFF00 with two program words, 256 encodings, and the copied Sind byte plus 16-bit pmad, reusing the W70 BRANCH_SIND_PMAD16 layout with AUXILIARY_REGISTERS inputs and INELIGIBLE repeatability; a BANZD leaf emitting taken/not-taken BRANCH_AUXILIARY with the delay flag set over the image-evidenced I=1/MOD0 and I=1/MOD1 Sind subset with shared Sind evaluation hoisted into a branch-Sind helper and the BANZ leaf refactored onto it at zero behavior change; catalog macro dispatch binding; CPU retirement through the unchanged W70 auxiliary-branch route with taken-delayed countdown arming now covered; and FORM-T2-12-03 inventory staying SUBSET with BANZ and BANZD symbols. No knob, layout, effect, timing, device, MEMORY, or status claim is admitted."
@@ -5525,7 +5525,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w71-banzd-delayed-auxiliary-register-branch-vertical-slice.md",
         "anchor": "P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)"
       },
       "assertion": "W71 activates the BANZD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts plus the updated BANZ decode pin, with row-count pins advanced to 154 rows with 6,339 lookup entries and 154 trusted bindings, family coverage unchanged at 57/205 with strict unchanged at 33/205, and FORM-T2-12-03 remaining SUBSET with BANZ and BANZD symbols."
@@ -5595,7 +5595,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w72-ccd-delayed-conditional-call-vertical-slice.md",
         "anchor": "P2-W72: CCD delayed-conditional-call vertical slice (planned)"
       },
       "assertion": "W72 is the planned CCD vertical slice: one Table 2-13 row under FORM-T2-13-03 at first-word value 0xFB00 under mask 0xFF00 with two program words, 256 encodings, and the copied condition byte plus 16-bit pmad, reusing the BRANCH_COND_PMAD16 layout with the new ACCUMULATORS_STATUS_C_TC plus STACK_POINTER inputs and INELIGIBLE repeatability; a pure call leaf evaluating the sixteen evidenced single conditions through the shared branch-condition helper with taken CALLD-shaped MEMORY stack-push-delayed emission versus not-taken NONE and taken-only SP knownness gating; catalog macro dispatch binding; CPU retirement through the unchanged CALLD MEMORY route and sequential bridge; and FORM-T2-13-03 inventory at SUBSET with a lone CCD symbol. No knob, layout, effect, timing, device, status, or ABI claim is admitted."
@@ -5611,7 +5611,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w72-ccd-delayed-conditional-call-vertical-slice.md",
         "anchor": "P2-W72: CCD delayed-conditional-call vertical slice (planned)"
       },
       "assertion": "W72 activates the CCD row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 155 rows with 6,595 lookup entries and 155 trusted bindings, family coverage at 58/205 with strict unchanged at 33/205, and FORM-T2-13-03 at SUBSET with a lone CCD symbol."
@@ -5627,7 +5627,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w73-cc-non-delayed-conditional-call-vertical-slice.md",
         "anchor": "P2-W73: CC non-delayed-conditional-call vertical slice (planned)"
       },
       "assertion": "W73 is the planned CC vertical slice: one Table 2-13 row under FORM-T2-13-03 at first-word value 0xF900 under mask 0xFF00 with two program words, 256 encodings, and the copied condition byte plus 16-bit pmad, reusing the BRANCH_COND_PMAD16 layout with the ACCUMULATORS_STATUS_C_TC plus STACK_POINTER inputs and INELIGIBLE repeatability; a pure call leaf evaluating the sixteen evidenced single conditions through the shared branch-condition helper with taken CALL-shaped MEMORY stack-push emission versus not-taken NONE and taken-only SP knownness gating; catalog macro dispatch binding; CPU retirement through the unchanged CALL MEMORY route and sequential bridge; and FORM-T2-13-03 inventory at SUBSET with CCD and CC symbols. No knob, layout, effect, timing, device, status, or ABI claim is admitted."
@@ -5643,7 +5643,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w73-cc-non-delayed-conditional-call-vertical-slice.md",
         "anchor": "P2-W73: CC non-delayed-conditional-call vertical slice (planned)"
       },
       "assertion": "W73 activates the CC row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 156 rows with 6,851 lookup entries and 156 trusted bindings, family coverage unchanged at 58/205 with strict unchanged at 33/205, and FORM-T2-13-03 at SUBSET with CCD and CC symbols."
@@ -5713,7 +5713,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w74-rete-interrupt-return-vertical-slice.md",
         "anchor": "P2-W74: RETE interrupt-return vertical slice (planned)"
       },
       "assertion": "W74 is the planned RETE vertical slice: one Table 2-15 row under FORM-T2-15-05 at first-word value 0xF4EB under mask 0xFFFF with one program word, one encoding, and no operands, reusing the NONE layout with STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf staging a MEMORY STACK_POP READ with an INTM-clearing completion through the generic pop-completion seam; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route and sequential bridge with TOS capture, SP commit, and the ST1 bit-11 clear; and FORM-T2-15-05 inventory at SUBSET with a lone RETE symbol. No knob, layout, effect-kind, timing, device, or ABI claim is admitted."
@@ -5729,7 +5729,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w74-rete-interrupt-return-vertical-slice.md",
         "anchor": "P2-W74: RETE interrupt-return vertical slice (planned)"
       },
       "assertion": "W74 activates the RETE row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 157 rows with 6,852 lookup entries and 157 trusted bindings, family coverage at 59/205 with strict unchanged at 33/205, and FORM-T2-15-05 at SUBSET with a lone RETE symbol."
@@ -5745,7 +5745,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w75-reted-delayed-interrupt-return-vertical-slice.md",
         "anchor": "P2-W75: RETED delayed-interrupt-return vertical slice (planned)"
       },
       "assertion": "W75 is the planned RETED vertical slice: one Table 2-15 row under FORM-T2-15-05 at first-word value 0xF6EB under mask 0xFFFF with one program word, one encoding, and no operands, reusing the NONE layout with STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf staging a MEMORY STACK_POP_DELAYED READ with the shared INTM-clearing completion through the generic pop-completion seam; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route with TOS capture, SP and INTM commit at retire, and the deferred TOS redirect after the delay slots; and FORM-T2-15-05 inventory at SUBSET with RETE and RETED symbols. No knob, layout, effect-kind, timing, device, or ABI claim is admitted."
@@ -5761,7 +5761,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w75-reted-delayed-interrupt-return-vertical-slice.md",
         "anchor": "P2-W75: RETED delayed-interrupt-return vertical slice (planned)"
       },
       "assertion": "W75 activates the RETED row with metadata, decode, handler, and CPU retirement green through four focused executable contracts, with row-count pins advanced to 158 rows with 6,853 lookup entries and 158 trusted bindings, family coverage unchanged at 59/205 with strict unchanged at 33/205, and FORM-T2-15-05 at SUBSET with RETE and RETED symbols."
@@ -5831,7 +5831,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w77-rc-conditional-return-vertical-slice.md",
         "anchor": "P2-W77: RC conditional-return vertical slice (planned)"
       },
       "assertion": "W77 is the planned RC vertical slice: one Table 2-15 row under FORM-T2-15-03 at first-word value 0xFC00 under mask 0xFF00 with one program word, 256 encodings, and the 1-word BRANCH_COND8 layout with ACCUMULATORS_STATUS_C_TC_STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf evaluating the sixteen image-evidenced single conditions and staging a MEMORY STACK_POP READ when taken versus NONE when not taken; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route for taken pops and the generic sequential route for not-taken form; and FORM-T2-15-03 inventory at SUBSET with the RC symbol. The 0xFC00 word keeps its RET identity under the W77A shadow seam. No knob, effect-kind, timing, device, or ABI claim is admitted."
@@ -5847,7 +5847,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w77-rc-conditional-return-vertical-slice.md",
         "anchor": "P2-W77: RC conditional-return vertical slice (planned)"
       },
       "assertion": "W77 is implemented and green: the RC catalog row, BRANCH_COND8 decode, pure taken-pop/not-taken-NONE handler, trusted dispatch binding, CPU retirement proofs, and SUBSET inventory binding are executable through the four RED contracts with the authoritative standalone gates passing."
@@ -5917,7 +5917,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w78-rcd-delayed-conditional-return-vertical-slice.md",
         "anchor": "P2-W78: RCD delayed-conditional-return vertical slice (planned)"
       },
       "assertion": "W78 is the planned RC vertical slice: one Table 2-15 row under FORM-T2-15-03 at first-word value 0xFC00 under mask 0xFF00 with one program word, 256 encodings, and the 1-word BRANCH_COND8 layout with ACCUMULATORS_STATUS_C_TC_STACK_POINTER inputs and INELIGIBLE repeatability; a pure return leaf evaluating the sixteen image-evidenced single conditions and staging a MEMORY STACK_POP READ when taken versus NONE when not taken; catalog macro dispatch binding; CPU retirement through the unchanged MEMORY route for taken pops and the generic sequential route for not-taken form; and FORM-T2-15-03 inventory at SUBSET with the RC symbol. The 0xFC00 word keeps its RET identity under the W78A shadow seam. No knob, effect-kind, timing, device, or ABI claim is admitted."
@@ -5933,7 +5933,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p2-w78-rcd-delayed-conditional-return-vertical-slice.md",
         "anchor": "P2-W78: RCD delayed-conditional-return vertical slice (planned)"
       },
       "assertion": "W78 is implemented and green: the RC catalog row, BRANCH_COND8 decode, pure taken-pop/not-taken-NONE handler, trusted dispatch binding, CPU retirement proofs, and SUBSET inventory binding are executable through the four RED contracts with the authoritative standalone gates passing."
@@ -5949,7 +5949,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s1-mmr-device-routing-seam.md",
         "anchor": "P3-S1: MMR/device routing seam (planned)"
       },
       "assertion": "S1 is the sealed MMR/device routing seam with no catalog rows: the Table 3-3 map owns per-address owner dispatch versus private file storage for IMR/TRN/BRC/RSA/REA, reserved words and XPC decline to the endpoint, whole-word owner accessors compose status and accumulator words with owner-held knownness, the resolver gates MMR READ knownness, and the root transaction serves routed traffic locally with atomic WAIT/READY/FAULT/cancel behavior. No knob, timing, IRQ/RPT, wrap, or ABI claim is admitted."
@@ -6001,7 +6001,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md",
         "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
       },
       "assertion": "S7 is the first family slice on the S1 seam: one row STM at 0x7700 under mask 0xFF00 with two program words and the DIRECT7_EXTENSION16 layout (I flag, addr7, lk16), a DP-independent page-0 planner behind the new DIRECT memory address kind, checked and trusted direct-store leaves that defer the I=1 indirect form, trusted dispatch binding with no opcode-specific CPU branch, MMR-routed and DP0-RAM CPU retirement with zero versus one endpoint call, and a SUBSET FORM-T2-20-14 inventory binding. The indirect Smem form, far/XPC, and timing stay deferred."
@@ -6017,7 +6017,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s7-stm-immediate-mmr-store-vertical-slice.md",
         "anchor": "P3-S7: STM immediate-MMR-store vertical slice (planned)"
       },
       "assertion": "S7 is implemented and green: the STM catalog row, DIRECT7_EXTENSION16 decode, pure direct-store handler with deferred indirect form, trusted dispatch binding, page-0 DIRECT liveness arm in candidate validation, MMR and DP0 CPU retirement proofs, and SUBSET inventory binding are executable through the five RED contracts with the authoritative standalone gates passing."
@@ -6033,7 +6033,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s2-rpt-activation-seam.md",
         "anchor": "P3-S2: RPT activation seam (planned)"
       },
       "assertion": "S2 activates single-repeat on the W48A/W48B seam: RPT #K at 0xEC00 under mask 0xFF00 and exact RPT #lk at 0xF070, both INELIGIBLE with no inputs, reusing the RPT_IMMEDIATE_K/LK layouts and the immediate core; a repeat_single driver owns guarded start, predecode arbitration plus body admission, and HOLD versus ADVANCE; run.c wires start plus predecode with the retirement-tail HOLD sites deferred to the first ELIGIBLE body. RPT Smem, ELIGIBLE flips, vectors, take paths, NMI sources, timing, and RPTB/RPTZ/RPTBD stay deferred."
@@ -6049,7 +6049,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s2-rpt-activation-seam.md",
         "anchor": "P3-S2: RPT activation seam (planned)"
       },
       "assertion": "S2 is implemented and green: the RPT_K and RPT_LK catalog rows, immediate decode, pure repeat-start leaves with deferred Smem form, trusted dispatch bindings, the repeat_single driver composition, RPT retirement with RC load plus transactional body blocks plus latched-request persistence, and SUBSET inventory bindings are executable through the eight RED contracts with the authoritative standalone gates passing."
@@ -6155,7 +6155,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3 builds the multiply-accumulate datapath on the S2 repeat seam: a pure core over copied raw40, u16 T, u16 multiplicand, FRCT/OVM bits, rounding flag, and add/sub/store select stages accumulator plus overflow effects with no addressing, rows, or CPU. Slices land the seam, then MAC Smem with ELIGIBLE plus RPT-MAC replay, then MPY Smem, then MPYA/MAS/MACR in census order. Dual Xmem/Ymem, #lk words, MACA/MACD/MACP, and PMST product-shift claims beyond FRCT stay deferred."
@@ -6171,7 +6171,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3a is implemented and green: the pure multiply-accumulate core proves the TI MAC and MPY example vectors, FRCT shift, R rounding, OVM saturation with OVdst disposition, MAS subtraction, STORE accumulator independence, and transactional unknown/invalid stops; the STATUS_FRCT input resource carries ST1.FRCT with canonical unknownness beside FRCT/OVM selection; no catalog row lands."
@@ -6205,7 +6205,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3b is implemented and green: the MAC_SMEM catalog row at 0x2800 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value completion through the multiply core, CPU retirement, the FORM-T2-04-01 SUBSET binding, and RPT-MAC end-to-end replay through the retirement-tail HOLD wiring."
@@ -6221,7 +6221,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3c is implemented and green: the MPY_SMEM catalog row at 0x2000 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value STORE completion through the multiply core without accumulation (TI MPY Examples 1 and 4), CPU retirement, and the FORM-T2-03-01 SUBSET binding."
@@ -6399,7 +6399,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3d is implemented and green: the MPYA_SMEM catalog row at 0x3100 under mask 0xFF00 with the new indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem times A-high into fixed B through the multiply core (TI MPYA Example 1), CPU retirement with T commit, and the FORM-T2-03-06 SUBSET binding."
@@ -6451,7 +6451,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3e is implemented and green: the MAS_SMEM catalog row at 0x2C00 under mask 0xFC00 with the shared round/select/indirect/addr7 layout and ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-value SUBTRACT completion through the multiply core with result-after-subtract rounding (TI MAS Examples 1 and 3), CPU retirement, and the FORM-T2-04-14 SUBSET binding."
@@ -6467,7 +6467,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3f is implemented and green: MACR Smem retires through the MAC_SMEM row with R=1, locked by TI MAC Example 5 (MACR *AR5+ with A 00 0000 1000, T 0400, mem 1234, FRCT 0 yields A 00 0049 0000) at the semantic leaf and at CPU retirement. No catalog, inventory, or production change was needed; the dual Xmem/Ymem MACR syntaxes stay deferred."
@@ -6501,7 +6501,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3g is implemented and green: nine MAC_DUAL_Mx_My catalog rows at 0xB000|xm<<6|ym<<2 under mask 0xF8CC with the new RSD/XAR/YAR layout and UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y)+(src), and CPU retirement proving the TI Example 4/6-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B 00 0C4C 10C0 unrounded and 00 0C4C 0000 rounded, T 5678). The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI Example 4 uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MPY/MAS dual rows, and dual replay classification. The three-bit RSD carrier keeps the layout within the frozen trusted-operand capacity."
@@ -6517,7 +6517,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3h is implemented and green: nine MPY_DUAL_Mx_My catalog rows at 0xA400|xm<<6|ym<<2 under mask 0xFECC reusing the DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (X)x(Y) with STORE overwrite, and CPU retirement proving TI MPY Example 2 (X 0010 at AR2 01FF, Y 0002 at AR4 0300, B before FF FFFF FFE0, FRCT 0 yield B 00 0000 0020, T 0010, AR2 01FE, AR4 0301). Syntax 2 carries no R bit, so MPYR stays a syntax-1 row sharing; MOD3 neighborhoods, MAS dual rows, and dual replay classification stay deferred."
@@ -6533,7 +6533,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3-mac-mpy-datapath-seam.md",
         "anchor": "P3-S3: MAC/MPY datapath seam (planned)"
       },
       "assertion": "S3i is implemented and green: nine MAS_DUAL_Mx_My catalog rows at 0xB800|xm<<6|ym<<2 under mask 0xF8CC reusing the DUAL_ROUND_SOURCE_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability, checked and trusted leaves staging dual-indirect MOD0-MOD2 reads with read-phase T load of the X-side word, pair completion through the multiply core as (src) minus (X)x(Y) with FRCT/OVM handling and R rounding, and CPU retirement proving the TI Example 2/4-derived vectors (X 5678, Y 1234, src A 1000, B before 4, T before 8, FRCT 1 yield B FF F3B4 0F40 unrounded and FF F3B4 0000 rounded, T 5678). TI prints B FF F9DA 0FA0/0000 for these examples, which equals the FRCT=0 computation exactly; per SPRU131 ST1 FRCT (multiplier output left-shifts one bit), the Example 2 prose, and the MAC Example 4 / MPY Example 1 oracles, the silicon behavior with FRCT=1 is the shifted product, and a dedicated FRCT=0 lane pins TI's printed value. The dual seam addresses AR2-AR5, so Y rides *AR4+ where TI uses *AR6+; AR6/AR7 dual-Y widening stays deferred, as do MOD3 neighborhoods, MASR dual form retirement (R=1 words execute through the MAS_DUAL rows), and dual replay classification."
@@ -6549,7 +6549,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3j-mpya-dst-register-only-vertical-slice.md",
         "anchor": "P3-S3j: MPYA-dst register-only vertical slice (planned)"
       },
       "assertion": "S3j is implemented and green: one MPYA_DST catalog row at 0xF48C under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (T) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (the S3d hi(A) feed with T and multiplicand roles swapped, no memory effect, no T update), and CPU retirement proving TI MPYA Example 2 (A FF 8765 1111, T 4567, FRCT 0 yield B FF DF4D B2A3 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-07 lands SUBSET."
@@ -6565,7 +6565,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3k-squr-smem-square-vertical-slice.md",
         "anchor": "P3-S3k: SQUR-Smem square vertical slice (planned)"
       },
       "assertion": "S3k is implemented and green: one SQUR_SMEM catalog row at 0x2600 under mask 0xFE80 carrying 512 encodings through the new DESTINATION_INDIRECT_ADDR7 layout (D plus indirect/addr7, no round or select bits) with ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem squared into the D-selected accumulator through the multiply core, and CPU retirement proving TI SQUR Example 1 (mem[031E] 000F, FRCT 0 yield B 00 0000 00E1 and T 000F). FORM-T2-03-09 lands SUBSET; syntax 2 stays UNIMPLEMENTED for its own register-only slice."
@@ -6581,7 +6581,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3l-squr-adst-register-only-vertical-slice.md",
         "anchor": "P3-S3l: SQUR-Adst register-only vertical slice (planned)"
       },
       "assertion": "S3l is implemented and green: one SQUR_ADST catalog row at 0xF48D under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (A(32-16)) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (no memory effect, no T update), and CPU retirement proving TI SQUR Example 2 (A 00 000F 0000, FRCT 1 yield B 00 0000 01C2 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape following the S3j MPYA_DST precedent; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-10 lands SUBSET; the test_mpya_dst_decode.c UNKNOWN lane for 0xF48D/0xF58D moves to the new row."
@@ -6597,7 +6597,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3m-squra-squrs-accumulate-squares-vertical-slice.md",
         "anchor": "P3-S3m: SQURA/SQURS accumulate-squares vertical slice (planned)"
       },
       "assertion": "S3m is implemented and green: SQURA_SMEM at 0x3800 and SQURS_SMEM at 0x3A00, each under mask 0xFE00 with 512 encodings, sharing one leaf file with an ADD/SUBTRACT select through the reused DESTINATION_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, and read-value completion runs (src) plus/minus Smem squared through the multiply core; CPU retirement proves TI SQURA Example 1 (B 00 0320 00E1, T 000F) and TI SQURS Example 1 (A 00 0000 0320, T 1234). FORM-T2-04-21 and FORM-T2-04-22 land SUBSET."
@@ -6613,7 +6613,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3n-mpyu-unsigned-multiply-vertical-slice.md",
         "anchor": "P3-S3n: MPYU unsigned-multiply vertical slice (planned)"
       },
       "assertion": "S3n is implemented and green: one MPYU_SMEM catalog row at 0x2400 under mask 0xFE00 carrying 512 D/I/addr7 encodings through the reused DESTINATION_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and no T load, and read-value completion runs uns(T) x uns(Smem) into the D-selected accumulator through the multiply core with the new unsigned-operands select, STORE select, and no rounding; CPU retirement proves TI MPYU Example 1 (A 00 3F80 0000 with T 4000 unchanged). FORM-T2-03-08 lands SUBSET."
@@ -6629,7 +6629,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3o-maca-smem-accumulate-a-slice.md",
         "anchor": "P3-S3o: MACA Smem accumulate-A slice (planned)"
       },
       "assertion": "S3o is implemented and green: one MACA_SMEM catalog row at 0x3500 under mask 0xFD00 carrying 512 R/I/addr7 encodings through the new ROUND_INDIRECT_ADDR7 layout with ELIGIBLE repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD3 reads with exotic-mode deferral and read-phase T load, and read-value completion runs (B) plus (Smem) x A(32-16) into fixed B through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 1 (B 00 0626 0060 with T 5678) and the MACAR Example 3 rounding lane. The R bit carries the MACAR variant on the shared row. FORM-T2-04-07 lands SUBSET."
@@ -6645,7 +6645,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3p-maca-t-src-register-only-slice.md",
         "anchor": "P3-S3p: MACA T,src register-only slice (planned)"
       },
       "assertion": "S3p is implemented and green: one MACA_T catalog row at 0xF488 under mask 0xFCFE carrying 8 S/D/R encodings through the new SOURCE_DESTINATION_ROUND layout with ELIGIBLE repeatability; checked and trusted register-only leaves complete (src) plus (T) x A(32-16) into the D-selected accumulator through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 2 (B 00 009D 4BA0 with T unchanged) and the MACAR Example 4 rounding lane. The R bit carries the MACAR T,src variant on the shared row. FORM-T2-04-08 lands SUBSET."
@@ -6679,7 +6679,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3q-macp-smem-pmad-program-coefficient-slice.md",
         "anchor": "P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)"
       },
       "assertion": "S3q is implemented and green: one MACP_SMEM catalog row at 0x7800 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the new DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000 and AR5 0101) and the FRCT lane (B 00 2000 0000). The DATA+PROGRAM pair seam (carrier, resolution, reducer, root, commit, candidate validation) issues the DATA read then the PROGRAM read with a zeroed PROGRAM commit and X-side T load. FORM-T2-04-12 lands SUBSET; FORM-T2-04-11 (MACD) stays UNIMPLEMENTED."
@@ -6713,7 +6713,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3r-macd-smem-pmad-delay-write-slice.md",
         "anchor": "P3-S3r: MACD Smem,Pmad delay-write slice (planned)"
       },
       "assertion": "S3r is implemented and green: one MACD_SMEM catalog row at 0x7A00 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the shared DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000) and the FRCT lane (B 00 2000 0000). The delay sidecar rides the new write_smem_delay MEMORY carrier flag (48-byte ABI unchanged, DATA+PROGRAM pair kind only): after both reads complete the pair root issues a third-ID DATA WRITE of the Smem word to Smem+1 with 16-bit wraparound through the reused child transaction before the Smem post-access commit and PC publish, with WAIT resume, fault/cancel silence, and reset routing by pair-versus-delay child state. FORM-T2-04-11 lands SUBSET."
@@ -6747,7 +6747,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3s-macsu-xmem-ymem-dual-slice.md",
         "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (planned)"
       },
       "assertion": "S3s is implemented and green: nine MACSU_DUAL_Mx_My catalog rows at 0xA800 plus X/Y mode bits under mask 0xFECC carrying 32 S/Xar/Yar encodings each through the shared DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability; checked and trusted leaves stage dual-indirect MOD0-MOD2 reads with read-phase X-side T load, and pair completion runs (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding; CPU retirement proves the recomputed oracle vector (A 00 1000 0000 with T 4000, AR4 0101, AR5 0201), the FRCT lane (A 00 2000 0000), S selection, and the mixed-sign lane. The mixed-sign product rides the new unsigned_t_only multiply-core select (T unsigned, multiplicand signed; both-unsigned keeps precedence; all-signed leaves set it false explicitly). FORM-T2-04-13 lands SUBSET."
@@ -6763,7 +6763,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3t-macr-xmem-ymem-dual-lock-in-slice.md",
         "anchor": "P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)"
       },
       "assertion": "S3t is implemented and green: MACR Xmem,Ymem retires through the shared MAC_DUAL rows with R=1, locked by the 0xB532 leaf completion ((0x5678 shifted by FRCT) x 0x1234 + 4 rounded to 0x0C4C0000 into B), the 0xB5BA CPU retirement with MOD2 post-increments, and trusted R=1 equivalence through the trusted MAC dual entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-05/06 stay UNIMPLEMENTED with empty symbol lists by the recorded S3f R-sharing convention."
@@ -6779,7 +6779,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3u-masr-smem-and-dual-lock-in-slice.md",
         "anchor": "P3-S3u: MASR Smem and dual lock-in slice (planned)"
       },
       "assertion": "S3u is implemented and green: MASR Smem retires through the shared MAS_SMEM row with R=1 and MASR Xmem,Ymem retires through the shared MAS_DUAL rows with R=1, locked by the 0x2E95 trusted R=1 completion (round(A - T*Smem) to 0xFFFFB70000 into A per TI MAS Example 3), the 0x2E34 CPU retirement, the 0xBD32 trusted R=1 rounding equivalence (rounded 0xFFF3B40000 into B), and the 0xBDBA CPU retirement. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-15/17 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
@@ -6795,7 +6795,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3v-macar-smem-lock-in-slice.md",
         "anchor": "P3-S3v: MACAR Smem lock-in slice (planned)"
       },
       "assertion": "S3v is implemented and green: MACAR Smem retires through the shared MACA_SMEM row with R=1, locked by the 0x3734 leaf completion (Example 1 product rounded to 0x6260000 into B per TI MACAR Example 3), the new 0x3734 CPU retirement with read-phase T load, and trusted R=1 completion through the trusted MACA Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-09/10 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
@@ -6811,7 +6811,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3w-masa-smem-and-t-slice.md",
         "anchor": "P3-S3w: MASA Smem and T slice (planned)"
       },
       "assertion": "S3w is implemented and green: two new MASA_SMEM (0x3300/0xFF00, shared INDIRECT_ADDR7 layout) and MASA_T (0xF48A/0xFCFE, shared SOURCE_DESTINATION_ROUND layout) catalog rows with 264 added lookup entries and zero neighbor moves, checked and trusted leaves reusing the multiply core with SUBTRACT select and A-high multiplicand, and CPU retirement of the TI Example 1 Smem vector (B FF F9DB FFA0 with T load), the Example 2 T vector (B FF FF66 B460), and the Example 3 rounding vector (B FF FF67 0000). Both rows are UNRESOLVED repeatability with no Table 2-28 MASA fact on record. FORM-T2-04-18/19 land SUBSET; FORM-T2-04-20/21 (MASAR) stay UNIMPLEMENTED with empty symbol lists."
@@ -6827,7 +6827,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3x-masar-t-lock-in-slice.md",
         "anchor": "P3-S3x: MASAR T lock-in slice (planned)"
       },
       "assertion": "S3x is implemented and green: MASAR T,src retires through the shared MASA_T row with R=1, locked by the 0xF78B leaf completion (Example 2 product rounded to 0xFFFF670000 into B per TI MASA Example 3), the 0xF78B CPU retirement with endpoint silence, and trusted R=1 completion through the trusted MASA T entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-20/21 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
@@ -6843,7 +6843,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3y-mpyr-smem-lock-in-slice.md",
         "anchor": "P3-S3y: MPYR Smem lock-in slice (planned)"
       },
       "assertion": "S3y is implemented and green: MPYR Smem retires through the shared MPY_SMEM row with R=1, locked by the 0x2200 leaf completion (T 0x1234 times Smem 0x5678 rounded to 0x6260000 into A per TI MPY Example 4), the 0x2320 CPU retirement, and trusted R=1 completion through the trusted MPY Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-03-02 stays UNIMPLEMENTED with an empty symbol list by the recorded R-sharing convention."
@@ -6859,7 +6859,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s3z-add-smem-slice.md",
         "anchor": "P3-S3z: ADD Smem slice (planned)"
       },
       "assertion": "S3z is implemented and green: three new ADD_SMEM (0x0000/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), ADD_SMEM_TS (0x0400/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), and ADD_SMEM_SH16 (0x3C00/0xFC00, shared SOURCE_DESTINATION_INDIRECT_ADDR7 layout) catalog rows with 2048 added lookup entries and zero neighbor moves; checked and trusted leaves over the arithmetic core with SXM extension, T-register and fixed-16 shifts, OVM saturation with sticky OVdst, and per-syntax C rules; and CPU retirement of derived vectors for all three syntaxes (direct plus MOD2 indirect, read-phase behavior, T preservation, C write/preserve). All three rows are UNRESOLVED repeatability with no Table 2-28 ADD-Smem fact on record. FORM-T2-01-01/02/03 land SUBSET."
@@ -6893,7 +6893,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s4-xc-conditional-execution-slice.md",
         "anchor": "P3-S4: XC conditional-execution slice (planned)"
       },
       "assertion": "S4 is implemented and green: one new XC (0xFD00/0xFD00, new N_CONDITION8 layout with N at bit 9 and cond at bits 7:0) catalog row with 512 added lookup entries and zero neighbor moves; checked and trusted leaves evaluating the sixteen image-evidenced single conditions plus UNC through the shared branch-condition core with taken NONE emission versus not-taken CONDITIONAL_SKIP staging and transactional INVALID_OPERAND rejection of deferred fields; and CPU retirement retiring taken followers normally and not-taken followers as NOP skips with PC advance, delay-slot countdown consumption, T preservation, and no endpoint traffic. The row is INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-18-07 lands SUBSET."
@@ -6927,7 +6927,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s5-accumulator-addressed-push-seam.md",
         "anchor": "P3-S5: accumulator-addressed push seam (planned)"
       },
       "assertion": "S5 is the planned accumulator-addressed push seam: two new STACK_PUSH_ACCUMULATOR WORD16 MEMORY address kinds (immediate and delayed) with TOS planning identical to the immediate pushes, the A/B accumulator select riding arf, and the PC target read from the frozen input snapshot gated on accumulator knownness; a pure effect-carrier extension, resolver TOS planning, and root prepare/commit coverage with no catalog rows, opcode identities, handlers, or CPU opcode branch."
@@ -7033,7 +7033,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s8-bacc-accumulator-addressed-branch-family-slice.md",
         "anchor": "P3-S8: BACC accumulator-addressed branch family slice (planned)"
       },
       "assertion": "S8 is implemented and green: two new accumulator-addressed branch catalog rows BACC (0xF4E2) and BACCD (0xF6E2) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves branching PC to the 16 low bits of the selected accumulator unconditionally with no status, accumulator, T-register, or MEMORY effect; CPU retirement retiring BACC followers normally and BACCD followers through the two-word delay window with T preservation and no endpoint traffic. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-12-02 lands SUBSET with BACC under ACCUMULATOR_NONDELAYED and BACCD under ACCUMULATOR_DELAYED."
@@ -7139,7 +7139,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s9-cala-accumulator-addressed-call-family-slice.md",
         "anchor": "P3-S9: CALA accumulator-addressed call family slice (planned)"
       },
       "assertion": "S9 is implemented and green: two new accumulator-addressed call catalog rows CALA (0xF4E3) and CALAD (0xF6E3) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves staging a MEMORY STACK_PUSH_ACCUMULATOR(_DELAYED) TOS WRITE with the select in arf and a zero return-address placeholder, gated on SP knownness and selected-accumulator knownness; the S5 seam root derives the PC target from the frozen input snapshot and stages PC+1 (CALA) or PC+3 (CALAD) return addresses. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-13-01 lands SUBSET with CALA under ACCUMULATOR_NONDELAYED and CALAD under ACCUMULATOR_DELAYED."
@@ -7191,7 +7191,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s10-sth-syntax-1-smem-store-slice.md",
         "anchor": "P3-S10: STH syntax-1 Smem store slice (planned)"
       },
       "assertion": "S10 is implemented and green: seven new STH syntax-1 catalog rows STH_SMEM (0x8280) and STH_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STL_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-05 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
@@ -7243,7 +7243,7 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s11-sth-by-asm-smem-store-slice.md",
         "anchor": "P3-S11: STH by-ASM Smem store slice (planned)"
       },
       "assertion": "S11 is implemented and green: seven new STH syntax-2 catalog rows STH_ASM_SMEM (0x8680) and STH_ASM_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STH_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the ASM-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-06 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
@@ -7295,10 +7295,62 @@
         "C54X_CORE_COMMON_V1"
       ],
       "locator": {
-        "path": "docs/implementation-plan.md",
+        "path": "docs/plan/p3-s12-sth-by-shft-xmem-store-slice.md",
         "anchor": "P3-S12: STH by-SHFT Xmem store slice (planned)"
       },
       "assertion": "S12 is implemented and green: one new STH syntax-3 catalog row STH_SHFT_XMEM (0x9A00) under the FE00 mask reusing the LD Xmem dual-indirect layout; checked and trusted leaves staging MEMORY dual-indirect X-only WRITE effects carrying bits 31-16 of the (SHFT-16)-shifted selected accumulator with no status, accumulator, or T-register effect. The X-only address seam gains its first WRITE arm with direction-independent dual planning. FORM-T2-20-07 lands COMPLETE under ALL."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-SHIFT-OPCODE-P4-168-4-171",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-168",
+        "printed_page_end": "4-171"
+      },
+      "assertion": "STH syntax 4 is the two-word STH src,SHIFT,Smem form: the direct first word pins 0x6F00 under mask 0xFF80 (bits 6-0 carry the 7-bit dma), the MOD4-family first words pin 0x6FA0, 0x6FA8, 0x6FB0, 0x6FB8, 0x6FC0, and 0x6FD0 under mask 0xFFF8 (ARF in bits 2-0, MOD in bits 6-3), and the second word carries the 0x0C60 fixed pattern (bits 15-9 carry 0x06, bits 7-5 fixed 011) with S at bit 8 selecting accumulator A (0) or B (1) and the signed 5-bit SHIFT in bits 4-0."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-SHIFT-SEMANTICS-P4-168-4-171",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-168",
+        "printed_page_end": "4-171"
+      },
+      "assertion": "STH syntax 4 shifts the S-selected accumulator arithmetically by the signed 5-bit SHIFT count (-16 to +15, negative counts shift right) and stores bits 31-16 of the shifted value; the stored field is pure source bits and SXM never perturbs it. The worked example STH A,-4 (SHIFT -4) with A FF 8421 1234 stores F842. The direct form addresses (DP << 7) | dma with DP unknownness gated at the leaf. The description carries no not-repeatable note, so the rows stay repeatability UNRESOLVED."
+    },
+    {
+      "id": "E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s13-sth-shift-smem-store-slice.md",
+        "anchor": "P3-S13: STH by-SHIFT Smem store slice (planned)"
+      },
+      "assertion": "S13 is implemented and green: seven new STH syntax-4 catalog rows (STH_SHIFT_DIRECT at 0x6F00 under FF80 plus STH_SHIFT_SMEM_MOD4 through MOD10 at 0x6FA0-0x6FD0 under FFF8) over two new operand layouts; checked and trusted leaves staging a DP-relative DIRECT_DP WRITE or MOD4-family indexed, circular, or reverse-carry WRITE carrying bits 31-16 of the signed-SHIFT-shifted selected accumulator with SXM hostile and DP gated at the leaf. The DIRECT_DP address kind reuses the shared long/offset carrier with no ABI growth and retires through the shared DP planner. FORM-T2-20-08 lands SUBSET."
     }
   ],
   "requirements": [
@@ -17005,6 +17057,50 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S13-STH-SHIFT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the seven STH syntax-4 rows as signed-SHIFT-shifted accumulator-high stores: resolve source, direct offset or ARF, MOD, and second-word SHIFT through the shared DIRECT7_SHIFT5 and ARF_MOD4_SHIFT5 layouts, shift the selected accumulator arithmetically by the signed 5-bit count (-16 to +15), store bits 31-16 of the shifted value to a DP-relative DIRECT_DP WRITE or a MOD4-family indexed, circular, or reverse-carry WRITE, gate on selected-accumulator knownness with DP gated at the leaf for direct words, stage no status, accumulator, or T-register effect, and leave the rows repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-SHIFT-OPCODE-P4-168-4-171",
+        "E-TI-C54X-SPRU172C-S4-STH-SHIFT-SEMANTICS-P4-168-4-171"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S13-STH-SHIFT-SEMANTICS-DIRECT",
+        "T-COMMON-P3-S13-STH-SHIFT-SEMANTICS-MOD"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S13-STH-SHIFT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire STH syntax-4 direct stores through the generic MEMORY route with the DATA WRITE carrying bits 31-16 of the shifted selected accumulator at (DP << 7) | dma, resolving through the shared DP planner with the frozen dispatch-time DP page, unknown-DP transactional rejection, WAIT resume, fault, and boundary transactionality.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-SHIFT-SEMANTICS-P4-168-4-171"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S13-STH-SHIFT-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the seven STH syntax-4 production symbols to FORM-T2-20-08 at SUBSET under the DIRECT_DP_STANDARD_INDIRECT_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20202,7 +20298,7 @@
         "REQ-PROJECT-P3-S9-CALA-INVENTORY",
         "REQ-PROJECT-P3-S10-STH-INVENTORY",
         "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY",
-        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY"
+        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY", "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY"
       ]
     },
     {
@@ -24639,6 +24735,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S12-STH-SHFT-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S13-STH-SHIFT-SEMANTICS-DIRECT",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_sth_shift_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sth_shift_direct_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S13-STH-SHIFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S13-STH-SHIFT-SEMANTICS-MOD",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_sth_shift_smem_mod.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sth_shift_smem_mod_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S13-STH-SHIFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S13-STH-SHIFT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/store/test_cpu_sth_shift_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_sth_shift_direct"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S13-STH-SHIFT-CPU-RETIREMENT"
       ]
     }
   ]

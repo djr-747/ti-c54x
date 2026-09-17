@@ -78,6 +78,14 @@ typedef enum ti_c54x_operand_layout_id {
     /* Two-word long32 standard-indirect fields: D/S, ARF, lk, MOD[6:3]. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4,
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5,
+    /* Two-word STH-direct fields: source select S at word 1 bit 8,
+     * 7-bit direct address A[6:0] at word 0, 5-bit SHIFT at word 1
+     * bits 4:0. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DIRECT7_SHIFT5,
+    /* Two-word shift-Smem MOD4-family fields: source select S at word
+     * 1 bit 8, ARF, 4-bit MOD at word 0, 5-bit SHIFT at word 1
+     * bits 4:0. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4_SHIFT5,
     /* One-word destination-accumulator plus unsigned 8-bit immediate. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_K8,
     /* Two-word destination-accumulator plus copied 16-bit extension. */
@@ -136,7 +144,8 @@ typedef enum ti_c54x_repeatability_class {
 
 typedef uint16_t ti_c54x_input_resource_mask;
 /* Resource values are powers of two; RETURN_REGISTER is the eleventh
- * resource (1024) and STATUS_FRCT is the twelfth resource (2048). */
+ * resource (1024), STATUS_FRCT is the twelfth resource (2048), and
+ * STATUS_DP is the thirteenth resource (4096). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -154,6 +163,11 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)1024U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_FRCT \
     ((ti_c54x_input_resource_mask)2048U)
+#define TI_C54X_INPUT_RESOURCES_STATUS_DP \
+    ((ti_c54x_input_resource_mask)4096U)
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_DP))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STACK_POINTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STACK_POINTER))
@@ -250,7 +264,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_ASM | \
                                    TI_C54X_INPUT_RESOURCES_STACK_POINTER | \
                                    TI_C54X_INPUT_RESOURCES_RETURN_REGISTER | \
-                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT))
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_DP))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

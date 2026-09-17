@@ -319,6 +319,23 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         }
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
 
+    case TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16:
+        /* DP-relative direct: all mode selectors zero, no AR selector;
+         * the 9-bit DP page rides `long_offset_word` with the 7-bit
+         * offset in `direct_dma7` (per-kind reinterpretation; the
+         * DIRECT arm above still requires the long word to be zero).
+         * READ and WRITE share the access shape. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.arf != UINT8_C(0) ||
+            effect->address_spec.long_offset_word > UINT16_C(0x1FF) ||
+            effect->address_spec.direct_dma7 > UINT8_C(0x7F)) {
+            return false;
+        }
+        return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
+
     case TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16:
         return ti_c54x_op_memory_data_program_address_is_valid(
                    &effect->address_spec) &&

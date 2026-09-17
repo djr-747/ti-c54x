@@ -149,6 +149,42 @@ const ti_c54x_operand_layout_set
     ti_c54x_accumulator_arf_mod_shift5_set = {
         ti_c54x_accumulator_arf_mod_shift5_operands, UINT8_C(4)};
 
+/* STH syntax-4 second-word source select S at word 1 bit 8. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_shift_source_piece = {
+        UINT8_C(1), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+/* STH syntax-4 second-word signed 5-bit SHIFT at word 1 bits 4:0. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_shift_shift5_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+/* STH-direct 7-bit direct address A[6:0] at word 0. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_shift_direct_addr7_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+/* STH shift-Smem MOD4-family ARF at word 0 bits 2:0. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_shift_arf_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(3), UINT8_C(0)};
+/* STH shift-Smem MOD4-family 4-bit MOD at word 0 bits 6:3. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_shift_mod4_piece = {
+        UINT8_C(0), UINT8_C(3), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_direct7_shift5_operands[3] = {
+        {&ti_c54x_shift_source_piece, UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_shift_direct_addr7_piece, UINT8_C(1), UINT8_C(7)},
+        {&ti_c54x_shift_shift5_piece, UINT8_C(1), UINT8_C(5)}};
+const ti_c54x_operand_layout_set ti_c54x_accumulator_direct7_shift5_set = {
+    ti_c54x_accumulator_direct7_shift5_operands, UINT8_C(3)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_accumulator_arf_mod4_shift5_operands[4] = {
+        {&ti_c54x_shift_source_piece, UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_shift_arf_piece, UINT8_C(1), UINT8_C(3)},
+        {&ti_c54x_shift_mod4_piece, UINT8_C(1), UINT8_C(4)},
+        {&ti_c54x_shift_shift5_piece, UINT8_C(1), UINT8_C(5)}};
+const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod4_shift5_set = {
+    ti_c54x_accumulator_arf_mod4_shift5_operands, UINT8_C(4)};
+
 static const ti_c54x_operand_field_layout ti_c54x_arf_mod4_operands[2] = {
     {&ti_c54x_arf_piece, UINT8_C(1), UINT8_C(3)},
     {&ti_c54x_standard_indirect_mod4_piece, UINT8_C(1), UINT8_C(4)}};

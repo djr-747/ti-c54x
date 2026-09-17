@@ -109,7 +109,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * sequential PC successor and reports the accumulator target as
      * the deferred branch target. The staged return address is PC+3
      * for the one-word form per SPRU172C section 4 CALA[D]. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 = 16
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 = 16,
+    /* DP-relative direct WORD16: the effective DATA address is
+     * (DP << 7) | dma with the frozen 9-bit DP page in
+     * `long_offset_word` and the 7-bit direct offset in `direct_dma7`.
+     * The shared fields are reinterpreted per kind (no arm growth: the
+     * 24-byte address ABI is pinned); all other first-arm fields stay
+     * zero. No AR, CMPT, CPL, or post-update; DP unknownness is gated
+     * at the leaf through STATUS_DP. */
+    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16 = 17
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -137,12 +145,16 @@ typedef struct ti_c54x_op_memory_address_spec {
             ti_c54x_indirect_circular_mode circular_mode;
             /* Used only by REVERSE_CARRY; must remain zero/default for other kinds. */
             ti_c54x_indirect_reverse_carry_mode reverse_carry_mode;
-            /* Used only by LONG_OFFSET_MOD13_LONG32; copied verbatim as `lk`. */
+            /* Used only by LONG_OFFSET_MOD13_LONG32, copied verbatim as
+             * `lk`, and by DIRECT_DP_WORD16, carrying the frozen 9-bit
+             * DP page (0..511). Must remain zero for other kinds. */
             uint16_t long_offset_word;
             uint8_t arf;
-            /* Used only by DIRECT_WORD16; 7-bit direct DATA address. Must
-             * remain zero for other kinds. Appended last so existing field
-             * offsets and the ABI sizes are unchanged. */
+            /* Used only by DIRECT_WORD16, carrying the 7-bit direct DATA
+             * address, and by DIRECT_DP_WORD16, carrying the 7-bit
+             * direct offset. Must remain zero for other kinds. Appended
+             * last so existing field offsets and the ABI sizes are
+             * unchanged. */
             uint8_t direct_dma7;
         };
         struct {

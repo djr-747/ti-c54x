@@ -94,7 +94,7 @@ int main(void)
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_RETURN_REGISTER, NULL, &output);
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x1000U, &sources, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x2000U, &sources, &output);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_RETURN_REGISTER, &sources,
                            NULL) != TI_C54X_INPUT_COLLECT_OK);

@@ -8,7 +8,7 @@
  * handler. The snapshot is borrowed for one call and no handler may retain
  * its address; raw40 values, auxiliary-register raw16 values, T raw16,
  * stack-pointer raw16, return-register raw16, and status C/TC/SXM/SST/OVM/
- * ASM/FRCT values are canonical and knownness is explicit.
+ * ASM/FRCT/DP values are canonical and knownness is explicit.
  * Does not own: architectural storage, decode, effects, sequencing, CPU
  * lifecycle, buses, timing, diagnostics, or public persistence formats.
  */
@@ -45,6 +45,8 @@ typedef struct ti_c54x_op_input_snapshot {
     bool status_asm_known;
     uint8_t status_frct;
     bool status_frct_known;
+    uint16_t status_dp;
+    bool status_dp_known;
 } ti_c54x_op_input_snapshot;
 
 #endif /* TI_C54X_ISA_OP_INPUT_H */
