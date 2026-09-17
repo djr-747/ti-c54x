@@ -12208,3 +12208,24 @@ entries are not rewritten after publication.
   `make test` green (C suite plus quality gate: evidence PASS,
   inventory, manifests, observer artifact). Next: S18 exit review, then
   the S6 port seam before agent fan-out.
+
+## 2026-09-18 — P3-S6 port I/O seam planning slice
+
+- S18 exit review: all four RED lanes hold (generator slot coverage,
+  decode re-resolution with decline, LD regression, MOD0-MOD3 execution
+  through the shared MEMORY effect) and FORM-T2-20-08 carries eleven
+  bound symbols at COMMON_CANDIDATE/SUBSET with the S13 deferral
+  retired by the superseding S18 record. Remaining arch seam: S6 port
+  I/O (PORTR 186 + PORTW 322 static words); S1-S5 all read implemented.
+- S6 opens as a sealed seam with no catalog rows (S1/W43A pattern):
+  TI Table 2-26 plus §4-129/130 give PORTR/PORTW word-1 bases
+  0xE8/0xE9 with I-bit Smem cookie and word-2 PA16; the MVDK diagram
+  corroborates the shape. Direct cookie (I=0, dma7) is example-proved;
+  the indirect cookie (I=1, ARF+MOD) is derived with landed precedent
+  and stays vector-gated to the family lane. Kind 18 reuses the
+  pair-arm shape; resolver maps to IO space; the generic commit root
+  serves the read/write completion chain. No timing claim, no knob.
+- RED lanes named: `ti_c54x.port_resolver`,
+  `ti_c54x.port_transaction`. Follow-ups: direct family lane,
+  indirect Smem lane, FORM-T2-26-09/10 binding with TI evidence
+  records. Planning commit carries plan plus index plus this entry.
