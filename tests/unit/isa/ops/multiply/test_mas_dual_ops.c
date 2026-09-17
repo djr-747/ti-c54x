@@ -364,6 +364,58 @@ test_trusted_equivalence(void)
 }
 
 static void
+test_trusted_masr_rounding_equivalence(void)
+{
+    /* 0xBD32: M0_M0, R=1, src A, dst B, XMOD0 XAR=3 (AR5),
+     * YMOD0 YAR=2 (AR4). The trusted path must stage the rounding
+     * select and complete the rounded MASR value. */
+    ti_c54x_decoded_instruction instruction = decode_expect(
+        UINT16_C(0xBD32), TI_C54X_OPCODE_ID_MAS_DUAL_M0_M0);
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_trusted_operand_values trusted =
+        trusted_for(UINT8_C(1), UINT8_C(0), UINT8_C(1), UINT8_C(3),
+                    UINT8_C(2));
+    ti_c54x_op_effect checked = {0};
+    ti_c54x_op_effect trusted_effect = {0};
+    ti_c54x_op_effect checked_next = {0};
+    ti_c54x_op_effect trusted_next = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_mas_dual_m0_m0(&instruction, &input,
+                                                &checked) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_mas_dual_m0_m0(
+                           &instruction, &trusted, &input,
+                           &trusted_effect) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(checked.kind == trusted_effect.kind);
+    TI_C54X_TEST_CHECK(checked.payload.memory.address_spec.dual.x_mode ==
+                       trusted_effect.payload.memory.address_spec.dual
+                           .x_mode);
+    TI_C54X_TEST_CHECK(checked.payload.memory.address_spec.dual.x_ar ==
+                       trusted_effect.payload.memory.address_spec.dual
+                           .x_ar);
+    TI_C54X_TEST_CHECK(checked.payload.memory.address_spec.dual.y_mode ==
+                       trusted_effect.payload.memory.address_spec.dual
+                           .y_mode);
+    TI_C54X_TEST_CHECK(checked.payload.memory.address_spec.dual.y_ar ==
+                       trusted_effect.payload.memory.address_spec.dual
+                           .y_ar);
+    TI_C54X_TEST_CHECK(checked.payload.memory.load_t_with_read ==
+                       trusted_effect.payload.memory.load_t_with_read);
+    TI_C54X_TEST_CHECK(checked.payload.memory.complete_dual ==
+                       trusted_effect.payload.memory.complete_dual);
+    TI_C54X_TEST_CHECK(checked.payload.memory.complete_dual(
+                           &instruction, &input, TI_X_WORD, TI_Y_WORD,
+                           &checked_next) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(trusted_effect.payload.memory.complete_dual(
+                           &instruction, &input, TI_X_WORD, TI_Y_WORD,
+                           &trusted_next) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(checked_next.payload.accumulator_write.value_raw40 ==
+                       trusted_next.payload.accumulator_write.value_raw40);
+    TI_C54X_TEST_CHECK(checked_next.payload.accumulator_write.value_raw40 ==
+                       TI_B_AFTER_EXAMPLE4_SILICON);
+}
+
+static void
 test_unknown_src_rejects(void)
 {
     ti_c54x_decoded_instruction instruction = decode_expect(
@@ -422,6 +474,7 @@ main(void)
     test_completion_src_b_dst_a();
     test_completion_m1_m2_row();
     test_trusted_equivalence();
+    test_trusted_masr_rounding_equivalence();
     test_unknown_src_rejects();
     test_unknown_ar_rejects();
     test_null_rejects();

@@ -134,7 +134,8 @@ with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
   precedence).
 - Major remaining work is the `MPYR`/`SQDST` families (`MACR` Smem
   and dual retire through the shared `MAC` rows with R=1, locked by
-  the Example 5/6 vectors),
+  the Example 5/6 vectors; `MASR` Smem and dual retire through the
+  shared `MAS` rows with R=1, locked by the Example 3/4 vectors),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

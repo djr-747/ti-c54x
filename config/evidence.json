@@ -6731,6 +6731,22 @@
         "anchor": "P3-S3t: MACR Xmem,Ymem dual lock-in slice (planned)"
       },
       "assertion": "S3t is implemented and green: MACR Xmem,Ymem retires through the shared MAC_DUAL rows with R=1, locked by the 0xB532 leaf completion ((0x5678 shifted by FRCT) x 0x1234 + 4 rounded to 0x0C4C0000 into B), the 0xB5BA CPU retirement with MOD2 post-increments, and trusted R=1 equivalence through the trusted MAC dual entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-05/06 stay UNIMPLEMENTED with empty symbol lists by the recorded S3f R-sharing convention."
+    },
+    {
+      "id": "E-PROJECT-P3-S3U-MASR-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3u: MASR Smem and dual lock-in slice (planned)"
+      },
+      "assertion": "S3u is implemented and green: MASR Smem retires through the shared MAS_SMEM row with R=1 and MASR Xmem,Ymem retires through the shared MAS_DUAL rows with R=1, locked by the 0x2E95 trusted R=1 completion (round(A - T*Smem) to 0xFFFFB70000 into A per TI MAS Example 3), the 0x2E34 CPU retirement, the 0xBD32 trusted R=1 rounding equivalence (rounded 0xFFF3B40000 into B), and the 0xBDBA CPU retirement. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-15/17 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
     }
   ],
   "requirements": [
@@ -15885,6 +15901,34 @@
       "test_ids": [
         "T-COMMON-P3-S3T-MACR-DUAL-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3U-MASR-SMEM-TRUSTED-ROUNDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MASR Smem through the shared MAS_SMEM row with R rounding per TI MAS Example 3 at the trusted entry point, staging the rounding select from the trusted operands and completing round(A - T*Smem) to 0xFFFFB70000 into A.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3U-MASR-SMEM-TRUSTED"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3U-MASR-DUAL-TRUSTED-ROUNDING",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MASR Xmem,Ymem through the shared MAS_DUAL rows with R rounding at the trusted entry point, staging the rounding select from the trusted operands and completing the rounded value 0xFFF3B40000 into B in equivalence with the checked path.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAS-P4-94-4-96"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3U-MASR-DUAL-TRUSTED"
+      ]
     }
   ],
   "tests": [
@@ -22952,6 +22996,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3T-MACR-DUAL-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3U-MASR-SMEM-TRUSTED",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mas_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mas_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3U-MASR-SMEM-TRUSTED-ROUNDING"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3U-MASR-DUAL-TRUSTED",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mas_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mas_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3U-MASR-DUAL-TRUSTED-ROUNDING"
       ]
     },
     {

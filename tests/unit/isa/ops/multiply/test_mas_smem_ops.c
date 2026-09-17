@@ -138,6 +138,40 @@ static void test_trusted_parity(void)
     TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_MEMORY);
 }
 
+static void test_trusted_masr_rounding_completion(void)
+{
+    /* 0x2E95: R=1 (MASR), S=0, I=1, addr=0x15. The trusted entry
+     * stages the rounding select and completes the rounded value. */
+    ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0x2E95));
+    ti_c54x_trusted_operand_values operands = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_op_effect next = {0};
+
+    operands.count = UINT8_C(4);
+    operands.values[0].raw_value = UINT64_C(1);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(0);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(1);
+    operands.values[2].width_bits = UINT8_C(1);
+    operands.values[3].raw_value = UINT64_C(0x15);
+    operands.values[3].width_bits = UINT8_C(7);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_mas_smem(
+                           &instruction, &operands, &input, &staged) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(staged.kind == TI_C54X_OP_EFFECT_MEMORY);
+    /* TI MAS Example 3: round(A - T*Smem) after the subtract. */
+    TI_C54X_TEST_CHECK(staged.payload.memory.complete(
+                           &instruction, &input, UINT16_C(0x1234),
+                           &next) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(next.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(0));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFFFB70000));
+}
+
 static void test_completion_ti_example1(void)
 {
     ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0x2C95));
@@ -225,6 +259,7 @@ main(void)
     test_checked_exotic_mode_defers();
     test_checked_unknown_inputs_stop();
     test_trusted_parity();
+    test_trusted_masr_rounding_completion();
     test_completion_ti_example1();
     test_completion_ti_example3_rounds_result();
     test_completion_selects_b();
