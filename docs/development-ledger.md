@@ -10691,3 +10691,77 @@ rewritten after publication.
   leaves, S4 XC, S1 STM/MMR, S6 PORTR/PORTW,
   AR6/AR7 dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+## 2026-09-17 — P3-S3s MACSU Xmem,Ymem dual slice (slice 27)
+
+- Commit `cf3b5c5` lands `FORM-T2-04-13` (TI
+  SPRU172C `MACSU` p. 4-91, word 0
+  `1010_011S_XXXX_YYYY`) as nine
+  `MACSU_DUAL_Mx_My` catalog rows at `0xA800`
+  plus X/Y mode bits under mask `0xFECC`
+  carrying 32 S/Xar/Yar encodings each (288
+  total) through the shared
+  `DUAL_DESTINATION_XAR_YAR` layout (no new
+  layout, no trusted-capacity pressure) with
+  `UNRESOLVED` repeatability and
+  `ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM`
+  resources. Checked and trusted leaves stage
+  dual-indirect MOD0-MOD2 reads with
+  read-phase X-side T load, and pair
+  completion runs `(src)` plus
+  `unsigned-(Xmem)` times `signed-(Ymem)`
+  into the S-selected accumulator (S selects
+  the shared src/dst) through the multiply
+  core with ADD select, FRCT/OVM handling,
+  and no rounding. The mixed-sign product
+  rides the new `unsigned_t_only`
+  multiply-core select (T unsigned,
+  multiplicand signed; both-unsigned keeps
+  precedence for `MPYU`; all sixteen signed
+  leaves set it false explicitly; FRCT shift,
+  accumulate, saturation, and overflow
+  disposition unchanged). CPU retirement
+  proves the recomputed oracle vector
+  (`A 00 1000 0000` with `T 4000`, `AR4 0101`,
+  `AR5 0201`), the FRCT lane
+  (`A 00 2000 0000`), S selection, and the
+  mixed-sign lane (`A FD E26C 000`... pinned
+  as `0xFFDE26C000`, distinct from both
+  uniform-signedness readings). The LD_K
+  bit-14 near-miss lane moves to the new row
+  as the recorded cross-slice update (the
+  first pin attempt targeted the wrong flip
+  `0x8000`; the failing mask was `0x4000`
+  landing on `0xA800`). `git diff --check`
+  clean. New files peak at 424 lines (ops
+  test); no split required. No new knob,
+  layout, public API, observer path, or root
+  phase.
+- RED was observed on the real contracts: the
+  core test failed to compile before the
+  `unsigned_t_only` field existed; the LD_K
+  near-miss failure exposed the `0xA800`
+  neighborhood claim. The static row-overlap
+  sweep over the `.def` reports zero overlaps
+  for the nine new rows.
+- Neighbor pins move to 215 IDs, 214
+  rows/bindings (181 SUBSET plus 33
+  COMPLETE), 17,681 lookup entries, 82/205
+  (40.000%) with the `FORM-T2-04-13`
+  contract set; strict stays 33/205
+  (16.098%). Evidence stands at 381 records,
+  627 requirements, 500 tests (500 `PASSING`,
+  0 `PLANNED`), matching the S3s anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  482/482 on the working Debug build; full
+  sanitizer CMake/CTest 482/482 (ASan/UBSan);
+  `make test` clean (all binaries plus knobs,
+  boundaries, manifests, evidence, inventory,
+  observer gates); contract unittest discovery
+  OK; evidence gate passes (381/627/500);
+  inventory provisional 82/205 with strict
+  33/205.
+- Follow-up work: `MACR`/`MPYR`/`SQDST`
+  leaves, S4 XC, S1 STM/MMR, S6 PORTR/PORTW,
+  AR6/AR7 dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
