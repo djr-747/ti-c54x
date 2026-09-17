@@ -10455,3 +10455,78 @@ rewritten after publication.
   indirect modes, dual `#lk` words, and
   far/XPC/timing.
 
+## 2026-09-17 — P3-S3p MACA T,src register-only slice (slice 24)
+
+- Commit `dc47103` lands `FORM-T2-04-08` (TI
+  SPRU172C `MACA[R]` p. 4-85, opcode `1111 01SD
+  1000 100R`) as one `MACA_T` catalog row at
+  `0xF488` under mask `0xFCFE` carrying 8 S/D/R
+  encodings through the new
+  `SOURCE_DESTINATION_ROUND` layout with
+  `ELIGIBLE` repeatability (Class 3A/3B, no
+  Table 2-28 entry) and
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM`
+  resources. The R bit carries the MACAR T,src
+  rounding variant on the shared row by the
+  recorded S3c/S3f R-sharing convention, so
+  `FORM-T2-04-10` stays `UNIMPLEMENTED`.
+  Checked/trusted register-only leaves
+  complete `(src)` plus `(T)` times `A(32-16)`
+  into the D-selected accumulator through the
+  multiply core with ADD select and R rounding;
+  T, A, and the unselected accumulator are
+  preserved, C/TC ride through unchanged, and
+  `OVdst` follows the core for dst (which is
+  src when dst is not specified). T, A, and
+  src must be known. CPU retirement proves TI
+  MACA Example 2 (`B 00 009D 4BA0` with `T`
+  unchanged; `0x0444` x `0x1234` = `0x4DA5D0`
+  recomputed independently before pinning) and
+  the MACAR Example 4 rounding lane
+  (`B 00 009D 0000`) with endpoint silence. No
+  new TI record was needed (the existing TI
+  MACA section record spans both syntaxes, per
+  the recorded S3f convention) — only the
+  activation, six owner-split requirements
+  (including the layout requirement), and five
+  test records (374/603/481→375/609/486); the
+  PROJECT INVENTORY requirement rides the
+  shared binding test with the `REGISTER_DST`
+  subset token alongside the register-only
+  siblings. One new layout; no new resource,
+  effect, address, state, CPU, public-API, or
+  manifest seam beyond the leaf.
+- RED was observed on the stub in two stages:
+  the layout test failed on the absent
+  `SOURCE_DESTINATION_ROUND` token, then the
+  slice tests failed on the absent `MACA_T`
+  identity. Two mid-slice test-authoring slips
+  were corrected against the hardware facts:
+  `0xF487` belongs to catalog row 11 (the
+  invalid lane is now `0xF480`), and the
+  oracle product `0x0444` x `0x1234` is
+  `0x4DA5D0` (the src-A lane is now
+  `0x12CF4BA0`). `git diff --check` clean. New
+  files peak at 230 lines
+  (`test_maca_t_ops.c`); no split required.
+- Neighbor pins move to 204 IDs, 203
+  rows/bindings (170 SUBSET plus 33 COMPLETE),
+  16,369 lookup entries, 79/205 (38.537%)
+  with the `FORM-T2-04-08` contract set;
+  strict stays 33/205 (16.098%). The `0xF488`
+  neighborhood borrows no other row.
+- Validation is GREEN: full CMake CTest 468/468
+  on the working build; fresh Debug configure
+  plus full CTest 468/468 in
+  `/tmp/ti-c54x-s3p-debug`; full sanitizer
+  CMake/CTest 468/468 in `/tmp/ti-c54x-s3p-asan`
+  (ASan/UBSan); `make test` clean; focused
+  new-slice binaries green; quality unittest
+  272 OK; evidence gate passes (375/609/486).
+- Follow-up work: `MACD`/`MACP` family
+  (program-memory operands plus the delay
+  seam), AR6/AR7 dual-Y widening, MOD3
+  neighborhoods, dual replay classification;
+  deferred exotic indirect modes, dual `#lk`
+  words, and far/XPC/timing.
+
