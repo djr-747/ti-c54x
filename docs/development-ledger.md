@@ -10295,3 +10295,85 @@ rewritten after publication.
   classification; deferred exotic indirect modes,
   dual `#lk` words, and far/XPC/timing.
 
+## 2026-09-17 — P3-S3n MPYU unsigned-multiply slice (slice 22)
+
+- Commit `94a0159` lands `FORM-T2-03-08` (TI
+  SPRU172C `MPYU` p. 4-106, opcode `0010 010D
+  IAAA AAAA`, dual-sourced against the TI
+  SPRU307A functional-overview summary) as one
+  `MPYU_SMEM` catalog row at `0x2400` under mask
+  `0xFE00` carrying 512 D/I/addr7 encodings
+  through the reused S3k
+  `DESTINATION_INDIRECT_ADDR7` layout with
+  `ELIGIBLE` repeatability (Table 2-28 lists no
+  MPYU entry) and
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM`
+  resources. The shared multiply core gains an
+  unsigned-operands select (zero-extended 16x16
+  product through the single-sourced FRCT shift
+  and OVM saturation path, keeping the positive
+  direction for non-negative products); all
+  eleven signed leaves pin the select false, and
+  the core unit test gains unsigned lanes.
+  Checked/trusted leaves stage direct page-0 and
+  standard-indirect MOD0-MOD3 reads with
+  exotic-mode deferral and no T load, then
+  complete `uns(T)` x `uns(Smem)` into the
+  D-selected accumulator with no rounding;
+  C/TC preserved, `OVdst` follows the core. CPU
+  retirement proves TI MPYU Example 1
+  (`MPYU *AR0-, A`, `A 00 3F80 0000` with `T`
+  `4000` unchanged; `0x4000` x `0xFE00`
+  recomputed independently before pinning). New
+  TI record `E-TI-C54X-SPRU172C-S4-MPYU-P4-106`
+  plus activation, five owner-split
+  requirements, and four test records
+  (370/592/472→372/597/476); the PROJECT
+  INVENTORY requirement rides the shared binding
+  test with the `DIRECT_PAGE0_STANDARD_`
+  `INDIRECT_MOD0_MOD3` subset token. No new
+  layout, resource, effect, address, state, CPU,
+  public-API, or manifest seam is added.
+- RED was observed on the stub (absent
+  `TI_C54X_OPCODE_ID_MPYU_SMEM` identity).
+  Diagnosis notes: the mid-slice CPU-test
+  failure (`requests[0].space` INVALID with the
+  instruction retired) was a test-addressing
+  mistake, not a leaf defect — dma7 `0x09`
+  falls in the `0x00`-`0x1F` MMR window, so the
+  read was served internally with no bus
+  transaction; the word is now `0x2434`
+  (dma7 `0x34`). The recorded SQUR→MPYU
+  cross-slice update landed here: the
+  `test_squr_smem_decode.c` UNKNOWN lanes for
+  `0x2400`/`0x2480`/`0x25FF` moved to the new
+  `MPYU_SMEM` row with an explanatory comment.
+  The evidence gate needed two fixes: the
+  binding test record's reverse link gained the
+  new INVENTORY requirement, and the CPU
+  requirement claim dropped the banned singular
+  `vector` term. `git diff --check` clean. New
+  files peak at 323 lines
+  (`test_mpyu_smem_ops.c`); no split required.
+- Neighbor pins move to 202 IDs, 201
+  rows/bindings (168 SUBSET plus 33 COMPLETE),
+  15,849 lookup entries, 77/205 (37.561%) with
+  the `FORM-T2-03-08` contract set; strict
+  stays 33/205 (16.098%). The `0x2400`
+  neighborhood is fully bookended (MPY below,
+  SQUR above) with no remaining UNKNOWN lane.
+- Validation is GREEN: full CMake CTest 458/458
+  on the working build; fresh Debug configure
+  plus full CTest 458/458 in
+  `/tmp/ti-c54x-s3n-debug`; full sanitizer
+  CMake/CTest 458/458 in `/tmp/ti-c54x-s3n-asan`
+  (ASan/UBSan); `make test` clean; focused
+  new-slice binaries green; quality unittest
+  272 OK; evidence gate passes (372/597/476);
+  inventory gate reports 77/205 (37.561%).
+- Follow-up work: `MACA`/`MACD`/`MACP` family,
+  AR6/AR7 dual-Y widening, MOD3 neighborhoods,
+  dual replay classification; deferred exotic
+  indirect modes, dual `#lk` words, and
+  far/XPC/timing.
+
