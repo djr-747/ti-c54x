@@ -19,6 +19,7 @@
 #include "arithmetic/op_dual_arithmetic.h"
 #include "arithmetic/op_add_smem.h"
 #include "arithmetic/op_sub_smem.h"
+#include "arithmetic/op_subb_smem.h"
 #include "compare/op_compare.h"
 #include "compare/op_cmpr.h"
 #include "load/op_ld_smem.h"

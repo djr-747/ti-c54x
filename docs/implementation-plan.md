@@ -651,9 +651,11 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S22: XOR Smem rows (implemented; local verification green)](plan/p3-s22-xor-smem-rows-slice.md)
 
-- [P3-S23: SUBS Smem leaf (planned)](plan/p3-s23-subs-smem-leaf-slice.md)
+- [P3-S23: SUBS Smem leaf (implemented; local verification green)](plan/p3-s23-subs-smem-leaf-slice.md)
 
-- [P3-S24: SUBB Smem leaf (planned)](plan/p3-s24-subb-smem-leaf-slice.md)
+- [P3-S24: SUBB Smem leaf (implemented; local verification green)](plan/p3-s24-subb-smem-leaf-slice.md)
+
+- [P3-S25: SUBB Smem rows (planned)](plan/p3-s25-subb-smem-rows-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

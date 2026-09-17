@@ -199,6 +199,10 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_TC))
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_T_REGISTER))

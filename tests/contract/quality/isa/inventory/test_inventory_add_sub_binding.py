@@ -63,6 +63,15 @@ ROWS = {
         "coverage": "SUBSET",
         "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
     },
+    "SUBB_SMEM": {
+        "form": "FORM-T2-02-11",
+        "base": 0x0E00,
+        "mask": 0xFE00,
+        "layout": "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_OVM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
 }
 
 
@@ -83,9 +92,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 260)
-        self.assertEqual(len(rows) + 1, 261)
-        self.assertEqual(len(inventory["catalog_bindings"]), 260)
+        self.assertEqual(len(rows), 261)
+        self.assertEqual(len(rows) + 1, 262)
+        self.assertEqual(len(inventory["catalog_bindings"]), 261)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -108,10 +117,10 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                     binding["addressing_subset"], expected["addressing"]
                 )
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 25617)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 26129)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 102, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 103, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],
