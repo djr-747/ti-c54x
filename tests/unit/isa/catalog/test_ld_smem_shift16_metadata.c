@@ -34,7 +34,7 @@ test_metadata(void)
         ti_c54x_opcode_metadata_for_id(
             TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 255);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 258);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id ==
                        TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
@@ -92,10 +92,12 @@ test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
 {
     /* Every bit other than D and ARF is fixed by the exact FE F8 mask. */
     /* Bit 14 (0x4000) left this list in P3-S3z: 0x4480 ^ 0x4000 is
-     * 0x0480, a valid ADD_SMEM_TS word handled below. */
+     * 0x0480, a valid ADD_SMEM_TS word handled below. Bit 10 (0x0400)
+     * leaves in P3-S19: 0x4480 ^ 0x0400 is 0x4080, a valid
+     * SUB_SMEM_SH16 word handled below. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080),
-        UINT16_C(0x0400), UINT16_C(0x0800),
+        UINT16_C(0x0800),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
 
@@ -119,6 +121,16 @@ test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
                            (uint16_t)(LD_SMEM_SHIFT16_VALUE ^
                                       UINT16_C(0x4000))) ==
                        TI_C54X_OPCODE_ID_ADD_SMEM_TS);
+
+    /* Flipping fixed bit 10 lands on 0x4080, claimed by the P3-S19
+     * SUB_SMEM_SH16 row: a valid cross-row near miss, not an
+     * overaccept. */
+    TI_C54X_TEST_CHECK(!matches_ld_smem_shift16(
+        (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x0400))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LD_SMEM_SHIFT16_VALUE ^
+                                      UINT16_C(0x0400))) ==
+                       TI_C54X_OPCODE_ID_SUB_SMEM_SH16);
 
     /* Bit 9 alone reaches the intentional W37 DP sibling; adding fixed bit
      * 3 must not let that sibling pattern overaccept the W38 near miss. */

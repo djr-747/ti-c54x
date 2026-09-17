@@ -90,11 +90,12 @@ check_transactional_failure(
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
+    /* Bit 15 (0x8000) leaves in P3-S19: 0x8C90 ^ 0x8000 is 0x0C90, a
+     * valid SUB_SMEM_TS word asserted below. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x0800),
-        UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -131,6 +132,16 @@ test_fixed_bit_near_misses_are_unknown(void)
             ti_c54x_decode_first_word(UINT16_C(0x8090));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_STL_SMEM);
+    }
+
+    /* Flipping bit 15 lands on 0x0C90, claimed by the P3-S19
+     * SUB_SMEM_TS row: a valid cross-row near miss, not an
+     * overaccept. */
+    {
+        const ti_c54x_decode_result sub_sibling = ti_c54x_decode_first_word(
+            (uint16_t)(ST_T_VALUE ^ UINT16_C(0x8000)));
+        TI_C54X_TEST_CHECK(sub_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sub_sibling.id == TI_C54X_OPCODE_ID_SUB_SMEM_TS);
     }
 }
 
