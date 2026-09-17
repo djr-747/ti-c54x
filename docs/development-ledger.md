@@ -11346,3 +11346,77 @@ rewritten after publication.
   S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7
   dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+
+## 2026-09-17 — P3-S8 BACC accumulator-addressed branch family (slice 37)
+
+- Commit `b2c06bb` lands the `BACC`
+  family on the S5 seam: two new
+  catalog rows, `BACC` (`0xF4E2`) and
+  `BACCD` (`0xF6E2`), under the shared
+  `0xFEFF` mask through the shared
+  `ACCUMULATOR_SOURCE` layout (S at bit
+  8: 0 selects A, 1 selects B). Checked
+  and trusted leaves branch PC to the
+  16 low bits of the selected
+  accumulator unconditionally; CPU
+  retirement takes `BACC` followers
+  normally and `BACCD` followers
+  through the two-word delay window.
+  Both rows are repeatability
+  `INELIGIBLE` on the explicit TI not-
+  repeatable note (TI SPRU172C
+  §`BACC[D]`, printed p. 4-15).
+  `FORM-T2-12-02` lands `SUBSET` with
+  `BACC` under `ACCUMULATOR_NONDELAYED`
+  and `BACCD` under
+  `ACCUMULATOR_DELAYED`.
+- Numbering: the family is P3-S8, not
+  P3-S6, because S6 is reserved for the
+  port I/O seam in the approved seam-
+  first table (families take fresh
+  numbers per the P3-S7 STM precedent).
+- Decisions: the scope gate rejected a
+  `COMMON` CPU requirement citing the
+  `PROJECT_CONTRACT_ONLY` activation,
+  so `REQ-COMMON-P3-S8-BACC-CPU-
+  RETIREMENT` cites only the two TI
+  semantics records (XC precedent). The
+  shared layout serves the future
+  `CALA`/`CALAD` rows with no new
+  requirement. Five RED lanes: leaf,
+  trusted, and CPU per row plus the
+  shared layout suite.
+- Contract pins move a layer at a time:
+  catalog rows 220 to 222, bindings 220
+  to 222, `OPCODE_ID_COUNT` 221 to 223,
+  lookup entries 20505 to 20509 (two
+  rows by two S values, zero neighbor
+  moves), bound forms 88 to 89
+  (43.415%), `SUBSET` bindings 187 to
+  189, `BACCD` joins `EXPECTED_DELAYED`
+  as the docstring anticipated. No knob
+  change.
+- Evidence stands at 400 records, 655
+  requirements, 527 tests (527
+  `PASSING`, 0 `PLANNED`), matching the
+  S8 projection exactly: five TI
+  source records, one activation
+  record, four requirements, five test
+  records.
+- Validation is GREEN: `make test`
+  clean (exit 0, full fast suite plus
+  contract quality 272/272); evidence,
+  inventory, and lookup gates pass.
+  The local CMake `build/` tree is
+  stale (enumerates 496 pre-BACC
+  tests); CI reconfigures it from
+  scratch, so no action is needed.
+- Follow-up work: `CALA`/`CALAD`
+  family on the S5 seam (TI record
+  `E-TI-C54X-SPRU172C-S4-CALA-P4-24-4-
+  25` already pinned), S1 STM/MMR, S6
+  PORTR/PORTW, far/XPC/timing. Push of
+  the local stack to `origin/main`
+  still awaits user approval, so remote
+  CI has not yet seen the S4/S5/S8
+  fixes.
