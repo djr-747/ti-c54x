@@ -88,6 +88,8 @@ $(eval $(call ti_c54x_add_test,mpya_smem_decode,isa/decode,test_mpya_smem_decode
 $(eval $(call ti_c54x_add_test,mas_smem_decode,isa/decode,test_mas_smem_decode.c))
 # P3-S3 RED contract: MPYA dst register-only row.
 $(eval $(call ti_c54x_add_test,mpya_dst_decode,isa/decode,test_mpya_dst_decode.c))
+# P3-S3 RED contract: SQUR A,dst register-only row.
+$(eval $(call ti_c54x_add_test,squr_adst_decode,isa/decode,test_squr_adst_decode.c))
 # W78 RED contract: RCD decode.
 $(eval $(call ti_c54x_add_test,rcd_decode,isa/decode,test_rcd_decode.c))
 $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))

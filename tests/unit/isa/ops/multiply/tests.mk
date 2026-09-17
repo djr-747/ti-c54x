@@ -11,5 +11,7 @@ $(eval $(call ti_c54x_add_test,mpy_dual_ops,isa/ops/multiply,test_mpy_dual_ops.c
 $(eval $(call ti_c54x_add_test,mas_dual_ops,isa/ops/multiply,test_mas_dual_ops.c))
 # P3-S3 RED contract: MPYA dst register-only row.
 $(eval $(call ti_c54x_add_test,mpya_dst_ops,isa/ops/multiply,test_mpya_dst_ops.c))
+# P3-S3 RED contract: SQUR A,dst register-only row.
+$(eval $(call ti_c54x_add_test,squr_adst_ops,isa/ops/multiply,test_squr_adst_ops.c))
 # P3-S3 RED contract: SQUR Smem square row.
 $(eval $(call ti_c54x_add_test,squr_smem_ops,isa/ops/multiply,test_squr_smem_ops.c))

@@ -8,5 +8,7 @@ ti_c54x_add_unit_test(cpu_mpy_dual test_cpu_mpy_dual.c)
 ti_c54x_add_unit_test(cpu_mas_dual test_cpu_mas_dual.c)
 # P3-S3 RED contract: MPYA dst register-only row.
 ti_c54x_add_unit_test(cpu_mpya_dst test_cpu_mpya_dst.c)
+# P3-S3 RED contract: SQUR A,dst register-only row.
+ti_c54x_add_unit_test(cpu_squr_adst test_cpu_squr_adst.c)
 # P3-S3 RED contract: SQUR Smem square row.
 ti_c54x_add_unit_test(cpu_squr_smem test_cpu_squr_smem.c)

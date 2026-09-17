@@ -8,5 +8,7 @@ $(eval $(call ti_c54x_add_test,cpu_mpy_dual,cpu/isa/multiply,test_cpu_mpy_dual.c
 $(eval $(call ti_c54x_add_test,cpu_mas_dual,cpu/isa/multiply,test_cpu_mas_dual.c))
 # P3-S3 RED contract: MPYA dst register-only row.
 $(eval $(call ti_c54x_add_test,cpu_mpya_dst,cpu/isa/multiply,test_cpu_mpya_dst.c))
+# P3-S3 RED contract: SQUR A,dst register-only row.
+$(eval $(call ti_c54x_add_test,cpu_squr_adst,cpu/isa/multiply,test_cpu_squr_adst.c))
 # P3-S3 RED contract: SQUR Smem square row.
 $(eval $(call ti_c54x_add_test,cpu_squr_smem,cpu/isa/multiply,test_cpu_squr_smem.c))

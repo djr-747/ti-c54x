@@ -490,9 +490,11 @@
       "table_ordinal": 10,
       "mnemonic": "SQUR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SQUR_ADST"
+      ]
     },
     {
       "id": "FORM-T2-04-01",
@@ -3750,6 +3752,12 @@
       "form_id": "FORM-T2-03-09",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "SQUR_ADST",
+      "form_id": "FORM-T2-03-10",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
     }
   ]
 }

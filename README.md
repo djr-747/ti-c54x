@@ -20,11 +20,11 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3k complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR` Smem rows plus
-`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only `MPYA dst`).
+Current snapshot: P3-S3l complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR` Smem rows plus
+`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only `MPYA`/`SQUR` dst).
 
-- 198 runnable catalog rows under 14,311 populated first-word lookup entries.
-  Inventory coverage is 73/205 forms SUBSET-or-better (35.610%) and 33/205
+- 199 runnable catalog rows under 14,313 populated first-word lookup entries.
+  Inventory coverage is 74/205 forms SUBSET-or-better (36.098%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -70,7 +70,11 @@ Current snapshot: P3-S3k complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR` Smem rows plu
   the `SQUR` Smem row (`FORM-T2-03-09`, 512 D/I/addr7 encodings under
   one masked row) with a new destination/indirect/addr7 layout and
   `(Smem)`x`(Smem)` STORE completion with read-phase T load (TI SQUR
-  Example 1 retires through the leaf).
+  Example 1 retires through the leaf). S3l lands the register-only
+  `SQUR A,dst` row (`FORM-T2-03-10`, both D encodings under one masked
+  row) reusing the MAX/MIN single-destination-bit layout with
+  `(A(32-16))` squared STORE completion and no T update (TI SQUR
+  Example 2 retires through the leaf with A and T preserved).
 - Major remaining work is the `MACA`/`MACD`/`MACP` family
   (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,

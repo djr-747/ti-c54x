@@ -57,7 +57,7 @@ test_metadata_rows(void)
 
     TI_C54X_TEST_CHECK(row_count == 5U);
     /* Unknown plus the 35 catalog rows is the complete generated identity. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 198);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 199);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];
@@ -115,7 +115,7 @@ test_each_row_has_expected_encodings_and_population(void)
             ++populated_first_words;
         }
     }
-    TI_C54X_TEST_CHECK(populated_first_words == 14311U);
+    TI_C54X_TEST_CHECK(populated_first_words == 14313U);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];

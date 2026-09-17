@@ -95,6 +95,8 @@ ti_c54x_add_unit_test(mpya_smem_decode test_mpya_smem_decode.c)
 ti_c54x_add_unit_test(mas_smem_decode test_mas_smem_decode.c)
 # P3-S3 RED contract: MPYA dst register-only row.
 ti_c54x_add_unit_test(mpya_dst_decode test_mpya_dst_decode.c)
+# P3-S3 RED contract: SQUR A,dst register-only row.
+ti_c54x_add_unit_test(squr_adst_decode test_squr_adst_decode.c)
 # W78 RED contract: RCD decode.
 ti_c54x_add_unit_test(rcd_decode test_rcd_decode.c)
 # W67B RED contract: RETD decode with near-miss audit.

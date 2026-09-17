@@ -6263,6 +6263,24 @@
       "assertion": "SQUR syntax 1 is SQUR Smem,dst with opcode bits 15:9 0010011 (D bit 8 selects A/B, I bit 7, Smem field 6:0), one program word, and execution (Smem) into T with (Smem) x (Smem) into dst. The operation is affected by FRCT and OVM and affects OVdst. Example 1 (SQUR 30, B, mem[031E] 000F, FRCT 0) yields B 00 0000 00E1 and T 000F. The SPRU179C algebraic restatement (B = square(@30), p. 4-163) agrees."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SQUR",
+        "printed_page_start": "4-162",
+        "printed_page_end": "4-162"
+      },
+      "assertion": "SQUR syntax 2 is SQUR A,dst with opcode word 1111 010D 1000 1101 (D bit 8 selects A/B), one program word, and execution (A(32-16)) x (A(32-16)) into dst with no memory operand and no T update. The operation is affected by FRCT and OVM and affects OVdst. Example 2 (SQUR A, B with A 00 000F 0000, FRCT 1) yields B 00 0000 01C2 with A and T unchanged. The SPRU179C algebraic restatement (B = square(hi(A)), p. 4-164) agrees."
+    },
+    {
       "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6443,6 +6461,22 @@
         "anchor": "P3-S3k: SQUR-Smem square vertical slice (planned)"
       },
       "assertion": "S3k is implemented and green: one SQUR_SMEM catalog row at 0x2600 under mask 0xFE80 carrying 512 encodings through the new DESTINATION_INDIRECT_ADDR7 layout (D plus indirect/addr7, no round or select bits) with ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem squared into the D-selected accumulator through the multiply core, and CPU retirement proving TI SQUR Example 1 (mem[031E] 000F, FRCT 0 yield B 00 0000 00E1 and T 000F). FORM-T2-03-09 lands SUBSET; syntax 2 stays UNIMPLEMENTED for its own register-only slice."
+    },
+    {
+      "id": "E-PROJECT-P3-S3L-SQUR-ADST-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3l: SQUR-Adst register-only vertical slice (planned)"
+      },
+      "assertion": "S3l is implemented and green: one SQUR_ADST catalog row at 0xF48D under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (A(32-16)) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (no memory effect, no T update), and CPU retirement proving TI SQUR Example 2 (A 00 000F 0000, FRCT 1 yield B 00 0000 01C2 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape following the S3j MPYA_DST precedent; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-10 lands SUBSET; the test_mpya_dst_decode.c UNKNOWN lane for 0xF48D/0xF58D moves to the new row."
     }
   ],
   "requirements": [
@@ -14903,6 +14937,78 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3L-SQUR-ADST-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog one SQUR_ADST row at first-word value 0xF48D under mask 0xFEFF with one program word, two encodings, the reused MAX_MIN_ACC single-destination-bit layout, ELIGIBLE repeatability by the Table 2-28 omission (no SQUR entry), and accumulator/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3L-SQUR-ADST-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3L-SQUR-ADST-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode both SQUR_ADST encodings with bundle copy and D-bit extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3L-SQUR-ADST-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3L-SQUR-ADST-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete SQUR Adst as (A(32-16)) x (A(32-16)) into dst through the multiply core with STORE select, FRCT/OVM handling, no rounding, no memory effect, and no T update, per TI SQUR Example 2, at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3L-SQUR-ADST-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3L-SQUR-ADST-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire SQUR Adst on the CPU per TI SQUR Example 2 with accumulator write, A and T preservation, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3L-SQUR-ADST-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3L-SQUR-ADST-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the SQUR_ADST catalog row to FORM-T2-03-10 at SUBSET coverage over the D-bit register destination select.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3L-SQUR-ADST-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -18084,7 +18190,8 @@
         "REQ-PROJECT-P3-S3D-MPYA-INVENTORY",
         "REQ-PROJECT-P3-S3E-MAS-INVENTORY",
         "REQ-PROJECT-P3-S3J-MPYA-DST-INVENTORY",
-        "REQ-PROJECT-P3-S3K-SQUR-SMEM-INVENTORY"
+        "REQ-PROJECT-P3-S3K-SQUR-SMEM-INVENTORY",
+        "REQ-PROJECT-P3-S3L-SQUR-ADST-INVENTORY"
       ]
     },
     {
@@ -21498,6 +21605,62 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3K-SQUR-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3L-SQUR-ADST-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_squr_adst_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_adst_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3L-SQUR-ADST-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3L-SQUR-ADST-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_squr_adst_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_adst_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3L-SQUR-ADST-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3L-SQUR-ADST-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_squr_adst_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_adst_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3L-SQUR-ADST-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3L-SQUR-ADST-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_squr_adst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_squr_adst"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3L-SQUR-ADST-CPU-RETIREMENT"
       ]
     }
   ]

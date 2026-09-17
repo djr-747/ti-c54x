@@ -78,7 +78,10 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_mpya_dst == 2U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0xF48D), UINT16_C(0xF58D),
+        /* 0xF48D/0xF58D belonged here until the S3l SQUR_ADST slice
+         * claimed them; the recorded W57->W58 cross-slice update
+         * replaces them with verified-unknown neighbors. */
+        const uint16_t invalid[] = {UINT16_C(0xF49C), UINT16_C(0xF59C),
                                     UINT16_C(0xF68C), UINT16_C(0xE48C)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
