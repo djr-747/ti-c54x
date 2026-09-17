@@ -1,4 +1,4 @@
-### P3-S21: OR Smem rows (planned)
+### P3-S21: OR Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S21 evidence freeze. `OR Smem`
 syntax 1 (TI SPRU172C §OR, p. 4-123: `0001_101S_IAAAAAAA`, class

@@ -12394,3 +12394,38 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `8d77708`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S21 OR Smem row (slice 49)
+
+- Commit `d1c5e66` lands OR Smem syntax 1 as OR_SMEM (0x1A00/0xFE00)
+  over SELECT_INDIRECT_ADDR7 with a new plain `ti_c54x_op_or_smem`
+  entry (layout-gated 1/1/7 extraction into the landed values
+  core) plus the landed trusted entry. TI basis dual-sourced from
+  vendor/ti/spru172c.txt (§OR opcode diagram, p. 4-123:
+  0001_101S, class 3A/3B). FORM-T2-08-01 binds at SUBSET under
+  DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3.
+- Census pins move with the row (259 rows, ID count 260, lookup
+  24593 to 25105 with zero neighbor moves, SUBSET bindings 224 to
+  225, FORM coverage 100 to 101/205 at 49.268%, strict-complete
+  bound steady at 34). One near-miss absorption pins the new
+  words: LDU-Smem 0x1A80/0x1A90 as OR_SMEM siblings (decode plus
+  metadata twins). Full `make test` green (exit 0); evidence
+  registry PASS at 435 evidence, 682 requirements, 546 tests;
+  focused ASan/UBSan run of the extended OR suite clean;
+  knobs/boundaries/manifests PASS.
+- Decisions: rows-plus-thin-adapter slice (no layout/decode/CPU
+  change); PROJECT rows requirement cites activation plus the two
+  PROJECT inventory proofs only (scope-leak rule); S16 handler
+  proof stays COMMON-uncited; no knob added; syntaxes 2-4 and
+  ORM stay as bound.
+- Process notes: pin updates used assert-counted per-pattern
+  replacements after the S20 bulk-script lesson; the
+  distinct-symbol count lines needed separate handling from the
+  total lines. The flip sweep missed the LDU probes (base spelled
+  via a local alias, not a static const); sweep now covers
+  #define and local-alias bases. Cross-slice absorptions: S19/S20
+  checklist lines flip to implemented here.
+- Follow-up: slice 50 (XOR Smem row, same pattern).
+- Split commit discipline: impl `d1c5e66`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.

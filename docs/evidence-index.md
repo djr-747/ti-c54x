@@ -482,7 +482,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-AND-SYNTAX1-OPCODE-P4-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §AND, `4-11`–`4-11` |
 | `E-PROJECT-P3-S20-AND-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s20-and-smem-rows-slice.md` anchor `P3-S20: AND Smem rows (implemented; local verification green)` |
 | `E-TI-C54X-SPRU172C-S4-OR-SYNTAX1-OPCODE-P4-123` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §OR, `4-123`–`4-123` |
-| `E-PROJECT-P3-S21-OR-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s21-or-smem-rows-slice.md` anchor `P3-S21: OR Smem rows (planned)` |
+| `E-PROJECT-P3-S21-OR-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s21-or-smem-rows-slice.md` anchor `P3-S21: OR Smem rows (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
