@@ -12286,3 +12286,35 @@ entries are not rewritten after publication.
   registry binding with TI evidence records.
 - Split commit discipline: impl `7ecca10`, this ledger-only
   follow-up.
+
+## 2026-09-18 — P3-S6 family rows land as 6de7192 (PORTR) and f3a4731 (PORTW)
+
+- PORTR PA,Smem and PORTW Smem,PA rows over the new two-word
+  INDIRECT_ADDR7_PA16 layout (I flag, 7-bit cookie, 16-bit PA):
+  PORTR_DIRECT 0x7400/0xFF80 plus PORTR_SMEM 0x7480/0xFF80 and
+  PORTW_DIRECT 0x7500/0xFF80 plus PORTW_SMEM 0x7580/0xFF80, with
+  plain plus trusted op_portr/op_portw handlers staging PORT arms
+  (DATA WRITE for PORTR, DATA READ for PORTW, zero template, DP
+  gated at the leaf, MOD9 rejected, crossed-row I mismatch
+  declined). RED test_portr_ops/test_portw_ops prove decode
+  identity, resources, trusted equivalence, and rejects.
+- Evidence correction with primary-source proof: the seam plan
+  transcribed PORTR/PORTW at 0xE8/0xE9, but TI SPRU172C 4-129/130
+  pin 0x74/0x75 (bit 15 is 0) and the 0xE8 range is dual-sourced
+  LD_K. Rows, handlers, and vectors use the TI-true bases; six TI
+  opcode/semantics records plus per-mnemonic activation records,
+  ARCHITECTURAL plus inventory requirements, and index rows land
+  with the lanes. FORM-T2-26-09/10 bind at SUBSET (direct rows
+  under DIRECT_DP, Smem rows under the full-indirect token).
+- Census pins move twice (250 to 252 to 254 rows, ID count to
+  255, lookup 21521 to 21777 to 22033, FORM coverage 94 to 95 to
+  96/205); six decode near-miss tests pin the new 0x74xx/0x7500
+  siblings under the cross-slice hazard rule. `make test` green
+  at both lanes (exit 0, zero failures).
+- Decisions: one shared PORT layout and one handler file per
+  mnemonic (direct/indirect branch on the I flag; per-row plain
+  plus trusted entries satisfy the `ti_c54x_op_##handler`
+  consumer contract); no knob added; no timing/IRQ/RPT claim;
+  long-offset and absolute Smem extension words stay undecoded.
+- Split commit discipline: impls `6de7192` and `f3a4731`, this
+  ledger-only follow-up.
