@@ -466,8 +466,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S11-STH-ASM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s11-sth-by-asm-smem-store-slice.md` anchor `P3-S11: STH by-ASM Smem store slice (planned)` |
 | `E-PROJECT-P3-S12-STH-SHFT-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s12-sth-by-shft-xmem-store-slice.md` anchor `P3-S12: STH by-SHFT Xmem store slice (implemented; local verification green)` |
 | `E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s13-sth-shift-smem-store-slice.md` anchor `P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)` |
-| `E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s14-sub-smem-slice.md` anchor `P3-S14: SUB Smem slice (planned)` |
-| `E-PROJECT-P3-S15-AND-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s15-and-smem-slice.md` anchor `P3-S15: AND Smem slice (planned)` |
+| `E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s14-sub-smem-slice.md` anchor `P3-S14: SUB Smem slice (implemented; local verification green)` |
+| `E-PROJECT-P3-S15-AND-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s15-and-smem-slice.md` anchor `P3-S15: AND Smem slice (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and

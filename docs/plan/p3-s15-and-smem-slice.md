@@ -1,4 +1,4 @@
-### P3-S15: AND Smem slice (planned)
+### P3-S15: AND Smem slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for this
 evidence freeze. `AND Smem, dst` (TI SPRU172C Sec4 AND, p. 4-11:

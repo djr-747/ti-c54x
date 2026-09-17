@@ -1,4 +1,4 @@
-### P3-S14: SUB Smem slice (planned)
+### P3-S14: SUB Smem slice (implemented; local verification green)
 
 SUB Smem (TI SPRU172C section Sec4 SUB p.4-187), form FORM-T2-02-01:
 syntax 1 (`src -= Smem`), syntax 2 (`src -= Smem << TS`), and syntax 3

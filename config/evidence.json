@@ -7364,7 +7364,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s14-sub-smem-slice.md",
-        "anchor": "P3-S14: SUB Smem slice (planned)"
+        "anchor": "P3-S14: SUB Smem slice (implemented; local verification green)"
       },
       "assertion": "S14 is implemented and green: the catalog-free SUB Smem pure leaf with checked and trusted entry points for syntaxes 1-3 (unshifted src -= Smem, T-shifted src -= Smem<<TS, dst = src - (Smem << 16)) over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, with SXM extension, T-register shift bands, per-syntax C rules, OVM saturation with sticky destination overflow, and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     },
@@ -7380,7 +7380,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s15-and-smem-slice.md",
-        "anchor": "P3-S15: AND Smem slice (planned)"
+        "anchor": "P3-S15: AND Smem slice (implemented; local verification green)"
       },
       "assertion": "S15 is implemented and green: the catalog-free AND Smem pure leaf with checked and trusted entry points for dst &= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, ANDing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     }

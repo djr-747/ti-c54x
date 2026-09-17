@@ -631,9 +631,9 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)](plan/p3-s13-sth-shift-smem-store-slice.md)
 
-- [P3-S14: SUB Smem slice (planned)](plan/p3-s14-sub-smem-slice.md)
+- [P3-S14: SUB Smem slice (implemented; local verification green)](plan/p3-s14-sub-smem-slice.md)
 
-- [P3-S15: AND Smem slice (planned)](plan/p3-s15-and-smem-slice.md)
+- [P3-S15: AND Smem slice (implemented; local verification green)](plan/p3-s15-and-smem-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

@@ -11870,3 +11870,120 @@ entries are not rewritten after publication.
   PORTR/PORTW, far/XPC/timing, then
   worktree fan-out for the remaining
   leaves.
+
+## 2026-09-17 — S12/S13 activation-anchor correction
+
+- Correction naming the P3-S13 ledger
+  entry (`b071b72`): its status flip
+  changed the S12/S13 slice-doc headings
+  and plan links to `(implemented;
+  local verification green)` but left
+  the `E-PROJECT-P3-S12-STH-SHFT-ACTIVATION`
+  and `E-PROJECT-P3-S13-STH-SHIFT-ACTIVATION`
+  locator anchors at `(planned)`, which
+  reddened `check_evidence.py` (2 LOCATOR
+  errors) at HEAD. Anchors are synced to
+  the landed headings (W22 precedent).
+- Process fix: a ledger status flip must
+  sync the slice's ACTIVATION anchors in
+  `config/evidence.json` and
+  `docs/evidence-index.md` in the same
+  commit, or the gate reds on the flip.
+  Applied to S14/S15 below.
+
+## 2026-09-17 — P3-S14 SUB Smem pure leaf (slice 43)
+
+- Commit `ef121f6` lands the first
+  isolated-worktree fan-out pilot batch
+  with P3-S15. Triage ranked SUB Smem
+  (FORM-T2-02-01) leaf-ready on existing
+  seams; the pilot worker delivered four
+  bounded new files with no shared-file
+  edits and no commits, reviewed and
+  merged by the maintainer.
+- Checked/trusted syntaxes 1-3
+  (`src -= Smem`, `src -= Smem << TS`,
+  `dst = src - (Smem << 16)`) in
+  `src/isa/ops/arithmetic/op_sub_smem.[hc]`
+  (459/67 lines) keyed on the shared
+  SELECT_INDIRECT_ADDR7 and
+  SOURCE_DESTINATION_INDIRECT_ADDR7
+  layouts: SXM extension, T-register
+  0x00-0x1F left and 0x30-0x3F
+  arithmetic-right bands, fixed logical
+  shift left 16, checked 40-bit
+  subtraction, C from the bit-32 borrow
+  (syntaxes 1-2) and set-on-no-borrow
+  (syntax 3), OVM saturation to
+  0x007FFFFFFF/0xFF80000000 with sticky
+  destination overflow, TC preserved,
+  MOD0-MOD3 reads through the shared
+  MEMORY effect, exotic modes defer as
+  INVALID_OPERAND with the caller effect
+  untouched.
+- Proved by
+  `tests/unit/isa/ops/arithmetic/test_sub_smem.c`
+  (16 cases, CTest `ti_c54x.sub_smem_ops`),
+  wired in `sources.mk`/`sources.cmake`
+  and `tests.mk`/`CMakeLists.txt`.
+  Catalog rows plus dispatch binding stay
+  deferred to the inventory-owning slice;
+  FORM-T2-02-01 remains UNIMPLEMENTED.
+- Registry: `E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION`,
+  `REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS`
+  on the existing TI SUB section record
+  `E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5`,
+  `T-COMMON-P3-S14-SUB-SMEM-SEMANTICS`.
+  Slice doc born `(planned)` in the impl
+  commit, flipped here with its anchor.
+- Validation: focused binaries pass,
+  ASan/UBSan clean, CMake configure plus
+  `ctest -R` 2/2 pass, full `make test`
+  green. No knob change.
+
+## 2026-09-17 — P3-S15 AND Smem pure leaf (slice 44)
+
+- Commit `ef121f6` lands the second
+  fan-out pilot leaf. AND Smem
+  (FORM-T2-07-01, TI SPRU172C §AND,
+  p. 4-11: `dst &= Smem`) as checked and
+  trusted entry points in
+  `src/isa/ops/logical/op_and_smem.[hc]`
+  (203/48 lines): DESTINATION_INDIRECT_ADDR7
+  shape, single WORD16 READ over direct
+  page-0 or standard-indirect MOD0-MOD3
+  through the shared MEMORY effect,
+  zero-extended unshifted word combined
+  full-width into the destination
+  accumulator, C and TC preserved, no
+  SXM/OVM consumed, exotic modes defer
+  as INVALID_OPERAND.
+- Proved by
+  `tests/unit/isa/ops/logical/test_and_smem.c`
+  (13 checks, CTest `ti_c54x.and_smem_ops`),
+  wired in `sources.mk`/`sources.cmake`
+  and `tests.mk`/`CMakeLists.txt`.
+  Catalog row plus dispatch binding stay
+  deferred; FORM-T2-07-01 remains
+  UNIMPLEMENTED.
+- Registry: `E-PROJECT-P3-S15-AND-SMEM-ACTIVATION`,
+  `REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS`
+  on `E-TI-C54X-SPRU172C-S4-AND-P4-11`,
+  `T-COMMON-P3-S15-AND-SMEM-SEMANTICS`.
+  Slice doc born `(planned)` in the impl
+  commit, flipped here with its anchor.
+- Validation shared with the S14 entry
+  (same gate run). Evidence stands at
+  420 records, 672 requirements, 542
+  tests. No knob change.
+- Fan-out hardening in the same impl
+  commit: agent worktrees (`.muse`) are
+  now excluded from manifest reachability
+  (`IGNORED_TREE_NAMES`) and the knob
+  project-file walk, so the gate stays
+  green while leaf workers are in flight.
+- Follow-up work: catalog/dispatch
+  binding slices for SUB Smem and AND
+  Smem (needs TI opcode-diagram rows),
+  then the next pilot wave over the
+  triaged leaf-ready list.
