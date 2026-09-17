@@ -1,4 +1,4 @@
-### P3-S25: SUBB Smem rows (planned)
+### P3-S25: SUBB Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S25 evidence freeze. `SUBB Smem`
 (TI SPRU172C §SUBB, p. 4-191: `0000_111D_IAAAAAAA`, class 3A/3B)

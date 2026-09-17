@@ -12497,3 +12497,40 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `c4afcc6`, this ledger-only
   follow-up. Slice docs born `(planned)` in the impl commit,
   flipped here with their anchors.
+
+## 2026-09-18 — P3-S25 SUBB Smem row (slice 53)
+
+- Commit `dfa5622` lands SUBB Smem as SUBB_SMEM (0x0E00/0xFE00)
+  over SELECT_INDIRECT_ADDR7, wiring the landed P3-S24 plain plus
+  trusted `op_subb_smem` handlers through the catalog X-macro
+  (`ti_c54x_op_##handler` binding; dispatch include only, no
+  handler/layout/decode/CPU change). TI basis from
+  vendor/ti/spru172c.txt (§SUBB opcode diagram, p. 4-191:
+  0000_111D, class 3A/3B). New `ACCUMULATORS_STATUS_C_OVM` input
+  combination (accumulators plus C plus OVM, no SXM) registered in
+  the catalog header and schema allowlist. FORM-T2-02-11 binds at
+  SUBSET under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3.
+- Census pins move with the row (261 rows, ID count 262, lookup
+  25617 to 26129 as 512 insertions with zero neighbor moves,
+  SUBSET bindings 226 to 227, FORM coverage 102 to 103/205 at
+  50.244%, strict-complete bound steady at 34). Full `make test`
+  green (exit 0); evidence registry PASS at 686 requirements, 548
+  tests; focused contract modules (catalog, lookup generator,
+  add/sub plus catalog binding) 33 tests OK; knobs, boundaries,
+  manifests, and observer-artifact gates PASS inside `make test`.
+- Decisions: row-plus-registered-token slice mirroring the
+  AND/OR/XOR row pattern; PROJECT rows requirement cites
+  activation plus the two PROJECT inventory proofs only
+  (scope-leak rule); no knob added; long-offset and absolute Smem
+  extension words stay undecoded.
+- Process notes: a `pat[:-4]` string-surgery shortcut corrupted
+  pin lines (`len\(...\),2261` literals) on first edit; repaired
+  with explicit per-file replace plus exact-match edits and a
+  diff-shape audit (56 ID-count plus 7 lookup lines, no other
+  churn). Rule restated: no programmatic string surgery on pin
+  literals — per-file assert-counted edits plus grep audit only.
+- Follow-up: slice 54 SUBS Smem row plus FORM-T2-02-13, then
+  wave-5 (#lk immediates, Xmem, src/ASM) with manual briefs.
+- Split commit discipline: impl `dfa5622`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.

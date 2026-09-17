@@ -489,7 +489,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-SUBS-P4-194` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SUBS, `4-194`–`4-194` |
 | `E-PROJECT-P3-S23-SUBS-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s23-subs-smem-leaf-slice.md` anchor `P3-S23: SUBS Smem leaf (implemented; local verification green)` |
 | `E-PROJECT-P3-S24-SUBB-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s24-subb-smem-leaf-slice.md` anchor `P3-S24: SUBB Smem leaf (implemented; local verification green)` |
-| `E-PROJECT-P3-S25-SUBB-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s25-subb-smem-rows-slice.md` anchor `P3-S25: SUBB Smem rows (planned)` |
+| `E-PROJECT-P3-S25-SUBB-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s25-subb-smem-rows-slice.md` anchor `P3-S25: SUBB Smem rows (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
