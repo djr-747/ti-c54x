@@ -11505,3 +11505,80 @@ rewritten after publication.
   still awaits user approval, so remote
   CI has not yet seen the S4/S5/S8/S9
   fixes.
+
+## 2026-09-17 — P3-S10 STH syntax-1 Smem store (slice 39)
+
+- Commit `41d24f1` lands STH syntax 1
+  (`STH src, Smem`, TI SPRU172C §STH,
+  pp. 4-168–4-171, opcode
+  `1000_001S_IAAAAAAA`) plus fix for
+  two `OPCODE_ID_COUNT` pins. Seven
+  rows mirror the `STL_SMEM` family
+  with bit 9 set: `STH_SMEM`
+  (`0x8280`/`0xFEE0`) and MOD4–MOD10
+  (`0x82A0`–`0x82D0`/`0xFEF8`) through
+  the shared `ACCUMULATOR_ARF_MOD`/
+  `MOD4` layouts. Checked and trusted
+  leaves stage indirect, indexed,
+  circular, and reverse-carry MEMORY
+  WRITE effects carrying bits 31–16 of
+  the selected accumulator. All rows
+  `UNRESOLVED` repeatability (no TI
+  note; `STL_SMEM` precedent).
+  `FORM-T2-20-05` lands `SUBSET` with
+  all seven symbols under the reused
+  `STL_SMEM` mode token. No `run.c`
+  change. Direct-DMA7 and shifted
+  syntaxes 2–4 stay for later slices.
+- Decisions: value derivation is the
+  only new logic — `(raw40 >> 16)`
+  where STL takes the low word — so
+  the op files derive from the STL
+  sources with the shared commons
+  untouched. My own CPU-test vector
+  for B was miscomputed (`0xCDEF`
+  for `0x00ABCDEF01>>16`); the leaf
+  was right, the test was wrong, fixed
+  to `0xABCD`. Leaf-first debugging
+  order stands: run the leaf lane
+  before assuming the CPU lane.
+- Contract pins: rows 224 to 231,
+  `OPCODE_ID_COUNT` 225 to 232, lookup
+  20513 to 20673 (+160 entries, zero
+  neighbor moves), bound forms 90 to
+  91 (44.390%), `SUBSET` 191 to 198.
+  The catalog order test needed a
+  positional shift: `STH_SMEM` pins
+  rows[6] after `STL_SMEM`, later
+  indices shift by one (S3z
+  precedent). `RETED`/`RETE` near-miss
+  tables were unaffected this time
+  (no 0x82xx words targeted). No knob
+  change.
+- Process slip, repeated: the same two
+  `OPCODE_ID_COUNT` pins
+  (`test_xc.c`, repeat eligibility)
+  missed the slice commit again and
+  landed as a fix commit. The slice
+  checklist now names those two files
+  explicitly for every row-adding
+  slice.
+- Evidence stands at 409 records, 661
+  requirements, 533 tests (533
+  `PASSING`, 0 `PLANNED`), matching the
+  S10 projection exactly: two TI
+  source records, one activation
+  record, three requirements, two test
+  records.
+- Validation is GREEN: `make test`
+  clean (exit 0); evidence, inventory,
+  and lookup gates pass. Both RED
+  lanes observed RED (missing
+  `op_sth_smem.h`) before GREEN.
+- Follow-up work: STH syntaxes 2–4,
+  STLM, S1-family MMR/stack moves, S6
+  PORTR/PORTW, far/XPC/timing. Push of
+  the local stack to `origin/main`
+  still awaits user approval, so remote
+  CI has not yet seen the recent
+  fixes.
