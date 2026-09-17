@@ -10771,3 +10771,42 @@ rewritten after publication.
   ``A FD E26C 000``; the pinned value is `0xFFDE26C000` (40-bit
   two's-complement of `-567885824`), as the same entry states and the
   `ti_c54x.macsu_dual_ops` / `ti_c54x.cpu_macsu_dual` tests pin.
+## 2026-09-17 — P3-S3t MACR Xmem,Ymem dual lock-in slice (slice 28)
+
+- Commit `cb46eb1` closes the census MACR dual
+  syntaxes (`FORM-T2-04-05`/`FORM-T2-04-06`,
+  TI SPRU172C `MAC[R]` syntax 2, opcode
+  `1011_0RSD_XXXX_YYYY`, pp. 4-82–4-84)
+  through the shared `MAC_DUAL` rows with
+  R=1: no catalog, inventory, production,
+  layout, or pin change was needed. The R=1
+  rounding path locks end to end on the
+  maintained suites — the `0xB532` leaf
+  completion (`(0x5678` shifted by FRCT`) x
+  `0x1234` + 4 rounded to `0x0C4C0000` into
+  B), the `0xB5BA` CPU retirement with MOD2
+  post-increments, and the new trusted R=1
+  equivalence lane through the trusted MAC
+  dual entry point. The two R-variant forms
+  stay `UNIMPLEMENTED` with empty symbol
+  lists by the recorded S3f R-sharing
+  convention (shared rows cannot
+  double-bind). README remaining-work wording
+  drops `MACR`. `git diff --check` clean.
+- The slice is lock-in, not RED/GREEN: the
+  checked-path vectors predate it (S3g) and
+  pass unchanged; the only new executable
+  content is the trusted rounding lane.
+- Evidence stands at 382 records, 629
+  requirements, 502 tests (502 `PASSING`,
+  0 `PLANNED`), matching the S3t anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  482/482 on the working Debug build;
+  sanitizer MAC dual suites clean; `make test`
+  clean; evidence gate passes (382/629/502).
+- Follow-up work: `MPYR` (closed at Smem;
+  dual has no R bit)/`SQDST` leaves, S4 XC,
+  S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
+  MOD3, dual replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
