@@ -11053,3 +11053,46 @@ rewritten after publication.
   STM/MMR, S6 PORTR/PORTW, AR6/AR7
   dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+
+## 2026-09-17 — P3-S3y MPYR Smem lock-in slice (slice 33)
+
+- Commit `77c7278` locks the census MPYR
+  Smem syntax (`FORM-T2-03-02`, TI
+  SPRU179C `MPY` syntax 1 with `rnd()`,
+  evidenced under the existing
+  SPRU172C `MPY` pp. 4-101–4-103 source
+  record) through the shared `MPY_SMEM`
+  row with R=1: no catalog, inventory,
+  production, layout, or pin change was
+  needed. The `0x2200` leaf completion
+  (T `0x1234` times Smem `0x5678`
+  rounded to `0x6260000` into A per TI
+  MPY Example 4) and the `0x2320` CPU
+  retirement already pin the checked
+  path. One new executable proof:
+  trusted R=1 completion through
+  `ti_c54x_trusted_op_mpy_smem` on
+  `0x2200`. The MPYR form stays
+  `UNIMPLEMENTED` with an empty symbol
+  list by the recorded R-sharing
+  convention (shared rows cannot
+  double-bind). README remaining-work
+  wording drops MPYR. `git diff --check`
+  clean.
+- Evidence stands at 388 records, 639
+  requirements, 512 tests (512 `PASSING`,
+  0 `PLANNED`), matching the S3y anchor
+  projections exactly.
+- Validation is GREEN: full CMake CTest
+  486/486; sanitizer MPY lane clean
+  (clean flagged rebuild, direct run
+  exit 0, `build-fast/` removed after);
+  evidence gate passes (388/639/512).
+- Follow-up work: the `MASAR` Smem
+  question (syntax 1 carries no R bit),
+  `SQDST` (needs a two-accumulator-write
+  effect channel that does not exist
+  yet), S4 XC, S1 STM/MMR, S6
+  PORTR/PORTW, AR6/AR7 dual-Y, MOD3, dual
+  replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
