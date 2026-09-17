@@ -48,6 +48,8 @@
 #include "branch/op_xc.h"
 #include "branch/op_bacc.h"
 #include "branch/op_baccd.h"
+#include "branch/op_cala.h"
+#include "branch/op_calad.h"
 #include "branch/op_ret.h"
 #include "branch/op_retd.h"
 #include "branch/op_rete.h"

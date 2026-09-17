@@ -2,6 +2,8 @@
 ti_c54x_core_sources += src/isa/ops/branch/op_b_pmad.c \
     src/isa/ops/branch/op_bacc.c \
     src/isa/ops/branch/op_baccd.c \
+    src/isa/ops/branch/op_cala.c \
+    src/isa/ops/branch/op_calad.c \
     src/isa/ops/branch/op_bc_pmad.c \
     src/isa/ops/branch/op_bcd.c \
     src/isa/ops/branch/op_banz.c \

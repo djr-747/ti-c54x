@@ -154,6 +154,9 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)1024U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_FRCT \
     ((ti_c54x_input_resource_mask)2048U)
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STACK_POINTER \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STACK_POINTER))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_C))

@@ -31,6 +31,10 @@ ti_c54x_add_unit_test(cpu_xc test_cpu_xc.c)
 ti_c54x_add_unit_test(cpu_bacc test_cpu_bacc.c)
 # P3 slice 4 RED contract: BACCD CPU retirement.
 ti_c54x_add_unit_test(cpu_baccd test_cpu_baccd.c)
+# P3 slice 9 RED contract: CALA CPU retirement.
+ti_c54x_add_unit_test(cpu_cala test_cpu_cala.c)
+# P3 slice 9 RED contract: CALAD CPU retirement.
+ti_c54x_add_unit_test(cpu_calad test_cpu_calad.c)
 # W67B RED contract: RETD CPU retirement.
 ti_c54x_add_unit_test(cpu_retd test_cpu_retd.c)
 # W67C RED contract: CALLD CPU retirement.

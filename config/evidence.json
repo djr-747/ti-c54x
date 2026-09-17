@@ -7037,6 +7037,112 @@
         "anchor": "P3-S8: BACC accumulator-addressed branch family slice (planned)"
       },
       "assertion": "S8 is implemented and green: two new accumulator-addressed branch catalog rows BACC (0xF4E2) and BACCD (0xF6E2) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves branching PC to the 16 low bits of the selected accumulator unconditionally with no status, accumulator, T-register, or MEMORY effect; CPU retirement retiring BACC followers normally and BACCD followers through the two-word delay window with T preservation and no endpoint traffic. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-12-02 lands SUBSET with BACC under ACCUMULATOR_NONDELAYED and BACCD under ACCUMULATOR_DELAYED."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-CALA-OPCODE-P4-24-4-25",
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "CALA encodes as 1111_010S_1110_0011 (catalog pin 0xF4E3 under mask 0xFEFF): bit 9 (Z) clear selects the nondelayed call, bit 8 (S) selects accumulator A (0) or B (1) as the call target source."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-CALA-SEMANTICS-P4-24-4-25",
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "CALA decrements SP by 1, pushes (PC) + 1 to TOS, then replaces PC with the 16 low bits of the S-selected accumulator; no status-bit effects are claimed. The worked example sends A 00 0000 3000 with PC 0025 and SP 1111 to TOS[1110] 0026, SP 1110, and PC 3000."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-CALAD-OPCODE-P4-24-4-25",
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "CALAD encodes as 1111_011S_1110_0011 (catalog pin 0xF6E3 under mask 0xFEFF): bit 9 (Z) set selects the delayed call, bit 8 (S) selects accumulator A (0) or B (1) as the call target source."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-CALAD-SEMANTICS-P4-24-4-25",
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "CALAD decrements SP by 1, pushes (PC) + 3 to TOS, then replaces PC with the 16 low bits of the S-selected accumulator after two delay-slot words execute; no status-bit effects are claimed. The worked example sends B 00 0000 2000 with PC 0025 and SP 1111 to TOS[1110] 0028, SP 1110, and PC 2000 after the slots."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-CALA-NONREPEATABLE-P4-24-4-25",
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "The CALA[D] description carries an explicit not-repeatable note, so the CALA and CALAD rows are repeatability INELIGIBLE without further evidence."
+    },
+    {
+      "id": "E-PROJECT-P3-S9-CALA-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S9: CALA accumulator-addressed call family slice (planned)"
+      },
+      "assertion": "S9 is implemented and green: two new accumulator-addressed call catalog rows CALA (0xF4E3) and CALAD (0xF6E3) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves staging a MEMORY STACK_PUSH_ACCUMULATOR(_DELAYED) TOS WRITE with the select in arf and a zero return-address placeholder, gated on SP knownness and selected-accumulator knownness; the S5 seam root derives the PC target from the frozen input snapshot and stages PC+1 (CALA) or PC+3 (CALAD) return addresses. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-13-01 lands SUBSET with CALA under ACCUMULATOR_NONDELAYED and CALAD under ACCUMULATOR_DELAYED."
     }
   ],
   "requirements": [
@@ -16565,6 +16671,55 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S9-CALA-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute the CALA and CALAD rows as accumulator-addressed subroutine calls: carry the S select in arf through the shared ACCUMULATOR_SOURCE layout into a MEMORY STACK_PUSH_ACCUMULATOR(_DELAYED) TOS WRITE with a zero return-address placeholder, gate on SP knownness and selected-accumulator knownness, stage no status, accumulator, or T-register effect, and retire both rows as repeatability INELIGIBLE on the explicit TI not-repeatable statement. The S5 seam root derives the PC target and the PC+1/PC+3 return addresses.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CALA-OPCODE-P4-24-4-25",
+        "E-TI-C54X-SPRU172C-S4-CALA-SEMANTICS-P4-24-4-25",
+        "E-TI-C54X-SPRU172C-S4-CALAD-OPCODE-P4-24-4-25",
+        "E-TI-C54X-SPRU172C-S4-CALAD-SEMANTICS-P4-24-4-25",
+        "E-TI-C54X-SPRU172C-S4-CALA-NONREPEATABLE-P4-24-4-25"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S9-CALA-SEMANTICS",
+        "T-COMMON-P3-S9-CALAD-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S9-CALA-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire CALA with the TOS WRITE carrying PC+1 at old SP - 1 and PC replaced by the accumulator target, and CALAD with the TOS WRITE carrying PC+3 through the two-word delay window before the deferred accumulator target takes effect, with SP/PC/RTN-only movement, T and accumulator preservation, and no endpoint traffic on MMR-routed pushes.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CALA-SEMANTICS-P4-24-4-25",
+        "E-TI-C54X-SPRU172C-S4-CALAD-SEMANTICS-P4-24-4-25"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S9-CALA-CPU",
+        "T-PROJECT-P3-S9-CALAD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S9-CALA-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the CALA and CALAD production symbols to FORM-T2-13-01 at SUBSET under the ACCUMULATOR_NONDELAYED and ACCUMULATOR_DELAYED addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S9-CALA-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -19758,7 +19913,8 @@
         "REQ-PROJECT-P3-S3S-MACSU-INVENTORY",
         "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY",
         "REQ-PROJECT-P3-S4-XC-INVENTORY",
-        "REQ-PROJECT-P3-S8-BACC-INVENTORY"
+        "REQ-PROJECT-P3-S8-BACC-INVENTORY",
+        "REQ-PROJECT-P3-S9-CALA-INVENTORY"
       ]
     },
     {
@@ -24055,6 +24211,62 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S8-BACC-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S9-CALA-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_cala.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cala"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S9-CALA-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S9-CALAD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_calad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.calad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S9-CALA-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S9-CALA-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_cala.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_cala"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S9-CALA-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S9-CALAD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_calad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_calad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S9-CALA-CPU-RETIREMENT"
       ]
     }
   ]

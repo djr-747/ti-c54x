@@ -1443,8 +1443,11 @@
       "mnemonic": "CALA",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "CALA",
+        "CALAD"
+      ]
     },
     {
       "id": "FORM-T2-13-02",
@@ -3603,6 +3606,18 @@
     {
       "catalog_symbol": "BACCD",
       "form_id": "FORM-T2-12-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_DELAYED"
+    },
+    {
+      "catalog_symbol": "CALA",
+      "form_id": "FORM-T2-13-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "CALAD",
+      "form_id": "FORM-T2-13-01",
       "coverage": "SUBSET",
       "addressing_subset": "ACCUMULATOR_DELAYED"
     },

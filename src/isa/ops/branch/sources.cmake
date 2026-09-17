@@ -3,6 +3,8 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_b_pmad.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_bacc.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_baccd.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_cala.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_calad.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_bc_pmad.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_bcd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_banz.c"

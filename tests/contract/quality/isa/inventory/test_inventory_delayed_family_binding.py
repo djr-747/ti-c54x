@@ -4,7 +4,7 @@
 The 205-form denominator counts TI summary-table families, never delay
 slots. Every DELAYED-subset catalog binding must share its form with a
 non-delayed sibling under the same form ID. Future delayed rows
-(RPTBD, FBD, RETFD, CALAD, RC-family RCD) extend
+(RPTBD, FBD, RETFD, RC-family RCD) extend
 EXPECTED_DELAYED and compose the same way; a delayed-only form ID is a
 denominator change and must fail here first.
 """
@@ -15,6 +15,7 @@ from tools.isa.inventory.schema import load_inventory
 EXPECTED_DELAYED = {
     "BACCD": "FORM-T2-12-02",
     "BD": "FORM-T2-12-01",
+    "CALAD": "FORM-T2-13-01",
     "BCD": "FORM-T2-12-04",
     "BANZD": "FORM-T2-12-03",
     "CALLD": "FORM-T2-13-02",
