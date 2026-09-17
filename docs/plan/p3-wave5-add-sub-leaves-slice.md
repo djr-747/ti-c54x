@@ -1,4 +1,4 @@
-### P3-WAVE5: ADD/SUB leaf fan-out (planned)
+### P3-WAVE5: ADD/SUB leaf fan-out (implemented; local verification green)
 
 This immutable anchor heads the P3-WAVE5 evidence freeze. Six
 catalog-free handler leaves land through the second managed

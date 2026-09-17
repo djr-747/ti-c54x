@@ -12574,3 +12574,42 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `d9ef620`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-WAVE5 ADD/SUB leaf fan-out (second managed fan-out)
+
+- Commit `c4b5b21` merges six catalog-free ADD/SUB handler leaves
+  from three isolated-worktree workers: op_add_lk/op_sub_lk
+  (syntaxes 7-8), op_add_xmem/op_sub_xmem (syntax 5 over the
+  0x9000/0x9200 fixed prefixes), op_add_src_asm/op_sub_src_asm
+  (syntax 10 over 0xF480/0xF481), each plain plus trusted with
+  SXM-widened shifts, OVM saturation, C written, TC preserved.
+  TI basis dual-pinned per family (§ADD pp. 4-3–4-4, §SUB
+  pp. 4-186–4-187); syn7 worked examples as vectors. Review
+  found all three faithful; worker B even documented the
+  0x9200/0x9300 S-encoding relationship correctly. 74 cases
+  across six suites (12/12/12/12/13/13; the impl message says 72
+  — corrected here), ASan/UBSan clean, full `make test` green
+  from clean (exit 0). Evidence: 3 TI section records plus this
+  activation, 6 ARCHITECTURAL requirements, 6 COMMON test records
+  (447 evidence, 693 requirements, 554 tests).
+- Fan-out mechanics: triage agent first (8 LEAF-NEEDED forms in
+  3 disjoint families, nothing BLOCKED), then three workers with
+  maintainer-sourced briefs carrying exact opcode words and TI
+  vectors. Two merges collided (B/C context drift after A on the
+  shared manifests); maintainer applied end-of-list plus
+  relative-anchor placement instead. Lesson restated: shared
+  wiring files serialize at merge even with staggered anchors —
+  next time hand each worker a disjoint wiring file or merge
+  strictly A-B-C with rebase between workers.
+- Gate failures fixed in-tree: ARCHITECTURAL requirements must
+  cite COMMON_TI evidence only (activation record dropped from
+  the six evidence lists, index rows realigned). Lesson: mirror
+  wave-4 link shapes exactly (TI-only evidence on ARCHITECTURAL
+  requirements).
+- No catalog rows, dispatch, decode, or CPU change; all eight
+  forms stay UNIMPLEMENTED. Follow-up: rows slices for the eight
+  #lk/Xmem/src-ASM forms, then the triage-adjacent tails (ADD/SUB
+  Smem[,SHIFT] ord4, ADDM #lk, MPY/MAC #lk/dual).
+- Split commit discipline: impl `c4b5b21`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.
