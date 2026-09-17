@@ -10604,3 +10604,90 @@ rewritten after publication.
   MOD3, dual replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
 
+## 2026-09-17 — P3-S3r MACD Smem,Pmad delay-write slice (slice 26)
+
+- Commit `04e8cbe` lands `FORM-T2-04-11` (TI
+  SPRU172C `MACD` p. 4-87, word 0
+  `0111_101S_IAAA_AAAA` plus verbatim `pmad`
+  second word) as one `MACD_SMEM` catalog row
+  at `0x7A00` under mask `0xFE00` carrying 512
+  S/I/addr7 encodings through the shared S3q
+  `DESTINATION_INDIRECT_ADDR7_PMAD16` layout
+  (no new layout) with `UNRESOLVED`
+  repeatability (two-word STM precedent) and
+  `ACCUMULATORS_STATUS_FRCT_OVM` resources
+  (MPYA_SMEM precedent: T written, not read; no
+  R rounding bit). Checked and trusted leaves
+  stage direct page-0 and standard-indirect
+  MOD0-MOD2 Smem DATA reads paired with an
+  absolute PROGRAM coefficient read with
+  exotic-mode deferral and read-phase Smem T
+  load; pair completion runs `(dst)` plus
+  `(Smem)`x`(pmad)` into the S-selected
+  accumulator with ADD select and no rounding.
+  The delay sidecar rides the new
+  `write_smem_delay` `MEMORY` carrier flag
+  (second boolean in the existing padding; the
+  48-byte effect ABI is unchanged and only the
+  DATA+PROGRAM pair kind may set it, enforced
+  by carrier validation): after both reads
+  complete, the pair root issues a third-ID
+  DATA WRITE of the Smem word to `Smem+1` with
+  16-bit wraparound through the reused child
+  transaction while the pair wrapper holds
+  staged values in `COMPLETE`, before the Smem
+  post-access commit and PC publish. WAIT
+  resumes only the delay WRITE under the third
+  ID, a delay FAULT or cancel publishes
+  nothing, and cancel/reset route by
+  pair-versus-delay child state with no new
+  root phase and no CPU resume-path change.
+  The delay stage lives in the pair-root owner
+  (`memory_instruction_data_program.c` at 744
+  lines) so the shared root transaction stays
+  at 798 lines under the 800 gate. No new
+  knob, resource, layout, public API, or
+  observer path; dispatch bindings (checked
+  and trusted) ride the catalog `.def` X-macro.
+- RED was observed on real contracts throughout:
+  the CPU test failed on a nonzero
+  `read_value_word` in the fake WRITE
+  observation (bus contract requires zero;
+  fixed in the fake, production code untouched),
+  the delay test failed on a mid-flight
+  accumulator read of reset-unknown state
+  (replaced with PC/AR non-publication pins),
+  and the wraparound case failed prepare on
+  MOD2 post-increment from `0xFFFF` (address
+  planner rejects the wrap; the case now uses
+  MOD0 `*AR5`, which is the reachable
+  wraparound shape). A flag-off isolation run
+  proved the leaf and commit retire cleanly
+  without the sidecar. Three cross-slice
+  near-miss lanes moved: the MACP invalid lane
+  `0x7A00` to `0x7C00` and the BCD/CCD bit-15
+  flips now pin the `MACD_SMEM` sibling.
+  `git diff --check` clean. New files peak at
+  324 lines (ops test); no split required.
+- Neighbor pins move to 206 IDs, 205
+  rows/bindings (172 SUBSET plus 33 COMPLETE),
+  17,393 lookup entries, 81/205 (39.512%)
+  with the `FORM-T2-04-11` contract set;
+  strict stays 33/205 (16.098%). The `0x7A00`
+  neighborhood borrows no other row. Evidence
+  stands at 379 records, 623 requirements, 498
+  tests (498 `PASSING`, 0 `PLANNED`), matching
+  the S3r anchor projections exactly.
+- Validation is GREEN: full CMake CTest
+  480/480 on the working Debug build; full
+  sanitizer CMake/CTest 480/480 (ASan/UBSan);
+  `make test` clean (all binaries plus knobs,
+  boundaries, manifests, evidence, inventory,
+  observer gates); contract unittest discovery
+  OK; evidence gate passes (379/623/498);
+  inventory provisional 81/205 with strict
+  33/205.
+- Follow-up work: `MACSU`/`MACR`/`MPYR`/`SQDST`
+  leaves, S4 XC, S1 STM/MMR, S6 PORTR/PORTW,
+  AR6/AR7 dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
