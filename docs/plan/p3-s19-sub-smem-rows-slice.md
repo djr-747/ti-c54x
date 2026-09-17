@@ -1,4 +1,4 @@
-### P3-S19: SUB Smem rows (planned)
+### P3-S19: SUB Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S19 evidence freeze. `SUB Smem`
 syntaxes 1-3 (TI SPRU172C §SUB, pp. 4-186-4-187) land three catalog

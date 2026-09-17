@@ -12318,3 +12318,43 @@ entries are not rewritten after publication.
   long-offset and absolute Smem extension words stay undecoded.
 - Split commit discipline: impls `6de7192` and `f3a4731`, this
   ledger-only follow-up.
+
+## 2026-09-18 — P3-S19 SUB Smem rows (slice 47)
+
+- Commit `cd6cfb9` closes the P3-S14 pilot deferral: SUB Smem
+  syntaxes 1-3 land as SUB_SMEM (0x0800/0xFE00), SUB_SMEM_TS
+  (0x0C00/0xFE00), and SUB_SMEM_SH16 (0x4000/0xFC00) over the shared
+  ADD-Smem layouts, dispatching to the landed plain plus trusted
+  op_sub_smem handlers by the catalog X-macro. TI basis is
+  dual-sourced in-session from vendor/ti/spru172c.txt (§SUB opcode
+  diagrams, pp. 4-186-4-187: 0000_100S, 0000_110S, 0100_00SD, class
+  3A/3B), recorded as E-TI-C54X-SPRU172C-S4-SUB-SYNTAX123-OPCODE.
+  FORM-T2-02-01/02/03 bind at SUBSET (one form per syntax, mirroring
+  ADD 01-01/02/03) under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3.
+- Census pins move with the three rows (257 rows, ID count 258,
+  lookup 22033 to 24081 with zero neighbor moves, SUBSET bindings
+  220 to 223, FORM coverage 96 to 99/205 at 48.293%, strict-complete
+  bound steady at 34). Three near-miss absorptions pin the new
+  words: LD-SHIFT16 0x4080/0x4090 and ST-T 0x0C90 as
+  SUB_SMEM_SH16/SUB_SMEM_TS siblings. Full `make test` green
+  (exit 0): C/Python suites, evidence registry PASS at 431 evidence,
+  680 requirements, 546 tests, knobs/boundaries/manifests PASS.
+- Decisions: rows-only slice (no handler/layout/decode/CPU change);
+  PROJECT rows requirement cites activation plus the two PROJECT
+  inventory proofs only (COMMON TI opcode record and COMMON handler
+  proof stay out by the scope-leak rule, caught and fixed
+  pre-commit); no knob added; syntax 4/Xmem/dual/#lk/accumulator
+  syntaxes plus SUBB/SUBC/SUBS stay unimplemented.
+- Wave-3 triage result recorded: all arch seams S1-S6 verified
+  landed in code; RPT/ST-T/STL candidates eliminated (already
+  bound); every remaining empty form needs new TI facts (Smem
+  opcode diagrams for AND/OR/XOR rows next) or new seams
+  (RPTB/RPTZ, far addressing excluded by the arch criterion).
+  Maintainer sources TI facts from vendor/ti/ per slice; delegated
+  triage stays timeboxed per the wave-3 stop lesson.
+- Follow-up: slices 48-50 (AND/OR/XOR Smem rows on the same
+  pattern, one family per commit), then worker fan-out for new
+  handler-leaves with manual-sourced TI briefs.
+- Split commit discipline: impl `cd6cfb9`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.
