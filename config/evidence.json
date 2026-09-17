@@ -6245,6 +6245,24 @@
       "assertion": "MPYA syntax 2 is MPYA dst with opcode word 1111 010D 1000 1100 (D bit 8 selects A/B), one program word, and execution (T) x (A(32-16)) into dst with no memory operand and no T update. The operation is affected by FRCT and OVM and affects OVdst. Example 2 (MPYA B, A FF 8765 1111, B 00 0000 0320, T 4567, FRCT 0) yields B FF DF4D B2A3 with A and T unchanged. The SPRU179C algebraic restatement (dst = T * hi(A), p. 4-107) agrees."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SQUR",
+        "printed_page_start": "4-160",
+        "printed_page_end": "4-161"
+      },
+      "assertion": "SQUR syntax 1 is SQUR Smem,dst with opcode bits 15:9 0010011 (D bit 8 selects A/B, I bit 7, Smem field 6:0), one program word, and execution (Smem) into T with (Smem) x (Smem) into dst. The operation is affected by FRCT and OVM and affects OVdst. Example 1 (SQUR 30, B, mem[031E] 000F, FRCT 0) yields B 00 0000 00E1 and T 000F. The SPRU179C algebraic restatement (B = square(@30), p. 4-163) agrees."
+    },
+    {
       "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6409,6 +6427,22 @@
         "anchor": "P3-S3j: MPYA-dst register-only vertical slice (planned)"
       },
       "assertion": "S3j is implemented and green: one MPYA_DST catalog row at 0xF48C under mask 0xFEFF carrying both D encodings through the reused MAX_MIN_ACC single-destination-bit layout with ELIGIBLE repeatability, checked and trusted leaves completing (T) x (A(32-16)) into dst through the multiply core with STORE select and no rounding (the S3d hi(A) feed with T and multiplicand roles swapped, no memory effect, no T update), and CPU retirement proving TI MPYA Example 2 (A FF 8765 1111, T 4567, FRCT 0 yield B FF DF4D B2A3 with A and T unchanged). Two exact rows would collide on the unmasked D bit, so one MASKED row is the honest shape; no new layout, resource, effect, address, state, CPU, public-API, or manifest seam is added. FORM-T2-03-07 lands SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P3-S3K-SQUR-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3k: SQUR-Smem square vertical slice (planned)"
+      },
+      "assertion": "S3k is implemented and green: one SQUR_SMEM catalog row at 0x2600 under mask 0xFE80 carrying 512 encodings through the new DESTINATION_INDIRECT_ADDR7 layout (D plus indirect/addr7, no round or select bits) with ELIGIBLE repeatability, checked and trusted leaves staging direct page-0 and standard-indirect MOD0-MOD3 reads with the read-phase T load and exotic-mode deferral, read-value STORE completion of Smem squared into the D-selected accumulator through the multiply core, and CPU retirement proving TI SQUR Example 1 (mem[031E] 000F, FRCT 0 yield B 00 0000 00E1 and T 000F). FORM-T2-03-09 lands SUBSET; syntax 2 stays UNIMPLEMENTED for its own register-only slice."
     }
   ],
   "requirements": [
@@ -14783,6 +14817,92 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3K-SQUR-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog one SQUR_SMEM row at first-word value 0x2600 under mask 0xFE80 with one program word, 512 encodings, the DESTINATION_INDIRECT_ADDR7 layout, ELIGIBLE repeatability by the Table 2-28 omission (no SQUR entry), and accumulator/T/FRCT/OVM inputs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161",
+        "E-TI-C54X-SPRU172C-T2-28-REPEATABLE-OMISSION-P2-20-2-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3K-SQUR-SMEM-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3K-SQUR-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all SQUR_SMEM encodings with bundle copy and D/I/addr7 extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3K-SQUR-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3K-SQUR-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete SQUR Smem as (Smem) x (Smem) into the D-selected accumulator through the multiply core with STORE select, FRCT/OVM handling, no rounding, and read-phase T load of the Smem word, per TI SQUR Example 1, at the semantic leaf.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3K-SQUR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3K-SQUR-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire SQUR Smem on the CPU per TI SQUR Example 1 with accumulator write, T-register commit, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQUR-P4-160-4-161"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3K-SQUR-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3K-SQUR-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Provide the DESTINATION_INDIRECT_ADDR7 operand layout extracting the D destination bit plus indirect/addr7 fields with no round or select bits.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3K-SQUR-SMEM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3K-DESTINATION-INDIRECT-ADDR7-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3K-SQUR-SMEM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the SQUR_SMEM catalog row to FORM-T2-03-09 at SUBSET coverage over direct page-0 and standard-indirect MOD0-MOD3 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3K-SQUR-SMEM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -17963,7 +18083,8 @@
         "REQ-PROJECT-P3-S3C-MPY-INVENTORY",
         "REQ-PROJECT-P3-S3D-MPYA-INVENTORY",
         "REQ-PROJECT-P3-S3E-MAS-INVENTORY",
-        "REQ-PROJECT-P3-S3J-MPYA-DST-INVENTORY"
+        "REQ-PROJECT-P3-S3J-MPYA-DST-INVENTORY",
+        "REQ-PROJECT-P3-S3K-SQUR-SMEM-INVENTORY"
       ]
     },
     {
@@ -21307,6 +21428,76 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3J-MPYA-DST-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3K-SQUR-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_squr_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3K-SQUR-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3K-SQUR-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_squr_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3K-SQUR-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3K-SQUR-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_squr_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.squr_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3K-SQUR-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3K-SQUR-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_squr_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_squr_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3K-SQUR-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3K-DESTINATION-INDIRECT-ADDR7-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_destination_indirect_addr7_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.destination_indirect_addr7_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3K-SQUR-LAYOUT"
       ]
     }
   ]

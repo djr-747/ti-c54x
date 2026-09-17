@@ -78,6 +78,8 @@ $(eval $(call ti_c54x_add_test,mpya_smem_metadata,isa/catalog,test_mpya_smem_met
 $(eval $(call ti_c54x_add_test,mas_smem_metadata,isa/catalog,test_mas_smem_metadata.c))
 # P3-S3 RED contract: MPYA dst register-only row.
 $(eval $(call ti_c54x_add_test,mpya_dst_metadata,isa/catalog,test_mpya_dst_metadata.c))
+# P3-S3 RED contract: SQUR Smem square row.
+$(eval $(call ti_c54x_add_test,squr_smem_metadata,isa/catalog,test_squr_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))

@@ -105,6 +105,9 @@ ti_c54x_add_unit_test(mas_smem_metadata
 # P3-S3 RED contract: MPYA dst register-only row.
 ti_c54x_add_unit_test(mpya_dst_metadata
                       test_mpya_dst_metadata.c)
+# P3-S3 RED contract: SQUR Smem square row.
+ti_c54x_add_unit_test(squr_smem_metadata
+                      test_squr_smem_metadata.c)
 # W67B RED contract: RETD row metadata.
 ti_c54x_add_unit_test(retd_metadata
                       test_retd_metadata.c)
