@@ -1693,6 +1693,24 @@
       "assertion": "SPRU172C ADD syntax 9 is ADD src [, SHIFT] [, dst]. S at bit 9 selects the source accumulator, D at bit 8 selects the destination, and the five-bit SHIFT field is a signed two's-complement count from -16 through 15. Its execution is (dst or src) plus (src shifted by SHIFT) written to dst; the source shift precedes the ALU operation. The form is one program word, class 1, is affected by SXM and OVM, and affects C and the destination overflow flag. Summary cycle values are not adopted as common timing evidence."
     },
     {
+      "id": "E-TI-C54X-SPRU179C-S4-ADD-P4-4-4-5-SMEM",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU179C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD",
+        "printed_page_start": "4-4",
+        "printed_page_end": "4-5"
+      },
+      "assertion": "ADD syntax 1 is src += Smem with opcode 0000 000S IAAA AAAA (S at bit 8, one program word). ADD syntax 2 is src += Smem << TS with opcode 0000 010S IAAA AAAA (S at bit 8, T-register shift count read from the T register, one program word). ADD syntax 3 is dst = src + (Smem << 16) with opcode 0011 11SD IAAA AAAA (S at bit 9, D at bit 8, one program word). All three are affected by SXM and OVM and affect C and the destination overflow flag; for syntax 3, if the addition generates a carry C is set to 1 and otherwise C is not affected. Syntaxes 1, 2, and 3 are Class 3A and 3B. Summary cycle values are not adopted as common timing evidence."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5",
       "immutable": true,
       "state": "PINNED",
@@ -6829,6 +6847,22 @@
         "anchor": "P3-S3y: MPYR Smem lock-in slice (planned)"
       },
       "assertion": "S3y is implemented and green: MPYR Smem retires through the shared MPY_SMEM row with R=1, locked by the 0x2200 leaf completion (T 0x1234 times Smem 0x5678 rounded to 0x6260000 into A per TI MPY Example 4), the 0x2320 CPU retirement, and trusted R=1 completion through the trusted MPY Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-03-02 stays UNIMPLEMENTED with an empty symbol list by the recorded R-sharing convention."
+    },
+    {
+      "id": "E-PROJECT-P3-S3Z-ADD-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3z: ADD Smem slice (planned)"
+      },
+      "assertion": "S3z is implemented and green: three new ADD_SMEM (0x0000/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), ADD_SMEM_TS (0x0400/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), and ADD_SMEM_SH16 (0x3C00/0xFC00, shared SOURCE_DESTINATION_INDIRECT_ADDR7 layout) catalog rows with 2048 added lookup entries and zero neighbor moves; checked and trusted leaves over the arithmetic core with SXM extension, T-register and fixed-16 shifts, OVM saturation with sticky OVdst, and per-syntax C rules; and CPU retirement of derived vectors for all three syntaxes (direct plus MOD2 indirect, read-phase behavior, T preservation, C write/preserve). All three rows are UNRESOLVED repeatability with no Table 2-28 ADD-Smem fact on record. FORM-T2-01-01/02/03 land SUBSET."
     }
   ],
   "requirements": [
@@ -15957,6 +15991,21 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the three ADD_SMEM, ADD_SMEM_TS, and ADD_SMEM_SH16 catalog rows to FORM-T2-01-01, FORM-T2-01-02, and FORM-T2-01-03 at SUBSET coverage over direct and standard-indirect addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Z-ADD-SMEM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-S3T-MACR-DUAL-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -16122,6 +16171,64 @@
       ],
       "test_ids": [
         "T-COMMON-P3-S3Y-MPYR-TRUSTED"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Z-ADD-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Complete ADD Smem syntaxes 1 through 3 through the ADD_SMEM, ADD_SMEM_TS, and ADD_SMEM_SH16 rows as src += Smem, src += Smem << TS with the T-register shift count, and dst = src + (Smem << 16) with SXM extension, per-syntax C rules, and OVM saturation with sticky destination overflow at the semantic leaf, including trusted-path completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-ADD-P4-4-4-5-SMEM"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Z-ADD-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Z-ADD-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire ADD Smem syntaxes 1 through 3 on the CPU with direct and standard-indirect DATA reads, T-register shift consumption and preservation, per-syntax C write and preserve rules, and SXM/OVM handling.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-ADD-P4-4-4-5-SMEM"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Z-ADD-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Z-SELECT-INDIRECT-ADDR7-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the SELECT_INDIRECT_ADDR7 operand layout for one-word bundles into accumulator-select, indirect, and addr7 fields through the shared plan table.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Z-ADD-SMEM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3Z-SELECT-INDIRECT-ADDR7-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Z-SOURCE-DESTINATION-INDIRECT-ADDR7-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Provide the SOURCE_DESTINATION_INDIRECT_ADDR7 operand layout extracting source and destination select bits plus indirect and addr7 fields.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Z-ADD-SMEM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3Z-SOURCE-DESTINATION-INDIRECT-ADDR7-LAYOUT"
       ]
     }
   ],
@@ -19313,7 +19420,8 @@
         "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY",
         "REQ-PROJECT-P3-S3Q-MACP-INVENTORY",
         "REQ-PROJECT-P3-S3R-MACD-INVENTORY",
-        "REQ-PROJECT-P3-S3S-MACSU-INVENTORY"
+        "REQ-PROJECT-P3-S3S-MACSU-INVENTORY",
+        "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY"
       ]
     },
     {
@@ -23330,6 +23438,62 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3Y-MPYR-TRUSTED-ROUNDING"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Z-ADD-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.add_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Z-ADD-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Z-ADD-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_add_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_add_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Z-ADD-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3Z-SELECT-INDIRECT-ADDR7-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_select_indirect_addr7_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.select_indirect_addr7_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3Z-SELECT-INDIRECT-ADDR7-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3Z-SOURCE-DESTINATION-INDIRECT-ADDR7-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_source_destination_indirect_addr7_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.source_destination_indirect_addr7_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3Z-SOURCE-DESTINATION-INDIRECT-ADDR7-LAYOUT"
       ]
     },
     {

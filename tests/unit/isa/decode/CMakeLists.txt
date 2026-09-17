@@ -109,6 +109,8 @@ ti_c54x_add_unit_test(maca_smem_decode test_maca_smem_decode.c)
 ti_c54x_add_unit_test(round_indirect_addr7_layout test_round_indirect_addr7_layout.c)
 # P3-S3 RED contract: MACA T,src source/destination/round layout.
 ti_c54x_add_unit_test(source_destination_round_layout test_source_destination_round_layout.c)
+ti_c54x_add_unit_test(select_indirect_addr7_layout test_select_indirect_addr7_layout.c)
+ti_c54x_add_unit_test(source_destination_indirect_addr7_layout test_source_destination_indirect_addr7_layout.c)
 ti_c54x_add_unit_test(mpya_smem_decode test_mpya_smem_decode.c)
 ti_c54x_add_unit_test(mas_smem_decode test_mas_smem_decode.c)
 # P3-S3 RED contract: MPYA dst register-only row.

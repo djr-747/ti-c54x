@@ -85,7 +85,8 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_count == 512U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0x3000), UINT16_C(0x0000)};
+        /* 0x0000 left this list in P3-S3z: it now decodes as ADD_SMEM. */
+        const uint16_t invalid[] = {UINT16_C(0x3000)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
                                TI_C54X_DECODE_STATUS_UNKNOWN_WORD);

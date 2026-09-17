@@ -110,6 +110,13 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word MACA T,src fields: source select, destination select,
      * and round bit; register-only with T preset and preserved. */
     TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND,
+    /* One-word ADD Smem fields: accumulator select S[8:8], indirect
+     * flag I[7:7], and 7-bit Smem address A[6:0]. */
+    TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7,
+    /* One-word ADD Smem<<16 fields: source select S[9:9],
+     * destination select D[8:8], indirect flag I[7:7], and 7-bit
+     * Smem address A[6:0]. */
+    TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7,
     /* Two-word MACP Smem fields: destination select, indirect flag,
      * and 7-bit Smem address from word 0 with the copied 16-bit
      * program-memory coefficient address from word 1; T is written. */
@@ -197,6 +204,12 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* ADD Smem<<TS bodies read accumulators plus T plus SXM/OVM. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* Multiply-accumulate bodies read accumulators plus T plus FRCT/OVM. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM \

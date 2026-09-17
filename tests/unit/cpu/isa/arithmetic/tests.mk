@@ -4,3 +4,5 @@ $(eval $(call ti_c54x_add_test,cpu_add_sub_dual_mod0,cpu/isa/arithmetic,test_cpu
 $(eval $(call ti_c54x_add_test,cpu_add_sub_dual_modes,cpu/isa/arithmetic,test_cpu_add_sub_dual_modes.c))
 # W52C RED contract: public-CPU MOD3-involving dual ADD/SUB retirement.
 $(eval $(call ti_c54x_add_test,cpu_add_sub_dual_mod3,cpu/isa/arithmetic,test_cpu_add_sub_dual_mod3.c))
+# P3-S3z RED contract: public-CPU ADD Smem syntaxes 1-3 retirement.
+$(eval $(call ti_c54x_add_test,cpu_add_smem,cpu/isa/arithmetic,test_cpu_add_smem.c))

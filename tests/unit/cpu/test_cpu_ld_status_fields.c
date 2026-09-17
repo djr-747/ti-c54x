@@ -93,7 +93,9 @@ run_and_check(uint16_t word,
 static void
 test_unknown_word_is_not_retired(void)
 {
-    ld_cpu_fixture fixture = {UINT16_C(0x0000), UINT32_C(0), 0U};
+    /* 0x0000 was the unknown-word probe until P3-S3z claimed it as
+     * ADD_SMEM; 0x3000 stays unclaimed. */
+    ld_cpu_fixture fixture = {UINT16_C(0x3000), UINT32_C(0), 0U};
     ti_c54x_bus bus = {0};
     ti_c54x_config config = {0U, {0U, NULL, NULL}};
     ti_c54x_run_result result;

@@ -104,7 +104,9 @@ int main(void)
         ti_c54x_cpu_deinit(cpu);
     }
     {
-        fixture f = {UINT16_C(0x0000), 0U};
+        /* 0x0000 was the unknown-word probe until P3-S3z claimed it as
+         * ADD_SMEM; 0x3000 stays unclaimed. */
+        fixture f = {UINT16_C(0x3000), 0U};
         ti_c54x_bus bus = {.context = &f, .program_read_word = read_word};
         ti_c54x_config config = {0U, {0U, NULL, NULL}};
         _Alignas(max_align_t) unsigned char storage[1024];
@@ -118,7 +120,7 @@ int main(void)
         TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
         TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
         TI_C54X_TEST_CHECK(result.opcode_valid);
-        TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x0000));
+        TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x3000));
         TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
         TI_C54X_TEST_CHECK(state.pc_word == 0U);
         TI_C54X_TEST_CHECK(!state.accumulator_a_known);
