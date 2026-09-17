@@ -20,11 +20,12 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3l complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR` Smem rows plus
-`MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only `MPYA`/`SQUR` dst).
+Current snapshot: P3-S3m complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`
+Smem rows plus `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem` plus register-only
+`MPYA`/`SQUR` dst).
 
-- 199 runnable catalog rows under 14,313 populated first-word lookup entries.
-  Inventory coverage is 74/205 forms SUBSET-or-better (36.098%) and 33/205
+- 201 runnable catalog rows under 15,337 populated first-word lookup entries.
+  Inventory coverage is 76/205 forms SUBSET-or-better (37.073%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -74,7 +75,13 @@ Current snapshot: P3-S3l complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR` Smem rows plu
   `SQUR A,dst` row (`FORM-T2-03-10`, both D encodings under one masked
   row) reusing the MAX/MIN single-destination-bit layout with
   `(A(32-16))` squared STORE completion and no T update (TI SQUR
-  Example 2 retires through the leaf with A and T preserved).
+  Example 2 retires through the leaf with A and T preserved). S3m lands
+  the `SQURA Smem,src`/`SQURS Smem,src` accumulate-square rows
+  (`FORM-T2-04-21`/`FORM-T2-04-22`, 512 S/I/addr7 encodings each under
+  one masked row) sharing one leaf with ADD/SUBTRACT select through the
+  multiply core with read-phase T load (TI SQURA/SQURS Example 1 vectors
+  retire through the leaf; the `LD_T` 0x0800 near-miss lane moves to the
+  new `SQURA` row as the recorded cross-slice update).
 - Major remaining work is the `MACA`/`MACD`/`MACP` family
   (the `R` variants share the dual row encodings),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,

@@ -207,6 +207,11 @@ TI_C54X_OPCODE_MASKED(SQUR_SMEM, squr_smem, 0x2600, 0xFE00, 1, TI_C54X_OPERAND_L
  * accumulator. The single row carries both encodings; D rides the
  * word through the reused MAX/MIN single-destination-bit layout. */
 TI_C54X_OPCODE_MASKED(SQUR_ADST, squr_adst, 0xF48D, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM)
+/* Accumulate squares: SQURA adds Smem x Smem into src, SQURS
+ * subtracts it. Both share the destination/indirect/addr7 layout
+ * and one leaf file with an ADD/SUBTRACT select. */
+TI_C54X_OPCODE_MASKED(SQURA_SMEM, squra_smem, 0x3800, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+TI_C54X_OPCODE_MASKED(SQURS_SMEM, squrs_smem, 0x3A00, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
 /* Syntax-2 register-only MPYA across the D destination select. The single
  * row carries both encodings; D rides the word through the reused
  * MAX/MIN single-destination-bit layout. */

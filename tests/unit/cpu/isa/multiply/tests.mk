@@ -12,3 +12,5 @@ $(eval $(call ti_c54x_add_test,cpu_mpya_dst,cpu/isa/multiply,test_cpu_mpya_dst.c
 $(eval $(call ti_c54x_add_test,cpu_squr_adst,cpu/isa/multiply,test_cpu_squr_adst.c))
 # P3-S3 RED contract: SQUR Smem square row.
 $(eval $(call ti_c54x_add_test,cpu_squr_smem,cpu/isa/multiply,test_cpu_squr_smem.c))
+# P3-S3 RED contract: SQURA/SQURS accumulate squares.
+$(eval $(call ti_c54x_add_test,cpu_squr_acc,cpu/isa/multiply,test_cpu_squr_acc.c))

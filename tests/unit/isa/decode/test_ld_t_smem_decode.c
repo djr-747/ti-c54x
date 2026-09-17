@@ -88,7 +88,7 @@ test_fixed_bit_near_misses_and_forged_completion(void)
 {
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x4000)};
+        UINT16_C(0x4000)};
     const uint16_t word = LD_T_VALUE;
     const ti_c54x_decode_result valid = ti_c54x_decode_first_word(word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -150,6 +150,15 @@ test_fixed_bit_near_misses_and_forged_completion(void)
             (uint16_t)(word ^ UINT16_C(0x0100)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_MPYA_SMEM);
+    }
+
+    /* This former near-miss is the P3-S3m SQURA Smem sibling:
+     * 0x3090 ^ 0x0800 = 0x3890 classifies into the SQURA_SMEM row. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x0800)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_SQURA_SMEM);
     }
 
     {

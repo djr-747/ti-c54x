@@ -84,6 +84,8 @@ $(eval $(call ti_c54x_add_test,indirect_addr7_layout,isa/decode,test_indirect_ad
 # P3-S3 RED contract: SQUR Smem square row plus destination layout.
 $(eval $(call ti_c54x_add_test,squr_smem_decode,isa/decode,test_squr_smem_decode.c))
 $(eval $(call ti_c54x_add_test,destination_indirect_addr7_layout,isa/decode,test_destination_indirect_addr7_layout.c))
+# P3-S3 RED contract: SQURA/SQURS accumulate squares.
+$(eval $(call ti_c54x_add_test,squr_acc_decode,isa/decode,test_squr_acc_decode.c))
 $(eval $(call ti_c54x_add_test,mpya_smem_decode,isa/decode,test_mpya_smem_decode.c))
 $(eval $(call ti_c54x_add_test,mas_smem_decode,isa/decode,test_mas_smem_decode.c))
 # P3-S3 RED contract: MPYA dst register-only row.

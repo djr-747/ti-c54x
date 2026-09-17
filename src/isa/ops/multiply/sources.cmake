@@ -11,4 +11,5 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_mpya_dst.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_squr_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_squr_adst.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_squr_acc.c"
 )

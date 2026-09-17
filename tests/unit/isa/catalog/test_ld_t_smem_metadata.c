@@ -85,7 +85,7 @@ test_fixed_bit_near_misses_are_unknown(void)
      * (0xB090: R=0, S=0, D=1, XMOD2 XAR=AR2, YMOD0 YAR=AR2). */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080), UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x4000)};
+        UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -121,6 +121,12 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0100))) ==
                        TI_C54X_OPCODE_ID_MPYA_SMEM);
+
+    /* This former near-miss is the P3-S3m SQURA Smem sibling:
+     * 0x3090 ^ 0x0800 = 0x3890 classifies into the SQURA_SMEM row. */
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LD_T_VALUE ^ UINT16_C(0x0800))) ==
+                       TI_C54X_OPCODE_ID_SQURA_SMEM);
 }
 
 int

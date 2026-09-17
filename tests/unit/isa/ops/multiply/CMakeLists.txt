@@ -18,3 +18,5 @@ ti_c54x_add_unit_test(mpya_dst_ops test_mpya_dst_ops.c)
 ti_c54x_add_unit_test(squr_adst_ops test_squr_adst_ops.c)
 # P3-S3 RED contract: SQUR Smem square row.
 ti_c54x_add_unit_test(squr_smem_ops test_squr_smem_ops.c)
+# P3-S3 RED contract: SQURA/SQURS accumulate squares.
+ti_c54x_add_unit_test(squr_acc_ops test_squr_acc_ops.c)

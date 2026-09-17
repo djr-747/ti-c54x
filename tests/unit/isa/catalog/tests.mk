@@ -82,6 +82,8 @@ $(eval $(call ti_c54x_add_test,mpya_dst_metadata,isa/catalog,test_mpya_dst_metad
 $(eval $(call ti_c54x_add_test,squr_adst_metadata,isa/catalog,test_squr_adst_metadata.c))
 # P3-S3 RED contract: SQUR Smem square row.
 $(eval $(call ti_c54x_add_test,squr_smem_metadata,isa/catalog,test_squr_smem_metadata.c))
+# P3-S3 RED contract: SQURA/SQURS accumulate squares.
+$(eval $(call ti_c54x_add_test,squr_acc_metadata,isa/catalog,test_squr_acc_metadata.c))
 $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 # W67B RED contract: RETD catalog row.
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))

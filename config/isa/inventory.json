@@ -747,9 +747,11 @@
       "table_ordinal": 21,
       "mnemonic": "SQURA",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SQURA_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-22",
@@ -758,9 +760,11 @@
       "table_ordinal": 22,
       "mnemonic": "SQURS",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SQURS_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-05-01",
@@ -3758,6 +3762,18 @@
       "form_id": "FORM-T2-03-10",
       "coverage": "SUBSET",
       "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "SQURA_SMEM",
+      "form_id": "FORM-T2-04-21",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "SQURS_SMEM",
+      "form_id": "FORM-T2-04-22",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }
   ]
 }
