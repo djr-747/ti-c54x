@@ -12133,3 +12133,38 @@ entries are not rewritten after publication.
   the four STH MOD0-MOD3 rows, then
   registry and inventory binding. No
   knob change.
+
+## 2026-09-18 — P3-S18 lane 2a lands as a3f931d
+
+- Lane 1 (schema `MASKED2` plus overlap
+  exemption) is consumed by lane 2a:
+  `render_qualified_slots` renders
+  declaration-order entries plus an
+  `UNKNOWN` sentinel, wired through an
+  opt-in `--qualified-output` flag so
+  existing CLI tests and temp-dir runs
+  never touch a second artifact; the
+  tracked empty fragment
+  `generated/isa/catalog/opcode_qualified_slots.inc`
+  is freshness-checked by a new
+  production test.
+- C side: `ti_c54x_qualified_slot` plus
+  `ti_c54x_first_word_has_qualified_slot`
+  and `ti_c54x_resolve_qualified_slot`
+  in the private catalog seam, with
+  `MASKED2` X-macro definitions at all
+  five `.def` consumers (enum,
+  metadata, binding, prototypes, dispatch
+  table). Qualifiers live ONLY in the
+  slot table: growing `ti_c54x_opcode_metadata`
+  tripped the pinned 24-byte guard, and
+  the guard was right, so the struct is
+  untouched and the single-source design
+  stands. Proved by the empty-table C
+  test plus python suites (29 tests OK)
+  and the full gate green.
+- Split commit discipline resumes here:
+  impl `a3f931d`, this ledger-only
+  follow-up. Next is lane 2b (LD row
+  qualification with parity probe plus
+  trusted re-resolution).
