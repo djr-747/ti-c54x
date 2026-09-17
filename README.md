@@ -35,7 +35,7 @@ with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
   not TI machine-cycle claims.
 - P3 works the Nokia 5110 DSP-image census seam-first. Wave-1 tail control
   flow is done (branch/return families with delayed companions, RC/RCD,
-  RETF). The S1 MMR/device routing seam unlocks the S7 `STM` immediate-MMR
+  RETF, XC conditional execution). The S1 MMR/device routing seam unlocks the S7 `STM` immediate-MMR
   store. S2 activates single-instruction repeat (`RPT_K`/`RPT_LK`,
   `INELIGIBLE`): CPU progress plus pending latch, predecode IRQ arbitration,
   and a body-eligibility gate. S3a adds the pure multiply-accumulate datapath

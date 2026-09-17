@@ -57,6 +57,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
         ti_c54x_effect_transaction transaction;
         ti_c54x_program_pc_bridge_effect pc_effect;
         ti_c54x_program_pc_bridge_status bridge_status;
+        uint8_t bridge_words;
         ti_c54x_op_status op_status;
         ti_c54x_program_word_address candidate_pc;
         ti_c54x_op_input_snapshot op_input = {0};
@@ -282,14 +283,22 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
          * trusted hot path keeps a single preparation plan: failure is
          * reported only by the routes that advance sequentially, so
          * top-of-memory MEMORY and immediate branches keep their
-         * existing behavior. Folding apply into the shared status is
-         * exact: every apply failure maps through
-         * ti_c54x_run_bridge_status_to_stop
+         * existing behavior. Not-taken XC widens this same plan past
+         * the skipped words (1 + n instead of the bare instruction
+         * width), so no second plan site is admitted. Folding apply
+         * into the shared status is exact: every apply failure maps
+         * through ti_c54x_run_bridge_status_to_stop
          * to the same INVALID_STATE the split checks produced. */
+        bridge_words = packet.instruction.bundle.program_word_count;
+        if (effect.kind == TI_C54X_OP_EFFECT_CONDITIONAL_SKIP &&
+            effect.payload.conditional_skip.skip_words >= UINT8_C(1) &&
+            effect.payload.conditional_skip.skip_words <= UINT8_C(2)) {
+            bridge_words =
+                (uint8_t)(bridge_words +
+                          effect.payload.conditional_skip.skip_words);
+        }
         bridge_status = ti_c54x_program_pc_bridge_plan_trusted(
-            cpu->arch_state.pc_word,
-            packet.instruction.bundle.program_word_count,
-            &pc_effect);
+            cpu->arch_state.pc_word, bridge_words, &pc_effect);
         candidate_pc = cpu->arch_state.pc_word;
         if (bridge_status == TI_C54X_PROGRAM_PC_BRIDGE_OK &&
             ti_c54x_program_pc_bridge_apply_trusted(
@@ -577,6 +586,57 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             if (took_effect) {
                 ti_c54x_run_apply_deferred_branch(cpu);
+            }
+            continue;
+        }
+
+        /* Not-taken XC retires n NOP words: the program counter
+         * advances past the skipped words with no fetch, no effect,
+         * and no bus traffic. Taken XC emits NONE and retires through
+         * the ordinary route below. The skip commits the widened plan
+         * prepared once at the shared site above, so top-of-memory
+         * behavior matches sequential advance. Skipped words consume
+         * delay-slot countdown as NOP occupants; taken followers
+         * retire on their own. No MEMORY endpoint, no WAIT/FAULT,
+         * and no status, accumulator, or T effect is admitted. */
+        if (effect.kind == TI_C54X_OP_EFFECT_CONDITIONAL_SKIP) {
+            uint8_t skip_advance;
+            bool took_effect = false;
+
+            if (effect.payload.conditional_skip.skip_words < UINT8_C(1) ||
+                effect.payload.conditional_skip.skip_words > UINT8_C(2)) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            skip_advance =
+                (uint8_t)(UINT8_C(1) +
+                          effect.payload.conditional_skip.skip_words);
+            if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+                return ti_c54x_run_stop_result(
+                    cpu, ti_c54x_run_bridge_status_to_stop(bridge_status),
+                    TI_C54X_BUS_OK, instructions_attempted,
+                    instructions_retired);
+            }
+            cpu->arch_state.pc_word = candidate_pc;
+            cpu->instructions_retired++;
+            instructions_retired++;
+            if (ti_c54x_run_advance_delayed_branch(
+                    cpu, skip_advance, false, &took_effect) !=
+                TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (took_effect) {
+                ti_c54x_run_apply_deferred_branch(cpu);
+            }
+            /* Retirement-tail HOLD re-drive for repeated bodies. */
+            if (ti_c54x_cpu_repeat_body_retired(cpu) ==
+                TI_C54X_CPU_REPEAT_RETIRE_INVALID) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
             }
             continue;
         }

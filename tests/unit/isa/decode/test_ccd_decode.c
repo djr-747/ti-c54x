@@ -166,14 +166,15 @@ test_fixed_bit_near_misses(void)
      * variable. Clearing fixed bit 9 lands on the non-delayed
      * CC sibling (pinned above), clearing fixed bit 8 lands on
      * the BCD sibling, and clearing fixed bit 12 lands on
-     * LD_IMMEDIATE_DP (both pinned below); all other fixed-bit
+     * LD_IMMEDIATE_DP (both pinned below); setting bit 10 lands
+     * on the P3-S4 XC row (pinned below); all other fixed-bit
      * flips must miss every row (flipping fixed bit 15 lands on
      * the S3r MACD_SMEM row, pinned below);
      * clearing fixed bit 14 lands on MAS_DUAL_M0_M0 (S3i claims the
      * 0xB8xx neighborhood; the UNKNOWN loop drops that mask under
      * the cross-slice hazard rule). */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0400), UINT16_C(0x0800),
+        UINT16_C(0x0800),
         UINT16_C(0x2000)};
 
     for (size_t index = 0U;
@@ -196,6 +197,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(bcd_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(bcd_sibling.id == TI_C54X_OPCODE_ID_BCD);
+    }
+
+    /* Setting bit 10 lands on the P3-S4 XC row (0xFF00: N=1,
+     * UNC condition). */
+    {
+        const ti_c54x_decode_result xc_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(CCD_VALUE ^ UINT16_C(0x0400)));
+
+        TI_C54X_TEST_CHECK(xc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(xc_sibling.id == TI_C54X_OPCODE_ID_XC);
     }
 
     /* Clearing fixed bit 12 lands on LD_IMMEDIATE_DP. */

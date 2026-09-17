@@ -121,6 +121,9 @@ typedef enum ti_c54x_operand_layout_id {
      * and 7-bit Smem address from word 0 with the copied 16-bit
      * program-memory coefficient address from word 1; T is written. */
     TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_PMAD16,
+    /* One-word XC fields: execute-count select N[9:9] and 8-bit
+     * condition code C[7:0]. */
+    TI_C54X_OPERAND_LAYOUT_N_CONDITION8,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

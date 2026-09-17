@@ -43,6 +43,7 @@ LAYOUT_SELECT_INDIRECT_ADDR7 = "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7"
 LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7 = (
     "TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7"
 )
+LAYOUT_N_CONDITION8 = "TI_C54X_OPERAND_LAYOUT_N_CONDITION8"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
@@ -67,6 +68,9 @@ RESOURCES_ACCUMULATORS_STATUS_SXM_OVM = (
 )
 RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM"
+)
+RESOURCES_ACCUMULATORS_STATUS_C_TC = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC"
 )
 
 
@@ -150,7 +154,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 219)
+        self.assertEqual(len(catalog_rows), 220)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -207,6 +211,18 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_smem_ts.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(
             ld_smem_ts.input_resources, RESOURCES_STATUS_SXM_T_REGISTER
+        )
+        # P3-S4 lands the XC row after RCD; symbol lookup keeps this
+        # assertion position-independent.
+        xc = next(row for row in catalog_rows if row.symbol == "XC")
+        self.assertEqual(xc.handler, "xc")
+        self.assertEqual(xc.first_word_value, 0xFD00)
+        self.assertEqual(xc.first_word_mask, 0xFD00)
+        self.assertEqual(xc.program_word_count, 1)
+        self.assertEqual(xc.operand_layout, LAYOUT_N_CONDITION8)
+        self.assertEqual(xc.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(
+            xc.input_resources, RESOURCES_ACCUMULATORS_STATUS_C_TC
         )
         self.assertEqual(rows[5].symbol, "STL_SMEM")
         self.assertEqual(rows[5].handler, "stl_smem")

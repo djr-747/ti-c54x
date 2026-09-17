@@ -25,6 +25,8 @@ ti_c54x_add_unit_test(retf test_retf.c)
 ti_c54x_add_unit_test(rc test_rc.c)
 # W78 RED contract: RCD effects.
 ti_c54x_add_unit_test(rcd test_rcd.c)
+# P3-S4 RED contract: XC effects.
+ti_c54x_add_unit_test(xc test_xc.c)
 # W67B RED contract: RETD effects.
 ti_c54x_add_unit_test(retd test_retd.c)
 # W67C RED contract: CALLD effects.

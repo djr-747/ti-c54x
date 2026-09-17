@@ -72,10 +72,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 219)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 219)
+        self.assertEqual(len(bindings), 220)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 220)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 186)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 187)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -86,7 +86,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | MAS_DUAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM", "MASA_SMEM", "MASA_T", "ADD_SMEM", "ADD_SMEM_TS", "ADD_SMEM_SH16",
+            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "XC", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM", "MASA_SMEM", "MASA_T", "ADD_SMEM", "ADD_SMEM_TS", "ADD_SMEM_SH16",
                "MACSU_DUAL_M0_M0", "MACSU_DUAL_M0_M1",
                "MACSU_DUAL_M0_M2", "MACSU_DUAL_M1_M0",
                "MACSU_DUAL_M1_M1", "MACSU_DUAL_M1_M2",
@@ -152,6 +152,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD5_MOD6"
                     if binding["catalog_symbol"]
                     in {"LDR", "LDR_MOD5", "LDR_MOD6"}
+                    else "N_CONDITION"
+                    if binding["catalog_symbol"] == "XC"
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
                 )
                 self.assertEqual(binding["addressing_subset"], expected)

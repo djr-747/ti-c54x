@@ -684,3 +684,15 @@ static const ti_c54x_operand_field_layout
          UINT8_C(1)}};
 const ti_c54x_operand_layout_set ti_c54x_source_destination_round_set = {
     ti_c54x_source_destination_round_operands, UINT8_C(3)};
+
+/* XC fields: execute-count select N[9:9], then 8-bit condition
+ * code C[7:0]. */
+static const ti_c54x_operand_field_piece ti_c54x_n_condition8_n_piece = {
+    UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece ti_c54x_n_condition8_cond_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_n_condition8_operands[2] = {
+    {&ti_c54x_n_condition8_n_piece, UINT8_C(1), UINT8_C(1)},
+    {&ti_c54x_n_condition8_cond_piece, UINT8_C(1), UINT8_C(8)}};
+const ti_c54x_operand_layout_set ti_c54x_n_condition8_set = {
+    ti_c54x_n_condition8_operands, UINT8_C(2)};

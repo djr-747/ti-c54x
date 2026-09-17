@@ -1786,8 +1786,10 @@
       "mnemonic": "XC",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "XC"
+      ]
     },
     {
       "id": "FORM-T2-19-01",
@@ -3918,6 +3920,12 @@
       "form_id": "FORM-T2-04-11",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "XC",
+      "form_id": "FORM-T2-18-07",
+      "coverage": "SUBSET",
+      "addressing_subset": "N_CONDITION"
     }
   ]
 }

@@ -53,7 +53,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_STATUS_BIT_WRITE = 6,
     TI_C54X_OP_EFFECT_PC_WRITE = 7,
     TI_C54X_OP_EFFECT_DELAYED_PC_WRITE = 8,
-    TI_C54X_OP_EFFECT_BRANCH_AUXILIARY = 9
+    TI_C54X_OP_EFFECT_BRANCH_AUXILIARY = 9,
+    TI_C54X_OP_EFFECT_CONDITIONAL_SKIP = 10
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -130,6 +131,10 @@ typedef struct ti_c54x_op_branch_auxiliary_effect {
     uint16_t pmad;
 } ti_c54x_op_branch_auxiliary_effect;
 
+typedef struct ti_c54x_op_conditional_skip_effect {
+    uint8_t skip_words;
+} ti_c54x_op_conditional_skip_effect;
+
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
     ti_c54x_op_status_field_write_effect status_field_write;
@@ -140,6 +145,7 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_pc_write_effect pc_write;
     ti_c54x_op_delayed_pc_write_effect delayed_pc_write;
     ti_c54x_op_branch_auxiliary_effect branch_auxiliary;
+    ti_c54x_op_conditional_skip_effect conditional_skip;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {

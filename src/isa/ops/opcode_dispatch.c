@@ -45,6 +45,7 @@
 #include "branch/op_cc.h"
 #include "branch/op_rc.h"
 #include "branch/op_rcd.h"
+#include "branch/op_xc.h"
 #include "branch/op_ret.h"
 #include "branch/op_retd.h"
 #include "branch/op_rete.h"

@@ -100,6 +100,8 @@ $(eval $(call ti_c54x_add_test,source_destination_round_layout,isa/decode,test_s
 $(eval $(call ti_c54x_add_test,select_indirect_addr7_layout,isa/decode,test_select_indirect_addr7_layout.c))
 # P3-S3z RED contract: ADD Smem<<16 source/destination/indirect layout.
 $(eval $(call ti_c54x_add_test,source_destination_indirect_addr7_layout,isa/decode,test_source_destination_indirect_addr7_layout.c))
+# P3-S4 RED contract: XC N/condition layout.
+$(eval $(call ti_c54x_add_test,n_condition8_layout,isa/decode,test_n_condition8_layout.c))
 # P3-S3 RED contract: MACP Smem,Pmad row.
 $(eval $(call ti_c54x_add_test,macp_smem_decode,isa/decode,test_macp_smem_decode.c))
 # P3-S3 RED contract: MACD Smem,Pmad row.

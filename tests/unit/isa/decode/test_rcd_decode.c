@@ -168,13 +168,14 @@ test_fixed_bit_near_misses(void)
      * exhaustive loop, except the RETD shadow word). Clearing
      * fixed bit 9 lands on RET (pinned above), clearing fixed
      * bit 10 lands on the BCD sibling, and clearing fixed bit 11
-     * lands on ADD_ACC_SHIFT; all other fixed-bit flips must
+     * lands on ADD_ACC_SHIFT; setting fixed bit 8 lands on the
+     * P3-S4 XC row (pinned below); all other fixed-bit flips must
      * miss every row, except clearing fixed bit 14 lands on
      * MAS_DUAL_M0_M0 (S3i claims the 0xB8xx neighborhood; the
      * UNKNOWN loop drops that mask under the cross-slice hazard
      * rule). */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -197,6 +198,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(ret_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(ret_sibling.id == TI_C54X_OPCODE_ID_RET);
+    }
+
+    /* Setting fixed bit 8 lands on the P3-S4 XC row (0xFF00:
+     * N=1, UNC condition). */
+    {
+        const ti_c54x_decode_result xc_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RCD_VALUE ^ UINT16_C(0x0100)));
+
+        TI_C54X_TEST_CHECK(xc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(xc_sibling.id == TI_C54X_OPCODE_ID_XC);
     }
 
     /* Clearing fixed bit 10 lands on the BCD sibling. */

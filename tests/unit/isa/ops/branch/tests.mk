@@ -24,6 +24,8 @@ $(eval $(call ti_c54x_add_test,retf,isa/ops/branch,test_retf.c))
 $(eval $(call ti_c54x_add_test,rc,isa/ops/branch,test_rc.c))
 # W78 RED contract: RCD effects.
 $(eval $(call ti_c54x_add_test,rcd,isa/ops/branch,test_rcd.c))
+# P3-S4 RED contract: XC effects.
+$(eval $(call ti_c54x_add_test,xc,isa/ops/branch,test_xc.c))
 $(eval $(call ti_c54x_add_test,rete,isa/ops/branch,test_rete.c))
 # W67B RED contract: RETD effects.
 $(eval $(call ti_c54x_add_test,retd,isa/ops/branch,test_retd.c))

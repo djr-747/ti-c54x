@@ -137,12 +137,12 @@ test_fixed_bit_near_misses(void)
      * BC_PMAD sibling, flipping fixed bit 11 lands on
      * ADD_ACC_SHIFT, and flipping fixed bit 12 lands on the RPT_K
      * row. Flipping any low-byte bit lands in the RC row
-     * (pinned below); all other fixed-bit flips must miss every row;
-     * clearing fixed bit 14 lands on MAS_DUAL_M0_M0 (S3i claims the
-     * 0xB8xx neighborhood; the UNKNOWN loop drops that mask under
-     * the cross-slice hazard rule). */
+     * (pinned below); flipping fixed bit 8 lands on the P3-S4 XC
+     * row (pinned below); all other fixed-bit flips must miss
+     * every row; clearing fixed bit 14 lands on MAS_DUAL_M0_M0
+     * (S3i claims the 0xB8xx neighborhood; the UNKNOWN loop drops
+     * that mask under the cross-slice hazard rule). */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100),
         UINT16_C(0x2000),
         UINT16_C(0x8000)};
     static const uint16_t rc_masks[] = {
@@ -161,9 +161,14 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result rpt_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RET_VALUE ^ UINT16_C(0x1000)));
+    const ti_c54x_decode_result xc_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(RET_VALUE ^ UINT16_C(0x0100)));
 
     TI_C54X_TEST_CHECK(retd_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(retd_sibling.id == TI_C54X_OPCODE_ID_RETD);
+    TI_C54X_TEST_CHECK(xc_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(xc_sibling.id == TI_C54X_OPCODE_ID_XC);
     TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
     TI_C54X_TEST_CHECK(add_sibling.status == TI_C54X_DECODE_STATUS_OK);

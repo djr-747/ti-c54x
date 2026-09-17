@@ -6863,6 +6863,40 @@
         "anchor": "P3-S3z: ADD Smem slice (planned)"
       },
       "assertion": "S3z is implemented and green: three new ADD_SMEM (0x0000/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), ADD_SMEM_TS (0x0400/0xFE00, shared SELECT_INDIRECT_ADDR7 layout), and ADD_SMEM_SH16 (0x3C00/0xFC00, shared SOURCE_DESTINATION_INDIRECT_ADDR7 layout) catalog rows with 2048 added lookup entries and zero neighbor moves; checked and trusted leaves over the arithmetic core with SXM extension, T-register and fixed-16 shifts, OVM saturation with sticky OVdst, and per-syntax C rules; and CPU retirement of derived vectors for all three syntaxes (direct plus MOD2 indirect, read-phase behavior, T preservation, C write/preserve). All three rows are UNRESOLVED repeatability with no Table 2-28 ADD-Smem fact on record. FORM-T2-01-01/02/03 land SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-XC-P4-198-4-200",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "XC",
+        "printed_page_start": "4-198",
+        "printed_page_end": "4-200"
+      },
+      "assertion": "XC n,cond is a one-word form with opcode 1111_11N1_CCCC_CCCC (N at bit 9 selecting n = 1 for 0 or n = 2 for 1, 8-bit condition field in bits 7:0), giving first-word value 0xFD00 under mask 0xFD00 with 512 encodings. If the condition holds, the next n instruction words execute normally; otherwise the CPU retires n NOP words (PC advances past them with no fetch, no effect, and no bus traffic). The TI Example vector pins XC 1,ALEQ with A = -1 executing the follower. The description carries an explicit not-repeatable note, so the row is repeatability INELIGIBLE. The sixteen image-evidenced single conditions plus unconditional UNC are executable; BIO/NBIO, AOV/ANOV/BOV/BNOV, and multi-condition combination fields have no input carrier and defer. The TI three-word uninterruptible window is recorded but not modeled, and cycle counts plus the sampled-two-cycles-early note are not adopted."
+    },
+    {
+      "id": "E-PROJECT-P3-S4-XC-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S4: XC conditional-execution slice (planned)"
+      },
+      "assertion": "S4 is implemented and green: one new XC (0xFD00/0xFD00, new N_CONDITION8 layout with N at bit 9 and cond at bits 7:0) catalog row with 512 added lookup entries and zero neighbor moves; checked and trusted leaves evaluating the sixteen image-evidenced single conditions plus UNC through the shared branch-condition core with taken NONE emission versus not-taken CONDITIONAL_SKIP staging and transactional INVALID_OPERAND rejection of deferred fields; and CPU retirement retiring taken followers normally and not-taken followers as NOP skips with PC advance, delay-slot countdown consumption, T preservation, and no endpoint traffic. The row is INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-18-07 lands SUBSET."
     }
   ],
   "requirements": [
@@ -16230,6 +16264,62 @@
       "test_ids": [
         "T-PROJECT-P3-S3Z-SOURCE-DESTINATION-INDIRECT-ADDR7-LAYOUT"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S4-XC-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute XC n,cond through the XC row as taken NONE emission versus not-taken CONDITIONAL_SKIP staging: evaluate the sixteen image-evidenced single conditions plus unconditional UNC through the shared branch-condition core, reject BIO/NBIO, AOV/ANOV/BOV/BNOV, and multi-condition combination fields transactionally as deferred INVALID_OPERAND, and stage no status, accumulator, T-register, or MEMORY effect.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-XC-P4-198-4-200"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S4-XC-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S4-XC-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire XC on the CPU with taken followers executing normally and not-taken followers retiring as n NOP words: PC advances past the skipped words with no fetch, no effect, and no bus traffic, delay-slot countdown is consumed, T is preserved, deferred-field rejections stay transactional, and the repeat-body gate blocks the INELIGIBLE row.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-XC-P4-198-4-200"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S4-XC-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S4-N-CONDITION8-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the N_CONDITION8 operand layout for one-word bundles into the 1-bit execute-count select N at bit 9 and the 8-bit condition code at bits 7:0 through the shared plan table.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S4-XC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S4-N-CONDITION8-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S4-XC-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the XC production symbol to FORM-T2-18-07 at SUBSET under the ALL addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S4-XC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -19421,7 +19511,8 @@
         "REQ-PROJECT-P3-S3Q-MACP-INVENTORY",
         "REQ-PROJECT-P3-S3R-MACD-INVENTORY",
         "REQ-PROJECT-P3-S3S-MACSU-INVENTORY",
-        "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY"
+        "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY",
+        "REQ-PROJECT-P3-S4-XC-INVENTORY"
       ]
     },
     {
@@ -23564,6 +23655,48 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3R-DELAY-WRITE-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S4-XC-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_xc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.xc"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S4-XC-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S4-XC-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_xc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_xc"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S4-XC-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S4-N-CONDITION8-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_n_condition8_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.n_condition8_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S4-N-CONDITION8-LAYOUT"
       ]
     }
   ]
