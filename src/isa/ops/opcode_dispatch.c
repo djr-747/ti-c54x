@@ -64,6 +64,7 @@
 #include "shift/op_sftc.h"
 #include "store/op_stl_smem.h"
 #include "store/op_sth_smem.h"
+#include "store/op_sth_shft_xmem.h"
 #include "store/op_sth_asm_smem.h"
 #include "store/op_st_immediate_smem.h"
 #include "store/op_stm.h"

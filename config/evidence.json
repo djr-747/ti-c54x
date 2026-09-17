@@ -7247,6 +7247,58 @@
         "anchor": "P3-S11: STH by-ASM Smem store slice (planned)"
       },
       "assertion": "S11 is implemented and green: seven new STH syntax-2 catalog rows STH_ASM_SMEM (0x8680) and STH_ASM_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STH_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the ASM-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-06 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-SHFT-OPCODE-P4-169",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-169",
+        "printed_page_end": "4-169"
+      },
+      "assertion": "STH syntax 3 encodes as 1001_101S_XXXXSHFT (catalog pins 0x9A00 under mask 0xFE00): bit 8 (S) selects accumulator A (0) or B (1), bits 7-4 carry the dual Xmem selector (Xmod in bits 7-6, raw Xar in bits 5-4 mapping to AR2-AR5), and bits 3-0 carry the unsigned 4-bit SHFT field (0-15)."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-SHFT-SEMANTICS-P4-169-4-171",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-169",
+        "printed_page_end": "4-171"
+      },
+      "assertion": "STH syntax 3 shifts the S-selected accumulator left by (SHFT-16) and stores bits 31-16 of the shifted value to Xmem; every encoded shift is a right shift of 1 to 16, so the stored field is pure source bits and SXM never perturbs it. The worked example STH B,-8 (encoded SHFT 8) with B FF 8421 1234 stores FF84. SHFT=0 assembles as syntax 1 but still decodes as its own opcode. The description carries no not-repeatable note, so the row stays repeatability UNRESOLVED."
+    },
+    {
+      "id": "E-PROJECT-P3-S12-STH-SHFT-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S12: STH by-SHFT Xmem store slice (planned)"
+      },
+      "assertion": "S12 is implemented and green: one new STH syntax-3 catalog row STH_SHFT_XMEM (0x9A00) under the FE00 mask reusing the LD Xmem dual-indirect layout; checked and trusted leaves staging MEMORY dual-indirect X-only WRITE effects carrying bits 31-16 of the (SHFT-16)-shifted selected accumulator with no status, accumulator, or T-register effect. The X-only address seam gains its first WRITE arm with direction-independent dual planning. FORM-T2-20-07 lands COMPLETE under ALL."
     }
   ],
   "requirements": [
@@ -16910,6 +16962,49 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S12-STH-SHFT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the STH syntax-3 row as an SHFT-shifted accumulator-high store: resolve source, Xmod, and raw Xar through the shared dual-X layout, shift the selected accumulator arithmetically right by (16-SHFT), store bits 31-16 of the shifted value to the X-only WRITE effect, gate on selected-accumulator knownness, stage no status, accumulator, or T-register effect, and leave the row repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-SHFT-OPCODE-P4-169",
+        "E-TI-C54X-SPRU172C-S4-STH-SHFT-SEMANTICS-P4-169-4-171"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S12-STH-SHFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S12-STH-SHFT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire STH syntax-3 stores through the generic MEMORY route with the DATA WRITE carrying bits 31-16 of the shifted selected accumulator at the resolved Xmem address, applying the Xmod AR update, with WAIT resume, fault, and boundary transactionality.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-SHFT-SEMANTICS-P4-169-4-171"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S12-STH-SHFT-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the STH syntax-3 production symbol to FORM-T2-20-07 at COMPLETE under the ALL addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S12-STH-SHFT-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20106,7 +20201,8 @@
         "REQ-PROJECT-P3-S8-BACC-INVENTORY",
         "REQ-PROJECT-P3-S9-CALA-INVENTORY",
         "REQ-PROJECT-P3-S10-STH-INVENTORY",
-        "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY"
+        "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY",
+        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY"
       ]
     },
     {
@@ -24515,6 +24611,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S11-STH-ASM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S12-STH-SHFT-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_sth_shft_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sth_shft_xmem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S12-STH-SHFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S12-STH-SHFT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/store/test_cpu_sth_shft_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_sth_shft_xmem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S12-STH-SHFT-CPU-RETIREMENT"
       ]
     }
   ]

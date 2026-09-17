@@ -263,12 +263,21 @@ ti_c54x_sequencer_resolve_memory_address(
         uint16_t bk_value = UINT16_C(0);
         ti_c54x_indirect_dual_result dual_result;
 
-        /* X-only reads observe no CMPT/ARP state: the selector stays
-         * directly encoded and AR0/BK are read lazily for MOD3 only. */
-        if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
+        /* X-only accesses observe no CMPT/ARP state: the selector stays
+         * directly encoded and AR0/BK are read lazily for MOD3 only.
+         * Reads carry a canonical zero value; writes carry the
+         * caller-owned store word. */
+        if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+            access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
+        }
+        if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
             write_value_word != UINT16_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
         }
+        address_access = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? TI_C54X_ADDRESS_ACCESS_READ
+                             : TI_C54X_ADDRESS_ACCESS_WRITE;
         if (ti_c54x_arch_state_read_ar(state, spec->dual.x_ar,
                                        &x_ar_value) !=
             TI_C54X_ARCH_STATE_OK) {
@@ -286,23 +295,29 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->dual.x_ar, x_ar_value, spec->dual.x_ar, x_ar_value,
             (ti_c54x_indirect_dual_mode)spec->dual.x_mode,
             (ti_c54x_indirect_dual_mode)spec->dual.x_mode, ar0_value,
-            bk_value, TI_C54X_ADDRESS_ACCESS_READ);
+            bk_value, address_access);
         if (dual_result.status != TI_C54X_ADDRESS_STATUS_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
         }
         /* Only the X side is issued: validate its effect at the phase
          * selected by the actual planner result. The self-aliased Y side
          * carries no independent update by planner contract and is
-         * discarded here, so exactly one read commits exactly one update. */
+         * discarded here, so exactly one access commits exactly one
+         * update. */
         address_status = ti_c54x_sequencer_validate_address_effect(
             state, &dual_result.x, dual_result.x.effect.update.phase,
             &address_commit);
         if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
         }
-        request_result = ti_c54x_bus_word16_request_read(
-            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-            dual_result.x.effect.operand.first_word);
+        request_result = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+                             ? ti_c54x_bus_word16_request_read(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   dual_result.x.effect.operand.first_word)
+                             : ti_c54x_bus_word16_request_write(
+                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                                   dual_result.x.effect.operand.first_word,
+                                   write_value_word);
         if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
         }

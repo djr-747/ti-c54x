@@ -140,13 +140,19 @@ test_invalid_selectors_and_access_are_transactional(void)
                 (ti_c54x_address_access)UINT8_C(2));
         check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
+    /* P3-S12 extends the planner contract: address arithmetic is
+     * direction-independent, so WRITE plans identically to READ. The
+     * first dual writer (STH syntax-3 X-only stores) exercises this
+     * arm; callers keep their own READ/WRITE gates. */
     {
         const ti_c54x_indirect_dual_result result =
             ti_c54x_indirect_dual_word16(
                 valid, value, valid, value, TI_C54X_INDIRECT_DUAL_MOD0,
                 TI_C54X_INDIRECT_DUAL_MOD0, UINT16_C(0), UINT16_C(0),
                 TI_C54X_ADDRESS_ACCESS_WRITE);
-        check_zero_dual(&result, TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
+        TI_C54X_TEST_CHECK(result.status == TI_C54X_ADDRESS_STATUS_OK);
+        check_word16_read(&result.x, valid, value);
+        check_word16_read(&result.y, valid, value);
     }
 }
 

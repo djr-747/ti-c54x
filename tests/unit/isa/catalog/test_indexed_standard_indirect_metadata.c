@@ -111,7 +111,7 @@ test_exact_rows_and_projection(void)
     TI_C54X_TEST_CHECK(sizeof(rows) / sizeof(rows[0]) == 22U);
     TI_C54X_TEST_CHECK(sizeof(indexed_handlers) /
                            sizeof(indexed_handlers[0]) == 22U);
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 239);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 240);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const indexed_row *row = &rows[index];
         const ti_c54x_opcode_metadata *metadata =
@@ -146,7 +146,7 @@ test_lookup_population_and_mask_identity(void)
             }
         }
     }
-    TI_C54X_TEST_CHECK(populated == 20833U);
+    TI_C54X_TEST_CHECK(populated == 21345U);
 }
 
 int

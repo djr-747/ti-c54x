@@ -157,10 +157,9 @@ ti_c54x_indirect_dual_word16(
         return ti_c54x_dual_result_with_status(
             TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
     }
-    if (access != TI_C54X_ADDRESS_ACCESS_READ) {
-        return ti_c54x_dual_result_with_status(
-            TI_C54X_ADDRESS_STATUS_UNSUPPORTED_ACCESS);
-    }
+    /* Address arithmetic is direction-independent: reads and writes plan
+     * the same operand address and AR update. The access discriminant
+     * stays validated above; callers keep their own READ/WRITE gates. */
     if (x_ar_index == y_ar_index && x_ar_value != y_ar_value) {
         return ti_c54x_dual_result_with_status(
             TI_C54X_ADDRESS_STATUS_INVALID_ARGUMENT);
