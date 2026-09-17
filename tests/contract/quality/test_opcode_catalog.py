@@ -536,5 +536,60 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         )
 
 
+class Word2QualifiedRowTests(unittest.TestCase):
+    """P3-S18 RED lane 1: second-word-qualified catalog rows."""
+
+    LD_W2 = (
+        "TI_C54X_OPCODE_MASKED2(LD_SMEM_SHIFT, ld_smem_shift, 0x6F80, "
+        f"0xFFE0, 2, {LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5}, "
+        f"{REPEAT_UNRESOLVED}, {RESOURCES_STATUS_SXM_OVM}, 0x0C40, 0xFEE0)\n"
+    )
+    STH_W2 = (
+        "TI_C54X_OPCODE_MASKED2(STH_SHIFT_SMEM_MOD0, sth_shift_smem_mod0, "
+        f"0x6F80, 0xFFE0, 2, {LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5}, "
+        f"{REPEAT_UNRESOLVED}, {RESOURCES_ACCUMULATORS}, 0x0C60, 0xFEE0)\n"
+    )
+
+    def test_parser_accepts_masked2_row(self) -> None:
+        rows = parse_catalog(self.LD_W2)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].form, "MASKED2")
+        self.assertEqual(rows[0].second_word_value, 0x0C40)
+        self.assertEqual(rows[0].second_word_mask, 0xFEE0)
+
+    def test_disjoint_word2_first_word_overlap_passes(self) -> None:
+        rows = parse_catalog(self.LD_W2 + self.STH_W2)
+        self.assertEqual([row.symbol for row in rows],
+                         ["LD_SMEM_SHIFT", "STH_SHIFT_SMEM_MOD0"])
+
+    def test_shared_word2_first_word_overlap_errors(self) -> None:
+        with self.assertRaisesRegex(ValueError, "overlapping opcode patterns"):
+            parse_catalog(self.LD_W2 + self.LD_W2.replace(
+                "LD_SMEM_SHIFT, ld_smem_shift",
+                "LD_SMEM_SHIFT_DUP, ld_smem_shift_dup"))
+
+    def test_qualified_vs_unqualified_overlap_errors(self) -> None:
+        plain = (
+            "TI_C54X_OPCODE_MASKED(LD_SMEM_PLAIN, ld_smem_plain, 0x6F80, "
+            f"0xFFE0, 2, {LAYOUT_ACCUMULATOR_ARF_MOD_SHIFT5}, "
+            f"{REPEAT_UNRESOLVED}, {RESOURCES_STATUS_SXM_OVM})\n"
+        )
+        with self.assertRaisesRegex(ValueError, "overlapping opcode patterns"):
+            parse_catalog(self.STH_W2 + plain)
+
+    def test_masked2_width_one_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_catalog(self.LD_W2.replace(", 2, ", ", 1, "))
+
+    def test_masked2_word2_value_outside_mask_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_catalog(self.LD_W2.replace("0x0C40, 0xFEE0",
+                                             "0x0C41, 0xFEE0"))
+
+    def test_masked2_wrong_field_count_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_catalog(self.LD_W2.replace(", 0x0C40, 0xFEE0", ""))
+
+
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()

@@ -2,11 +2,13 @@
 
 Module contract
 ---------------
-Owns: the small, deterministic source schema for exact and masked first-word
-opcode rows, including lexical validation, immutable normalized records, and
-pairwise overlap checks.  The one overlap exception is an exact word
-declared before a covering masked row, which keeps its identity under the
-first-match lookup order.  It is tooling code used before C compilation.
+Owns: the small, deterministic source schema for exact, masked, and
+second-word-qualified first-word opcode rows, including lexical validation,
+immutable normalized records, and pairwise overlap checks.  The overlap
+exceptions are an exact word declared before a covering masked row, which
+keeps its identity under the first-match lookup order, and two qualified
+rows whose second-word patterns discriminate every shared first word.  It
+is tooling code used before C compilation.
 Does not own: opcode generation, C macro consumers, operand extraction,
 instruction semantics, timing, or architectural evidence.  Parsing returns
 new immutable records; no caller-owned mutable object is retained.
@@ -31,9 +33,10 @@ class OpcodeRow:
     integers. ``program_word_count`` carries its unit explicitly.
     ``operand_layout`` and ``repeatability`` retain the fully namespaced
     catalog tokens. ``input_resources`` is the namespaced resource-mask token.
-    ``form`` is the source spelling (``EXACT`` or ``MASKED``), and
-    ``source_line`` is the one-based source line where the macro declaration
-    begins.
+    ``form`` is the source spelling (``EXACT``, ``MASKED``, or ``MASKED2``),
+    and ``source_line`` is the one-based source line where the macro
+    declaration begins. ``second_word_value`` and ``second_word_mask`` carry
+    the word-2 qualifier for ``MASKED2`` rows and stay ``None`` otherwise.
     """
 
     symbol: str
@@ -46,6 +49,8 @@ class OpcodeRow:
     form: str
     source_line: int
     input_resources: str
+    second_word_value: int | None = None
+    second_word_mask: int | None = None
 
 
 _ID_RE: Final = re.compile(r"^[A-Z][A-Z0-9_]*$")
@@ -147,7 +152,7 @@ _INPUT_RESOURCE_TOKENS: Final = frozenset(
     }
 )
 _ROW_RE: Final = re.compile(
-    r"^TI_C54X_OPCODE_(EXACT|MASKED)\((.*)\)$"
+    r"^TI_C54X_OPCODE_(EXACT|MASKED2|MASKED)\((.*)\)$"
 )
 
 _WORD_BITS = 16
@@ -208,7 +213,7 @@ def _parse_width(token: str, location: str) -> int:
     return value
 
 
-def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, str, int]:
+def _row_key(row: OpcodeRow) -> tuple:
     """Stable semantic ordering, independent of declaration order."""
 
     return (
@@ -222,6 +227,8 @@ def _row_key(row: OpcodeRow) -> tuple[str, str, int, int, int, str, str, str, st
         row.input_resources,
         row.form,
         row.source_line,
+        row.second_word_value if row.second_word_value is not None else -1,
+        row.second_word_mask if row.second_word_mask is not None else -1,
     )
 
 
@@ -254,6 +261,24 @@ def _is_single_word_shadow(first: OpcodeRow, second: OpcodeRow) -> bool:
     return exact.source_line < masked.source_line
 
 
+def _word2_disjoint(first: OpcodeRow, second: OpcodeRow) -> bool:
+    """Whether two word-2-qualified rows discriminate every shared word.
+
+    Both rows must carry qualifiers and their patterns must disagree on at
+    least one commonly masked bit; any other pairing keeps the overlap.
+    """
+
+    if (
+        first.second_word_value is None
+        or first.second_word_mask is None
+        or second.second_word_value is None
+        or second.second_word_mask is None
+    ):
+        return False
+    shared = first.second_word_mask & second.second_word_mask
+    return ((first.second_word_value ^ second.second_word_value) & shared) != 0
+
+
 def _validate_overlaps(rows: Iterable[OpcodeRow]) -> None:
     ordered = sorted(rows, key=_row_key)
     for index, first in enumerate(ordered):
@@ -262,6 +287,8 @@ def _validate_overlaps(rows: Iterable[OpcodeRow]) -> None:
             if witness is None:
                 continue
             if _is_single_word_shadow(first, second):
+                continue
+            if _word2_disjoint(first, second):
                 continue
             names = sorted((first.symbol, second.symbol))
             raise OpcodeCatalogError(
@@ -336,8 +363,21 @@ def validate_catalog_rows(rows: Iterable[OpcodeRow]) -> tuple[OpcodeRow, ...]:
             or row.input_resources not in _INPUT_RESOURCE_TOKENS
         ):
             raise OpcodeCatalogError(f"{location}: invalid input-resource token")
-        if not isinstance(row.form, str) or row.form not in {"EXACT", "MASKED"}:
+        if not isinstance(row.form, str) or row.form not in {"EXACT", "MASKED", "MASKED2"}:
             raise OpcodeCatalogError(f"{location}: unknown opcode form {row.form!r}")
+        if row.form == "MASKED2":
+            if row.program_word_count < 2:
+                raise OpcodeCatalogError(
+                    f"{location}: MASKED2 form needs at least two program words"
+                )
+            if not _is_integer(row.second_word_value) or not 0 <= row.second_word_value <= _WORD_MAX:
+                raise OpcodeCatalogError(f"{location}: second word is outside 16-bit range")
+            if not _is_integer(row.second_word_mask) or not 0 <= row.second_word_mask <= _WORD_MAX:
+                raise OpcodeCatalogError(f"{location}: second mask is outside 16-bit range")
+            if row.second_word_value & ~row.second_word_mask:
+                raise OpcodeCatalogError(f"{location}: second value sets bits outside its mask")
+        elif row.second_word_value is not None or row.second_word_mask is not None:
+            raise OpcodeCatalogError(f"{location}: second-word qualifier needs MASKED2 form")
         if not _is_integer(row.source_line) or row.source_line <= 0:
             raise OpcodeCatalogError(f"{location}: source line must be positive")
         if row.form == "EXACT" and row.first_word_mask != _WORD_MAX:
@@ -359,11 +399,13 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
     """Parse catalog macro rows into immutable normalized records.
 
     The accepted forms are ``TI_C54X_OPCODE_EXACT(symbol, handler, value,
-    width, operand_layout, repeatability, input_resources)`` and
+    width, operand_layout, repeatability, input_resources)``,
     ``TI_C54X_OPCODE_MASKED(symbol, handler, value, mask, width,
-    operand_layout, repeatability, input_resources)``. Every non-empty
-    non-comment line must contain exactly one row; comments and blank lines
-    are otherwise ignored.
+    operand_layout, repeatability, input_resources)``, and
+    ``TI_C54X_OPCODE_MASKED2(symbol, handler, value, mask, width,
+    operand_layout, repeatability, input_resources, second_value,
+    second_mask)``. Every non-empty non-comment line must contain exactly
+    one row; comments and blank lines are otherwise ignored.
     """
 
     if not isinstance(text, str):
@@ -378,7 +420,7 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
             raise OpcodeCatalogError(f"malformed catalog row at line {line_number}")
         form, body = match.groups()
         fields = tuple(field.strip() for field in body.split(","))
-        expected_fields = 7 if form == "EXACT" else 8
+        expected_fields = {"EXACT": 7, "MASKED": 8, "MASKED2": 10}[form]
         if len(fields) != expected_fields or any(not field for field in fields):
             raise OpcodeCatalogError(
                 f"line {line_number}: {form} requires exactly "
@@ -387,17 +429,28 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
         symbol, handler, value_token = fields[:3]
         if form == "EXACT":
             mask_or_width, operand_layout, repeatability, input_resources = fields[3:]
-        else:
+        elif form == "MASKED":
             mask_or_width, width_token, operand_layout, repeatability, input_resources = fields[3:]
+        else:
+            (mask_or_width, width_token, operand_layout, repeatability,
+             input_resources, second_value_token, second_mask_token) = fields[3:]
         location = f"line {line_number}"
         if form == "EXACT":
             value = _parse_word(value_token, f"{location}: value")
             mask = _WORD_MAX
             width = _parse_width(mask_or_width, f"{location}: width")
+            second_value = None
+            second_mask = None
         else:
             value = _parse_word(value_token, f"{location}: value")
             mask = _parse_word(mask_or_width, f"{location}: mask")
             width = _parse_width(width_token, f"{location}: width")
+            if form == "MASKED2":
+                second_value = _parse_word(second_value_token, f"{location}: second value")
+                second_mask = _parse_word(second_mask_token, f"{location}: second mask")
+            else:
+                second_value = None
+                second_mask = None
 
         rows.append(
             OpcodeRow(
@@ -411,6 +464,8 @@ def parse_catalog(text: str) -> list[OpcodeRow]:
                 form,
                 line_number,
                 input_resources,
+                second_value,
+                second_mask,
             )
         )
 

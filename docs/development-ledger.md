@@ -12102,3 +12102,34 @@ entries are not rewritten after publication.
   registry, or inventory change. The TI
   request for Smem opcode diagrams,
   PORT, and variant syntax lists stands.
+
+## 2026-09-18 — P3-S18 RED lane 1: word-2-qualified catalog rows
+
+- The catalog schema
+  (`tools/isa/catalog/opcode_catalog_schema.py`)
+  gains the `MASKED2` row form with
+  `second_word_value`/`second_word_mask`
+  (defaulting `None` so every existing
+  positional construction keeps
+  working), strict word-2 validation
+  (two-word minimum, 16-bit range,
+  value-within-mask, qualifier requires
+  the form), and the overlap exemption
+  for dual-qualified rows whose word-2
+  patterns disagree on a commonly masked
+  bit. Qualified-vs-unqualified first-
+  word sharing stays an overlap error.
+- Proved by seven new contract tests
+  (`Word2QualifiedRowTests` in
+  `tests/contract/quality/test_opcode_catalog.py`),
+  written RED first (4 failing) then
+  green with the 7 pre-existing tests
+  untouched. No `.def` change yet, so
+  the generated lookup is byte-identical
+  and the full gate stays green.
+- Next lanes: generator/decode support
+  for qualified slots, LD row
+  qualification with regression cover,
+  the four STH MOD0-MOD3 rows, then
+  registry and inventory binding. No
+  knob change.
