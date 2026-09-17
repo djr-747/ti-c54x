@@ -1178,9 +1178,11 @@
       "table_ordinal": 1,
       "mnemonic": "XOR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "XOR_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-09-02",
@@ -4210,6 +4212,12 @@
     {
       "catalog_symbol": "OR_SMEM",
       "form_id": "FORM-T2-08-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "XOR_SMEM",
+      "form_id": "FORM-T2-09-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }

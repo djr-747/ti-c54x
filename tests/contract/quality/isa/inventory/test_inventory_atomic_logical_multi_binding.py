@@ -25,6 +25,7 @@ TOKEN = "STANDARD_INDIRECT_MOD0_MOD3"
 SMEM_CASES = {
     "AND_SMEM": "FORM-T2-07-01",
     "OR_SMEM": "FORM-T2-08-01",
+    "XOR_SMEM": "FORM-T2-09-01",
 }
 SMEM_TOKEN = "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
 
@@ -41,7 +42,7 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_each_atomic_logical_form_has_one_subset_binding(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 259)
+        self.assertEqual(len(bindings), 260)
         by_symbol = {binding["catalog_symbol"]: binding for binding in bindings}
         for symbol, form_id in CASES.items():
             self.assertIn(symbol, by_symbol)
@@ -63,10 +64,10 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_report_counts_atomic_families_once(self) -> None:
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"],
-                         {"covered": 101, "denominator": 205})
+                         {"covered": 102, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"],
                          {"covered": 34, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 49.268,
+        self.assertAlmostEqual(report["catalog_family_percent"], 49.756,
                                places=3)
         self.assertAlmostEqual(report["strict_complete_percent"], 16.585,
                                places=3)

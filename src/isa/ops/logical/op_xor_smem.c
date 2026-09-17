@@ -18,6 +18,7 @@
 #include <stdint.h>
 
 #include "foundation/arithmetic40.h"
+#include "isa/decode/operand_layout.h"
 #include "isa/ops/memory/memory_effect.h"
 
 typedef struct xor_smem_fields {
@@ -145,6 +146,76 @@ static ti_c54x_op_status xor_smem_stage_read(
     }
     *effect = staged;
     return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status xor_smem_extract(
+    const ti_c54x_decoded_instruction *instruction,
+    uint8_t *destination,
+    uint8_t *indirect,
+    uint8_t *addr7)
+{
+    ti_c54x_operand_layout_set_view layout_view;
+    ti_c54x_operand_field_value field;
+    ti_c54x_program_words_view words;
+    uint8_t index;
+    uint8_t got[3] = {0U, 0U, 0U};
+
+    if (instruction == NULL || destination == NULL || indirect == NULL ||
+        addr7 == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (instruction->operand_layout !=
+            TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7 ||
+        instruction->bundle.program_word_count != UINT8_C(1)) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+    if (ti_c54x_operand_layout_set_resolve(
+            TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, UINT8_C(1),
+            &layout_view) != TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+    words.program_words = instruction->bundle.program_words;
+    words.program_word_count = instruction->bundle.program_word_count;
+    for (index = UINT8_C(0); index < UINT8_C(3); ++index) {
+        const uint8_t want_width =
+            index == UINT8_C(2) ? UINT8_C(7) : UINT8_C(1);
+        const uint64_t want_max =
+            index == UINT8_C(2) ? UINT64_C(0x7F) : UINT64_C(1);
+        if (ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, index, &field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            field.width_bits != want_width ||
+            field.raw_value > want_max) {
+            return TI_C54X_OP_STATUS_INVALID_DECODE;
+        }
+        got[index] = (uint8_t)field.raw_value;
+    }
+    *destination = got[0];
+    *indirect = got[1];
+    *addr7 = got[2];
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_op_xor_smem(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    uint8_t destination;
+    uint8_t indirect;
+    uint8_t addr7;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    status = xor_smem_extract(instruction, &destination, &indirect,
+                              &addr7);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return ti_c54x_op_xor_smem_values(destination, indirect, addr7, input,
+                                      effect);
 }
 
 ti_c54x_op_status ti_c54x_op_xor_smem_values(

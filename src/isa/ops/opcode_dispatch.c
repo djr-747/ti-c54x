@@ -78,6 +78,7 @@
 #include "logical/op_logical.h"
 #include "logical/op_and_smem.h"
 #include "logical/op_or_smem.h"
+#include "logical/op_xor_smem.h"
 #include "logical/immediate/and/op_and.h"
 #include "logical/immediate/or/op_or.h"
 #include "logical/immediate/xor/op_xor.h"

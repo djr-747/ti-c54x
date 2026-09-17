@@ -72,10 +72,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 259)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 259)
+        self.assertEqual(len(bindings), 260)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 260)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 34)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 225)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 226)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -96,7 +96,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "MACSU_DUAL_M2_M2", "PORTR_DIRECT", "PORTR_SMEM",
                "PORTW_DIRECT", "PORTW_SMEM",
                "SUB_SMEM", "SUB_SMEM_TS", "SUB_SMEM_SH16",
-               "AND_SMEM", "OR_SMEM"},
+               "AND_SMEM", "OR_SMEM", "XOR_SMEM"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -153,7 +153,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "ADD_SMEM_SH16",
                                                        "SUB_SMEM", "SUB_SMEM_TS",
                                                        "SUB_SMEM_SH16",
-                                                       "AND_SMEM", "OR_SMEM")
+                                                       "AND_SMEM", "OR_SMEM",
+                                                       "XOR_SMEM")
                     else "IMMEDIATE_K"
                     if binding["catalog_symbol"] == "RPT_K"
                     else "IMMEDIATE_LK"

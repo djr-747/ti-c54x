@@ -649,6 +649,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S21: OR Smem rows (planned)](plan/p3-s21-or-smem-rows-slice.md)
 
+- [P3-S22: XOR Smem rows (planned)](plan/p3-s22-xor-smem-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
