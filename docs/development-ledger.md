@@ -10765,3 +10765,9 @@ rewritten after publication.
   leaves, S4 XC, S1 STM/MMR, S6 PORTR/PORTW,
   AR6/AR7 dual-Y, MOD3, dual replay,
   RPTB/RPTZ/RPTBD, far/XPC/timing.
+
+### Correction — S3s ledger mixed-sign lane formatting
+- The S3s entry above garbles the mixed-sign accumulator rendering as
+  ``A FD E26C 000``; the pinned value is `0xFFDE26C000` (40-bit
+  two's-complement of `-567885824`), as the same entry states and the
+  `ti_c54x.macsu_dual_ops` / `ti_c54x.cpu_macsu_dual` tests pin.
