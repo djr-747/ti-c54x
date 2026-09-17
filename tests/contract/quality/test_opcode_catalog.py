@@ -56,6 +56,9 @@ RESOURCES_ACCUMULATORS = "TI_C54X_INPUT_RESOURCES_ACCUMULATORS"
 RESOURCES_ACCUMULATORS_STATUS_C = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C"
 )
+RESOURCES_ACCUMULATORS_STATUS_ASM = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_ASM"
+)
 RESOURCES_ACCUMULATORS_STATUS_TC = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_TC"
 )
@@ -154,7 +157,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 231)
+        self.assertEqual(len(catalog_rows), 238)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -239,48 +242,60 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_ARF_MOD)
         self.assertEqual(rows[6].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[6].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[7].symbol, "MAX_ACC")
-        self.assertEqual(rows[7].first_word_value, 0xF486)
-        self.assertEqual(rows[7].first_word_mask, 0xFEFF)
-        self.assertEqual(rows[7].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[8].symbol, "MIN_ACC")
-        self.assertEqual(rows[8].first_word_value, 0xF487)
+        # P3-S11 inserts the STH_ASM_SMEM row immediately after STH_SMEM;
+        # later positional indices shift by one more.
+        self.assertEqual(rows[7].symbol, "STH_ASM_SMEM")
+        self.assertEqual(rows[7].handler, "sth_asm_smem")
+        self.assertEqual(rows[7].first_word_value, 0x8680)
+        self.assertEqual(rows[7].first_word_mask, 0xFEE0)
+        self.assertEqual(rows[7].program_word_count, 1)
+        self.assertEqual(rows[7].operand_layout,
+                         LAYOUT_ACCUMULATOR_ARF_MOD)
+        self.assertEqual(rows[7].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[7].input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_ASM)
+        self.assertEqual(rows[8].symbol, "MAX_ACC")
+        self.assertEqual(rows[8].first_word_value, 0xF486)
         self.assertEqual(rows[8].first_word_mask, 0xFEFF)
         self.assertEqual(rows[8].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[9].symbol, "EXP_ACC")
-        self.assertEqual(rows[9].handler, "exp_acc")
-        self.assertEqual(rows[9].first_word_value, 0xF48E)
+        self.assertEqual(rows[9].symbol, "MIN_ACC")
+        self.assertEqual(rows[9].first_word_value, 0xF487)
         self.assertEqual(rows[9].first_word_mask, 0xFEFF)
-        self.assertEqual(rows[9].program_word_count, 1)
-        self.assertEqual(rows[9].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
-        self.assertEqual(rows[9].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[9].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[10].symbol, "CMPL_ACC")
-        self.assertEqual(rows[10].first_word_value, 0xF493)
-        self.assertEqual(rows[10].first_word_mask, 0xFCFF)
+        self.assertEqual(rows[10].symbol, "EXP_ACC")
+        self.assertEqual(rows[10].handler, "exp_acc")
+        self.assertEqual(rows[10].first_word_value, 0xF48E)
+        self.assertEqual(rows[10].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[10].program_word_count, 1)
+        self.assertEqual(rows[10].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[10].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[10].input_resources, RESOURCES_ACCUMULATORS)
-        self.assertEqual(rows[11].symbol, "ROL_ACC")
-        self.assertEqual(rows[11].handler, "rol_acc")
-        self.assertEqual(rows[11].first_word_value, 0xF491)
-        self.assertEqual(rows[11].first_word_mask, 0xFEFF)
-        self.assertEqual(rows[11].program_word_count, 1)
-        self.assertEqual(rows[11].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
-        self.assertEqual(rows[11].repeatability, REPEAT_UNRESOLVED)
-        self.assertEqual(rows[11].input_resources,
-                         RESOURCES_ACCUMULATORS_STATUS_C)
-        self.assertEqual(rows[12].symbol, "ROR_ACC")
-        self.assertEqual(rows[12].handler, "ror_acc")
-        self.assertEqual(rows[12].first_word_value, 0xF490)
+        self.assertEqual(rows[11].symbol, "CMPL_ACC")
+        self.assertEqual(rows[11].first_word_value, 0xF493)
+        self.assertEqual(rows[11].first_word_mask, 0xFCFF)
+        self.assertEqual(rows[11].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[12].symbol, "ROL_ACC")
+        self.assertEqual(rows[12].handler, "rol_acc")
+        self.assertEqual(rows[12].first_word_value, 0xF491)
         self.assertEqual(rows[12].first_word_mask, 0xFEFF)
         self.assertEqual(rows[12].program_word_count, 1)
         self.assertEqual(rows[12].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
         self.assertEqual(rows[12].repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(rows[12].input_resources,
                          RESOURCES_ACCUMULATORS_STATUS_C)
+        self.assertEqual(rows[13].symbol, "ROR_ACC")
+        self.assertEqual(rows[13].handler, "ror_acc")
+        self.assertEqual(rows[13].first_word_value, 0xF490)
+        self.assertEqual(rows[13].first_word_mask, 0xFEFF)
+        self.assertEqual(rows[13].program_word_count, 1)
+        self.assertEqual(rows[13].operand_layout, LAYOUT_ACCUMULATOR_SOURCE)
+        self.assertEqual(rows[13].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[13].input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_C)
         for row, symbol, handler, value, resources in (
-            (rows[13], "ROLTC_ACC", "roltc_acc", 0xF492,
+            (rows[14], "ROLTC_ACC", "roltc_acc", 0xF492,
              RESOURCES_ACCUMULATORS_STATUS_TC),
-            (rows[14], "SFTC_ACC", "sftc_acc", 0xF494,
+            (rows[15], "SFTC_ACC", "sftc_acc", 0xF494,
              RESOURCES_ACCUMULATORS),
         ):
             with self.subTest(symbol=symbol):
@@ -293,19 +308,19 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                                  LAYOUT_ACCUMULATOR_SOURCE)
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, resources)
-        self.assertEqual(rows[15].symbol, "SFTL_ACC")
-        self.assertEqual(rows[15].handler, "sftl_acc")
-        self.assertEqual(rows[15].first_word_value, 0xF0E0)
-        self.assertEqual(rows[15].first_word_mask, 0xFCE0)
-        self.assertEqual(rows[15].program_word_count, 1)
-        self.assertEqual(rows[15].operand_layout,
+        self.assertEqual(rows[16].symbol, "SFTL_ACC")
+        self.assertEqual(rows[16].handler, "sftl_acc")
+        self.assertEqual(rows[16].first_word_value, 0xF0E0)
+        self.assertEqual(rows[16].first_word_mask, 0xFCE0)
+        self.assertEqual(rows[16].program_word_count, 1)
+        self.assertEqual(rows[16].operand_layout,
                          LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT5)
-        self.assertEqual(rows[15].repeatability, REPEAT_UNRESOLVED)
-        self.assertEqual(rows[15].input_resources, RESOURCES_ACCUMULATORS)
+        self.assertEqual(rows[16].repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(rows[16].input_resources, RESOURCES_ACCUMULATORS)
         for row, symbol, handler, value in (
-            (rows[16], "AND_ACC_SHIFT", "and_acc_shift", 0xF080),
-            (rows[17], "OR_ACC_SHIFT", "or_acc_shift", 0xF0A0),
-            (rows[18], "XOR_ACC_SHIFT", "xor_acc_shift", 0xF0C0),
+            (rows[17], "AND_ACC_SHIFT", "and_acc_shift", 0xF080),
+            (rows[18], "OR_ACC_SHIFT", "or_acc_shift", 0xF0A0),
+            (rows[19], "XOR_ACC_SHIFT", "xor_acc_shift", 0xF0C0),
         ):
             with self.subTest(symbol=symbol):
                 self.assertEqual(row.symbol, symbol)
@@ -322,15 +337,15 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         # P3-S3z inserts the three ADD Smem rows immediately before the
         # immediate logical forms; later positional indices shift by three.
         for row, symbol, handler, value, mask, layout, resources in (
-            (rows[19], "ADD_SMEM", "add_smem",
+            (rows[20], "ADD_SMEM", "add_smem",
              0x0000, 0xFE00,
              LAYOUT_SELECT_INDIRECT_ADDR7,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
-            (rows[20], "ADD_SMEM_TS", "add_smem_ts",
+            (rows[21], "ADD_SMEM_TS", "add_smem_ts",
              0x0400, 0xFE00,
              LAYOUT_SELECT_INDIRECT_ADDR7,
              RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM),
-            (rows[21], "ADD_SMEM_SH16", "add_smem_sh16",
+            (rows[22], "ADD_SMEM_SH16", "add_smem_sh16",
              0x3C00, 0xFC00,
              LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
@@ -345,22 +360,22 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, resources)
         for row, symbol, handler, value, mask, layout in (
-            (rows[22], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
+            (rows[23], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
              0xF030, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[23], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
+            (rows[24], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
              0xF063, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
-            (rows[24], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
+            (rows[25], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
              0xF040, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[25], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
+            (rows[26], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
              0xF064, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
-            (rows[26], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
+            (rows[27], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
              0xF050, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16),
-            (rows[27], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
+            (rows[28], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
              0xF065, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16),
         ):

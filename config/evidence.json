@@ -7195,6 +7195,58 @@
         "anchor": "P3-S10: STH syntax-1 Smem store slice (planned)"
       },
       "assertion": "S10 is implemented and green: seven new STH syntax-1 catalog rows STH_SMEM (0x8280) and STH_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STL_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-05 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-ASM-OPCODE-P4-169",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-169",
+        "printed_page_end": "4-169"
+      },
+      "assertion": "STH syntax 2 encodes as 1000_011S_IAAAAAAA (catalog pins 0x8680 under mask 0xFEE0 for MOD0-MOD3 and 0x86A0/0x86A8/0x86B0/0x86B8/0x86C0/0x86D0 under mask 0xFEF8 for MOD4/MOD5/MOD6/MOD7/MOD8/MOD10): bit 8 (S) selects accumulator A (0) or B (1), bit 7 (I) selects the indirect Smem leg, and the A field carries the ARF/MOD selectors."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STH-ASM-SEMANTICS-P4-169-4-171",
+      "locator": {
+        "chapter": "4",
+        "section": "STH",
+        "printed_page_start": "4-169",
+        "printed_page_end": "4-171"
+      },
+      "assertion": "STH syntax 2 shifts the S-selected accumulator by ASM (0-15 left, 16-31 arithmetic right with sign fill) and stores bits 31-16 of the shifted value to Smem; SXM never perturbs the stored word because both SXM rules coincide with arithmetic fill over the whole ASM domain, so ASM alone is the status input. The worked examples send B FF 8421 1234 with ASM -8 to data memory holding FF84 and A FF 8421 1234 with ASM -4 under SXM=1 holding F842. The description carries no not-repeatable note, so the rows stay repeatability UNRESOLVED."
+    },
+    {
+      "id": "E-PROJECT-P3-S11-STH-ASM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S11: STH by-ASM Smem store slice (planned)"
+      },
+      "assertion": "S11 is implemented and green: seven new STH syntax-2 catalog rows STH_ASM_SMEM (0x8680) and STH_ASM_SMEM_MOD4/MOD5/MOD6/MOD7/MOD8/MOD10 under the FEE0/FEF8 masks mirroring the STH_SMEM row family with bit 9 set; checked and trusted leaves staging MEMORY single-indirect/indexed/circular/reverse-carry WRITE effects carrying bits 31-16 of the ASM-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-06 lands SUBSET with all seven symbols under STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10."
     }
   ],
   "requirements": [
@@ -16815,6 +16867,49 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S11-STH-ASM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the seven STH syntax-2 rows as ASM-shifted accumulator-high stores: resolve source, ARF, and MOD through the shared Smem layouts, shift the selected accumulator by ASM with arithmetic right fill, store bits 31-16 of the shifted value to the indirect Smem WRITE effect, gate on selected-accumulator and ASM knownness, stage no status, accumulator, or T-register effect, and leave all seven rows repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-ASM-OPCODE-P4-169",
+        "E-TI-C54X-SPRU172C-S4-STH-ASM-SEMANTICS-P4-169-4-171"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S11-STH-ASM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S11-STH-ASM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire STH syntax-2 stores through the generic MEMORY route with the DATA WRITE carrying bits 31-16 of the ASM-shifted selected accumulator at the resolved Smem address, post-incrementing AR, with WAIT resume, fault, and boundary transactionality.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STH-ASM-SEMANTICS-P4-169-4-171"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S11-STH-ASM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the seven STH syntax-2 production symbols to FORM-T2-20-06 at SUBSET under the STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S11-STH-ASM-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20010,7 +20105,8 @@
         "REQ-PROJECT-P3-S4-XC-INVENTORY",
         "REQ-PROJECT-P3-S8-BACC-INVENTORY",
         "REQ-PROJECT-P3-S9-CALA-INVENTORY",
-        "REQ-PROJECT-P3-S10-STH-INVENTORY"
+        "REQ-PROJECT-P3-S10-STH-INVENTORY",
+        "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY"
       ]
     },
     {
@@ -24391,6 +24487,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S10-STH-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S11-STH-ASM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_sth_asm_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sth_asm_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S11-STH-ASM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S11-STH-ASM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/store/test_cpu_sth_asm_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_sth_asm_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S11-STH-ASM-CPU-RETIREMENT"
       ]
     }
   ]
