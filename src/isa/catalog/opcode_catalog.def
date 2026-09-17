@@ -231,6 +231,17 @@ TI_C54X_OPCODE_MASKED(MPYA_DST, mpya_dst, 0xF48C, 0xFEFF, 1, TI_C54X_OPERAND_LAY
  * source/destination/round layout. Low bytes 0x88/0x89 keep the row
  * disjoint from the neighboring MPYA_DST row. */
 TI_C54X_OPCODE_MASKED(MACA_T, maca_t, 0xF488, 0xFCFE, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* Syntax-1 subtract of Smem times A-high from fixed B with
+ * read-phase T load. I/addr7 ride the word through the shared
+ * indirect/addr7 layout; dst is fixed B and there is no R bit
+ * (the MASAR Smem variant shares no row). */
+TI_C54X_OPCODE_MASKED(MASA_SMEM, masa_smem, 0x3300, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* Syntax-2 register-only MASA across the S source, D destination, and R
+ * round selects. The single row carries all 8 encodings (the R bit carries
+ * the MASAR T,src variant); S/D/R ride the word through the shared
+ * source/destination/round layout. Low bytes 0x8A/0x8B keep the row
+ * disjoint from the neighboring MACA_T row. */
+TI_C54X_OPCODE_MASKED(MASA_T, masa_t, 0xF48A, 0xFCFE, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
 /* Syntax-1 two-word accumulate of Smem times a PROGRAM-memory
  * coefficient into the S-selected accumulator with read-phase Smem
  * T load. S/I/addr7 ride word 0 through the new

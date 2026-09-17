@@ -42,7 +42,7 @@ matches(const ld_status_row *row, uint16_t word)
 static void
 test_metadata_rows(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 215);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 217);
 
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const ld_status_row *row = &rows[index];
@@ -133,9 +133,18 @@ test_fixed_bit_near_misses_and_no_arp_alias(void)
 
             TI_C54X_TEST_CHECK(id != row->id);
             if (fixed_bit_masks[mask_index] == UINT16_C(0x0100)) {
-                /* A lax FE mask would overaccept this fixed-bit near miss. */
-                TI_C54X_TEST_CHECK((word & LD_STATUS_LAX_MASK) == row->value);
-                TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_UNKNOWN);
+                if (row->id == TI_C54X_OPCODE_ID_LD_ASM_SMEM) {
+                    /* 0x3280 ^ 0x0100 = 0x3380 lands on the S3w
+                     * MASA_SMEM row. */
+                    TI_C54X_TEST_CHECK(id ==
+                                       TI_C54X_OPCODE_ID_MASA_SMEM);
+                } else {
+                    /* A lax FE mask would overaccept this fixed-bit
+                     * near miss. */
+                    TI_C54X_TEST_CHECK((word & LD_STATUS_LAX_MASK) ==
+                                       row->value);
+                    TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_UNKNOWN);
+                }
             }
         }
     }

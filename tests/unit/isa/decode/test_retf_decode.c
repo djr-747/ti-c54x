@@ -139,11 +139,12 @@ test_fixed_bit_near_misses(void)
      * and clearing fixed bit 10 lands on the AND_ACC_SHIFT sibling
      * (all pinned below). Setting fixed bit 11 lands in the RC
      * row (pinned below); setting fixed bit 14 lands on the P3-S3g
-     * MAC_DUAL_M2_M2 sibling (pinned below); all other fixed-bit
-     * flips must miss every row. */
+     * MAC_DUAL_M2_M2 sibling (pinned below); clearing fixed bit 4
+     * lands on the S3w MASA_T sibling (pinned below); all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
-        UINT16_C(0x0010), UINT16_C(0x0040),
+        UINT16_C(0x0040),
         UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
@@ -190,6 +191,18 @@ test_fixed_bit_near_misses(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
                            TI_C54X_OPCODE_ID_MAC_DUAL_M2_M2);
+    }
+
+    /* 0xF48B (fixed bit 4 cleared) is the S3w MASA_T encoding with
+     * S=0 (src A), D=0 (dst A), R=1. */
+    {
+        const ti_c54x_decode_result masa_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETF_VALUE ^ UINT16_C(0x0010)));
+
+        TI_C54X_TEST_CHECK(masa_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(masa_sibling.id == TI_C54X_OPCODE_ID_MASA_T);
     }
 
     for (size_t index = 0U;

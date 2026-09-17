@@ -28,6 +28,10 @@ ti_c54x_add_unit_test(mpyu_smem_ops test_mpyu_smem_ops.c)
 ti_c54x_add_unit_test(maca_smem_ops test_maca_smem_ops.c)
 # P3-S3 RED contract: MACA T,src register-only row.
 ti_c54x_add_unit_test(maca_t_ops test_maca_t_ops.c)
+# P3-S3 RED contract: MASA Smem subtract-A row.
+ti_c54x_add_unit_test(masa_smem_ops test_masa_smem_ops.c)
+# P3-S3 RED contract: MASA T,src register-only row.
+ti_c54x_add_unit_test(masa_t_ops test_masa_t_ops.c)
 # P3-S3 RED contract: MACP Smem,Pmad row.
 ti_c54x_add_unit_test(macp_smem_ops test_macp_smem_ops.c)
 # P3-S3 RED contract: MACD Smem,Pmad row.

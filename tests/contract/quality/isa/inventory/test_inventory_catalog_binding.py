@@ -72,10 +72,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 214)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 214)
+        self.assertEqual(len(bindings), 216)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 216)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 33)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 181)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 183)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -86,7 +86,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | MAS_DUAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM",
+            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "STM", "RPT_K", "RPT_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM", "MASA_SMEM", "MASA_T",
                "MACSU_DUAL_M0_M0", "MACSU_DUAL_M0_M1",
                "MACSU_DUAL_M0_M2", "MACSU_DUAL_M1_M0",
                "MACSU_DUAL_M1_M1", "MACSU_DUAL_M1_M2",
@@ -130,7 +130,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     if binding["catalog_symbol"] == "RETF"
                     else "REGISTER_DST"
                     if binding["catalog_symbol"] in ("MPYA_DST", "SQUR_ADST",
-                                                       "MACA_T")
+                                                       "MACA_T", "MASA_T")
                     else "DIRECT_PAGE0"
                     if binding["catalog_symbol"] == "STM"
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
@@ -139,7 +139,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "MPYU_SMEM", "MACA_SMEM",
                                                        "SQUR_SMEM", "SQURA_SMEM",
                                                        "SQURS_SMEM", "MACP_SMEM",
-                                                       "MACD_SMEM")
+                                                       "MACD_SMEM", "MASA_SMEM")
                     else "IMMEDIATE_K"
                     if binding["catalog_symbol"] == "RPT_K"
                     else "IMMEDIATE_LK"

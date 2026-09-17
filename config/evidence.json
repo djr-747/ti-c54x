@@ -6353,6 +6353,24 @@
       "assertion": "MACA[R] syntax 1 is MACA[R] Smem[, B] with opcode bits 15:10 001101, bit 8 fixed 1, R bit 9, I bit 7, Smem field 6:0, one program word, and execution (B) + (Smem) x A(32-16) into B with (Smem) into T. The operation is affected by FRCT and OVM and affects OVdst and OVB in syntax 1. Example 1 (MACA *AR5+, A 00 1234 0000, B 00 0000 0000, FRCT 0, AR5 0100, mem[0100] 5678) yields B 00 0626 0060 with T 5678 and AR5 0101; Example 3 (MACAR *AR5+, B) rounds to B 00 0626 0000. Syntaxes 1 and 2 are Class 3A/3B single-repeatable."
     },
     {
+      "id": "E-TI-C54X-SPRU179C-S4-MASA-P4-99-4-100",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU179C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MASA",
+        "printed_page_start": "4-99",
+        "printed_page_end": "4-100"
+      },
+      "assertion": "MASA syntax 1 is B = B - Smem x A(32-16) with (Smem) into T, opcode 0011 0011 IAAA AAAA, one program word. MASA syntax 2 is dst = src - T x A(32-16) with optional rnd(), opcode 1111 01SD 1000 101R (S bit 9, D bit 8, R bit 0), one program word. The operation is affected by FRCT and OVM and affects OVdst and OVB in syntax 1. Example 1 (MASA *AR5+, A 00 1234 0000, B 00 0002 0000, T 0400, FRCT 0, AR5 0100, mem[0100] 5678) yields B FF F9DB FFA0 with T 5678 and AR5 0101; Example 2 (MASA T,B,B, T 0444, FRCT 1) yields B FF FF66 B460; Example 3 (MASAR T,B,B, R=1) rounds to B FF FF67 0000."
+    },
+    {
       "id": "E-PROJECT-P3-S3D-MPYA-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -6763,6 +6781,22 @@
         "anchor": "P3-S3v: MACAR Smem lock-in slice (planned)"
       },
       "assertion": "S3v is implemented and green: MACAR Smem retires through the shared MACA_SMEM row with R=1, locked by the 0x3734 leaf completion (Example 1 product rounded to 0x6260000 into B per TI MACAR Example 3), the new 0x3734 CPU retirement with read-phase T load, and trusted R=1 completion through the trusted MACA Smem entry point. No catalog, inventory, production, layout, or pin change was needed; FORM-T2-04-09/10 stay UNIMPLEMENTED with empty symbol lists by the recorded R-sharing convention."
+    },
+    {
+      "id": "E-PROJECT-P3-S3W-MASA-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3w: MASA Smem and T slice (planned)"
+      },
+      "assertion": "S3w is implemented and green: two new MASA_SMEM (0x3300/0xFF00, shared INDIRECT_ADDR7 layout) and MASA_T (0xF48A/0xFCFE, shared SOURCE_DESTINATION_ROUND layout) catalog rows with 264 added lookup entries and zero neighbor moves, checked and trusted leaves reusing the multiply core with SUBTRACT select and A-high multiplicand, and CPU retirement of the TI Example 1 Smem vector (B FF F9DB FFA0 with T load), the Example 2 T vector (B FF FF66 B460), and the Example 3 rounding vector (B FF FF67 0000). Both rows are UNRESOLVED repeatability with no Table 2-28 MASA fact on record. FORM-T2-04-18/19 land SUBSET; FORM-T2-04-20/21 (MASAR) stay UNIMPLEMENTED with empty symbol lists."
     }
   ],
   "requirements": [
@@ -15973,6 +16007,62 @@
       "test_ids": [
         "T-COMMON-P3-S3V-MACAR-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3W-MASA-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MASA Smem through the MASA_SMEM row as (B) - (Smem) x A(32-16) into B with read-phase (Smem) T load per TI MASA Example 1 at the semantic leaf, including trusted-path completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-MASA-P4-99-4-100"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3W-MASA-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3W-MASA-SMEM-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MASA Smem on the CPU per TI MASA Example 1 with read-phase T load, B subtract commit, and data-read bus request.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-MASA-P4-99-4-100"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3W-MASA-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3W-MASA-T-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MASA T,src through the MASA_T row as (src) - (T) x A(32-16) into dst with R rounding per TI MASA Examples 2 and 3 at the semantic leaf, including trusted-path completion.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-MASA-P4-99-4-100"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3W-MASA-T-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3W-MASA-T-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MASA T,src on the CPU per TI MASA Examples 2 and 3 with T/A preservation, endpoint silence, and R rounding commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU179C-S4-MASA-P4-99-4-100"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3W-MASA-T-CPU"
+      ]
     }
   ],
   "tests": [
@@ -23096,6 +23186,62 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S3V-MACAR-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3W-MASA-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_masa_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.masa_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3W-MASA-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3W-MASA-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_masa_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_masa_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3W-MASA-SMEM-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3W-MASA-T-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_masa_t_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.masa_t_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3W-MASA-T-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3W-MASA-T-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_masa_t.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_masa_t"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3W-MASA-T-CPU-RETIREMENT"
       ]
     },
     {

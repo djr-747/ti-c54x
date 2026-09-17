@@ -121,9 +121,19 @@ test_fixed_bit_near_misses(void)
 
             TI_C54X_TEST_CHECK(result.id != test_case->id);
             if (fixed_bit_masks[mask_index] == UINT16_C(0x0100)) {
-                TI_C54X_TEST_CHECK(result.status ==
-                                   TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-                TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+                if (test_case->id == TI_C54X_OPCODE_ID_LD_ASM_SMEM) {
+                    /* Flipping fixed bit 8 lands on the S3w MASA_SMEM
+                     * row (0x3290 ^ 0x0100 = 0x3390). */
+                    TI_C54X_TEST_CHECK(result.status ==
+                                       TI_C54X_DECODE_STATUS_OK);
+                    TI_C54X_TEST_CHECK(result.id ==
+                                       TI_C54X_OPCODE_ID_MASA_SMEM);
+                } else {
+                    TI_C54X_TEST_CHECK(result.status ==
+                                       TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
+                    TI_C54X_TEST_CHECK(result.id ==
+                                       TI_C54X_OPCODE_ID_UNKNOWN);
+                }
             }
         }
     }
