@@ -209,6 +209,7 @@ static ti_c54x_op_status squr_acc_complete_select(
     operands.ovm = input->status_ovm;
     operands.ovm_known = true;
     operands.unsigned_operands = false;
+    operands.unsigned_t_only = false;
     operands.rounding = false;
     operands.select = select;
     multiply_status = ti_c54x_multiply_accumulate(&operands, &result);

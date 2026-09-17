@@ -3,9 +3,11 @@
 
 /* Module contract
  * Owns: the pure multiply-accumulate datapath core shared by the MAC/MPY
- * family (signed 16x16 product, or unsigned 16x16 product when the
- * unsigned-operands select is set, FRCT shift, R rounding, add/sub/store
- * select, OVM saturation with overflow disposition) over copied inputs.
+ * family (signed 16x16 product, unsigned 16x16 product when the
+ * unsigned-operands select is set, or mixed unsigned-T/signed-multiplicand
+ * product when the unsigned-t-only select is set, FRCT shift, R rounding,
+ * add/sub/store select, OVM saturation with overflow disposition) over
+ * copied inputs.
  * Inputs are borrowed for one call; the result is written only after
  * complete validation, and nothing is staged on unknown/invalid stops.
  * SMUL product pre-saturation is out of scope: the common target models
@@ -50,6 +52,10 @@ typedef struct ti_c54x_multiply_operands {
     bool ovm_known;
     bool rounding;
     bool unsigned_operands;
+    /* Mixed-sign select (MACSU): T is read unsigned while the
+     * multiplicand stays signed. The both-unsigned select keeps
+     * precedence when both selects are set. */
+    bool unsigned_t_only;
     ti_c54x_multiply_select select;
 } ti_c54x_multiply_operands;
 

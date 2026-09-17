@@ -1,8 +1,10 @@
 /* Module contract
  * Owns: the pure multiply-accumulate datapath core shared by the MAC/MPY
- * family (signed 16x16 product, or unsigned 16x16 product when the
- * unsigned-operands select is set, FRCT shift, R rounding, add/sub/store
- * select, OVM saturation with overflow disposition) over copied inputs.
+ * family (signed 16x16 product, unsigned 16x16 product when the
+ * unsigned-operands select is set, or mixed unsigned-T/signed-multiplicand
+ * product when the unsigned-t-only select is set, FRCT shift, R rounding,
+ * add/sub/store select, OVM saturation with overflow disposition) over
+ * copied inputs.
  * Does not own: catalog lookup generation, operand addressing, T or
  * accumulator or status mutation, CPU sequencing, timing, buses, or
  * diagnostics.
@@ -70,6 +72,9 @@ ti_c54x_multiply_status ti_c54x_multiply_accumulate(
             (uint64_t)operands->t_raw16 *
             (uint64_t)operands->multiplicand_raw16;
         product = (int64_t)unsigned_product;
+    } else if (operands->unsigned_t_only) {
+        product = (int64_t)operands->t_raw16 *
+                  sign_extend16(operands->multiplicand_raw16);
     } else {
         product = sign_extend16(operands->t_raw16) *
                   sign_extend16(operands->multiplicand_raw16);

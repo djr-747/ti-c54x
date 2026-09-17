@@ -20,13 +20,13 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3r complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
+Current snapshot: P3-S3s complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
 Smem rows, `MACA` T,src, `MACP` Smem,Pmad, `MACD` Smem,Pmad with the Smem+1
-delay write-back, `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`,
-register-only `MPYA`/`SQUR` dst).
+delay write-back, `MAC`/`MPY`/`MAS`/`MACSU` dual `Xmem`,`Ymem`
+with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
 
-- 206 runnable catalog rows under 17,393 populated first-word lookup entries.
-  Inventory coverage is 81/205 forms SUBSET-or-better (39.512%) and 33/205
+- 215 runnable catalog rows under 17,681 populated first-word lookup entries.
+  Inventory coverage is 82/205 forms SUBSET-or-better (40.000%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -122,8 +122,17 @@ register-only `MPYA`/`SQUR` dst).
   recomputed `0x4000`x`0x4000` oracle with `mem[0101]` `4000` and the
   FRCT lane retire through the leaf and the CPU; the BCD/CCD bit-15
   near-miss lanes move to the new row as recorded cross-slice
-  updates).
-- Major remaining work is the `MACSU`/`MACR`/`MPYR`/`SQDST` families,
+  updates). S3s lands the nine one-word `MACSU Xmem,Ymem` dual rows
+  (`FORM-T2-04-13`, `0xA800` plus X/Y mode bits under mask `0xFECC`,
+  S/Xar/Yar riding the word) on the shared dual destination/XAR/YAR
+  layout and the dual pair seam with read-phase X-side T load,
+  completing `(src)` plus unsigned-`Xmem` times signed-`Ymem` into
+  the S-selected accumulator with no rounding (the recomputed
+  `0x4000`x`0x4000` oracle, the FRCT lane, and the mixed-sign lane
+  retire through the leaf and the CPU; the mixed product rides a new
+  unsigned-T-only multiply-core select with both-unsigned
+  precedence).
+- Major remaining work is the `MACR`/`MPYR`/`SQDST` families,
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

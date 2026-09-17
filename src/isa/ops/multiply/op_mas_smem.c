@@ -190,6 +190,7 @@ static ti_c54x_op_status mas_smem_complete(
     operands.ovm = input->status_ovm;
     operands.ovm_known = true;
     operands.unsigned_operands = false;
+    operands.unsigned_t_only = false;
     operands.rounding = fields.round != UINT8_C(0);
     operands.select = TI_C54X_MULTIPLY_SUBTRACT;
     multiply_status = ti_c54x_multiply_accumulate(&operands, &result);

@@ -5,7 +5,8 @@
  * three TI SPRU172C MAC vectors (pp. 4-81--4-83), the MPY store vectors
  * (pp. 4-101--4-102), R rounding, OVM saturation with OVdst disposition,
  * MAS subtraction, STORE-accumulator independence, the unsigned-operands
- * select (MPYU vector p. 4-106), and transactional
+ * select (MPYU vector p. 4-106), the mixed unsigned-T/signed-multiplicand
+ * select (MACSU p. 4-91), and transactional
  * unknown/invalid stops. Does not own: catalog rows, operand layouts,
  * addressing, T/accumulator/status mutation, CPU sequencing, timing,
  * observers, diagnostics, or the production seam core.
@@ -32,6 +33,7 @@ static ti_c54x_multiply_operands base_operands(void)
         true,
         UINT8_C(0),
         true,
+        false,
         false,
         false,
         TI_C54X_MULTIPLY_ADD,
@@ -297,6 +299,49 @@ static void test_unsigned_operands(void)
     TI_C54X_TEST_CHECK(!result.overflow);
 }
 
+static void test_mixed_sign_t_unsigned(void)
+{
+    ti_c54x_multiply_operands operands = base_operands();
+    ti_c54x_multiply_result result = {0U, false};
+
+    /* MACSU shape: uns(0x4000) * 0x4000 added to zero. */
+    operands.unsigned_t_only = true;
+    operands.select = TI_C54X_MULTIPLY_ADD;
+    operands.accumulator_raw40 = UINT64_C(0);
+    operands.t_raw16 = UINT16_C(0x4000);
+    operands.multiplicand_raw16 = UINT16_C(0x4000);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x10000000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+
+    /* FRCT shifts the mixed product left by one. */
+    operands.frct = UINT8_C(1);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x20000000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+    operands.frct = UINT8_C(0);
+
+    /* uns(0x8765) * -16384: the mixed reading differs from both
+     * uniform readings (signed 0x001E26C000, unsigned 0x00658BC000). */
+    operands.t_raw16 = UINT16_C(0x8765);
+    operands.multiplicand_raw16 = UINT16_C(0xC000);
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0xFFDE26C000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+
+    /* The both-unsigned select keeps precedence when both selects
+     * are set: uns(0x8765) * uns(0xC000) stored. */
+    operands.unsigned_operands = true;
+    operands.select = TI_C54X_MULTIPLY_STORE;
+    TI_C54X_TEST_CHECK(ti_c54x_multiply_accumulate(&operands, &result) ==
+                       TI_C54X_MULTIPLY_OK);
+    TI_C54X_TEST_CHECK(result.accumulator_raw40 == UINT64_C(0x658BC000));
+    TI_C54X_TEST_CHECK(!result.overflow);
+}
+
 int
 main(void)
 {
@@ -309,5 +354,6 @@ main(void)
     test_unknown_stops();
     test_invalid_rejects();
     test_unsigned_operands();
+    test_mixed_sign_t_unsigned();
     return 0;
 }

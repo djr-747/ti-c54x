@@ -12,6 +12,8 @@ ti_c54x_add_unit_test(mac_dual_ops test_mac_dual_ops.c)
 ti_c54x_add_unit_test(mpy_dual_ops test_mpy_dual_ops.c)
 # P3-S3 RED contract: MAS Xmem,Ymem dual rows.
 ti_c54x_add_unit_test(mas_dual_ops test_mas_dual_ops.c)
+# P3-S3 RED contract: MACSU Xmem,Ymem dual rows.
+ti_c54x_add_unit_test(macsu_dual_ops test_macsu_dual_ops.c)
 # P3-S3 RED contract: MPYA dst register-only row.
 ti_c54x_add_unit_test(mpya_dst_ops test_mpya_dst_ops.c)
 # P3-S3 RED contract: SQUR A,dst register-only row.

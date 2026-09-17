@@ -6681,6 +6681,40 @@
         "anchor": "P3-S3r: MACD Smem,Pmad delay-write slice (planned)"
       },
       "assertion": "S3r is implemented and green: one MACD_SMEM catalog row at 0x7A00 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the shared DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000) and the FRCT lane (B 00 2000 0000). The delay sidecar rides the new write_smem_delay MEMORY carrier flag (48-byte ABI unchanged, DATA+PROGRAM pair kind only): after both reads complete the pair root issues a third-ID DATA WRITE of the Smem word to Smem+1 with 16-bit wraparound through the reused child transaction before the Smem post-access commit and PC publish, with WAIT resume, fault/cancel silence, and reset routing by pair-versus-delay child state. FORM-T2-04-11 lands SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MACSU-P4-91",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MACSU",
+        "printed_page_start": "4-91",
+        "printed_page_end": "4-91"
+      },
+      "assertion": "MACSU syntax 2 is MACSU Xmem, Ymem, src with word 0 bits 15:9 1010011, S bit 8, X field 7:4, Y field 3:0, one program word, and execution src + unsigned(Xmem) x signed(Ymem) into src with the Xmem word into T in the read phase. The operation is affected by FRCT and OVM and affects OVsrc. Oracle shape (MACSU *AR4+, *AR5+, A 00 0000 0000, FRCT 0, AR4 0100, AR5 0200, mem[0100] 4000, mem[0200] 4000) yields A 00 1000 0000 with T 4000, AR4 0101, AR5 0201; the FRCT lane doubles the product. Dual one-word forms carry UNRESOLVED repeatability by the dual precedent."
+    },
+    {
+      "id": "E-PROJECT-P3-S3S-MACSU-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (planned)"
+      },
+      "assertion": "S3s is implemented and green: nine MACSU_DUAL_Mx_My catalog rows at 0xA800 plus X/Y mode bits under mask 0xFECC carrying 32 S/Xar/Yar encodings each through the shared DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability; checked and trusted leaves stage dual-indirect MOD0-MOD2 reads with read-phase X-side T load, and pair completion runs (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding; CPU retirement proves the recomputed oracle vector (A 00 1000 0000 with T 4000, AR4 0101, AR5 0201), the FRCT lane (A 00 2000 0000), S selection, and the mixed-sign lane. The mixed-sign product rides the new unsigned_t_only multiply-core select (T unsigned, multiplicand signed; both-unsigned keeps precedence; all-signed leaves set it false explicitly). FORM-T2-04-13 lands SUBSET."
     }
   ],
   "requirements": [
@@ -15750,6 +15784,63 @@
       "test_ids": [
         "T-PROJECT-P3-S3R-DATA-PROGRAM-DELAY-WRITE"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3S-MACSU-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACSU Xmem,Ymem as (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding, per the pinned MACSU oracle, FRCT, and mixed-sign lanes, at the semantic leaves.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACSU-P4-91"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3S-MACSU-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3S-MACSU-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACSU Xmem,Ymem on the CPU per the pinned MACSU oracle with ordered X/Y DATA reads, read-phase X-side T load, S selection, MOD2 post-increment of both ARs, accumulator write, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACSU-P4-91"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3S-MACSU-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3S-MIXED-SIGN-CORE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Compute the mixed unsigned-T/signed-multiplicand 16x16 product in the shared multiply-accumulate core when the unsigned-t-only select is set, with FRCT shift, accumulate, saturation, and overflow disposition unchanged; the both-unsigned select keeps precedence when both selects are set.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACSU-P4-91"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3-MULTIPLY-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3S-MACSU-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the nine MACSU_DUAL_Mx_My catalog rows to FORM-T2-04-13 at SUBSET coverage over dual-indirect X/Y MOD0-MOD2 addressing.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3S-MACSU-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -18939,7 +19030,8 @@
         "REQ-PROJECT-P3-S3O-MACA-INVENTORY",
         "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY",
         "REQ-PROJECT-P3-S3Q-MACP-INVENTORY",
-        "REQ-PROJECT-P3-S3R-MACD-INVENTORY"
+        "REQ-PROJECT-P3-S3R-MACD-INVENTORY",
+        "REQ-PROJECT-P3-S3S-MACSU-INVENTORY"
       ]
     },
     {
@@ -21834,7 +21926,8 @@
         "ctest_name": "ti_c54x.multiply_core"
       },
       "requirement_ids": [
-        "REQ-COMMON-P3-S3-MULTIPLY-CORE"
+        "REQ-COMMON-P3-S3-MULTIPLY-CORE",
+        "REQ-COMMON-P3-S3S-MIXED-SIGN-CORE"
       ]
     },
     {
@@ -22759,6 +22852,34 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3S-MACSU-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_macsu_dual_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macsu_dual_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3S-MACSU-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3S-MACSU-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_macsu_dual.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_macsu_dual"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3S-MACSU-CPU-RETIREMENT"
       ]
     },
     {
