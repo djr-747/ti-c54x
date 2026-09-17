@@ -7296,7 +7296,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s12-sth-by-shft-xmem-store-slice.md",
-        "anchor": "P3-S12: STH by-SHFT Xmem store slice (planned)"
+        "anchor": "P3-S12: STH by-SHFT Xmem store slice (implemented; local verification green)"
       },
       "assertion": "S12 is implemented and green: one new STH syntax-3 catalog row STH_SHFT_XMEM (0x9A00) under the FE00 mask reusing the LD Xmem dual-indirect layout; checked and trusted leaves staging MEMORY dual-indirect X-only WRITE effects carrying bits 31-16 of the (SHFT-16)-shifted selected accumulator with no status, accumulator, or T-register effect. The X-only address seam gains its first WRITE arm with direction-independent dual planning. FORM-T2-20-07 lands COMPLETE under ALL."
     },
@@ -7348,9 +7348,41 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s13-sth-shift-smem-store-slice.md",
-        "anchor": "P3-S13: STH by-SHIFT Smem store slice (planned)"
+        "anchor": "P3-S13: STH by-SHIFT Smem store slice (implemented; local verification green)"
       },
       "assertion": "S13 is implemented and green: seven new STH syntax-4 catalog rows (STH_SHIFT_DIRECT at 0x6F00 under FF80 plus STH_SHIFT_SMEM_MOD4 through MOD10 at 0x6FA0-0x6FD0 under FFF8) over two new operand layouts; checked and trusted leaves staging a DP-relative DIRECT_DP WRITE or MOD4-family indexed, circular, or reverse-carry WRITE carrying bits 31-16 of the signed-SHIFT-shifted selected accumulator with SXM hostile and DP gated at the leaf. The DIRECT_DP address kind reuses the shared long/offset carrier with no ABI growth and retires through the shared DP planner. FORM-T2-20-08 lands SUBSET."
+    },
+    {
+      "id": "E-PROJECT-P3-S14-SUB-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s14-sub-smem-slice.md",
+        "anchor": "P3-S14: SUB Smem slice (planned)"
+      },
+      "assertion": "S14 is implemented and green: the catalog-free SUB Smem pure leaf with checked and trusted entry points for syntaxes 1-3 (unshifted src -= Smem, T-shifted src -= Smem<<TS, dst = src - (Smem << 16)) over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, with SXM extension, T-register shift bands, per-syntax C rules, OVM saturation with sticky destination overflow, and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
+    },
+    {
+      "id": "E-PROJECT-P3-S15-AND-SMEM-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s15-and-smem-slice.md",
+        "anchor": "P3-S15: AND Smem slice (planned)"
+      },
+      "assertion": "S15 is implemented and green: the catalog-free AND Smem pure leaf with checked and trusted entry points for dst &= Smem over direct page-0 and standard-indirect MOD0-MOD3 reads through the shared MEMORY effect, ANDing the zero-extended unshifted word full-width into the destination accumulator with C and TC preserved and exotic-mode deferral. Catalog rows plus dispatch binding are follow-up work for the inventory-owning slice."
     }
   ],
   "requirements": [
@@ -17101,6 +17133,34 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the three SUB Smem syntaxes as catalog-free pure leaves: resolve select, destination, indirect, and addr7 through the shared SELECT_INDIRECT_ADDR7 and SOURCE_DESTINATION_INDIRECT_ADDR7 layouts, SXM-extend the Smem word to 40 bits, apply the per-syntax shift (unshifted, T-register 0x00-0x1F left and 0x30-0x3F arithmetic-right bands, fixed logical shift left 16), subtract from the S-selected accumulator with checked 40-bit subtraction, write C from the bit-32 borrow for syntaxes 1-2 and set-on-no-borrow for syntax 3, saturate to 0x007FFFFFFF and 0xFF80000000 under OVM with sticky destination overflow, preserve TC, gate on accumulator, T-register, SXM, and OVM knownness, and defer exotic indirect modes above MOD3 as INVALID_OPERAND with the caller effect untouched.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SUB-P4-187-190-ACCUMULATOR-SHIFT5"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S14-SUB-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/logical/",
+      "claim": "Execute the AND Smem form as a catalog-free pure leaf: resolve destination, indirect, and addr7 for the DESTINATION_INDIRECT_ADDR7 shape, stage a single WORD16 READ over direct page-0 or standard-indirect MOD0-MOD3 through the shared MEMORY effect, combine the zero-extended unshifted word full-width into the destination accumulator, preserve C and TC, consume no SXM or OVM input, gate on destination-accumulator knownness, and defer exotic indirect modes above MOD3 as INVALID_OPERAND with the caller effect untouched.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-AND-P4-11"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S15-AND-SMEM-SEMANTICS"
+      ]
     }
   ],
   "tests": [
@@ -24777,6 +24837,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S13-STH-SHIFT-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S14-SUB-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sub_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sub_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S14-SUB-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S15-AND-SMEM-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/logical/test_and_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.and_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS"
       ]
     }
   ]

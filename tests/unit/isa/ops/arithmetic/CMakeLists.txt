@@ -7,3 +7,5 @@ ti_c54x_add_unit_test(add_sub_dual_modes test_add_sub_dual_modes.c)
 ti_c54x_add_unit_test(add_sub_dual_mod3 test_add_sub_dual_mod3.c)
 # P3-S3z RED contract: ADD Smem syntaxes 1-3.
 ti_c54x_add_unit_test(add_smem_ops test_add_smem_ops.c)
+# P3-S14 RED contract: SUB Smem syntaxes 1-3.
+ti_c54x_add_unit_test(sub_smem_ops test_sub_smem.c)

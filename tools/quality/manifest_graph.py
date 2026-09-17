@@ -15,7 +15,9 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
 
-IGNORED_TREE_NAMES = {".git", "build", "build-fast", "build-cmake", "generated", "external"}
+# ".muse" holds agent worktrees and session state: never deliverable content.
+# Ignoring it keeps the gate green while isolated leaf workers are in flight.
+IGNORED_TREE_NAMES = {".git", "build", "build-fast", "build-cmake", "generated", "external", ".muse"}
 
 
 @dataclass(frozen=True)

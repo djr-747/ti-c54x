@@ -118,7 +118,8 @@ def _strip_c_comments(text: str) -> str:
 
 def _iter_project_files(root: Path) -> Iterable[Path]:
     for path in root.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
+        # ".muse" holds agent worktrees and session state: never deliverable content.
+        if not path.is_file() or ".git" in path.parts or ".muse" in path.parts:
             continue
         if path.name in BUILD_FILENAMES or path.suffix in {".cmake", ".mk"}:
             yield path
