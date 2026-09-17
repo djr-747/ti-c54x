@@ -1,4 +1,4 @@
-### P3-S24: SUBB Smem leaf (planned)
+### P3-S24: SUBB Smem leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S24 evidence freeze. `SUBB Smem`
 (TI SPRU172C §SUBB, p. 4-191: `0000_111D_IAAAAAAA`, class 3A/3B)

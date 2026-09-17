@@ -12464,3 +12464,36 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `bd53076`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S23/S24 SUBS/SUBB Smem leaves (slices 51-52, wave-4 fan-out)
+
+- Commit `c4afcc6` merges the first managed handler fan-out: two
+  isolated-worktree workers delivered op_subs_smem (FORM-T2-02-13)
+  and op_subb_smem (FORM-T2-02-11) with plain plus trusted entries
+  over SELECT_INDIRECT_ADDR7, 12 and 11 cases on TI worked-example
+  vectors (SUBS p. 4-194 unsigned rule, SUBB p. 4-191 borrow
+  rule). Maintainer review found both faithful (borrow folded
+  into the 40-bit subtrahend, C from the full-lane comparison,
+  SUB-style OVM saturation); fixed a `mode4` contract typo in
+  both files, rebuilt and re-verified in-tree, both binaries
+  green plus focused ASan/UBSan runs clean.
+- Fan-out mechanics that worked: bounded ownership (3 new files
+  each plus append-only wiring), no commits by workers, TI-true
+  briefs with exact opcodes/vectors sourced by the maintainer
+  from vendor/ti/, one family per worker. One collision: both
+  workers appended wiring at the same anchor lines, so the
+  second merge needed manual wiring (atomic git-apply rejected
+  the whole patch). Lesson: stagger wiring anchors per worker
+  (e.g. alphabetical placement) or serialize wiring in the
+  maintainer merge.
+- No catalog rows, dispatch, decode, or CPU change; both forms
+  stay UNIMPLEMENTED. Evidence: 2 TI section records, 2 plan
+  anchors, 2 ARCHITECTURAL semantics requirements, 2 COMMON test
+  records with index rows. Full `make test` green (exit 0);
+  registry PASS at 441 evidence, 685 requirements, 548 tests.
+- Follow-up: SUBB/SUBS rows plus bindings (opcodes pinned:
+  SUBB 0000_111D 0x0E00/FE00, SUBS 0000_101S 0x0A00/FE00);
+  wave-5 (#lk immediates, Xmem, src/ASM) with manual briefs.
+- Split commit discipline: impl `c4afcc6`, this ledger-only
+  follow-up. Slice docs born `(planned)` in the impl commit,
+  flipped here with their anchors.

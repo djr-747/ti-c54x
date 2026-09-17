@@ -7720,7 +7720,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s23-subs-smem-leaf-slice.md",
-        "anchor": "P3-S23: SUBS Smem leaf (planned)"
+        "anchor": "P3-S23: SUBS Smem leaf (implemented; local verification green)"
       },
       "assertion": "P3-S23 merges the managed fan-out SUBS Smem handler leaf: plain plus trusted entries over SELECT_INDIRECT_ADDR7 executing dst = src40 minus unsigned smem16 with C written from the borrow, OVM saturation, and exotic-mode deferral. No catalog rows; FORM-T2-02-13 stays UNIMPLEMENTED."
     },
@@ -7736,7 +7736,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s24-subb-smem-leaf-slice.md",
-        "anchor": "P3-S24: SUBB Smem leaf (planned)"
+        "anchor": "P3-S24: SUBB Smem leaf (implemented; local verification green)"
       },
       "assertion": "P3-S24 merges the managed fan-out SUBB Smem handler leaf: plain plus trusted entries over SELECT_INDIRECT_ADDR7 executing dst = src40 minus smem16 minus the inversion of C with C written from the borrow, OVM saturation, and exotic-mode deferral. No catalog rows; FORM-T2-02-11 stays UNIMPLEMENTED."
     }
