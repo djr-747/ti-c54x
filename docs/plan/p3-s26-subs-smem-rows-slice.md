@@ -1,4 +1,4 @@
-### P3-S26: SUBS Smem rows (planned)
+### P3-S26: SUBS Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S26 evidence freeze. `SUBS Smem`
 (TI SPRU172C §SUBS, p. 4-194: `0000_101S_IAAAAAAA`, class 3A/3B)

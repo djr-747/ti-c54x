@@ -12534,3 +12534,43 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `dfa5622`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S26 SUBS Smem row (slice 54)
+
+- Commit `d9ef620` lands SUBS Smem as SUBS_SMEM (0x0A00/0xFE00)
+  over SELECT_INDIRECT_ADDR7, wiring the landed P3-S23 plain plus
+  trusted `op_subs_smem` handlers through the catalog X-macro
+  (`ti_c54x_op_##handler` binding; dispatch include only, no
+  handler/layout/decode/CPU change). TI basis from
+  vendor/ti/spru172c.txt (§SUBS opcode diagram, p. 4-194:
+  0000_101S, class 3A/3B). New `ACCUMULATORS_STATUS_OVM` input
+  combination (accumulators plus OVM) registered in the catalog
+  header and schema allowlist. FORM-T2-02-13 binds at SUBSET
+  under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3.
+- Census pins move with the row (262 rows, ID count 263, lookup
+  26129 to 26641 as 512 insertions with zero neighbor moves,
+  SUBSET bindings 227 to 228, FORM coverage 103 to 104/205 at
+  50.732%, strict-complete bound steady at 34). Full `make test`
+  green (exit 0, 105 C suites ok); evidence registry PASS at 687
+  requirements, 548 tests; focused contract modules (catalog,
+  lookup generator, add/sub plus catalog binding) 33 tests OK;
+  knobs, boundaries, manifests, and observer-artifact gates PASS
+  inside `make test`.
+- Decisions: row-plus-registered-token slice; the C bit stays out
+  because SUBS writes C but never reads it (SUB Smem precedent —
+  reusing the C_OVM token would have falsely claimed a C input);
+  SXM stays out because Smem is zero-extended regardless of SXM.
+  PROJECT rows requirement cites activation plus the two PROJECT
+  inventory proofs only (scope-leak rule); no knob added;
+  long-offset and absolute Smem extension words stay undecoded.
+- Process notes: numeric pin bumps via assert-counted `sed` plus
+  diff-shape audit only (no string surgery on literals); one
+  missed SUBSET-count pin (227) caught by the focused contract
+  run before the full suite. Rule restated: grep-audit every
+  census literal family (rows, IDs, lookup, SUBSET, FORMs) after
+  each bump.
+- Follow-up: wave-5 (#lk immediates, Xmem, src/ASM) with manual
+  briefs.
+- Split commit discipline: impl `d9ef620`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.
