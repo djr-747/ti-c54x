@@ -99,6 +99,8 @@ ti_c54x_add_unit_test(mpyu_smem_decode test_mpyu_smem_decode.c)
 ti_c54x_add_unit_test(maca_t_decode test_maca_t_decode.c)
 # P3-S3 RED contract: MACP Smem,Pmad row.
 ti_c54x_add_unit_test(macp_smem_decode test_macp_smem_decode.c)
+# P3-S3 RED contract: MACD Smem,Pmad row.
+ti_c54x_add_unit_test(macd_smem_decode test_macd_smem_decode.c)
 # P3-S3 RED contract: MACP Smem destination/indirect/addr7/pmad16 layout.
 ti_c54x_add_unit_test(destination_indirect_addr7_pmad16_layout test_destination_indirect_addr7_pmad16_layout.c)
 # P3-S3 RED contract: MACA Smem accumulate-A row.

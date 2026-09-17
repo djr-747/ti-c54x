@@ -22,3 +22,5 @@ $(eval $(call ti_c54x_add_test,cpu_maca_smem,cpu/isa/multiply,test_cpu_maca_smem
 $(eval $(call ti_c54x_add_test,cpu_maca_t,cpu/isa/multiply,test_cpu_maca_t.c))
 # P3-S3 RED contract: MACP Smem,Pmad row.
 $(eval $(call ti_c54x_add_test,cpu_macp_smem,cpu/isa/multiply,test_cpu_macp_smem.c))
+# P3-S3 RED contract: MACD Smem,Pmad row.
+$(eval $(call ti_c54x_add_test,cpu_macd_smem,cpu/isa/multiply,test_cpu_macd_smem.c))

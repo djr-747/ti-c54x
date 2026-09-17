@@ -97,7 +97,7 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_count == 512U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0x7600), UINT16_C(0x7A00)};
+        const uint16_t invalid[] = {UINT16_C(0x7600), UINT16_C(0x7C00)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
                                TI_C54X_DECODE_STATUS_UNKNOWN_WORD);

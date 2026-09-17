@@ -6,8 +6,10 @@
  *
  * Owns: the root DATA+PROGRAM WORD16-read seam, including deferred
  * two-request preparation, two-ID reservation, endpoint issue and
- * resume, pair completion, atomic Smem address-commit publication,
- * and terminal cancellation/reset.
+ * resume, pair completion, the optional Smem delay write-back
+ * (third ID through the reused child with the pair held COMPLETE),
+ * atomic Smem address-commit publication, and terminal
+ * cancellation/reset.
  * Does not own: opcode decode or semantics, address arithmetic, CPU
  * lifecycle, endpoint storage, timing, observers, diagnostics,
  * allocation, I/O, or global state. All candidate and

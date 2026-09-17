@@ -28,3 +28,5 @@ ti_c54x_add_unit_test(maca_smem_ops test_maca_smem_ops.c)
 ti_c54x_add_unit_test(maca_t_ops test_maca_t_ops.c)
 # P3-S3 RED contract: MACP Smem,Pmad row.
 ti_c54x_add_unit_test(macp_smem_ops test_macp_smem_ops.c)
+# P3-S3 RED contract: MACD Smem,Pmad row.
+ti_c54x_add_unit_test(macd_smem_ops test_macd_smem_ops.c)

@@ -19,6 +19,8 @@ $(eval $(call ti_c54x_add_test,dual_memory_instruction_transaction,sequencer/ins
 # P3-S3 RED contracts: DATA+PROGRAM pair reducer and root.
 $(eval $(call ti_c54x_add_test,data_program_word16_read_transaction,sequencer/instruction,test_data_program_word16_read_transaction.c))
 $(eval $(call ti_c54x_add_test,data_program_memory_instruction_transaction,sequencer/instruction,test_data_program_memory_instruction_transaction.c))
+# P3-S3 RED contract: MACD Smem delay write-back root stage.
+$(eval $(call ti_c54x_add_test,data_program_delay_write,sequencer/instruction,test_data_program_delay_write.c))
 # W51B RED contracts: dual address commit persistence and atomic publication.
 $(eval $(call ti_c54x_add_test,dual_memory_instruction_w51b_contract,sequencer/instruction,test_dual_memory_instruction_w51b_contract.c))
 # W52B RED contract: dual-indirect MOD3 root commit validation.

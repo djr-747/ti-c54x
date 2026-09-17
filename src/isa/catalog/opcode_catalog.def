@@ -238,6 +238,12 @@ TI_C54X_OPCODE_MASKED(MACA_T, maca_t, 0xF488, 0xFCFE, 1, TI_C54X_OPERAND_LAYOUT_
  * second word; the row is UNRESOLVED repeatability by the two-word
  * STM precedent. */
 TI_C54X_OPCODE_MASKED(MACP_SMEM, macp_smem, 0x7800, 0xFE00, 2, TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_PMAD16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM)
+/* Syntax-1 two-word accumulate of Smem times a PROGRAM-memory
+ * coefficient into the S-selected accumulator with read-phase Smem
+ * T load plus the Smem delay write-back to DATA Smem+1. The row
+ * shares the S3q destination/indirect/addr7/pmad16 layout with
+ * UNRESOLVED repeatability by the two-word STM precedent. */
+TI_C54X_OPCODE_MASKED(MACD_SMEM, macd_smem, 0x7A00, 0xFE00, 2, TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_PMAD16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM)
 /* Syntax-2 dual WORD16 MAC across X/Y MOD0/MOD1/MOD2 addressing. Each row
  * fixes one mode combination; R/S/D/XAR/YAR ride the word and MOD3
  * neighborhoods stay undecoded. */

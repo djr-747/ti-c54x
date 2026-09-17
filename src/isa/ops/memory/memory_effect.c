@@ -138,6 +138,12 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
     if (effect == NULL) {
         return false;
     }
+    /* The Smem delay write-back rides the DATA+PROGRAM pair only. */
+    if (effect->write_smem_delay &&
+        effect->address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
+        return false;
+    }
 
     switch (effect->address_spec.kind) {
     case TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16:

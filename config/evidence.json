@@ -6647,6 +6647,40 @@
         "anchor": "P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)"
       },
       "assertion": "S3q is implemented and green: one MACP_SMEM catalog row at 0x7800 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the new DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000 and AR5 0101) and the FRCT lane (B 00 2000 0000). The DATA+PROGRAM pair seam (carrier, resolution, reducer, root, commit, candidate validation) issues the DATA read then the PROGRAM read with a zeroed PROGRAM commit and X-side T load. FORM-T2-04-12 lands SUBSET; FORM-T2-04-11 (MACD) stays UNIMPLEMENTED."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MACD-P4-87",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MACD",
+        "printed_page_start": "4-87",
+        "printed_page_end": "4-87"
+      },
+      "assertion": "MACD syntax 1 is MACD Smem, pmad[, dst] with word 0 bits 15:9 0111101, S bit 8, I bit 7, Smem field 6:0, word 1 pmad, two program words, and execution (dst) + (Smem) x (pmad) into the S-selected accumulator with (Smem) into T followed by the delay move of (Smem) to the next DATA address Smem+1. The operation is affected by FRCT and OVM and affects OVdst. Oracle vector (MACD *AR5+, #0100h, B 00 0000 0000, FRCT 0, AR5 0100, mem[0100] 4000, pmem[0100] 4000, mem[0101] 0000) yields B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000; the FRCT lane yields B 00 2000 0000. Two-word forms are UNRESOLVED repeatability by the STM precedent."
+    },
+    {
+      "id": "E-PROJECT-P3-S3R-MACD-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3r: MACD Smem,Pmad delay-write slice (planned)"
+      },
+      "assertion": "S3r is implemented and green: one MACD_SMEM catalog row at 0x7A00 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the shared DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000) and the FRCT lane (B 00 2000 0000). The delay sidecar rides the new write_smem_delay MEMORY carrier flag (48-byte ABI unchanged, DATA+PROGRAM pair kind only): after both reads complete the pair root issues a third-ID DATA WRITE of the Smem word to Smem+1 with 16-bit wraparound through the reused child transaction before the Smem post-access commit and PC publish, with WAIT resume, fault/cancel silence, and reset routing by pair-versus-delay child state. FORM-T2-04-11 lands SUBSET."
     }
   ],
   "requirements": [
@@ -15630,6 +15664,92 @@
       "test_ids": [
         "T-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3R-MACD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog MACD_SMEM at 0x7A00 under mask 0xFE00 with two program words, 512 encodings, the DESTINATION_INDIRECT_ADDR7_PMAD16 layout, UNRESOLVED repeatability by the two-word STM precedent, and accumulator/FRCT/OVM inputs with T written.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACD-P4-87"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3R-MACD-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3R-MACD-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all MACD_SMEM encodings with bundle copy and S/I/addr7/pmad extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACD-P4-87"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3R-MACD-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3R-MACD-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACD Smem,Pmad as (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select, no rounding, and FRCT/OVM handling, per the pinned MACD oracle and FRCT lanes, at the semantic leaves, staging the Smem delay write-back on the MEMORY carrier.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACD-P4-87"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3R-MACD-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3R-MACD-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACD Smem,Pmad on the CPU per the pinned MACD oracle with Smem DATA then PROGRAM coefficient reads, read-phase Smem T load, the delay DATA write of the Smem word to Smem+1, accumulator write, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACD-P4-87"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3R-MACD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3R-MACD-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MACD_SMEM catalog row to FORM-T2-04-11 at SUBSET coverage over direct page-0 and standard-indirect Smem addressing with an absolute program coefficient.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3R-MACD-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3R-DELAY-WRITE-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Stage the Smem delay write-back on the DATA+PROGRAM pair root only when the MEMORY carrier sets write_smem_delay: after both reads complete, issue one DATA WRITE of the Smem word to Smem-address-plus-one with 16-bit wraparound under a third transaction ID through the reused child while the pair holds staged values, then run the ordinary READY commit. WAIT resumes only the delay WRITE; a delay FAULT or cancel publishes nothing; reset routes by pair-versus-delay child state; flag-off pairs issue no third request. Keep the shared root transaction shape with no new phase.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3R-MACD-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3R-DATA-PROGRAM-DELAY-WRITE"
+      ]
     }
   ],
   "tests": [
@@ -18818,7 +18938,8 @@
         "REQ-PROJECT-P3-S3N-MPYU-INVENTORY",
         "REQ-PROJECT-P3-S3O-MACA-INVENTORY",
         "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY",
-        "REQ-PROJECT-P3-S3Q-MACP-INVENTORY"
+        "REQ-PROJECT-P3-S3Q-MACP-INVENTORY",
+        "REQ-PROJECT-P3-S3R-MACD-INVENTORY"
       ]
     },
     {
@@ -22638,6 +22759,76 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3R-MACD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_macd_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macd_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3R-MACD-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3R-MACD-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_macd_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macd_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3R-MACD-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3R-MACD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_macd_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macd_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3R-MACD-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3R-MACD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_macd_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_macd_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3R-MACD-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3R-DATA-PROGRAM-DELAY-WRITE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_data_program_delay_write.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.data_program_delay_write"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3R-DELAY-WRITE-TRANSACTION"
       ]
     }
   ]

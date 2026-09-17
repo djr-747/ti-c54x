@@ -161,11 +161,12 @@ test_fixed_bit_near_misses(void)
     /* Mask 0xFF00 leaves only the condition byte variable. Clearing
      * fixed bit 9 lands on the BC_PMAD sibling, setting fixed bit 8
      * lands on the W72 CCD row, flipping fixed bit 12 lands on
-     * LD_IMMEDIATE_DP, and flipping fixed bit 10 lands on RETD;
+     * LD_IMMEDIATE_DP, flipping fixed bit 10 lands on RETD, and
+     * flipping fixed bit 15 lands on the S3r MACD_SMEM row;
      * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0800),
-        UINT16_C(0x2000), UINT16_C(0x8000)};
+        UINT16_C(0x2000)};
     const ti_c54x_decode_result bc_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(BCD_VALUE ^ UINT16_C(0x0200)));
@@ -209,6 +210,16 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mas_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mas_dual_sibling.id == TI_C54X_OPCODE_ID_MAS_DUAL_M0_M0);
+    }
+
+    /* Flipping fixed bit 15 lands on the S3r MACD_SMEM row. */
+    {
+        const ti_c54x_decode_result macd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BCD_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(macd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(macd_sibling.id == TI_C54X_OPCODE_ID_MACD_SMEM);
     }
 }
 
