@@ -11096,3 +11096,28 @@ rewritten after publication.
   PORTR/PORTW, AR6/AR7 dual-Y, MOD3, dual
   replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
+
+## 2026-09-17 — Correction: MASAR form numbering in S3w/S3x assertions
+
+- The S3w activation assertion
+  (`E-PROJECT-P3-S3W-MASA-ACTIVATION`)
+  and the S3x activation assertion
+  (`E-PROJECT-P3-S3X-MASAR-ACTIVATION`)
+  name `FORM-T2-04-20`/`FORM-T2-04-21`
+  as the `(MASAR)` forms. Only
+  `FORM-T2-04-20` is `MASAR`;
+  `FORM-T2-04-21` is `SQURA` (already
+  `SUBSET`). The census has a single
+  `MASAR` form because TI `MASA`
+  syntax 1 carries no R bit, so the only
+  `MASAR` encoding is syntax-2 R=1,
+  locked through the shared `MASA_T` row
+  in S3x. The `UNIMPLEMENTED`/empty-list
+  status both assertions record remains
+  true of `FORM-T2-04-20`; the
+  parenthetical just over-names 04-21.
+  Evidence records are immutable, so
+  this correction stands in the ledger
+  instead of an edit. Future slice
+  follow-up lines should name only
+  `FORM-T2-04-20` for `MASAR`.
