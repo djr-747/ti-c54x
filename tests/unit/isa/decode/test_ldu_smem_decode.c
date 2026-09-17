@@ -94,8 +94,10 @@ check_transactional_failure(const ti_c54x_decode_result *first,
 static void
 test_fixed_bit_near_misses_and_forged_completion(void)
 {
+    /* Bit 11 (0x0800) leaves in P3-S21: 0x1280 ^ 0x0800 is 0x1A80, a
+     * valid OR_SMEM word asserted below. */
     static const uint16_t unknown_near_misses[] = {
-        UINT16_C(0x0080), UINT16_C(0x0800),
+        UINT16_C(0x0080),
         UINT16_C(0x1000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
     const uint16_t word = LDU_VALUE;
@@ -125,6 +127,15 @@ test_fixed_bit_near_misses_and_forged_completion(void)
             (uint16_t)(word ^ UINT16_C(0x0400)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LDR);
+    }
+
+    /* Flipping bit 11 lands on 0x1A80, claimed by the P3-S21
+     * OR_SMEM row: a valid cross-row near miss, not an overaccept. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x0800)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_OR_SMEM);
     }
 
     /* This former near-miss is the W44B circular LDU MOD10 sibling. */

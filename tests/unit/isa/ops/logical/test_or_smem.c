@@ -3,8 +3,9 @@
  * standard-indirect MOD0--MOD3 memory-read staging, read-value
  * completion (zero-extended full-width OR into the destination
  * accumulator with C/TC preserved), exotic-mode deferral,
- * unknown-input stops, field/range rejection, effect-validity, and
- * the trusted three-operand entry. Vectors are independently
+ * unknown-input stops, field/range rejection, effect-validity,
+ * the trusted three-operand entry, and the plain decoded entry
+ * (layout-gated extraction into the values core). Vectors are independently
  * recomputed from the TI execution formula (no TI worked example
  * exists for this row).
  * Does not own: catalog rows, operand-layout descriptors, decode,
@@ -341,6 +342,86 @@ static void test_trusted_shape_rejects(void)
                            &staged) == TI_C54X_OP_STATUS_INVALID_OPERAND);
 }
 
+static ti_c54x_decoded_instruction make_plain_instruction(
+    uint16_t first_word)
+{
+    ti_c54x_decoded_instruction instruction = null_instruction();
+
+    instruction.operand_layout =
+        TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7;
+    instruction.bundle.program_words[0] = first_word;
+    instruction.bundle.program_word_count = UINT8_C(1);
+    return instruction;
+}
+
+/* Plain entry: 0x1A34 extracts S=0/I=0/addr 0x34, staging direct. */
+static void test_plain_entry_stages_direct_read(void)
+{
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_decoded_instruction instruction =
+        make_plain_instruction(UINT16_C(0x1A34));
+    ti_c54x_op_effect staged = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(&instruction, &input,
+                                         &staged) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(staged.kind == TI_C54X_OP_EFFECT_MEMORY);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.kind ==
+                       TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.direct_dma7 ==
+                       UINT8_C(0x34));
+    TI_C54X_TEST_CHECK(
+        ti_c54x_op_memory_effect_is_valid(&staged.payload.memory));
+}
+
+/* Plain entry: 0x1A95 extracts S=0/I=1/MOD2, staging indirect. */
+static void test_plain_entry_stages_indirect_read(void)
+{
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_decoded_instruction instruction =
+        make_plain_instruction(UINT16_C(0x1A95));
+    ti_c54x_op_effect staged = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(&instruction, &input,
+                                         &staged) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.kind ==
+                       TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.mode ==
+                       TI_C54X_INDIRECT_SINGLE_MOD2);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.arf ==
+                       UINT8_C(5));
+    TI_C54X_TEST_CHECK(
+        ti_c54x_op_memory_effect_is_valid(&staged.payload.memory));
+}
+
+/* Plain entry: wrong layout and nulls reject; effect untouched. */
+static void test_plain_entry_rejects_bad_decode(void)
+{
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_decoded_instruction instruction =
+        make_plain_instruction(UINT16_C(0x1A34));
+    ti_c54x_decoded_instruction wrong_layout = instruction;
+    ti_c54x_op_effect staged = {0};
+    ti_c54x_op_effect before = {0};
+
+    wrong_layout.operand_layout = TI_C54X_OPERAND_LAYOUT_NONE;
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(&wrong_layout, &input,
+                                         &staged) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    TI_C54X_TEST_CHECK(memcmp(&before, &staged, sizeof staged) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(NULL, &input,
+                                         &staged) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(&instruction, NULL,
+                                         &staged) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_op_or_smem(&instruction, &input,
+                                         NULL) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(memcmp(&before, &staged, sizeof staged) == 0);
+}
+
 int main(void)
 {
     test_direct_stages_memory_read();
@@ -356,5 +437,8 @@ int main(void)
     test_null_arguments_reject();
     test_trusted_stages_direct_read();
     test_trusted_shape_rejects();
+    test_plain_entry_stages_direct_read();
+    test_plain_entry_stages_indirect_read();
+    test_plain_entry_rejects_bad_decode();
     return 0;
 }

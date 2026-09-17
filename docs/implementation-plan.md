@@ -643,9 +643,11 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S6: port I/O seam (planned)](plan/p3-s6-port-io-seam.md)
 
-- [P3-S19: SUB Smem rows (planned)](plan/p3-s19-sub-smem-rows-slice.md)
+- [P3-S19: SUB Smem rows (implemented; local verification green)](plan/p3-s19-sub-smem-rows-slice.md)
 
-- [P3-S20: AND Smem rows (planned)](plan/p3-s20-and-smem-rows-slice.md)
+- [P3-S20: AND Smem rows (implemented; local verification green)](plan/p3-s20-and-smem-rows-slice.md)
+
+- [P3-S21: OR Smem rows (planned)](plan/p3-s21-or-smem-rows-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
