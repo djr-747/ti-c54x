@@ -10,6 +10,8 @@
  * MOD8/MOD10 family rows), compare,
  * complement, exponent,
  * rotate, shift, and one- or two-word logical-accumulator rows.
+ * The P3-S6 PORTR direct/indirect rows use the two-word
+ * indirect-plus-port-address layout.
  * The W47B2 DLD/DST long32 MOD13 rows use the four-field two-word layout.
  * The W46B neutral ANDM/ORM/XORM rows reuse the generic two-word
  * ARF-extension standard-indirect shape across MOD0 through MOD3.
@@ -353,3 +355,10 @@ TI_C54X_OPCODE_MASKED(MACSU_DUAL_M1_M2, macsu_dual_m1_m2, 0xA848, 0xFECC, 1, TI_
 TI_C54X_OPCODE_MASKED(MACSU_DUAL_M2_M0, macsu_dual_m2_m0, 0xA880, 0xFECC, 1, TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM)
 TI_C54X_OPCODE_MASKED(MACSU_DUAL_M2_M1, macsu_dual_m2_m1, 0xA884, 0xFECC, 1, TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM)
 TI_C54X_OPCODE_MASKED(MACSU_DUAL_M2_M2, macsu_dual_m2_m2, 0xA888, 0xFECC, 1, TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM)
+/* P3-S6 PORTR PA,Smem (TI SPRU172C 4-129): word 0 pins 0x74 with the I
+ * flag at bit 7 and the 7-bit Smem cookie at bits 6:0 (direct dma
+ * offset when I=0, ARF at bits 2:0 with the 4-bit MOD at bits 6:3
+ * when I=1); word 1 carries the absolute 16-bit I/O port address.
+ * Long-offset and absolute Smem extension words stay undecoded. */
+TI_C54X_OPCODE_MASKED(PORTR_DIRECT, portr_direct, 0x7400, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_PA16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_DP)
+TI_C54X_OPCODE_MASKED(PORTR_SMEM, portr_smem, 0x7480, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_PA16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS)

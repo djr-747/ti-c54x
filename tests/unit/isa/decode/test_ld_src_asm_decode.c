@@ -164,11 +164,15 @@ test_fixed_bit_near_misses(void)
         /* 0xF48A (fixed bit 3 set) is the S3w MASA_T encoding
          * with S=0 (src A), D=0 (dst A), R=0. */
         {UINT16_C(0x0008), TI_C54X_OPCODE_ID_MASA_T},
+        /* 0x7482 (fixed bit 15 clear) is the P3-S6 PORTR indirect
+         * row with I=1, MOD0, ARF=2 (TI SPRU172C 4-129 pins PORTR
+         * at 0x74xx). */
+        {UINT16_C(0x8000), TI_C54X_OPCODE_ID_PORTR_SMEM},
     };
     static const uint16_t misses[] = {
         UINT16_C(0x0001), UINT16_C(0x0002),
         UINT16_C(0x0040), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x8000)};
+        UINT16_C(0x2000)};
     size_t index;
 
     for (index = 0U; index < sizeof(siblings) / sizeof(siblings[0]);

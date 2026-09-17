@@ -140,14 +140,14 @@ test_fixed_bit_near_misses(void)
      * (all pinned below). Setting fixed bit 11 lands in the RC
      * row (pinned below); setting fixed bit 14 lands on the P3-S3g
      * MAC_DUAL_M2_M2 sibling (pinned below); clearing fixed bit 4
-     * lands on the S3w MASA_T sibling (pinned below); all other
-     * fixed-bit flips must miss every row. */
+     * lands on the S3w MASA_T sibling (pinned below); clearing
+     * fixed bit 15 lands in the P3-S6 PORTR indirect row (pinned
+     * below); all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0040),
         UINT16_C(0x0100),
-        UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x1000), UINT16_C(0x2000)};
     const ti_c54x_decode_result cmpl_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RETF_VALUE ^ UINT16_C(0x0008)));
@@ -203,6 +203,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(masa_sibling.status ==
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(masa_sibling.id == TI_C54X_OPCODE_ID_MASA_T);
+    }
+
+    /* Clearing fixed bit 15 lands in the P3-S6 PORTR indirect row
+     * (TI SPRU172C 4-129 pins PORTR at 0x74xx). */
+    {
+        const ti_c54x_decode_result portr_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETF_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(portr_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(portr_sibling.id ==
+                           TI_C54X_OPCODE_ID_PORTR_SMEM);
     }
 
     for (size_t index = 0U;

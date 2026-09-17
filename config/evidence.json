@@ -7431,6 +7431,58 @@
         "anchor": "P3-S18: STH MOD0-MOD3 second-word disambiguation seam (planned)"
       },
       "assertion": "S18 lane 2b is implemented and green: the LD Smem,SHIFT catalog row is second-word-qualified (0x0C40 under FEE0) and four new STH syntax-4 MOD0-MOD3 rows (0x6F80, 0x6F88, 0x6F90, 0x6F98 under FFF8 with MOD in first-word bits 6:3, 0x0C60 under FEE0) share its first-word slot declared after it so first-word lookup stays LD; completion and the trusted packet path re-resolve on the second word with unmatched words declined; checked and trusted MOD0-MOD3 leaves stage MOD0-MOD3 standard-indirect SINGLE_INDIRECT WRITEs through the shared MEMORY effect; FORM-T2-20-08 advances to COMMON_CANDIDATE at SUBSET under the grown DIRECT_DP_STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 token, retiring the S13 MOD0-MOD3 deferral."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PORTR-P4-129-OPCODE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PORTR",
+        "printed_page_start": "4-129",
+        "printed_page_end": "4-129"
+      },
+      "assertion": "PORTR PA, Smem is a two-word instruction with word 1 opcode 0111 0100 IAAA AAAA (I at bit 7, 7-bit Smem cookie at bits 6:0) and word 2 carrying the absolute 16-bit I/O port address with 0 <= PA <= 65535. One word is added when using long-offset indirect addressing or absolute addressing with Smem. Classes are 27A and 27B. Summary cycle values are not adopted as common timing evidence."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PORTR-P4-129-SEMANTICS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PORTR",
+        "printed_page_start": "4-129",
+        "printed_page_end": "4-129"
+      },
+      "assertion": "PORTR reads a 16-bit value from external I/O port PA into data-memory location Smem with (PA) -> Smem execution and no affected status bits. The direct example PORTR 05, INDAT with INDAT .equ 60h and DP 000 retires data word 7FFA at 0060h, proving the direct dma offset is DP-relative; the indirect cookie reuses the Smem ARF-plus-MOD shape proved by the ADD Smem opcode record."
+    },
+    {
+      "id": "E-PROJECT-P3-S6-PORTR-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s6-port-io-seam.md",
+        "anchor": "P3-S6: port I/O seam (planned)"
+      },
+      "assertion": "P3-S6 activates the PORTR direct/indirect rows PORTR_DIRECT (0x7400/0xFF80, STATUS_DP) and PORTR_SMEM (0x7480/0xFF80, AUXILIARY_REGISTERS) over the INDIRECT_ADDR7_PA16 layout with plain plus trusted op_portr handlers staging PORT arms (DATA WRITE, zero value). Long-offset and absolute Smem extension words stay undecoded; FORM-T2-26-09 stays SUBSET."
     }
   ],
   "requirements": [
@@ -17251,6 +17303,35 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S6-PORTR-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/port/",
+      "claim": "Execute the two PORTR rows as I/O-port-to-memory writes: resolve the I flag, 7-bit Smem cookie, and 16-bit absolute port address through the shared INDIRECT_ADDR7_PA16 layout, retire a DP-relative DIRECT_DP WRITE for direct dma with DP gated at the leaf or an ARF-plus-MOD indirect WRITE for MOD0-MOD8 plus MOD10, stage the observed port word with a zero template, and leave the rows repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PORTR-P4-129-OPCODE",
+        "E-TI-C54X-SPRU172C-S4-PORTR-P4-129-SEMANTICS"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S6-PORTR-OPS"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S6-PORTR-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the two PORTR production symbols to FORM-T2-26-09 at SUBSET under DIRECT_DP and STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10 addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S6-PORTR-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -20448,8 +20529,10 @@
         "REQ-PROJECT-P3-S9-CALA-INVENTORY",
         "REQ-PROJECT-P3-S10-STH-INVENTORY",
         "REQ-PROJECT-P3-S11-STH-ASM-INVENTORY",
-        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY", "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY",
-        "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY"
+        "REQ-PROJECT-P3-S12-STH-SHFT-INVENTORY",
+        "REQ-PROJECT-P3-S13-STH-SHIFT-INVENTORY",
+        "REQ-PROJECT-P3-S18-STH-MOD0-3-INVENTORY",
+        "REQ-PROJECT-P3-S6-PORTR-ROWS"
       ]
     },
     {
@@ -24984,6 +25067,20 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S6-PORTR-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/port/test_portr.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.portr_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S6-PORTR-SEMANTICS"
       ]
     }
   ]

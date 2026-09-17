@@ -86,10 +86,12 @@ static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
     /* These flip fixed bits, except bit 8, which lands in the STM
-     * row (0x7780); the low three ARF bits remain. */
+     * row (0x7780), and bit 9, which lands in the P3-S6 PORTR
+     * indirect row (0x74A0, TI SPRU172C 4-129 pins PORTR at 0x74xx);
+     * the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080),
-        UINT16_C(0x0200), UINT16_C(0x0400),
+        UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
@@ -109,6 +111,11 @@ test_fixed_bit_near_misses_are_unknown(void)
                            (uint16_t)(ST_IMMEDIATE_VALUE ^
                                       UINT16_C(0x0100))) ==
                        TI_C54X_OPCODE_ID_STM);
+
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(ST_IMMEDIATE_VALUE ^
+                                      UINT16_C(0x0200))) ==
+                       TI_C54X_OPCODE_ID_PORTR_SMEM);
 
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x0040))) ==

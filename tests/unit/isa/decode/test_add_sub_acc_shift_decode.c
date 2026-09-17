@@ -58,10 +58,12 @@ static void check_row(uint16_t base, ti_c54x_opcode_id id)
     }
 }
 
+/* Clearing fixed bit 15 lands in the P3-S6 PORTR direct row
+ * (TI SPRU172C 4-129 pins PORTR at 0x74xx). */
 static void check_near_miss_and_completion(uint16_t base)
 {
     const uint16_t near_miss = (uint16_t)(base ^ UINT16_C(0x8000));
-    const ti_c54x_decode_result unknown =
+    const ti_c54x_decode_result portr_sibling =
         ti_c54x_decode_first_word(near_miss);
     const uint16_t valid_word = (uint16_t)(base | UINT16_C(0x0015));
     const ti_c54x_decode_result first = ti_c54x_decode_first_word(valid_word);
@@ -70,8 +72,8 @@ static void check_near_miss_and_completion(uint16_t base)
     ti_c54x_decoded_instruction output;
     ti_c54x_decoded_instruction before;
 
-    TI_C54X_TEST_CHECK(unknown.status == TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-    TI_C54X_TEST_CHECK(unknown.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(portr_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(portr_sibling.id == TI_C54X_OPCODE_ID_PORTR_DIRECT);
     memset(&output, 0xa5, sizeof(output));
     before = output;
     TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
