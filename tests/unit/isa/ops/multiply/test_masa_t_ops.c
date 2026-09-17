@@ -191,6 +191,33 @@ static void test_trusted_example2_completion(void)
                        UINT64_C(0xFFFF66B460));
 }
 
+static void test_trusted_masar_rounding_completion(void)
+{
+    /* 0xF78B: S=1 (src B), D=1 (dst B), R=1 (MASAR). The trusted
+     * entry stages the rounding select and completes the Example 3
+     * rounded value. */
+    ti_c54x_decoded_instruction instruction = decode_word(UINT16_C(0xF78B));
+    ti_c54x_trusted_operand_values operands = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    operands.count = UINT8_C(3);
+    operands.values[0].raw_value = UINT64_C(1);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(1);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(1);
+    operands.values[2].width_bits = UINT8_C(1);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_masa_t(
+                           &instruction, &operands, &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.destination ==
+                       UINT8_C(1));
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFFF670000));
+}
+
 static void test_crossed_row_rejects(void)
 {
     /* A MACA T word through the MASA leaf is a decode mismatch. */
@@ -225,6 +252,7 @@ main(void)
     test_checked_src_a_selects();
     test_checked_unknown_inputs_stop();
     test_trusted_example2_completion();
+    test_trusted_masar_rounding_completion();
     test_crossed_row_rejects();
     test_null_rejects();
     return 0;
