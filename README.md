@@ -20,12 +20,12 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3p complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
-Smem rows, `MACA` T,src, `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`, register-only
-`MPYA`/`SQUR` dst).
+Current snapshot: P3-S3q complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
+Smem rows, `MACA` T,src, `MACP` Smem,Pmad, `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`,
+register-only `MPYA`/`SQUR` dst).
 
-- 204 runnable catalog rows under 16,369 populated first-word lookup entries.
-  Inventory coverage is 79/205 forms SUBSET-or-better (38.537%) and 33/205
+- 205 runnable catalog rows under 16,881 populated first-word lookup entries.
+  Inventory coverage is 80/205 forms SUBSET-or-better (39.024%) and 33/205
   strict-complete (16.098%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -102,9 +102,18 @@ Smem rows, `MACA` T,src, `MAC`/`MPY`/`MAS` dual `Xmem`,`Ymem`, register-only
   `(src)` plus `(T)`x`A(32-16)` ADD completion with R rounding
   (TI MACA Example 2 and the MACAR rounding lane retire through
   the leaf with T preserved; the R bit carries the `MACAR` T,src
-  variant on the shared row).
-- Major remaining work is the `MACD`/`MACP` family
-  (the `R` variants share the dual row encodings),
+  variant on the shared row). S3q lands the two-word `MACP Smem,Pmad`
+  row (`FORM-T2-04-12`, 512 S/I/addr7 encodings under one masked row
+  plus the verbatim pmad second word) with a new
+  destination/indirect/addr7/pmad16 layout and the DATA+PROGRAM pair
+  seam (Smem DATA read then absolute PROGRAM coefficient read with
+  read-phase Smem T load), completing `(dst)` plus `(Smem)`x`(pmad)`
+  into the S-selected accumulator with no rounding (the recomputed
+  `0x4000`x`0x4000` oracle and the FRCT lane retire through the leaf
+  and the CPU; the BC/CC bit-15 near-miss lanes move to the new row
+  as recorded cross-slice updates).
+- Major remaining work is the `MACD` family
+  (program-memory operands plus the delay seam),
   MMR/stack moves, bit/field ops, shifts/misc, the port seam,
   far/XPC addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.

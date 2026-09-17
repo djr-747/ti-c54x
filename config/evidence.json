@@ -6613,6 +6613,40 @@
         "anchor": "P3-S3p: MACA T,src register-only slice (planned)"
       },
       "assertion": "S3p is implemented and green: one MACA_T catalog row at 0xF488 under mask 0xFCFE carrying 8 S/D/R encodings through the new SOURCE_DESTINATION_ROUND layout with ELIGIBLE repeatability; checked and trusted register-only leaves complete (src) plus (T) x A(32-16) into the D-selected accumulator through the multiply core with ADD select and R rounding; CPU retirement proves TI MACA Example 2 (B 00 009D 4BA0 with T unchanged) and the MACAR Example 4 rounding lane. The R bit carries the MACAR T,src variant on the shared row. FORM-T2-04-08 lands SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MACP-P4-89",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MACP",
+        "printed_page_start": "4-89",
+        "printed_page_end": "4-89"
+      },
+      "assertion": "MACP syntax 1 is MACP Smem, pmad[, dst] with word 0 bits 15:9 0111100, S bit 8, I bit 7, Smem field 6:0, word 1 pmad, two program words, and execution (dst) + (Smem) x (pmad) into the S-selected accumulator with (Smem) into T. The operation is affected by FRCT and OVM and affects OVdst. Oracle vector (MACP *AR5+, #0100h, B 00 0000 0000, FRCT 0, AR5 0100, mem[0100] 4000, pmem[0100] 4000) yields B 00 1000 0000 with T 4000 and AR5 0101; the FRCT lane yields B 00 2000 0000. Two-word forms are UNRESOLVED repeatability by the STM precedent."
+    },
+    {
+      "id": "E-PROJECT-P3-S3Q-MACP-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S3q: MACP Smem,Pmad program-coefficient slice (planned)"
+      },
+      "assertion": "S3q is implemented and green: one MACP_SMEM catalog row at 0x7800 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the new DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000 and AR5 0101) and the FRCT lane (B 00 2000 0000). The DATA+PROGRAM pair seam (carrier, resolution, reducer, root, commit, candidate validation) issues the DATA read then the PROGRAM read with a zeroed PROGRAM commit and X-side T load. FORM-T2-04-12 lands SUBSET; FORM-T2-04-11 (MACD) stays UNIMPLEMENTED."
     }
   ],
   "requirements": [
@@ -15480,6 +15514,122 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Q-MACP-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Catalog MACP_SMEM at 0x7800 under mask 0xFE00 with two program words, 512 encodings, the DESTINATION_INDIRECT_ADDR7_PMAD16 layout, UNRESOLVED repeatability by the two-word STM precedent, and accumulator/FRCT/OVM inputs with T written.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACP-P4-89"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Q-MACP-METADATA"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Q-MACP-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode all MACP_SMEM encodings with bundle copy and S/I/addr7/pmad extraction order, rejecting malformed words transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACP-P4-89"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Q-MACP-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Q-MACP-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Complete MACP Smem,Pmad as (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select, no rounding, and FRCT/OVM handling, per the pinned MACP oracle and FRCT lanes, at the semantic leaves.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACP-P4-89"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Q-MACP-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S3Q-MACP-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MACP Smem,Pmad on the CPU per the pinned MACP oracle with Smem DATA then PROGRAM coefficient reads, read-phase Smem T load, accumulator write, and overflow commit.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MACP-P4-89"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S3Q-MACP-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Q-MACP-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Resolve the DESTINATION_INDIRECT_ADDR7_PMAD16 two-word plan with destination, indirect, addr7, and pmad operands in order.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Q-MACP-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3Q-DESTINATION-INDIRECT-ADDR7-PMAD16-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Q-MACP-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the MACP_SMEM catalog row to FORM-T2-04-12 at SUBSET coverage over direct page-0 and standard-indirect Smem addressing with an absolute program coefficient.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Q-MACP-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-PAIR-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Sequence DATA+PROGRAM WORD16 reads deterministically Smem-DATA then PROGRAM-coefficient over one WORD16 endpoint, retaining the same child request and transaction identity across WAIT. A FAULT, failed cancel, malformed observation, or invalid terminal transition cancels without pair publication; only two READY observations publish both copied words once. The reducer must not replan addresses, refetch the instruction, or commit architectural state before completion.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Q-MACP-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3Q-DATA-PROGRAM-PAIR-TRANSACTION"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Compose the generic instruction root with the DATA+PROGRAM WORD16 reducer while preserving copied operands, resume-before-fetch ordering, one endpoint descriptor, atomic pair result delivery, the single Smem post-access commit with a zeroed PROGRAM commit, read-phase Smem T load, and existing PC/effect commit boundaries. Keep the root generic with no catalog row, opcode-specific CPU branch, new public API, or physical dual-bus timing guarantee.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S3-PLAN-ANCHOR",
+        "E-PROJECT-P3-S3Q-MACP-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION"
+      ]
     }
   ],
   "tests": [
@@ -18667,7 +18817,8 @@
         "REQ-PROJECT-P3-S3M-SQURS-INVENTORY",
         "REQ-PROJECT-P3-S3N-MPYU-INVENTORY",
         "REQ-PROJECT-P3-S3O-MACA-INVENTORY",
-        "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY"
+        "REQ-PROJECT-P3-S3P-MACA-T-INVENTORY",
+        "REQ-PROJECT-P3-S3Q-MACP-INVENTORY"
       ]
     },
     {
@@ -22389,6 +22540,104 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3P-MACA-T-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Q-MACP-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_macp_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macp_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Q-MACP-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Q-MACP-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_macp_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macp_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Q-MACP-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Q-MACP-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_macp_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.macp_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Q-MACP-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S3Q-MACP-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_macp_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_macp_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S3Q-MACP-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3Q-DESTINATION-INDIRECT-ADDR7-PMAD16-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_destination_indirect_addr7_pmad16_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.destination_indirect_addr7_pmad16_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3Q-MACP-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3Q-DATA-PROGRAM-PAIR-TRANSACTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_data_program_word16_read_transaction.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.data_program_word16_read_transaction"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-PAIR-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_data_program_memory_instruction_transaction.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.data_program_memory_instruction_transaction"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S3Q-DATA-PROGRAM-ROOT-INTEGRATION"
       ]
     }
   ]

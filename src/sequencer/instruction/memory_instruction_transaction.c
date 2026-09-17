@@ -27,6 +27,7 @@
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_candidate_validate.h"
 #include "memory_instruction_commit.h"
+#include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -212,7 +213,8 @@ ti_c54x_memory_instruction_transaction_prepare(
             TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
-    } else {
+    } else if (effect->payload.memory.address_spec.kind !=
+               TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
         if (ti_c54x_sequencer_resolve_memory_address(
                 state, &effect->payload.memory.address_spec,
                 effect->payload.memory.access,
@@ -272,6 +274,10 @@ ti_c54x_memory_instruction_transaction_prepare(
         if (!ti_c54x_memory_instruction_dual_prepare_snapshot(target)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+    } else if (candidate.effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_data_program_prepare_candidate(
+            target, state);
     } else if (candidate.effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
         if (!ti_c54x_memory_instruction_long32_prepare_snapshot(target)) {

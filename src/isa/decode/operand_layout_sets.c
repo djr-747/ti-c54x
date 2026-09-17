@@ -561,6 +561,35 @@ static const ti_c54x_operand_field_layout
 const ti_c54x_operand_layout_set ti_c54x_destination_indirect_addr7_set = {
     ti_c54x_destination_indirect_addr7_operands, UINT8_C(3)};
 
+/* MACP Smem fields: D destination bit S[8:8], indirect flag I[7:7],
+ * 7-bit Smem address A[6:0], then the copied 16-bit program-memory
+ * coefficient address from word 1. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_destination_indirect_addr7_pmad16_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_destination_indirect_addr7_pmad16_indirect_piece = {
+        UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_destination_indirect_addr7_pmad16_address_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_destination_indirect_addr7_pmad16_pmad_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_destination_indirect_addr7_pmad16_operands[4] = {
+        {&ti_c54x_destination_indirect_addr7_pmad16_destination_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_destination_indirect_addr7_pmad16_indirect_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_destination_indirect_addr7_pmad16_address_piece,
+         UINT8_C(1), UINT8_C(7)},
+        {&ti_c54x_destination_indirect_addr7_pmad16_pmad_piece,
+         UINT8_C(1), UINT8_C(16)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_destination_indirect_addr7_pmad16_set = {
+        ti_c54x_destination_indirect_addr7_pmad16_operands, UINT8_C(4)};
+
 /* MACA Smem fields: round bit R[9:9], indirect flag I[7:7],
  * then 7-bit Smem address A[6:0]. Unlike the round/select/indirect
  * shape, fixed bit 8 carries no operand. */

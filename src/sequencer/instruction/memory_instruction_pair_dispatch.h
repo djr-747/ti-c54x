@@ -5,8 +5,8 @@
  * Module contract
  *
  * Owns: cold dispatch from a prepared root memory transaction to one of the
- * pair reducers (LONG32 or dual-WORD16), including the status returned for an
- * unknown child discriminator.
+ * pair reducers (LONG32, dual-WORD16, or DATA+PROGRAM-WORD16), including
+ * the status returned for an unknown child discriminator.
  * Does not own: WORD16 execution, transaction preparation, reducer state,
  * opcode semantics, physical memory, endpoint storage, timing, observers,
  * diagnostics, allocation, I/O, or global state. Callers must have already

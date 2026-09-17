@@ -642,9 +642,11 @@
       "table_ordinal": 12,
       "mnemonic": "MACP",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MACP_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-13",
@@ -3798,6 +3800,12 @@
       "form_id": "FORM-T2-04-08",
       "coverage": "SUBSET",
       "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "MACP_SMEM",
+      "form_id": "FORM-T2-04-12",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }
   ]
 }

@@ -110,6 +110,10 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word MACA T,src fields: source select, destination select,
      * and round bit; register-only with T preset and preserved. */
     TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND,
+    /* Two-word MACP Smem fields: destination select, indirect flag,
+     * and 7-bit Smem address from word 0 with the copied 16-bit
+     * program-memory coefficient address from word 1; T is written. */
+    TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_PMAD16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

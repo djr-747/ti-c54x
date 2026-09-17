@@ -164,11 +164,11 @@ test_fixed_bit_near_misses(void)
      * fixed bit 12 lands on the LD_K sibling, flipping fixed bit 10
      * lands on the RET sibling, flipping fixed bit 9 lands on
      * the W69 BCD sibling, and flipping fixed bit 8 lands on the
-     * W73 CC sibling; all other fixed-bit flips must miss
+     * W73 CC sibling; flipping fixed bit 15 lands on the S3q MACP
+     * row, and all other fixed-bit flips must miss
      * every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0800), UINT16_C(0x2000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0800), UINT16_C(0x2000)};
     const ti_c54x_decode_result ld_k_sibling =
         ti_c54x_decode_first_word((uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x1000)));
     const ti_c54x_decode_result ret_sibling =
@@ -207,6 +207,16 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mas_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mas_dual_sibling.id == TI_C54X_OPCODE_ID_MAS_DUAL_M0_M0);
+    }
+
+    /* Flipping fixed bit 15 lands on the S3q MACP row. */
+    {
+        const ti_c54x_decode_result macp_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BC_PMAD_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(macp_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(macp_sibling.id == TI_C54X_OPCODE_ID_MACP_SMEM);
     }
 }
 

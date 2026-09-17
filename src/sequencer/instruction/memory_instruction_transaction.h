@@ -19,6 +19,7 @@
 #include <ti_c54x/bus_endpoint.h>
 
 #include "bus/transaction/word16_transaction.h"
+#include "sequencer/instruction/data_program_word16_read_transaction.h"
 #include "sequencer/instruction/dual_word16_read_transaction.h"
 #include "sequencer/instruction/long32_pair_transaction.h"
 #include "isa/decode/opcode_decode.h"
@@ -60,7 +61,8 @@ typedef enum ti_c54x_memory_instruction_phase {
 typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 = 1,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32 = 2,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ = 3
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ = 3,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ = 4
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
@@ -96,6 +98,8 @@ typedef struct ti_c54x_memory_instruction_transaction {
         ti_c54x_bus_word16_transaction bus_transaction;
         ti_c54x_long32_pair_transaction long32_bus_transaction;
         ti_c54x_dual_word16_read_transaction dual_bus_transaction;
+        ti_c54x_data_program_word16_read_transaction
+            data_program_bus_transaction;
     };
     uint64_t last_transaction_id;
     /* The transformed WORD16 is staged between the READ and paired WRITE;
@@ -106,6 +110,9 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t long32_first_value_msw;
         /* Dual MOD0 uses it as an immutable X-address shadow. */
         uint16_t dual_x_address_word;
+        /* The DATA+PROGRAM pair uses it as an immutable Smem DATA
+         * address shadow. */
+        uint16_t data_program_smem_address_word;
     };
     /* Immutable copy of the RMW operator, or packed dual X/Y AR selectors.
      * The copied candidate remains externally inspectable, so a pending
@@ -121,6 +128,9 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t long32_second_value_lsw;
         /* Dual MOD0 uses it as an immutable Y-address shadow. */
         uint16_t dual_y_address_word;
+        /* The DATA+PROGRAM pair uses it as an immutable PROGRAM
+         * address (pmad) shadow. */
+        uint16_t data_program_pmad_word;
     };
     ti_c54x_memory_instruction_candidate candidate;
 } ti_c54x_memory_instruction_transaction;

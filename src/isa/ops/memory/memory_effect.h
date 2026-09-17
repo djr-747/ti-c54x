@@ -81,7 +81,17 @@ typedef enum ti_c54x_op_memory_address_kind {
      * the MMR file, 0x20-0x7F reach DP0 endpoint RAM). No AR,
      * CMPT, CPL, or DP dependence and no post-update; the nine
      * MSBs of the effective address clear regardless of DP. */
-    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16 = 13
+    TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16 = 13,
+    /* DATA+PROGRAM READ pair (MACP): the Smem leg is a direct
+     * page-0 or standard-indirect MOD0--MOD2 DATA read selected by
+     * `pair_indirect` (MOD3 reads stay carrier-invalid by the
+     * single-leg write-only rule; exotic modes above MOD3 never
+     * reach the carrier), and the PROGRAM leg is an absolute
+     * 16-bit program-word coefficient read with no post-update.
+     * Both values publish through the shared `complete_dual`
+     * shape with the Smem word as `x` and the coefficient as
+     * `y`; read-phase T load takes the `x` word. */
+    TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16 = 14
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -131,6 +141,30 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word2;
             uint32_t reserved_word3;
         } dual;
+        struct {
+            /* DATA+PROGRAM pair: the Smem DATA leg selector. Zero
+             * selects the direct page-0 leg (`smem_dma7`); one
+             * selects the standard-indirect leg (`smem_mode` with
+             * `smem_arf`). */
+            uint8_t indirect;
+            /* Indirect-leg mode MOD0/MOD1/MOD2; MOD3 stays
+             * carrier-invalid. Must remain zero for the direct leg. */
+            uint8_t smem_mode;
+            /* Indirect-leg AR selector. Must remain zero for the
+             * direct leg. */
+            uint8_t smem_arf;
+            /* Direct-leg 7-bit DATA address. Must remain zero for
+             * the indirect leg. */
+            uint8_t smem_dma7;
+            /* Absolute PROGRAM-leg word address (the coefficient). */
+            uint16_t program_pmad;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation four scalar comparisons. */
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } pair;
     };
 } ti_c54x_op_memory_address_spec;
 
