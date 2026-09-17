@@ -10163,3 +10163,67 @@ rewritten after publication.
   classification; deferred exotic indirect modes,
   dual `#lk` words, and far/XPC/timing.
 
+## 2026-09-17 — P3-S3l SQUR-Adst register-only slice (slice 20)
+
+- Commit `99b579d` lands `FORM-T2-03-10` (TI SPRU172C
+  `SQUR` syntax 2, opcode `1111 010D 1000 1101`,
+  dual-sourced against the SPRU179C algebraic
+  `B = square(hi(A))`) as one `SQUR_ADST` catalog
+  row at `0xF48D` under mask `0xFEFF` carrying both
+  D encodings through the reused `MAX_MIN_ACC`
+  single-destination-bit layout with `ELIGIBLE`
+  repeatability (Table 2-28 lists no SQUR entry).
+  Checked/trusted leaves complete `(A(32-16))`
+  squared into dst through the multiply core with
+  STORE select and no rounding (no memory effect, no
+  T update; T is never read, so the leaf stays green
+  with T unknown); C/TC preserved, `OVdst` follows
+  the core. CPU retirement proves TI SQUR Example 2
+  (`A 00 000F 0000`, FRCT 1 yield `B 00 0000 01C2`
+  with A and T unchanged; the 15-squared-shifted
+  vector was recomputed independently before
+  pinning). New TI record
+  `E-TI-C54X-SPRU172C-S4-SQUR-ADST-P4-162` plus
+  activation, five owner-split requirements, and
+  four test records (365/581/464→367/586/468); the
+  PROJECT INVENTORY requirement rides the shared
+  binding test with the `REGISTER_DST` subset
+  token. No new layout, resource, effect, address,
+  state, CPU, public-API, or manifest seam is
+  added.
+- RED was observed on the stub (absent
+  `TI_C54X_OPCODE_ID_SQUR_ADST` identity). The
+  recorded W57→W58 cross-slice update landed here:
+  the `test_mpya_dst_decode.c` UNKNOWN lane that
+  pinned `0xF48D`/`0xF58D` moved to verified-unknown
+  `0xF49C`/`0xF59C` with an explanatory comment.
+  `git diff --check` clean. New files peak at 233
+  lines (`test_squr_adst_ops.c`); no split required.
+- Neighbor pins move to 199 IDs, 198 rows/bindings
+  (165 SUBSET plus 33 COMPLETE), 14,313 lookup
+  entries, 74/205 (36.098%) with the `FORM-T2-03-10`
+  contract set; strict stays 33/205 (16.098%). The
+  0xF48D near-miss sweep is clean — the single
+  masked row follows the S3j precedent.
+- Validation is GREEN: full CMake CTest 450/450 on
+  the working build; fresh Debug configure plus full
+  CTest 450/450 in `/tmp/ti-c54x-s3l-debug`; full
+  sanitizer CMake/CTest 449/449 (quality.python
+  excluded, green separately); `make test` exit 0
+  with observer artifact OK; focused ASan/UBSan
+  `squr_adst` plus updated `mpya_dst_decode` tests
+  rc=0 with `detect_leaks=0`; Python `unittest
+  discover` OK (272); evidence (367/586/468),
+  inventory (74/205), source-boundary, knob,
+  manifest, and lookup gates pass. No knob was
+  added or changed. README snapshot now reads
+  P3-S3l complete. Scratch-build hygiene holds:
+  superseded `/tmp/ti-c54x-*` dirs are removed as
+  they are replaced.
+- Follow-up work: `SQURA`/`SQURS`, `MPYU`
+  (unsigned core support, shares the S3k layout
+  shape), `MACA`/`MACD`/`MACP` family, AR6/AR7
+  dual-Y widening, MOD3 neighborhoods, dual replay
+  classification; deferred exotic indirect modes,
+  dual `#lk` words, and far/XPC/timing.
+
