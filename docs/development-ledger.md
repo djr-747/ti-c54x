@@ -11121,3 +11121,72 @@ rewritten after publication.
   instead of an edit. Future slice
   follow-up lines should name only
   `FORM-T2-04-20` for `MASAR`.
+
+## 2026-09-17 — P3-S3z ADD Smem slice (slice 34)
+
+- Commit `53dff1c` lands `FORM-T2-01-01`/`02`/`03`
+  (TI SPRU179C `ADD` pp. 4-4–4-5) as
+  three new rows: `ADD_SMEM` at `0x0000`
+  under mask `0xFE00`, `ADD_SMEM_TS` at
+  `0x0400` under mask `0xFE00`, and
+  `ADD_SMEM_SH16` at `0x3C00` under mask
+  `0xFC00` through the shared arithmetic
+  core with SXM extension, OVM
+  saturation with sticky OVdst, and
+  per-syntax C rules. Syntaxes 1–2 share
+  the new `SELECT_INDIRECT_ADDR7`
+  layout; syntax 3 takes the new
+  `SOURCE_DESTINATION_INDIRECT_ADDR7`
+  layout. All three rows are `UNRESOLVED`
+  repeatability with no Table 2-28
+  ADD-Smem fact on record. Lookup gains
+  2048 entries (17945 to 19993) with
+  zero neighbor moves; census moves to
+  220 IDs, 219 bindings, 87/205 families
+  (42.439%), 33 strict-complete, 186
+  SUBSET. Derived vectors pin end to end
+  at the leaf, through the trusted
+  entries, and on the CPU. README
+  remaining-work wording lands ADD Smem.
+  `git diff --check` clean.
+- Evidence stands at 390 records, 644
+  requirements, 516 tests (516 `PASSING`,
+  0 `PLANNED`). The S3z anchor projected
+  390/641/514 with two requirements and
+  two test records: the evidence count
+  matches (the TI `ADD` source record
+  pre-existed under `SRC-TI-SPRU179C`,
+  so no new TI source record was
+  needed), and the extra three
+  requirements plus two tests are the two
+  layout rows and the inventory binding
+  row the S3D/S3K convention requires
+  for new layouts and new bindings. No
+  knob change.
+- Decisions: mid-`.def` placement keeps
+  the `ADD` family together and shifts
+  the catalog-order contract positions
+  18–23 by three with new row
+  assertions; the scope gate forbids
+  `COMMON` requirements from citing the
+  `PROJECT_CONTRACT_ONLY` activation, so
+  the two `COMMON` requirements cite the
+  TI formula record only. Absorptions:
+  `0x0000`/`0x3C00` leave older
+  `UNKNOWN` pins, `0x4480`^`0x4000`
+  resolves to `ADD_SMEM_TS`, and the
+  `0x0000` CPU unknown-probes move to
+  `0x3000`.
+- Validation is GREEN: full CMake CTest
+  490/490 on the working Debug build;
+  sanitizer ADD quartet clean (clean
+  flagged rebuild, direct runs exit 0,
+  `build-fast/` removed after); `make
+  test` clean (exit 0); evidence,
+  inventory, and lookup gates pass;
+  contract quality suites pass.
+- Follow-up work: `SQDST` two-write
+  effect seam, S4 XC, S1 STM/MMR, S6
+  PORTR/PORTW, AR6/AR7 dual-Y, MOD3, dual
+  replay, RPTB/RPTZ/RPTBD,
+  far/XPC/timing.
