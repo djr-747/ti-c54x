@@ -1,4 +1,4 @@
-### P3-S22: XOR Smem rows (planned)
+### P3-S22: XOR Smem rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S22 evidence freeze. `XOR Smem`
 syntax 1 (TI SPRU172C §XOR, p. 4-201: `0001_110S_IAAAAAAA`, class

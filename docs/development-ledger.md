@@ -12429,3 +12429,38 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `d1c5e66`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S22 XOR Smem row (slice 50)
+
+- Commit `bd53076` lands XOR Smem syntax 1 as XOR_SMEM
+  (0x1C00/0xFE00) over SELECT_INDIRECT_ADDR7 with a new plain
+  `ti_c54x_op_xor_smem` entry (layout-gated 1/1/7 extraction into
+  the landed values core) plus the landed trusted entry. TI basis
+  dual-sourced from vendor/ti/spru172c.txt (§XOR opcode diagram,
+  p. 4-201: 0001_110S, class 3A/3B). FORM-T2-09-01 binds at SUBSET
+  under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3. This closes the
+  S15-S17 handler deferrals (SUB/AND/OR/XOR Smem all bound).
+- Census pins move with the row (260 rows, ID count 261, lookup
+  25105 to 25617 with zero neighbor moves, SUBSET bindings 225 to
+  226, FORM coverage 101 to 102/205 at 49.756%, strict-complete
+  bound steady at 34). No near-miss absorption: the flip sweep
+  for 0x1C00-0x1DFF is empty. Full `make test` green (exit 0);
+  evidence registry PASS at 437 evidence, 683 requirements, 546
+  tests; focused ASan/UBSan run of the extended XOR suite clean;
+  knobs/boundaries/manifests PASS.
+- Decisions: rows-plus-thin-adapter slice (no layout/decode/CPU
+  change); PROJECT rows requirement cites activation plus the two
+  PROJECT inventory proofs only (scope-leak rule); S17 handler
+  proof stays COMMON-uncited; no knob added; syntaxes 2-4 and
+  XORM stay as bound.
+- Process notes: a `pat[:-3]` string-surgery shortcut corrupted
+  nine pin lines (`len\(...\), 25260)` literals); repaired line
+  by line with exact-match edits and re-audited. Rule restated:
+  no programmatic string surgery on pin literals — per-file
+  assert-counted edits plus grep audit only.
+- Follow-up: SUB syntax-4/Xmem/dual/#lk tails, SUBB/SUBC/SUBS,
+  and ADDC/ADDM/ADDS need TI section facts; worker fan-out for
+  handler-leaves resumes with manual-sourced TI briefs.
+- Split commit discipline: impl `bd53076`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.
