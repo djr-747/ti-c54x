@@ -27,6 +27,9 @@ ti_c54x_add_unit_test(rc test_rc.c)
 ti_c54x_add_unit_test(rcd test_rcd.c)
 # P3-S4 RED contract: XC effects.
 ti_c54x_add_unit_test(xc test_xc.c)
+# P3 slice 4 RED contracts: BACC/BACCD effects.
+ti_c54x_add_unit_test(bacc test_bacc.c)
+ti_c54x_add_unit_test(baccd test_baccd.c)
 # W67B RED contract: RETD effects.
 ti_c54x_add_unit_test(retd test_retd.c)
 # W67C RED contract: CALLD effects.

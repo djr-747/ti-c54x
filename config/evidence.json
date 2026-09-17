@@ -6931,6 +6931,112 @@
         "anchor": "P3-S5: accumulator-addressed push seam (planned)"
       },
       "assertion": "S5 is the planned accumulator-addressed push seam: two new STACK_PUSH_ACCUMULATOR WORD16 MEMORY address kinds (immediate and delayed) with TOS planning identical to the immediate pushes, the A/B accumulator select riding arf, and the PC target read from the frozen input snapshot gated on accumulator knownness; a pure effect-carrier extension, resolver TOS planning, and root prepare/commit coverage with no catalog rows, opcode identities, handlers, or CPU opcode branch."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-BACC-OPCODE-P4-15",
+      "locator": {
+        "chapter": "4",
+        "section": "BACC[D]",
+        "printed_page_start": "4-15",
+        "printed_page_end": "4-15"
+      },
+      "assertion": "BACC encodes as 1111_010S_1110_0010 (catalog pin 0xF4E2 under mask 0xFEFF): bit 8 (S) selects accumulator A (0) or B (1) while the remaining fixed bits identify the nondelayed accumulator-addressed branch."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-BACC-SEMANTICS-P4-15",
+      "locator": {
+        "chapter": "4",
+        "section": "BACC[D]",
+        "printed_page_start": "4-15",
+        "printed_page_end": "4-15"
+      },
+      "assertion": "BACC is a single-word unconditional branch replacing PC with the 16 low bits of the S-selected accumulator; no status-bit effects are claimed."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-BACCD-OPCODE-P4-15",
+      "locator": {
+        "chapter": "4",
+        "section": "BACC[D]",
+        "printed_page_start": "4-15",
+        "printed_page_end": "4-15"
+      },
+      "assertion": "BACCD encodes as 1111_011S_1110_0010 (catalog pin 0xF6E2 under mask 0xFEFF): bit 8 (S) selects accumulator A (0) or B (1) while the remaining fixed bits identify the delayed accumulator-addressed branch."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-BACCD-SEMANTICS-P4-15",
+      "locator": {
+        "chapter": "4",
+        "section": "BACC[D]",
+        "printed_page_start": "4-15",
+        "printed_page_end": "4-15"
+      },
+      "assertion": "BACCD replaces PC with the 16 low bits of the S-selected accumulator after two delay-slot words execute; no status-bit effects are claimed."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-BACC-NONREPEATABLE-P4-15",
+      "locator": {
+        "chapter": "4",
+        "section": "BACC[D]",
+        "printed_page_start": "4-15",
+        "printed_page_end": "4-15"
+      },
+      "assertion": "The BACC[D] description carries an explicit not-repeatable note, so the BACC and BACCD rows are repeatability INELIGIBLE without further evidence."
+    },
+    {
+      "id": "E-PROJECT-P3-S8-BACC-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S8: BACC accumulator-addressed branch family slice (planned)"
+      },
+      "assertion": "S8 is implemented and green: two new accumulator-addressed branch catalog rows BACC (0xF4E2) and BACCD (0xF6E2) under the shared 0xFEFF mask through the shared ACCUMULATOR_SOURCE layout with bit 8 selecting accumulator A or B; checked and trusted leaves branching PC to the 16 low bits of the selected accumulator unconditionally with no status, accumulator, T-register, or MEMORY effect; CPU retirement retiring BACC followers normally and BACCD followers through the two-word delay window with T preservation and no endpoint traffic. Both rows are INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-12-02 lands SUBSET with BACC under ACCUMULATOR_NONDELAYED and BACCD under ACCUMULATOR_DELAYED."
     }
   ],
   "requirements": [
@@ -16396,6 +16502,69 @@
       "test_ids": [
         "T-PROJECT-P3-S5-PUSH-TRANSACTION"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S8-BACC-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute the BACC and BACCD rows as unconditional accumulator-addressed branches: resolve the S-selected accumulator through the shared ACCUMULATOR_SOURCE layout, replace PC with its 16 low bits, stage no status, accumulator, T-register, or MEMORY effect, and retire both rows as repeatability INELIGIBLE on the explicit TI not-repeatable statement.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BACC-OPCODE-P4-15",
+        "E-TI-C54X-SPRU172C-S4-BACC-SEMANTICS-P4-15",
+        "E-TI-C54X-SPRU172C-S4-BACCD-OPCODE-P4-15",
+        "E-TI-C54X-SPRU172C-S4-BACCD-SEMANTICS-P4-15",
+        "E-TI-C54X-SPRU172C-S4-BACC-NONREPEATABLE-P4-15"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S8-BACC-SEMANTICS",
+        "T-COMMON-P3-S8-BACCD-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S8-BACC-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire BACC followers normally and BACCD followers through the two-word delay window with PC advance, T preservation, and no endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BACC-SEMANTICS-P4-15",
+        "E-TI-C54X-SPRU172C-S4-BACCD-SEMANTICS-P4-15"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S8-BACC-CPU",
+        "T-PROJECT-P3-S8-BACCD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S8-ACCUMULATOR-SOURCE-LAYOUT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/decode/",
+      "claim": "Select the S-field accumulator source through the shared ACCUMULATOR_SOURCE layout serving the BACC and BACCD rows (and the future CALA and CALAD rows) with bit 8 mapping 0 to accumulator A and 1 to accumulator B.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S8-BACC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S8-ACCUMULATOR-SOURCE-LAYOUT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S8-BACC-INVENTORY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the BACC and BACCD production symbols to FORM-T2-12-02 at SUBSET under the ACCUMULATOR_NONDELAYED and ACCUMULATOR_DELAYED addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S8-BACC-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
+      ]
     }
   ],
   "tests": [
@@ -19588,7 +19757,8 @@
         "REQ-PROJECT-P3-S3R-MACD-INVENTORY",
         "REQ-PROJECT-P3-S3S-MACSU-INVENTORY",
         "REQ-PROJECT-P3-S3Z-ADD-SMEM-INVENTORY",
-        "REQ-PROJECT-P3-S4-XC-INVENTORY"
+        "REQ-PROJECT-P3-S4-XC-INVENTORY",
+        "REQ-PROJECT-P3-S8-BACC-INVENTORY"
       ]
     },
     {
@@ -23815,6 +23985,76 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S5-PUSH-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S8-BACC-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_bacc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bacc"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S8-BACC-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S8-BACCD-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_baccd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.baccd"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S8-BACC-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S8-ACCUMULATOR-SOURCE-LAYOUT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/decode/test_accumulator_source_layout.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.accumulator_source_layout"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S8-ACCUMULATOR-SOURCE-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S8-BACC-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_bacc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_bacc"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S8-BACC-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S8-BACCD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_baccd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_baccd"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S8-BACC-CPU-RETIREMENT"
       ]
     }
   ]

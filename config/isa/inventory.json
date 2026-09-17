@@ -1379,8 +1379,11 @@
       "mnemonic": "BACC",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "BACC",
+        "BACCD"
+      ]
     },
     {
       "id": "FORM-T2-12-03",
@@ -3590,6 +3593,18 @@
       "form_id": "FORM-T2-15-03",
       "coverage": "SUBSET",
       "addressing_subset": "STACK_POP_DELAYED"
+    },
+    {
+      "catalog_symbol": "BACC",
+      "form_id": "FORM-T2-12-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "BACCD",
+      "form_id": "FORM-T2-12-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_DELAYED"
     },
     {
       "catalog_symbol": "STM",

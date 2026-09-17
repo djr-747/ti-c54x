@@ -26,6 +26,10 @@ $(eval $(call ti_c54x_add_test,cpu_rc,cpu/isa/branch,test_cpu_rc.c))
 $(eval $(call ti_c54x_add_test,cpu_rcd,cpu/isa/branch,test_cpu_rcd.c))
 # P3-S4 RED contract: XC CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_xc,cpu/isa/branch,test_cpu_xc.c))
+# P3 slice 4 RED contract: BACC CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_bacc,cpu/isa/branch,test_cpu_bacc.c))
+# P3 slice 4 RED contract: BACCD CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_baccd,cpu/isa/branch,test_cpu_baccd.c))
 $(eval $(call ti_c54x_add_test,cpu_rete,cpu/isa/branch,test_cpu_rete.c))
 # W67B RED contract: RETD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_retd,cpu/isa/branch,test_cpu_retd.c))
