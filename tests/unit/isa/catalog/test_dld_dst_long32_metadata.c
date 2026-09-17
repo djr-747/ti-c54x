@@ -34,7 +34,7 @@ static const long32_row rows[] = {
 static void
 test_metadata_rows(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 262);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 263);
 
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const long32_row *row = &rows[index];
