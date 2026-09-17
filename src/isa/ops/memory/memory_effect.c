@@ -242,6 +242,26 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect) &&
                effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
 
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16:
+        /* Accumulator-targeted push: all first-arm fields zero except
+         * `arf`, which carries the accumulator select (0 for A, 1 for
+         * B); WRITE-only with no RMW and no completion, sharing the
+         * access shape of the immediate pushes. The delayed kind
+         * shares this shape exactly: only the root PC commit timing
+         * differs. */
+        if (effect->address_spec.mode != 0 ||
+            effect->address_spec.indexed_mode != 0 ||
+            effect->address_spec.circular_mode != 0 ||
+            effect->address_spec.reverse_carry_mode != 0 ||
+            effect->address_spec.long_offset_word != UINT16_C(0) ||
+            effect->address_spec.direct_dma7 != UINT8_C(0) ||
+            effect->address_spec.arf > UINT8_C(1)) {
+            return false;
+        }
+        return ti_c54x_op_memory_effect_access_shape_is_valid(effect) &&
+               effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
+
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16:
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16:
         /* All-zero spec with no AR selector; READ-only with a zero staged

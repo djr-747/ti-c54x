@@ -105,6 +105,21 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->arf != UINT8_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
+    } else if (spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+               spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+        /* Accumulator-targeted pushes share the TOS contract with the
+         * immediate pushes; only the accumulator select rides `arf`
+         * (0 for A, 1 for B) while every other first-arm field stays
+         * zero. The PC target itself travels outside this spec. */
+        if (spec->mode != 0 || spec->indexed_mode != 0 ||
+            spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
+            spec->long_offset_word != UINT16_C(0) ||
+            spec->direct_dma7 != UINT8_C(0) ||
+            spec->arf > UINT8_C(1)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
     } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
                spec->kind ==
                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
@@ -300,7 +315,11 @@ ti_c54x_sequencer_resolve_memory_address(
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+        spec->kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+        spec->kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
         uint16_t sp_value = UINT16_C(0);
 
         /* Pushes observe only SP: no CMPT/ARP/CPL read, so unknown mode

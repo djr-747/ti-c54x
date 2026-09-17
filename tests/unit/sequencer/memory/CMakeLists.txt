@@ -18,6 +18,9 @@ ti_c54x_add_unit_test(dual_mod3_resolution
 # W65A RED contract: stack-push WORD16 resolution and mode independence.
 ti_c54x_add_unit_test(stack_push_resolution
                       test_stack_push_resolution.c)
+# P3-S5 RED contract: accumulator-targeted push resolution.
+ti_c54x_add_unit_test(accumulator_push_resolution
+                      test_accumulator_push_resolution.c)
 # W66A RED contract: stack-pop WORD16 resolution and mode independence.
 ti_c54x_add_unit_test(stack_pop_resolution
                       test_stack_pop_resolution.c)

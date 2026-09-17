@@ -10,7 +10,10 @@
  * MOD13 LONG32 and dual-indirect MOD0/MOD1/MOD2/MOD3 WORD16 address
  * specifications, the mode-independent STACK_PUSH/STACK_POP WORD16
  * address kinds with their delayed-branch counterparts (identical
- * stack planning; only the root PC commit timing differs), and
+ * stack planning; only the root PC commit timing differs), the
+ * accumulator-targeted STACK_PUSH_ACCUMULATOR WORD16 kinds with
+ * their delayed counterpart (identical TOS planning; the PC target
+ * rides the frozen input snapshot instead of the bundle), and
  * static completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
@@ -91,7 +94,22 @@ typedef enum ti_c54x_op_memory_address_kind {
      * Both values publish through the shared `complete_dual`
      * shape with the Smem word as `x` and the coefficient as
      * `y`; read-phase T load takes the `x` word. */
-    TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16 = 14
+    TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16 = 14,
+    /* Accumulator-targeted stack push (CALA): identical TOS planning
+     * to the immediate push (old SP - 1 with a PRE_ACCESS SP update,
+     * WRITE-only with the staged return address), but the PC target
+     * is the low 16 bits of the selected accumulator, not the
+     * bundle extension word. The accumulator select rides `arf`
+     * (0 for A, 1 for B); all other first-arm fields stay zero.
+     * The root reads the target from the frozen input snapshot
+     * gated on accumulator knownness, so no frozen field grows. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 = 15,
+    /* Delayed accumulator-targeted stack push (CALAD): identical TOS
+     * planning to the accumulator push, but the root commits the
+     * sequential PC successor and reports the accumulator target as
+     * the deferred branch target. The staged return address is PC+3
+     * for the one-word form per SPRU172C section 4 CALA[D]. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 = 16
 } ti_c54x_op_memory_address_kind;
 
 /*

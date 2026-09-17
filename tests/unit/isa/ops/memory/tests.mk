@@ -9,3 +9,5 @@ $(eval $(call ti_c54x_add_test,atomic_logical_memory_effects,isa/ops/memory,test
 # W47B1 RED contract: DLD/DST MOD13 LONG32 carrier and pure resolver.
 $(eval $(call ti_c54x_add_test,dld_dst_long32_memory_carrier,isa/ops/memory,test_dld_dst_long32_memory_carrier.c))
 $(eval $(call ti_c54x_add_test,dual_word16_memory_effect,isa/ops/memory,test_dual_word16_memory_effect.c))
+# P3-S5 RED contract: accumulator-targeted stack-push effect shapes.
+$(eval $(call ti_c54x_add_test,accumulator_push_memory_effect,isa/ops/memory,test_accumulator_push_memory_effect.c))

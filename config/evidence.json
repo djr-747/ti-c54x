@@ -6897,6 +6897,40 @@
         "anchor": "P3-S4: XC conditional-execution slice (planned)"
       },
       "assertion": "S4 is implemented and green: one new XC (0xFD00/0xFD00, new N_CONDITION8 layout with N at bit 9 and cond at bits 7:0) catalog row with 512 added lookup entries and zero neighbor moves; checked and trusted leaves evaluating the sixteen image-evidenced single conditions plus UNC through the shared branch-condition core with taken NONE emission versus not-taken CONDITIONAL_SKIP staging and transactional INVALID_OPERAND rejection of deferred fields; and CPU retirement retiring taken followers normally and not-taken followers as NOP skips with PC advance, delay-slot countdown consumption, T preservation, and no endpoint traffic. The row is INELIGIBLE repeatability on the explicit TI not-repeatable statement. FORM-T2-18-07 lands SUBSET."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CALA-P4-24-4-25",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "CALA[D]",
+        "printed_page_start": "4-24",
+        "printed_page_end": "4-25"
+      },
+      "assertion": "CALA[D] src is a one-word call to the 16-bit address in the low part of src (bits 15-0, A or B accumulator): nondelayed pushes (PC) + 1 to TOS, delayed pushes (PC) + 3 to TOS, both over an SP - 1 TOS with a PRE_ACCESS SP update, then (src(15-0)) replaces PC with the staged return address additionally loading RTN. No status-bit effects are claimed, and the description carries an explicit not-repeatable note. Cycle counts are instruction evidence only and are not adopted as machine-cycle timing."
+    },
+    {
+      "id": "E-PROJECT-P3-S5-PLAN-ANCHOR",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/implementation-plan.md",
+        "anchor": "P3-S5: accumulator-addressed push seam (planned)"
+      },
+      "assertion": "S5 is the planned accumulator-addressed push seam: two new STACK_PUSH_ACCUMULATOR WORD16 MEMORY address kinds (immediate and delayed) with TOS planning identical to the immediate pushes, the A/B accumulator select riding arf, and the PC target read from the frozen input snapshot gated on accumulator knownness; a pure effect-carrier extension, resolver TOS planning, and root prepare/commit coverage with no catalog rows, opcode identities, handlers, or CPU opcode branch."
     }
   ],
   "requirements": [
@@ -16320,6 +16354,48 @@
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S5-PUSH-EFFECT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/isa/ops/memory/",
+      "claim": "Carry accumulator-targeted stack pushes in the WORD16 MEMORY effect as STACK_PUSH_ACCUMULATOR immediate and delayed kinds with the A/B select in arf, WRITE-only access with no RMW and no completion, and transactional rejection of malformed shapes.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S5-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S5-PUSH-EFFECT"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S5-PUSH-RESOLVER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/memory/",
+      "claim": "Resolve accumulator-targeted stack pushes with TOS planning identical to the immediate pushes (SP - 1 DATA WRITE with PRE_ACCESS SP commit) for both selects and both immediacy kinds, rejecting malformed selects and unknown SP without a commit candidate.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S5-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S5-PUSH-RESOLVER"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S5-PUSH-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire accumulator-targeted stack pushes through the root with the PC target taken from the frozen input snapshot gated on accumulator knownness, PC+1 (PC+3 delayed) return staging, atomic SP commit with accumulator redirect or deferred reporting, and transactional rejection of unknown accumulators and forged shapes before any bus issue.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S5-PLAN-ANCHOR"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S5-PUSH-TRANSACTION"
+      ]
     }
   ],
   "tests": [
@@ -23697,6 +23773,48 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S4-N-CONDITION8-LAYOUT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S5-PUSH-EFFECT",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/isa/ops/memory/test_accumulator_push_memory_effect.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.accumulator_push_memory_effect"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S5-PUSH-EFFECT"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S5-PUSH-RESOLVER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/memory/test_accumulator_push_resolution.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.accumulator_push_resolution"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S5-PUSH-RESOLVER"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S5-PUSH-TRANSACTION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_accumulator_push_root.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.accumulator_push_root"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S5-PUSH-TRANSACTION"
       ]
     }
   ]

@@ -16,3 +16,6 @@ ti_c54x_add_unit_test(dld_dst_long32_memory_carrier
                       test_dld_dst_long32_memory_carrier.c)
 ti_c54x_add_unit_test(dual_word16_memory_effect
                       test_dual_word16_memory_effect.c)
+# P3-S5 RED contract: accumulator-targeted stack-push effect shapes.
+ti_c54x_add_unit_test(accumulator_push_memory_effect
+                      test_accumulator_push_memory_effect.c)

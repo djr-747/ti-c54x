@@ -382,6 +382,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-RCD-SEMANTICS-P4-133` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RC[D], `4-133`, `4-134` |
 | `E-TI-C54X-SPRU172C-S4-RCD-NONREPEATABLE-P4-134` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RC[D], `4-134` |
 | `E-TI-C54X-SPRU172C-S4-XC-P4-198-4-200` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §XC, `4-198`–`4-200` |
+| `E-TI-C54X-SPRU172C-S4-CALA-P4-24-4-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CALA[D], `4-24`–`4-25` |
 | `E-PROJECT-P2-W78-RCD-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W78: RCD delayed-conditional-return vertical slice (planned)` |
 | `E-PROJECT-P2-W78-RCD-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P2-W78: RCD delayed-conditional-return vertical slice (planned)` |
 | `E-PROJECT-P3-S1-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S1: MMR/device routing seam (planned)` |
@@ -440,6 +441,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S3Y-MPYR-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3y: MPYR Smem lock-in slice (planned)` |
 | `E-PROJECT-P3-S3Z-ADD-SMEM-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S3z: ADD Smem slice (planned)` |
 | `E-PROJECT-P3-S4-XC-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S4: XC conditional-execution slice (planned)` |
+| `E-PROJECT-P3-S5-PLAN-ANCHOR` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/implementation-plan.md` anchor `P3-S5: accumulator-addressed push seam (planned)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1191,6 +1193,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S4-XC-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-XC-P4-198-4-200` | `T-COMMON-P3-S4-XC-CPU` |
 | `REQ-PROJECT-P3-S4-N-CONDITION8-LAYOUT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P3-S4-XC-ACTIVATION` | `T-PROJECT-P3-S4-N-CONDITION8-LAYOUT` |
 | `REQ-PROJECT-P3-S4-XC-INVENTORY` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `tools/quality/` | `E-PROJECT-P3-S4-XC-ACTIVATION` | `T-PROJECT-ISA-INVENTORY-CATALOG-BINDING` |
+| `REQ-PROJECT-P3-S5-PUSH-EFFECT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/ops/memory/` | `E-PROJECT-P3-S5-PLAN-ANCHOR` | `T-PROJECT-P3-S5-PUSH-EFFECT` |
+| `REQ-PROJECT-P3-S5-PUSH-RESOLVER` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/memory/` | `E-PROJECT-P3-S5-PLAN-ANCHOR` | `T-PROJECT-P3-S5-PUSH-RESOLVER` |
+| `REQ-PROJECT-P3-S5-PUSH-TRANSACTION` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/sequencer/instruction/` | `E-PROJECT-P3-S5-PLAN-ANCHOR` | `T-PROJECT-P3-S5-PUSH-TRANSACTION` |
 
 ## Tests
 
@@ -1717,6 +1722,9 @@ exist in the repository.
 | `T-COMMON-P3-S4-XC-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_xc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.xc"}` | `REQ-COMMON-P3-S4-XC-SEMANTICS` |
 | `T-COMMON-P3-S4-XC-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_xc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_xc"}` | `REQ-COMMON-P3-S4-XC-CPU-RETIREMENT` |
 | `T-PROJECT-P3-S4-N-CONDITION8-LAYOUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_n_condition8_layout.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.n_condition8_layout"}` | `REQ-PROJECT-P3-S4-N-CONDITION8-LAYOUT` |
+| `T-PROJECT-P3-S5-PUSH-EFFECT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/ops/memory/test_accumulator_push_memory_effect.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.accumulator_push_memory_effect"}` | `REQ-PROJECT-P3-S5-PUSH-EFFECT` |
+| `T-PROJECT-P3-S5-PUSH-RESOLVER` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/memory/test_accumulator_push_resolution.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.accumulator_push_resolution"}` | `REQ-PROJECT-P3-S5-PUSH-RESOLVER` |
+| `T-PROJECT-P3-S5-PUSH-TRANSACTION` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_accumulator_push_root.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.accumulator_push_root"}` | `REQ-PROJECT-P3-S5-PUSH-TRANSACTION` |
 | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/isa/decode/test_indirect_addr7_layout.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.indirect_addr7_layout"}` | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` |
 | `T-PROJECT-P3-S3D-T-LOAD-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_commit"}` | `REQ-PROJECT-P3-S3D-MPYA-T-LOAD` |
 

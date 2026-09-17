@@ -416,7 +416,11 @@ address_resolution_is_valid(
     if (effect->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         effect->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
         const ti_c54x_address_source_stack_push *const source =
             &address_effect->source.value.stack_push;
         /* Wrapping TOS arithmetic mirrors the planner exactly, so a forged
@@ -678,6 +682,10 @@ ti_c54x_memory_instruction_candidate_matches_live(
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==

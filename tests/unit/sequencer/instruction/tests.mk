@@ -34,3 +34,5 @@ $(eval $(call ti_c54x_add_test,stack_pop_root,sequencer/instruction,test_stack_p
 # W67A RED contracts: delayed stack-pop/push WORD16 root lifecycles.
 $(eval $(call ti_c54x_add_test,delayed_stack_pop_root,sequencer/instruction,test_delayed_stack_pop_root.c))
 $(eval $(call ti_c54x_add_test,delayed_stack_push_root,sequencer/instruction,test_delayed_stack_push_root.c))
+# P3-S5 RED contract: accumulator-targeted push root lifecycle.
+$(eval $(call ti_c54x_add_test,accumulator_push_root,sequencer/instruction,test_accumulator_push_root.c))

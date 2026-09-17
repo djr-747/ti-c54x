@@ -44,33 +44,71 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
-        /* Pushes redirect PC to the frozen pmad instead of the sequential
-         * successor. Re-plan deterministically from the frozen bundle word
-         * and the stable live PC; prepare already proved this plan, so a
-         * failure here is unreachable but still transactional. The frozen
-         * staged return address additionally loads RTN atomically with
-         * the push (SPRU131G §6: calls load RTN with the address they
-         * push). Delayed pushes only prove the deferred pmad target here:
-         * the two delay-slot words execute first, so PC advances to the
-         * frozen sequential successor and the W67B CPU loop reports pmad
-         * from the retirement result. */
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+        /* Pushes redirect PC to the frozen target instead of the
+         * sequential successor. Re-plan deterministically from the
+         * frozen target and the stable live PC; prepare already proved
+         * this plan, so a failure here is unreachable but still
+         * transactional. Two-word pushes read the target from the
+         * frozen bundle word; one-word accumulator pushes re-derive
+         * it from the frozen input snapshot gated on accumulator
+         * knownness. The frozen staged return address additionally
+         * loads RTN atomically with the push (SPRU131G §6: calls load
+         * RTN with the address they push). Delayed pushes only prove
+         * the deferred target here: the two delay-slot words execute
+         * first, so PC advances to the frozen sequential successor
+         * and the W67B CPU loop reports the target from the
+         * retirement result. */
         const ti_c54x_instruction_word_bundle *bundle_words =
             &transaction->candidate.instruction.bundle;
+        const ti_c54x_op_input_snapshot *frozen_input =
+            &transaction->candidate.input;
+        uint8_t push_select =
+            transaction->candidate.effect.payload.memory.address_spec.arf;
         ti_c54x_program_pc_target_effect call_target = {0};
         uint32_t live_pc = state->pc_word;
         uint16_t pmad;
 
-        if (bundle_words->program_word_count != UINT8_C(2)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+            if (bundle_words->program_word_count != UINT8_C(1)) {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            if (push_select == UINT8_C(0)) {
+                if (!frozen_input->accumulator_a_known) {
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+                pmad = (uint16_t)(frozen_input->accumulator_a_raw40 &
+                                  UINT64_C(0xFFFF));
+            } else if (push_select == UINT8_C(1)) {
+                if (!frozen_input->accumulator_b_known) {
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+                pmad = (uint16_t)(frozen_input->accumulator_b_raw40 &
+                                  UINT64_C(0xFFFF));
+            } else {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+        } else {
+            if (bundle_words->program_word_count != UINT8_C(2)) {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            pmad = bundle_words->program_words[1];
         }
-        pmad = bundle_words->program_words[1];
         if (ti_c54x_program_pc_target_plan(live_pc, pmad, &call_target) !=
             TI_C54X_PROGRAM_PC_TARGET_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
         if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16) {
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
             state->pc_word =
                 transaction->candidate.pc_effect.public_pc_word_after;
         } else {

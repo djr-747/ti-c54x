@@ -57,3 +57,6 @@ ti_c54x_add_unit_test(delayed_stack_pop_root
                       test_delayed_stack_pop_root.c)
 ti_c54x_add_unit_test(delayed_stack_push_root
                       test_delayed_stack_push_root.c)
+# P3-S5 RED contract: accumulator-targeted push root lifecycle.
+ti_c54x_add_unit_test(accumulator_push_root
+                      test_accumulator_push_root.c)
