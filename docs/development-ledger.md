@@ -11190,3 +11190,80 @@ rewritten after publication.
   PORTR/PORTW, AR6/AR7 dual-Y, MOD3, dual
   replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
+
+## 2026-09-17 — P3-S4 XC conditional-execution slice (slice 35)
+
+- Commit `fed89f8` lands `FORM-T2-18-07`
+  (TI SPRU172C `XC` pp. 4-198–4-200) as
+  one new row: `XC` at `0xFD00` under
+  mask `0xFD00` (N at bit 9, cond at
+  7:0) through the new `N_CONDITION8`
+  layout. Taken emits `NONE`; not-taken
+  stages the new `CONDITIONAL_SKIP`
+  effect and the CPU retires n NOP words
+  with PC advance, no fetch/effect/bus
+  traffic, delay-slot countdown
+  consumption, and T preservation.
+  Sixteen image-evidenced single
+  conditions plus `UNC` evaluate through
+  the shared branch-condition core;
+  `BIO`/`NBIO`, `AOV`/`ANOV`/`BOV`/`BNOV`,
+  and multi-condition combos reject as
+  deferred `INVALID_OPERAND`.
+  `INELIGIBLE` repeatability on the
+  explicit TI `not repeatable` statement.
+  Lookup gains 512 entries (19993 to
+  20505) with zero neighbor moves;
+  census moves to
+  221 IDs, 220 bindings, 88/205 families
+  (42.927%), 33 strict-complete, 187
+  SUBSET. The TI Example vector
+  (`XC 1,ALEQ` with A −1) pins end to
+  end at the leaf, through the trusted
+  entries, and on the CPU. README
+  wave-1 tail wording lands XC.
+  `git diff --check` clean.
+- Evidence stands at 392 records, 648
+  requirements, 519 tests (519
+  `PASSING`, 0 `PLANNED`). The S4 anchor
+  projected 392/648/519 with one TI
+  source record, one activation record,
+  four requirements, and three test
+  records: all counts match exactly (the
+  TI `XC` source record is new under
+  `SRC-TI-SPRU172C`; no separate
+  plan-anchor record — PROJECT
+  requirements cite the activation
+  record, COMMON requirements cite the
+  TI record only per the scope gate).
+  The new `N_CONDITION` addressing token
+  follows the per-slice token precedent
+  (`ALL` is schema-reserved for
+  `COMPLETE`). No knob change.
+- Decisions: the not-taken skip commits
+  the widened (1 + n) plan at the single
+  shared bridge-plan site instead of a
+  second plan call, so the
+  one-preparation-plan perf contract
+  holds unchanged with no test edit;
+  mid-`.def` placement (after `RCD`)
+  shifts no catalog-order contract
+  positions (positional pins cover only
+  rows 0–26), so the XC catalog-contract
+  assertion uses symbol lookup.
+  Absorptions: `0xFD00`/`0xFF00` leave
+  older `UNKNOWN` pins in the
+  CC/CCD/RC/RCD/RET/RETD near-miss
+  lanes, now re-pinned to `XC`.
+- Validation is GREEN: full CMake CTest
+  493/493 on the working Debug build;
+  sanitizer XC trio clean (clean flagged
+  ASan/UBSan rebuild, direct runs exit
+  0, `build-s4-xc-asan/` removed after);
+  `make test` clean (exit 0); evidence,
+  inventory, and lookup gates pass;
+  contract quality suites pass.
+- Follow-up work: `SQDST` two-write
+  effect seam, S1 STM/MMR, S6 PORTR/PORTW,
+  AR6/AR7 dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
