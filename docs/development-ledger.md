@@ -10227,3 +10227,71 @@ rewritten after publication.
   classification; deferred exotic indirect modes,
   dual `#lk` words, and far/XPC/timing.
 
+## 2026-09-17 — P3-S3m SQURA/SQURS accumulate-squares slice (slice 21)
+
+- Commit `ae8945f` lands `FORM-T2-04-21`/`FORM-T2-04-22`
+  (TI SPRU172C `SQURA` p. 4-163, `SQURS` p. 4-164)
+  as two catalog rows sharing one leaf with
+  ADD/SUBTRACT select: `SQURA_SMEM` at `0x3800`
+  and `SQURS_SMEM` at `0x3A00`, each under mask
+  `0xFE00` with 512 S/I/addr7 encodings through
+  the reused S3k `DESTINATION_INDIRECT_ADDR7`
+  layout, `ELIGIBLE` repeatability (Table 2-28
+  lists no SQURA/SQURS entry), and
+  `ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM`
+  resources. Checked/trusted leaves stage the
+  Smem read with read-phase T load, then complete
+  `(src)` plus/minus `(Smem)x(Smem)` into the
+  S-selected accumulator through the multiply
+  core with no rounding; C/TC preserved, `OVdst`
+  follows the core. CPU retirement proves both
+  Example 1 vectors (recomputed independently
+  before pinning). New TI records
+  `E-TI-C54X-SPRU172C-S4-SQURA-P4-163` and
+  `E-TI-C54X-SPRU172C-S4-SQURS-P4-164` plus
+  activation, six owner-split requirements, and
+  four test records (367/586/468→370/592/472);
+  the PROJECT INVENTORY requirements ride the
+  shared binding test with the `DESTINATION_`
+  `INDIRECT_ADDR7` subset token. No new layout,
+  resource, effect, address, state, CPU,
+  public-API, or manifest seam is added.
+- RED was observed on the stub (absent
+  `TI_C54X_OPCODE_ID_SQURA_SMEM`/`SQURS_SMEM`
+  identities). Diagnosis note: the mid-slice
+  `squr_acc_ops` failure at `first.id == id` was
+  a test-word typo (`0x3BAD`, SQURS family, in
+  the exotic-mode case expecting `SQURA_SMEM`),
+  not a decoder defect — a direct probe of the
+  same library decoded `0x391E`→171,
+  `0x3A09`→172, `0x3B82`→172 correctly; the
+  word is now `0x39AD`. The recorded
+  LD-T→SQURA cross-slice update landed here:
+  the `test_ld_t_smem_metadata.c`/`test_ld_t_smem_decode.c`
+  UNKNOWN lanes for the `0x0800` flip (`0x3890`)
+  moved to the new `SQURA_SMEM` row with an
+  explanatory comment.
+  `git diff --check` clean. New files peak at 373
+  lines (`op_squr_acc.c`); no split required.
+- Neighbor pins move to 201 IDs, 200 rows/bindings
+  (167 SUBSET plus 33 COMPLETE), 15,337 lookup
+  entries, 76/205 (37.073%) with the
+  `FORM-T2-04-21`/`FORM-T2-04-22` contract set;
+  strict stays 33/205 (16.098%). The
+  0x3800/0x3A00 near-miss sweeps are clean — each
+  single masked row carries its 512 encodings.
+- Validation is GREEN: full CMake CTest 454/454 on
+  the working build; fresh Debug configure plus full
+  CTest 454/454 in `/tmp/ti-c54x-s3m-debug`; full
+  sanitizer CMake/CTest 454/454 in
+  `/tmp/ti-c54x-s3m-asan` (ASan/UBSan); `make test`
+  clean; focused new-slice binaries green; quality
+  unittest 272 OK; evidence gate passes
+  (370/592/472).
+- Follow-up work: `MPYU` (unsigned core support,
+  shares the S3k layout shape),
+  `MACA`/`MACD`/`MACP` family, AR6/AR7 dual-Y
+  widening, MOD3 neighborhoods, dual replay
+  classification; deferred exotic indirect modes,
+  dual `#lk` words, and far/XPC/timing.
+
