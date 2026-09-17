@@ -10936,3 +10936,81 @@ rewritten after publication.
   STM/MMR, S6 PORTR/PORTW, AR6/AR7 dual-Y,
   MOD3, dual replay, RPTB/RPTZ/RPTBD,
   far/XPC/timing.
+
+## 2026-09-17 — P3-S3w MASA Smem and T slice (slice 31)
+
+- Commit `6f56f4e` closes the census MASA
+  syntaxes (`FORM-T2-04-18`/
+  `FORM-T2-04-19`, TI SPRU179C `MASA`
+  pp. 4-99–4-100) with two new catalog
+  rows: `MASA_SMEM` at `0x3300` under mask
+  `0xFF00` through the shared
+  `INDIRECT_ADDR7` layout, and `MASA_T` at
+  `0xF48A` under mask `0xFCFE` through the
+  shared `SOURCE_DESTINATION_ROUND`
+  layout (S bit 9, D bit 8, R bit 0; R=1
+  carries the future MASAR T variant;
+  low bytes `0x8A`/`0x8B` stay disjoint
+  from `MACA_T`). Both handlers reuse the
+  multiply core with the SUBTRACT select
+  and the A-high multiplicand, FRCT/OVM
+  handling, and C/TC preservation. Both
+  rows are `UNRESOLVED` repeatability
+  with no Table 2-28 MASA fact on record
+  (P2-W48C precedent). The TI vectors pin
+  end to end: Example 1 Smem (`0x5678`
+  read, B `00 0002 0000` to `FF F9DB
+  FFA0` with T load) at the leaf, through
+  the trusted entry, and on the CPU
+  (direct plus MOD2 indirect); Example 2
+  T (T `0x0444`, FRCT=1, B to `FF FF66
+  B460`) at the leaf, through the trusted
+  entry, and on the CPU with endpoint
+  silence; Example 3 rounding (R=1, B to
+  `FF FF67 0000`) at the leaf and on the
+  CPU. The generated lookup gains 264
+  entries with zero neighbor moves. The
+  `MASAR` forms stay `UNIMPLEMENTED` with
+  empty symbol lists. README
+  remaining-work wording drops `MASA`.
+  `git diff --check` clean.
+- This is a full RED slice, not a
+  lock-in: catalog rows, leaves, CPU
+  lanes, and bindings are all new. The
+  census pins move to 217 IDs, 216
+  rows/bindings (183 SUBSET plus 33
+  COMPLETE), 17,945 lookup entries,
+  84/205 (40.976%); strict stays 33/205.
+  Absorbed near-miss lanes move to the
+  new rows as recorded cross-slice
+  updates (`LD_ASM` bit-8 to `MASA_SMEM`,
+  `LD_SRC_ASM` bit-3 and `RETF` bit-4 to
+  `MASA_T`; `MACA_T` invalid pin moves to
+  `0xF48F`).
+- Evidence stands at 386 records, 637
+  requirements, 510 tests (510 `PASSING`,
+  0 `PLANNED`), matching the S3w anchor
+  projections exactly. The TI source is
+  registered under the pre-existing
+  `SRC-TI-SPRU179C` registry with its own
+  printed pages (SPRU179C pagination
+  differs from SPRU172C by ~2 pages, so
+  no SPRU172C page claim is made).
+- Validation is GREEN: full CMake CTest
+  486/486 on the working Debug build;
+  sanitizer MASA quartet clean (clean
+  flagged rebuild, 73 asan/ubsan symbols,
+  direct runs exit 0, `build-fast/`
+  removed after); `make test` clean on a
+  fresh unflagged rebuild (exit 0);
+  evidence, inventory, and lookup gates
+  pass; contract quality suites pass.
+- Follow-up work: `MASAR` T lock-in (R=1
+  through `MASA_T`) plus the `MASAR`
+  Smem question (syntax 1 carries no R
+  bit), `MPYR`/`SQDST` leaves (SQDST
+  needs a two-accumulator-write effect
+  channel that does not exist yet), S4
+  XC, S1 STM/MMR, S6 PORTR/PORTW, AR6/AR7
+  dual-Y, MOD3, dual replay,
+  RPTB/RPTZ/RPTBD, far/XPC/timing.
