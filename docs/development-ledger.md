@@ -11420,3 +11420,88 @@ rewritten after publication.
   still awaits user approval, so remote
   CI has not yet seen the S4/S5/S8
   fixes.
+
+## 2026-09-17 — P3-S9 CALA accumulator-addressed call family (slice 38)
+
+- Commit `1d9a9ea` lands the `CALA`
+  family on the S5 seam plus fix
+  `5dd96b0` for two `OPCODE_ID_COUNT`
+  pins missed by the slice commit. Two
+  new catalog rows, `CALA` (`0xF4E3`)
+  and `CALAD` (`0xF6E3`), under the
+  shared `0xFEFF` mask through the
+  shared `ACCUMULATOR_SOURCE` layout
+  (TI SPRU172C §`CALA[D]`, printed pp.
+  4-24–4-25, opcode
+  `1111_01ZS_1110_0011`). Checked and
+  trusted leaves stage a MEMORY
+  `STACK_PUSH_ACCUMULATOR(_DELAYED)`
+  TOS WRITE with the select in `arf`
+  and a zero return placeholder; the S5
+  root derives the PC target from the
+  frozen snapshot and stages PC+1
+  (`CALA`) or PC+3 (`CALAD`). Both rows
+  `INELIGIBLE` repeatability.
+  `FORM-T2-13-01` lands `SUBSET` with
+  `CALA` under `ACCUMULATOR_NONDELAYED`
+  and `CALAD` under
+  `ACCUMULATOR_DELAYED`. No `run.c`
+  change: retirement reuses the generic
+  MEMORY route.
+- Decisions: new input-resource token
+  `ACCUMULATORS_STACK_POINTER` carries
+  exactly the two consumed inputs (no
+  status claim); collector and
+  `KNOWN_MASK` already cover both bits.
+  Leaf gates SP knownness as
+  `INVALID_OPERAND` (CALL precedent)
+  and selected-accumulator knownness as
+  `UNKNOWN_INPUT` (BACC precedent);
+  prepare keeps its own gate as
+  defense in depth. No new layout
+  requirement: the S8 layout record
+  already names the future rows.
+- Size review: `test_cpu_calad.c` is
+  555 lines (advisory `SIZE_REVIEW`
+  over 500, hard split at 800). Split
+  decision: keep whole, mirroring the
+  653-line `test_cpu_calld.c` shape;
+  the delay-window and transactionality
+  coverage reads as one fixture
+  narrative. No knob change.
+- Contract pins: rows 222 to 224,
+  `OPCODE_ID_COUNT` 223 to 225, lookup
+  20509 to 20513 (zero neighbor
+  moves), bound forms 89 to 90
+  (43.902%), `SUBSET` 189 to 191,
+  `CALAD` joins `EXPECTED_DELAYED`.
+  `RETED`/`RETE` near-miss tables drop
+  bit-3 flips onto `CALAD`/`CALA` and
+  pin them as siblings (RCD/RC
+  precedent). One process slip: a
+  brace-typo from pin `sed` on the
+  one-line reverse-carry test broke
+  collection; fixed by hand and
+  verified minimal by `git diff`.
+  Prefer the editing tool for pin
+  edits going forward.
+- Evidence stands at 406 records, 658
+  requirements, 531 tests (531
+  `PASSING`, 0 `PLANNED`), matching the
+  S9 projection exactly: five TI
+  source records, one activation
+  record, three requirements, four
+  test records.
+- Validation is GREEN: `make test`
+  clean (exit 0, 105 fast binaries
+  plus contract quality 272/272);
+  evidence, inventory, and lookup
+  gates pass. Four RED lanes observed
+  RED (missing `op_cala.h`) before
+  GREEN.
+- Follow-up work: S1 STM/MMR, S6
+  PORTR/PORTW, far/XPC/timing. Push of
+  the local stack to `origin/main`
+  still awaits user approval, so remote
+  CI has not yet seen the S4/S5/S8/S9
+  fixes.
