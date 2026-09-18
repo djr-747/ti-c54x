@@ -145,10 +145,12 @@ check_access_shapes_and_nonmutation(void)
     effect.complete = NULL;
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
 
+    /* WRITE with no RMW transform may carry a follow-on completion
+     * (CMPS TRN/TC precedent). */
     effect = reverse_effect(TI_C54X_INDIRECT_REVERSE_CARRY_MOD7, UINT8_C(7),
                             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
     effect.complete = complete_effect;
-    TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
+    TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
     effect = reverse_effect(TI_C54X_INDIRECT_REVERSE_CARRY_MOD7, UINT8_C(7),
                             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_INVALID;

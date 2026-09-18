@@ -102,6 +102,7 @@
 #include "store/op_stl_smem_direct.h"
 #include "store/op_stl_asm_smem_direct.h"
 #include "store/op_stlm_smem_direct.h"
+#include "store/op_cmps_smem_direct.h"
 #include "store/op_saccd_xmem_cond.h"
 #include "store/op_srccd_xmem_cond.h"
 #include "store/op_strcd_xmem_cond.h"

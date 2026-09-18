@@ -28,7 +28,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_MPYU_SMEM);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 302);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 303);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_MPYU_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == MPYU_SMEM_VALUE);

@@ -105,9 +105,12 @@ check_shape_rejections(void)
     effect.complete = NULL;
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
 
+    /* WRITE with no RMW transform may carry a completion that stages
+     * at most one ordinary follow-on after the write resolves
+     * (CMPS TRN/TC precedent). */
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
     effect.complete = complete_effect;
-    TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
+    TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
     effect.complete = NULL;
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_INVALID;
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));

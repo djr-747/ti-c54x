@@ -103,6 +103,25 @@ check_ordinary_shapes_remain_valid(void)
 }
 
 static void
+check_write_with_completion_stays_valid(void)
+{
+    /* CMPS precedent: a WRITE with no RMW transform may carry a
+     * completion that stages at most one ordinary follow-on after
+     * the write resolves; any RMW transform with a completion
+     * stays invalid. */
+    ti_c54x_op_memory_effect write = ordinary_write_effect();
+    ti_c54x_op_memory_effect write_rmw = ordinary_write_effect();
+
+    write.complete = noop_complete;
+    TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
+
+    write_rmw.rmw_operation =
+        (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_OVERWRITE;
+    write_rmw.complete = noop_complete;
+    TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&write_rmw));
+}
+
+static void
 check_malformed_combinations_are_rejected(void)
 {
     ti_c54x_op_memory_effect effect = rmw_effect(
@@ -148,6 +167,7 @@ main(void)
 {
     check_valid_rmw_operations();
     check_ordinary_shapes_remain_valid();
+    check_write_with_completion_stays_valid();
     check_malformed_combinations_are_rejected();
     check_validation_is_non_mutating();
     return 0;

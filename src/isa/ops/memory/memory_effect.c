@@ -72,10 +72,13 @@ ti_c54x_op_memory_effect_access_shape_is_valid(
         }
         return effect->complete == NULL;
     }
+    /* A WRITE with no RMW transform carries the staged value word
+     * directly; a non-null completion additionally stages at most
+     * one ordinary follow-on effect after the write resolves,
+     * receiving the staged value word (CMPS TRN/TC precedent). */
     return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
            effect->rmw_operation ==
-               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
-           effect->complete == NULL;
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE;
 }
 
 static bool

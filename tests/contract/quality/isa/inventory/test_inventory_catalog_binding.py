@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),307)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 301)
+        self.assertEqual(len(bindings),308)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 302)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 43)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 264)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 265)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -107,6 +107,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "STL_ASM_SMEM_DIRECT",
                "STLM_SMEM_DIRECT",
                "LDM_SMEM_DIRECT",
+               "CMPS_SMEM_DIRECT",
                "ADD_LK_SHIFT", "ADD_LK_16",
                "SUB_LK_SHIFT", "SUB_LK_16",
                "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT",
@@ -170,7 +171,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "STL_SMEM_DIRECT",
                                                        "STL_ASM_SMEM_DIRECT",
                                                        "STLM_SMEM_DIRECT",
-                                                       "LDM_SMEM_DIRECT")
+                                                       "LDM_SMEM_DIRECT",
+                                                       "CMPS_SMEM_DIRECT")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
                     if binding["catalog_symbol"] in ("MAC_SMEM", "MPY_SMEM",
                                                        "MPYA_SMEM", "MAS_SMEM",

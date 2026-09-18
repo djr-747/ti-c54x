@@ -118,6 +118,7 @@ $(eval $(call ti_c54x_add_test,bitt_smem_metadata,isa/catalog,test_bitt_smem_met
 $(eval $(call ti_c54x_add_test,st_lk_smem_metadata,isa/catalog,test_st_lk_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_metadata,isa/catalog,test_st_t_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_metadata,isa/catalog,test_stlm_smem_direct_metadata.c))
+$(eval $(call ti_c54x_add_test,cmps_smem_direct_metadata,isa/catalog,test_cmps_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,ldm_smem_direct_metadata,isa/catalog,test_ldm_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,stl_smem_direct_metadata,isa/catalog,test_stl_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,stl_asm_smem_direct_metadata,isa/catalog,test_stl_asm_smem_direct_metadata.c))

@@ -236,21 +236,47 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
             }
             if (ti_c54x_effect_transaction_stage(
                     &pop_next_effect, &state->status, accumulators,
-                    t_register,
+                    t_register, &state->mmr_file,
                     &pop_ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
                 ti_c54x_effect_transaction_commit(
                     &pop_ordinary, &state->status, accumulators,
-                    t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
+                    t_register, &state->mmr_file) !=
+                TI_C54X_EFFECT_TRANSACTION_OK) {
                 transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
                 return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             }
         }
         return ti_c54x_memory_instruction_commit_pop_architecture(transaction, state, read_value_word);
     }
-    if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
-        (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
-         transaction->bus_transaction.request.access ==
-             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)) {
+    if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+        /* A WRITE carrying a completion (CMPS TRN/TC precedent)
+         * runs it after the write resolves with the staged value
+         * word, committing at most one ordinary follow-on before
+         * the architecture commit; failures fault transactionally
+         * exactly like the read-value completion path below. The
+         * paired RMW write leg never carries a completion. */
+        if (memory->complete != NULL) {
+            if (memory->complete(&transaction->candidate.instruction,
+                                 &transaction->candidate.input,
+                                 memory->value_word,
+                                 &next_effect) != TI_C54X_OP_STATUS_OK ||
+                ti_c54x_effect_transaction_stage(
+                    &next_effect, &state->status, accumulators,
+                    t_register, &state->mmr_file,
+                    &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
+                ti_c54x_effect_transaction_commit(
+                    &ordinary, &state->status, accumulators,
+                    t_register, &state->mmr_file) !=
+                    TI_C54X_EFFECT_TRANSACTION_OK) {
+                transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+        }
+        return ti_c54x_memory_instruction_commit_architecture(transaction, state);
+    }
+    if (ti_c54x_memory_instruction_memory_is_rmw(memory) &&
+        transaction->bus_transaction.request.access ==
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
         return ti_c54x_memory_instruction_commit_architecture(transaction, state);
     }
     if (memory->complete == NULL) {
@@ -273,10 +299,11 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
         }
         if (ti_c54x_effect_transaction_stage(
                 &next_effect, &state->status, accumulators, t_register,
-                &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
+                &state->mmr_file, &ordinary) !=
+                TI_C54X_EFFECT_TRANSACTION_OK ||
             ti_c54x_effect_transaction_commit(
-                &ordinary, &state->status, accumulators, t_register) !=
-                TI_C54X_EFFECT_TRANSACTION_OK) {
+                &ordinary, &state->status, accumulators, t_register,
+                &state->mmr_file) != TI_C54X_EFFECT_TRANSACTION_OK) {
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }

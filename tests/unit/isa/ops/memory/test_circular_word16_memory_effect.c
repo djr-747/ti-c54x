@@ -116,10 +116,12 @@ check_shape_rejections_are_transactional(void)
     effect.complete = NULL;
     TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
 
+    /* WRITE with no RMW transform may carry a follow-on completion
+     * (CMPS TRN/TC precedent). */
     effect = circular_effect(TI_C54X_INDIRECT_CIRCULAR_MOD8, UINT8_C(0),
                              TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
     effect.complete = complete_effect;
-    TI_C54X_TEST_CHECK(!ti_c54x_op_memory_effect_is_valid(&effect));
+    TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&effect));
     effect = circular_effect(TI_C54X_INDIRECT_CIRCULAR_MOD8, UINT8_C(0),
                              TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
     effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_INVALID;

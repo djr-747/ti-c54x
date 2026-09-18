@@ -158,6 +158,15 @@ TI_C54X_OPCODE_MASKED(ST_T_SMEM_DIRECT, st_t_smem_direct, 0x8C00, 0xFF80, 1, TI_
  * layout into the landed op_st_trn_smem_direct core. No ST_TRN
  * MOD rows exist yet, so the I-set half rejects in the leaf. */
 TI_C54X_OPCODE_MASKED(ST_TRN_SMEM_DIRECT, st_trn_smem_direct, 0x8D00, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_TRN_REGISTER)
+/* CMPS src,Smem (direct only): the signed 16-bit maximum of
+ * src(31:16) and src(15:0) stages into page-0 Smem over the
+ * 0x8E00 first word with S free and the I bit fixed zero (mask
+ * 0xFE80, 256 encodings) through the shared
+ * select/indirect/addr7 layout into the landed
+ * op_cmps_smem_direct core. The completion stages the
+ * TRN_SHIFT_WRITE follow-on. No CMPS MOD rows exist yet, so
+ * the I-set half rejects in the leaf. */
+TI_C54X_OPCODE_MASKED(CMPS_SMEM_DIRECT, cmps_smem_direct, 0x8E00, 0xFE80, 1, TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_TRN_REGISTER)
 /* STL src,Smem (syntax 1, direct only): accumulator low stages into
  * page-0 Smem over the 0x8000 first word with S free and the I bit
  * fixed zero (mask 0xFE80, 256 encodings) through the shared

@@ -211,6 +211,10 @@ typedef uint16_t ti_c54x_input_resource_mask;
 /* BRC arrives from the MMR file cell; SRCCD is its first consumer. */
 #define TI_C54X_INPUT_RESOURCES_BRC_REGISTER \
     ((ti_c54x_input_resource_mask)16384U)
+/* CMPS Smem bodies read one S-selected accumulator plus the MMR TRN cell. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_TRN_REGISTER \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_TRN_REGISTER))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_DP))

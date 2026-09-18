@@ -663,7 +663,8 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
 
         if (ti_c54x_effect_transaction_stage(
                 &effect, &cpu->arch_state.status, &cpu->accumulators,
-                &cpu->t_register, &transaction) !=
+                &cpu->t_register, &cpu->arch_state.mmr_file,
+                &transaction) !=
             TI_C54X_EFFECT_TRANSACTION_OK) {
             return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
@@ -677,7 +678,8 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
 
         if (ti_c54x_effect_transaction_commit(
                 &transaction, &cpu->arch_state.status, &cpu->accumulators,
-                &cpu->t_register) != TI_C54X_EFFECT_TRANSACTION_OK) {
+                &cpu->t_register, &cpu->arch_state.mmr_file) !=
+            TI_C54X_EFFECT_TRANSACTION_OK) {
             return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);

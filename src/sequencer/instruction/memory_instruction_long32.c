@@ -123,10 +123,10 @@ static ti_c54x_memory_instruction_status commit_ready(
             TI_C54X_OP_STATUS_OK ||
         ti_c54x_effect_transaction_stage(
             &next_effect, &state->status, accumulators, t_register,
-            &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
+            &state->mmr_file, &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
         ti_c54x_effect_transaction_commit(
-            &ordinary, &state->status, accumulators, t_register) !=
-            TI_C54X_EFFECT_TRANSACTION_OK) {
+            &ordinary, &state->status, accumulators, t_register,
+            &state->mmr_file) != TI_C54X_EFFECT_TRANSACTION_OK) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }

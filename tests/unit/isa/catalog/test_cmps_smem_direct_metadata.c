@@ -1,0 +1,99 @@
+/*
+ * Module contract
+ *
+ * Owns: executable proof that the CMPS_SMEM_DIRECT catalog row
+ * carries the 0x8E00 value under the 0xFE80 mask with one program
+ * word, the shared select/indirect/addr7 layout, accumulator-plus-TRN
+ * inputs, and unresolved repeatability, covering exactly the 256
+ * direct first-word encodings with no shadow word and no overlap
+ * into any neighboring row.
+ * Does not own: catalog generation, decode, memory addressing or
+ * buses, accumulator/status state, CPU sequencing, timing, or
+ * handler bodies.
+ */
+
+#include "../../../../src/isa/catalog/opcode_catalog.h"
+#include "../../../../src/isa/catalog/opcode_catalog_internal.h"
+#include "../../../support/test_harness.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+
+static const uint16_t CMPS_SMEM_DIRECT_VALUE = UINT16_C(0x8E00);
+static const uint16_t CMPS_SMEM_DIRECT_MASK = UINT16_C(0xFE80);
+
+static void
+test_metadata(void)
+{
+    const ti_c54x_opcode_metadata *metadata =
+        ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT);
+
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 303);
+    TI_C54X_TEST_CHECK(metadata != NULL);
+    TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT);
+    TI_C54X_TEST_CHECK(metadata->first_word_value == CMPS_SMEM_DIRECT_VALUE);
+    TI_C54X_TEST_CHECK(metadata->first_word_mask == CMPS_SMEM_DIRECT_MASK);
+    TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
+    TI_C54X_TEST_CHECK(metadata->operand_layout ==
+                       TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7);
+    TI_C54X_TEST_CHECK(metadata->repeatability ==
+                       TI_C54X_REPEATABILITY_UNRESOLVED);
+    TI_C54X_TEST_CHECK(metadata->input_resources ==
+                       TI_C54X_INPUT_RESOURCES_ACCUMULATORS_TRN_REGISTER);
+    TI_C54X_TEST_CHECK((uint16_t)~metadata->first_word_mask ==
+                       UINT16_C(0x017F));
+}
+
+static void
+test_exact_population(void)
+{
+    unsigned matches = 0U;
+    uint32_t raw;
+
+    for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
+        const uint16_t word = (uint16_t)raw;
+        const bool matches_row =
+            (uint16_t)(word & CMPS_SMEM_DIRECT_MASK) ==
+            CMPS_SMEM_DIRECT_VALUE;
+        ti_c54x_opcode_id id =
+            ti_c54x_opcode_catalog_lookup_first_word(word);
+
+        if (matches_row) {
+            ++matches;
+        }
+        TI_C54X_TEST_CHECK((id == TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT) ==
+                           matches_row);
+    }
+    TI_C54X_TEST_CHECK(matches == 256U);
+}
+
+static void
+test_row_boundaries(void)
+{
+    /* 0x8E00 and 0x8F7F are the direct slice ends (S=0/I=0/addr=0 and
+     * S=1/I=0/addr=0x7F); both neighbors are unbound. */
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0x8E00)) ==
+                       TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0x8F00)) ==
+                       TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0x8F7F)) ==
+                       TI_C54X_OPCODE_ID_CMPS_SMEM_DIRECT);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0x8DFF)) ==
+                       TI_C54X_OPCODE_ID_UNKNOWN);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0x8F80)) ==
+                       TI_C54X_OPCODE_ID_UNKNOWN);
+}
+
+int
+main(void)
+{
+    test_metadata();
+    test_exact_population();
+    test_row_boundaries();
+    return 0;
+}

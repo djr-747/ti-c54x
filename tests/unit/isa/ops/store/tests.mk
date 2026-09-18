@@ -25,6 +25,8 @@ $(eval $(call ti_c54x_add_test,st_trn_smem_direct_ops,isa/ops/store,test_st_trn_
 $(eval $(call ti_c54x_add_test,saccd_xmem_cond_ops,isa/ops/store,test_saccd_xmem_cond.c))
 $(eval $(call ti_c54x_add_test,srccd_xmem_cond_ops,isa/ops/store,test_srccd_xmem_cond.c))
 $(eval $(call ti_c54x_add_test,strcd_xmem_cond_ops,isa/ops/store,test_strcd_xmem_cond.c))
+# P3-S50 RED contract: CMPS max-select-store direct leaf.
+$(eval $(call ti_c54x_add_test,cmps_smem_direct_ops,isa/ops/store,test_cmps_smem_direct.c))
 # S36 RED contract: ST #lk Smem store effects.
 $(eval $(call ti_c54x_add_test,st_lk_smem_ops,isa/ops/store,test_st_lk_smem.c))
 $(eval $(call ti_c54x_add_test,standard_indirect_store_modes,isa/ops/store,test_standard_indirect_store_modes.c))

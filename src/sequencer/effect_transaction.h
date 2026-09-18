@@ -16,6 +16,7 @@
 
 #include "../isa/ops/op_effect.h"
 #include "../state/accumulator/accumulator.h"
+#include "../state/mmr_file.h"
 #include "../state/status/registers.h"
 #include "../state/temporary/t_register.h"
 
@@ -35,8 +36,14 @@ typedef enum ti_c54x_effect_transaction_target {
     TI_C54X_EFFECT_TRANSACTION_STATUS_FIELD = 1,
     TI_C54X_EFFECT_TRANSACTION_ACCUMULATOR = 2,
     TI_C54X_EFFECT_TRANSACTION_T_REGISTER = 3,
-    TI_C54X_EFFECT_TRANSACTION_STATUS_BIT = 4
+    TI_C54X_EFFECT_TRANSACTION_STATUS_BIT = 4,
+    TI_C54X_EFFECT_TRANSACTION_TRN_SHIFT = 5
 } ti_c54x_effect_transaction_target;
+
+typedef struct ti_c54x_effect_transaction_trn_shift_candidate {
+    ti_c54x_mmr_file_state mmr_file;
+    ti_c54x_status_register_state status;
+} ti_c54x_effect_transaction_trn_shift_candidate;
 
 typedef struct ti_c54x_effect_transaction_accumulator_candidate {
     ti_c54x_accumulator_state accumulators;
@@ -48,6 +55,7 @@ typedef union ti_c54x_effect_transaction_candidate {
     ti_c54x_status_register_state status_bit;
     ti_c54x_effect_transaction_accumulator_candidate accumulator;
     ti_c54x_t_register_state t_register;
+    ti_c54x_effect_transaction_trn_shift_candidate trn_shift;
 } ti_c54x_effect_transaction_candidate;
 
 typedef struct ti_c54x_effect_transaction {
@@ -64,6 +72,7 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
     const ti_c54x_status_register_state *status,
     const ti_c54x_accumulator_state *accumulators,
     const ti_c54x_t_register_state *t_register,
+    const ti_c54x_mmr_file_state *mmr_file,
     ti_c54x_effect_transaction *out);
 
 /*
@@ -75,7 +84,8 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_commit(
     const ti_c54x_effect_transaction *transaction,
     ti_c54x_status_register_state *status,
     ti_c54x_accumulator_state *accumulators,
-    ti_c54x_t_register_state *t_register);
+    ti_c54x_t_register_state *t_register,
+    ti_c54x_mmr_file_state *mmr_file);
 
 #ifdef __cplusplus
 }

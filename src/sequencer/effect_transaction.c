@@ -17,6 +17,7 @@
 #include "status/bit_effect_apply.h"
 #include "status/field_effect_apply.h"
 #include "temporary/effect_apply.h"
+#include "temporary/trn_shift_apply.h"
 
 #include <stddef.h>
 static ti_c54x_effect_transaction_status map_status_effect(
@@ -81,11 +82,28 @@ static ti_c54x_effect_transaction_status map_t_effect(
     }
 }
 
+static ti_c54x_effect_transaction_status map_trn_shift_effect(
+    ti_c54x_trn_shift_effect_status status)
+{
+    switch (status) {
+    case TI_C54X_TRN_SHIFT_EFFECT_OK:
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    case TI_C54X_TRN_SHIFT_EFFECT_INVALID_ARGUMENT:
+        return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+    case TI_C54X_TRN_SHIFT_EFFECT_UNSUPPORTED:
+        return TI_C54X_EFFECT_TRANSACTION_UNSUPPORTED;
+    case TI_C54X_TRN_SHIFT_EFFECT_INVALID_EFFECT:
+    default:
+        return TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT;
+    }
+}
+
 ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
     const ti_c54x_op_effect *effect,
     const ti_c54x_status_register_state *status,
     const ti_c54x_accumulator_state *accumulators,
     const ti_c54x_t_register_state *t_register,
+    const ti_c54x_mmr_file_state *mmr_file,
     ti_c54x_effect_transaction *out)
 {
     ti_c54x_effect_transaction_status result;
@@ -175,6 +193,25 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
         return TI_C54X_EFFECT_TRANSACTION_OK;
     }
 
+    case TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE:
+    {
+        ti_c54x_effect_transaction_trn_shift_candidate candidate;
+
+        if (mmr_file == NULL || status == NULL) {
+            return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+        }
+        candidate.mmr_file = *mmr_file;
+        candidate.status = *status;
+        result = map_trn_shift_effect(ti_c54x_trn_shift_effect_apply(
+            effect, &candidate.mmr_file, &candidate.status));
+        if (result != TI_C54X_EFFECT_TRANSACTION_OK) {
+            return result;
+        }
+        out->candidate.trn_shift = candidate;
+        out->target = TI_C54X_EFFECT_TRANSACTION_TRN_SHIFT;
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    }
+
     default:
         return TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT;
     }
@@ -184,7 +221,8 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_commit(
     const ti_c54x_effect_transaction *transaction,
     ti_c54x_status_register_state *status,
     ti_c54x_accumulator_state *accumulators,
-    ti_c54x_t_register_state *t_register)
+    ti_c54x_t_register_state *t_register,
+    ti_c54x_mmr_file_state *mmr_file)
 {
     if (transaction == NULL) {
         return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
@@ -218,6 +256,13 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_commit(
             return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
         }
         *t_register = transaction->candidate.t_register;
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    case TI_C54X_EFFECT_TRANSACTION_TRN_SHIFT:
+        if (status == NULL || mmr_file == NULL) {
+            return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+        }
+        *mmr_file = transaction->candidate.trn_shift.mmr_file;
+        *status = transaction->candidate.trn_shift.status;
         return TI_C54X_EFFECT_TRANSACTION_OK;
     default:
         return TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT;

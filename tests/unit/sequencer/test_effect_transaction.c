@@ -11,6 +11,7 @@
 #include "../../../src/isa/ops/op_effect.h"
 #include "../../../src/sequencer/effect_transaction.h"
 #include "../../../src/state/accumulator/accumulator.h"
+#include "../../../src/state/mmr_file.h"
 #include "../../../src/state/status/registers.h"
 #include "../../../src/state/temporary/t_register.h"
 #include "../../support/test_harness.h"
@@ -109,12 +110,12 @@ static void test_none_route_accepts_null_live_state(void)
 
     memset(&transaction, 0xa5, sizeof(transaction));
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &none, NULL, NULL, NULL, &transaction) ==
+                           &none, NULL, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(transaction.target ==
                        TI_C54X_EFFECT_TRANSACTION_NONE);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, NULL, NULL, NULL) ==
+                           &transaction, NULL, NULL, NULL, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
 }
 
@@ -129,7 +130,7 @@ static void test_status_route_snapshots_and_commits_only_status(void)
     ti_c54x_effect_transaction transaction;
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &effect, &status, NULL, NULL, &transaction) ==
+                           &effect, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(transaction.target ==
                        TI_C54X_EFFECT_TRANSACTION_STATUS_FIELD);
@@ -139,7 +140,7 @@ static void test_status_route_snapshots_and_commits_only_status(void)
                            &status, UINT16_C(0x0033)) ==
                        TI_C54X_STATUS_REGISTER_OK);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, &t_register) ==
+                           &transaction, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     check_status_dp(&status, UINT16_C(0x01a5));
     TI_C54X_TEST_CHECK(memcmp(&accumulators, &before_accumulators,
@@ -160,7 +161,7 @@ static void test_status_bit_route_snapshots_and_commits_only_status(void)
     ti_c54x_effect_transaction transaction;
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &effect, &status, NULL, NULL, &transaction) ==
+                           &effect, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(transaction.target ==
                        TI_C54X_EFFECT_TRANSACTION_STATUS_BIT);
@@ -170,7 +171,7 @@ static void test_status_bit_route_snapshots_and_commits_only_status(void)
     status.st1_known_mask =
         (uint16_t)(status.st1_known_mask & (uint16_t)~UINT16_C(0x0400));
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, &t_register) ==
+                           &transaction, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK_U64(status.st1,
                            (uint16_t)(before_status.st1 | UINT16_C(0x0400)));
@@ -197,7 +198,7 @@ static void test_accumulator_route_snapshots_and_commits_only_route_state(void)
     ti_c54x_effect_transaction transaction;
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &effect, &status, &accumulators, NULL,
+                           &effect, &status, &accumulators, NULL, NULL,
                            &transaction) == TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(transaction.target ==
                        TI_C54X_EFFECT_TRANSACTION_ACCUMULATOR);
@@ -209,7 +210,7 @@ static void test_accumulator_route_snapshots_and_commits_only_route_state(void)
     TI_C54X_TEST_CHECK(ti_c54x_status_register_write_c(&status, 0U) ==
                        TI_C54X_STATUS_REGISTER_OK);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, &t_register) ==
+                           &transaction, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
 
     {
@@ -241,14 +242,14 @@ static void test_t_route_snapshots_and_commits_only_t(void)
     ti_c54x_effect_transaction transaction;
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &effect, &status, NULL, &t_register, &transaction) ==
+                           &effect, &status, NULL, &t_register, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(transaction.target ==
                        TI_C54X_EFFECT_TRANSACTION_T_REGISTER);
     t_register.raw_value = UINT16_C(0x2222);
     t_register.known = true;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, &t_register) ==
+                           &transaction, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     TI_C54X_TEST_CHECK(t_register.raw_value == UINT16_C(0xbeef));
     TI_C54X_TEST_CHECK(t_register.known);
@@ -269,24 +270,24 @@ static void test_stage_failures_preserve_transaction_byte_for_byte(void)
     memset(&transaction, 0x5a, sizeof(transaction));
     before = transaction;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           NULL, &status, NULL, NULL, &transaction) ==
+                           NULL, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) == 0);
 
     forged.kind = (ti_c54x_op_effect_kind)UINT8_C(0x7f);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &forged, &status, NULL, NULL, &transaction) ==
+                           &forged, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) == 0);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &repeat, &status, NULL, NULL, &transaction) ==
+                           &repeat, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_UNSUPPORTED);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) == 0);
 
     {
         const ti_c54x_op_effect status_write = status_effect(1U);
         TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                               &status_write, NULL, NULL, NULL, &transaction) ==
+                               &status_write, NULL, NULL, NULL, NULL, &transaction) ==
                            TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
         TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) ==
                            0);
@@ -296,7 +297,7 @@ static void test_stage_failures_preserve_transaction_byte_for_byte(void)
         const ti_c54x_op_effect status_bit_write = status_bit_effect(
             TI_C54X_OP_STATUS_REGISTER_ST0, 16U, 1U);
         TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                               &status_bit_write, &status, NULL, NULL,
+                               &status_bit_write, &status, NULL, NULL, NULL,
                                &transaction) ==
                            TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT);
         TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) ==
@@ -307,7 +308,7 @@ static void test_stage_failures_preserve_transaction_byte_for_byte(void)
         const ti_c54x_op_effect status_bit_write = status_bit_effect(
             TI_C54X_OP_STATUS_REGISTER_ST1, 10U, 2U);
         TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                               &status_bit_write, &status, NULL, NULL,
+                               &status_bit_write, &status, NULL, NULL, NULL,
                                &transaction) ==
                            TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT);
         TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) ==
@@ -318,7 +319,7 @@ static void test_stage_failures_preserve_transaction_byte_for_byte(void)
         const ti_c54x_op_effect status_bit_write = status_bit_effect(
             TI_C54X_OP_STATUS_REGISTER_ST0, 0U, 1U);
         TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                               &status_bit_write, NULL, NULL, NULL,
+                               &status_bit_write, NULL, NULL, NULL, NULL,
                                &transaction) ==
                            TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
         TI_C54X_TEST_CHECK(memcmp(&transaction, &before, sizeof(transaction)) ==
@@ -341,14 +342,14 @@ static void test_commit_prevalidates_and_never_partially_mutates(void)
     const ti_c54x_op_effect t_write = t_register_effect(UINT16_C(0xaaaa));
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &status_write, &status, NULL, NULL, &transaction) ==
+                           &status_write, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     before_transaction = transaction;
     before_status = status;
     before_accumulators = accumulators;
     before_t = t_register;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, NULL, &accumulators, &t_register) ==
+                           &transaction, NULL, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
                               sizeof(transaction)) == 0);
@@ -358,14 +359,14 @@ static void test_commit_prevalidates_and_never_partially_mutates(void)
     TI_C54X_TEST_CHECK(memcmp(&t_register, &before_t, sizeof(t_register)) == 0);
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &accumulator_write, &status, &accumulators, NULL,
+                           &accumulator_write, &status, &accumulators, NULL, NULL,
                            &transaction) == TI_C54X_EFFECT_TRANSACTION_OK);
     before_transaction = transaction;
     before_status = status;
     before_accumulators = accumulators;
     before_t = t_register;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, NULL, &t_register) ==
+                           &transaction, &status, NULL, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
                               sizeof(transaction)) == 0);
@@ -375,14 +376,14 @@ static void test_commit_prevalidates_and_never_partially_mutates(void)
     TI_C54X_TEST_CHECK(memcmp(&t_register, &before_t, sizeof(t_register)) == 0);
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &t_write, &status, NULL, &t_register, &transaction) ==
+                           &t_write, &status, NULL, &t_register, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     before_transaction = transaction;
     before_status = status;
     before_accumulators = accumulators;
     before_t = t_register;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, NULL) ==
+                           &transaction, &status, &accumulators, NULL, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
                               sizeof(transaction)) == 0);
@@ -397,7 +398,7 @@ static void test_commit_prevalidates_and_never_partially_mutates(void)
     before_accumulators = accumulators;
     before_t = t_register;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, &status, &accumulators, &t_register) ==
+                           &transaction, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
                               sizeof(transaction)) == 0);
@@ -406,7 +407,7 @@ static void test_commit_prevalidates_and_never_partially_mutates(void)
                               sizeof(accumulators)) == 0);
     TI_C54X_TEST_CHECK(memcmp(&t_register, &before_t, sizeof(t_register)) == 0);
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           NULL, &status, &accumulators, &t_register) ==
+                           NULL, &status, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
 }
 
@@ -425,11 +426,11 @@ static void test_status_bit_commit_prevalidates_and_never_partially_mutates(
     const ti_c54x_t_register_state before_t = t_register;
 
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
-                           &effect, &status, NULL, NULL, &transaction) ==
+                           &effect, &status, NULL, NULL, NULL, &transaction) ==
                        TI_C54X_EFFECT_TRANSACTION_OK);
     before_transaction = transaction;
     TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
-                           &transaction, NULL, &accumulators, &t_register) ==
+                           &transaction, NULL, &accumulators, &t_register, NULL) ==
                        TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
     TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
                               sizeof(transaction)) == 0);
@@ -439,6 +440,109 @@ static void test_status_bit_commit_prevalidates_and_never_partially_mutates(
     TI_C54X_TEST_CHECK(memcmp(&t_register, &before_t, sizeof(t_register)) == 0);
 }
 
+static ti_c54x_op_effect trn_shift_effect(uint16_t trn_word, uint8_t tc_bit)
+{
+    ti_c54x_op_effect effect = {0};
+
+    effect.kind = TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE;
+    effect.payload.trn_shift_write.trn_word = trn_word;
+    effect.payload.trn_shift_write.tc_bit = tc_bit;
+    return effect;
+}
+
+static ti_c54x_mmr_file_state reset_mmr(void)
+{
+    ti_c54x_mmr_file_state file;
+
+    TI_C54X_TEST_CHECK(ti_c54x_mmr_file_reset(&file) ==
+                       TI_C54X_MMR_FILE_OK);
+    return file;
+}
+
+static void test_trn_shift_route_commits_trn_and_tc(void)
+{
+    ti_c54x_status_register_state status = reset_status();
+    ti_c54x_accumulator_state accumulators = reset_accumulators();
+    ti_c54x_t_register_state t_register = known_t(UINT16_C(0x4444));
+    ti_c54x_mmr_file_state mmr_file = reset_mmr();
+    const ti_c54x_accumulator_state before_accumulators = accumulators;
+    const ti_c54x_t_register_state before_t = t_register;
+    const ti_c54x_op_effect effect = trn_shift_effect(UINT16_C(0x8642),
+                                                     UINT8_C(1));
+    ti_c54x_effect_transaction transaction;
+    uint16_t trn_word = UINT16_C(0);
+
+    TI_C54X_TEST_CHECK(ti_c54x_mmr_file_write_trn(
+                           &mmr_file, UINT16_C(0x1234)) ==
+                       TI_C54X_MMR_FILE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
+                           &effect, &status, &accumulators, &t_register,
+                           &mmr_file, &transaction) ==
+                       TI_C54X_EFFECT_TRANSACTION_OK);
+    TI_C54X_TEST_CHECK(transaction.target ==
+                       TI_C54X_EFFECT_TRANSACTION_TRN_SHIFT);
+
+    /* The candidate is independent of the live source after staging. */
+    TI_C54X_TEST_CHECK(ti_c54x_mmr_file_write_trn(
+                           &mmr_file, UINT16_C(0xFFFF)) ==
+                       TI_C54X_MMR_FILE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
+                           &transaction, &status, &accumulators,
+                           &t_register, &mmr_file) ==
+                       TI_C54X_EFFECT_TRANSACTION_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_mmr_file_read_trn(&mmr_file, &trn_word) ==
+                       TI_C54X_MMR_FILE_OK);
+    TI_C54X_TEST_CHECK(trn_word == UINT16_C(0x8642));
+    TI_C54X_TEST_CHECK(ti_c54x_status_register_read_tc(&status).raw_value ==
+                       UINT8_C(1));
+    TI_C54X_TEST_CHECK(memcmp(&accumulators, &before_accumulators,
+                              sizeof(accumulators)) == 0);
+    TI_C54X_TEST_CHECK(memcmp(&t_register, &before_t,
+                              sizeof(t_register)) == 0);
+}
+
+static void test_trn_shift_rejects_missing_mmr_and_bad_bit(void)
+{
+    ti_c54x_status_register_state status = reset_status();
+    ti_c54x_accumulator_state accumulators = reset_accumulators();
+    ti_c54x_t_register_state t_register = known_t(UINT16_C(0x4444));
+    ti_c54x_mmr_file_state mmr_file = reset_mmr();
+    const ti_c54x_op_effect effect = trn_shift_effect(UINT16_C(0x8642),
+                                                     UINT8_C(1));
+    const ti_c54x_op_effect bad_bit = trn_shift_effect(UINT16_C(0x8642),
+                                                      UINT8_C(2));
+    ti_c54x_effect_transaction transaction;
+    ti_c54x_effect_transaction before_transaction;
+
+    memset(&transaction, 0xa5, sizeof(transaction));
+    before_transaction = transaction;
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
+                           &effect, &status, &accumulators, &t_register,
+                           NULL, &transaction) ==
+                       TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
+                              sizeof(transaction)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
+                           &bad_bit, &status, &accumulators, &t_register,
+                           &mmr_file, &transaction) ==
+                       TI_C54X_EFFECT_TRANSACTION_INVALID_EFFECT);
+    TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
+                              sizeof(transaction)) == 0);
+
+    /* A staged TRN_SHIFT transaction commits only with live MMR. */
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_stage(
+                           &effect, &status, &accumulators, &t_register,
+                           &mmr_file, &transaction) ==
+                       TI_C54X_EFFECT_TRANSACTION_OK);
+    before_transaction = transaction;
+    TI_C54X_TEST_CHECK(ti_c54x_effect_transaction_commit(
+                           &transaction, &status, &accumulators,
+                           &t_register, NULL) ==
+                       TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(memcmp(&transaction, &before_transaction,
+                              sizeof(transaction)) == 0);
+}
+
 int main(void)
 {
     test_none_route_accepts_null_live_state();
@@ -446,6 +550,8 @@ int main(void)
     test_status_bit_route_snapshots_and_commits_only_status();
     test_accumulator_route_snapshots_and_commits_only_route_state();
     test_t_route_snapshots_and_commits_only_t();
+    test_trn_shift_route_commits_trn_and_tc();
+    test_trn_shift_rejects_missing_mmr_and_bad_bit();
     test_stage_failures_preserve_transaction_byte_for_byte();
     test_commit_prevalidates_and_never_partially_mutates();
     test_status_bit_commit_prevalidates_and_never_partially_mutates();

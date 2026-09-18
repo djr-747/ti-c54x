@@ -2425,9 +2425,11 @@
       "table_ordinal": 1,
       "mnemonic": "CMPS",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "CMPS_SMEM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-21-02",
@@ -4596,6 +4598,12 @@
       "form_id": "FORM-T2-21-04",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "CMPS_SMEM_DIRECT",
+      "form_id": "FORM-T2-21-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
     }
   ]
 }

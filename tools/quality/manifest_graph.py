@@ -17,7 +17,13 @@ from pathlib import Path, PurePosixPath
 
 # ".muse" holds agent worktrees and session state: never deliverable content.
 # Ignoring it keeps the gate green while isolated leaf workers are in flight.
+# "build-*" covers the per-slice build trees (sanitizer/red/bench/cmake
+# variants): regenerable outputs that never carry deliverable manifests.
 IGNORED_TREE_NAMES = {".git", "build", "build-fast", "build-cmake", "generated", "external", ".muse"}
+
+
+def _ignored_dir_name(name: str) -> bool:
+    return name in IGNORED_TREE_NAMES or name.startswith("build-") or name.startswith("build_")
 
 
 @dataclass(frozen=True)
@@ -37,14 +43,26 @@ class MakeTestRegistration:
 
 
 def repo_files(root: Path, suffix: str) -> list[Path]:
+    # Prune ignored trees during traversal (never descend into them):
+    # a post-filter still walks gigabytes of per-slice build output.
     files: list[Path] = []
-    for path in root.rglob(f"*{suffix}"):
-        if not path.is_file():
+    stack = [root]
+    while stack:
+        directory = stack.pop()
+        try:
+            entries = sorted(directory.iterdir(), key=lambda item: item.name)
+        except OSError:
             continue
-        relative = path.relative_to(root)
-        if any(part in IGNORED_TREE_NAMES for part in relative.parts):
-            continue
-        files.append(path)
+        for entry in entries:
+            if entry.is_symlink():
+                if entry.is_file() and entry.name.endswith(suffix):
+                    files.append(entry)
+                continue
+            if entry.is_dir():
+                if not _ignored_dir_name(entry.name):
+                    stack.append(entry)
+            elif entry.is_file() and entry.name.endswith(suffix):
+                files.append(entry)
     return sorted(files, key=lambda item: item.relative_to(root).as_posix())
 
 

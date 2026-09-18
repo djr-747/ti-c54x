@@ -30,7 +30,12 @@
  * non-delayed), and the copied 16-bit pmad; AR writeback and the
  * taken ? pmad : sequential PC commit belong to the CPU retirement
  * route, which advances the pending countdown with the taken
- * outcome as the redirect flag. Callers own each effect object.
+ * outcome as the redirect flag.
+ * TRN_SHIFT_WRITE carries one copied 16-bit TRN word with its
+ * companion TC bit (both derive from one taken outcome at the
+ * leaf); MMR TRN-cell mutation and the ST0 TC-bit commit belong
+ * to the ordinary effect transaction. Callers own each effect
+ * object.
  */
 
 #include <stdbool.h>
@@ -54,7 +59,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_PC_WRITE = 7,
     TI_C54X_OP_EFFECT_DELAYED_PC_WRITE = 8,
     TI_C54X_OP_EFFECT_BRANCH_AUXILIARY = 9,
-    TI_C54X_OP_EFFECT_CONDITIONAL_SKIP = 10
+    TI_C54X_OP_EFFECT_CONDITIONAL_SKIP = 10,
+    TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE = 11
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -115,6 +121,11 @@ typedef struct ti_c54x_op_t_register_write_effect {
     uint16_t raw_value;
 } ti_c54x_op_t_register_write_effect;
 
+typedef struct ti_c54x_op_trn_shift_write_effect {
+    uint16_t trn_word;
+    uint8_t tc_bit;
+} ti_c54x_op_trn_shift_write_effect;
+
 typedef struct ti_c54x_op_pc_write_effect {
     uint16_t pmad;
 } ti_c54x_op_pc_write_effect;
@@ -147,6 +158,7 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_delayed_pc_write_effect delayed_pc_write;
     ti_c54x_op_branch_auxiliary_effect branch_auxiliary;
     ti_c54x_op_conditional_skip_effect conditional_skip;
+    ti_c54x_op_trn_shift_write_effect trn_shift_write;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {
