@@ -1,4 +1,4 @@
-### P3-S51: FRAME stack-pointer-offset slice (planned)
+### P3-S51: FRAME stack-pointer-offset slice (implemented; local verification green)
 
 Opens table 2-17 (`FORM-T2-17-01`, first of its table):
 `FRAME K` (SPRU172C p. 4-60) adds the signed 8-bit short-immediate

@@ -13730,3 +13730,52 @@ entries are not rewritten after publication.
   worker worktrees under `.muse/worktrees/` await GC.
 - Split commit discipline: impl `127b685`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S51 FRAME stack-pointer-offset slice (slice 80)
+
+- Scope: FRAME K (FORM-T2-17-01, first of table 2-17): signed
+  8-bit K in bits 7:0 stages one SP_WRITE carrying
+  (SP + K) mod 65536, committed through checked arch state
+  (marks SP known) on a run.c ordinary-path arm ahead of the
+  effect-transaction stage, which admits no SP target. New
+  FRAME_K8 layout, row 0xEE00/0xFF00 (256 encodings),
+  STACK_POINTER input, repeatability UNRESOLVED (Table 2-28
+  lists no FRAME form). Unknown SP rejects transactionally
+  (INVALID_OPERAND at the leaf, INVALID_STATE at the CPU).
+- Validation: 5 new tests (catalog 256-population + neighbors,
+  decode + K extraction, 4-path checked/trusted/dispatch parity
+  with 8 K/SP vectors incl. both wraps, apply value/knownness/
+  atomicity, CPU retire/wrap/unknown-SP). Full `make test`
+  exit 0 under default ASan/UBSan; 286 contract tests OK;
+  evidence gate 791/647; cmake-build + CTest 5/5; harness
+  synthetic NOP/NOP/FRAME run retires 2 then stops
+  INVALID_STATE on reset-unknown SP with 3/3 coverage.
+- Decisions: (1) SP commits through a dedicated run.c arm
+  (repeat-route placement pattern), not the shared
+  effect-transaction, whose signatures the six memory-commit
+  call sites share. (2) Review fix: bridge resolves before any
+  SP mutation (ordinary path stages before its bridge check;
+  the arm now matches). (3) Uninitialized effect padding broke
+  four-path memcmp parity; the leaf memsets the staged effect.
+  (4) Catalog handler token is `frame_k` (dispatch derives
+  `ti_c54x_op_frame_k`); first write used `frame` and failed
+  to link. (5) Commit message for `d7fb653` carries a garbled
+  "UNIMPLEMENTED-adjacent UNRESOLVED" phrase; the row is
+  plain UNRESOLVED per the W52A rule — message left as-is,
+  recorded here.
+- Near-misses: BANZD/RPT_K/RCD/RETD decode tests each lost one
+  unknown-mask lane into 0xEE00 and now pin FRAME siblings;
+  spaced ID_COUNT pins 303 to 304 (plus nospace variants);
+  population pins 35081 to 35337 (three spellings); bindings
+  308 to 309 with FRAME in the frozen SUBSET set
+  (IMMEDIATE_K branch shared with RPT_K); SUBSET 265 to 266;
+  percents to 73.659 with 151/205; catalog_rows 302 to 303.
+- Knobs: none added, changed, or retired (harness takes argv
+  config; no environment reads).
+- Follow-up: 54 unbound forms remain (table 2-17 needs the
+  S52 pair-leg slice: PSHD/POPD/PSHM/POPM direct, doc planned);
+  RESET slice unblocked with TI-pinned opcode 0xF7E0 and
+  INELIGIBLE evidence; harness DATA/IO report fields live but
+  unreachable from cold reset until register seeding exists.
+- Split commit discipline: impl `d7fb653`, hosted harness
+  `3f987e6`, this ledger-only follow-up.
