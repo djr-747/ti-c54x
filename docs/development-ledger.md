@@ -13188,3 +13188,42 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)`.
+
+## 2026-09-18 — P3-S40 W7 batch-4 LTD Smem row (slice 69)
+
+- Landed: fourth managed fan-out — one TI-pinned row (LTD
+  `0x4C00/0xFF00`) on the existing indirect/addr7 layout,
+  `UNRESOLVED` repeatability (LD_T precedent). Leaf built
+  row-less by an isolated worker (W7-LTD) against a maintainer
+  TI brief (Z-delay: T = Smem plus the Smem word to DATA
+  Smem+1, worked example hand-verified), merged with a row-id
+  flip, dispatch include, manifests, 3 leaf/metadata/decode
+  suites, inventory flip (`FORM-T2-19-21` to
+  `COMMON_CANDIDATE`/`SUBSET` +
+  `DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3` binding), 7
+  evidence records (1 TI + 3 req + 3 test), index rows,
+  frozen-count bumps (291 rows, 297 bindings, 32,265 lookup,
+  257 SUBSET, 139/205 at 67.805%, 754 requirements, 610
+  tests), README/plan/slice.
+- Validation: `make build` clean, `make test` exit 0 (584 C
+  binaries ok, 286 Python tests), `check_evidence.py` PASS
+  (754/610), `check_isa_inventory.py` exit 0 (139/205, strict
+  40/205), lookup regen pure (+256), sanitizer rebuild of the
+  leaf exit 0.
+- Decisions: LTD composes two existing effect shapes (MACD
+  delay write-back staging + LD_T T-write completion), so no
+  new seam was needed. The new words collided with three old
+  probes (BANZ `0x2000` flip, LD_SMEM_SHIFT16 `0x0800` flip in
+  both metadata and decode) — all converted to pinned LTD
+  siblings. Six C population pins were stale binaries, fixed
+  by rebuild.
+- Near-misses: CMPS assessed for this batch and deferred —
+  its TRN write is a genuine mini-seam (TRN exists in the MMR
+  file with no architectural writer yet).
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 66 unbound forms; W7 fan-out
+  continues. Wave-7 plan doc still untracked.
+- Split commit discipline: impl `66b8ebe`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)`.
