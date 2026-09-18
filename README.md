@@ -34,10 +34,11 @@ accumulator rows from managed leaf fan-out; S38 `ADDC`/`ADDS`/`SUBC` Smem rows
 from managed leaf fan-out; S39 `SFTA` accumulator row from managed leaf
 fan-out; S40 `LTD` Smem row from managed leaf fan-out; S42 `DELAY` Smem row
 from managed leaf fan-out; S43 `ST T` direct row from managed leaf fan-out;
-S44 `TRN` input seam; S45 `ST TRN` direct row from managed leaf fan-out).
+S44 `TRN` input seam; S45 `ST TRN` direct row from managed leaf fan-out;
+S46 `STL` direct rows from managed leaf fan-out).
 
-- 294 runnable catalog rows under 32,777 populated first-word lookup entries.
-  Inventory coverage is 142/205 forms SUBSET-or-better (69.268%) and 40/205
+- 296 runnable catalog rows under 33,033 populated first-word lookup entries.
+  Inventory coverage is 144/205 forms SUBSET-or-better (70.244%) and 40/205
   strict-complete (19.512%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release

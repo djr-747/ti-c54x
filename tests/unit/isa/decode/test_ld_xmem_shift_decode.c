@@ -155,12 +155,13 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFE00 leaves D(8), XXXX(7:4), and SHFT(3:0) variable.
      * Flipping fixed bit 13 lands on the P3-S3g MAC_DUAL_M0_M0
-     * sibling and flipping fixed bit 10 lands on the P3-S28
-     * ADD_XMEM sibling (pinned below); all other fixed-bit 15:9
-     * flips miss every catalog row. */
+     * sibling, flipping fixed bit 10 lands on the P3-S28
+     * ADD_XMEM sibling, and flipping fixed bit 12 lands on the
+     * P3-S46 STL_ASM_SMEM_DIRECT sibling (pinned below); all
+     * other fixed-bit 15:9 flips miss every catalog row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0200), UINT16_C(0x0800),
-        UINT16_C(0x1000), UINT16_C(0x4000),
+        UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
     /* 0xB400 (fixed bit 13 set) is the MAC_DUAL_M0_M0 encoding with
@@ -187,6 +188,19 @@ test_fixed_bit_near_misses(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(add_xmem_sibling.id ==
                            TI_C54X_OPCODE_ID_ADD_XMEM);
+    }
+
+    /* 0x8400 (fixed bit 12 cleared) is the STL_ASM_SMEM_DIRECT
+     * encoding with S=0 (src A), I=0, dma=0. */
+    {
+        const ti_c54x_decode_result stl_asm_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_XMEM_SHIFT_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(stl_asm_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(stl_asm_sibling.id ==
+                           TI_C54X_OPCODE_ID_STL_ASM_SMEM_DIRECT);
     }
 
     for (size_t index = 0U;

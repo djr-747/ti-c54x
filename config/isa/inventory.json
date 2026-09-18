@@ -2360,9 +2360,11 @@
       "table_ordinal": 10,
       "mnemonic": "STL",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "STL_SMEM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-20-11",
@@ -2371,9 +2373,11 @@
       "table_ordinal": 11,
       "mnemonic": "STL",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "STL_ASM_SMEM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-20-12",
@@ -4538,6 +4542,18 @@
     {
       "catalog_symbol": "ST_TRN_SMEM_DIRECT",
       "form_id": "FORM-T2-22-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "STL_SMEM_DIRECT",
+      "form_id": "FORM-T2-20-10",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "STL_ASM_SMEM_DIRECT",
+      "form_id": "FORM-T2-20-11",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0"
     }
