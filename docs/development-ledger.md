@@ -13015,3 +13015,16 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S36 Smem-lk test/store layout seam (slice 64)
+
+- Landed: shared two-word `INDIRECT_ADDR7_EXTENSION16` layout
+  (I/A from word 0, copied lk from word 1) as the last layout
+  id with plan and resolve wiring plus a field-extraction
+  proof suite. No rows yet. Full `make test` green (exit 0).
+- Decisions: three plain operands (no Smem cookie — only the
+  MAC form needs the packet-saving cookie); T neither read nor
+  written per the BITF/CMPM/ST sections. Leaves land via
+  managed fan-out on this base.
+- Follow-up: BITF/CMPM/BITT/ST-lk rows plus leaves (S36
+  completion); BIT Xmem dual form stays deferred.
