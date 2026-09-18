@@ -13580,3 +13580,50 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `71e6006`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S48 conditional-store seam (slice 77)
+
+- Scope: maintainer arch seam for the class-15 SACCD/SRCCD/STRCD
+  leaves (FORM-T2-21-02/03/04): BRC_REGISTER input (bit 16384,
+  MMR cell, probes to 0x8000), store-owned 4-bit cond evaluator
+  (`op_store_cond_common`), OVERWRITE/WRITEBACK RMW operations,
+  SELECT_DUAL_XMOD_XAR_COND4 layout. No catalog row, handler,
+  inventory form, or CPU retirement change.
+- Validation: `make build` clean, `make test` exit 0 (full gate:
+  source boundaries PASS over 1104 files, observer artifact OK),
+  new suites `store_cond_evaluate_ops` and
+  `rmw_overwrite_writeback_transform` pass in-tree,
+  `check_evidence.py` PASS (779 requirements, 635 tests),
+  `check_isa_inventory.py` exit 0 (catalog 298 rows, 304
+  bindings, 33,801 lookup, 146/205 families at 71.220%,
+  strict 40/205 — all unchanged from the S47 freeze).
+- Decisions: (1) TI ground truth fetched from SPRU172C
+  (pp. 4-152/4-165/4-186): cond A-codes are `0xxx` and B-codes
+  `1xxx` — the planned slice's `01xx`/`10xx` was wrong and was
+  corrected in the slice, evaluator, and tests before landing.
+  (2) OVERWRITE-on-true / WRITEBACK-on-false is not an
+  approximation: the TI execution pages prescribe exactly
+  "reads Xmem and writes the value back ... always read and
+  updated". (3) Evaluator is store-owned and dependency-free
+  rather than delegating to `branch_cond_evaluate` because no
+  store-to-branch include exists. (4) Split decision:
+  `operand_layout_sets.c` hit 818 lines on the COND4 addition,
+  so the branch/XC tables moved to
+  `operand_layout_sets_branch.c` (757/87). (5) S-bit
+  convention S=0→A/S=1→B confirmed against the STL direct
+  sibling, not assumed from TI.
+- Near-misses: (1) new test initially called a file-static
+  RMW validator — acceptance is proven through the transform
+  instead. (2) Contract assertion first copied S44's size
+  deltas; measured S48 deltas are snapshot stays 72 (LP64),
+  root 392→392 (LP64) and 356→360 (ILP32) — fixed before
+  committing. (3) Layout test comment mislabeled the 0x9D5B
+  vector as SACCD shape; it is SRCCD-family — fixed.
+- Knobs: none added, changed, or retired.
+- Follow-up: S49 leaves (SACCD must shift `src << (ASM-16)`
+  before staging per TI "affected by ASM and SXM"; SRCCD/STRCD
+  TI `*AR5-,AGT` vectors pinned in the slice); 59 unbound forms
+  remain. Stale worker worktrees under `.muse/worktrees/`
+  await GC.
+- Split commit discipline: impl `99c535f`, this ledger-only
+  follow-up.
