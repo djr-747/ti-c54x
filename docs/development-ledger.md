@@ -13522,3 +13522,61 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `4ebd543`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S47 W7 batch-9 STLM/LDM direct rows (slice 76)
+
+- Landed: direct slices of TI STLM src,MMR (FORM-T2-20-13,
+  0x8800/0xFE80, SPRU172C STLM p. 4-175) and LDM MMR,dst
+  (FORM-T2-19-18, 0x4800/0xFE80, SPRU172C LDM p. 4-73) on a
+  fixed-zero I bit. S/D@8 select over the existing
+  SELECT_INDIRECT_ADDR7 layout (no layout seam); 7-bit
+  DP-independent page-0 MMR address; UNRESOLVED
+  repeatability. STLM stages a DATA WRITE of accumulator low
+  with null completion (worked example STLM A,BRC; register
+  routing downstream at the bus, as for STM). LDM stages a
+  DATA READ whose static completion zero-extends into
+  dst(15:0) and clears dst(39:16) (worked examples LDM AR4,A
+  and LDM 060h,B; LDU completion precedent; first
+  DIRECT-addressing load; SXM untouched). I=1 rejects as
+  INVALID_OPERAND (indirect MMR deferred). Two isolated
+  workers built the leaves row-less in parallel (W9A STLM,
+  W9B LDM, disjoint files, no commits) and merged with no
+  fixes — both applied the MOD-rows truth lesson
+  unprompted. Maintainer wired both rows, lookup regen (+512
+  pure, no collisions), dispatch includes, store/load
+  sources, six suites plus registrations, inventory flips
+  plus bindings, two new TI records, 6 req plus 6 test
+  records, index rows, README, and frozen-count bumps (298
+  rows, 304 bindings, 33,801 lookup, 146/205 at 71.220%,
+  strict 40/205, 777 requirements, 633 tests). Slice doc born
+  `(implemented; local verification green)` in the impl
+  commit.
+- Validation: `make build` clean, `make test` exit 0 (full
+  gate), six new suites pass in-tree,
+  `check_evidence.py` PASS (777/633),
+  `check_isa_inventory.py` exit 0 (146/205, strict 40/205).
+- Decisions: SXM kept out of the LDM row (TI "not affected
+  by SXM", LDU precedent). New TI records use manual
+  locators (chapter/section/pages), matching the registry
+  convention.
+- Near-misses: (1) workers guessed COUNT 297/298; actual
+  299 (298 rows + 1) — probe before asserting, especially
+  with two rows landing at once. (2) S46 correction: its
+  README shipped the projected 33,033 lookup instead of the
+  actual 33,289 (comma-form miss in the fix script); fixed
+  here to 33,801.
+- Open question (follow-up, not blocking): I=0 direct slices
+  stage DP-independent absolute page-0 (DIRECT_PAGE0,
+  project-wide convention across ADD/SUB/ST/LTD rows) while
+  TI direct addressing is DP-relative; only the STH family
+  models DP via DIRECT_DP. DP-relative direct for the I=0
+  slices remains future work.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 59 unbound forms; W7 fan-out
+  continues (conditional stores, filter ops, dual-memory
+  seam, control/interrupt/stack). Wave-7 plan doc still
+  untracked; stale worker worktrees under `.muse/worktrees/`
+  await GC.
+- Split commit discipline: impl `71e6006`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
