@@ -12883,3 +12883,54 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S33 MPY syn3 / MAC syn4 Smem-lk rows with layout seam (slice 61)
+
+- Commit `b8f4fc7` lands Seam 3 end to end: the shared two-word
+  layouts DESTINATION_INDIRECT_ADDR7_EXTENSION16 (D/I/addr7 +
+  lk) and SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16
+  (S/D/Smem-cookie + lk, the cookie keeping trusted packets at
+  four operands), op_mpy_smem_lk (STORE completion) and
+  op_mac_smem_lk (ADD completion with S/D split knownness)
+  leaves with plain plus trusted entries and read-phase T load
+  through the multiply core, MASKED rows MPY_SMEM_LK
+  (0x6200/0xFE00, TI SPRU172C section MPY syntax 3) and
+  MAC_SMEM_LK (0x6400/0xFC00, section MAC syntax 4), both
+  ELIGIBLE with STATUS_FRCT_OVM and
+  ACCUMULATORS_STATUS_FRCT_OVM inputs, regenerated first-word
+  lookup (+1,536 encodings, zero neighbor moves), and
+  FORM-T2-03-04/FORM-T2-04-03 bound at SUBSET with the rows
+  (covered 119/205, 58.049%). Full `make test` green (exit 0);
+  evidence PASS at 459 evidence, 711 requirements, 568 tests;
+  sanitizer rebuild clean; generator --check and diff --check
+  clean. The commit also refreshes the README snapshot to
+  P3-S33 with current counts (277 rows, 29,431 entries).
+- Decisions: Table 6-18 omits every MPY/MAC form, so both rows
+  are ELIGIBLE (the MAC_LK/MPY_LK UNRESOLVED rows are a
+  separate conservative choice for T-operand forms, not a
+  precedent for Smem-reading forms). TI pins no R bit in
+  either opcode space, so the unrounded leaves cover both rows
+  fully. The new sets split into
+  operand_layout_sets_smem_lk.c (owned file) to keep
+  operand_layout_sets.c under the 800-line limit (791 after
+  the move). New STATUS_FRCT_OVM combo added because no honest
+  existing macro covers FRCT/OVM without accumulators (T is
+  written, never read; Smem arrives on the bus).
+- Near-misses worth recording: (1) a 40-bit test literal needs
+  10 hex digits — 0xFFFFFFFFFFFE is 48 bits, the -2 product is
+  0xFFFFFFFFFE (caught by the first MPY syn3 run); (2) four
+  established decode/metadata tests pin fixed-bit flips as
+  UNKNOWN that the new rows legitimately claim (LD_SMEM_SHIFT16
+  0x2000, BANZ 0x0800, BANZD 0x0800, ST_IMMEDIATE 0x1000, STM
+  0x1000, plus ST_IMMEDIATE metadata 0x1000) — each converted
+  to a pinned cross-row sibling assertion, never deleted;
+  sweeping every test binary catches them all in one pass;
+  (3) sibling bindings need DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3,
+  not the narrower indirect-only token.
+- Follow-up: all arch seams are now complete (Seam 1 syn4
+  SHIFT, Seam 2 RMW-ADD, Seam 3 Smem-lk); next is managed leaf
+  fan-out through agent worktrees.
+- Split commit discipline: impl `b8f4fc7`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
