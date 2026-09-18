@@ -693,6 +693,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S41: single-word Smem delay write-back seam (implemented; local verification green)](plan/p3-s41-single-word-smem-delay-seam-slice.md)
 
+- [P3-S42: W7 batch-5 DELAY Smem row (implemented; local verification green)](plan/p3-s42-w7-delay-smem-row-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

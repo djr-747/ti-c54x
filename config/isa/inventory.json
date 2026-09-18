@@ -964,9 +964,11 @@
       "table_ordinal": 4,
       "mnemonic": "DELAY",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "DELAY_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-06-05",
@@ -4514,6 +4516,12 @@
     {
       "catalog_symbol": "LTD_SMEM",
       "form_id": "FORM-T2-19-21",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "DELAY_SMEM",
+      "form_id": "FORM-T2-06-04",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }

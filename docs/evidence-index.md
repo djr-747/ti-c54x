@@ -201,6 +201,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P2-W34-LDU-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w34-fixed-mod2-ldu-vertical-slice.md` anchor `P2-W34: fixed-MOD2 LDU vertical slice (planned)` |
 | `E-TI-C54X-SPRU172C-S4-LD-T-P4-70-4-71` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LD, `4-70`–`4-71` |
 | `E-TI-C54X-SPRU172C-S4-LTD-P4-81` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LTD, `4-81` |
+| `E-TI-C54X-SPRU172C-S4-DELAY-P4-41` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DELAY, `4-41` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-LD-T-REPEATABILITY-BOUNDARY-P2-19-2-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W35-LD-T-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w35-fixed-mod2-ld-to-t-vertical-slice.md` anchor `P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)` |
 | `E-TI-C54X-SPRU172C-S4-ST-IMMEDIATE-SMEM-P4-166-4-167` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §Store T/TRN/immediate, `4-166`–`4-167` |
@@ -1229,6 +1230,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-LTD-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-LTD-P4-81` | `T-COMMON-LTD-SMEM-CATALOG` |
 | `REQ-COMMON-LTD-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-LTD-P4-81` | `T-COMMON-LTD-SMEM-DECODE` |
 | `REQ-COMMON-LTD-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-LTD-P4-81` | `T-COMMON-LTD-SMEM-EFFECTS` |
+| `REQ-COMMON-DELAY-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-DELAY-P4-41` | `T-COMMON-DELAY-SMEM-CATALOG` |
+| `REQ-COMMON-DELAY-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-DELAY-P4-41` | `T-COMMON-DELAY-SMEM-DECODE` |
+| `REQ-COMMON-DELAY-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/load/` | `E-TI-C54X-SPRU172C-S4-DELAY-P4-41` | `T-COMMON-DELAY-SMEM-EFFECTS` |
 | `REQ-COMMON-ACCUMULATOR-OVERFLOW-WRITE-0` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/accumulator/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` |
 | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105` | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` |
 | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P3-S3-PLAN-ANCHOR`, `E-PROJECT-P3-S3D-MPYA-ACTIVATION` | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` |
@@ -1881,6 +1885,9 @@ exist in the repository.
 | `T-COMMON-LTD-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_ltd_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ltd_smem_metadata"}` | `REQ-COMMON-LTD-SMEM-CATALOG` |
 | `T-COMMON-LTD-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_ltd_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ltd_smem_decode"}` | `REQ-COMMON-LTD-SMEM-DECODE` |
 | `T-COMMON-LTD-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_ltd_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.ltd_smem_ops"}` | `REQ-COMMON-LTD-SMEM-EFFECTS` |
+| `T-COMMON-DELAY-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_delay_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.delay_smem_metadata"}` | `REQ-COMMON-DELAY-SMEM-CATALOG` |
+| `T-COMMON-DELAY-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_delay_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.delay_smem_decode"}` | `REQ-COMMON-DELAY-SMEM-DECODE` |
+| `T-COMMON-DELAY-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/load/test_delay_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.delay_smem_ops"}` | `REQ-COMMON-DELAY-SMEM-EFFECTS` |
 | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mpya_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mpya_smem"}` | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` |
 | `T-COMMON-P3-S3E-MAS-SMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_mas_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_metadata"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-CATALOG` |
 | `T-COMMON-P3-S3E-MAS-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_mas_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_decode"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-DECODE` |

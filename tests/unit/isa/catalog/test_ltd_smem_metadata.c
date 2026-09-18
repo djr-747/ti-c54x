@@ -26,7 +26,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_LTD_SMEM);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 292);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 293);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_LTD_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == LTD_SMEM_VALUE);
@@ -67,13 +67,14 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* Both neighbors are unbound. */
+    /* Below-neighbor is unbound; above-neighbor is the pinned DELAY
+     * sibling. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4BFF)) ==
                        TI_C54X_OPCODE_ID_UNKNOWN);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4D00)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_DELAY_SMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4C00)) ==
                        TI_C54X_OPCODE_ID_LTD_SMEM);

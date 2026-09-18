@@ -8313,6 +8313,24 @@
         "printed_page_end": "4-81"
       },
       "assertion": "SPRU172C LTD defines the single-word operation LTD Smem with opcode diagram 0100_1100_IAAAAAAA (I selects indirect addressing, A the 7-bit Smem address): Smem is copied into T and simultaneously into the address following Smem, leaving Smem itself unchanged, which implements a Z delay. No status bits are affected. Worked example (LTD *AR3 with data word 0100h holding 6CACh) loads 6CACh into T and stores 6CACh into 0101h while 0100h keeps 6CACh."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DELAY-P4-41",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DELAY",
+        "printed_page_start": "4-41",
+        "printed_page_end": "4-41"
+      },
+      "assertion": "SPRU172C DELAY defines the single-word operation DELAY Smem with opcode diagram 0100_1101_IAAAAAAA (I selects indirect addressing, A the 7-bit Smem address): the content of Smem is copied into the next higher address (Smem+1), leaving Smem itself unchanged, which implements a Z delay; the same delay operation is contained in LTD (page 4-81) and MACD (page 4-87). No status bits are affected. One word (one more with long-offset indirect or absolute Smem); classes 24A and 24B. Worked example (DELAY *AR3 with AR3 0100, data word 0100h holding 6CACh, 0101h holding 0000h) keeps AR3 0100 and 0100h 6CACh while storing 6CACh into 0101h."
     }
   ],
   "requirements": [
@@ -19267,6 +19285,48 @@
       "test_ids": [
         "T-COMMON-LTD-SMEM-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-DELAY-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for DELAY Smem using base 0x4D00 with mask 0xFF00, the INDIRECT_ADDR7 layout, no input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DELAY-P4-41"
+      ],
+      "test_ids": [
+        "T-COMMON-DELAY-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-DELAY-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every DELAY Smem first word through the INDIRECT_ADDR7 layout, extracting the I indirect flag and 7-bit Smem address with exact 256-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DELAY-P4-41"
+      ],
+      "test_ids": [
+        "T-COMMON-DELAY-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-DELAY-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute the checked and trusted DELAY Smem semantic leaves, staging a Smem delay write-back read with a null completion and no register or status effects, with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DELAY-P4-41"
+      ],
+      "test_ids": [
+        "T-COMMON-DELAY-SMEM-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -27963,6 +28023,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-LTD-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-DELAY-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_delay_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.delay_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-DELAY-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-DELAY-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_delay_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.delay_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-DELAY-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-DELAY-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_delay_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.delay_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-DELAY-SMEM-EFFECTS"
       ]
     }
   ]

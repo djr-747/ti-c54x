@@ -87,11 +87,12 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_ltd == 256U);
 
     {
-        /* Neighbors are unbound. */
+        /* Below-neighbor is unbound; above-neighbor is the pinned
+         * DELAY sibling. */
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x4BFF)).id ==
                            TI_C54X_OPCODE_ID_UNKNOWN);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x4D00)).id ==
-                           TI_C54X_OPCODE_ID_UNKNOWN);
+                           TI_C54X_OPCODE_ID_DELAY_SMEM);
     }
     return 0;
 }
