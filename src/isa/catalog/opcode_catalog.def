@@ -415,6 +415,30 @@ TI_C54X_OPCODE_MASKED(RND_ACC, rnd_acc, 0xF49F, 0xFCFF, 1, TI_C54X_OPERAND_LAYOU
  * stays UNRESOLVED like its MAX/MIN/EXP/CMPL accumulator-unary
  * neighbors. */
 TI_C54X_OPCODE_MASKED(SAT_ACC, sat_acc, 0xF483, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+/* ABS src[,dst]: dst40 = |src40| over the 0xF485|S<<9|D<<8 single
+ * word through the shared accumulator/source/destination layout.
+ * OVM gates the 80_0000_0000h edge (00_7FFF_FFFFh vs hold) with
+ * sticky OVdst; C is set iff the result is zero, per the TI ABS
+ * examples (p. 4-3). Neither Table 2-28 nor Table 6-18 lists ABS,
+ * but omission never implies eligibility, so the row stays
+ * UNRESOLVED like its SAT accumulator-unary neighbor. */
+TI_C54X_OPCODE_MASKED(ABS_ACC, abs_acc, 0xF485, 0xFCFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_OVM)
+/* NEG src[,dst]: dst40 = -src40 over the 0xF484|S<<9|D<<8 single
+ * word through the shared accumulator/source/destination layout.
+ * C is cleared for nonzero src and set for zero src; signed-32
+ * overflowing results saturate (OVM=1) or hold (OVM=0) with
+ * sticky OVdst, per the TI NEG prose and examples
+ * (pp. 4-119--4-120). Neither Table 2-28 nor Table 6-18 lists
+ * NEG, so the row stays UNRESOLVED like ABS above. */
+TI_C54X_OPCODE_MASKED(NEG_ACC, neg_acc, 0xF484, 0xFCFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_OVM)
+/* NORM src[,dst]: dst40 = src40 << TS over the 0xF48F|S<<9|D<<8
+ * single word through the shared accumulator/source/destination
+ * layout. The shift count is T(5:0) as a 2s-complement value
+ * (-16..31); SXM rules right shifts and OVM saturates left-shift
+ * overflow with sticky OVdst, per the TI NORM examples
+ * (pp. 4-121--4-122). Neither Table 2-28 nor Table 6-18 lists
+ * NORM, so the row stays UNRESOLVED like ABS above. */
+TI_C54X_OPCODE_MASKED(NORM_ACC, norm_acc, 0xF48F, 0xFCFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM)
 /* Syntax-1 two-word accumulate of Smem times a PROGRAM-memory
  * coefficient into the S-selected accumulator with read-phase Smem
  * T load. S/I/addr7 ride word 0 through the new

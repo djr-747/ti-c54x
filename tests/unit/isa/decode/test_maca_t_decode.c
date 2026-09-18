@@ -84,8 +84,10 @@ int main(void)
     }
     TI_C54X_TEST_CHECK(valid_count == 8U);
 
+    /* 0xF48F is the W7 NORM_ACC base word (pinned in the NORM
+     * decode sibling tests); the invalid probe moves to 0xF47F. */
     {
-        const uint16_t invalid[] = {UINT16_C(0xF48F)};
+        const uint16_t invalid[] = {UINT16_C(0xF47F)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
                                TI_C54X_DECODE_STATUS_UNKNOWN_WORD);

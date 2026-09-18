@@ -8153,6 +8153,60 @@
         "printed_page_end": "4-166"
       },
       "assertion": "SPRU172C ST syntax 3 defines the two-word operation ST #lk,Smem with opcode diagram 0111_0110_IAAAAAAA plus a 16-bit extension word: the lk constant is stored into Smem. No status bits are affected. Example 1 (ST FFFFh,0) stores FFFFh into direct data-memory word 0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ABS-P4-3",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ABS",
+        "printed_page_start": "4-3",
+        "printed_page_end": "4-3"
+      },
+      "assertion": "SPRU172C ABS defines the single-word operation ABS src[,dst] with opcode diagram 1111_01SD_1000_0101 (S selects the source accumulator, D the destination): dst is loaded with the absolute value of src, or src itself when dst is omitted. If OVM = 1, the absolute value of 80 0000 0000h is 00 7FFF FFFFh; if OVM = 0 it stays 80 0000 0000h. The carry bit C is set when the result equals 0. Affects C and OVdst (or OVsrc when dst = src). Example 1 (ABS A,B with A holding -53) stores +53 into B; Example 2 (ABS A with OVM = 1, A = 03 1234 5678h) stores 00 7FFF FFFFh into A."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-NEG-P4-119",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "NEG",
+        "printed_page_start": "4-119",
+        "printed_page_end": "4-120"
+      },
+      "assertion": "SPRU172C NEG defines the single-word operation NEG src[,dst] with opcode diagram 1111_01SD_1000_0100 (S selects the source accumulator, D the destination): dst is loaded with the 2s complement of src, or src itself when dst is omitted. C is cleared to 0 for every nonzero accumulator value and set to 1 when the accumulator equals 0. Negating FF 8000 0000h overflows: with OVM = 1 dst is assigned 00 7FFF FFFFh, with OVM = 0 dst is assigned 00 8000 0000h, and the OV bit for dst is set in either case. Affects C and OVdst (or OVsrc when dst = src). Example 3 (NEG A with OVM = 0, A = 80 0000 0000h) leaves A unchanged and sets OVA; Example 4 (same with OVM = 1) stores 00 7FFF FFFFh."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-NORM-P4-121",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "NORM",
+        "printed_page_start": "4-121",
+        "printed_page_end": "4-122"
+      },
+      "assertion": "SPRU172C NORM defines the single-word operation NORM src[,dst] with opcode diagram 1111_01SD_1000_1111 (S selects the source accumulator, D the destination): dst is loaded with src shifted left by TS, or src itself when dst is omitted. The shift value is T(5-0) as a 2s-complement number with valid values -16 to 31; T is read in the read phase and unchanged. Affected by SXM and OVM; affects OVdst (or OVsrc when dst = src). Example 1 (NORM A with A = FF FFFF F001h, T = 0013h) stores FF 8008 0000h into A; Example 2 (NORM B,A with T = 0FF9h) stores 00 4214 1414h into A while B is unchanged."
     }
   ],
   "requirements": [
@@ -18757,6 +18811,132 @@
       "test_ids": [
         "T-COMMON-ST-LK-SMEM-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-ABS-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for ABS src[,dst] using base 0xF485 with mask 0xFCFF, the ACCUMULATOR_SOURCE_DESTINATION layout, accumulator plus OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 4 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ABS-P4-3"
+      ],
+      "test_ids": [
+        "T-COMMON-ABS-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ABS-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every ABS src[,dst] first word through the ACCUMULATOR_SOURCE_DESTINATION layout, extracting the S source bit and D destination bit with exact 4-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ABS-P4-3"
+      ],
+      "test_ids": [
+        "T-COMMON-ABS-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ABS-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted ABS src[,dst] semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ABS-P4-3"
+      ],
+      "test_ids": [
+        "T-COMMON-ABS-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NEG-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for NEG src[,dst] using base 0xF484 with mask 0xFCFF, the ACCUMULATOR_SOURCE_DESTINATION layout, accumulator plus OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 4 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NEG-P4-119"
+      ],
+      "test_ids": [
+        "T-COMMON-NEG-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NEG-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every NEG src[,dst] first word through the ACCUMULATOR_SOURCE_DESTINATION layout, extracting the S source bit and D destination bit with exact 4-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NEG-P4-119"
+      ],
+      "test_ids": [
+        "T-COMMON-NEG-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NEG-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted NEG src[,dst] semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NEG-P4-119"
+      ],
+      "test_ids": [
+        "T-COMMON-NEG-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NORM-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for NORM src[,dst] using base 0xF48F with mask 0xFCFF, the ACCUMULATOR_SOURCE_DESTINATION layout, accumulator plus T/SXM/OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 4 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NORM-P4-121"
+      ],
+      "test_ids": [
+        "T-COMMON-NORM-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NORM-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every NORM src[,dst] first word through the ACCUMULATOR_SOURCE_DESTINATION layout, extracting the S source bit and D destination bit with exact 4-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NORM-P4-121"
+      ],
+      "test_ids": [
+        "T-COMMON-NORM-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-NORM-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted NORM src[,dst] semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-NORM-P4-121"
+      ],
+      "test_ids": [
+        "T-COMMON-NORM-ACC-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -27103,6 +27283,132 @@
       },
       "requirement_ids": [
         "REQ-COMMON-ST-LK-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-ABS-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_abs_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.abs_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ABS-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-ABS-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_abs_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.abs_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ABS-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-ABS-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_abs_acc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.abs_acc_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ABS-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-NEG-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_neg_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.neg_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NEG-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-NEG-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_neg_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.neg_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NEG-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-NEG-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_neg_acc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.neg_acc_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NEG-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-NORM-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_norm_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.norm_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NORM-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-NORM-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_norm_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.norm_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NORM-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-NORM-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_norm_acc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.norm_acc_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-NORM-ACC-EFFECTS"
       ]
     }
   ]

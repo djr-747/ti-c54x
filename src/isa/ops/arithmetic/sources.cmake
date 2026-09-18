@@ -16,4 +16,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_sub_xmem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_rnd_acc.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_sat_acc.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_abs_acc.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_neg_acc.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_norm_acc.c"
 )

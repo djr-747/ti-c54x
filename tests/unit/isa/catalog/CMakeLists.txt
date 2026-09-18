@@ -158,3 +158,10 @@ ti_c54x_add_unit_test(bitt_smem_metadata
                       test_bitt_smem_metadata.c)
 ti_c54x_add_unit_test(st_lk_smem_metadata
                       test_st_lk_smem_metadata.c)
+# W7 RED contract: ABS/NEG/NORM accumulator rows.
+ti_c54x_add_unit_test(abs_acc_metadata
+                      test_abs_acc_metadata.c)
+ti_c54x_add_unit_test(neg_acc_metadata
+                      test_neg_acc_metadata.c)
+ti_c54x_add_unit_test(norm_acc_metadata
+                      test_norm_acc_metadata.c)

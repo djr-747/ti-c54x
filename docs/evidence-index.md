@@ -263,6 +263,9 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BITT, `4-23` |
 | `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CMPM, `4-33` |
 | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST, `4-166` |
+| `E-TI-C54X-SPRU172C-S4-ABS-P4-3` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ABS, `4-3` |
+| `E-TI-C54X-SPRU172C-S4-NEG-P4-119` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §NEG, `4-119`--`4-120` |
+| `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §NORM, `4-121`--`4-122` |
 | `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1 through 4.2.2, `4-3`–`4-12` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w50b-dual-memory-add-sub-mod0-activation.md` anchor `P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)` |
@@ -1196,6 +1199,15 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-ST-LK-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-CATALOG` |
 | `REQ-COMMON-ST-LK-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-DECODE` |
 | `REQ-COMMON-ST-LK-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-EFFECTS` |
+| `REQ-COMMON-ABS-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ABS-P4-3` | `T-COMMON-ABS-ACC-CATALOG` |
+| `REQ-COMMON-ABS-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ABS-P4-3` | `T-COMMON-ABS-ACC-DECODE` |
+| `REQ-COMMON-ABS-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ABS-P4-3` | `T-COMMON-ABS-ACC-EFFECTS` |
+| `REQ-COMMON-NEG-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-NEG-P4-119` | `T-COMMON-NEG-ACC-CATALOG` |
+| `REQ-COMMON-NEG-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-NEG-P4-119` | `T-COMMON-NEG-ACC-DECODE` |
+| `REQ-COMMON-NEG-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-NEG-P4-119` | `T-COMMON-NEG-ACC-EFFECTS` |
+| `REQ-COMMON-NORM-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-CATALOG` |
+| `REQ-COMMON-NORM-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-DECODE` |
+| `REQ-COMMON-NORM-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-EFFECTS` |
 | `REQ-COMMON-ACCUMULATOR-OVERFLOW-WRITE-0` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/accumulator/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` |
 | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105` | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` |
 | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P3-S3-PLAN-ANCHOR`, `E-PROJECT-P3-S3D-MPYA-ACTIVATION` | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` |
@@ -1823,6 +1835,15 @@ exist in the repository.
 | `T-COMMON-ST-LK-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_st_lk_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_metadata"}` | `REQ-COMMON-ST-LK-SMEM-CATALOG` |
 | `T-COMMON-ST-LK-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_st_lk_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_decode"}` | `REQ-COMMON-ST-LK-SMEM-DECODE` |
 | `T-COMMON-ST-LK-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_st_lk_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_ops"}` | `REQ-COMMON-ST-LK-SMEM-EFFECTS` |
+| `T-COMMON-ABS-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_abs_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.abs_acc_metadata"}` | `REQ-COMMON-ABS-ACC-CATALOG` |
+| `T-COMMON-ABS-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_abs_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.abs_acc_decode"}` | `REQ-COMMON-ABS-ACC-DECODE` |
+| `T-COMMON-ABS-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_abs_acc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.abs_acc_ops"}` | `REQ-COMMON-ABS-ACC-EFFECTS` |
+| `T-COMMON-NEG-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_neg_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.neg_acc_metadata"}` | `REQ-COMMON-NEG-ACC-CATALOG` |
+| `T-COMMON-NEG-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_neg_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.neg_acc_decode"}` | `REQ-COMMON-NEG-ACC-DECODE` |
+| `T-COMMON-NEG-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_neg_acc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.neg_acc_ops"}` | `REQ-COMMON-NEG-ACC-EFFECTS` |
+| `T-COMMON-NORM-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_norm_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_metadata"}` | `REQ-COMMON-NORM-ACC-CATALOG` |
+| `T-COMMON-NORM-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_norm_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_decode"}` | `REQ-COMMON-NORM-ACC-DECODE` |
+| `T-COMMON-NORM-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_norm_acc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_ops"}` | `REQ-COMMON-NORM-ACC-EFFECTS` |
 | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mpya_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mpya_smem"}` | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` |
 | `T-COMMON-P3-S3E-MAS-SMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_mas_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_metadata"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-CATALOG` |
 | `T-COMMON-P3-S3E-MAS-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_mas_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_decode"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-DECODE` |

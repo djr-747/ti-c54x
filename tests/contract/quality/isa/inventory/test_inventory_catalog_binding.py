@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 289)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 283)
+        self.assertEqual(len(bindings), 292)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 286)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 249)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 252)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -104,7 +104,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "MPY_SMEM_LK", "MAC_SMEM_LK",
                "RND_ACC", "SAT_ACC",
                "BITF_SMEM_LK", "CMPM_SMEM_LK", "BITT_SMEM",
-               "ST_LK_SMEM"},
+               "ST_LK_SMEM",
+               "ABS_ACC", "NEG_ACC", "NORM_ACC"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -148,7 +149,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     else "REGISTER_DST"
                     if binding["catalog_symbol"] in ("MPYA_DST", "SQUR_ADST",
                                                        "MACA_T", "MASA_T",
-                                                       "RND_ACC", "SAT_ACC")
+                                                       "RND_ACC", "SAT_ACC",
+                                                       "ABS_ACC", "NEG_ACC",
+                                                       "NORM_ACC")
                     else "DIRECT_PAGE0"
                     if binding["catalog_symbol"] in ("STM", "ST_LK_SMEM")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
