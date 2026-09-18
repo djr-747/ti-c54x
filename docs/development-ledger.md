@@ -13468,3 +13468,57 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `f8951cc`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S46 W7 batch-8 STL direct rows (slice 75)
+
+- Landed: direct slices of TI STL syntax 1 (FORM-T2-20-10,
+  0x8000/0xFE80) and syntax 2 (FORM-T2-20-11, 0x8400/0xFE80)
+  on a fixed-zero I bit (SPRU172C STL pp. 4-172–4-173). S@8
+  selects accumulator A/B through the existing
+  SELECT_INDIRECT_ADDR7 layout (no layout seam); 7-bit page-0
+  address; UNRESOLVED repeatability; page-0 DATA WRITE with
+  null completion. Syntax 1 stages accumulator low unshifted
+  (worked example STL A,11 stores 0x4321); syntax 2 shifts by
+  the signed ASM count with SXM-gated fill per the ADD/STH
+  precedent and stages bits 15:0 (worked example STL B,−8
+  stores 0x2112). I=1 rejects as INVALID_OPERAND (no STL MOD
+  rows exist). Two isolated workers built the leaves row-less
+  in parallel against one maintainer brief (W8A syntax 1, W8B
+  syntax 2, disjoint files, no commits) and merged with
+  MOD-rows comment truth fixes plus a composite token rename
+  to the LD_SRC_ASM ordering (SXM_ASM). Maintainer wired both
+  rows, schema tokens, lookup regen (+512 pure, no
+  collisions), dispatch includes, store sources, six suites
+  plus registrations, inventory flips plus bindings, 6 req
+  plus 6 test records reusing the STL TI evidence, index
+  rows, README, and frozen-count bumps (296 rows, 302
+  bindings, 33,289 lookup, 144/205 at 70.244%, strict 40/205,
+  771 requirements, 627 tests). Slice doc born `(implemented;
+  local verification green)` in the impl commit.
+- Validation: `make build` clean, `make test` exit 0 (full
+  gate), six new STL suites pass in-tree,
+  `check_evidence.py` PASS (771/627),
+  `check_isa_inventory.py` exit 0 (144/205, strict 40/205).
+- Decisions: SXM kept as a declared syntax-2 input per TI's
+  "Affected by SXM" plus the ADD_SRC_ASM precedent (new
+  ACCUMULATORS_STATUS_SXM_ASM composite); no new layout was
+  needed. Parallel two-worker fan-out with disjoint ownership
+  needed no conflict resolution.
+- Near-misses: (1) projection arithmetic wrote +256 lookup
+  for two rows; actual +512 (33,289) caught by the generator
+  test and corrected in the doc. (2) full gate exposed the
+  standard double pin sweep (COUNT 297, lookup 33289, SUBSET
+  set/map/percent, row+1 identity) plus an LD_XMEM_SHIFT
+  decode sibling flip (0x8400 now STL ASM, pinned). Lesson:
+  compute multi-row projections as rows × encodings, and grep
+  fixed-bit near-miss probes for the new first words before
+  the full gate.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 61 unbound forms; W7 fan-out
+  continues with the next TI-pinned briefs (STLM/LDM,
+  conditional stores, filter ops, dual-memory seam). Wave-7
+  plan doc still untracked; stale worker worktrees under
+  `.muse/worktrees/` await GC.
+- Split commit discipline: impl `4ebd543`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
