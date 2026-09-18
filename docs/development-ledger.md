@@ -12647,3 +12647,30 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `60e8888`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-WAVE6 MPY/MAC #lk leaf fan-out (third managed fan-out)
+
+- Commit `5607c65` merges op_mpy_lk (MPY syntax 4, 0xF066|D<<8)
+  and op_mac_lk (MAC syntax 3, 0xF067|S<<9|D<<8) from two
+  isolated-worktree workers, each plain plus trusted through
+  the P3-S3 multiply datapath. Review found both faithful
+  (unrounded, T read-only, FRCT/OVM, OVsrc-when-dst==src for
+  MAC, C/TC preserved). 26 cases across two suites (12+14; the
+  impl message says 24 — corrected here), ASan/UBSan clean,
+  full `make test` green from clean (exit 0). Evidence: 2 TI
+  section records plus this activation, 2 ARCHITECTURAL
+  requirements, 2 COMMON test records (451 evidence, 696
+  requirements, 556 tests).
+- Fan-out mechanics keep improving: staggered anchors (tails
+  for MPY, heads for MAC) applied with zero merge fixups — the
+  wave-5 lesson holds. One maintainer normalization: the MAC
+  test target arrived as `mac_lk` and was renamed to `mac_lk_ops`
+  at merge for the house convention. Next briefs will pin the
+  `_ops` target name explicitly.
+- No catalog rows, dispatch, decode, or CPU change; both forms
+  stay UNIMPLEMENTED. Follow-up: MPY/MAC #lk rows slices, then
+  the seam-blocked tails (syn4 Smem-SHIFT, ADDM, syn3/4 Smem-lk
+  need layout/RMW seams).
+- Split commit discipline: impl `5607c65`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.

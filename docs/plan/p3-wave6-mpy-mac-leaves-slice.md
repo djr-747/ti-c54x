@@ -1,4 +1,4 @@
-### P3-WAVE6: MPY/MAC #lk leaf fan-out (planned)
+### P3-WAVE6: MPY/MAC #lk leaf fan-out (implemented; local verification green)
 
 This immutable anchor heads the P3-WAVE6 evidence freeze. Two
 catalog-free handler leaves land through the third managed
