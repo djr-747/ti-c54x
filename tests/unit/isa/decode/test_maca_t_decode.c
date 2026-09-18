@@ -85,11 +85,21 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_count == 8U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0xF480), UINT16_C(0xF48F)};
+        const uint16_t invalid[] = {UINT16_C(0xF48F)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
                                TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         }
+    }
+
+    /* 0xF480 is claimed by the P3-S29 ADD_SRC_ASM row with S=0
+     * (src A), D=0 (dst A): a valid cross-row word, not an
+     * overaccept. */
+    {
+        const ti_c54x_decode_result sibling =
+            ti_c54x_decode_first_word(UINT16_C(0xF480));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_ADD_SRC_ASM);
     }
     return 0;
 }

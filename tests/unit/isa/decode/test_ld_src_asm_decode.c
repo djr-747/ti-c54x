@@ -168,9 +168,12 @@ test_fixed_bit_near_misses(void)
          * row with I=1, MOD0, ARF=2 (TI SPRU172C 4-129 pins PORTR
          * at 0x74xx). */
         {UINT16_C(0x8000), TI_C54X_OPCODE_ID_PORTR_SMEM},
+        /* 0xF480 (fixed bit 1 clear) is the P3-S29 ADD_SRC_ASM
+         * row with S=0 (src A), D=0 (dst A). */
+        {UINT16_C(0x0002), TI_C54X_OPCODE_ID_ADD_SRC_ASM},
     };
     static const uint16_t misses[] = {
-        UINT16_C(0x0001), UINT16_C(0x0002),
+        UINT16_C(0x0001),
         UINT16_C(0x0040), UINT16_C(0x1000),
         UINT16_C(0x2000)};
     size_t index;

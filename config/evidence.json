@@ -7805,6 +7805,22 @@
       "assertion": "P3-S28 activates the two ADD/SUB Xmem rows ADD_XMEM (0x9000/0xFE00) and SUB_XMEM (0x9200/0xFE00) over the shared accumulator/dual-XMOD/XAR/shift-4 layout with the landed plain plus trusted op_add_xmem/op_sub_xmem handlers covering all four XMOD modes. FORM-T2-01-05 and FORM-T2-02-05 become COMPLETE under ALL."
     },
     {
+      "id": "E-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s29-add-sub-src-asm-rows-slice.md",
+        "anchor": "P3-S29: ADD/SUB src-ASM rows (implemented; local verification green)"
+      },
+      "assertion": "P3-S29 activates the two ADD/SUB src-ASM rows ADD_SRC_ASM (0xF480/0xFCFF) and SUB_SRC_ASM (0xF481/0xFCFF) over the shared accumulator source/destination layout with the landed plain plus trusted op_add_src_asm/op_sub_src_asm handlers covering all four S/D combinations. FORM-T2-01-10 and FORM-T2-02-10 become COMPLETE under ALL."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101",
       "immutable": true,
       "state": "PINNED",
@@ -17953,6 +17969,21 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the two ADD/SUB src-ASM production symbols to FORM-T2-01-10 and FORM-T2-02-10 at COMPLETE under the ALL addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+        "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -21272,7 +21303,8 @@
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
         "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
         "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
-        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS"
+        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS",
+        "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS"
       ]
     },
     {
@@ -22008,7 +22040,8 @@
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
         "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
         "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
-        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS"
+        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS",
+        "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS"
       ]
     },
     {

@@ -92,8 +92,7 @@ test_fixed_bit_near_misses_are_unknown(void)
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0080),
         UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -120,6 +119,16 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x0040))) ==
                        TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD8);
+
+    /* Flipping bit 15 lands on 0xF680, claimed by the P3-S29
+     * ADD_SRC_ASM row (the 0xFCFF mask clears bits 9:8): a valid
+     * cross-row near miss, not an overaccept. */
+    TI_C54X_TEST_CHECK(!matches_st_immediate(
+        (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x8000))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(ST_IMMEDIATE_VALUE ^
+                                      UINT16_C(0x8000))) ==
+                       TI_C54X_OPCODE_ID_ADD_SRC_ASM);
 }
 
 int

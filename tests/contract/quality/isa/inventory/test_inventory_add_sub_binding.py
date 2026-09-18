@@ -139,6 +139,24 @@ ROWS = {
         "coverage": "COMPLETE",
         "addressing": "ALL",
     },
+    "ADD_SRC_ASM": {
+        "form": "FORM-T2-01-10",
+        "base": 0xF480,
+        "mask": 0xFCFF,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_ASM",
+        "coverage": "COMPLETE",
+        "addressing": "ALL",
+    },
+    "SUB_SRC_ASM": {
+        "form": "FORM-T2-02-10",
+        "base": 0xF481,
+        "mask": 0xFCFF,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_ASM",
+        "coverage": "COMPLETE",
+        "addressing": "ALL",
+    },
 }
 
 
@@ -159,9 +177,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 268)
-        self.assertEqual(len(rows) + 1, 269)
-        self.assertEqual(len(inventory["catalog_bindings"]), 268)
+        self.assertEqual(len(rows), 270)
+        self.assertEqual(len(rows) + 1, 271)
+        self.assertEqual(len(inventory["catalog_bindings"]), 270)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -184,14 +202,14 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                     binding["addressing_subset"], expected["addressing"]
                 )
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 27801)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 27809)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 110, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 112, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],
-            {"covered": 36, "denominator": 205},
+            {"covered": 38, "denominator": 205},
         )
 
 

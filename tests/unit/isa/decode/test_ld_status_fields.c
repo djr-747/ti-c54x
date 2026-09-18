@@ -82,7 +82,6 @@ test_masks_do_not_accept_near_misses(void)
 {
     const uint16_t near_misses[] = {
         UINT16_C(0xED20), /* ASM fixed bit 5 differs */
-        UINT16_C(0xF480), /* ARP fixed bit 5 differs */
     };
     size_t index;
 
@@ -90,6 +89,16 @@ test_masks_do_not_accept_near_misses(void)
          ++index) {
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(near_misses[index]).status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
+    }
+
+    /* 0xF480 (ARP fixed bit 5 differs) is claimed by the P3-S29
+     * ADD_SRC_ASM row: a valid cross-row near miss, not an
+     * overaccept. */
+    {
+        const ti_c54x_decode_result sibling =
+            ti_c54x_decode_first_word(UINT16_C(0xF480));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_ADD_SRC_ASM);
     }
 }
 

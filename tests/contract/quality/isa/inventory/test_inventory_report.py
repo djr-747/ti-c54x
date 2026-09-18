@@ -23,14 +23,14 @@ class InventoryReportTests(unittest.TestCase):
     def test_repository_check_is_clean_and_report_is_provisional(self) -> None:
         self.assertEqual(check_repository(self.root), [])
         report = report_inventory(self.root)
-        self.assertEqual(report["catalog_family_progress"], {"covered": 110, "denominator": 205})
-        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 36, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 53.659, places=3)
-        self.assertAlmostEqual(report["strict_complete_percent"], 17.561, places=3)
+        self.assertEqual(report["catalog_family_progress"], {"covered": 112, "denominator": 205})
+        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 38, "denominator": 205})
+        self.assertAlmostEqual(report["catalog_family_percent"], 54.634, places=3)
+        self.assertAlmostEqual(report["strict_complete_percent"], 18.537, places=3)
         self.assertNotIn(65536, report.values())
         rendered = report["text"]
-        self.assertIn("110/205", rendered)
-        self.assertIn("36/205", rendered)
+        self.assertIn("112/205", rendered)
+        self.assertIn("38/205", rendered)
         self.assertNotIn("1487/65536", rendered)
 
     def test_report_rejects_invalid_repository_root(self) -> None:
@@ -52,5 +52,5 @@ class InventoryReportTests(unittest.TestCase):
             checker, "load_inventory", return_value=inventory
         ):
             report = report_inventory(self.root)
-        self.assertEqual(report["catalog_family_progress"], {"covered": 110, "denominator": 205})
-        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 36, "denominator": 205})
+        self.assertEqual(report["catalog_family_progress"], {"covered": 112, "denominator": 205})
+        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 38, "denominator": 205})
