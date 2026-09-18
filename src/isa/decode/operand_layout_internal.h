@@ -36,8 +36,11 @@ typedef struct ti_c54x_operand_layout_plan {
     const ti_c54x_operand_layout_set *descriptor;
 } ti_c54x_operand_layout_plan;
 
-/* Layout set tables live in operand_layout_sets.c; the plan table
- * and resolver borrow them for the process lifetime. */
+/* Layout set tables live in operand_layout_sets.c with the
+ * Smem-plus-lk and branch families split into
+ * operand_layout_sets_smem_lk.c and operand_layout_sets_branch.c;
+ * the plan table and resolver borrow them for the process
+ * lifetime. */
 extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_extension16_mod4_set;
 extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod4_set;
 extern const ti_c54x_operand_layout_set ti_c54x_accumulator_arf_mod_set;
@@ -78,6 +81,8 @@ extern const ti_c54x_operand_layout_set ti_c54x_indirect_addr7_pa16_set;
 extern const ti_c54x_operand_layout_set ti_c54x_n_condition8_set;
 extern const ti_c54x_operand_layout_set
     ti_c54x_select_indirect_addr7_set;
+extern const ti_c54x_operand_layout_set
+    ti_c54x_select_dual_xmod_xar_cond4_set;
 extern const ti_c54x_operand_layout_set
     ti_c54x_source_destination_indirect_addr7_set;
 extern const ti_c54x_operand_layout_set

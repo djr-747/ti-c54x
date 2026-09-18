@@ -2,6 +2,7 @@
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_store_circular_common.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_store_indexed_common.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_store_cond_common.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_stl_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_sth_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_sth_asm_smem.c"

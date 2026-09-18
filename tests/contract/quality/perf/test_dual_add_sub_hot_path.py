@@ -245,7 +245,7 @@ _Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 392U, "root");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 40U, "memory");
 _Static_assert(sizeof(ti_c54x_op_effect) == 44U, "effect");
 _Static_assert(sizeof(ti_c54x_dual_word16_read_transaction) == 72U, "dual");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 356U, "root");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 360U, "root");
 #else
 #error "unsupported pointer width"
 #endif

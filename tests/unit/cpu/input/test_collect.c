@@ -143,9 +143,9 @@ int main(void)
 
     sources = sources_for(NULL, NULL);
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x4000U, &sources, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x8000U, &sources, &output);
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x4000U, NULL, &output);
+    expect_rejected((ti_c54x_input_resource_mask)0x8000U, NULL, &output);
 
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_ACCUMULATORS, &sources, &output);

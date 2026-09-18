@@ -21,6 +21,9 @@ ti_c54x_add_unit_test(rmw_add_transform
 # P3-S32 RED contract: RMW-ADD root commit with sticky C/OVA.
 ti_c54x_add_unit_test(rmw_add_memory_transaction
                       test_rmw_add_memory_transaction.c)
+# P3-S48 RED contract: OVERWRITE/WRITEBACK RMW transforms.
+ti_c54x_add_unit_test(rmw_overwrite_writeback_transform
+                      test_rmw_overwrite_writeback_transform.c)
 # P3-S1 RED contract: MMR-routed root transaction retirement.
 ti_c54x_add_unit_test(mmr_transaction
                       test_mmr_memory_transaction.c)

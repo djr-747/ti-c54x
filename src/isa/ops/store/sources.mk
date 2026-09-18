@@ -1,6 +1,7 @@
 # Source ownership: isa/ops/store owns store opcode semantics.
 ti_c54x_core_sources += src/isa/ops/store/op_store_circular_common.c
 ti_c54x_core_sources += src/isa/ops/store/op_store_indexed_common.c
+ti_c54x_core_sources += src/isa/ops/store/op_store_cond_common.c
 ti_c54x_core_sources += src/isa/ops/store/op_stl_smem.c
 ti_c54x_core_sources += src/isa/ops/store/op_sth_smem.c
 ti_c54x_core_sources += src/isa/ops/store/op_sth_asm_smem.c

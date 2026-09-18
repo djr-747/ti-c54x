@@ -32,3 +32,5 @@ ti_c54x_add_unit_test(circular_standard_indirect_store_effects
 ti_c54x_add_unit_test(reverse_carry_standard_indirect_store_effects
                       test_reverse_carry_standard_indirect_store_effects.c)
 ti_c54x_add_unit_test(dst_long32_mod13_ops test_dst_long32_mod13.c)
+# P3-S48 RED contract: 4-bit accumulator-condition evaluator.
+ti_c54x_add_unit_test(store_cond_evaluate_ops test_store_cond_evaluate.c)

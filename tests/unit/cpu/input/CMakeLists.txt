@@ -13,3 +13,4 @@ ti_c54x_add_unit_test(cpu_input_collect_auxiliary_registers
                       test_collect_auxiliary_registers.c)
 ti_c54x_add_unit_test(cpu_input_collect_t_register test_collect_t_register.c)
 ti_c54x_add_unit_test(cpu_input_collect_trn_register test_collect_trn_register.c)
+ti_c54x_add_unit_test(cpu_input_collect_brc_register test_collect_brc_register.c)

@@ -45,6 +45,12 @@ ti_c54x_memory_instruction_rmw_transform(
     case TI_C54X_OP_MEMORY_RMW_OPERATION_XOR:
         *out_value_word = (uint16_t)(read_value_word ^ memory->value_word);
         return true;
+    case TI_C54X_OP_MEMORY_RMW_OPERATION_OVERWRITE:
+        *out_value_word = memory->value_word;
+        return true;
+    case TI_C54X_OP_MEMORY_RMW_OPERATION_WRITEBACK:
+        *out_value_word = read_value_word;
+        return true;
     case TI_C54X_OP_MEMORY_RMW_OPERATION_NONE:
     default:
         return false;

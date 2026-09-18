@@ -28,3 +28,5 @@ $(eval $(call ti_c54x_add_test,indexed_standard_indirect_store_effects,isa/ops/s
 $(eval $(call ti_c54x_add_test,circular_standard_indirect_store_effects,isa/ops/store,test_circular_standard_indirect_store_effects.c))
 $(eval $(call ti_c54x_add_test,reverse_carry_standard_indirect_store_effects,isa/ops/store,test_reverse_carry_standard_indirect_store_effects.c))
 $(eval $(call ti_c54x_add_test,dst_long32_mod13_ops,isa/ops/store,test_dst_long32_mod13.c))
+# P3-S48 RED contract: 4-bit accumulator-condition evaluator.
+$(eval $(call ti_c54x_add_test,store_cond_evaluate_ops,isa/ops/store,test_store_cond_evaluate.c))

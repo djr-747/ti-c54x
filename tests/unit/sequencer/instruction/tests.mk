@@ -12,6 +12,8 @@ $(eval $(call ti_c54x_add_test,word16_rmw_memory_transaction,sequencer/instructi
 $(eval $(call ti_c54x_add_test,rmw_add_transform,sequencer/instruction,test_rmw_add_transform.c))
 # P3-S32 RED contract: RMW-ADD root commit with sticky C/OVA.
 $(eval $(call ti_c54x_add_test,rmw_add_memory_transaction,sequencer/instruction,test_rmw_add_memory_transaction.c))
+# P3-S48 RED contract: OVERWRITE/WRITEBACK RMW transforms.
+$(eval $(call ti_c54x_add_test,rmw_overwrite_writeback_transform,sequencer/instruction,test_rmw_overwrite_writeback_transform.c))
 # P3-S1 RED contract: MMR-routed root transaction retirement.
 $(eval $(call ti_c54x_add_test,mmr_transaction,sequencer/instruction,test_mmr_memory_transaction.c))
 # P3-S6 RED contract: PORT root transaction hook.

@@ -8383,6 +8383,76 @@
         "printed_page_end": "4-73"
       },
       "assertion": "SPRU172C LDM defines LDM MMR,dst with opcode diagram 0100_100D_IAAAAAAA (D selects accumulator A/B, I selects direct/indirect addressing, A the 7-bit address): (MMR) loads dst(15-0) with 00_0000h into dst(39-16), and the nine MSBs of the effective address are cleared to 0 regardless of DP or the upper nine bits of ARx. Status Bits None and not affected by SXM; one word; class 3A. Worked examples LDM AR4,A (AR4 FFFF into A low) and LDM 060h,B (data 0060h 1234 into B low)."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SACCD-P4-152",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SACCD",
+        "printed_page_start": "4-152",
+        "printed_page_end": "4-152"
+      },
+      "assertion": "SPRU172C SACCD defines SACCD src,Xmem,cond with opcode diagram 1001_111S_XXXX_COND (S selects accumulator A/B source, XXXX the dual-X Xmem field, COND the 4-bit condition): twelve conditions AEQ=0101 ANEQ=0100 AGT=0110 AGEQ=0010 ALT=0011 ALEQ=0111 BEQ=1101 BNEQ=1100 BGT=1110 BGEQ=1010 BLT=1011 BLEQ=1111. If (cond) Xmem stores src left-shifted by (ASM-16); else Xmem is read and the value written back to the same address so Xmem is unchanged. Regardless of the condition Xmem is always read and updated. Status Bits affected by ASM and SXM; one word, one cycle, class 15."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SRCCD-P4-165",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SRCCD",
+        "printed_page_start": "4-165",
+        "printed_page_end": "4-165"
+      },
+      "assertion": "SPRU172C SRCCD defines SRCCD Xmem,cond with opcode diagram 1001_1101_XXXX_COND (XXXX the dual-X Xmem field, COND the 4-bit condition) over the same twelve accumulator conditions as SACCD. If (cond) the BRC content stores to Xmem; else Xmem is read and the value written back to the same address so Xmem is unchanged. Regardless of the condition Xmem is always read and updated. Status Bits None; one word, one cycle, class 15. Worked example SRCCD *AR5-,AGT with A 00_70FF_FFFF (AGT true), AR5 0202 to 0201, BRC 4321, data 0202h 1234 to 4321."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-STRCD-P4-186",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "STRCD",
+        "printed_page_start": "4-186",
+        "printed_page_end": "4-186"
+      },
+      "assertion": "SPRU172C STRCD defines STRCD Xmem,cond with opcode diagram 1001_1100_XXXX_COND (XXXX the dual-X Xmem field, COND the 4-bit condition) over the same twelve accumulator conditions as SACCD. If (cond) the T content stores to Xmem; else Xmem is read and the value written back to the same address so Xmem is unchanged. Regardless of the condition Xmem is always read and updated. Status Bits None; one word, one cycle, class 15. Worked example STRCD *AR5-,AGT with A 00_70FF_FFFF (AGT true), T 4321, AR5 0202 to 0201, data 0202h 1234 to 4321."
+    },
+    {
+      "id": "E-PROJECT-P3-S48-CONDITIONAL-STORE-SEAM-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s48-conditional-store-seam-slice.md",
+        "anchor": "P3-S48: conditional-store seam (implemented; local verification green)"
+      },
+      "assertion": "P3-S48 adds the conditional-store seam for the class-15 SACCD/SRCCD/STRCD leaves: the BRC_REGISTER input resource (bit 16384) as a copied raw 16-bit BRC snapshot with knownness sourced from the MMR file BRC cell with the eleven 0x4000 invalid-resource probes moved to 0x8000 (the snapshot carrier stays 72 bytes on LP64 with the embedded instruction transaction root staying 392 on LP64 and moving 356 to 360 on ILP32); the store-owned 4-bit accumulator-condition evaluator over the twelve TI cond codes with consumed-input-only knownness; the OVERWRITE/WRITEBACK RMW operations (cond-true writes the staged value, cond-false rewrites the read word, matching the TI read-always/update-always execution); and the SELECT_DUAL_XMOD_XAR_COND4 operand layout (S at bit 8, XMOD at 7:6, XAR at 5:4, COND at 3:0). No catalog row, handler, inventory form, or CPU retirement change is admitted; the three leaves belong to S49."
     }
   ],
   "requirements": [
@@ -19645,6 +19715,38 @@
       "test_ids": [
         "T-COMMON-LDM-SMEM-DIRECT-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-STORE-COND-EVALUATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Evaluate the shared 4-bit accumulator condition for the class-15 conditional stores over the TI cond codes (AGEQ/ALT/ANEQ/AEQ/AGT/ALEQ on accumulator A; BGEQ/BLT/BNEQ/BEQ/BGT/BLEQ on accumulator B) as full-40-bit two's-complement signed compares against zero with guard bits included and consumed-input-only knownness, rejecting an unknown selected accumulator and the four unassigned nibbles with transactional rejection.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SACCD-P4-152",
+        "E-TI-C54X-SPRU172C-S4-SRCCD-P4-165",
+        "E-TI-C54X-SPRU172C-S4-STRCD-P4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-STORE-COND-EVALUATE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Reduce a staged RMW-OVERWRITE candidate to the staged value word ignoring the read word, and a staged RMW-WRITEBACK candidate to the read word ignoring the staged value, matching the conditional-store false-branch read-and-write-back execution; the NONE carrier still rejects and neither operation stages flags.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SACCD-P4-152",
+        "E-TI-C54X-SPRU172C-S4-SRCCD-P4-165",
+        "E-TI-C54X-SPRU172C-S4-STRCD-P4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM"
+      ]
     }
   ],
   "tests": [
@@ -28649,6 +28751,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-LDM-SMEM-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-STORE-COND-EVALUATE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_store_cond_evaluate.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.store_cond_evaluate_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STORE-COND-EVALUATE"
+      ]
+    },
+    {
+      "id": "T-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/instruction/test_rmw_overwrite_writeback_transform.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rmw_overwrite_writeback_transform"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM"
       ]
     }
   ]

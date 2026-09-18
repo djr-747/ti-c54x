@@ -1,7 +1,7 @@
 /* Module contract
  * Owns: transactional collection of catalog-declared accumulator, auxiliary,
- * T, TRN, stack-pointer, return-register, and status C, TC, SXM, SST, or OVM
- * resources into a copied opcode input snapshot.
+ * T, TRN, BRC, stack-pointer, return-register, and status C, TC, SXM, SST,
+ * or OVM resources into a copied opcode input snapshot.
  * Does not own: opcode semantics, decode, CPU lifecycle, effects, sequencing,
  * timing, buses, diagnostics, allocation, or global state.
  */
@@ -217,6 +217,22 @@ ti_c54x_input_collect_status ti_c54x_input_collect(
         if (status == TI_C54X_MMR_FILE_OK) {
             staged.trn_register_raw16 = raw_value;
             staged.trn_register_known = true;
+        } else if (status != TI_C54X_MMR_FILE_UNKNOWN) {
+            return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
+        }
+    }
+
+    if ((resources & TI_C54X_INPUT_RESOURCES_BRC_REGISTER) !=
+        TI_C54X_INPUT_RESOURCES_NONE) {
+        uint16_t raw_value = 0U;
+        const ti_c54x_mmr_file_status status =
+            sources == NULL || sources->mmr_file == NULL
+                ? TI_C54X_MMR_FILE_INVALID_ARGUMENT
+                : ti_c54x_mmr_file_read_brc(sources->mmr_file, &raw_value);
+
+        if (status == TI_C54X_MMR_FILE_OK) {
+            staged.brc_register_raw16 = raw_value;
+            staged.brc_register_known = true;
         } else if (status != TI_C54X_MMR_FILE_UNKNOWN) {
             return TI_C54X_INPUT_COLLECT_INVALID_SOURCE;
         }

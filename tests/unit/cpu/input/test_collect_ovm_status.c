@@ -31,8 +31,8 @@ _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U,
                "metadata carrier must remain 24 bytes on ILP32");
 _Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U,
                "decoded carrier must remain 20 bytes on ILP32");
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 68U,
-               "op input carrier must remain 68 bytes on ILP32");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 72U,
+               "op input carrier must remain 72 bytes on ILP32");
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 76U,
                "trusted packet must remain 76 bytes on ILP32");
 #endif
@@ -98,7 +98,7 @@ int main(void)
     output.status_ovm_known = true;
     before = output;
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
-                           (ti_c54x_input_resource_mask)0x4000U, &sources,
+                           (ti_c54x_input_resource_mask)0x8000U, &sources,
                            &output) == TI_C54X_INPUT_COLLECT_INVALID_RESOURCE_MASK);
     TI_C54X_TEST_CHECK(memcmp(&before, &output, sizeof(output)) == 0);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(

@@ -238,6 +238,45 @@ test_local_multi_operand_descriptor_validation(void)
                        TI_C54X_OPERAND_LAYOUT_STATUS_INVALID_VIEW);
 }
 
+static void
+test_select_dual_xmod_xar_cond4_resolution_and_extraction(void)
+{
+    /* SRCCD-family shape: S=1, XMOD=1, XAR=1, COND=0xB (BLT). */
+    const uint16_t words[] = {UINT16_C(0x9D5B)};
+    const ti_c54x_program_words_view word_view = {words, 1U};
+    ti_c54x_operand_layout_set_view view;
+    ti_c54x_operand_field_value value = {0U, 0U};
+
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_resolve(
+                           TI_C54X_OPERAND_LAYOUT_SELECT_DUAL_XMOD_XAR_COND4,
+                           1U, &view) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+    TI_C54X_TEST_CHECK(view.descriptor->operand_count == 4U);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                           &view, &word_view, 0U, &value) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+    TI_C54X_TEST_CHECK_U64(value.raw_value, UINT64_C(1));
+    TI_C54X_TEST_CHECK(value.width_bits == 1U);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                           &view, &word_view, 1U, &value) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+    TI_C54X_TEST_CHECK_U64(value.raw_value, UINT64_C(1));
+    TI_C54X_TEST_CHECK(value.width_bits == 2U);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                           &view, &word_view, 2U, &value) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+    TI_C54X_TEST_CHECK_U64(value.raw_value, UINT64_C(1));
+    TI_C54X_TEST_CHECK(value.width_bits == 2U);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                           &view, &word_view, 3U, &value) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+    TI_C54X_TEST_CHECK_U64(value.raw_value, UINT64_C(0xB));
+    TI_C54X_TEST_CHECK(value.width_bits == 4U);
+    TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                           &view, &word_view, 4U, &value) ==
+                       TI_C54X_OPERAND_LAYOUT_STATUS_OPERAND_INDEX_OUT_OF_RANGE);
+}
+
 int
 main(void)
 {
@@ -247,6 +286,7 @@ main(void)
     test_resolution_ids_and_widths();
     test_nulls_indexes_and_output_transactionality();
     test_local_multi_operand_descriptor_validation();
+    test_select_dual_xmod_xar_cond4_resolution_and_extraction();
     puts("operand_layout_binding: ok");
     return 0;
 }

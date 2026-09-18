@@ -128,6 +128,10 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word ADD Smem fields: accumulator select S[8:8], indirect
      * flag I[7:7], and 7-bit Smem address A[6:0]. */
     TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7,
+    /* One-word conditional-store fields: source select S[8:8],
+     * dual-X modifier XMOD[7:6] and register XAR[5:4], and 4-bit
+     * accumulator condition COND[3:0]. */
+    TI_C54X_OPERAND_LAYOUT_SELECT_DUAL_XMOD_XAR_COND4,
     /* One-word ADD Smem<<16 fields: source select S[9:9],
      * destination select D[8:8], indirect flag I[7:7], and 7-bit
      * Smem address A[6:0]. */
@@ -179,8 +183,9 @@ typedef enum ti_c54x_repeatability_class {
 typedef uint16_t ti_c54x_input_resource_mask;
 /* Resource values are powers of two; RETURN_REGISTER is the eleventh
  * resource (1024), STATUS_FRCT is the twelfth resource (2048),
- * STATUS_DP is the thirteenth resource (4096), and TRN_REGISTER is the
- * fourteenth resource (8192). */
+ * STATUS_DP is the thirteenth resource (4096), TRN_REGISTER is the
+ * fourteenth resource (8192), and BRC_REGISTER is the fifteenth
+ * resource (16384). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -203,6 +208,9 @@ typedef uint16_t ti_c54x_input_resource_mask;
 /* TRN arrives from the MMR file cell; ST TRN is its first consumer. */
 #define TI_C54X_INPUT_RESOURCES_TRN_REGISTER \
     ((ti_c54x_input_resource_mask)8192U)
+/* BRC arrives from the MMR file cell; SRCCD is its first consumer. */
+#define TI_C54X_INPUT_RESOURCES_BRC_REGISTER \
+    ((ti_c54x_input_resource_mask)16384U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_DP))
@@ -325,7 +333,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_RETURN_REGISTER | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_DP | \
-                                   TI_C54X_INPUT_RESOURCES_TRN_REGISTER))
+                                   TI_C54X_INPUT_RESOURCES_TRN_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_BRC_REGISTER))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

@@ -133,7 +133,9 @@ check_rejects_non_add_carrier(void)
         TI_C54X_OP_MEMORY_RMW_OPERATION_NONE,
         TI_C54X_OP_MEMORY_RMW_OPERATION_AND,
         TI_C54X_OP_MEMORY_RMW_OPERATION_OR,
-        TI_C54X_OP_MEMORY_RMW_OPERATION_XOR};
+        TI_C54X_OP_MEMORY_RMW_OPERATION_XOR,
+        TI_C54X_OP_MEMORY_RMW_OPERATION_OVERWRITE,
+        TI_C54X_OP_MEMORY_RMW_OPERATION_WRITEBACK};
     size_t index;
     uint16_t write_word;
     bool carry;

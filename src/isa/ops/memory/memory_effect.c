@@ -27,7 +27,9 @@ ti_c54x_op_memory_rmw_operation_is_valid(uint8_t operation)
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_AND ||
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_OR ||
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_XOR ||
-           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD;
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD ||
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_OVERWRITE ||
+           operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_WRITEBACK;
 }
 
 /* Single-word Smem delay write-back (LTD/DELAY): a plain DATA

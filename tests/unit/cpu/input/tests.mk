@@ -12,3 +12,4 @@ $(eval $(call ti_c54x_add_test,cpu_input_collect_frct_status,cpu/input,test_coll
 $(eval $(call ti_c54x_add_test,cpu_input_collect_auxiliary_registers,cpu/input,test_collect_auxiliary_registers.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_t_register,cpu/input,test_collect_t_register.c))
 $(eval $(call ti_c54x_add_test,cpu_input_collect_trn_register,cpu/input,test_collect_trn_register.c))
+$(eval $(call ti_c54x_add_test,cpu_input_collect_brc_register,cpu/input,test_collect_brc_register.c))

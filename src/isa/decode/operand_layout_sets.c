@@ -454,59 +454,10 @@ const ti_c54x_operand_layout_set
     ti_c54x_accumulator_immediate_shift4_lk16_set = {
         ti_c54x_accumulator_immediate_shift4_lk16_operands, UINT8_C(3)};
 
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_pmad16_pmad_piece = {
-        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_branch_pmad16_operands[1] = {
-        {&ti_c54x_branch_pmad16_pmad_piece, UINT8_C(1),
-         UINT8_C(16)}};
-const ti_c54x_operand_layout_set ti_c54x_branch_pmad16_set = {
-    ti_c54x_branch_pmad16_operands, UINT8_C(1)};
-
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_cond_pmad16_cond_piece = {
-        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_cond_pmad16_pmad_piece = {
-        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_branch_cond_pmad16_operands[2] = {
-        {&ti_c54x_branch_cond_pmad16_cond_piece, UINT8_C(1),
-         UINT8_C(8)},
-        {&ti_c54x_branch_cond_pmad16_pmad_piece, UINT8_C(1),
-         UINT8_C(16)}};
-const ti_c54x_operand_layout_set ti_c54x_branch_cond_pmad16_set = {
-    ti_c54x_branch_cond_pmad16_operands, UINT8_C(2)};
-
-/* RC condition field: raw cond[7:0] from the single first word. */
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_cond8_cond_piece = {
-        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_branch_cond8_operands[1] = {
-        {&ti_c54x_branch_cond8_cond_piece, UINT8_C(1),
-         UINT8_C(8)}};
-const ti_c54x_operand_layout_set ti_c54x_branch_cond8_set = {
-    ti_c54x_branch_cond8_operands, UINT8_C(1)};
-
-/* BANZ Sind fields: raw Sind[7:0], then the copied pmad[+1].
- * The piece shape matches the condition layout exactly; the
- * distinct set keeps Sind and condition namespaces separate. */
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_sind_pmad16_sind_piece = {
-        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_branch_sind_pmad16_pmad_piece = {
-        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_branch_sind_pmad16_operands[2] = {
-        {&ti_c54x_branch_sind_pmad16_sind_piece, UINT8_C(1),
-         UINT8_C(8)},
-        {&ti_c54x_branch_sind_pmad16_pmad_piece, UINT8_C(1),
-         UINT8_C(16)}};
-const ti_c54x_operand_layout_set ti_c54x_branch_sind_pmad16_set = {
-    ti_c54x_branch_sind_pmad16_operands, UINT8_C(2)};
+/* Branch-family sets live in operand_layout_sets_branch.c (S48
+ * split decision: this file approached the 800-line review
+ * ceiling, so the branch/XC tables moved to their own
+ * translation unit with pieces still private there). */
 
 /* STM direct fields: raw indirect flag I[7:7], 7-bit direct address
  * dma[6:0], then the copied lk[+1]. */
@@ -618,6 +569,33 @@ static const ti_c54x_operand_field_layout
          UINT8_C(7)}};
 const ti_c54x_operand_layout_set ti_c54x_select_indirect_addr7_set = {
     ti_c54x_select_indirect_addr7_operands, UINT8_C(3)};
+
+/* Conditional-store fields: source select S[8:8], dual-X modifier
+ * XMOD[7:6] and register XAR[5:4], and 4-bit condition COND[3:0]. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_select_dual_xmod_xar_cond4_select_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_select_dual_xmod_xar_cond4_xmod_piece = {
+        UINT8_C(0), UINT8_C(6), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_select_dual_xmod_xar_cond4_xar_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_select_dual_xmod_xar_cond4_cond_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_select_dual_xmod_xar_cond4_operands[4] = {
+        {&ti_c54x_select_dual_xmod_xar_cond4_select_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_select_dual_xmod_xar_cond4_xmod_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_select_dual_xmod_xar_cond4_xar_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_select_dual_xmod_xar_cond4_cond_piece, UINT8_C(1),
+         UINT8_C(4)}};
+const ti_c54x_operand_layout_set ti_c54x_select_dual_xmod_xar_cond4_set = {
+    ti_c54x_select_dual_xmod_xar_cond4_operands, UINT8_C(4)};
 
 /* ADD Smem<<16 fields: source select S[9:9], destination select
  * D[8:8], indirect flag I[7:7], then 7-bit Smem address A[6:0]. */
@@ -777,15 +755,3 @@ static const ti_c54x_operand_field_layout
          UINT8_C(1)}};
 const ti_c54x_operand_layout_set ti_c54x_source_destination_round_set = {
     ti_c54x_source_destination_round_operands, UINT8_C(3)};
-
-/* XC fields: execute-count select N[9:9], then 8-bit condition
- * code C[7:0]. */
-static const ti_c54x_operand_field_piece ti_c54x_n_condition8_n_piece = {
-    UINT8_C(0), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
-static const ti_c54x_operand_field_piece ti_c54x_n_condition8_cond_piece = {
-    UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
-static const ti_c54x_operand_field_layout ti_c54x_n_condition8_operands[2] = {
-    {&ti_c54x_n_condition8_n_piece, UINT8_C(1), UINT8_C(1)},
-    {&ti_c54x_n_condition8_cond_piece, UINT8_C(1), UINT8_C(8)}};
-const ti_c54x_operand_layout_set ti_c54x_n_condition8_set = {
-    ti_c54x_n_condition8_operands, UINT8_C(2)};
