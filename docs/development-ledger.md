@@ -12714,3 +12714,40 @@ entries are not rewritten after publication.
   green)` in the impl commit with its anchor, matching the
   landed state; plan link stays `(planned)` per the S27/WAVE6
   convention.
+
+## 2026-09-18 — P3-S29 ADD/SUB src-ASM rows (slice 57)
+
+- Commit `6228ccf` lands ADD_SRC_ASM (0xF480/0xFCFF) and
+  SUB_SRC_ASM (0xF481/0xFCFF) over the shared accumulator
+  source/destination layout, wiring the landed wave-5 plain
+  plus trusted op_add_src_asm/op_sub_src_asm cores through
+  the catalog X-macro (two dispatch includes, no new
+  handlers). Census: 270 rows, ID count 271, lookup 27801 to
+  27809 as 8 insertions with zero neighbor moves, COMPLETE
+  bindings 36 to 38, FORMs 110 to 112/205 at 54.634%,
+  strict-complete bound 36 to 38. Full `make test` green
+  (exit 0); evidence PASS at 453 evidence, 698 requirements,
+  556 tests; sanitizer spot rebuild of dispatch clean on the
+  src-asm ops/decode binaries.
+- Decisions: forms bind at COMPLETE under ALL (the LD_SRC_ASM
+  precedent; the leaves cover all four S/D combinations) and
+  flip UNRESOLVED to COMMON_CANDIDATE with the rows. Four
+  decode flip sweeps absorb nearby words by design
+  (ld_status_fields, ld_src_asm, maca_t, st_immediate at
+  lookup level); each gains an explicit valid-row sibling pin
+  per the file-local convention instead of weakening the
+  sweep.
+- Near-miss worth recording: the 0xF48x cluster is dense —
+  LD_SRC_ASM (0xF482), MAX/MIN/EXP (0xF486/87/8E), and the
+  new rows sit within a few flips of each other, so every
+  neighbor sweep in that band must be re-run, not just the
+  obvious LD_SRC_ASM one. The st_immediate bit-15 case shows
+  mask-clearing flips (0xF680 -> 0xF480 under 0xFCFF) land
+  farther than they read — compute the masked value by hand
+  before trusting a sweep list.
+- Follow-up: MPY/MAC #lk rows (FORM-T2-03-05/FORM-T2-04-02),
+  then the seam-blocked tails.
+- Split commit discipline: impl `6228ccf`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
