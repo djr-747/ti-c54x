@@ -98,6 +98,7 @@
 #include "store/op_stm.h"
 #include "store/op_st_t_smem.h"
 #include "store/op_st_t_smem_direct.h"
+#include "store/op_st_trn_smem_direct.h"
 #include "store/op_st_lk_smem.h"
 #include "store/op_dst_long32.h"
 #include "status/op_status_bits.h"

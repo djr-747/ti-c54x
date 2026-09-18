@@ -142,6 +142,7 @@ $(eval $(call ti_c54x_add_test,cmpm_smem_lk_decode,isa/decode,test_cmpm_smem_lk_
 $(eval $(call ti_c54x_add_test,bitt_smem_decode,isa/decode,test_bitt_smem_decode.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_decode,isa/decode,test_st_lk_smem_decode.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_decode,isa/decode,test_st_t_smem_direct_decode.c))
+$(eval $(call ti_c54x_add_test,st_trn_smem_direct_decode,isa/decode,test_st_trn_smem_direct_decode.c))
 # W7 RED contract: ABS/NEG/NORM accumulator rows.
 $(eval $(call ti_c54x_add_test,abs_acc_decode,isa/decode,test_abs_acc_decode.c))
 $(eval $(call ti_c54x_add_test,neg_acc_decode,isa/decode,test_neg_acc_decode.c))

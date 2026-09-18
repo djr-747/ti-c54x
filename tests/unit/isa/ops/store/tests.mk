@@ -17,6 +17,7 @@ $(eval $(call ti_c54x_add_test,st_immediate_smem_ops,isa/ops/store,test_st_immed
 $(eval $(call ti_c54x_add_test,stm_ops,isa/ops/store,test_stm.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_ops,isa/ops/store,test_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_ops,isa/ops/store,test_st_t_smem_direct.c))
+$(eval $(call ti_c54x_add_test,st_trn_smem_direct_ops,isa/ops/store,test_st_trn_smem_direct.c))
 # S36 RED contract: ST #lk Smem store effects.
 $(eval $(call ti_c54x_add_test,st_lk_smem_ops,isa/ops/store,test_st_lk_smem.c))
 $(eval $(call ti_c54x_add_test,standard_indirect_store_modes,isa/ops/store,test_standard_indirect_store_modes.c))

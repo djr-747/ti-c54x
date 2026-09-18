@@ -145,6 +145,7 @@ ti_c54x_add_unit_test(cmpm_smem_lk_decode test_cmpm_smem_lk_decode.c)
 ti_c54x_add_unit_test(bitt_smem_decode test_bitt_smem_decode.c)
 ti_c54x_add_unit_test(st_lk_smem_decode test_st_lk_smem_decode.c)
 ti_c54x_add_unit_test(st_t_smem_direct_decode test_st_t_smem_direct_decode.c)
+ti_c54x_add_unit_test(st_trn_smem_direct_decode test_st_trn_smem_direct_decode.c)
 # W7 RED contract: ABS/NEG/NORM accumulator rows.
 ti_c54x_add_unit_test(abs_acc_decode test_abs_acc_decode.c)
 ti_c54x_add_unit_test(neg_acc_decode test_neg_acc_decode.c)
