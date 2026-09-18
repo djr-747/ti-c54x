@@ -34,7 +34,7 @@ static const uint16_t SQUR_ACC_MASK = UINT16_C(0xFE00);
 static void
 test_metadata(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 276);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 278);
     for (size_t i = 0U; i < sizeof(rows) / sizeof(rows[0]); ++i) {
         const ti_c54x_opcode_metadata *metadata =
             ti_c54x_opcode_metadata_for_id(rows[i].id);

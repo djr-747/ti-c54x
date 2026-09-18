@@ -116,6 +116,9 @@ $(eval $(call ti_c54x_add_test,macd_smem_decode,isa/decode,test_macd_smem_decode
 # P3-S3 RED contract: MACP Smem destination/indirect/addr7/pmad16 layout.
 $(eval $(call ti_c54x_add_test,destination_indirect_addr7_pmad16_layout,isa/decode,test_destination_indirect_addr7_pmad16_layout.c))
 $(eval $(call ti_c54x_add_test,mpya_smem_decode,isa/decode,test_mpya_smem_decode.c))
+# P3-S33 RED contract: MPY/MAC Smem,#lk syntax rows.
+$(eval $(call ti_c54x_add_test,mpy_smem_lk_decode,isa/decode,test_mpy_smem_lk_decode.c))
+$(eval $(call ti_c54x_add_test,mac_smem_lk_decode,isa/decode,test_mac_smem_lk_decode.c))
 $(eval $(call ti_c54x_add_test,mas_smem_decode,isa/decode,test_mas_smem_decode.c))
 # P3-S3 RED contract: MPYA dst register-only row.
 $(eval $(call ti_c54x_add_test,mpya_dst_decode,isa/decode,test_mpya_dst_decode.c))

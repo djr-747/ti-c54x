@@ -104,6 +104,11 @@ ti_c54x_add_unit_test(mpy_smem_metadata
                       test_mpy_smem_metadata.c)
 ti_c54x_add_unit_test(mpya_smem_metadata
                       test_mpya_smem_metadata.c)
+# P3-S33 RED contract: MPY/MAC Smem,#lk syntax rows.
+ti_c54x_add_unit_test(mpy_smem_lk_metadata
+                      test_mpy_smem_lk_metadata.c)
+ti_c54x_add_unit_test(mac_smem_lk_metadata
+                      test_mac_smem_lk_metadata.c)
 ti_c54x_add_unit_test(mas_smem_metadata
                       test_mas_smem_metadata.c)
 # P3-S3 RED contract: MPYA dst register-only row.

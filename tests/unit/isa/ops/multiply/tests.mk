@@ -36,3 +36,7 @@ $(eval $(call ti_c54x_add_test,macp_smem_ops,isa/ops/multiply,test_macp_smem_ops
 $(eval $(call ti_c54x_add_test,macd_smem_ops,isa/ops/multiply,test_macd_smem_ops.c))
 # P3-S3 RED contract: MPY #lk immediate row.
 $(eval $(call ti_c54x_add_test,mpy_lk_ops,isa/ops/multiply,test_mpy_lk.c))
+# P3-S33 RED contract: MPY Smem,#lk syntax-3 leaf.
+$(eval $(call ti_c54x_add_test,mpy_smem_lk_ops,isa/ops/multiply,test_mpy_smem_lk_ops.c))
+# P3-S33 RED contract: MAC Smem,#lk syntax-4 leaf.
+$(eval $(call ti_c54x_add_test,mac_smem_lk_ops,isa/ops/multiply,test_mac_smem_lk_ops.c))

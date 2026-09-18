@@ -456,9 +456,11 @@
       "table_ordinal": 4,
       "mnemonic": "MPY",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MPY_SMEM_LK"
+      ]
     },
     {
       "id": "FORM-T2-03-05",
@@ -571,9 +573,11 @@
       "table_ordinal": 3,
       "mnemonic": "MAC",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAC_SMEM_LK"
+      ]
     },
     {
       "id": "FORM-T2-04-04",
@@ -4338,6 +4342,18 @@
     {
       "catalog_symbol": "SUB_SMEM_SHIFT",
       "form_id": "FORM-T2-02-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MPY_SMEM_LK",
+      "form_id": "FORM-T2-03-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MAC_SMEM_LK",
+      "form_id": "FORM-T2-04-03",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     }

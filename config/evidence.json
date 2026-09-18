@@ -8009,6 +8009,42 @@
         "printed_page_end": "4-9"
       },
       "assertion": "SPRU172C ADDM defines the two-word immediate memory operation ADDM #lk,Smem with opcode diagram 0110_1011 I AAAAAAA: the 16-bit extension operand is added to the WORD16 data-memory operand and the sum is written back to the same Smem location. The MOD0-MOD3 composition uses base 0x6B80 and mask 0xFFE0. Status bits are affected by OVM and SXM and the operation affects C and OVA. The instruction is not repeatable. Under OVM=1 and SXM=1 the Example 2 vector (memory 0x8007 plus 0xFFF8) saturates to 0x8000."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MPY-SMEM-LK-P4-101",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MPY",
+        "printed_page_start": "4-101",
+        "printed_page_end": "4-101"
+      },
+      "assertion": "SPRU172C MPY syntax 3 defines the two-word operation MPY Smem,#lk,dst with opcode diagram 0110_001D I AAAAAAA: the signed 16-bit Smem operand is multiplied by the signed 16-bit lk operand and the product is stored in dst, while T is loaded with the Smem operand in the read phase. The MOD0-MOD3 composition uses base 0x6200 and mask 0xFE00. Status bits are affected by FRCT and OVM and the operation affects OVdst. No R bit exists in this opcode space, so the unrounded form covers it fully."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAC-SMEM-LK-P4-82",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MAC",
+        "printed_page_start": "4-82",
+        "printed_page_end": "4-82"
+      },
+      "assertion": "SPRU172C MAC syntax 4 defines the two-word operation MAC Smem,#lk,src[,dst] with opcode diagram 0110_01SD I AAAAAAA: the S-selected source accumulator is added to the product of the signed 16-bit Smem operand and the signed 16-bit lk operand and the sum is stored in the D-selected destination (defaulting to src), while T is loaded with the Smem operand in the read phase. The MOD0-MOD3 composition uses base 0x6400 and mask 0xFC00. Status bits are affected by FRCT and OVM and the operation affects OVdst. No R bit exists in this opcode space, so the unrounded form covers it fully."
     }
   ],
   "requirements": [
@@ -18263,6 +18299,90 @@
         "T-COMMON-RMW-ADD-REDUCER",
         "T-COMMON-RMW-ADD-COMMIT"
       ]
+    },
+    {
+      "id": "REQ-COMMON-MPY-SMEM-LK-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one two-word MOD0-MOD3 catalog identity for MPY Smem,#lk using base 0x6200 with mask 0xFE00, the DESTINATION_INDIRECT_ADDR7_EXTENSION16 layout, STATUS_FRCT_OVM input resources, and repeatability ELIGIBLE; the slot is disjoint from every established first-word identity and projects 512 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-SMEM-LK-P4-101"
+      ],
+      "test_ids": [
+        "T-COMMON-MPY-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-MPY-SMEM-LK-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Implement the MPY Smem,#lk effect as a direct-or-indirect WORD16 read with read-phase T load and a read-value STORE completion of Smem times signed lk into the D-selected accumulator through the multiply core with FRCT shift, OVM saturation, sticky OVdst, and preserved C/TC, gated on known FRCT/OVM with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-SMEM-LK-P4-101"
+      ],
+      "test_ids": [
+        "T-COMMON-MPY-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-MAC-SMEM-LK-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one two-word MOD0-MOD3 catalog identity for MAC Smem,#lk using base 0x6400 with mask 0xFC00, the SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16 layout, ACCUMULATORS_STATUS_FRCT_OVM input resources, and repeatability ELIGIBLE; the slot is disjoint from every established first-word identity and projects 1024 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-SMEM-LK-P4-82"
+      ],
+      "test_ids": [
+        "T-COMMON-MAC-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-MAC-SMEM-LK-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Implement the MAC Smem,#lk effect as a direct-or-indirect WORD16 read with read-phase T load and a read-value ADD completion of the S-selected source accumulator plus Smem times signed lk into the D-selected accumulator through the multiply core with FRCT shift, OVM saturation, sticky OVdst, and preserved C/TC, gated on known source/destination, FRCT, and OVM with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-SMEM-LK-P4-82"
+      ],
+      "test_ids": [
+        "T-COMMON-MAC-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-MPY-SMEM-LK-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode MPY Smem,#lk first words through the generic two-word DESTINATION_INDIRECT_ADDR7_EXTENSION16 decoder with copied destination, indirect, addr7, and lk operands and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-SMEM-LK-P4-101"
+      ],
+      "test_ids": [
+        "T-COMMON-MPY-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-MAC-SMEM-LK-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode MAC Smem,#lk first words through the generic two-word SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16 decoder with copied source, destination, Smem-cookie, and lk operands and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-SMEM-LK-P4-82"
+      ],
+      "test_ids": [
+        "T-COMMON-MAC-SMEM-LK-DECODE"
+      ]
     }
   ],
   "tests": [
@@ -26272,6 +26392,90 @@
       },
       "requirement_ids": [
         "REQ-COMMON-RMW-ADD-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-COMMON-MPY-SMEM-LK-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mpy_smem_lk_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_lk_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MPY-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-MPY-SMEM-LK-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpy_smem_lk_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MPY-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-MAC-SMEM-LK-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mac_smem_lk_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_lk_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MAC-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-MAC-SMEM-LK-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_smem_lk_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MAC-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-MPY-SMEM-LK-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mpy_smem_lk_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_smem_lk_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MPY-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-MAC-SMEM-LK-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_mac_smem_lk_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_smem_lk_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-MAC-SMEM-LK-DECODE"
       ]
     }
   ]

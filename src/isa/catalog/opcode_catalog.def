@@ -309,12 +309,24 @@ TI_C54X_OPCODE_MASKED(STM, stm, 0x7700, 0xFF00, 2, TI_C54X_OPERAND_LAYOUT_DIRECT
 TI_C54X_OPCODE_MASKED(RPT_K, rpt_k, 0xEC00, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_EXACT(RPT_LK, rpt_lk, 0xF070, 2, TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(MAC_SMEM, mac_smem, 0x2800, 0xFC00, 1, TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* Syntax-4 MAC Smem,#lk: (src) + (Smem) x lk into dst (defaulting
+ * to src) over the 0x6400|S<<9|D<<8 base plus lk extension word,
+ * with the Smem read loading T in the read phase. TI pins no R
+ * bit in this space, so the unrounded leaf covers it fully;
+ * Table 6-18 omits every MAC form, so the row is repeatable. */
+TI_C54X_OPCODE_MASKED(MAC_SMEM_LK, mac_smem_lk, 0x6400, 0xFC00, 2, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM)
 /* Syntax-3 MAC #lk: (T) x lk + src into dst (defaulting to src)
  * over the 0xF067|S<<9|D<<8 base plus lk extension word into the
  * landed op_mac_lk core. TI pins no R bit in this space, so the
  * unrounded leaf covers it fully. */
 TI_C54X_OPCODE_MASKED(MAC_LK, mac_lk, 0xF067, 0xFCFF, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
 TI_C54X_OPCODE_MASKED(MPY_SMEM, mpy_smem, 0x2000, 0xFC00, 1, TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* Syntax-3 MPY Smem,#lk: (Smem) x lk into the D-selected accumulator
+ * over the 0x6200|D<<8 base plus lk extension word, with the Smem
+ * read loading T in the read phase. TI pins no R bit in this
+ * space, so the unrounded leaf covers it fully; Table 6-18 omits
+ * every MPY form, so the row is repeatable. */
+TI_C54X_OPCODE_MASKED(MPY_SMEM_LK, mpy_smem_lk, 0x6200, 0xFE00, 2, TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_EXTENSION16, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_FRCT_OVM)
 /* Syntax-4 MPY #lk: (T) x lk into the D-selected accumulator over
  * the 0xF066|D<<8 base plus lk extension word into the landed
  * op_mpy_lk core. TI pins no R bit in this space, so the

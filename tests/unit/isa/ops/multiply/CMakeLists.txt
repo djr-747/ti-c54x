@@ -39,3 +39,7 @@ ti_c54x_add_unit_test(macp_smem_ops test_macp_smem_ops.c)
 ti_c54x_add_unit_test(macd_smem_ops test_macd_smem_ops.c)
 # P3-S3 RED contract: MPY #lk immediate row.
 ti_c54x_add_unit_test(mpy_lk_ops test_mpy_lk.c)
+# P3-S33 RED contract: MPY Smem,#lk syntax-3 leaf.
+ti_c54x_add_unit_test(mpy_smem_lk_ops test_mpy_smem_lk_ops.c)
+# P3-S33 RED contract: MAC Smem,#lk syntax-4 leaf.
+ti_c54x_add_unit_test(mac_smem_lk_ops test_mac_smem_lk_ops.c)

@@ -21,4 +21,6 @@ ti_c54x_core_sources += \
     src/isa/ops/multiply/op_masa_t.c \
     src/isa/ops/multiply/op_macd_smem.c \
     src/isa/ops/multiply/op_macp_smem.c \
-    src/isa/ops/multiply/op_mpy_lk.c
+    src/isa/ops/multiply/op_mpy_lk.c \
+    src/isa/ops/multiply/op_mpy_smem_lk.c \
+    src/isa/ops/multiply/op_mac_smem_lk.c

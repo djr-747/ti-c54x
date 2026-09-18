@@ -165,11 +165,12 @@ test_fixed_bit_near_misses(void)
     /* Mask 0xFF00 fixes bits 15:8 and leaves the Sind byte
      * variable. Clearing fixed bit 9 lands on the BANZ sibling
      * (pinned above) and clearing fixed bit 14 lands on the
-     * MAS_SMEM row (pinned below); setting bit 8 lands on the
-     * STH syntax-4 direct row (pinned below); all other
+     * MAS_SMEM row (pinned below); clearing fixed bit 11 lands
+     * on the MAC_SMEM_LK row (pinned below); setting bit 8 lands
+     * on the STH syntax-4 direct row (pinned below); all other
      * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0400), UINT16_C(0x0800), UINT16_C(0x1000),
+        UINT16_C(0x0400), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x8000)};
 
     /* Setting bit 8 lands on the P3-S13 STH syntax-4 direct row:
@@ -187,6 +188,17 @@ test_fixed_bit_near_misses(void)
 
     /* Clearing fixed bit 14 lands on the P3-S3e MAS Smem row:
      * 0x6E00 ^ 0x4000 = 0x2E00 classifies as MAS_SMEM. */
+
+    /* Clearing fixed bit 11 lands on the P3-S33 MAC Smem,#lk row:
+     * 0x6E00 ^ 0x0800 = 0x6600 classifies as MAC_SMEM_LK. */
+    {
+        const ti_c54x_decode_result mac_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZD_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_sibling.id == TI_C54X_OPCODE_ID_MAC_SMEM_LK);
+    }
     {
         const ti_c54x_decode_result mas_sibling =
             ti_c54x_decode_first_word(

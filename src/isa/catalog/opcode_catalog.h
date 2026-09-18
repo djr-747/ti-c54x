@@ -149,6 +149,18 @@ typedef enum ti_c54x_operand_layout_id {
      * destination select D[8:8], and signed 5-bit SHIFT[4:0] from
      * word 1. */
     TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_SOURCE_DESTINATION_SHIFT5,
+    /* Two-word MPY Smem,#lk fields: destination select D[8:8],
+     * indirect flag I[7:7], and 7-bit Smem address A[6:0] from
+     * word 0 with the copied 16-bit immediate from word 1; T is
+     * written. */
+    TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_EXTENSION16,
+    /* Two-word MAC Smem,#lk fields: source select S[9:9],
+     * destination select D[8:8], one 8-bit Smem specifier cookie
+     * (indirect flag I[7:7] over the 7-bit address A[6:0]) from
+     * word 0, and the copied 16-bit immediate from word 1; T is
+     * written. The cookie rides one operand so trusted packets
+     * stay within the four-operand capacity. */
+    TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -254,6 +266,11 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_FRCT_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* MPY Smem,#lk bodies read FRCT/OVM only; Smem arrives on the bus and
+ * T is written, not read. */
+#define TI_C54X_INPUT_RESOURCES_STATUS_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* ADD Smem<<TS bodies read accumulators plus T plus SXM/OVM. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM \

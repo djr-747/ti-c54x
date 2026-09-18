@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 275)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 275)
+        self.assertEqual(len(bindings), 277)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 277)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 235)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 237)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -100,7 +100,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "AND_SMEM", "OR_SMEM", "XOR_SMEM", "SUBB_SMEM",
                "SUBS_SMEM", "ADD_LK_SHIFT", "ADD_LK_16",
                "SUB_LK_SHIFT", "SUB_LK_16",
-               "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT"},
+               "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT",
+               "MPY_SMEM_LK", "MAC_SMEM_LK"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -161,7 +162,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "XOR_SMEM", "SUBB_SMEM",
                                                        "SUBS_SMEM",
                                                        "ADD_SMEM_SHIFT",
-                                                       "SUB_SMEM_SHIFT")
+                                                       "SUB_SMEM_SHIFT",
+                                                       "MPY_SMEM_LK",
+                                                       "MAC_SMEM_LK")
                     else "IMMEDIATE_K"
                     if binding["catalog_symbol"] == "RPT_K"
                     else "IMMEDIATE_LK"

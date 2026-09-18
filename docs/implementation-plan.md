@@ -675,6 +675,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S32: ADDM RMW-ADD seam (planned)](plan/p3-s32-addm-rmw-add-seam-slice.md)
 
+- [P3-S33: MPY syn3 / MAC syn4 Smem-lk rows (planned)](plan/p3-s33-mpy-mac-smem-lk-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

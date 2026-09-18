@@ -1,0 +1,336 @@
+/*
+ * Module contract
+ *
+ * Owns: RED proofs for the MPY Smem,#lk,dst syntax-3 leaf (unrounded
+ * only): layout plus 0x6200 first-word gating, D/I/addr7/lk selection,
+ * direct versus standard-indirect memory-read staging with the
+ * read-phase T load, the read-value STORE completion of Smem times
+ * signed lk into dst through the multiply core, FRCT doubling, OVM
+ * saturation with sticky OVdst, C/TC preservation, T-input
+ * independence, trusted parity, and transactional rejection. All
+ * vectors are derived from the execution rules ((Smem) x lk -> dst,
+ * (Smem) -> T); the manual gives no worked example for syntax 3.
+ * Does not own: catalog rows, operand-layout descriptors,
+ * T/accumulator/status mutation, CPU sequencing, timing,
+ * observers, diagnostics, or the production semantic leaf.
+ */
+
+#include "../../../../../src/isa/ops/op_effect.h"
+#include "../../../../../src/isa/ops/op_input.h"
+#include "../../../../../src/isa/ops/op_status.h"
+#include "../../../../../src/isa/decode/operand_layout.h"
+#include "../../../../../src/isa/ops/dispatch/trusted_semantics.h"
+#include "../../../../../src/isa/ops/multiply/op_mpy_smem_lk.h"
+#include "../../../../support/test_harness.h"
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+#define LAYOUT_MPY_SMEM_LK \
+    TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7_EXTENSION16
+
+static ti_c54x_decoded_instruction make_instruction(uint16_t first_word,
+                                                    uint16_t second_word)
+{
+    ti_c54x_decoded_instruction instruction = {0};
+
+    instruction.id = TI_C54X_OPCODE_ID_MPY_SMEM_LK;
+    instruction.operand_layout = LAYOUT_MPY_SMEM_LK;
+    instruction.repeatability = TI_C54X_REPEATABILITY_ELIGIBLE;
+    instruction.input_resources = TI_C54X_INPUT_RESOURCES_STATUS_FRCT_OVM;
+    instruction.bundle.program_words[0] = first_word;
+    instruction.bundle.program_words[1] = second_word;
+    instruction.bundle.program_word_count = UINT8_C(2);
+    return instruction;
+}
+
+static ti_c54x_op_input_snapshot known_input(void)
+{
+    ti_c54x_op_input_snapshot input = {0};
+
+    /* T is written, never read; FRCT/OVM gate execution. */
+    input.t_register_raw16 = UINT16_C(0x1234);
+    input.t_register_known = false;
+    input.status_frct = UINT8_C(0);
+    input.status_frct_known = true;
+    input.status_ovm = UINT8_C(0);
+    input.status_ovm_known = true;
+    return input;
+}
+
+static ti_c54x_op_effect run_checked(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input)
+{
+    ti_c54x_op_effect effect = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(instruction, input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_MEMORY);
+    TI_C54X_TEST_CHECK(effect.payload.memory.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(effect.payload.memory.load_t_with_read == true);
+    TI_C54X_TEST_CHECK(effect.payload.memory.complete != NULL);
+    return effect;
+}
+
+static ti_c54x_op_effect run_completion(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    const ti_c54x_op_effect *staged, uint16_t read_value_word)
+{
+    ti_c54x_op_effect next = {0};
+
+    TI_C54X_TEST_CHECK(staged->payload.memory.complete(
+                           instruction, input, read_value_word, &next) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(next.kind == TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.status_delta.c_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.status_delta.tc_action ==
+                       TI_C54X_OP_STATUS_BIT_PRESERVE);
+    return next;
+}
+
+/* Direct page-0 word 0x6215 (D=0, I=0, addr 0x15), lk=6, Smem=7:
+ * A = 42. */
+static void test_checked_direct_basic(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x0006));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = run_checked(&instruction, &input);
+    ti_c54x_op_effect next =
+        run_completion(&instruction, &input, &staged, UINT16_C(0x0007));
+
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.kind ==
+                       TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(0));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x2A));
+    TI_C54X_TEST_CHECK(
+        next.payload.accumulator_write.status_delta
+            .destination_overflow_action ==
+        TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE);
+}
+
+/* Indirect word 0x6394 (D=1, I=1, MOD2 AR4), lk=3, Smem=5: B = 15. */
+static void test_checked_indirect_selects_destination(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6394), UINT16_C(0x0003));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = run_checked(&instruction, &input);
+    ti_c54x_op_effect next =
+        run_completion(&instruction, &input, &staged, UINT16_C(0x0005));
+
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.kind ==
+                       TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.mode ==
+                       TI_C54X_INDIRECT_SINGLE_MOD2);
+    TI_C54X_TEST_CHECK(staged.payload.memory.address_spec.arf ==
+                       UINT8_C(4));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(1));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x0F));
+}
+
+/* Signed product: Smem=-1 (0xFFFF) times lk=2 gives -2. */
+static void test_checked_negative_smem(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x0002));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged = run_checked(&instruction, &input);
+    ti_c54x_op_effect next =
+        run_completion(&instruction, &input, &staged, UINT16_C(0xFFFF));
+
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFFFFFFFFE));
+}
+
+/* FRCT=1 doubles the 32-bit product: 1x1 -> 2. */
+static void test_checked_frct_doubles_product(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x0001));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged;
+    ti_c54x_op_effect next;
+
+    input.status_frct = UINT8_C(1);
+    staged = run_checked(&instruction, &input);
+    next = run_completion(&instruction, &input, &staged, UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(2));
+}
+
+/* OVM saturation: Smem=0x8000 times lk=0x8000 with FRCT=1 overflows
+ * the signed 32-bit product: OVM=0 keeps 0x80000000, OVM=1 pins at
+ * 0x007FFFFFFF, OVdst set in both modes. */
+static void test_checked_ovm_saturation(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x8000));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect staged;
+    ti_c54x_op_effect next;
+
+    input.status_frct = UINT8_C(1);
+    staged = run_checked(&instruction, &input);
+    next = run_completion(&instruction, &input, &staged, UINT16_C(0x8000));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x80000000));
+    TI_C54X_TEST_CHECK(
+        next.payload.accumulator_write.status_delta
+            .destination_overflow_action ==
+        TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1);
+    input.status_ovm = UINT8_C(1);
+    staged = run_checked(&instruction, &input);
+    next = run_completion(&instruction, &input, &staged, UINT16_C(0x8000));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x007FFFFFFF));
+    TI_C54X_TEST_CHECK(
+        next.payload.accumulator_write.status_delta
+            .destination_overflow_action ==
+        TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1);
+}
+
+static void test_checked_unknown_inputs_stop(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x0006));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    input.status_frct_known = false;
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, &effect) ==
+                       TI_C54X_OP_STATUS_UNKNOWN_INPUT);
+    input = known_input();
+
+    input.status_ovm_known = false;
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, &effect) ==
+                       TI_C54X_OP_STATUS_UNKNOWN_INPUT);
+    input = known_input();
+
+    input.status_frct = UINT8_C(2);
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_OPERAND);
+    input = known_input();
+
+    input.status_ovm = UINT8_C(3);
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_OPERAND);
+}
+
+static void test_checked_exotic_mode_rejects(void)
+{
+    /* MOD4 (mode bits 100) is outside the MOD0--MOD3 composition. */
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x63A2), UINT16_C(0x0006));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_OPERAND);
+    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_NONE);
+}
+
+static void test_trusted_parity(void)
+{
+    /* Word 0x6394: D=1, I=1, MOD2 AR4; lk=3; Smem=5 -> B=15. */
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6394), UINT16_C(0x0003));
+    ti_c54x_trusted_operand_values operands = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+    ti_c54x_op_effect next = {0};
+
+    operands.count = UINT8_C(4);
+    operands.values[0].raw_value = UINT64_C(1);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(1);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(0x14);
+    operands.values[2].width_bits = UINT8_C(7);
+    operands.values[3].raw_value = UINT64_C(0x0003);
+    operands.values[3].width_bits = UINT8_C(16);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_mpy_smem_lk(
+                           &instruction, &operands, &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.kind == TI_C54X_OP_EFFECT_MEMORY);
+    TI_C54X_TEST_CHECK(effect.payload.memory.address_spec.arf ==
+                       UINT8_C(4));
+    TI_C54X_TEST_CHECK(effect.payload.memory.complete(
+                           &instruction, &input, UINT16_C(0x0005), &next) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.destination ==
+                       UINT8_C(1));
+    TI_C54X_TEST_CHECK(next.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x0F));
+}
+
+static void test_checked_decode_rejects(void)
+{
+    ti_c54x_decoded_instruction neighbor =
+        make_instruction(UINT16_C(0x6000), UINT16_C(0x0006));
+    ti_c54x_decoded_instruction wrong_layout = make_instruction(
+        UINT16_C(0x6215), UINT16_C(0x0006));
+    ti_c54x_decoded_instruction short_bundle = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    /* Fixed-bits neighbor outside the 0x6200/0xFE00 slot. */
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&neighbor, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    /* MPY word under the MAC sibling layout is not this form. */
+    wrong_layout.operand_layout =
+        TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16;
+    TI_C54X_TEST_CHECK(
+        ti_c54x_op_mpy_smem_lk(&wrong_layout, &input, &effect) ==
+        TI_C54X_OP_STATUS_INVALID_DECODE);
+
+    short_bundle.id = TI_C54X_OPCODE_ID_MPY_SMEM_LK;
+    short_bundle.operand_layout = LAYOUT_MPY_SMEM_LK;
+    short_bundle.bundle.program_words[0] = UINT16_C(0x6215);
+    short_bundle.bundle.program_word_count = UINT8_C(1);
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&short_bundle, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+}
+
+static void test_null_rejects(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0x6215), UINT16_C(0x0006));
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(NULL, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, NULL, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_op_mpy_smem_lk(&instruction, &input, NULL) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_mpy_smem_lk(NULL, NULL, &input,
+                                                      &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+}
+
+int main(void)
+{
+    test_checked_direct_basic();
+    test_checked_indirect_selects_destination();
+    test_checked_negative_smem();
+    test_checked_frct_doubles_product();
+    test_checked_ovm_saturation();
+    test_checked_unknown_inputs_stop();
+    test_checked_exotic_mode_rejects();
+    test_trusted_parity();
+    test_checked_decode_rejects();
+    test_null_rejects();
+    return 0;
+}
