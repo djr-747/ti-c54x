@@ -13669,3 +13669,64 @@ entries are not rewritten after publication.
   worker worktrees under `.muse/worktrees/` await GC.
 - Split commit discipline: impl `c23ccc5`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S50 CMPS max-select-store slice (slice 79)
+
+- Scope: direct-only CMPS src,Smem leaf (FORM-T2-21-01, last of
+  table 2-21): signed 16-bit max of the S-selected accumulator
+  halves stages a page-0 Smem WRITE with a completion staging
+  the compound TRN_SHIFT_WRITE follow-on ((trn << 1) | taken,
+  TC = taken) on the S50 TRN_SHIFT_WRITE effect + ordinary
+  transaction arm. Maintainer wired the catalog row
+  (0x8E00/0xFE80, 256 encodings), ACCUMULATORS_TRN_REGISTER
+  resource (+ schema token), dispatch include, lookup regen,
+  inventory flip to SUBSET/DIRECT_PAGE0, evidence, README,
+  and frozen-count bumps. The deferred I=1 half stays
+  decodable and rejects INVALID_OPERAND on both paths.
+- Validation: `make test` exit 0 (617/617 unit binaries incl.
+  the four new CMPS suites, 286/286 python contract tests,
+  source boundaries PASS, evidence PASS, observer artifact
+  OK). Independent end-to-end probe retired CMPS through
+  `ti_c54x_cpu_run` before the committed CPU suite landed.
+  Closure: 302 rows, 308 bindings, 35,081 lookup entries,
+  150/205 forms at 73.171% with strict 43/205 at 20.976%,
+  786 requirements, 642 tests.
+- Decisions: (1) RED tie vector 0x00FF expected taken,
+  contradicting the 0x1234 tie vector; strict-wins design
+  rules ties untaken, so the expectation (not the leaf) was
+  fixed to false. (2) Landing closed the TRN-cell completion
+  gap: the pipeline admitted no WRITE-with-completion shape,
+  so CMPS retired INVALID_STATE at the CPU. Admitted WRITE +
+  NONE + completion in the validator (staged value feeds the
+  completion) and invoked it in the single-leg WRITE branch
+  with the ordinary follow-on commit before the architecture
+  commit; RMW paired-write legs still never carry
+  completions. Follow-on commit is infallible for
+  well-formed effects (binary tc_bit enforced twice), so the
+  post-write fault arm is defensive only. (3) Probe dma 0x10
+  hit the MMR AR0 cell and routed internally; committed CPU
+  test uses dma 0x20/0x21 on the DATA bus and leaves DP
+  unseeded to prove DP-independence.
+- Near-misses: six lookup-population pins 34825 to 35081;
+  one unspaced ID_COUNT pin; 79 spaced ID_COUNT pins 302 to
+  303; SUBSET 264 to 265 with CMPS added to the DIRECT_PAGE0
+  tuple; percent pins to 73.171. CPU test links a new
+  src/cpu/-owned CPU-RETIREMENT requirement (MPYA
+  precedent); the OWNER gate rejects cpu/ tests under
+  isa/ops-owned requirements.
+- Tool fix: `check_evidence` hung (100% CPU, no output) on
+  the S50 tree. Root cause in the checker, not the
+  registry: `repo_files` post-filtered a whole-tree rglob,
+  walking gigabytes of accumulated per-slice `build-*`
+  trees. Fixed by pruning ignored trees during traversal
+  (identical results) and covering the `build-*` family;
+  walks now take 0.08 s. No manifests live in build trees
+  (verified empty).
+- Knobs: none added, changed, or retired.
+- Follow-up: 55 unbound forms remain (table 2-21 fully
+  bound: CMPS SUBSET direct, SACCD/SRCCD/STRCD COMPLETE);
+  CMPS indirect (I=1) MOD slice still deferred; stale
+  `indirect_dual.h` MOD3-deferred comment predates W52B;
+  worker worktrees under `.muse/worktrees/` await GC.
+- Split commit discipline: impl `127b685`, this ledger-only
+  follow-up.
