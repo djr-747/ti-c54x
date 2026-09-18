@@ -13364,3 +13364,56 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `8953957`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S44 TRN input seam (slice 73)
+
+- Landed: maintainer arch seam unblocking deferred ST TRN
+  (`FORM-T2-22-02`). New `TI_C54X_INPUT_RESOURCES_TRN_REGISTER`
+  bit (8192, fourteenth resource, `KNOWN_MASK` included),
+  snapshot fields `trn_register_raw16`/`trn_register_known`, a
+  `collect.c` arm reading the architectural TRN through
+  `ti_c54x_mmr_file_read_trn` (OK copies exact WORD16 known,
+  UNKNOWN leaves zero/unknown, anything else rejects), and a
+  borrowed `mmr_file` source pointer on `ti_c54x_input_sources`
+  wired once in `run.c` from `cpu->arch_state.mmr_file`.
+  Unrequested TRN is not read. Snapshot carrier 64 to 72
+  bytes LP64 (68 ILP32, both verified by probe); embedded
+  instruction transaction root 384 to 392 (348 to 356, LP64
+  executed and -m32 probe executed, native-32 by
+  construction); eleven `0x2000` invalid-resource probes moved
+  to `0x4000`. RED proof
+  `tests/unit/cpu/input/test_collect_trn_register.c` mirrors
+  the T collection contract (exact copies, unknown
+  canonicalization, selectivity, transactional rejection) and
+  was observed failing before the seam. No catalog row,
+  layout, handler, effect, inventory form, or CPU retirement
+  change; catalog, lookup, bindings, and family coverage
+  unchanged (293 rows, 299 bindings, 32,649 lookup, 141/205
+  at 68.780%), 762 requirements, 618 tests. Slice doc born
+  `(implemented; local verification green)` in the impl
+  commit.
+- Validation: `make build` clean, `make test` exit 0 (full
+  gate), focused input suite 12/12, `check_evidence.py` PASS
+  (762/618), `check_isa_inventory.py` exit 0 (141/205,
+  strict 40/205), ASan/UBSan clean on the TRN/T/root/carrier
+  suites with the normal build restored (0 asan symbols).
+- Decisions: dedicated `mmr_file` source pointer (mirrors the
+  T precedent) instead of reaching through `arch_state`;
+  single production wiring site. PROJECT/COMMON scope policy
+  held: the new PROJECT_CONTRACT req cites the project
+  contract source only.
+- Near-misses: first full run exposed four more pinned
+  carriers beyond the input asserts (dual-MOD3 root, W51B
+  contract, DLD carrier, two perf ABI probes); all moved to
+  probe-verified sizes in the same pass. Lesson: a snapshot
+  field addition ripples to every embedding carrier — grep
+  `_Static_assert.*sizeof` and `sizeof(...) ==` pins before
+  the full gate, not after.
+- Knobs: none added, changed, or retired.
+- Follow-up: ST TRN direct leaf (S45) can now go to managed
+  fan-out against this seam; remaining census 64 unbound
+  forms minus the seam itself. Wave-7 plan doc still
+  untracked.
+- Split commit discipline: impl `4bd4ef2`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
