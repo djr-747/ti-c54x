@@ -20,24 +20,16 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S34 complete (S3t–S3x R-variant lock-ins through the
-shared `MAC`/`MAS`/`MACA`/`MASA`/`MPY` rows; S3z `ADD` Smem syntaxes 1–3;
-S4 `XC`; S10–S13 `STH` stores; S14–S26 `SUB`/`AND`/`OR`/`XOR`/`SUBB`/`SUBS`
-Smem rows; Wave-5 `ADD`/`SUB` leaf fan-out with S27–S29 `#lk`/`Xmem`/src-ASM
-rows; Wave-6 `MPY`/`MAC` `#lk` leaves with S30 rows; S31 `ADD`/`SUB` Smem
-SHIFT rows; S32 `ADDM` RMW-ADD seam; S33 `MPY` syn3 / `MAC` syn4 Smem-`#lk`
-rows; S34 `RND`/`SAT` accumulator rows with the `WRITE_0` overflow seam;
-S35 `MPYR`/`MACR`/`MACAR`/`MASR`/`MASAR` shared-row bindings; S36 `BITF`
-Smem-`#lk`, `CMPM` Smem-`#lk`, `BITT` Smem, and direct-only `ST #lk`,Smem rows
-under the `INDIRECT_ADDR7_EXTENSION16` layout seam; W7 pilot `ABS`/`NEG`/`NORM`
-accumulator rows from managed leaf fan-out; S38 `ADDC`/`ADDS`/`SUBC` Smem rows
-from managed leaf fan-out; S39 `SFTA` accumulator row from managed leaf
-fan-out; S40 `LTD` Smem row from managed leaf fan-out; S42 `DELAY` Smem row
-from managed leaf fan-out; S43 `ST T` direct row from managed leaf fan-out;
-S44 `TRN` input seam; S45 `ST TRN` direct row from managed leaf fan-out;
-S46 `STL` direct rows from managed leaf fan-out; S47 `STLM`/`LDM` direct rows
-from managed leaf fan-out; S48 conditional-store seam; S49 `SACCD`/`SRCCD`/
-`STRCD` Xmem rows from managed leaf fan-out; S50 `CMPS` direct row).
+Current snapshot: P3-S50 complete (`CMPS` direct row; table 2-21 fully
+bound). Wave-1 tail control flow is done (branches, calls, and returns
+with delayed companions, plus `RC`/`RCD`, `RETF`, and `XC`). Single-repeat
+immediates (`RPT #K`/`#lk`), the `MAC`/`MPY` datapath with single, dual,
+and program-coefficient rows, `STM`/`STH`/`STL`/`STLM`/`LDM` stores and
+loads, the `ADD`/`SUB`/`MPY`/`MAC` leaf fan-out (`#lk`, `Xmem`, src-ASM,
+Smem SHIFT), `ADDM`/`ADDC`/`ADDS`/`SUBC`, `RND`/`SAT`/`ABS`/`NEG`/`NORM`/
+`SFTA`, `LTD`/`DELAY`, `BITF`/`CMPM`/`BITT`, conditional stores
+(`SACCD`/`SRCCD`/`STRCD`), `CMPS`, and `PORTR`/`PORTW` are all retired
+through CPU tests.
 
 - 302 runnable catalog rows under 35,081 populated first-word lookup entries.
   Inventory coverage is 150/205 forms SUBSET-or-better (73.171%) and 43/205
@@ -158,13 +150,30 @@ from managed leaf fan-out; S48 conditional-store seam; S49 `SACCD`/`SRCCD`/
   out the six `ADD`/`SUB` leaves (`#lk`, `Xmem`, src-ASM) with
   S27–S29 rows binding `FORM-T2-01-07/08/05/10` and
   `FORM-T2-02-07/08/05/10`; Wave-6 plus S30 land the `MPY`/`MAC`
-  `#lk` leaves and rows (`FORM-T2-03-05`, `FORM-T2-04-02`).
-- Major remaining work is the `ADD`/`SUB` syntax-4 Smem SHIFT rows
-  (S31, in progress), `ADDM`, `MPY` Smem,`#lk` syntax 3, `MAC`
-  Smem,`#lk` syntax 4, `SUBC`, `ADDC`/`ADDS`/`DADD`, MMR/stack
-  moves, bit/field ops, shifts/misc, the port seam, far/XPC
-  addressing, profiles/devices, and evidenced machine timing.
-  Emulator integration remains deferred.
+  `#lk` leaves and rows (`FORM-T2-03-05`, `FORM-T2-04-02`); S31
+  lands the `ADD`/`SUB` syntax-4 Smem SHIFT rows; S37–S50 close out
+  `ABS`/`NEG`/`NORM`, `ADDC`/`ADDS`/`SUBC`, `SFTA`, `LTD`, `DELAY`,
+  `ST T`/`ST TRN`/`STL`/`STLM`/`LDM` direct rows, the
+  conditional-store seam and leaves, and the `CMPS` direct row.
+- Major remaining work (55/205 forms): dual-40 `DADD`-family arithmetic,
+  filter ops (`FIRS`/`LMS`/`POLY`/`SQDST`/`ABDST`), `BIT`, far/XPC
+  branches and returns (`FB`/`FCALL`/`FRET` family), `INTR`/`TRAP`/`IDLE`/
+  `RESET`/`MAR` control, block repeat (`RPTB`/`RPTBD`/`RPTZ`) plus `RPT`
+  Smem, the T2-17 stack family (`FRAME` via S51; `PSHD`/`POPD`/`PSHM`/
+  `POPM` next), one `STL` form, parallel `LD`/`ST` forms (tables 2-23
+  through 2-25), MMR/pmad moves (`MVDD`/`MVDK`/`MVDM`/`MVDP`/`MVKD`/
+  `MVMD`/`MVMM`/`MVPD`, `READA`/`WRITA`), and rounded single-memory
+  `MACR`/`MASR`. Profiles/devices and evidenced machine timing stay
+  later work. Emulator integration remains deferred.
+- Against the Nokia 5110 DSP-image mnemonic census (~36.2k static words),
+  roughly 89% of static words now use mnemonics with at least one covered
+  form (mnemonic-level upper bound, not exact-syntax coverage). The
+  heaviest uncovered weights are `MAR`, `POPM`/`PSHM`, the `MVxx` moves,
+  block repeat (`RPTBD`/`RPTB`), and dual-40 `DADD`-family words; far
+  addressing stays out of scope for the common core. Feeding the image
+  to the core still needs a hosted loader/bus harness (none exists yet),
+  the missing high-weight forms above, block-repeat activation, and the
+  open P0-W4 permitted-use decision for DSP images.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.
