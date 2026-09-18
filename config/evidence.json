@@ -8471,6 +8471,24 @@
         "printed_page_end": "4-35"
       },
       "assertion": "SPRU172C CMPS defines CMPS src,Smem with opcode diagram 1000_111S_IAAAAAAA (S selects accumulator A/B source, I selects direct/indirect addressing, A the 7-bit address): the signed 16-bit maximum of src(31:16) and src(15:0) is stored into Smem, TRN shifts left by one with the taken bit shifted into TRN(0), and TC takes the taken bit; only bits 31:0 participate and guard bits are excluded. Status Bits TC; one word."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FRAME-P4-60",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "FRAME",
+        "printed_page_start": "4-60",
+        "printed_page_end": "4-60"
+      },
+      "assertion": "SPRU172C FRAME defines FRAME K with opcode diagram 1110_1110_KKKKKKKK (K is the signed 8-bit short-immediate offset in bits 7:0, -128 to 127): the offset is added to SP with no address-generation or stack-manipulation latency for the following instruction. Status Bits None; one word; Class 1."
     }
   ],
   "requirements": [
@@ -19863,6 +19881,76 @@
       "test_ids": [
         "T-COMMON-CMPS-SMEM-DIRECT-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-FRAME-K-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for FRAME K using base 0xEE00 with mask 0xFF00 (K free in bits 7:0), the FRAME_K8 layout, stack-pointer input, and repeatability UNRESOLVED; the slot projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRAME-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-FRAME-K-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-FRAME-K-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every FRAME K first word through FRAME_K8, extracting the 8-bit K field with exact 256-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRAME-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-FRAME-K-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-FRAME-K-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/stack/",
+      "claim": "Execute the checked and trusted FRAME K leaves, staging one SP_WRITE effect carrying the (SP + sign-extended K) mod 65536 value-after, requiring known SP input, with transactional rejection and checked/trusted/dispatch parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRAME-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-FRAME-K-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-FRAME-K-SP-APPLY",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/stack/",
+      "claim": "Apply the SP_WRITE effect to architectural SP through the checked state writer (marking SP known), treating NONE as a successful no-op and rejecting other kinds atomically.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRAME-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-FRAME-K-SP-APPLY"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-FRAME-K-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire FRAME K on the CPU with SP publication, sequential PC advance, no bus traffic, and transactional rejection on unknown SP input.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRAME-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-FRAME-K-CPU"
+      ]
     }
   ],
   "tests": [
@@ -28993,6 +29081,76 @@
       },
       "requirement_ids": [
         "REQ-COMMON-CMPS-SMEM-DIRECT-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-FRAME-K-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_frame_k_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.frame_k_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-FRAME-K-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-FRAME-K-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_frame_k_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.frame_k_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-FRAME-K-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-FRAME-K-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/stack/test_frame_k.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.frame_k_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-FRAME-K-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-FRAME-K-SP-APPLY",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/stack/test_sp_write_apply.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sp_write_apply"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-FRAME-K-SP-APPLY"
+      ]
+    },
+    {
+      "id": "T-COMMON-FRAME-K-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/stack/test_cpu_frame_k.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_frame_k"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-FRAME-K-CPU-RETIREMENT"
       ]
     }
   ]

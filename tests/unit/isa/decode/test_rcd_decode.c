@@ -173,9 +173,10 @@ test_fixed_bit_near_misses(void)
      * miss every row, except clearing fixed bit 14 lands on
      * MAS_DUAL_M0_M0 (S3i claims the 0xB8xx neighborhood; the
      * UNKNOWN loop drops that mask under the cross-slice hazard
-     * rule). */
+     * rule) and clearing fixed bit 12 lands on the P3-S51 FRAME
+     * row (0xFE00 ^ 0x1000 = 0xEE00; pinned below). */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x2000),
         UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -188,6 +189,17 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Clearing fixed bit 12 lands on the P3-S51 FRAME row. */
+    {
+        const ti_c54x_decode_result frame_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RCD_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(frame_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(frame_sibling.id == TI_C54X_OPCODE_ID_FRAME);
     }
 
     /* Clearing fixed bit 9 lands on RET. */

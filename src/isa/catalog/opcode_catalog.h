@@ -170,6 +170,9 @@ typedef enum ti_c54x_operand_layout_id {
      * 16-bit immediate from word 1. T is neither read nor
      * written. */
     TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16,
+    /* One-word FRAME fields: signed 8-bit stack-pointer offset
+     * K[7:0] from word 0; no other operand. */
+    TI_C54X_OPERAND_LAYOUT_FRAME_K8,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

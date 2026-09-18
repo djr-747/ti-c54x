@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),308)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 302)
+        self.assertEqual(len(bindings),309)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 303)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 43)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 265)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 266)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -108,6 +108,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "STLM_SMEM_DIRECT",
                "LDM_SMEM_DIRECT",
                "CMPS_SMEM_DIRECT",
+               "FRAME",
                "ADD_LK_SHIFT", "ADD_LK_16",
                "SUB_LK_SHIFT", "SUB_LK_16",
                "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT",
@@ -200,7 +201,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "CMPM_SMEM_LK",
                                                        "BITT_SMEM")
                     else "IMMEDIATE_K"
-                    if binding["catalog_symbol"] == "RPT_K"
+                    if binding["catalog_symbol"] in ("RPT_K", "FRAME")
                     else "IMMEDIATE_LK"
                     if binding["catalog_symbol"] in ("RPT_LK", "ADD_LK_SHIFT",
                                                      "ADD_LK_16",

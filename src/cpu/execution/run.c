@@ -21,6 +21,7 @@
 #include "isa/ops/opcode_dispatch.h"
 #include "isa/ops/dispatch/trusted_opcode_binding.h"
 #include "sequencer/effect_transaction.h"
+#include "sequencer/stack/sp_write_apply.h"
 #include "sequencer/program_pc_bridge.h"
 #include "sequencer/program_pc_target.h"
 #include "repeat_activate.h"
@@ -659,6 +660,52 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                 instructions_retired++;
                 continue;
             }
+        }
+
+        /* FRAME retires through the stack-pointer leaf: the bridge
+         * resolves first (no SP mutation on bridge failure), then
+         * the staged value-after commits through checked
+         * architectural state (marking SP known) ahead of the
+         * effect-transaction stage, which admits no SP target.
+         * Rejected calls publish no state mutation. */
+        if (effect.kind == TI_C54X_OP_EFFECT_SP_WRITE) {
+            if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
+                return ti_c54x_run_stop_result(cpu, ti_c54x_run_bridge_status_to_stop(bridge_status),
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (ti_c54x_sp_write_effect_apply(&effect,
+                                              &cpu->arch_state) !=
+                TI_C54X_SP_WRITE_EFFECT_OK) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            cpu->arch_state.pc_word = candidate_pc;
+            cpu->instructions_retired++;
+            instructions_retired++;
+            {
+                bool took_effect = false;
+
+                if (ti_c54x_run_advance_delayed_branch(
+                        cpu, packet.instruction.bundle.program_word_count,
+                        false, &took_effect) !=
+                    TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+                    return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+                if (took_effect) {
+                    ti_c54x_run_apply_deferred_branch(cpu);
+                }
+            }
+            if (ti_c54x_cpu_repeat_body_retired(cpu) ==
+                TI_C54X_CPU_REPEAT_RETIRE_INVALID) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            continue;
         }
 
         if (ti_c54x_effect_transaction_stage(

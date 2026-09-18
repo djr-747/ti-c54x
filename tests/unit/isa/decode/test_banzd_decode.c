@@ -171,7 +171,19 @@ test_fixed_bit_near_misses(void)
      * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0400), UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x8000)};
+        UINT16_C(0x2000)};
+
+    /* Flipping bit 15 lands on the P3-S51 FRAME row:
+     * 0x6E00 ^ 0x8000 = 0xEE00 classifies as FRAME. */
+    {
+        const ti_c54x_decode_result frame_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZD_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(frame_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(frame_sibling.id == TI_C54X_OPCODE_ID_FRAME);
+    }
 
     /* Setting bit 8 lands on the P3-S13 STH syntax-4 direct row:
      * 0x6E00 ^ 0x0100 = 0x6F00 classifies as STH_SHIFT_DIRECT. */

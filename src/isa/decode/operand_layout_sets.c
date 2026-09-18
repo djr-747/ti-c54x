@@ -755,3 +755,12 @@ static const ti_c54x_operand_field_layout
          UINT8_C(1)}};
 const ti_c54x_operand_layout_set ti_c54x_source_destination_round_set = {
     ti_c54x_source_destination_round_operands, UINT8_C(3)};
+
+/* FRAME fields: signed 8-bit stack-pointer offset K[7:0] from word 0;
+ * fixed bits 15:8 carry no operand. */
+static const ti_c54x_operand_field_piece ti_c54x_frame_k_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_frame_k_operand = {
+    &ti_c54x_frame_k_piece, UINT8_C(1), UINT8_C(8)};
+const ti_c54x_operand_layout_set ti_c54x_frame_k_set = {
+    &ti_c54x_frame_k_operand, UINT8_C(1)};

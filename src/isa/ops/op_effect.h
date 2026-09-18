@@ -34,8 +34,12 @@
  * TRN_SHIFT_WRITE carries one copied 16-bit TRN word with its
  * companion TC bit (both derive from one taken outcome at the
  * leaf); MMR TRN-cell mutation and the ST0 TC-bit commit belong
- * to the ordinary effect transaction. Callers own each effect
- * object.
+ * to the ordinary effect transaction.
+ * SP_WRITE carries one copied 16-bit stack-pointer value-after
+ * (the leaf adds the signed offset to the copied SP snapshot
+ * modulo 65536); SP commit belongs to the stack-pointer route,
+ * which writes through checked architectural state. Callers own
+ * each effect object.
  */
 
 #include <stdbool.h>
@@ -60,7 +64,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_DELAYED_PC_WRITE = 8,
     TI_C54X_OP_EFFECT_BRANCH_AUXILIARY = 9,
     TI_C54X_OP_EFFECT_CONDITIONAL_SKIP = 10,
-    TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE = 11
+    TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE = 11,
+    TI_C54X_OP_EFFECT_SP_WRITE = 12
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -126,6 +131,10 @@ typedef struct ti_c54x_op_trn_shift_write_effect {
     uint8_t tc_bit;
 } ti_c54x_op_trn_shift_write_effect;
 
+typedef struct ti_c54x_op_sp_write_effect {
+    uint16_t value_after;
+} ti_c54x_op_sp_write_effect;
+
 typedef struct ti_c54x_op_pc_write_effect {
     uint16_t pmad;
 } ti_c54x_op_pc_write_effect;
@@ -159,6 +168,7 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_branch_auxiliary_effect branch_auxiliary;
     ti_c54x_op_conditional_skip_effect conditional_skip;
     ti_c54x_op_trn_shift_write_effect trn_shift_write;
+    ti_c54x_op_sp_write_effect sp_write;
 } ti_c54x_op_effect_payload;
 
 typedef struct ti_c54x_op_effect {

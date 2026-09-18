@@ -1748,9 +1748,11 @@
       "table_ordinal": 1,
       "mnemonic": "FRAME",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "FRAME"
+      ]
     },
     {
       "id": "FORM-T2-17-02",
@@ -4604,6 +4606,12 @@
       "form_id": "FORM-T2-21-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "FRAME",
+      "form_id": "FORM-T2-17-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_K"
     }
   ]
 }

@@ -105,6 +105,7 @@ extern const ti_c54x_operand_layout_set ti_c54x_ld_asm_set;
 extern const ti_c54x_operand_layout_set ti_c54x_ld_dp_set;
 extern const ti_c54x_operand_layout_set ti_c54x_max_min_destination_set;
 extern const ti_c54x_operand_layout_set ti_c54x_operand_layout_none;
+extern const ti_c54x_operand_layout_set ti_c54x_frame_k_set;
 extern const ti_c54x_operand_layout_set ti_c54x_rpt_k_set;
 extern const ti_c54x_operand_layout_set ti_c54x_rpt_lk_set;
 extern const ti_c54x_operand_layout_set ti_c54x_status_bit_set;

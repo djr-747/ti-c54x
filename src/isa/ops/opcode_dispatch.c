@@ -89,6 +89,7 @@
 #include "shift/op_sfta_acc.h"
 #include "port/op_portr.h"
 #include "port/op_portw.h"
+#include "stack/op_frame_k.h"
 #include "store/op_stl_smem.h"
 #include "store/op_sth_smem.h"
 #include "store/op_sth_shft_xmem.h"

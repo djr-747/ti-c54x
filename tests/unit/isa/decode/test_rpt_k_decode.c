@@ -136,12 +136,11 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the K byte variable
      * (pinned by the exhaustive loop). Flipping bit 8 lands on the
-     * LD_IMMEDIATE_ASM row, bit 10 on LD_K, bit 12 on RET (which
-     * shadows the RC row at exactly 0xFC00), and bit 15 on BANZ
-     * (each pinned below); all other fixed-bit flips must miss
-     * every row. */
+     * LD_IMMEDIATE_ASM row, bit 9 on the P3-S51 FRAME row, bit 10
+     * on LD_K, bit 12 on RET (which shadows the RC row at exactly
+     * 0xFC00), and bit 15 on BANZ (each pinned below); all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0200),
         UINT16_C(0x0800), UINT16_C(0x2000), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
@@ -164,6 +163,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(ret_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(ret_sibling.id == TI_C54X_OPCODE_ID_RET);
+    }
+
+    /* Flipping bit 9 lands on the P3-S51 FRAME row. */
+    {
+        const ti_c54x_decode_result frame_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RPT_K_VALUE ^ UINT16_C(0x0200)));
+
+        TI_C54X_TEST_CHECK(frame_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(frame_sibling.id == TI_C54X_OPCODE_ID_FRAME);
     }
 
     /* Flipping bit 8 lands on LD_IMMEDIATE_ASM. */
