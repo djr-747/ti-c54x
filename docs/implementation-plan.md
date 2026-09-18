@@ -669,6 +669,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S29: ADD/SUB src-ASM rows (planned)](plan/p3-s29-add-sub-src-asm-rows-slice.md)
 
+- [P3-S30: MPY/MAC #lk rows (planned)](plan/p3-s30-mpy-mac-lk-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

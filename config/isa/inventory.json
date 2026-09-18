@@ -461,9 +461,11 @@
       "table_ordinal": 5,
       "mnemonic": "MPY",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "MPY_LK"
+      ]
     },
     {
       "id": "FORM-T2-03-06",
@@ -550,9 +552,11 @@
       "table_ordinal": 2,
       "mnemonic": "MAC",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "MAC_LK"
+      ]
     },
     {
       "id": "FORM-T2-04-03",
@@ -4298,6 +4302,18 @@
     {
       "catalog_symbol": "SUB_SRC_ASM",
       "form_id": "FORM-T2-02-10",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "MPY_LK",
+      "form_id": "FORM-T2-03-05",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "MAC_LK",
+      "form_id": "FORM-T2-04-02",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

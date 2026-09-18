@@ -84,14 +84,14 @@ class AddSubDualInventoryTest(unittest.TestCase):
                             "addressing_subset": f"DUAL_INDIRECT_MOD{x_mode}_MOD{y_mode}",
                         },
                     )
-        self.assertEqual(len(self.inventory["catalog_bindings"]), 270)
+        self.assertEqual(len(self.inventory["catalog_bindings"]), 272)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 112, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 114, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],
-            {"covered": 38, "denominator": 205},
+            {"covered": 40, "denominator": 205},
         )
 
 

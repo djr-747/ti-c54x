@@ -150,10 +150,11 @@ test_fixed_bit_near_misses(void)
      * OR_IMMEDIATE_SHIFT, and flipping fixed bit 0 lands on
      * AND_IMMEDIATE_SHIFT16; flipping fixed bit 14 lands on the
      * P3-S3g MAC_DUAL_M1_M0 sibling; flipping fixed bit 1 lands on
-     * the P3-S27 ADD_LK_16 sibling; all other fixed-bit flips must
-     * miss every row. */
+     * the P3-S27 ADD_LK_16 sibling; flipping fixed bit 2 lands on
+     * the P3-S30 MPY_LK sibling (pinned below); all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0004), UINT16_C(0x0008),
+        UINT16_C(0x0008),
         UINT16_C(0x0010), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x8000)};
@@ -196,6 +197,15 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(add_lk16_sibling.id == TI_C54X_OPCODE_ID_ADD_LK_16);
     TI_C54X_TEST_CHECK(mac_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(mac_dual_sibling.id == TI_C54X_OPCODE_ID_MAC_DUAL_M1_M0);
+    /* 0xF066 (fixed bit 2 set) is the MPY_LK encoding with D=0
+     * (dst A): valid row, wrong identity. */
+    {
+        const ti_c54x_decode_result mpy_lk_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0004)));
+        TI_C54X_TEST_CHECK(mpy_lk_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mpy_lk_sibling.id == TI_C54X_OPCODE_ID_MPY_LK);
+    }
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
