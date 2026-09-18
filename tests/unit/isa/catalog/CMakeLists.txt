@@ -149,3 +149,12 @@ ti_c54x_add_unit_test(rnd_acc_metadata
                       test_rnd_acc_metadata.c)
 ti_c54x_add_unit_test(sat_acc_metadata
                       test_sat_acc_metadata.c)
+# S36 RED contract: BITF/CMPM/BITT/ST-lk rows.
+ti_c54x_add_unit_test(bitf_smem_lk_metadata
+                      test_bitf_smem_lk_metadata.c)
+ti_c54x_add_unit_test(cmpm_smem_lk_metadata
+                      test_cmpm_smem_lk_metadata.c)
+ti_c54x_add_unit_test(bitt_smem_metadata
+                      test_bitt_smem_metadata.c)
+ti_c54x_add_unit_test(st_lk_smem_metadata
+                      test_st_lk_smem_metadata.c)

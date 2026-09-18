@@ -91,7 +91,6 @@ test_fixed_bit_near_misses_are_unknown(void)
      * and bit 12, which lands in the P3-S33 MAC_SMEM_LK row
      * (0x6690, handled below); the low three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
         UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x4000)};
 
@@ -120,6 +119,16 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x0040))) ==
                        TI_C54X_OPCODE_ID_ST_IMMEDIATE_SMEM_MOD8);
+
+    /* Flipping bit 7 lands on 0x7600, claimed by the P3-S36
+     * ST_LK_SMEM row (direct dmad 0): a valid cross-row near
+     * miss, not an overaccept. */
+    TI_C54X_TEST_CHECK(!matches_st_immediate(
+        (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x0080))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(ST_IMMEDIATE_VALUE ^
+                                      UINT16_C(0x0080))) ==
+                       TI_C54X_OPCODE_ID_ST_LK_SMEM);
 
     /* Flipping bit 12 lands on 0x6690, claimed by the P3-S33
      * MAC_SMEM_LK row: a valid cross-row near miss, not an

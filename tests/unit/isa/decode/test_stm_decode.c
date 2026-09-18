@@ -149,10 +149,11 @@ test_fixed_bit_near_misses(void)
      * and clearing fixed bit 9 lands on the P3-S6 PORTW direct row
      * (pinned below; TI SPRU172C 4-130 pins PORTW at 0x75xx);
      * clearing fixed bit 12 lands on the P3-S33 MAC_SMEM_LK row
-     * (pinned below); all other fixed-bit flips must miss every
-     * row. */
+     * (pinned below); clearing fixed bit 8 lands on the P3-S36
+     * ST_LK_SMEM row (pinned below); all other fixed-bit flips
+     * must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100), UINT16_C(0x0400),
+        UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x2000)};
 
     for (size_t index = 0U;
@@ -187,6 +188,18 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_sibling.id == TI_C54X_OPCODE_ID_MAC_SMEM_LK);
+    }
+
+    /* This former near-miss is the P3-S36 ST #lk,Smem sibling:
+     * 0x7700 ^ 0x0100 = 0x7600 classifies into the ST_LK_SMEM row
+     * (direct dmad 0). */
+    {
+        const ti_c54x_decode_result st_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(STM_VALUE ^ UINT16_C(0x0100)));
+
+        TI_C54X_TEST_CHECK(st_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(st_sibling.id == TI_C54X_OPCODE_ID_ST_LK_SMEM);
     }
 
     /* This former near-miss is the P3-S3o MACA Smem sibling:

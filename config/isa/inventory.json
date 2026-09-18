@@ -1380,9 +1380,11 @@
       "table_ordinal": 2,
       "mnemonic": "BITF",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "BITF_SMEM_LK"
+      ]
     },
     {
       "id": "FORM-T2-11-03",
@@ -1391,9 +1393,11 @@
       "table_ordinal": 3,
       "mnemonic": "BITT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "BITT_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-11-04",
@@ -1402,9 +1406,11 @@
       "table_ordinal": 4,
       "mnemonic": "CMPM",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "CMPM_SMEM_LK"
+      ]
     },
     {
       "id": "FORM-T2-11-05",
@@ -2211,9 +2217,11 @@
       "table_ordinal": 3,
       "mnemonic": "ST",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ST_LK_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-20-04",
@@ -4420,6 +4428,30 @@
       "form_id": "FORM-T2-04-20",
       "coverage": "SUBSET",
       "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "BITF_SMEM_LK",
+      "form_id": "FORM-T2-11-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "CMPM_SMEM_LK",
+      "form_id": "FORM-T2-11-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "BITT_SMEM",
+      "form_id": "FORM-T2-11-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "ST_LK_SMEM",
+      "form_id": "FORM-T2-20-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
     }
   ]
 }

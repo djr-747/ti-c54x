@@ -109,3 +109,8 @@ $(eval $(call ti_c54x_add_test,calld_metadata,isa/catalog,test_calld_metadata.c)
 # W7A RED contract: RND/SAT accumulator rows.
 $(eval $(call ti_c54x_add_test,rnd_acc_metadata,isa/catalog,test_rnd_acc_metadata.c))
 $(eval $(call ti_c54x_add_test,sat_acc_metadata,isa/catalog,test_sat_acc_metadata.c))
+# S36 RED contract: BITF/CMPM/BITT/ST-lk rows.
+$(eval $(call ti_c54x_add_test,bitf_smem_lk_metadata,isa/catalog,test_bitf_smem_lk_metadata.c))
+$(eval $(call ti_c54x_add_test,cmpm_smem_lk_metadata,isa/catalog,test_cmpm_smem_lk_metadata.c))
+$(eval $(call ti_c54x_add_test,bitt_smem_metadata,isa/catalog,test_bitt_smem_metadata.c))
+$(eval $(call ti_c54x_add_test,st_lk_smem_metadata,isa/catalog,test_st_lk_smem_metadata.c))

@@ -151,12 +151,11 @@ test_malformed_two_word_inputs_reject_transactionally(void)
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
-    /* Flipping fixed bit 8 lands in the STM row (0x7790, the
-     * indirect form STM defers at the op layer); flipping fixed
-     * bit 12 lands in the MAC_SMEM_LK row (0x6690, pinned below);
-     * all other fixed-bit flips must miss every row. */
+    /* Flipping fixed bit 12 lands in the MAC_SMEM_LK row
+     * (0x6690, pinned below); all other fixed-bit flips must miss
+     * every row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080), UINT16_C(0x0400),
+        UINT16_C(0x0400),
         UINT16_C(0x0800),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
@@ -178,6 +177,17 @@ test_fixed_bit_near_misses_are_unknown(void)
                                                  UINT16_C(0x0100)));
         TI_C54X_TEST_CHECK(stm_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(stm_sibling.id == TI_C54X_OPCODE_ID_STM);
+    }
+
+    /* Flipping fixed bit 7 lands on 0x7610, claimed by the P3-S36
+     * ST_LK_SMEM row (direct dmad 0x10): a valid cross-row near
+     * miss, not an overaccept. */
+    {
+        const ti_c54x_decode_result st_sibling =
+            ti_c54x_decode_first_word((uint16_t)(ST_IMMEDIATE_VALUE ^
+                                                 UINT16_C(0x0080)));
+        TI_C54X_TEST_CHECK(st_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(st_sibling.id == TI_C54X_OPCODE_ID_ST_LK_SMEM);
     }
 
     /* Flipping fixed bit 12 lands on 0x6690, claimed by the P3-S33

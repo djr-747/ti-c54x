@@ -8081,6 +8081,78 @@
         "printed_page_end": "4-154"
       },
       "assertion": "SPRU172C SAT defines the single-word operation SAT src with opcode diagram 1111_010S_1000_0011: the src accumulator saturates to 32 bits regardless of OVM, affecting OVsrc. Example 1 (B = 71 2345 6789) pins to 00 7FFF FFFF with OVB set; Example 2 (A = F8 1234 5678) pins to FF 8000 0000 with OVA set; Example 3 (B = 00 0012 3456) passes through unchanged with OVB cleared."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-BITF-P4-22",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "BITF",
+        "printed_page_start": "4-22",
+        "printed_page_end": "4-22"
+      },
+      "assertion": "SPRU172C BITF defines the two-word operation BITF Smem,#lk with opcode diagram 0110_0001_IAAAAAAA plus a 16-bit extension word: TC is set to 1 when (Smem AND lk) is nonzero and cleared to 0 otherwise. Example 1 (Smem 5400h, lk 00FFh, masked result 0) clears TC to 0; Example 2 (Smem 0F7Fh, lk 0800h, masked result nonzero) sets TC to 1. Only TC is affected."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-BITT-P4-23",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "BITT",
+        "printed_page_start": "4-23",
+        "printed_page_end": "4-23"
+      },
+      "assertion": "SPRU172C BITT defines the single-word operation BITT Smem with opcode diagram 0011_0100_IAAAAAAA: TC is loaded with Smem bit (15 minus T(3:0)) while T itself is unchanged. Only TC is affected."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-CMPM-P4-33",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "CMPM",
+        "printed_page_start": "4-33",
+        "printed_page_end": "4-33"
+      },
+      "assertion": "SPRU172C CMPM defines the two-word operation CMPM Smem,#lk with opcode diagram 0110_0000_IAAAAAAA plus a 16-bit extension word: TC is set to 1 when Smem equals lk and cleared to 0 otherwise. The worked example (Smem 4444h against lk 0404h) drives TC from 1 to 0. Only TC is affected."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-LK-P4-166",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST",
+        "printed_page_start": "4-166",
+        "printed_page_end": "4-166"
+      },
+      "assertion": "SPRU172C ST syntax 3 defines the two-word operation ST #lk,Smem with opcode diagram 0111_0110_IAAAAAAA plus a 16-bit extension word: the lk constant is stored into Smem. No status bits are affected. Example 1 (ST FFFFh,0) stores FFFFh into direct data-memory word 0."
     }
   ],
   "requirements": [
@@ -18517,6 +18589,174 @@
       "test_ids": [
         "T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT"
       ]
+    },
+    {
+      "id": "REQ-COMMON-BITF-SMEM-LK-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one two-word catalog identity for BITF Smem,#lk using base 0x6100 with mask 0xFF00, the INDIRECT_ADDR7_EXTENSION16 layout, no input resources, and repeatability ELIGIBLE; the slot is disjoint from every established first-word identity and projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITF-P4-22"
+      ],
+      "test_ids": [
+        "T-COMMON-BITF-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-BITF-SMEM-LK-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode BITF first words through the generic two-word INDIRECT_ADDR7_EXTENSION16 decoder with copied indirect, addr7, and immediate selects and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITF-P4-22"
+      ],
+      "test_ids": [
+        "T-COMMON-BITF-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-BITF-SMEM-LK-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Implement the BITF effect as a WORD16 Smem read whose read-value completion stages TC = ((read AND lk) != 0) with no other status mutation and no T traffic, gated on MOD0--MOD3 addressing with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITF-P4-22"
+      ],
+      "test_ids": [
+        "T-COMMON-BITF-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-BITT-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for BITT Smem using base 0x3400 with mask 0xFF00, the INDIRECT_ADDR7 layout, T_REGISTER input resources, and repeatability ELIGIBLE; the slot is disjoint from every established first-word identity and projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITT-P4-23"
+      ],
+      "test_ids": [
+        "T-COMMON-BITT-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-BITT-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode BITT first words through the generic single-word INDIRECT_ADDR7 decoder with copied indirect and addr7 selects and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITT-P4-23"
+      ],
+      "test_ids": [
+        "T-COMMON-BITT-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-BITT-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Implement the BITT effect as a WORD16 Smem read whose read-value completion stages TC = read(15 - T(3:0)) with no T load and no other status mutation, gated on known T and MOD0--MOD3 addressing with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BITT-P4-23"
+      ],
+      "test_ids": [
+        "T-COMMON-BITT-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-CMPM-SMEM-LK-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one two-word catalog identity for CMPM Smem,#lk using base 0x6000 with mask 0xFF00, the INDIRECT_ADDR7_EXTENSION16 layout, no input resources, and repeatability ELIGIBLE; the slot is disjoint from every established first-word identity and projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CMPM-P4-33"
+      ],
+      "test_ids": [
+        "T-COMMON-CMPM-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-CMPM-SMEM-LK-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode CMPM first words through the generic two-word INDIRECT_ADDR7_EXTENSION16 decoder with copied indirect, addr7, and immediate selects and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CMPM-P4-33"
+      ],
+      "test_ids": [
+        "T-COMMON-CMPM-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-CMPM-SMEM-LK-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Implement the CMPM effect as a WORD16 Smem read whose read-value completion stages TC = (read == lk) with no other status mutation and no T traffic, gated on MOD0--MOD3 addressing with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-CMPM-P4-33"
+      ],
+      "test_ids": [
+        "T-COMMON-CMPM-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ST-LK-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one two-word direct-only catalog identity for ST #lk,Smem using base 0x7600 with mask 0xFF80, the INDIRECT_ADDR7_EXTENSION16 layout, no input resources, and repeatability ELIGIBLE; the slot covers the 128 direct encodings, stays disjoint from the carved-out ST_IMMEDIATE_SMEM subrange, and defers MOD4+ to later mode rows.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-LK-P4-166"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-LK-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ST-LK-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode direct ST #lk first words through the generic two-word INDIRECT_ADDR7_EXTENSION16 decoder with copied indirect (always zero), addr7, and immediate selects and ELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-LK-P4-166"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-LK-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ST-LK-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Implement the ST #lk effect as a WORD16 Smem write of the copied lk value with complete-NULL fire-and-forget staging, no status mutation, and no T traffic, deferring any I=1 indirect word with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-LK-P4-166"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-LK-SMEM-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -26695,6 +26935,174 @@
       },
       "requirement_ids": [
         "REQ-COMMON-SAT-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITF-SMEM-LK-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_bitf_smem_lk_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitf_smem_lk_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITF-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITF-SMEM-LK-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_bitf_smem_lk_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitf_smem_lk_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITF-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITF-SMEM-LK-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_bitf_smem_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitf_compare"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITF-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITT-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_bitt_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitt_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITT-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITT-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_bitt_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitt_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITT-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-BITT-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_bitt_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bitt_compare"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-BITT-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-CMPM-SMEM-LK-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_cmpm_smem_lk_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cmpm_smem_lk_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-CMPM-SMEM-LK-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-CMPM-SMEM-LK-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_cmpm_smem_lk_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cmpm_smem_lk_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-CMPM-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-CMPM-SMEM-LK-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_cmpm_smem_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cmpm_compare"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-CMPM-SMEM-LK-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-LK-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_lk_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_lk_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-LK-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-LK-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_st_lk_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_lk_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-LK-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-LK-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_st_lk_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_lk_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-LK-SMEM-EFFECTS"
       ]
     }
   ]

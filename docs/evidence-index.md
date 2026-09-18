@@ -259,6 +259,10 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-MAC-SMEM-LK-P4-82` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MAC, `4-82` |
 | `E-TI-C54X-SPRU172C-S4-RND-P4-142` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RND, `4-142` |
 | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SAT, `4-154` |
+| `E-TI-C54X-SPRU172C-S4-BITF-P4-22` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BITF, `4-22` |
+| `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BITT, `4-23` |
+| `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CMPM, `4-33` |
+| `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST, `4-166` |
 | `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1 through 4.2.2, `4-3`–`4-12` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w50b-dual-memory-add-sub-mod0-activation.md` anchor `P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)` |
@@ -1180,6 +1184,18 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-SAT-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-SAT-ACC-CATALOG` |
 | `REQ-COMMON-SAT-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-SAT-ACC-DECODE` |
 | `REQ-COMMON-SAT-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-SAT-ACC-EFFECTS` |
+| `REQ-COMMON-BITF-SMEM-LK-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-BITF-P4-22` | `T-COMMON-BITF-SMEM-LK-CATALOG` |
+| `REQ-COMMON-BITF-SMEM-LK-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-BITF-P4-22` | `T-COMMON-BITF-SMEM-LK-DECODE` |
+| `REQ-COMMON-BITF-SMEM-LK-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-BITF-P4-22` | `T-COMMON-BITF-SMEM-LK-EFFECTS` |
+| `REQ-COMMON-BITT-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | `T-COMMON-BITT-SMEM-CATALOG` |
+| `REQ-COMMON-BITT-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | `T-COMMON-BITT-SMEM-DECODE` |
+| `REQ-COMMON-BITT-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | `T-COMMON-BITT-SMEM-EFFECTS` |
+| `REQ-COMMON-CMPM-SMEM-LK-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | `T-COMMON-CMPM-SMEM-LK-CATALOG` |
+| `REQ-COMMON-CMPM-SMEM-LK-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | `T-COMMON-CMPM-SMEM-LK-DECODE` |
+| `REQ-COMMON-CMPM-SMEM-LK-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | `T-COMMON-CMPM-SMEM-LK-EFFECTS` |
+| `REQ-COMMON-ST-LK-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-CATALOG` |
+| `REQ-COMMON-ST-LK-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-DECODE` |
+| `REQ-COMMON-ST-LK-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | `T-COMMON-ST-LK-SMEM-EFFECTS` |
 | `REQ-COMMON-ACCUMULATOR-OVERFLOW-WRITE-0` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/sequencer/accumulator/` | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | `T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT` |
 | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MPYA-P4-104-4-105` | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` |
 | `REQ-PROJECT-P3-S3D-MPYA-LAYOUT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/isa/decode/` | `E-PROJECT-P3-S3-PLAN-ANCHOR`, `E-PROJECT-P3-S3D-MPYA-ACTIVATION` | `T-PROJECT-P3-S3D-INDIRECT-ADDR7-LAYOUT` |
@@ -1795,6 +1811,18 @@ exist in the repository.
 | `T-COMMON-SAT-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_sat_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sat_acc_metadata"}` | `REQ-COMMON-SAT-ACC-CATALOG` |
 | `T-COMMON-SAT-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_sat_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sat_acc_decode"}` | `REQ-COMMON-SAT-ACC-DECODE` |
 | `T-COMMON-SAT-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_sat_acc_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sat_acc_ops"}` | `REQ-COMMON-SAT-ACC-EFFECTS` |
+| `T-COMMON-BITF-SMEM-LK-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_bitf_smem_lk_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitf_smem_lk_metadata"}` | `REQ-COMMON-BITF-SMEM-LK-CATALOG` |
+| `T-COMMON-BITF-SMEM-LK-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_bitf_smem_lk_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitf_smem_lk_decode"}` | `REQ-COMMON-BITF-SMEM-LK-DECODE` |
+| `T-COMMON-BITF-SMEM-LK-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/compare/test_bitf_smem_lk.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitf_compare"}` | `REQ-COMMON-BITF-SMEM-LK-EFFECTS` |
+| `T-COMMON-BITT-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_bitt_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitt_smem_metadata"}` | `REQ-COMMON-BITT-SMEM-CATALOG` |
+| `T-COMMON-BITT-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_bitt_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitt_smem_decode"}` | `REQ-COMMON-BITT-SMEM-DECODE` |
+| `T-COMMON-BITT-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/compare/test_bitt_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bitt_compare"}` | `REQ-COMMON-BITT-SMEM-EFFECTS` |
+| `T-COMMON-CMPM-SMEM-LK-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_cmpm_smem_lk_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpm_smem_lk_metadata"}` | `REQ-COMMON-CMPM-SMEM-LK-CATALOG` |
+| `T-COMMON-CMPM-SMEM-LK-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_cmpm_smem_lk_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpm_smem_lk_decode"}` | `REQ-COMMON-CMPM-SMEM-LK-DECODE` |
+| `T-COMMON-CMPM-SMEM-LK-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/compare/test_cmpm_smem_lk.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cmpm_compare"}` | `REQ-COMMON-CMPM-SMEM-LK-EFFECTS` |
+| `T-COMMON-ST-LK-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_st_lk_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_metadata"}` | `REQ-COMMON-ST-LK-SMEM-CATALOG` |
+| `T-COMMON-ST-LK-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_st_lk_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_decode"}` | `REQ-COMMON-ST-LK-SMEM-DECODE` |
+| `T-COMMON-ST-LK-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_st_lk_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_lk_smem_ops"}` | `REQ-COMMON-ST-LK-SMEM-EFFECTS` |
 | `T-COMMON-P3-S3D-MPYA-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_mpya_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mpya_smem"}` | `REQ-COMMON-P3-S3D-MPYA-SMEM-CPU-RETIREMENT` |
 | `T-COMMON-P3-S3E-MAS-SMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_mas_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_metadata"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-CATALOG` |
 | `T-COMMON-P3-S3E-MAS-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_mas_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mas_smem_decode"}` | `REQ-COMMON-P3-S3E-MAS-SMEM-DECODE` |

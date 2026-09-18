@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 285)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 279)
+        self.assertEqual(len(bindings), 289)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 283)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 245)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 249)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -102,7 +102,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "SUB_LK_SHIFT", "SUB_LK_16",
                "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT",
                "MPY_SMEM_LK", "MAC_SMEM_LK",
-               "RND_ACC", "SAT_ACC"},
+               "RND_ACC", "SAT_ACC",
+               "BITF_SMEM_LK", "CMPM_SMEM_LK", "BITT_SMEM",
+               "ST_LK_SMEM"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -148,7 +150,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "MACA_T", "MASA_T",
                                                        "RND_ACC", "SAT_ACC")
                     else "DIRECT_PAGE0"
-                    if binding["catalog_symbol"] == "STM"
+                    if binding["catalog_symbol"] in ("STM", "ST_LK_SMEM")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
                     if binding["catalog_symbol"] in ("MAC_SMEM", "MPY_SMEM",
                                                        "MPYA_SMEM", "MAS_SMEM",
@@ -166,7 +168,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "ADD_SMEM_SHIFT",
                                                        "SUB_SMEM_SHIFT",
                                                        "MPY_SMEM_LK",
-                                                       "MAC_SMEM_LK")
+                                                       "MAC_SMEM_LK",
+                                                       "BITF_SMEM_LK",
+                                                       "CMPM_SMEM_LK",
+                                                       "BITT_SMEM")
                     else "IMMEDIATE_K"
                     if binding["catalog_symbol"] == "RPT_K"
                     else "IMMEDIATE_LK"

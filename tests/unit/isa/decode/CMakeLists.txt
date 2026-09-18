@@ -137,5 +137,10 @@ ti_c54x_add_unit_test(calld_decode test_calld_decode.c)
 # W7A RED contract: RND/SAT accumulator decode.
 ti_c54x_add_unit_test(rnd_acc_decode test_rnd_acc_decode.c)
 ti_c54x_add_unit_test(sat_acc_decode test_sat_acc_decode.c)
+# S36 RED contract: BITF/CMPM/BITT/ST-lk decode.
+ti_c54x_add_unit_test(bitf_smem_lk_decode test_bitf_smem_lk_decode.c)
+ti_c54x_add_unit_test(cmpm_smem_lk_decode test_cmpm_smem_lk_decode.c)
+ti_c54x_add_unit_test(bitt_smem_decode test_bitt_smem_decode.c)
+ti_c54x_add_unit_test(st_lk_smem_decode test_st_lk_smem_decode.c)
 # S36 RED contract: Smem,#lk test/store layout.
 ti_c54x_add_unit_test(indirect_addr7_extension16_layout test_indirect_addr7_extension16_layout.c)
