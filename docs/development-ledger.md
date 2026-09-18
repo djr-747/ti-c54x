@@ -13065,3 +13065,42 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S37 W7 pilot ABS/NEG/NORM accumulator rows (slice 66)
+
+- Landed: first managed fan-out — three TI-pinned rows (ABS
+  `0xF485/0xFCFF`, NEG `0xF484/0xFCFF`, NORM `0xF48F/0xFCFF`)
+  on the existing accumulator source/destination layout, all
+  `UNRESOLVED` (Tables 2-28/6-18 omit them; SAT precedent).
+  Leaves built row-less by isolated workers (W7-ABS/W7-NEG/W7-NORM)
+  against maintainer TI briefs from SPRU172C/SPRU131G, merged with
+  row-id flips, dispatch includes, manifests, 6 row metadata/decode
+  suites, inventory flips (`FORM-T2-06-02/10/11` to
+  `COMMON_CANDIDATE`/`SUBSET` + `REGISTER_DST` bindings), 21
+  evidence records (3 TI + 9 req + 9 test), index rows, frozen-count
+  bumps (286 rows, 292 bindings, 30,345 lookup, 252 SUBSET,
+  134/205 at 65.366%, 739 requirements, 595 tests), README/plan/slice.
+- Validation: `make build` clean, `make test` exit 0 (105 C binaries
+  ok, 286 Python tests), `check_evidence.py` PASS (739/595),
+  `check_isa_inventory.py` exit 0 (134/205, strict 40/205),
+  lookup regen pure (+12), `TI_C54X_ENABLE_SANITIZERS=1 make build`
+  exit 0.
+- Decisions: NEG needed the general signed-32 saturation rule, not
+  just the minimum edge — the TI prose edge (`0xFF_8000_0000` to
+  `0x00_8000_0000`) overflows too; applied at merge with a dedicated
+  test. New words collided with five old probes (`0xF486` MAX,
+  `0xF487` MIN, `0xF48E` EXP, `0xF490` ROR, MACA-T probe to `0xF47F`)
+  — all converted to pinned siblings. Caught a maintainer hex slip
+  (S/D transposition) and a worker 48-bit constant typo via probe
+  before landing.
+- Near-misses: order-destroying `sort_keys=True` JSON dumps bloated
+  the config diff 18k/15k lines — repaired by checkout plus
+  order-preserving re-application (final: +306/+42, deletions are
+  the three form flips only).
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 71 unbound forms; next is W7 batch 2
+  (ADDC/ADDS/SUBC leaf-only briefs ready; SFTA needs a 5-bit-shift
+  layout micro-seam first). Wave-7 plan doc still untracked.
+- Split commit discipline: impl `a9bdced`, this ledger-only follow-up.
+  Slice doc born `(implemented; local verification green)` in the
+  impl commit with its anchor; plan link stays `(planned)`.
