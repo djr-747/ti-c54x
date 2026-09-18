@@ -12674,3 +12674,43 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `5607c65`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S28 ADD/SUB Xmem rows (slice 56)
+
+- Commit `134633e` lands ADD_XMEM (0x9000/0xFE00) and SUB_XMEM
+  (0x9200/0xFE00) over the shared accumulator/dual-XMOD/XAR/
+  shift-4 layout, wiring the landed wave-5 plain plus trusted
+  op_add_xmem/op_sub_xmem cores through the catalog X-macro
+  (two dispatch includes, no new handlers). Census: 268 rows,
+  ID count 269, lookup 26777 to 27801 as 1024 insertions with
+  zero neighbor moves, COMPLETE bindings 34 to 36, FORMs 108
+  to 110/205 at 53.659%, strict-complete bound 34 to 36.
+  Full `make test` green (exit 0); evidence PASS at 452
+  evidence, 697 requirements, 556 tests; sanitizer spot
+  rebuild of dispatch plus catalog clean on the xmem/decode/
+  metadata binaries.
+- Decisions: forms bind at COMPLETE under ALL (the
+  LD_XMEM_SHIFT precedent; the landed leaves cover all four
+  XMOD modes) and flip UNRESOLVED to COMMON_CANDIDATE with
+  the rows. Input resources follow the LD_XMEM_SHIFT sibling
+  (AUXILIARY_REGISTERS_STATUS_SXM_OVM). Two decode flip
+  sweeps absorb nearby words by design (ldu_smem bit-15 ->
+  SUB_XMEM at the lookup and decode levels, ld_xmem_shift
+  bit-10 -> ADD_XMEM); each gains an explicit valid-row
+  sibling pin per the file-local convention instead of
+  weakening the sweep.
+- Near-miss worth recording: the add/sub binding test asserts
+  COMMON_CANDIDATE scope on every tabled form, so binding to
+  an UNRESOLVED form fails closed — the S27 scope-flip-with-
+  rows precedent applies, not a test weakening. A second
+  near-miss: several family suites pin the strict-complete
+  percent (16.585) and the rendered provisional line
+  (108/205, 34/205), not just the family percent — sweep all
+  three pin shapes after any COMPLETE-binding slice.
+- Follow-up: S29 src-ASM rows, then MPY/MAC #lk rows
+  (FORM-T2-03-05/FORM-T2-04-02), then the seam-blocked tails.
+- Split commit discipline: impl `134633e`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor, matching the
+  landed state; plan link stays `(planned)` per the S27/WAVE6
+  convention.
