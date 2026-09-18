@@ -13627,3 +13627,45 @@ entries are not rewritten after publication.
   await GC.
 - Split commit discipline: impl `99c535f`, this ledger-only
   follow-up.
+
+## 2026-09-18 — P3-S49 conditional-store Xmem leaves (slice 78)
+
+- Scope: maintainer merge of three row-less leaves from isolated
+  fan-out workers (SACCD/SRCCD/STRCD, FORM-T2-21-02/03/04):
+  dual-X Xmem READ with OVERWRITE/WRITEBACK selected by the S48
+  cond evaluator, one AR update via the canonical-zero RMW read
+  leg, checked/trusted parity, transactional rejection.
+  Maintainer wired catalog rows/IDs (0x9E00/0xFE00, 0x9D00,
+  0x9C00), three resource combos, dispatch includes, lookup
+  regen (+1024 pure insertions), inventory flips to COMPLETE,
+  evidence, README, and frozen-count bumps.
+- Validation: `make test` exit 0 (613/613 unit binaries incl.
+  the three new leaf suites, 286/286 python contract tests,
+  source boundaries PASS over 1113 files, evidence PASS,
+  observer artifact OK). Closure: 301 rows, 307 bindings,
+  34,825 lookup entries, 149/205 forms at 72.683% with strict
+  43/205 at 20.976%, 782 requirements, 638 tests.
+- Decisions: (1) SACCD worker staged bits 31-16 with unsigned
+  ASM and no TI vector; TI p. 4-153 (0xFC00) proves low-16
+  with signed ASM — helper, full vector table (recomputed
+  against an independent oracle that also reproduced TI), and
+  stale comments corrected at merge. (2) Brief said reject
+  XMOD 3; both store workers staged 0-3 matching landed
+  STH_SHFT_XMEM while the address core owns MOD3 (W52B root)
+  — accepted, brief corrected. (3) STRCD S-mismatch returned
+  INVALID_DECODE on the checked path; moved into the values
+  core as INVALID_OPERAND both paths (SRCCD parity); resource
+  token renamed to canonical order in code and test.
+  (4) COMPLETE (not SUBSET) per ADD_XMEM single-row precedent;
+  COMPLETE bindings require addressing_subset ALL.
+- Near-misses: two decode near-miss sweeps flipped into the
+  claimed range (LD_XMEM_SHIFT 0x9C00, ST_T_SMEM 0x9C90) —
+  promoted to pinned STRCD siblings; six metadata population
+  pins 33801 to 34825; 79 ID_COUNT pins 299 to 302; percent
+  pins to 72.683/20.976.
+- Knobs: none added, changed, or retired.
+- Follow-up: 56 unbound forms remain (table 2-21 leaves CMPS);
+  stale `indirect_dual.h` MOD3-deferred comment predates W52B;
+  worker worktrees under `.muse/worktrees/` await GC.
+- Split commit discipline: impl `c23ccc5`, this ledger-only
+  follow-up.
