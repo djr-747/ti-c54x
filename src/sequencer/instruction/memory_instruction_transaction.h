@@ -110,6 +110,12 @@ typedef struct ti_c54x_memory_instruction_transaction {
      * it is never recomputed while the WRITE is pending. */
     union {
         uint16_t rmw_write_value_word;
+        /* Single-word Smem delay write-back: stages the READ
+         * observation between READ READY and the delay WRITE
+         * issue/commit. Shares storage with the RMW slot; the
+         * carrier forbids RMW together with delay, so the two
+         * stages never overlap. */
+        uint16_t single_delay_read_value_word;
         /* LONG32 uses the otherwise RMW-only slot for the frozen MSW. */
         uint16_t long32_first_value_msw;
         /* Dual MOD0 uses it as an immutable X-address shadow. */

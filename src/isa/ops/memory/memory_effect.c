@@ -6,7 +6,9 @@
  * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, dual-indirect
  * MOD0/MOD1/MOD2 WORD16, X-only dual-indirect WORD16,
  * DATA+PROGRAM pair WORD16, and
- * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers.
+ * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers,
+ * plus the single-word DIRECT/SINGLE_INDIRECT delay write-back READ
+ * shape (optional completion; WRITE/RMW access stays invalid).
  * Dual MOD3 remains deferred with the AR0/BK indexed/circular
  * dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
@@ -26,6 +28,22 @@ ti_c54x_op_memory_rmw_operation_is_valid(uint8_t operation)
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_OR ||
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_XOR ||
            operation == (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD;
+}
+
+/* Single-word Smem delay write-back (LTD/DELAY): a plain DATA
+ * READ with no RMW and a zero staged value. The completion is
+ * optional: a T-register-write completion is the LTD shape while a
+ * null completion is the DELAY shape whose delay WRITE is the only
+ * publication. */
+static bool
+ti_c54x_op_memory_effect_single_delay_shape_is_valid(
+    const ti_c54x_op_memory_effect *effect)
+{
+    return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+           effect->value_word == UINT16_C(0) &&
+           effect->rmw_operation ==
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+           effect->transfer_reserved == UINT8_C(0);
 }
 
 static bool
@@ -139,10 +157,16 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
     if (effect == NULL) {
         return false;
     }
-    /* The Smem delay write-back rides the DATA+PROGRAM pair only. */
+    /* The Smem delay write-back rides the DATA+PROGRAM pair
+     * (MACD) and the single-word DIRECT/SINGLE_INDIRECT DATA reads
+     * (LTD/DELAY); all other carriers leave it false. */
     if (effect->write_smem_delay &&
         effect->address_spec.kind !=
-            TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16 &&
+        effect->address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16 &&
+        effect->address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16) {
         return false;
     }
 
@@ -159,6 +183,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         if (effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
             effect->address_spec.mode == TI_C54X_INDIRECT_SINGLE_MOD3) {
             return false;
+        }
+        if (effect->write_smem_delay) {
+            return ti_c54x_op_memory_effect_single_delay_shape_is_valid(
+                effect);
         }
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
 
@@ -317,6 +345,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
             effect->address_spec.long_offset_word != UINT16_C(0) ||
             effect->address_spec.direct_dma7 > UINT8_C(0x7f)) {
             return false;
+        }
+        if (effect->write_smem_delay) {
+            return ti_c54x_op_memory_effect_single_delay_shape_is_valid(
+                effect);
         }
         return ti_c54x_op_memory_effect_access_shape_is_valid(effect);
 

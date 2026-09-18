@@ -265,13 +265,16 @@ typedef struct ti_c54x_op_memory_effect {
      * completion commits. Only READ access with no RMW transform may
      * set this; all other carriers leave it false. */
     bool load_t_with_read;
-    /* Smem delay write-back (MACD): when true on a DATA+PROGRAM READ
-     * pair, the pair root writes the Smem (x) word to DATA
-     * Smem-address-plus-one (16-bit wraparound) through the endpoint
-     * after both reads complete and before the post-access commit.
-     * Only the DATA+PROGRAM pair kind may set this; all other
-     * carriers leave it false. Shares the existing padding: the
-     * 48-byte effect ABI is unchanged. */
+    /* Smem delay write-back (MACD/LTD/DELAY): when true on a
+     * DATA+PROGRAM READ pair, the pair root writes the Smem (x) word
+     * to DATA Smem-address-plus-one (16-bit wraparound) through the
+     * endpoint after both reads complete and before the post-access
+     * commit. When true on a single-word DIRECT or SINGLE_INDIRECT
+     * DATA READ, the WORD16 root writes the read word to DATA
+     * Smem-address-plus-one after the read completes and before the
+     * architecture commit. Only those three kinds may set this; all
+     * other carriers leave it false. Shares the existing padding:
+     * the 48-byte effect ABI is unchanged. */
     bool write_smem_delay;
     union {
         struct {

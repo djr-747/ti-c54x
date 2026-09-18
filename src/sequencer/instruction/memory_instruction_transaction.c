@@ -25,6 +25,7 @@
 #include "sequencer/memory/mmr_access_plan.h"
 #include "sequencer/program_pc_target.h"
 #include "memory_instruction_rmw.h"
+#include "memory_instruction_single_delay.h"
 #include "memory_instruction_stack_push.h"
 #include "memory_instruction_candidate_validate.h"
 #include "memory_instruction_commit.h"
@@ -476,6 +477,15 @@ ti_c54x_memory_instruction_transaction_advance(
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
+    if (ti_c54x_memory_instruction_single_delay_write_in_flight(
+            transaction)) {
+        /* Delay-write resume: the reused child carries the issued
+         * delay WRITE. The delay owner resumes it and retires
+         * through the shared READY tail. */
+        return ti_c54x_memory_instruction_single_delay_resume(
+            transaction, endpoint, state, accumulators, t_register,
+            result);
+    }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         /* Fast interrupt returns retire with no bus traffic: the PC
@@ -514,6 +524,17 @@ ti_c54x_memory_instruction_transaction_advance(
                 planned->write_value_word);
         if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_UNKNOWN ||
             mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_INVALID_ARGUMENT) {
+            result->status =
+                TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED &&
+            ti_c54x_memory_instruction_single_delay_is_armed(transaction)) {
+            /* The single-word delay write-back issues DATA endpoint
+             * traffic to Smem+1 after the read: an MMR-routed Smem
+             * has no endpoint read and MMR+1 write semantics are
+             * unevidenced, so delay on MMR rejects transactionally
+             * before any routing. */
             result->status =
                 TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
@@ -649,46 +670,19 @@ ti_c54x_memory_instruction_transaction_advance(
         return advance_rmw_write(transaction, endpoint, state, result,
                                  first_issue);
     }
-    {
-        const uint16_t ready_read_word = adapter_result.read_value_word;
-
-        operation_status = ti_c54x_memory_instruction_commit_ready(transaction, state, accumulators,
-                                        t_register, ready_read_word);
-        if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
-            return operation_status;
-        }
-        /* Delayed stack branches retire their stack update here but
-         * defer the PC transfer: report the deferred target so the
-         * CPU loop can arm the two-word countdown. Pops defer the
-         * TOS READ observation; pushes defer the frozen pmad word.
-         * All other retirements leave the report disarmed. */
-        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
-            result->deferred_branch_armed = true;
-            result->deferred_branch_pc_word = ready_read_word;
-        } else if (transaction->candidate.effect.payload.memory.address_spec
-                           .kind ==
-                       TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-                   transaction->candidate.effect.payload.memory.address_spec
-                           .kind ==
-                       TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
-            ti_c54x_memory_instruction_status report_status;
-
-            /* Delayed push reporting (bundle or accumulator
-             * target) lives in the push owner. */
-            report_status =
-                ti_c54x_memory_instruction_stack_push_deferred_report(
-                    &transaction->candidate, result);
-            if (report_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_OK) {
-                return report_status;
-            }
-        }
+    /* Single-word delay write-back: the READ leg just completed, so
+     * the delay WRITE issues before any publication. The delay owner
+     * issues it and retires through the shared READY tail. */
+    if (ti_c54x_memory_instruction_single_delay_is_armed(transaction) &&
+        transaction->bus_transaction.request.access ==
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+        return ti_c54x_memory_instruction_single_delay_issue(
+            transaction, endpoint, state, accumulators, t_register,
+            result, adapter_result.read_value_word, first_issue);
     }
-    result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
-    result->bus_status = TI_C54X_BUS_OK;
-    result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
-    result->instructions_retired = UINT64_C(1);
-    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    return ti_c54x_memory_instruction_commit_ready_tail(
+        transaction, state, accumulators, t_register, result,
+        adapter_result.read_value_word, first_issue);
 }
 
 ti_c54x_memory_instruction_status

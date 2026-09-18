@@ -6719,6 +6719,22 @@
       "assertion": "S3r is implemented and green: one MACD_SMEM catalog row at 0x7A00 under mask 0xFE00 carrying 512 S/I/addr7 encodings plus the verbatim pmad second word through the shared DESTINATION_INDIRECT_ADDR7_PMAD16 layout with UNRESOLVED repeatability; checked and trusted leaves stage direct page-0 and standard-indirect MOD0-MOD2 Smem DATA reads paired with an absolute PROGRAM coefficient read with exotic-mode deferral and read-phase Smem T load, and pair completion runs (dst) plus (Smem) x (pmad) into the S-selected accumulator through the multiply core with ADD select and no rounding; CPU retirement proves the recomputed oracle vector (B 00 1000 0000 with T 4000, AR5 0101, and mem[0101] 4000) and the FRCT lane (B 00 2000 0000). The delay sidecar rides the new write_smem_delay MEMORY carrier flag (48-byte ABI unchanged, DATA+PROGRAM pair kind only): after both reads complete the pair root issues a third-ID DATA WRITE of the Smem word to Smem+1 with 16-bit wraparound through the reused child transaction before the Smem post-access commit and PC publish, with WAIT resume, fault/cancel silence, and reset routing by pair-versus-delay child state. FORM-T2-04-11 lands SUBSET."
     },
     {
+      "id": "E-PROJECT-P3-S41-SINGLE-DELAY-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s41-single-word-smem-delay-seam-slice.md",
+        "anchor": "P3-S41: single-word Smem delay write-back seam (implemented; local verification green)"
+      },
+      "assertion": "S41 is implemented and green with no catalog row, binding, or lookup change: the write_smem_delay MEMORY carrier flag generalizes to the single-word DIRECT and SINGLE_INDIRECT DATA READ shapes (48-byte ABI unchanged; READ-only with no RMW and a zero staged value; optional completion with null as the DELAY shape; WRITE/RMW delay stays invalid). The new single-delay owner derives the DATA delay target from the frozen candidate resolution (Smem address plus one with 16-bit wraparound) and issues or resumes the delay WRITE through the reused WORD16 child under a fresh transaction ID by the MACD pair precedent, stashing the READ observation in a root union slot disjoint from RMW staging and pinning delay resumes against the frozen target and stashed word. The WORD16 root runs the delay stage after the READ leg completes and before the shared READY tail (moved to the commit owner): WAIT resumes only the delay WRITE, a delay FAULT or cancel publishes nothing, reset routes by the ordinary pairings with no new phase, and delay on an MMR-routed Smem read rejects transactionally. The LTD leaf needs no edit; the TI LTD worked example (6CACh from 0100h into T and 0101h) retires through the seam."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-MACSU-P4-91",
       "immutable": true,
       "state": "PINNED",
@@ -17368,6 +17384,20 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S41-SINGLE-DELAY-TRANSACTION",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Stage the Smem delay write-back on the WORD16 root only when the MEMORY carrier sets write_smem_delay on a single-word DIRECT or SINGLE_INDIRECT DATA READ: after the READ leg completes, issue one DATA WRITE of the read word to Smem-address-plus-one with 16-bit wraparound under a fresh transaction ID through the reused child, then run the shared READY tail with the stashed READ observation (a null completion stages nothing further). WAIT resumes only the delay WRITE pinned against the frozen target and stashed word; a delay FAULT or cancel publishes nothing; reset routes by the ordinary pairings; flag-off singles issue no second request; delay on WRITE/RMW access or on an MMR-routed Smem read rejects transactionally. Keep the shared root transaction shape with no new phase.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S41-SINGLE-DELAY-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S41-SINGLE-WORD-DELAY-WRITE"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-S3S-MACSU-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -26603,6 +26633,20 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S3R-DELAY-WRITE-TRANSACTION"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S41-SINGLE-WORD-DELAY-WRITE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/instruction/test_single_word_delay_write.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.single_word_delay_write"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S41-SINGLE-DELAY-TRANSACTION"
       ]
     },
     {

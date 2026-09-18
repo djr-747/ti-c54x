@@ -10,6 +10,7 @@ ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_dual_candidate_validate.c \
 	src/sequencer/instruction/memory_instruction_dual_commit.c \
 	src/sequencer/instruction/memory_instruction_rmw.c \
+	src/sequencer/instruction/memory_instruction_single_delay.c \
 	src/sequencer/instruction/memory_instruction_stack_push.c \
 	src/sequencer/instruction/memory_instruction_transaction.c \
 	src/sequencer/instruction/memory_instruction_long32.c \

@@ -6,7 +6,9 @@
  * with atomic RTN staging of the frozen return address, stack-pop
  * TOS-target commit from the READ observation or the frozen RTN value,
  * and static opcode completion plus ordinary effects ahead of the
- * architecture commit. Delayed stack branches commit the sequential
+ * architecture commit. Single-word delay shapes without a completion
+ * skip the completion and stage nothing: the delay WRITE is the only
+ * publication. Delayed stack branches commit the sequential
  * successor here; WAIT, FAULT, cancellation, and other nonterminal
  * paths never reach this owner.
  * Does not own: request preparation, endpoint issue/resume, pair
@@ -22,6 +24,7 @@
 #include <stddef.h>
 
 #include "memory_instruction_rmw.h"
+#include "memory_instruction_stack_push.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_target.h"
 #include "state/status/registers.h"
@@ -250,21 +253,33 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
              TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)) {
         return ti_c54x_memory_instruction_commit_architecture(transaction, state);
     }
-    if (memory->complete == NULL || memory->complete(
-                         &transaction->candidate.instruction,
-                         &transaction->candidate.input, read_value_word,
-                         &next_effect) != TI_C54X_OP_STATUS_OK) {
-        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    if (ti_c54x_effect_transaction_stage(
-            &next_effect, &state->status, accumulators, t_register,
-            &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
-        ti_c54x_effect_transaction_commit(
-            &ordinary, &state->status, accumulators, t_register) !=
-            TI_C54X_EFFECT_TRANSACTION_OK) {
-        transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    if (memory->complete == NULL) {
+        /* Single-word delay shapes without a completion (DELAY)
+         * publish only the delay WRITE: skip the read-value
+         * completion and the follow-on stage below, falling through
+         * to the address/PC tail. Reads without delay still
+         * reject. */
+        if (!memory->write_smem_delay) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else {
+        if (memory->complete(
+                &transaction->candidate.instruction,
+                &transaction->candidate.input, read_value_word,
+                &next_effect) != TI_C54X_OP_STATUS_OK) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (ti_c54x_effect_transaction_stage(
+                &next_effect, &state->status, accumulators, t_register,
+                &ordinary) != TI_C54X_EFFECT_TRANSACTION_OK ||
+            ti_c54x_effect_transaction_commit(
+                &ordinary, &state->status, accumulators, t_register) !=
+                TI_C54X_EFFECT_TRANSACTION_OK) {
+            transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
     }
     if (memory->load_t_with_read) {
         /* Read-phase T load (MPYA): T takes the read value word once
@@ -286,5 +301,54 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
         *t_register = t_candidate;
     }
     return ti_c54x_memory_instruction_commit_architecture(transaction, state);
+}
+
+ti_c54x_memory_instruction_status
+ti_c54x_memory_instruction_commit_ready_tail(
+    ti_c54x_memory_instruction_transaction *transaction,
+    ti_c54x_arch_state *state,
+    ti_c54x_accumulator_state *accumulators,
+    ti_c54x_t_register_state *t_register,
+    ti_c54x_memory_instruction_result *result, uint16_t read_value_word,
+    bool first_issue)
+{
+    ti_c54x_memory_instruction_status operation_status;
+
+    operation_status = ti_c54x_memory_instruction_commit_ready(
+        transaction, state, accumulators, t_register, read_value_word);
+    if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
+        return operation_status;
+    }
+    /* Delayed stack branches retire their stack update here but
+     * defer the PC transfer: report the deferred target so the
+     * CPU loop can arm the two-word countdown. Pops defer the
+     * TOS READ observation; pushes defer the frozen pmad word.
+     * All other retirements leave the report disarmed. */
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+        result->deferred_branch_armed = true;
+        result->deferred_branch_pc_word = read_value_word;
+    } else if (transaction->candidate.effect.payload.memory.address_spec
+                       .kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+               transaction->candidate.effect.payload.memory.address_spec
+                       .kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+        ti_c54x_memory_instruction_status report_status;
+
+        /* Delayed push reporting (bundle or accumulator
+         * target) lives in the push owner. */
+        report_status =
+            ti_c54x_memory_instruction_stack_push_deferred_report(
+                &transaction->candidate, result);
+        if (report_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_OK) {
+            return report_status;
+        }
+    }
+    result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
+    result->bus_status = TI_C54X_BUS_OK;
+    result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
+    result->instructions_retired = UINT64_C(1);
+    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
 }
 

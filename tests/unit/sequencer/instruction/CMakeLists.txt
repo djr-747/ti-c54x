@@ -46,6 +46,9 @@ ti_c54x_add_unit_test(data_program_memory_instruction_transaction
 # P3-S3 RED contract: MACD Smem delay write-back root stage.
 ti_c54x_add_unit_test(data_program_delay_write
                       test_data_program_delay_write.c)
+# P3-S41 RED contract: single-word Smem delay write-back seam.
+ti_c54x_add_unit_test(single_word_delay_write
+                      test_single_word_delay_write.c)
 # W51B RED contracts: dual address commit persistence and atomic publication.
 ti_c54x_add_unit_test(dual_memory_instruction_w51b_contract
                       test_dual_memory_instruction_w51b_contract.c)
