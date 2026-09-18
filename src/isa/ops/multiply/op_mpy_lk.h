@@ -1,0 +1,50 @@
+#ifndef TI_C54X_ISA_OPS_MULTIPLY_MPY_LK_H
+#define TI_C54X_ISA_OPS_MULTIPLY_MPY_LK_H
+
+/*
+ * Module contract
+ *
+ * Owns: checked and trusted pure semantic leaves for MPY #lk, dst
+ * (syntax 4, UNROUNDED form only): (T) times signed lk16 stored
+ * into the destination accumulator through the shared multiply
+ * core with STORE select, FRCT shift, and OVM saturation plus
+ * sticky OVdst. T is READ and never written; C and TC are
+ * preserved. The R (rounding) suffix form defers as
+ * INVALID_DECODE. No catalog rows exist for this form yet, so
+ * entry points key on the shared ACCUMULATOR_IMMEDIATE_LK16
+ * operand layout (the LD_LK_16 precedent) plus the MPY
+ * first-word discriminator instead of opcode metadata; dispatch
+ * binding follows when the rows land.
+ * Does not own: opcode inventory, operand-layout definitions,
+ * T/accumulator/status mutation, buses, CPU/state mutation,
+ * sequencing, timing, observers, allocation, logging,
+ * environment, or diagnostics. Borrowed instruction/input/effect
+ * objects are used for one call only and no pointer is retained;
+ * failed calls leave the caller-owned effect unchanged.
+ */
+
+#include "../op_effect.h"
+#include "../op_input.h"
+#include "../op_status.h"
+#include "../dispatch/trusted_handler.h"
+#include "../../decode/opcode_decode.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+ti_c54x_op_status ti_c54x_op_mpy_lk(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_trusted_op_mpy_lk(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* TI_C54X_ISA_OPS_MULTIPLY_MPY_LK_H */

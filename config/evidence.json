@@ -7789,6 +7789,58 @@
       "assertion": "P3-S27 activates the four ADD/SUB #lk rows ADD_LK_SHIFT (0xF000/0xFCF0), ADD_LK_16 (0xF060/0xFCFF), SUB_LK_SHIFT (0xF010/0xFCF0), and SUB_LK_16 (0xF061/0xFCFF) over the shared 2-word accumulator layouts with the landed plain plus trusted op_add_lk/op_sub_lk per-syntax handlers. FORM-T2-01-07, FORM-T2-01-08, FORM-T2-02-07, and FORM-T2-02-08 stay SUBSET under IMMEDIATE_LK."
     },
     {
+      "id": "E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MPY[R]",
+        "printed_page_start": "4-100",
+        "printed_page_end": "4-101"
+      },
+      "assertion": "SPRU172C MPY syntax 4 is MPY[R] #lk,dst with first word 0xF066|D<<8 plus a 16-bit lk extension word executing (T)x(lk) into dst. lk spans -32768..32767, the form is two program words, and T is read but never written. This record pins the unrounded execution path; the R rounding suffix defers. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MAC-SYN3-LK-P4-81-82",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MAC[R]",
+        "printed_page_start": "4-81",
+        "printed_page_end": "4-82"
+      },
+      "assertion": "SPRU172C MAC syntax 3 is MAC #lk,src[,dst] with first word 0xF067|S<<9|D<<8 plus a 16-bit lk extension word executing (T)x(lk)+(src) into dst. lk spans -32768..32767, the form is two program words of class 2, T is read but never written, and dst defaults to src. This record pins the unrounded execution path; the R rounding suffix defers. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-PROJECT-P3-WAVE6-MPY-MAC-LEAVES-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-wave6-mpy-mac-leaves-slice.md",
+        "anchor": "P3-WAVE6: MPY/MAC #lk leaf fan-out (planned)"
+      },
+      "assertion": "P3-WAVE6 merges the third managed fan-out: two catalog-free MPY/MAC #lk handler leaves (op_mpy_lk, op_mac_lk) with plain plus trusted entries through the shared P3-S3 multiply datapath. No catalog rows, dispatch, decode, or CPU change; FORM-T2-03-05 and FORM-T2-04-02 stay UNIMPLEMENTED."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187",
       "immutable": true,
       "state": "PINNED",
@@ -17870,6 +17922,34 @@
       ]
     },
     {
+      "id": "REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Execute MPY #lk syntax 4 as a catalog-free pure leaf: resolve D and the 16-bit lk extension over the 0xF066 fixed prefix, multiply T by the signed lk through the shared multiply core with STORE select and FRCT shift, store unrounded into the D-selected accumulator with OVM saturation and sticky destination overflow, preserve C and TC, leave T read-only, and gate on T, FRCT, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE6-MPY-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Execute MAC #lk syntax 3 as a catalog-free pure leaf: resolve S, D, and the 16-bit lk extension over the 0xF067 fixed prefix, multiply T by the signed lk and add src through the shared multiply core with FRCT shift, store unrounded into dst (defaulting to src) with OVM saturation and sticky destination overflow (source overflow when dst equals src), preserve C and TC, leave T read-only, and gate on accumulators, FRCT, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MAC-SYN3-LK-P4-81-82"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-WAVE6-MAC-LK-SEMANTICS"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-WAVE5-ADD-LK-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -25842,6 +25922,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE6-MPY-LK-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mpy_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mpy_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-WAVE6-MAC-LK-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_mac_lk.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mac_lk_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS"
       ]
     }
   ]

@@ -1,6 +1,7 @@
 # Test ownership: tests/unit/isa/ops/multiply owns multiply-accumulate seam proofs.
 # P3-S3 RED contract: multiply core.
 ti_c54x_add_unit_test(multiply_core test_multiply_core.c)
+ti_c54x_add_unit_test(mac_lk_ops test_mac_lk.c)
 # P3-S3 RED contract: MAC Smem row.
 ti_c54x_add_unit_test(mac_smem_ops test_mac_smem_ops.c)
 ti_c54x_add_unit_test(mpy_smem_ops test_mpy_smem_ops.c)
@@ -36,3 +37,5 @@ ti_c54x_add_unit_test(masa_t_ops test_masa_t_ops.c)
 ti_c54x_add_unit_test(macp_smem_ops test_macp_smem_ops.c)
 # P3-S3 RED contract: MACD Smem,Pmad row.
 ti_c54x_add_unit_test(macd_smem_ops test_macd_smem_ops.c)
+# P3-S3 RED contract: MPY #lk immediate row.
+ti_c54x_add_unit_test(mpy_lk_ops test_mpy_lk.c)

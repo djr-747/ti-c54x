@@ -1,6 +1,7 @@
 # Source ownership: src/isa/ops/multiply owns multiply-accumulate core construction.
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_multiply.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_mac_lk.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mac_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mpy_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mpya_smem.c"
@@ -20,4 +21,5 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_masa_t.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_macd_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_macp_smem.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_mpy_lk.c"
 )

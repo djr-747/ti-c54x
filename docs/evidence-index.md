@@ -252,6 +252,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ADD and SUB, `4-3`–`4-187` |
 | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN5-XMEM-P4-3-4-186` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ADD and SUB, `4-3`–`4-186` |
 | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ADD and SUB, `4-4`–`4-187` |
+| `E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MPY[R], `4-100`–`4-101` |
+| `E-TI-C54X-SPRU172C-S4-MAC-SYN3-LK-P4-81-82` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MAC[R], `4-81`–`4-82` |
 | `E-TI-C54X-SPRU131G-S4.1-S4.2.1-P4-3-4-12-DUAL-ALU-STATUS` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1 through 4.2.2, `4-3`–`4-12` |
 | `E-TI-C54X-SPRU172C-S2.5-T2-28-ADD-SUB-DUAL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W50B-DUAL-ADD-SUB-MOD0-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w50b-dual-memory-add-sub-mod0-activation.md` anchor `P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)` |
@@ -495,6 +497,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-PROJECT-P3-S25-SUBB-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s25-subb-smem-rows-slice.md` anchor `P3-S25: SUBB Smem rows (implemented; local verification green)` |
 | `E-PROJECT-P3-S26-SUBS-SMEM-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s26-subs-smem-rows-slice.md` anchor `P3-S26: SUBS Smem rows (implemented; local verification green)` |
 | `E-PROJECT-P3-S27-ADD-SUB-LK-ROWS-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s27-add-sub-lk-rows-slice.md` anchor `P3-S27: ADD/SUB #lk rows (implemented; local verification green)` |
+| `E-PROJECT-P3-WAVE6-MPY-MAC-LEAVES-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-wave6-mpy-mac-leaves-slice.md` anchor `P3-WAVE6: MPY/MAC #lk leaf fan-out (planned)` |
 | `E-PROJECT-P3-WAVE5-ADD-SUB-LEAVES-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-wave5-add-sub-leaves-slice.md` anchor `P3-WAVE5: ADD/SUB leaf fan-out (implemented; local verification green)` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
@@ -1293,6 +1296,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN5-XMEM-P4-3-4-186` | `T-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS` |
 | `REQ-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187` | `T-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS` |
 | `REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187` | `T-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` |
+| `REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101` | `T-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` |
+| `REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MAC-SYN3-LK-P4-81-82` | `T-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` |
 
 ## Tests
 
@@ -1849,6 +1854,8 @@ exist in the repository.
 | `T-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_sub_xmem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sub_xmem_ops"}` | `REQ-COMMON-P3-WAVE5-SUB-XMEM-SEMANTICS` |
 | `T-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_add_src_asm.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.add_src_asm_ops"}` | `REQ-COMMON-P3-WAVE5-ADD-SRC-ASM-SEMANTICS` |
 | `T-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_sub_src_asm.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sub_src_asm_ops"}` | `REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` |
+| `T-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mpy_lk.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mpy_lk_ops"}` | `REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` |
+| `T-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_mac_lk.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mac_lk_ops"}` | `REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` |
 | `T-COMMON-P3-S15-AND-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_and_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.and_smem_ops"}` | `REQ-COMMON-P3-S15-AND-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S16-OR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_or_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.or_smem_ops"}` | `REQ-COMMON-P3-S16-OR-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S17-XOR-SMEM-SEMANTICS` | PASSING | COMMON_TI | `tests/unit/isa/ops/logical/test_xor_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.xor_smem_ops"}` | `REQ-COMMON-P3-S17-XOR-SMEM-SEMANTICS` |
