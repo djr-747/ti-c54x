@@ -85,13 +85,13 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_count == 8U);
 
     /* 0xF48F is the W7 NORM_ACC base word (pinned in the NORM
-     * decode sibling tests); the invalid probe moves to 0xF47F. */
+     * decode sibling tests); 0xF47F is the P3-S39 SFTA_ACC word
+     * with S=1 (src B), D=1 (dst B): valid row, wrong identity. */
     {
-        const uint16_t invalid[] = {UINT16_C(0xF47F)};
-        for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
-            TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==
-                               TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        }
+        const ti_c54x_decode_result sfta_sibling =
+            ti_c54x_decode_first_word(UINT16_C(0xF47F));
+        TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
     }
 
     /* 0xF480 is claimed by the P3-S29 ADD_SRC_ASM row with S=0

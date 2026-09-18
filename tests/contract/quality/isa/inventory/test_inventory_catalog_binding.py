@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 295)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 289)
+        self.assertEqual(len(bindings), 296)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 290)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 255)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 256)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -106,7 +106,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "RND_ACC", "SAT_ACC",
                "BITF_SMEM_LK", "CMPM_SMEM_LK", "BITT_SMEM",
                "ST_LK_SMEM",
-               "ABS_ACC", "NEG_ACC", "NORM_ACC"},
+               "ABS_ACC", "NEG_ACC", "NORM_ACC",
+               "SFTA_ACC"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -152,7 +153,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "MACA_T", "MASA_T",
                                                        "RND_ACC", "SAT_ACC",
                                                        "ABS_ACC", "NEG_ACC",
-                                                       "NORM_ACC")
+                                                       "NORM_ACC",
+                                                       "SFTA_ACC")
                     else "DIRECT_PAGE0"
                     if binding["catalog_symbol"] in ("STM", "ST_LK_SMEM")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"

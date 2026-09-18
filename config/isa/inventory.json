@@ -1344,9 +1344,11 @@
       "table_ordinal": 4,
       "mnemonic": "SFTA",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SFTA_ACC"
+      ]
     },
     {
       "id": "FORM-T2-10-05",
@@ -4500,6 +4502,12 @@
       "form_id": "FORM-T2-02-12",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "SFTA_ACC",
+      "form_id": "FORM-T2-10-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
     }
   ]
 }

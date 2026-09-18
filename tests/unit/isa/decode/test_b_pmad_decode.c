@@ -158,13 +158,14 @@ test_fixed_bit_near_misses(void)
      * the W68 BD sibling, flipping fixed bit 7 lands on
      * SFTL_ACC, flipping fixed bit 6 lands on AND_IMMEDIATE_SHIFT,
      * flipping fixed bit 5 lands on XOR_IMMEDIATE_SHIFT, and flipping
-     * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16, and flipping
+     * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16, flipping fixed
+     * bit 10 lands on the P3-S39 SFTA_ACC sibling, and flipping
      * fixed bit 14 lands on the P3-S3g MAC_DUAL_M1_M0 sibling; all other
      * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100),
-        UINT16_C(0x0400), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result bd_sibling =
         ti_c54x_decode_first_word(
@@ -179,6 +180,8 @@ test_fixed_bit_near_misses(void)
         ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0020)));
     const ti_c54x_decode_result and16_sibling =
         ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0010)));
+    const ti_c54x_decode_result sfta_sibling =
+        ti_c54x_decode_first_word((uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0400)));
 
     TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
@@ -193,6 +196,8 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(and16_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(and16_sibling.id ==
                        TI_C54X_OPCODE_ID_AND_IMMEDIATE_SHIFT16);
+    TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
     /* 0xB073 (fixed bit 14 set) is the MAC_DUAL_M1_M0 encoding with
      * R=0, S=0 (src A), D=0 (dst A), XMOD1 XAR=AR5, YMOD0 YAR=AR5. */
     const ti_c54x_decode_result mac_dual_sibling =

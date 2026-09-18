@@ -158,12 +158,13 @@ test_fixed_bit_near_misses(void)
      * on SFTL_ACC, flipping fixed bit 6 lands on
      * AND_IMMEDIATE_SHIFT, flipping fixed bit 5 lands on
      * XOR_IMMEDIATE_SHIFT, and flipping fixed bit 4 lands on
-     * OR_IMMEDIATE_SHIFT16, and flipping fixed bit 14 lands on the
+     * OR_IMMEDIATE_SHIFT16, flipping fixed bit 10 lands on the
+     * P3-S39 SFTA_ACC sibling, and flipping fixed bit 14 lands on the
      * P3-S3g MAC_DUAL_M1_M1 sibling; all other fixed-bit flips must
      * miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
-        UINT16_C(0x0008), UINT16_C(0x0100), UINT16_C(0x0400),
+        UINT16_C(0x0008), UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result call_sibling =
@@ -181,6 +182,9 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result or16_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(CALLD_VALUE ^ UINT16_C(0x0010)));
+    const ti_c54x_decode_result sfta_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(CALLD_VALUE ^ UINT16_C(0x0400)));
 
     TI_C54X_TEST_CHECK(call_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(call_sibling.id == TI_C54X_OPCODE_ID_CALL_PMAD);
@@ -204,6 +208,8 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(or16_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(or16_sibling.id ==
                        TI_C54X_OPCODE_ID_OR_IMMEDIATE_SHIFT16);
+    TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
     /* 0xB274 (fixed bit 14 set) is the MAC_DUAL_M1_M1 encoding with
      * R=0, S=1 (src B), D=0 (dst A), XMOD1 XAR=AR5, YMOD1 YAR=AR2. */
     const ti_c54x_decode_result mac_dual_sibling =

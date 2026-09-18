@@ -138,11 +138,12 @@ test_fixed_bit_near_misses(void)
      * (pinned below); clearing fixed bit 3 lands in the CALA row
      * (pinned below); all other fixed-bit flips must miss every
      * row. Clearing fixed bit 15 lands in the P3-S6 PORTR indirect
-     * row (pinned below). */
+     * row (pinned below). Clearing fixed bit 7 lands in the P3-S39
+     * SFTA_ACC row (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0010), UINT16_C(0x0020),
-        UINT16_C(0x0080), UINT16_C(0x0100),
+        UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000)};
     const ti_c54x_decode_result reted_sibling =
@@ -154,6 +155,9 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result sftl_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(RETE_VALUE ^ UINT16_C(0x0400)));
+    const ti_c54x_decode_result sfta_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(RETE_VALUE ^ UINT16_C(0x0080)));
 
     TI_C54X_TEST_CHECK(reted_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(reted_sibling.id == TI_C54X_OPCODE_ID_RETED);
@@ -161,6 +165,8 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(cmpr_sibling.id == TI_C54X_OPCODE_ID_CMPR_AR);
     TI_C54X_TEST_CHECK(sftl_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sftl_sibling.id == TI_C54X_OPCODE_ID_SFTL_ACC);
+    TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
 
     /* Setting fixed bit 11 lands in the RC row. */
     {

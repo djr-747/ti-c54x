@@ -143,6 +143,7 @@ $(eval $(call ti_c54x_add_test,st_lk_smem_decode,isa/decode,test_st_lk_smem_deco
 $(eval $(call ti_c54x_add_test,abs_acc_decode,isa/decode,test_abs_acc_decode.c))
 $(eval $(call ti_c54x_add_test,neg_acc_decode,isa/decode,test_neg_acc_decode.c))
 $(eval $(call ti_c54x_add_test,norm_acc_decode,isa/decode,test_norm_acc_decode.c))
+$(eval $(call ti_c54x_add_test,sfta_acc_decode,isa/decode,test_sfta_acc_decode.c))
 $(eval $(call ti_c54x_add_test,addc_smem_decode,isa/decode,test_addc_smem_decode.c))
 $(eval $(call ti_c54x_add_test,adds_smem_decode,isa/decode,test_adds_smem_decode.c))
 $(eval $(call ti_c54x_add_test,subc_smem_decode,isa/decode,test_subc_smem_decode.c))

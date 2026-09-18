@@ -155,6 +155,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S2-5-T2-28-ROL-ROR-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W25-ROL-ROR-INPUT-COLLECTION-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w25-generic-input-collection-and-rol-ror-vertical-slice.md` anchor `P2-W25: generic input collection and ROL/ROR vertical slice (planned)` |
 | `E-TI-C54X-SPRU172C-S4-SFTL-P4-158` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 SFTL, `4-158` |
+| `E-TI-C54X-SPRU172C-S4-SFTA-P4-155` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 SFTA, `4-155`--`4-156` |
 | `E-TI-C54X-SPRU172C-S2-5-T2-28-SFTL-REPEATABILITY-BOUNDARY` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §2.5/Table 2‑28, `2-19`–`2-21` |
 | `E-PROJECT-P2-W26-SFTL-FIT-OWNERSHIP-CONTRACT` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p2-w26-sftl-shifted-accumulator-vertical-slice.md` anchor `P2-W26: SFTL shifted-accumulator vertical slice (planned)` |
 | `E-TI-C54X-SPRU172C-S4-AND-P4-11` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §4 AND, `4-11` |
@@ -1211,6 +1212,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-NORM-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-CATALOG` |
 | `REQ-COMMON-NORM-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-DECODE` |
 | `REQ-COMMON-NORM-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-NORM-P4-121` | `T-COMMON-NORM-ACC-EFFECTS` |
+| `REQ-COMMON-SFTA-ACC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-SFTA-P4-155` | `T-COMMON-SFTA-ACC-CATALOG` |
+| `REQ-COMMON-SFTA-ACC-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-SFTA-P4-155` | `T-COMMON-SFTA-ACC-DECODE` |
+| `REQ-COMMON-SFTA-ACC-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/shift/` | `E-TI-C54X-SPRU172C-S4-SFTA-P4-155` | `T-COMMON-SFTA-ACC-EFFECTS` |
 | `REQ-COMMON-ADDC-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ADDC-P4-8` | `T-COMMON-ADDC-SMEM-CATALOG` |
 | `REQ-COMMON-ADDC-SMEM-DECODE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/decode/` | `E-TI-C54X-SPRU172C-S4-ADDC-P4-8` | `T-COMMON-ADDC-SMEM-DECODE` |
 | `REQ-COMMON-ADDC-SMEM-EFFECTS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADDC-P4-8` | `T-COMMON-ADDC-SMEM-EFFECTS` |
@@ -1856,6 +1860,9 @@ exist in the repository.
 | `T-COMMON-NORM-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_norm_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_metadata"}` | `REQ-COMMON-NORM-ACC-CATALOG` |
 | `T-COMMON-NORM-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_norm_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_decode"}` | `REQ-COMMON-NORM-ACC-DECODE` |
 | `T-COMMON-NORM-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_norm_acc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.norm_acc_ops"}` | `REQ-COMMON-NORM-ACC-EFFECTS` |
+| `T-COMMON-SFTA-ACC-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_sfta_acc_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sfta_acc_metadata"}` | `REQ-COMMON-SFTA-ACC-CATALOG` |
+| `T-COMMON-SFTA-ACC-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_sfta_acc_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sfta_acc_decode"}` | `REQ-COMMON-SFTA-ACC-DECODE` |
+| `T-COMMON-SFTA-ACC-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/shift/test_sfta_acc.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.sfta_acc"}` | `REQ-COMMON-SFTA-ACC-EFFECTS` |
 | `T-COMMON-ADDC-SMEM-CATALOG` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_addc_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.addc_smem_metadata"}` | `REQ-COMMON-ADDC-SMEM-CATALOG` |
 | `T-COMMON-ADDC-SMEM-DECODE` | PASSING | COMMON_TI | `tests/unit/isa/decode/test_addc_smem_decode.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.addc_smem_decode"}` | `REQ-COMMON-ADDC-SMEM-DECODE` |
 | `T-COMMON-ADDC-SMEM-EFFECTS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_addc_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.addc_smem_ops"}` | `REQ-COMMON-ADDC-SMEM-EFFECTS` |

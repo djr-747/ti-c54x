@@ -8261,6 +8261,24 @@
         "printed_page_end": "4-193"
       },
       "assertion": "SPRU172C SUBC defines the single-word operation SUBC Smem,src with opcode diagram 0001_111S_IAAA_AAAA (S selects accumulator A or B): the divide step subtracts Smem shifted left by 15 from src, and when the ALU output is greater than 0 the output shifted left by 1 with a 1 shifted into LSB returns to src, otherwise src shifted left by 1 returns to src. Affected by SXM (with SXM = 1 the Smem MSB must be 0); affects C and OVsrc; not affected by OVM. Worked example 1 (SUBC 2,A with data word 0001h and A = 4) stores 8 into A with C cleared."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SFTA-P4-155",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SFTA",
+        "printed_page_start": "4-155",
+        "printed_page_end": "4-156"
+      },
+      "assertion": "SPRU172C SFTA defines the single-word operation SFTA src, SHIFT [,dst] with opcode diagram 1111_01SD_011S_HIFT (S and D select the source and destination accumulators, SHIFT is signed -16..+15): a negative SHIFT arithmetically shifts right by -SHIFT with C taking src((-SHIFT)-1) and the vacated top bits taking src(39) when SXM = 1 else 0; a non-negative SHIFT shifts left with C taking src(39-SHIFT) and the low bits zero-filled. Affected by SXM and OVM; affects C and OVdst (or OVsrc when dst is omitted). Class 1. Worked example 1 (SFTA A,-5,B with A = FF 8765 0055h, SXM = 1) stores FF FC3B 2802h into B with C = 1; example 2 (SFTA B,+5 with B = 80 AA00 1234h) stores 15 4002 4680h with C = 0."
     }
   ],
   "requirements": [
@@ -19117,6 +19135,48 @@
       "test_ids": [
         "T-COMMON-SUBC-SMEM-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-SFTA-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for SFTA src, SHIFT [,dst] using base 0xF460 with mask 0xFCE0, the ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 layout, accumulator plus SXM/OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 128 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SFTA-P4-155"
+      ],
+      "test_ids": [
+        "T-COMMON-SFTA-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SFTA-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every SFTA src, SHIFT [,dst] first word through the ACCUMULATOR_SOURCE_DESTINATION_SHIFT5 layout, extracting the S source bit, D destination bit, and 5-bit signed SHIFT with exact 128-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SFTA-P4-155"
+      ],
+      "test_ids": [
+        "T-COMMON-SFTA-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SFTA-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/shift/",
+      "claim": "Execute the checked and trusted SFTA src, SHIFT [,dst] semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SFTA-P4-155"
+      ],
+      "test_ids": [
+        "T-COMMON-SFTA-ACC-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -27715,6 +27775,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-SUBC-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-SFTA-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_sfta_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sfta_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SFTA-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-SFTA-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_sfta_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sfta_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SFTA-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-SFTA-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/shift/test_sfta_acc.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sfta_acc"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SFTA-ACC-EFFECTS"
       ]
     }
   ]

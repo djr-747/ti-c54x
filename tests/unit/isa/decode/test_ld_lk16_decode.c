@@ -151,12 +151,13 @@ test_fixed_bit_near_misses(void)
      * AND_IMMEDIATE_SHIFT16; flipping fixed bit 14 lands on the
      * P3-S3g MAC_DUAL_M1_M0 sibling; flipping fixed bit 1 lands on
      * the P3-S27 ADD_LK_16 sibling; flipping fixed bit 2 lands on
-     * the P3-S30 MPY_LK sibling (pinned below); all other
-     * fixed-bit flips must miss every row. */
+     * the P3-S30 MPY_LK sibling (pinned below); flipping fixed bit
+     * 10 lands on the P3-S39 SFTA_ACC sibling (pinned below); all
+     * other fixed-bit flips must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0008),
         UINT16_C(0x0010), UINT16_C(0x0200),
-        UINT16_C(0x0400), UINT16_C(0x1000),
+        UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x8000)};
     /* 0xB062 (fixed bit 14 set) is the MAC_DUAL_M1_M0 encoding with
      * R=0, S=0 (src A), D=0 (dst A), XMOD1 XAR=AR4, YMOD0 YAR=AR4:
@@ -205,6 +206,15 @@ test_fixed_bit_near_misses(void)
                 (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0004)));
         TI_C54X_TEST_CHECK(mpy_lk_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mpy_lk_sibling.id == TI_C54X_OPCODE_ID_MPY_LK);
+    }
+    /* 0xF462 (fixed bit 10 set) is the SFTA_ACC encoding with S=0
+     * (src A), D=1 (dst B): valid row, wrong identity. */
+    {
+        const ti_c54x_decode_result sfta_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0400)));
+        TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
     }
 
     for (size_t index = 0U;
