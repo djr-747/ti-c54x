@@ -95,8 +95,7 @@ test_fixed_bit_near_misses(void)
      * valid OR_SMEM word asserted below. */
     static const uint16_t unknown_near_misses[] = {
         UINT16_C(0x0080),
-        UINT16_C(0x1000), UINT16_C(0x4000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x1000), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_near_misses) /
@@ -129,6 +128,14 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LDU_VALUE ^ UINT16_C(0x2000))) ==
                        TI_C54X_OPCODE_ID_LD_ASM_SMEM);
+
+    /* Flipping bit 15 lands on 0x9290, claimed by the P3-S28
+     * SUB_XMEM row: a valid cross-row near miss, not an overaccept. */
+    TI_C54X_TEST_CHECK(!matches_ldu(
+        (uint16_t)(LDU_VALUE ^ UINT16_C(0x8000))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LDU_VALUE ^ UINT16_C(0x8000))) ==
+                       TI_C54X_OPCODE_ID_SUB_XMEM);
 }
 
 int

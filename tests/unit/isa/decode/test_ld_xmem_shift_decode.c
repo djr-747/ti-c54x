@@ -155,10 +155,11 @@ test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFE00 leaves D(8), XXXX(7:4), and SHFT(3:0) variable.
      * Flipping fixed bit 13 lands on the P3-S3g MAC_DUAL_M0_M0
-     * sibling; all other fixed-bit 15:9 flips miss every catalog
-     * row. */
+     * sibling and flipping fixed bit 10 lands on the P3-S28
+     * ADD_XMEM sibling (pinned below); all other fixed-bit 15:9
+     * flips miss every catalog row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0200), UINT16_C(0x0400), UINT16_C(0x0800),
+        UINT16_C(0x0200), UINT16_C(0x0800),
         UINT16_C(0x1000), UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
@@ -173,6 +174,19 @@ test_fixed_bit_near_misses(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
                            TI_C54X_OPCODE_ID_MAC_DUAL_M0_M0);
+    }
+
+    /* 0x9000 (fixed bit 10 cleared) is the ADD_XMEM encoding with
+     * S=0 (src A), XMOD0, XAR=AR2, SHFT=0. */
+    {
+        const ti_c54x_decode_result add_xmem_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_XMEM_SHIFT_VALUE ^ UINT16_C(0x0400)));
+
+        TI_C54X_TEST_CHECK(add_xmem_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(add_xmem_sibling.id ==
+                           TI_C54X_OPCODE_ID_ADD_XMEM);
     }
 
     for (size_t index = 0U;

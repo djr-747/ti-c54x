@@ -665,6 +665,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-WAVE6: MPY/MAC #lk leaf fan-out (planned)](plan/p3-wave6-mpy-mac-leaves-slice.md)
 
+- [P3-S28: ADD/SUB Xmem rows (planned)](plan/p3-s28-add-sub-xmem-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

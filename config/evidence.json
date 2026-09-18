@@ -7789,6 +7789,22 @@
       "assertion": "P3-S27 activates the four ADD/SUB #lk rows ADD_LK_SHIFT (0xF000/0xFCF0), ADD_LK_16 (0xF060/0xFCFF), SUB_LK_SHIFT (0xF010/0xFCF0), and SUB_LK_16 (0xF061/0xFCFF) over the shared 2-word accumulator layouts with the landed plain plus trusted op_add_lk/op_sub_lk per-syntax handlers. FORM-T2-01-07, FORM-T2-01-08, FORM-T2-02-07, and FORM-T2-02-08 stay SUBSET under IMMEDIATE_LK."
     },
     {
+      "id": "E-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s28-add-sub-xmem-rows-slice.md",
+        "anchor": "P3-S28: ADD/SUB Xmem rows (implemented; local verification green)"
+      },
+      "assertion": "P3-S28 activates the two ADD/SUB Xmem rows ADD_XMEM (0x9000/0xFE00) and SUB_XMEM (0x9200/0xFE00) over the shared accumulator/dual-XMOD/XAR/shift-4 layout with the landed plain plus trusted op_add_xmem/op_sub_xmem handlers covering all four XMOD modes. FORM-T2-01-05 and FORM-T2-02-05 become COMPLETE under ALL."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101",
       "immutable": true,
       "state": "PINNED",
@@ -17922,6 +17938,21 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the two ADD/SUB Xmem production symbols to FORM-T2-01-05 and FORM-T2-02-05 at COMPLETE under the ALL addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+        "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -21240,7 +21271,8 @@
         "REQ-PROJECT-P3-S22-XOR-SMEM-ROWS",
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
         "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
-        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS"
+        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
+        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS"
       ]
     },
     {
@@ -21975,7 +22007,8 @@
         "REQ-PROJECT-P3-S19-SUB-SMEM-ROWS",
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
         "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
-        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS"
+        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
+        "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS"
       ]
     },
     {
