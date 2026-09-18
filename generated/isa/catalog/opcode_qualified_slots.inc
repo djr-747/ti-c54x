@@ -3,9 +3,18 @@
  * Source: src/isa/catalog/opcode_catalog.def.
  * DO NOT EDIT: regenerate this tracked fragment from the catalog.
  */
+{(uint16_t)0x6F00, (uint16_t)0xFF80, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_DIRECT, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FA0, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD4, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FA8, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD5, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FB0, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD6, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FB8, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD7, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FC0, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD8, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6FD0, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD10, (uint16_t)0x0C60, (uint16_t)0xFEE0},
 {(uint16_t)0x6F80, (uint16_t)0xFFE0, (uint16_t)TI_C54X_OPCODE_ID_LD_SMEM_SHIFT, (uint16_t)0x0C40, (uint16_t)0xFEE0},
 {(uint16_t)0x6F80, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD0, (uint16_t)0x0C60, (uint16_t)0xFEE0},
 {(uint16_t)0x6F88, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD1, (uint16_t)0x0C60, (uint16_t)0xFEE0},
 {(uint16_t)0x6F90, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD2, (uint16_t)0x0C60, (uint16_t)0xFEE0},
 {(uint16_t)0x6F98, (uint16_t)0xFFF8, (uint16_t)TI_C54X_OPCODE_ID_STH_SHIFT_SMEM_MOD3, (uint16_t)0x0C60, (uint16_t)0xFEE0},
+{(uint16_t)0x6F00, (uint16_t)0xFF00, (uint16_t)TI_C54X_OPCODE_ID_ADD_SMEM_SHIFT, (uint16_t)0x0C00, (uint16_t)0xFCE0},
+{(uint16_t)0x6F00, (uint16_t)0xFF00, (uint16_t)TI_C54X_OPCODE_ID_SUB_SMEM_SHIFT, (uint16_t)0x0C20, (uint16_t)0xFCE0},
 {(uint16_t)0x0000, (uint16_t)0x0000, (uint16_t)TI_C54X_OPCODE_ID_UNKNOWN, (uint16_t)0x0000, (uint16_t)0x0000},

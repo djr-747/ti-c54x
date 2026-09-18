@@ -7837,6 +7837,22 @@
       "assertion": "P3-S30 activates the two MPY/MAC #lk rows MPY_LK (0xF066/0xFEFF) and MAC_LK (0xF067/0xFCFF) over the shared 2-word accumulator layouts with the landed plain plus trusted op_mpy_lk/op_mac_lk handlers covering the full D and S/D spaces. TI pins no R bit in either space, so the unrounded leaves cover them fully. FORM-T2-03-05 and FORM-T2-04-02 become COMPLETE under ALL."
     },
     {
+      "id": "E-PROJECT-P3-S31-ADD-SUB-SMEM-SHIFT-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s31-add-sub-smem-shift-rows-slice.md",
+        "anchor": "P3-S31: ADD/SUB Smem SHIFT rows (implemented; local verification green)"
+      },
+      "assertion": "P3-S31 activates the two ADD/SUB Smem SHIFT rows ADD_SMEM_SHIFT (0x6F00/0xFF00 + 0x0C00/0xFCE0) and SUB_SMEM_SHIFT (0x6F00/0xFF00 + 0x0C20/0xFCE0) over the new shared indirect/source/destination/shift5 layout with the landed plain plus trusted op_add_smem_shift/op_sub_smem_shift handlers covering direct page-0 and standard-indirect MOD0-MOD3. The seven overlapping STH shift rows convert to MASKED2 with their 0x0C60/0xFEE0 second-word pattern and the syn4 rows sit after every 0x6Fxx row so first-match keeps established first-word identities. FORM-T2-01-04 and FORM-T2-02-04 bind SUBSET under DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101",
       "immutable": true,
       "state": "PINNED",
@@ -7923,6 +7939,24 @@
         "printed_page_end": "4-186"
       },
       "assertion": "SPRU172C ADD syntax 5 is ADD Xmem,SHFT,src with first word 0x9000|S<<8|XXXX|SHFT executing (Xmem<<SHFT)+(src) into src. SUB syntax 5 is SUB Xmem,SHFT,src with first word 0x9200|S<<8|XXXX|SHFT executing (src)-(Xmem<<SHFT) into src. SHFT spans 0..15, both forms are one program word of class 3A with S at bit 8 selecting the accumulator. This record does not adopt a cycle class or establish repeat eligibility."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN4-SMEM-SHIFT-P4-3-4-186",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADD and SUB",
+        "printed_page_start": "4-3",
+        "printed_page_end": "4-186"
+      },
+      "assertion": "SPRU172C ADD syntax 4 is ADD Smem[,SHIFT],src[,dst] with first word 0x6F00|I<<7|cookie and second word 0x0C00|S<<9|D<<8|SHIFT executing dst=(src)+((Smem)<<SHIFT) over 2 program words of class 4A/4B. SUB syntax 4 is SUB Smem[,SHIFT],src[,dst] with first word 0x6F00|I<<7|cookie and second word 0x0C20|S<<9|D<<8|SHIFT executing dst=(src)-((Smem)<<SHIFT). SHIFT spans -16..15, S at second-word bit 9 selects the source accumulator and D at bit 8 the destination. This record does not adopt a cycle class or establish repeat eligibility."
     },
     {
       "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187",
@@ -18014,6 +18048,21 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S31-ADD-SUB-SMEM-SHIFT-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the two ADD/SUB Smem SHIFT production symbols to FORM-T2-01-04 and FORM-T2-02-04 at SUBSET under the DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3 addressing token with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S31-ADD-SUB-SMEM-SHIFT-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+        "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -18067,6 +18116,34 @@
       ],
       "test_ids": [
         "T-COMMON-P3-WAVE5-SUB-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S31-ADD-SMEM-SHIFT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ADD Smem SHIFT syntax 4 as a catalog-free pure leaf: resolve S, D, the Smem cookie, and signed 5-bit SHIFT through the shared indirect/source/destination/shift5 layout over the 0x6F00 fixed prefix with the 0x0C00 second-word pattern, shift the Smem word by the signed count with SXM widening, add to the S-selected accumulator with checked 40-bit addition, write C from the low-32 carry, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN4-SMEM-SHIFT-P4-3-4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S31-ADD-SMEM-SHIFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S31-SUB-SMEM-SHIFT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute SUB Smem SHIFT syntax 4 as a catalog-free pure leaf: resolve S, D, the Smem cookie, and signed 5-bit SHIFT through the shared indirect/source/destination/shift5 layout over the 0x6F00 fixed prefix with the 0x0C20 second-word pattern, shift the Smem word by the signed count with SXM widening, subtract from the S-selected accumulator with checked 40-bit subtraction, write C from the low-32 borrow with C set meaning no borrow, saturate under OVM with sticky destination overflow, preserve TC, and gate on accumulator, SXM, and OVM knownness.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN4-SMEM-SHIFT-P4-3-4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S31-SUB-SMEM-SHIFT-SEMANTICS"
       ]
     },
     {
@@ -21335,7 +21412,8 @@
         "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
         "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS",
         "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS",
-        "REQ-PROJECT-P3-S30-MPY-MAC-LK-ROWS"
+        "REQ-PROJECT-P3-S30-MPY-MAC-LK-ROWS",
+        "REQ-PROJECT-P3-S31-ADD-SUB-SMEM-SHIFT-ROWS"
       ]
     },
     {
@@ -22072,7 +22150,8 @@
         "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
         "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
         "REQ-PROJECT-P3-S28-ADD-SUB-XMEM-ROWS",
-        "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS"
+        "REQ-PROJECT-P3-S29-ADD-SUB-SRC-ASM-ROWS",
+        "REQ-PROJECT-P3-S31-ADD-SUB-SMEM-SHIFT-ROWS"
       ]
     },
     {
@@ -26047,6 +26126,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S31-ADD-SMEM-SHIFT-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_add_smem_shift.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.add_smem_shift_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S31-ADD-SMEM-SHIFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S31-SUB-SMEM-SHIFT-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sub_smem_shift.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sub_smem_shift_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S31-SUB-SMEM-SHIFT-SEMANTICS"
       ]
     }
   ]

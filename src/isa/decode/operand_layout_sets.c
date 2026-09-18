@@ -647,6 +647,40 @@ const ti_c54x_operand_layout_set
     ti_c54x_source_destination_indirect_addr7_set = {
         ti_c54x_source_destination_indirect_addr7_operands, UINT8_C(4)};
 
+/* ADD/SUB Smem SHIFT fields: source select S[9:9], destination
+ * select D[8:8], one 8-bit Smem specifier cookie (indirect flag
+ * I[7:7] over the 7-bit address cookie A[6:0]) from word 0, and
+ * signed 5-bit SHIFT[4:0] from word 1. The cookie rides one
+ * operand so trusted packets stay within the four-operand
+ * capacity; leaves split the flag from the address. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_source_destination_shift5_source_piece = {
+        UINT8_C(1), UINT8_C(9), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_source_destination_shift5_destination_piece = {
+        UINT8_C(1), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_source_destination_shift5_shift_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_indirect_addr7_source_destination_shift5_smem_pieces[2] = {
+        {UINT8_C(0), UINT8_C(7), UINT8_C(1), UINT8_C(7)},
+        {UINT8_C(0), UINT8_C(0), UINT8_C(7), UINT8_C(0)}};
+static const ti_c54x_operand_field_layout
+    ti_c54x_indirect_addr7_source_destination_shift5_operands[4] = {
+        {&ti_c54x_indirect_addr7_source_destination_shift5_source_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_indirect_addr7_source_destination_shift5_destination_piece,
+         UINT8_C(1), UINT8_C(1)},
+        {ti_c54x_indirect_addr7_source_destination_shift5_smem_pieces,
+         UINT8_C(2), UINT8_C(8)},
+        {&ti_c54x_indirect_addr7_source_destination_shift5_shift_piece,
+         UINT8_C(1), UINT8_C(5)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_indirect_addr7_source_destination_shift5_set = {
+        ti_c54x_indirect_addr7_source_destination_shift5_operands,
+        UINT8_C(4)};
+
 /* SQUR Smem fields: D destination bit D[8:8], indirect flag I[7:7],
  * then 7-bit Smem address A[6:0]. Unlike the round/select/indirect
  * shape, fixed bit 9 carries no operand. */

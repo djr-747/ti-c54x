@@ -144,6 +144,11 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word XC fields: execute-count select N[9:9] and 8-bit
      * condition code C[7:0]. */
     TI_C54X_OPERAND_LAYOUT_N_CONDITION8,
+    /* Two-word Smem SHIFT fields: indirect flag I[7:7] and 7-bit
+     * Smem cookie A[6:0] from word 0 with source select S[9:9],
+     * destination select D[8:8], and signed 5-bit SHIFT[4:0] from
+     * word 1. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_SOURCE_DESTINATION_SHIFT5,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

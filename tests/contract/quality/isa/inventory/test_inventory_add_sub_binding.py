@@ -157,6 +157,30 @@ ROWS = {
         "coverage": "COMPLETE",
         "addressing": "ALL",
     },
+    "ADD_SMEM_SHIFT": {
+        "form": "FORM-T2-01-04",
+        "words": 2,
+        "base": 0x6F00,
+        "mask": 0xFF00,
+        "second_base": 0x0C00,
+        "second_mask": 0xFCE0,
+        "layout": "TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_SOURCE_DESTINATION_SHIFT5",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
+    "SUB_SMEM_SHIFT": {
+        "form": "FORM-T2-02-04",
+        "words": 2,
+        "base": 0x6F00,
+        "mask": 0xFF00,
+        "second_base": 0x0C20,
+        "second_mask": 0xFCE0,
+        "layout": "TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_SOURCE_DESTINATION_SHIFT5",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
 }
 
 
@@ -177,9 +201,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 272)
-        self.assertEqual(len(rows) + 1, 273)
-        self.assertEqual(len(inventory["catalog_bindings"]), 272)
+        self.assertEqual(len(rows), 274)
+        self.assertEqual(len(rows) + 1, 275)
+        self.assertEqual(len(inventory["catalog_bindings"]), 274)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -188,6 +212,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                 self.assertEqual(row.first_word_value, expected["base"])
                 self.assertEqual(row.first_word_mask, expected["mask"])
                 self.assertEqual(row.program_word_count, expected.get("words", 1))
+                if "second_base" in expected:
+                    self.assertEqual(row.second_word_value, expected["second_base"])
+                    self.assertEqual(row.second_word_mask, expected["second_mask"])
                 self.assertEqual(row.operand_layout, expected["layout"])
                 self.assertEqual(
                     row.repeatability, "TI_C54X_REPEATABILITY_UNRESOLVED"
@@ -202,10 +229,10 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                     binding["addressing_subset"], expected["addressing"]
                 )
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 27815)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 27863)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 114, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 116, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],

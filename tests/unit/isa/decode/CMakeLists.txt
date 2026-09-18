@@ -113,6 +113,7 @@ ti_c54x_add_unit_test(round_indirect_addr7_layout test_round_indirect_addr7_layo
 ti_c54x_add_unit_test(source_destination_round_layout test_source_destination_round_layout.c)
 ti_c54x_add_unit_test(select_indirect_addr7_layout test_select_indirect_addr7_layout.c)
 ti_c54x_add_unit_test(source_destination_indirect_addr7_layout test_source_destination_indirect_addr7_layout.c)
+ti_c54x_add_unit_test(indirect_addr7_source_destination_shift5_layout test_indirect_addr7_source_destination_shift5_layout.c)
 ti_c54x_add_unit_test(n_condition8_layout test_n_condition8_layout.c)
 # P3 slice 4 (BACC family) contract: shared accumulator-source layout
 # proof over BACC-family first words.

@@ -4,9 +4,11 @@
  * Owns: executable proof that second-word slot resolution qualifies the
  * 0x6F80/FFE0 LD Smem,SHIFT slot on the second program word under mask
  * 0xFEE0: 0x0C40 words resolve LD_SMEM_SHIFT, 0x0C60 words resolve the
- * STH_SHIFT_SMEM_MOD0-MOD3 row selected by first-word bits 6:3, and every
- * other second word resolves UNKNOWN. The bit-5 parity between the two
- * fixed patterns is the whole discriminator.
+ * STH_SHIFT_SMEM_MOD0-MOD3 row selected by first-word bits 6:3,
+ * 0x0C00 words resolve ADD_SMEM_SHIFT and 0x0C20 words resolve
+ * SUB_SMEM_SHIFT, and every other second word resolves UNKNOWN. The
+ * bit-5 parity between the LD and STH fixed patterns is the whole
+ * discriminator; the syn4 patterns sit outside the 0xFEE0 mask.
  * Does not own: lookup generation, decode policy, dispatch, CPU/state
  * mutation, sequencing, timing, or diagnostics.
  */
@@ -93,10 +95,24 @@ test_parity_bit_selects_family(void)
 }
 
 static void
+test_syn4_words_resolve_syn4_rows(void)
+{
+    for (uint8_t mode = UINT8_C(0); mode <= UINT8_C(3); ++mode) {
+        const uint16_t first = mod_first_word(mode, UINT8_C(0));
+        TI_C54X_TEST_CHECK(ti_c54x_resolve_qualified_slot(
+                               first, UINT16_C(0x0C00)) ==
+                           TI_C54X_OPCODE_ID_ADD_SMEM_SHIFT);
+        TI_C54X_TEST_CHECK(ti_c54x_resolve_qualified_slot(
+                               first, UINT16_C(0x0C20)) ==
+                           TI_C54X_OPCODE_ID_SUB_SMEM_SHIFT);
+    }
+}
+
+static void
 test_other_second_words_decline(void)
 {
     static const uint16_t declined[] = {
-        UINT16_C(0x0000), UINT16_C(0x0C00), UINT16_C(0x0C20),
+        UINT16_C(0x0000),
         UINT16_C(0x0C80), UINT16_C(0x0CE0), UINT16_C(0xFFFF)};
     for (uint8_t mode = UINT8_C(0); mode <= UINT8_C(3); ++mode) {
         const uint16_t first = mod_first_word(mode, UINT8_C(0));
@@ -119,6 +135,7 @@ main(void)
     test_ld_word_resolves_ld();
     test_sth_word_resolves_mod_row();
     test_parity_bit_selects_family();
+    test_syn4_words_resolve_syn4_rows();
     test_other_second_words_decline();
     return 0;
 }

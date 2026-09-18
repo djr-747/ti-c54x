@@ -107,7 +107,7 @@ class OpcodeLookupGeneratorTests(unittest.TestCase):
         expected = render_lookup(rows)
         actual = self.artifact.read_text(encoding="utf-8")
         self.assertEqual(actual, expected)
-        self.assertEqual(actual.count("= (uint16_t)"), 27815)
+        self.assertEqual(actual.count("= (uint16_t)"), 27863)
         self.assertIn("[0xF495] = (uint16_t)TI_C54X_OPCODE_ID_NOP,", actual)
         self.assertIn(
             "[0xF5B0] = (uint16_t)TI_C54X_OPCODE_ID_SSBX_STATUS,", actual

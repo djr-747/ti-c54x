@@ -20,14 +20,15 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S3s complete (`MAC`/`MPY`/`MPYA`/`MAS`/`SQUR`/`SQURA`/`SQURS`/`MPYU`/`MACA`
-Smem rows, `MACA` T,src, `MACP` Smem,Pmad, `MACD` Smem,Pmad with the Smem+1
-delay write-back, `MAC`/`MPY`/`MAS`/`MACSU` dual `Xmem`,`Ymem`
-with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
+Current snapshot: P3-S30 complete (S3t–S3x R-variant lock-ins through the
+shared `MAC`/`MAS`/`MACA`/`MASA`/`MPY` rows; S3z `ADD` Smem syntaxes 1–3;
+S4 `XC`; S10–S13 `STH` stores; S14–S26 `SUB`/`AND`/`OR`/`XOR`/`SUBB`/`SUBS`
+Smem rows; Wave-5 `ADD`/`SUB` leaf fan-out with S27–S29 `#lk`/`Xmem`/src-ASM
+rows; Wave-6 `MPY`/`MAC` `#lk` leaves with S30 rows).
 
-- 215 runnable catalog rows under 17,681 populated first-word lookup entries.
-  Inventory coverage is 82/205 forms SUBSET-or-better (40.000%) and 33/205
-  strict-complete (16.098%); lookup encodings are not instruction counts.
+- 272 runnable catalog rows under 27,815 populated first-word lookup entries.
+  Inventory coverage is 114/205 forms SUBSET-or-better (55.610%) and 40/205
+  strict-complete (19.512%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
   constraint: one-pass trusted packets, allocation-free opcode leaves, and
@@ -131,21 +132,25 @@ with unsigned-X/signed-Y product select, register-only `MPYA`/`SQUR` dst).
   `0x4000`x`0x4000` oracle, the FRCT lane, and the mixed-sign lane
   retire through the leaf and the CPU; the mixed product rides a new
   unsigned-T-only multiply-core select with both-unsigned
-  precedence).
-- Major remaining work is the `MPYR`/`SQDST` families (`MACR` Smem
-  and dual retire through the shared `MAC` rows with R=1, locked by
-  the Example 5/6 vectors; `MASR` Smem and dual retire through the
-  shared `MAS` rows with R=1, locked by the Example 3/4 vectors;
-  `MACAR` Smem retires through the shared `MACA` row with R=1,
-  locked by the Example 3 vector; `MASA` Smem and T retire through
-  the new `MASA_SMEM`/`MASA_T` rows, locked by the Example 1/2/3
-  vectors; `MASAR` T retires through the shared `MASA_T` row with
-  R=1; `MPYR` Smem retires through the shared `MPY_SMEM` row with
-  R=1, locked by the Example 4 vector; `ADD` Smem syntaxes 1-3 retire
-  through the new `ADD_SMEM`/`ADD_SMEM_TS`/`ADD_SMEM_SH16` rows with
-  derived-vector coverage, no TI worked example on record),
-  MMR/stack moves, bit/field ops, shifts/misc, the port seam,
-  far/XPC addressing, profiles/devices, and evidenced machine timing.
+  precedence). S3t–S3x lock the R variants in place (`MACR` dual
+  through the shared `MAC` rows, `MASR` Smem and dual, `MACAR`
+  Smem, `MASA` Smem and T rows, `MASAR` T, each with TI example
+  vectors). S3y locks `MPYR` Smem through the shared `MPY_SMEM`
+  row,
+  S3z lands the `ADD` Smem syntax 1–3 rows
+  (`ADD_SMEM`/`ADD_SMEM_TS`/`ADD_SMEM_SH16`), and S4 lands `XC`.
+  S10–S13 land the `STH` stores (syntax 1, by-ASM, by-SHFT Xmem,
+  Smem SHIFT with MOD0–MOD3/MOD4+ rows); S14–S26 land the `SUB`,
+  `AND`, `OR`, `XOR`, `SUBB`, and `SUBS` Smem rows. Wave-5 fans
+  out the six `ADD`/`SUB` leaves (`#lk`, `Xmem`, src-ASM) with
+  S27–S29 rows binding `FORM-T2-01-07/08/05/10` and
+  `FORM-T2-02-07/08/05/10`; Wave-6 plus S30 land the `MPY`/`MAC`
+  `#lk` leaves and rows (`FORM-T2-03-05`, `FORM-T2-04-02`).
+- Major remaining work is the `ADD`/`SUB` syntax-4 Smem SHIFT rows
+  (S31, in progress), `ADDM`, `MPY` Smem,`#lk` syntax 3, `MAC`
+  Smem,`#lk` syntax 4, `SUBC`, `ADDC`/`ADDS`/`DADD`, MMR/stack
+  moves, bit/field ops, shifts/misc, the port seam, far/XPC
+  addressing, profiles/devices, and evidenced machine timing.
   Emulator integration remains deferred.
 
 See the [implementation plan](docs/implementation-plan.md) and
