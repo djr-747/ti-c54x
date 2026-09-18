@@ -178,8 +178,9 @@ typedef enum ti_c54x_repeatability_class {
 
 typedef uint16_t ti_c54x_input_resource_mask;
 /* Resource values are powers of two; RETURN_REGISTER is the eleventh
- * resource (1024), STATUS_FRCT is the twelfth resource (2048), and
- * STATUS_DP is the thirteenth resource (4096). */
+ * resource (1024), STATUS_FRCT is the twelfth resource (2048),
+ * STATUS_DP is the thirteenth resource (4096), and TRN_REGISTER is the
+ * fourteenth resource (8192). */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -199,6 +200,9 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)2048U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_DP \
     ((ti_c54x_input_resource_mask)4096U)
+/* TRN arrives from the MMR file cell; ST TRN is its first consumer. */
+#define TI_C54X_INPUT_RESOURCES_TRN_REGISTER \
+    ((ti_c54x_input_resource_mask)8192U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_DP))
@@ -315,7 +319,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STACK_POINTER | \
                                    TI_C54X_INPUT_RESOURCES_RETURN_REGISTER | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
-                                   TI_C54X_INPUT_RESOURCES_STATUS_DP))
+                                   TI_C54X_INPUT_RESOURCES_STATUS_DP | \
+                                   TI_C54X_INPUT_RESOURCES_TRN_REGISTER))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

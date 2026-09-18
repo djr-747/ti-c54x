@@ -3151,6 +3151,22 @@
       "assertion": "P2-W39 adds the project-contract T_REGISTER input resource as a copied raw 16-bit T snapshot with knownness, sourced from the private T state; unrequested T is not read, malformed or unknown input rejects transactionally, and unknown T produces UNKNOWN_INPUT without a MEMORY effect. The fixed-MOD2 ST T, *ARx+ handler is a pure MEMORY WORD16 WRITE with exact copied T, complete=NULL, and no status-bit effects, while generic fixed-MOD2 address resolution and CPU WAIT/READY/FAULT/sequential-PC retirement are reused. No new layout, effect, address, architectural-state, public-API, source-manifest, timing, or opcode-specific CPU branch seam is admitted; STH, LDR, LD#K, and TS remain deferred for their recorded gaps."
     },
     {
+      "id": "E-PROJECT-P3-S44-TRN-INPUT-SEAM-CONTRACT",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s44-trn-input-seam-slice.md",
+        "anchor": "P3-S44: TRN input seam (planned)"
+      },
+      "assertion": "P3-S44 adds the project-contract TRN_REGISTER input resource (bit 8192) as a copied raw 16-bit TRN snapshot with knownness, sourced from the MMR file TRN cell; unrequested TRN is not read, a missing MMR file source or malformed request rejects transactionally, and unknown TRN remains known=false for semantic rejection. The snapshot carrier grows 64 to 72 bytes on LP64 (68 on ILP32) with the embedded instruction transaction root moving 384 to 392 (348 to 356), and the eleven 0x2000 invalid-resource probes move to 0x4000. No catalog row, layout, handler, effect, inventory form, or CPU retirement change is admitted; the ST TRN leaf belongs to S45."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S2-1-S2-4-T2-1-T2-26-ISA-INSTRUCTION-INVENTORY",
       "immutable": true,
       "state": "PINNED",
@@ -11827,6 +11843,20 @@
       ],
       "test_ids": [
         "T-PROJECT-OP-INPUT-T-REGISTER"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-OP-INPUT-TRN-REGISTER",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/cpu/input/",
+      "claim": "Collect TRN_REGISTER only when requested by the instruction input mask as a copied raw 16-bit TRN snapshot with explicit knownness from the MMR file TRN cell; a missing MMR file source or malformed request rejects transactionally, and an unknown TRN remains known=false for semantic rejection without reading unrequested TRN.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S44-TRN-INPUT-SEAM-CONTRACT"
+      ],
+      "test_ids": [
+        "T-PROJECT-OP-INPUT-TRN-REGISTER"
       ]
     },
     {
@@ -22211,6 +22241,20 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-OP-INPUT-T-REGISTER"
+      ]
+    },
+    {
+      "id": "T-PROJECT-OP-INPUT-TRN-REGISTER",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/cpu/input/test_collect_trn_register.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_input_collect_trn_register"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-OP-INPUT-TRN-REGISTER"
       ]
     },
     {

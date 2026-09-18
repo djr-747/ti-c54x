@@ -17,8 +17,8 @@
 #include <stdint.h>
 #include <string.h>
 
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 64U,
-               "op input snapshot must retain its fixed 64-byte layout");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 72U,
+               "op input snapshot must retain its fixed 72-byte layout");
 
 #define FRCT_BIT_INDEX UINT8_C(6)
 

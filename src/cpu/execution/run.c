@@ -264,6 +264,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                     .status = &cpu->arch_state.status,
                     .arch_state = &cpu->arch_state,
                     .t_register = &cpu->t_register,
+                    .mmr_file = &cpu->arch_state.mmr_file,
                 },
                 &op_input) != TI_C54X_INPUT_COLLECT_OK) {
             return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,

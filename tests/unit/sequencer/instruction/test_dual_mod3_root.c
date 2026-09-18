@@ -31,11 +31,12 @@
  * the read-phase T-load flag to the memory effect, so the root holds
  * at 360. S6 grows the PORT pair snapshot with the DATA-leg
  * resolution (the generic slot aliases the snapshot in the candidate
- * union), so the root holds at 384. */
+ * union), so the root holds at 384. S44 grows the embedded input
+ * snapshot with the TRN fields, so the root holds at 392. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 384U,
-               "S6 LP64 root holds the PORT DATA-leg resolution");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 392U,
+               "S44 LP64 root holds the TRN input fields");
 
 static ti_c54x_op_memory_address_spec
 dual_spec_modes(uint8_t x_ar,
