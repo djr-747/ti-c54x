@@ -13273,3 +13273,49 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `51fe34e`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S42 W7 batch-5 DELAY Smem row (slice 71)
+
+- Landed: one TI-pinned single-word row on INDIRECT_ADDR7
+  (DELAY_SMEM 0x4D00/0xFF00, UNRESOLVED, no resources): DELAY
+  stages a Smem read with the S41 single-word delay write-back
+  and a null completion. Leaf built row-less by an isolated
+  worker against a maintainer TI brief (SPRU172C DELAY p. 4-41
+  fetched from the public TI manual volume; Z-delay, no status
+  bits, 6CAC worked example) and merged with no fixes and no id
+  flip. Maintainer wired the row, lookup regen (+256 pure),
+  dispatch include (both tables auto-bind from the row stem),
+  load sources, ops/decode/metadata suites plus registrations,
+  LTD 0x4D00 neighbor flips, inventory form flip plus binding,
+  7 evidence records (1 TI + 3 req + 3 test), index rows, README,
+  and frozen-count bumps (292 rows, 298 bindings, 32,521
+  lookup, 140/205 at 68.293%, 258 SUBSET bindings, 758
+  requirements, 614 tests). Slice doc born `(implemented;
+  local verification green)` in the impl commit.
+- Validation: `make build` clean, `make test` exit 0,
+  `check_evidence.py` PASS (758/614),
+  `check_isa_inventory.py` exit 0 (140/205, strict 40/205),
+  sanitizer rebuild of the new/touched sources with the DELAY
+  and LTD suites passing under ASan/UBSan, normal build
+  restored (0 asan symbols) with the suites re-passing.
+- Decisions: DELAY reuses the LTD addressing subset
+  (DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3); no CPU-level
+  retirement test (LTD precedent; execution is covered by the
+  S41 seam proof). PROJECT/COMMON scope policy held: the new
+  ARCHITECTURAL reqs cite COMMON_TI evidence only.
+- Near-misses: first full run exposed 16 stale Python frozen
+  pins plus 7 C-side pins (rows, bindings, lookup, coverage,
+  SUBSET set/map) fixed as maintainer bumps; worker worktree
+  sources were GC'd after the child terminated, recovered
+  byte-identical from the worker's /tmp/delay_hold copies
+  (line counts, contract heads, and 59-check suite all match;
+  all suites re-pass in-tree). Lesson: copy worker
+  deliverables into the parent tree before the child result
+  resolves.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 65 unbound forms; W7 fan-out
+  continues with the next TI-pinned briefs. Wave-7 plan doc
+  still untracked.
+- Split commit discipline: impl `45f1adb`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
