@@ -161,6 +161,11 @@ typedef enum ti_c54x_operand_layout_id {
      * written. The cookie rides one operand so trusted packets
      * stay within the four-operand capacity. */
     TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16,
+    /* Two-word test/store Smem,#lk fields: indirect flag I[7:7]
+     * and 7-bit Smem address A[6:0] from word 0 with the copied
+     * 16-bit immediate from word 1. T is neither read nor
+     * written. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

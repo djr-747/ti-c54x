@@ -137,6 +137,10 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16,
             UINT8_C(2),
             &ti_c54x_source_destination_indirect_addr7_extension16_set},
+        [TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16] = {
+            TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16,
+            UINT8_C(2),
+            &ti_c54x_indirect_addr7_extension16_set},
         [TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7] = {
             TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7, UINT8_C(1),
             &ti_c54x_destination_indirect_addr7_set},
@@ -348,6 +352,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7_EXTENSION16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_source_destination_indirect_addr7_extension16_set;
+    case TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_indirect_addr7_extension16_set;
     case TI_C54X_OPERAND_LAYOUT_DESTINATION_INDIRECT_ADDR7:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_destination_indirect_addr7_set;

@@ -134,3 +134,5 @@ $(eval $(call ti_c54x_add_test,calld_decode,isa/decode,test_calld_decode.c))
 # W7A RED contract: RND/SAT accumulator decode.
 $(eval $(call ti_c54x_add_test,rnd_acc_decode,isa/decode,test_rnd_acc_decode.c))
 $(eval $(call ti_c54x_add_test,sat_acc_decode,isa/decode,test_sat_acc_decode.c))
+# S36 RED contract: Smem,#lk test/store layout.
+$(eval $(call ti_c54x_add_test,indirect_addr7_extension16_layout,isa/decode,test_indirect_addr7_extension16_layout.c))
