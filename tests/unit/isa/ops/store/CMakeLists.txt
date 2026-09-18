@@ -21,6 +21,10 @@ ti_c54x_add_unit_test(stlm_smem_direct_ops test_stlm_smem_direct.c)
 ti_c54x_add_unit_test(stl_smem_direct_ops test_stl_smem_direct.c)
 ti_c54x_add_unit_test(stl_asm_smem_direct_ops test_stl_asm_smem_direct.c)
 ti_c54x_add_unit_test(st_trn_smem_direct_ops test_st_trn_smem_direct.c)
+# P3-S49 RED contracts: conditional-store Xmem leaves.
+ti_c54x_add_unit_test(saccd_xmem_cond_ops test_saccd_xmem_cond.c)
+ti_c54x_add_unit_test(srccd_xmem_cond_ops test_srccd_xmem_cond.c)
+ti_c54x_add_unit_test(strcd_xmem_cond_ops test_strcd_xmem_cond.c)
 # S36 RED contract: ST #lk Smem store effects.
 ti_c54x_add_unit_test(st_lk_smem_ops test_st_lk_smem.c)
 ti_c54x_add_unit_test(standard_indirect_store_modes

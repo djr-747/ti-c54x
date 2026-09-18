@@ -2436,9 +2436,11 @@
       "table_ordinal": 2,
       "mnemonic": "SACCD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SACCD_XMEM_COND"
+      ]
     },
     {
       "id": "FORM-T2-21-03",
@@ -2447,9 +2449,11 @@
       "table_ordinal": 3,
       "mnemonic": "SRCCD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SRCCD_XMEM_COND"
+      ]
     },
     {
       "id": "FORM-T2-21-04",
@@ -2458,9 +2462,11 @@
       "table_ordinal": 4,
       "mnemonic": "STRCD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "STRCD_XMEM_COND"
+      ]
     },
     {
       "id": "FORM-T2-22-01",
@@ -4572,6 +4578,24 @@
       "form_id": "FORM-T2-19-18",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "SACCD_XMEM_COND",
+      "form_id": "FORM-T2-21-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "SRCCD_XMEM_COND",
+      "form_id": "FORM-T2-21-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "STRCD_XMEM_COND",
+      "form_id": "FORM-T2-21-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
     }
   ]
 }

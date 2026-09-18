@@ -92,12 +92,13 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* Bit 15 (0x8000) leaves in P3-S19: 0x8C90 ^ 0x8000 is 0x0C90, a
      * valid SUB_SMEM_TS word asserted below. */
-    /* Clearing bit 7 lands the pinned direct sibling; every other
-     * fixed-bit flip stays unbound. */
+    /* Clearing bit 7 lands the pinned direct sibling, and setting
+     * bit 12 lands the P3-S49 STRCD_XMEM_COND sibling (pinned
+     * below); every other fixed-bit flip stays unbound. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x0800),
-        UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000)};
+        UINT16_C(0x2000), UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -118,6 +119,18 @@ test_fixed_bit_near_misses_are_unknown(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(direct_sibling.id ==
                            TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
+    }
+    /* 0x9C90 (bit 12 set) is the STRCD_XMEM_COND first word with
+     * S=0, XMOD0, XAR=AR3 (COND=0x0 rejects at the leaf). */
+    {
+        const ti_c54x_decode_result strcd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(ST_T_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(strcd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(strcd_sibling.id ==
+                           TI_C54X_OPCODE_ID_STRCD_XMEM_COND);
     }
 
     {

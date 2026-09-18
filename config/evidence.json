@@ -19747,6 +19747,48 @@
       "test_ids": [
         "T-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM"
       ]
+    },
+    {
+      "id": "REQ-COMMON-SACCD-XMEM-COND-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the checked and trusted SACCD src,Xmem,cond leaves, staging a dual-X Xmem READ with OVERWRITE carrying the low 16 of the S-selected accumulator shifted by (ASM-16) with SXM-gated fill when the 4-bit TI condition holds and WRITEBACK otherwise, rejecting bad select/XAR/unassigned nibbles and unknown source, ASM, SXM, or selected accumulator with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SACCD-P4-152"
+      ],
+      "test_ids": [
+        "T-COMMON-SACCD-XMEM-COND-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SRCCD-XMEM-COND-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the checked and trusted SRCCD Xmem,cond leaves, staging a dual-X Xmem READ with OVERWRITE carrying the BRC word when the 4-bit TI condition holds and WRITEBACK otherwise, rejecting a cleared S bit, bad XAR, unassigned nibbles, and unknown BRC or selected accumulator with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SRCCD-P4-165"
+      ],
+      "test_ids": [
+        "T-COMMON-SRCCD-XMEM-COND-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STRCD-XMEM-COND-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the checked and trusted STRCD Xmem,cond leaves, staging a dual-X Xmem READ with OVERWRITE carrying the T word when the 4-bit TI condition holds and WRITEBACK otherwise, rejecting a set S bit, bad XAR, unassigned nibbles, and unknown T or selected accumulator with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STRCD-P4-186"
+      ],
+      "test_ids": [
+        "T-COMMON-STRCD-XMEM-COND-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -28779,6 +28821,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-RMW-OVERWRITE-WRITEBACK-TRANSFORM"
+      ]
+    },
+    {
+      "id": "T-COMMON-SACCD-XMEM-COND-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_saccd_xmem_cond.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.saccd_xmem_cond_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SACCD-XMEM-COND-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-SRCCD-XMEM-COND-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_srccd_xmem_cond.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.srccd_xmem_cond_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SRCCD-XMEM-COND-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-STRCD-XMEM-COND-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_strcd_xmem_cond.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.strcd_xmem_cond_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STRCD-XMEM-COND-EFFECTS"
       ]
     }
   ]
