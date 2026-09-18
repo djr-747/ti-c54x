@@ -1,6 +1,7 @@
 /* Module contract
  * Owns: structural validation and atomic accumulator-write effect commit,
- * including conditional C/TC and sticky destination-overflow mutation.
+ * including conditional C/TC and explicit destination-overflow mutation
+ * (sticky set via WRITE_1, recompute-to-clear via WRITE_0).
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 
@@ -62,12 +63,21 @@ ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply(
                 : UINT8_C(0)) != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
-    if (write->status_delta.destination_overflow_action ==
-            TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1 &&
+    if (write->status_delta.destination_overflow_action !=
+            TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE &&
         (write->destination == TI_C54X_ACCUMULATOR_A
-             ? ti_c54x_status_register_write_ova(&candidate_status, 1U)
-             : ti_c54x_status_register_write_ovb(&candidate_status, 1U)) !=
-            TI_C54X_STATUS_REGISTER_OK) {
+             ? ti_c54x_status_register_write_ova(
+                   &candidate_status,
+                   write->status_delta.destination_overflow_action ==
+                           TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1
+                       ? 1U
+                       : 0U)
+             : ti_c54x_status_register_write_ovb(
+                   &candidate_status,
+                   write->status_delta.destination_overflow_action ==
+                           TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1
+                       ? 1U
+                       : 0U)) != TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ACCUMULATOR_EFFECT_INVALID_EFFECT;
     }
     *accumulators = candidate_accumulators;

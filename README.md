@@ -20,16 +20,16 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S33 complete (S3t–S3x R-variant lock-ins through the
+Current snapshot: P3-S34 complete (S3t–S3x R-variant lock-ins through the
 shared `MAC`/`MAS`/`MACA`/`MASA`/`MPY` rows; S3z `ADD` Smem syntaxes 1–3;
 S4 `XC`; S10–S13 `STH` stores; S14–S26 `SUB`/`AND`/`OR`/`XOR`/`SUBB`/`SUBS`
 Smem rows; Wave-5 `ADD`/`SUB` leaf fan-out with S27–S29 `#lk`/`Xmem`/src-ASM
 rows; Wave-6 `MPY`/`MAC` `#lk` leaves with S30 rows; S31 `ADD`/`SUB` Smem
 SHIFT rows; S32 `ADDM` RMW-ADD seam; S33 `MPY` syn3 / `MAC` syn4 Smem-`#lk`
-rows).
+rows; S34 `RND`/`SAT` accumulator rows with the `WRITE_0` overflow seam).
 
-- 277 runnable catalog rows under 29,431 populated first-word lookup entries.
-  Inventory coverage is 119/205 forms SUBSET-or-better (58.049%) and 40/205
+- 279 runnable catalog rows under 29,437 populated first-word lookup entries.
+  Inventory coverage is 121/205 forms SUBSET-or-better (59.024%) and 40/205
   strict-complete (19.512%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release

@@ -3,8 +3,8 @@
 
 /* Module contract
  * Owns: validation and atomic commit of a value-owned accumulator write
- * effect, including its explicit C/TC and sticky destination-overflow status
- * disposition.
+ * effect, including its explicit C/TC and destination-overflow status
+ * disposition (sticky WRITE_1, recompute-to-clear WRITE_0).
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 

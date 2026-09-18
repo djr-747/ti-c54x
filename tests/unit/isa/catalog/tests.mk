@@ -106,3 +106,6 @@ $(eval $(call ti_c54x_add_test,rete_metadata,isa/catalog,test_rete_metadata.c))
 $(eval $(call ti_c54x_add_test,retd_metadata,isa/catalog,test_retd_metadata.c))
 # W67C RED contract: CALLD catalog row.
 $(eval $(call ti_c54x_add_test,calld_metadata,isa/catalog,test_calld_metadata.c))
+# W7A RED contract: RND/SAT accumulator rows.
+$(eval $(call ti_c54x_add_test,rnd_acc_metadata,isa/catalog,test_rnd_acc_metadata.c))
+$(eval $(call ti_c54x_add_test,sat_acc_metadata,isa/catalog,test_sat_acc_metadata.c))

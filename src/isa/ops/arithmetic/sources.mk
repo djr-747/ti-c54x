@@ -12,4 +12,6 @@ ti_c54x_core_sources += src/isa/ops/arithmetic/op_arithmetic.c \
     src/isa/ops/arithmetic/op_subb_smem.c \
     src/isa/ops/arithmetic/op_subs_smem.c \
     src/isa/ops/arithmetic/op_add_xmem.c \
-    src/isa/ops/arithmetic/op_sub_xmem.c
+    src/isa/ops/arithmetic/op_sub_xmem.c \
+    src/isa/ops/arithmetic/op_rnd_acc.c \
+    src/isa/ops/arithmetic/op_sat_acc.c

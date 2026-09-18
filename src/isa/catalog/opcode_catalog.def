@@ -377,6 +377,21 @@ TI_C54X_OPCODE_MASKED(MASA_SMEM, masa_smem, 0x3300, 0xFF00, 1, TI_C54X_OPERAND_L
  * source/destination/round layout. Low bytes 0x8A/0x8B keep the row
  * disjoint from the neighboring MACA_T row. */
 TI_C54X_OPCODE_MASKED(MASA_T, masa_t, 0xF48A, 0xFCFE, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_ROUND, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* RND src[,dst]: dst40 = src40 + 8000h with 40-bit wrap over the
+ * 0xF49F|S<<9|D<<8 single word through the shared
+ * accumulator/source/destination layout. OVM gates saturation of a
+ * signed-32 overflowing result with sticky OVdst; TI section RND
+ * (p. 4-142) marks the form not repeatable. */
+TI_C54X_OPCODE_MASKED(RND_ACC, rnd_acc, 0xF49F, 0xFCFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_OVM)
+/* SAT src: saturate src40 to signed 32 bits written back to src over
+ * the 0xF483|S<<8 single word through the shared
+ * accumulator/source layout. Saturation applies regardless of OVM
+ * with OVsrc recomputed (set on clamp, cleared otherwise) per the
+ * TI SAT examples (p. 4-154). Neither Table 2-28 nor Table 6-18
+ * lists SAT, but omission never implies eligibility, so the row
+ * stays UNRESOLVED like its MAX/MIN/EXP/CMPL accumulator-unary
+ * neighbors. */
+TI_C54X_OPCODE_MASKED(SAT_ACC, sat_acc, 0xF483, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
 /* Syntax-1 two-word accumulate of Smem times a PROGRAM-memory
  * coefficient into the S-selected accumulator with read-phase Smem
  * T load. S/I/addr7 ride word 0 through the new

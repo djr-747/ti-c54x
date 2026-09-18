@@ -25,3 +25,6 @@ ti_c54x_add_unit_test(subs_smem_ops test_subs_smem.c)
 ti_c54x_add_unit_test(subb_smem_ops test_subb_smem.c)
 ti_c54x_add_unit_test(add_xmem_ops test_add_xmem.c)
 ti_c54x_add_unit_test(sub_xmem_ops test_sub_xmem.c)
+# W7A RED contract: RND src[,dst] and SAT src accumulator semantics.
+ti_c54x_add_unit_test(rnd_acc_ops test_rnd_acc_ops.c)
+ti_c54x_add_unit_test(sat_acc_ops test_sat_acc_ops.c)

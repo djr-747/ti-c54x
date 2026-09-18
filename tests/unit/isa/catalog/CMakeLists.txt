@@ -144,3 +144,8 @@ ti_c54x_add_unit_test(retd_metadata
 # W67C RED contract: CALLD row metadata.
 ti_c54x_add_unit_test(calld_metadata
                       test_calld_metadata.c)
+# W7A RED contract: RND/SAT accumulator rows.
+ti_c54x_add_unit_test(rnd_acc_metadata
+                      test_rnd_acc_metadata.c)
+ti_c54x_add_unit_test(sat_acc_metadata
+                      test_sat_acc_metadata.c)

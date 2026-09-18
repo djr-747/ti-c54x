@@ -8045,6 +8045,42 @@
         "printed_page_end": "4-82"
       },
       "assertion": "SPRU172C MAC syntax 4 defines the two-word operation MAC Smem,#lk,src[,dst] with opcode diagram 0110_01SD I AAAAAAA: the S-selected source accumulator is added to the product of the signed 16-bit Smem operand and the signed 16-bit lk operand and the sum is stored in the D-selected destination (defaulting to src), while T is loaded with the Smem operand in the read phase. The MOD0-MOD3 composition uses base 0x6400 and mask 0xFC00. Status bits are affected by FRCT and OVM and the operation affects OVdst. No R bit exists in this opcode space, so the unrounded form covers it fully."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RND-P4-142",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RND",
+        "printed_page_start": "4-142",
+        "printed_page_end": "4-142"
+      },
+      "assertion": "SPRU172C RND defines the single-word operation RND src[,dst] with opcode diagram 1111_01SD_1001_1111: the rounded value (src plus 8000h) is stored in dst, or in src when dst is omitted. Status is affected by OVM, so an overflowing result saturates under OVM=1. Example 1 (A = FF FFFF FFFF, OVM = 0) wraps into B = 00 0000 7FFF; Example 2 (A = 00 7FFF FFFF, OVM = 1) saturates in place to 00 7FFF FFFF. The section marks the instruction not repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SAT-P4-154",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SAT",
+        "printed_page_start": "4-154",
+        "printed_page_end": "4-154"
+      },
+      "assertion": "SPRU172C SAT defines the single-word operation SAT src with opcode diagram 1111_010S_1000_0011: the src accumulator saturates to 32 bits regardless of OVM, affecting OVsrc. Example 1 (B = 71 2345 6789) pins to 00 7FFF FFFF with OVB set; Example 2 (A = F8 1234 5678) pins to FF 8000 0000 with OVA set; Example 3 (B = 00 0012 3456) passes through unchanged with OVB cleared."
     }
   ],
   "requirements": [
@@ -18383,6 +18419,104 @@
       "test_ids": [
         "T-COMMON-MAC-SMEM-LK-DECODE"
       ]
+    },
+    {
+      "id": "REQ-COMMON-RND-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for RND src[,dst] using base 0xF49F with mask 0xFCFF, the ACCUMULATOR_SOURCE_DESTINATION layout, ACCUMULATORS_STATUS_OVM input resources, and repeatability INELIGIBLE; the slot is disjoint from every established first-word identity and projects 4 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RND-P4-142"
+      ],
+      "test_ids": [
+        "T-COMMON-RND-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-RND-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode RND first words through the generic single-word ACCUMULATOR_SOURCE_DESTINATION decoder with copied source and destination selects and INELIGIBLE repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RND-P4-142"
+      ],
+      "test_ids": [
+        "T-COMMON-RND-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-RND-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Implement the RND effect as dst40 = src40 plus 8000h with 40-bit wrap and OVM-gated saturation of a signed-32 overflowing result with sticky OVdst and preserved C/TC, gated on known source and OVM with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RND-P4-142"
+      ],
+      "test_ids": [
+        "T-COMMON-RND-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SAT-ACC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for SAT src using base 0xF483 with mask 0xFEFF, the ACCUMULATOR_SOURCE layout, ACCUMULATORS input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 2 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SAT-P4-154"
+      ],
+      "test_ids": [
+        "T-COMMON-SAT-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SAT-ACC-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode SAT first words through the generic single-word ACCUMULATOR_SOURCE decoder with copied source select and UNRESOLVED repeatability.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SAT-P4-154"
+      ],
+      "test_ids": [
+        "T-COMMON-SAT-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SAT-ACC-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Implement the SAT effect as clamping src40 to a signed 32-bit value written back to src regardless of OVM, with OVsrc recomputed (set on clamp, cleared otherwise) and preserved C/TC, gated on known source with no status mutation at stage time.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SAT-P4-154"
+      ],
+      "test_ids": [
+        "T-COMMON-SAT-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ACCUMULATOR-OVERFLOW-WRITE-0",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/accumulator/",
+      "claim": "Extend the destination-overflow action with WRITE_0 recompute-to-clear: the commit writes 0 to the destination accumulator's OV flag while preserving the sibling flag and knownness, keeping PRESERVE and WRITE_1 behavior unchanged; malformed actions still publish nothing and the outer effect carrier remains unchanged in size.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SAT-P4-154"
+      ],
+      "test_ids": [
+        "T-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT"
+      ]
     }
   ],
   "tests": [
@@ -19524,7 +19658,8 @@
         "ctest_name": "ti_c54x.accumulator_overflow_effect"
       },
       "requirement_ids": [
-        "REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT"
+        "REQ-COMMON-P2-W49A-ACCUMULATOR-OVERFLOW-STATUS-EFFECT",
+        "REQ-COMMON-ACCUMULATOR-OVERFLOW-WRITE-0"
       ]
     },
     {
@@ -26476,6 +26611,90 @@
       },
       "requirement_ids": [
         "REQ-COMMON-MAC-SMEM-LK-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-RND-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_rnd_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rnd_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-RND-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-RND-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_rnd_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rnd_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-RND-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-RND-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_rnd_acc_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rnd_acc_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-RND-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-SAT-ACC-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_sat_acc_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sat_acc_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SAT-ACC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-SAT-ACC-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_sat_acc_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sat_acc_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SAT-ACC-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-SAT-ACC-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sat_acc_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sat_acc_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SAT-ACC-EFFECTS"
       ]
     }
   ]

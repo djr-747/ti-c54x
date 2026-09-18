@@ -171,9 +171,11 @@ test_fixed_bit_near_misses(void)
         /* 0xF480 (fixed bit 1 clear) is the P3-S29 ADD_SRC_ASM
          * row with S=0 (src A), D=0 (dst A). */
         {UINT16_C(0x0002), TI_C54X_OPCODE_ID_ADD_SRC_ASM},
+        /* 0xF483 (fixed bit 0 set) is the S34 SAT_ACC row with
+         * S=0 (src A). */
+        {UINT16_C(0x0001), TI_C54X_OPCODE_ID_SAT_ACC},
     };
     static const uint16_t misses[] = {
-        UINT16_C(0x0001),
         UINT16_C(0x0040), UINT16_C(0x1000),
         UINT16_C(0x2000)};
     size_t index;

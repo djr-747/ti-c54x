@@ -131,3 +131,6 @@ $(eval $(call ti_c54x_add_test,rete_decode,isa/decode,test_rete_decode.c))
 $(eval $(call ti_c54x_add_test,retd_decode,isa/decode,test_retd_decode.c))
 # W67C RED contract: CALLD decode.
 $(eval $(call ti_c54x_add_test,calld_decode,isa/decode,test_calld_decode.c))
+# W7A RED contract: RND/SAT accumulator decode.
+$(eval $(call ti_c54x_add_test,rnd_acc_decode,isa/decode,test_rnd_acc_decode.c))
+$(eval $(call ti_c54x_add_test,sat_acc_decode,isa/decode,test_sat_acc_decode.c))

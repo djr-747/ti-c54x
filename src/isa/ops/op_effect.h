@@ -95,7 +95,8 @@ typedef enum ti_c54x_op_status_bit_action {
 typedef enum ti_c54x_op_destination_overflow_action {
     TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE = 0,
     TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_1 = 1,
-    TI_C54X_OP_DESTINATION_OVERFLOW_ACTION_COUNT = 2
+    TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_0 = 2,
+    TI_C54X_OP_DESTINATION_OVERFLOW_ACTION_COUNT = 3
 } ti_c54x_op_destination_overflow_action;
 
 typedef struct ti_c54x_op_status_delta {

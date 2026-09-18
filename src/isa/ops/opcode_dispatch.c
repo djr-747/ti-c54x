@@ -29,6 +29,8 @@
 #include "arithmetic/op_sub_xmem.h"
 #include "arithmetic/op_subb_smem.h"
 #include "arithmetic/op_subs_smem.h"
+#include "arithmetic/op_rnd_acc.h"
+#include "arithmetic/op_sat_acc.h"
 #include "compare/op_compare.h"
 #include "compare/op_cmpr.h"
 #include "load/op_ld_smem.h"

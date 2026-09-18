@@ -1,7 +1,7 @@
 /* Module contract
  * Owns: executable proof for accumulator destination overflow status deltas,
- * including A/B routing, sticky WRITE_1, PRESERVE knownness, and atomic
- * malformed-effect rejection.
+ * including A/B routing, sticky WRITE_1, recompute-to-clear WRITE_0,
+ * PRESERVE knownness, and atomic malformed-effect rejection.
  * Does not own: arithmetic policy, opcode decode, or CPU lifecycle.
  */
 
@@ -69,6 +69,15 @@ int main(void)
                        TI_C54X_ACCUMULATOR_EFFECT_OK);
     TI_C54X_TEST_CHECK((status.st0 & TI_C54X_ST0_OVB_MASK) != 0U);
     TI_C54X_TEST_CHECK((status.st0 & TI_C54X_ST0_OVA_MASK) != 0U);
+
+    write_a = effect(TI_C54X_ACCUMULATOR_A,
+                     TI_C54X_OP_DESTINATION_OVERFLOW_WRITE_0);
+    TI_C54X_TEST_CHECK(ti_c54x_accumulator_effect_apply(
+                           &write_a, &accumulators, &status) ==
+                       TI_C54X_ACCUMULATOR_EFFECT_OK);
+    TI_C54X_TEST_CHECK((status.st0 & TI_C54X_ST0_OVA_MASK) == 0U);
+    TI_C54X_TEST_CHECK((status.st0_known_mask & TI_C54X_ST0_OVA_MASK) != 0U);
+    TI_C54X_TEST_CHECK((status.st0 & TI_C54X_ST0_OVB_MASK) != 0U);
 
     status.st0_known_mask = (uint16_t)(status.st0_known_mask &
                                        (uint16_t)~TI_C54X_ST0_OVA_MASK);

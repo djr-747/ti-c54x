@@ -1049,9 +1049,11 @@
       "table_ordinal": 13,
       "mnemonic": "RND",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RND_ACC"
+      ]
     },
     {
       "id": "FORM-T2-06-14",
@@ -1060,9 +1062,11 @@
       "table_ordinal": 14,
       "mnemonic": "SAT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SAT_ACC"
+      ]
     },
     {
       "id": "FORM-T2-06-15",
@@ -4356,6 +4360,18 @@
       "form_id": "FORM-T2-04-03",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "RND_ACC",
+      "form_id": "FORM-T2-06-13",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "SAT_ACC",
+      "form_id": "FORM-T2-06-14",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
     }
   ]
 }

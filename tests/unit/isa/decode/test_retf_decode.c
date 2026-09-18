@@ -144,7 +144,7 @@ test_fixed_bit_near_misses(void)
      * fixed bit 15 lands in the P3-S6 PORTR indirect row (pinned
      * below); all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
+        UINT16_C(0x0001), UINT16_C(0x0002),
         UINT16_C(0x0040),
         UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000)};
@@ -191,6 +191,19 @@ test_fixed_bit_near_misses(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_dual_sibling.id ==
                            TI_C54X_OPCODE_ID_MAC_DUAL_M2_M2);
+    }
+
+    /* 0xF49F (fixed bit 2 set) is the S34 RND_ACC encoding with
+     * S=0 (src A), D=0 (dst A). */
+    {
+        const ti_c54x_decode_result rnd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETF_VALUE ^ UINT16_C(0x0004)));
+
+        TI_C54X_TEST_CHECK(rnd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rnd_sibling.id ==
+                           TI_C54X_OPCODE_ID_RND_ACC);
     }
 
     /* 0xF48B (fixed bit 4 cleared) is the S3w MASA_T encoding with

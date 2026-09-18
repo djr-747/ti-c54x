@@ -134,3 +134,6 @@ ti_c54x_add_unit_test(rcd_decode test_rcd_decode.c)
 ti_c54x_add_unit_test(retd_decode test_retd_decode.c)
 # W67C RED contract: CALLD decode with near-miss audit.
 ti_c54x_add_unit_test(calld_decode test_calld_decode.c)
+# W7A RED contract: RND/SAT accumulator decode.
+ti_c54x_add_unit_test(rnd_acc_decode test_rnd_acc_decode.c)
+ti_c54x_add_unit_test(sat_acc_decode test_sat_acc_decode.c)

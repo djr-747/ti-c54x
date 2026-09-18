@@ -25,3 +25,6 @@ $(eval $(call ti_c54x_add_test,subs_smem_ops,isa/ops/arithmetic,test_subs_smem.c
 $(eval $(call ti_c54x_add_test,subb_smem_ops,isa/ops/arithmetic,test_subb_smem.c))
 $(eval $(call ti_c54x_add_test,add_xmem_ops,isa/ops/arithmetic,test_add_xmem.c))
 $(eval $(call ti_c54x_add_test,sub_xmem_ops,isa/ops/arithmetic,test_sub_xmem.c))
+# W7A RED contract: RND src[,dst] and SAT src accumulator semantics.
+$(eval $(call ti_c54x_add_test,rnd_acc_ops,isa/ops/arithmetic,test_rnd_acc_ops.c))
+$(eval $(call ti_c54x_add_test,sat_acc_ops,isa/ops/arithmetic,test_sat_acc_ops.c))
