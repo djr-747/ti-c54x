@@ -12751,3 +12751,41 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S30 MPY/MAC #lk rows (slice 58)
+
+- Commit `3bb17fc` lands MPY_LK (0xF066/0xFEFF) and MAC_LK
+  (0xF067/0xFCFF) over the shared 2-word accumulator layouts,
+  wiring the landed wave-6 plain plus trusted op_mpy_lk/
+  op_mac_lk cores through the catalog X-macro (two dispatch
+  includes, no new handlers). Census: 272 rows, ID count 273,
+  lookup 27809 to 27815 as 6 insertions with zero neighbor
+  moves, COMPLETE bindings 38 to 40, FORMs 112 to 114/205 at
+  55.610%, strict-complete bound 38 to 40. Full `make test`
+  green (exit 0); evidence PASS at 454 evidence, 699
+  requirements, 556 tests; sanitizer spot rebuild of dispatch
+  clean on the mpy/mac-lk ops/decode binaries.
+- Decisions: forms bind at COMPLETE under ALL. Verified
+  against the vendored TI opcode tables (not the wave-6 test
+  comment): MPY syntax 4 (`1111 00 0 D 0 110 0110`) and MAC
+  syntax 3 (`1111 00 S D 0 110 0111`) carry no R bit — both
+  are unrounded-only encodings — so the unrounded leaves
+  cover them fully. The requirement links only the
+  PROJECT_CONTRACT binding suite; the scope gate rejects
+  linking the COMMON_TI wave-6 semantics suites to a PROJECT
+  requirement even though those suites execute the rows'
+  semantics. One decode flip sweep absorbs a nearby word by
+  design (ld_lk16 bit-2 -> MPY_LK); explicit sibling pin.
+- Near-miss worth recording: the wave-6 mpy test comment
+  mislabels 0xF067 as the "MPYR #lk rounded base" — per TI
+  it is the MAC syn3 base, and no MPYR #lk encoding exists
+  (syntax 4 is MPY-only). The rejection itself is correct;
+  only the comment's rationale is wrong. Left as-is (test
+  intent is clear); revisit if that file is touched.
+- Follow-up: the seam-blocked tails (syn4 Smem-SHIFT, ADDM,
+  syn3/4 Smem-lk need layout/RMW seams) — the arch-seam
+  phase; leaves after.
+- Split commit discipline: impl `3bb17fc`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
