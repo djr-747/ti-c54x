@@ -2,7 +2,8 @@
  * Module contract
  *
  * Owns: executable metadata and generated-lookup proofs for the three
- * neutral ANDM/ORM/XORM WORD16 memory catalog rows. Does not own: decode
+ * neutral ANDM/ORM/XORM WORD16 memory catalog rows plus the ADDM row,
+ * which shares their shape with OVM/SXM modes. Does not own: decode
  * extraction, address arithmetic, semantic effects, CPU transactions,
  * inventory policy, or handler bodies.
  */
@@ -17,18 +18,24 @@
 typedef struct atomic_row {
     ti_c54x_opcode_id id;
     uint16_t value;
+    ti_c54x_input_resource_mask resources;
 } atomic_row;
 
 static const atomic_row rows[] = {
-    {TI_C54X_OPCODE_ID_ANDM_SMEM_MOD0_3, UINT16_C(0x6880)},
-    {TI_C54X_OPCODE_ID_ORM_SMEM_MOD0_3, UINT16_C(0x6980)},
-    {TI_C54X_OPCODE_ID_XORM_SMEM_MOD0_3, UINT16_C(0x6A80)},
+    {TI_C54X_OPCODE_ID_ANDM_SMEM_MOD0_3, UINT16_C(0x6880),
+     TI_C54X_INPUT_RESOURCES_NONE},
+    {TI_C54X_OPCODE_ID_ORM_SMEM_MOD0_3, UINT16_C(0x6980),
+     TI_C54X_INPUT_RESOURCES_NONE},
+    {TI_C54X_OPCODE_ID_XORM_SMEM_MOD0_3, UINT16_C(0x6A80),
+     TI_C54X_INPUT_RESOURCES_NONE},
+    {TI_C54X_OPCODE_ID_ADDM_SMEM_MOD0_3, UINT16_C(0x6B80),
+     TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM},
 };
 
 static void
 test_rows_and_projection(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 275);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 276);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const atomic_row *row = &rows[index];
         const ti_c54x_opcode_metadata *metadata =
@@ -42,8 +49,7 @@ test_rows_and_projection(void)
                            TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD);
         TI_C54X_TEST_CHECK(metadata->repeatability ==
                            TI_C54X_REPEATABILITY_INELIGIBLE);
-        TI_C54X_TEST_CHECK(metadata->input_resources ==
-                           TI_C54X_INPUT_RESOURCES_NONE);
+        TI_C54X_TEST_CHECK(metadata->input_resources == row->resources);
     }
 }
 
@@ -66,7 +72,7 @@ test_lookup_population_and_disjoint_rows(void)
             }
         }
     }
-    TI_C54X_TEST_CHECK(populated == 27863U);
+    TI_C54X_TEST_CHECK(populated == 27895U);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         unsigned encodings = 0U;
         for (uint32_t low = 0U; low < UINT32_C(32); ++low) {

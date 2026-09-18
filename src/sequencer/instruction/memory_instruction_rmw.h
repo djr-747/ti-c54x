@@ -26,6 +26,33 @@ bool ti_c54x_memory_instruction_rmw_transform(
     uint16_t read_value_word,
     uint16_t *out_value_word);
 
+/*
+ * Value-owned 16-bit RMW-ADD reducer. Serves only carriers whose
+ * rmw_operation is ADD; the addend is the carrier value_word and the
+ * OVM/SXM modes arrive as frozen values from the candidate input
+ * snapshot. Reports the wrapped or saturated write word plus the raw
+ * bit-16 carry and the SXM-selected overflow the commit path turns
+ * into sticky C/OVA writes.
+ */
+bool ti_c54x_memory_instruction_rmw_transform_add(
+    const ti_c54x_op_memory_effect *memory,
+    uint16_t read_value_word,
+    bool overflow_mode,
+    bool sign_extension_mode,
+    uint16_t *out_value_word,
+    bool *out_carry,
+    bool *out_overflow);
+
+/*
+ * Runs the frozen candidate's RMW transform over the staged READ value.
+ * The ADD reducer additionally freezes the OVM/SXM modes from the
+ * candidate input snapshot and stages the resulting carry/overflow
+ * beside the write word for the commit path. Transaction storage is
+ * borrowed for one call.
+ */
+bool ti_c54x_memory_instruction_rmw_run_transform(
+    struct ti_c54x_memory_instruction_transaction *transaction);
+
 bool ti_c54x_memory_instruction_rmw_next_id(
     struct ti_c54x_memory_instruction_transaction *transaction,
     uint64_t *out_id);

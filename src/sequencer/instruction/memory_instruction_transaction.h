@@ -14,6 +14,7 @@
  * retains no caller pointer. Endpoint context remains host-owned.
  */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include <ti_c54x/bus_endpoint.h>
@@ -125,6 +126,12 @@ typedef struct ti_c54x_memory_instruction_transaction {
     /* Child discriminator occupies the existing scalar padding before the
      * candidate's alignment on LP64 and ILP32. */
     uint8_t child_kind;
+    /* RMW-ADD staged flags: frozen beside rmw_write_value_word when the
+     * ADD reducer runs at advance time; meaningful only while
+     * candidate_rmw_operation holds ADD. They occupy the remaining
+     * scalar padding, so the root size is unchanged on LP64/ILP32. */
+    bool rmw_add_carry;
+    bool rmw_add_overflow;
     union {
         uint16_t candidate_rmw_value_word;
         /* LONG32's second payload is frozen in the same scalar slot. */

@@ -24,6 +24,7 @@
 #include "memory_instruction_rmw.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/program_pc_target.h"
+#include "state/status/registers.h"
 #include "state/temporary/t_register.h"
 
 ti_c54x_memory_instruction_status
@@ -129,6 +130,29 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN;
     } else {
         state->pc_word = transaction->candidate.pc_effect.public_pc_word_after;
+    }
+    if (transaction->candidate.effect.payload.memory.rmw_operation ==
+        (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD) {
+        /* ADDM (SPRU172C §ADDM) affects C and OVA with sticky-set
+         * policy matching the accumulator ADD precedent: C takes 1 on
+         * the frozen carry and OVA takes 1 on the frozen overflow,
+         * both otherwise preserved. Staged on a candidate so a
+         * rejected write leaves live status untouched. */
+        ti_c54x_status_register_state candidate_status = state->status;
+
+        if (transaction->rmw_add_carry &&
+            ti_c54x_status_register_write_c(&candidate_status,
+                                            UINT8_C(1)) !=
+                TI_C54X_STATUS_REGISTER_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (transaction->rmw_add_overflow &&
+            ti_c54x_status_register_write_ova(&candidate_status,
+                                              UINT8_C(1)) !=
+                TI_C54X_STATUS_REGISTER_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        state->status = candidate_status;
     }
     transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_COMPLETE;
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;

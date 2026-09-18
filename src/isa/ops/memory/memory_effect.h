@@ -134,12 +134,19 @@ typedef enum ti_c54x_op_memory_address_kind {
  * its paired write.  The carrier stores the operation in one byte of the
  * existing value/callback alignment padding; no callback or context is
  * retained here.
+ *
+ * ADD stages value_word as the 16-bit addend.  The OVM/SXM modes live in
+ * the frozen input snapshot the sequencer already copies, so they travel
+ * outside this carrier; the sequencer stages the resulting carry and
+ * overflow beside the transformed write word and commits C/OVA from
+ * those staged flags.
  */
 typedef enum ti_c54x_op_memory_rmw_operation {
     TI_C54X_OP_MEMORY_RMW_OPERATION_NONE = 0,
     TI_C54X_OP_MEMORY_RMW_OPERATION_AND = 1,
     TI_C54X_OP_MEMORY_RMW_OPERATION_OR = 2,
-    TI_C54X_OP_MEMORY_RMW_OPERATION_XOR = 3
+    TI_C54X_OP_MEMORY_RMW_OPERATION_XOR = 3,
+    TI_C54X_OP_MEMORY_RMW_OPERATION_ADD = 4
 } ti_c54x_op_memory_rmw_operation;
 
 typedef struct ti_c54x_op_memory_address_spec {

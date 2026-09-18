@@ -15,6 +15,12 @@ ti_c54x_add_unit_test(reverse_carry_word16_memory_transaction
                       test_reverse_carry_word16_memory_transaction.c)
 ti_c54x_add_unit_test(word16_rmw_memory_transaction
                       test_word16_rmw_memory_transaction.c)
+# P3-S32 RED contract: RMW-ADD 16-bit reducer vectors.
+ti_c54x_add_unit_test(rmw_add_transform
+                      test_rmw_add_transform.c)
+# P3-S32 RED contract: RMW-ADD root commit with sticky C/OVA.
+ti_c54x_add_unit_test(rmw_add_memory_transaction
+                      test_rmw_add_memory_transaction.c)
 # P3-S1 RED contract: MMR-routed root transaction retirement.
 ti_c54x_add_unit_test(mmr_transaction
                       test_mmr_memory_transaction.c)

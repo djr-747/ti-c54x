@@ -284,10 +284,7 @@ advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
     result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
 
     if (!candidate_snapshot_matches(transaction) ||
-        !ti_c54x_memory_instruction_rmw_transform(
-                       &transaction->candidate.effect.payload.memory,
-                       transaction->bus_transaction.staged_read_value_word,
-                       &transaction->rmw_write_value_word) ||
+        !ti_c54x_memory_instruction_rmw_run_transform(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
@@ -368,10 +365,7 @@ advance_rmw_write_mmr(ti_c54x_memory_instruction_transaction *transaction,
      * value transforms, then the write plans. No bus ID is
      * allocated and no endpoint issue happens on this path. */
     if (!candidate_snapshot_matches(transaction) ||
-        !ti_c54x_memory_instruction_rmw_transform(
-                       &transaction->candidate.effect.payload.memory,
-                       transaction->bus_transaction.staged_read_value_word,
-                       &transaction->rmw_write_value_word) ||
+        !ti_c54x_memory_instruction_rmw_run_transform(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;

@@ -1,11 +1,11 @@
 /*
  * Module contract
  *
- * Owns: executable proof that ANDM/ORM/XORM MOD0 through MOD3 first words
- * complete through the generic two-word ARF_EXTENSION16_MOD decoder and
- * expose copied ARF, extension, and MOD operands. Does not own: catalog
- * generation, address arithmetic, memory effects, CPU sequencing, or
- * handler semantics.
+ * Owns: executable proof that ANDM/ORM/XORM/ADDM MOD0 through MOD3 first
+ * words complete through the generic two-word ARF_EXTENSION16_MOD decoder
+ * and expose copied ARF, extension, and MOD operands. Does not own:
+ * catalog generation, address arithmetic, memory effects, CPU sequencing,
+ * or handler semantics.
  */
 
 #include "../../../../src/isa/catalog/opcode_catalog.h"
@@ -26,6 +26,7 @@ static const atomic_decode_case cases[] = {
     {TI_C54X_OPCODE_ID_ANDM_SMEM_MOD0_3, UINT16_C(0x6880)},
     {TI_C54X_OPCODE_ID_ORM_SMEM_MOD0_3, UINT16_C(0x6980)},
     {TI_C54X_OPCODE_ID_XORM_SMEM_MOD0_3, UINT16_C(0x6A80)},
+    {TI_C54X_OPCODE_ID_ADDM_SMEM_MOD0_3, UINT16_C(0x6B80)},
 };
 
 static void

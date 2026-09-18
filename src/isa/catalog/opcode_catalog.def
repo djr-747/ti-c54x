@@ -14,7 +14,9 @@
  * indirect-plus-port-address layout.
  * The W47B2 DLD/DST long32 MOD13 rows use the four-field two-word layout.
  * The W46B neutral ANDM/ORM/XORM rows reuse the generic two-word
- * ARF-extension standard-indirect shape across MOD0 through MOD3.
+ * ARF-extension standard-indirect shape across MOD0 through MOD3, as does
+ * the ADDM row at the next first-word slot (with OVM/SXM modes and an ADD
+ * transform instead of a logical one).
  * Every consumer derives its own view from this same file.
  * Does not own: opcode strings, timing, bus/state behavior, or a second
  * handwritten instruction table. The handler token is an operation binding
@@ -213,6 +215,10 @@ TI_C54X_OPCODE_MASKED(ST_T_SMEM_MOD7, st_t_smem_mod7, 0x8CB8, 0xFFF8, 1, TI_C54X
 TI_C54X_OPCODE_MASKED(ANDM_SMEM_MOD0_3, andm_smem_mod0_3, 0x6880, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(ORM_SMEM_MOD0_3, orm_smem_mod0_3, 0x6980, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(XORM_SMEM_MOD0_3, xorm_smem_mod0_3, 0x6A80, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+/* ADDM shares the neutral two-word ARF-extension shape at the next first-word
+ * slot (SPRU172C section ADDM: 0110 1011 I addr7, nonrepeatable); unlike the
+ * logical rows it stages an ADD transform with OVM/SXM modes. */
+TI_C54X_OPCODE_MASKED(ADDM_SMEM_MOD0_3, addm_smem_mod0_3, 0x6B80, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM)
 
 /* CMPT=0 long32 standard-indirect MOD13 rows. */
 TI_C54X_OPCODE_MASKED(DLD_LONG32_MOD13, dld_long32_mod13, 0x56E8, 0xFEF8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)

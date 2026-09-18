@@ -36,6 +36,7 @@ ATOMIC_LOGICAL_SUBSET = {
     "ANDM_SMEM_MOD0_3",
     "ORM_SMEM_MOD0_3",
     "XORM_SMEM_MOD0_3",
+    "ADDM_SMEM_MOD0_3",
 }
 DUAL_ARITHMETIC_SUBSET = {
     "ADD_DUAL_MOD0",
@@ -72,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 274)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 274)
+        self.assertEqual(len(bindings), 275)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 275)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 234)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 235)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """RED-first contracts for W46B atomic logical inventory bindings.
 
-Owns: audit-only one-symbol-per-form bindings for ANDM, ORM, and XORM over
-the neutral MOD0--MOD3 composition. Does not own opcode values, decode,
+Owns: audit-only one-symbol-per-form bindings for ANDM, ORM, XORM, and ADDM
+over the neutral MOD0--MOD3 composition. Does not own opcode values, decode,
 execution semantics, or catalog generation.
 """
 
@@ -20,6 +20,7 @@ CASES = {
     "ANDM_SMEM_MOD0_3": "FORM-T2-07-05",
     "ORM_SMEM_MOD0_3": "FORM-T2-08-05",
     "XORM_SMEM_MOD0_3": "FORM-T2-09-05",
+    "ADDM_SMEM_MOD0_3": "FORM-T2-01-12",
 }
 TOKEN = "STANDARD_INDIRECT_MOD0_MOD3"
 SMEM_CASES = {
@@ -42,7 +43,7 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_each_atomic_logical_form_has_one_subset_binding(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 274)
+        self.assertEqual(len(bindings), 275)
         by_symbol = {binding["catalog_symbol"]: binding for binding in bindings}
         for symbol, form_id in CASES.items():
             self.assertIn(symbol, by_symbol)
@@ -64,10 +65,10 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_report_counts_atomic_families_once(self) -> None:
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"],
-                         {"covered": 116, "denominator": 205})
+                         {"covered": 117, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"],
                          {"covered": 40, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 56.585,
+        self.assertAlmostEqual(report["catalog_family_percent"], 57.073,
                                places=3)
         self.assertAlmostEqual(report["strict_complete_percent"], 19.512,
                                places=3)

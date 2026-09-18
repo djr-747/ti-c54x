@@ -91,7 +91,7 @@ test_full_catalog_sweep_maps(void)
 {
     ti_c54x_opcode_id id;
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 275);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 276);
     for (id = (ti_c54x_opcode_id)1; id < TI_C54X_OPCODE_ID_COUNT; ++id) {
         const ti_c54x_opcode_metadata *metadata =
             ti_c54x_opcode_metadata_for_id(id);
@@ -140,6 +140,9 @@ test_documented_nonrepeatable_rows_reject(void)
                         TI_C54X_REPEATABILITY_INELIGIBLE,
                         TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
     check_row_admission(TI_C54X_OPCODE_ID_ANDM_SMEM_MOD0_3,
+                        TI_C54X_REPEATABILITY_INELIGIBLE,
+                        TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
+    check_row_admission(TI_C54X_OPCODE_ID_ADDM_SMEM_MOD0_3,
                         TI_C54X_REPEATABILITY_INELIGIBLE,
                         TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
     check_row_admission(TI_C54X_OPCODE_ID_DST_LONG32_MOD13,

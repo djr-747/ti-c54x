@@ -205,9 +205,11 @@
       "table_ordinal": 12,
       "mnemonic": "ADDM",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ADDM_SMEM_MOD0_3"
+      ]
     },
     {
       "id": "FORM-T2-01-13",
@@ -3370,6 +3372,12 @@
     {
       "catalog_symbol": "XORM_SMEM_MOD0_3",
       "form_id": "FORM-T2-09-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "ADDM_SMEM_MOD0_3",
+      "form_id": "FORM-T2-01-12",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
     },

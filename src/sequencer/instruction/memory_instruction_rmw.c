@@ -9,6 +9,7 @@
 #include "memory_instruction_rmw.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "bus/request/word16_request.h"
 #include "bus/transaction/word16_transaction.h"
@@ -48,6 +49,95 @@ ti_c54x_memory_instruction_rmw_transform(
     default:
         return false;
     }
+}
+
+bool
+ti_c54x_memory_instruction_rmw_transform_add(
+    const ti_c54x_op_memory_effect *memory,
+    uint16_t read_value_word,
+    bool overflow_mode,
+    bool sign_extension_mode,
+    uint16_t *out_value_word,
+    bool *out_carry,
+    bool *out_overflow)
+{
+    uint32_t full_sum;
+    bool carry;
+    bool overflow;
+
+    if (memory == NULL || out_value_word == NULL || out_carry == NULL ||
+        out_overflow == NULL ||
+        memory->rmw_operation !=
+            (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD) {
+        return false;
+    }
+    full_sum = (uint32_t)read_value_word + (uint32_t)memory->value_word;
+    carry = (full_sum & UINT32_C(0x10000)) != UINT32_C(0);
+    if (sign_extension_mode) {
+        const bool read_negative =
+            (read_value_word & UINT16_C(0x8000)) != UINT16_C(0);
+        const bool addend_negative =
+            (memory->value_word & UINT16_C(0x8000)) != UINT16_C(0);
+        const bool sum_negative =
+            ((uint16_t)full_sum & UINT16_C(0x8000)) != UINT16_C(0);
+
+        overflow = (read_negative == addend_negative) &&
+                   (sum_negative != read_negative);
+    } else {
+        overflow = carry;
+    }
+    if (overflow_mode && overflow) {
+        if (!sign_extension_mode) {
+            *out_value_word = UINT16_C(0xFFFF);
+        } else if (((uint16_t)full_sum & UINT16_C(0x8000)) !=
+                   UINT16_C(0)) {
+            *out_value_word = UINT16_C(0x7FFF);
+        } else {
+            *out_value_word = UINT16_C(0x8000);
+        }
+    } else {
+        *out_value_word = (uint16_t)full_sum;
+    }
+    *out_carry = carry;
+    *out_overflow = overflow;
+    return true;
+}
+
+bool
+ti_c54x_memory_instruction_rmw_run_transform(
+    struct ti_c54x_memory_instruction_transaction *transaction)
+{
+    const ti_c54x_op_memory_effect *memory;
+    const ti_c54x_op_input_snapshot *input;
+    bool carry = false;
+    bool overflow = false;
+
+    if (transaction == NULL) {
+        return false;
+    }
+    memory = &transaction->candidate.effect.payload.memory;
+    input = &transaction->candidate.input;
+    if (memory->rmw_operation !=
+        (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_ADD) {
+        transaction->rmw_add_carry = false;
+        transaction->rmw_add_overflow = false;
+        return ti_c54x_memory_instruction_rmw_transform(
+            memory, transaction->bus_transaction.staged_read_value_word,
+            &transaction->rmw_write_value_word);
+    }
+    if (!input->status_ovm_known || !input->status_sxm_known) {
+        return false;
+    }
+    if (!ti_c54x_memory_instruction_rmw_transform_add(
+            memory, transaction->bus_transaction.staged_read_value_word,
+            input->status_ovm != UINT8_C(0),
+            input->status_sxm != UINT8_C(0),
+            &transaction->rmw_write_value_word, &carry, &overflow)) {
+        return false;
+    }
+    transaction->rmw_add_carry = carry;
+    transaction->rmw_add_overflow = overflow;
+    return true;
 }
 
 bool
