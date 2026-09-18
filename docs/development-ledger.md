@@ -12830,3 +12830,56 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S32 ADDM RMW-ADD seam (slice 60)
+
+- Commit `c1579be` lands Seam 2 end to end: the RMW_OPERATION_ADD
+  carrier value (lk addend in value_word, OVM/SXM in the frozen
+  input snapshot, carrier size unchanged), the value-owned 16-bit
+  reducer rmw_transform_add (wrapped sum, bit-16 carry,
+  SXM-selected overflow, OVM saturation 0x7FFF/0x8000 signed and
+  0xFFFF unsigned), sequencer flag staging in the root scalar
+  padding (root size unchanged on LP64/ILP32), sticky C/OVA
+  commit shared by the bus and MMR RMW-WRITE paths,
+  op_addm_smem_mod0_3 leaf with plain plus trusted entries and
+  OVM/SXM knownness gating, MASKED row ADDM_SMEM_MOD0_3
+  (0x6B80/0xFFE0, TI SPRU172C section ADDM), regenerated
+  first-word lookup (+32 encodings, zero neighbor moves), and
+  FORM-T2-01-12 bound at SUBSET with the row (covered 117/205,
+  57.073%). Full `make test` green (exit 0); evidence PASS at
+  457 evidence, 705 requirements, 562 tests; sanitizer rebuild
+  clean; generator --check and diff --check clean. The commit
+  also refreshes the README snapshot to P3-S32 with current
+  counts (275 rows, 27,895 entries).
+- Decisions: OVM/SXM travel outside the carrier in the
+  already-copied frozen input snapshot (no ABI change, no
+  transfer_reserved repurposing); the advance dispatch helper
+  lives in memory_instruction_rmw.c (its owning module), which
+  also keeps memory_instruction_transaction.c under the 800-line
+  split limit (786 after the move). Sticky-set C/OVA mirrors
+  the accumulator ADD precedent (WRITE_1 on the frozen flags,
+  otherwise preserved), staged on a status candidate so a
+  rejected write leaves live status untouched. SXM=0 overflow
+  is the bit-16 carry and OVM=1 saturates it to 0xFFFF, derived
+  from the unconditional "Affected by OVM" line plus the
+  accumulator saturation precedent. There is no SUBM in the TI
+  source (zero hits in SPRU172C), so the seam covers ADDM only;
+  earlier ledger "ADDM/SUBM" phrasing is corrected here, not
+  rewritten there.
+- Near-misses worth recording: (1) the transaction test
+  endpoint must zero read_value_word on WRITE observations or
+  the adapter reports MALFORMED_OBSERVATION (caught by the
+  first commit-vector run); (2) the evidence OWNER policy
+  requires sequencer-path tests under a sequencer-owned
+  requirement, so REQ-COMMON-RMW-ADD-TRANSACTION split off from
+  the leaf EFFECTS requirement; (3) the frozen SUBSET symbol
+  set in test_inventory_catalog_binding.py must gain each new
+  symbol explicitly — counts alone do not cover it; (4) the
+  no-space `==275` spelling in the reverse-carry metadata file
+  needs its own sed pattern.
+- Follow-up: Seam 3 (MPY syn3 / MAC syn4 layouts with D/S+D +
+  Smem + lk), then managed leaf fan-out through agent worktrees.
+- Split commit discipline: impl `c1579be`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
