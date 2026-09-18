@@ -13028,3 +13028,40 @@ entries are not rewritten after publication.
   managed fan-out on this base.
 - Follow-up: BITF/CMPM/BITT/ST-lk rows plus leaves (S36
   completion); BIT Xmem dual form stays deferred.
+
+## 2026-09-18 — P3-S36 BITF/CMPM/BITT/ST rows completion (slice 65)
+
+- Landed: four TI-pinned rows on the S36 seam — BITF
+  `0x6100/0xFF00`, CMPM `0x6000/0xFF00`, BITT `0x3400/0xFF00`,
+  direct-only ST `0x7600/0xFF80` under `ST_IMMEDIATE_SMEM`
+  (`0x7680/0xFFE0`) — with leaves, dispatch, metadata/decode/effects
+  suites, inventory flips (`FORM-T2-11-02/03/04`, `FORM-T2-20-03`
+  to `COMMON_CANDIDATE`/`SUBSET`), 12 evidence records, index rows,
+  README/plan/slice updates, and frozen-count bumps (283 rows, 289
+  bindings, 30,333 lookup, 249 SUBSET, 131/205 at 63.902%, 730
+  requirements, 586 tests).
+- Validation: `make build` clean, `make test` exit 0 (105 C binaries
+  ok, 286 Python tests), `check_evidence.py` PASS (730/586),
+  `check_isa_inventory.py` exit 0 (131/205, strict 40/205),
+  lookup regen pure (+896), `TI_C54X_ENABLE_SANITIZERS=1 make build`
+  exit 0.
+- Decisions: new rows legitimately claim five old negative probes
+  (`0x3490` BITT, `0x7610`/`0x7600` ST direct) — converted to pinned
+  cross-row siblings per file convention instead of narrowing masks.
+  Slice draft slot hexes corrected to the TI-pinned values before
+  landing (BITF `0x61xx`, CMPM `0x60xx`, BITT `0x34xx`, ST `0x76xx`
+  per SPRU172C diagrams); ST leaf header contract updated from
+  row-less/UNKNOWN to the wired row id.
+- Knobs: none added, changed, or retired.
+- Near-misses: a placeholder `s/29437U/29433X/` sed touched six
+  lookup-count pins — repaired to `30333U` and verified zero
+  `29437` residue outside stale build binaries; contract
+  `test_inventory_catalog_binding.py` needed the four symbols in
+  both the frozen SUBSET set and the addressing-subset chain.
+- Follow-up: remaining census 74 unbound forms; next is continued
+  Wave-7 leaf fan-out per the fan-out plan
+  (`docs/plan/p3-wave7-leaf-fanout-plan.md`, still untracked).
+- Split commit discipline: impl `1f1bd2e`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
