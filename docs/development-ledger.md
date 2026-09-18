@@ -13417,3 +13417,54 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `4bd4ef2`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S45 W7 batch-7 ST TRN direct row (slice 74)
+
+- Landed: direct slice of TI syntax-2 ST TRN,Smem on a
+  fixed-zero I bit (FORM-T2-22-02, 0x8D00/0xFF80 from opcode
+  diagram 1000_1101_IAAAAAAA, SPRU172C ST pp. 4-166–4-168,
+  fetched from the public TI manual volume). Execution is
+  (TRN) into Smem with no status effects; worked example ST
+  TRN,5 stores TRN=0x1234. I=1 rejects as INVALID_OPERAND
+  (no ST_TRN MOD rows exist yet), UNRESOLVED repeatability,
+  TRN_REGISTER inputs over the S44 seam, one DIRECT_WORD16
+  page-0 DATA WRITE with null completion. Leaf built row-less
+  by an isolated worker against a maintainer TI brief and
+  merged with two comment truth fixes. Maintainer wired the
+  row, schema token, lookup regen (+128 pure, no collisions),
+  dispatch include, store sources, ops/decode/metadata suites
+  plus registrations, inventory form flip plus binding, 3 req
+  plus 3 test records reusing the ST TI evidence, index rows,
+  README, and frozen-count bumps (294 rows, 300 bindings,
+  32,777 lookup, 142/205 at 69.268%, strict 40/205, 765
+  requirements, 621 tests). Slice doc born `(implemented;
+  local verification green)` in the impl commit.
+- Validation: `make build` clean, `make test` exit 0 (full
+  gate), three new TRN suites pass in-tree,
+  `check_evidence.py` PASS (765/621),
+  `check_isa_inventory.py` exit 0 (142/205, strict 40/205).
+- Decisions: worker protocol amended for row-less leaves —
+  the worker may apply scratch wiring in its own tree only
+  (catalog row, regen, dispatch include, sources line) to
+  compile and run its tests, and delivers new files only;
+  the maintainer redoes all wiring authoritatively and runs
+  the full gates. No worker commits, no shared-file delivery.
+- Near-misses: (1) worker comments claimed established
+  ST_TRN MOD rows; fixed at merge since none exist. (2) full
+  gate exposed the standard pin sweep (COUNT 295, lookup
+  32777, SUBSET set/map/percent, row+1 identity) plus a
+  DIRECT_PAGE0 addressing case, all flipped in the maintainer
+  pass. (3) S44 correction: the S44 status flip broke its own
+  project evidence anchor (`(planned)` heading renamed);
+  the anchor now points at the landed heading. Lesson: a
+  project-evidence anchor must name the post-landing heading
+  when the slice flips on landing, or the evidence gate fails
+  after the flip.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 63 unbound forms; W7 fan-out
+  continues with the next TI-pinned briefs. Wave-7 plan doc
+  still untracked; stale S43/S45 worker worktrees under
+  `.muse/worktrees/` await GC.
+- Split commit discipline: impl `f8951cc`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
