@@ -44,6 +44,7 @@ ti_c54x_add_unit_test(ccd_decode test_ccd_decode.c)
 # W73 RED contract: CC decode with near-miss audit.
 ti_c54x_add_unit_test(cc_decode test_cc_decode.c)
 ti_c54x_add_unit_test(ldr_smem_decode test_ldr_smem_decode.c)
+ti_c54x_add_unit_test(ltd_smem_decode test_ltd_smem_decode.c)
 ti_c54x_add_unit_test(ld_xmem_shift_decode test_ld_xmem_shift_decode.c)
 ti_c54x_add_unit_test(ld_src_asm_decode test_ld_src_asm_decode.c)
 ti_c54x_add_unit_test(ld_smem_ts_decode test_ld_smem_ts_decode.c)

@@ -101,9 +101,11 @@ test_fixed_bits_and_nearby_unknown_words(void)
      * left this list in P3-S33: 0x4490 ^ 0x2000 is 0x6490, a valid
      * MAC_SMEM_LK word asserted below. Bit 10 (0x0400)
      * leaves in P3-S19: 0x4490 ^ 0x0400 is 0x4090, a valid
-     * SUB_SMEM_SH16 word asserted below. */
+     * SUB_SMEM_SH16 word asserted below. Bit 11 (0x0800)
+     * leaves in P3-S40: 0x4490 ^ 0x0800 is 0x4C90, a valid
+     * LTD_SMEM word asserted below. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080), UINT16_C(0x0800),
+        UINT16_C(0x0080),
         UINT16_C(0x1000),
         UINT16_C(0x8000)};
 
@@ -155,6 +157,16 @@ test_fixed_bits_and_nearby_unknown_words(void)
             (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x0400)));
         TI_C54X_TEST_CHECK(sub_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sub_sibling.id == TI_C54X_OPCODE_ID_SUB_SMEM_SH16);
+    }
+
+    /* Flipping fixed bit 11 lands on 0x4C90, claimed by the P3-S40
+     * LTD_SMEM row: a valid cross-row near miss, not an
+     * overaccept. */
+    {
+        const ti_c54x_decode_result ltd_sibling = ti_c54x_decode_first_word(
+            (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x0800)));
+        TI_C54X_TEST_CHECK(ltd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(ltd_sibling.id == TI_C54X_OPCODE_ID_LTD_SMEM);
     }
 
     /* Bit 9 alone is the neutral DP sibling; adding the indexed MOD6 bit

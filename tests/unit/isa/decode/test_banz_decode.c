@@ -167,11 +167,11 @@ test_fixed_bit_near_misses(void)
      * the MAS_SMEM row (pinned below), setting fixed bit 11 lands
      * on the MAC_SMEM_LK row (pinned below), and setting fixed
      * bit 15 lands on the RPT_K row (pinned below); all other
-     * fixed-bit flips must miss every row. */
+     * fixed-bit flips must miss every row. Clearing fixed bit 13
+     * lands on the P3-S40 LTD_SMEM row (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0100),
-        UINT16_C(0x0400), UINT16_C(0x1000),
-        UINT16_C(0x2000)};
+        UINT16_C(0x0400), UINT16_C(0x1000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -214,6 +214,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mas_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mas_sibling.id == TI_C54X_OPCODE_ID_MAS_SMEM);
+    }
+
+    /* Clearing fixed bit 13 lands on the LTD_SMEM base word 0x4C00:
+     * valid row, wrong identity. */
+    {
+        const ti_c54x_decode_result ltd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZ_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(ltd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(ltd_sibling.id == TI_C54X_OPCODE_ID_LTD_SMEM);
     }
 }
 

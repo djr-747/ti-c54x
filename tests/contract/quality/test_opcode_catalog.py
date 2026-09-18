@@ -46,6 +46,7 @@ LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16 = (
     "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16"
 )
 LAYOUT_SELECT_INDIRECT_ADDR7 = "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7"
+LAYOUT_INDIRECT_ADDR7 = "TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7"
 LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7 = (
     "TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7"
 )
@@ -172,7 +173,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 290)
+        self.assertEqual(len(catalog_rows), 291)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -522,6 +523,16 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(ld_t.operand_layout, LAYOUT_ARF_MOD)
         self.assertEqual(ld_t.repeatability, REPEAT_UNRESOLVED)
         self.assertEqual(ld_t.input_resources, RESOURCES_NONE)
+
+        ltd = rows_by_symbol["LTD_SMEM"]
+        self.assertEqual(ltd.symbol, "LTD_SMEM")
+        self.assertEqual(ltd.handler, "ltd_smem")
+        self.assertEqual(ltd.first_word_value, 0x4C00)
+        self.assertEqual(ltd.first_word_mask, 0xFF00)
+        self.assertEqual(ltd.program_word_count, 1)
+        self.assertEqual(ltd.operand_layout, LAYOUT_INDIRECT_ADDR7)
+        self.assertEqual(ltd.repeatability, REPEAT_UNRESOLVED)
+        self.assertEqual(ltd.input_resources, RESOURCES_NONE)
 
         st_immediate = rows_by_symbol["ST_IMMEDIATE_SMEM"]
         self.assertEqual(st_immediate.symbol, "ST_IMMEDIATE_SMEM")

@@ -32,10 +32,10 @@ Smem-`#lk`, `CMPM` Smem-`#lk`, `BITT` Smem, and direct-only `ST #lk`,Smem rows
 under the `INDIRECT_ADDR7_EXTENSION16` layout seam; W7 pilot `ABS`/`NEG`/`NORM`
 accumulator rows from managed leaf fan-out; S38 `ADDC`/`ADDS`/`SUBC` Smem rows
 from managed leaf fan-out; S39 `SFTA` accumulator row from managed leaf
-fan-out).
+fan-out; S40 `LTD` Smem row from managed leaf fan-out).
 
-- 290 runnable catalog rows under 32,009 populated first-word lookup entries.
-  Inventory coverage is 138/205 forms SUBSET-or-better (67.317%) and 40/205
+- 291 runnable catalog rows under 32,265 populated first-word lookup entries.
+  Inventory coverage is 139/205 forms SUBSET-or-better (67.805%) and 40/205
   strict-complete (19.512%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release

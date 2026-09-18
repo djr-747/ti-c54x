@@ -689,6 +689,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S39: W7 batch-3 SFTA accumulator row (planned)](plan/p3-s39-w7-sfta-acc-row-slice.md)
 
+- [P3-S40: W7 batch-4 LTD Smem row (planned)](plan/p3-s40-w7-ltd-smem-row-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

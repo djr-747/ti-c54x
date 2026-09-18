@@ -54,6 +54,7 @@
 #include "load/op_ld_status_smem.h"
 #include "load/op_ld_t_smem.h"
 #include "load/op_ldu_smem.h"
+#include "load/op_ltd_smem.h"
 #include "load/op_ld_status_fields.h"
 #include "branch/op_b_pmad.h"
 #include "branch/op_bc_pmad.h"

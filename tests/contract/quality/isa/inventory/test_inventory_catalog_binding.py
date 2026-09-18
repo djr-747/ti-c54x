@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 296)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 290)
+        self.assertEqual(len(bindings), 297)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 291)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 40)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 256)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 257)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -99,6 +99,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "SUB_SMEM", "SUB_SMEM_TS", "SUB_SMEM_SH16",
                "AND_SMEM", "OR_SMEM", "XOR_SMEM", "SUBB_SMEM",
                "SUBS_SMEM", "ADDC_SMEM", "ADDS_SMEM", "SUBC_SMEM",
+               "LTD_SMEM",
                "ADD_LK_SHIFT", "ADD_LK_16",
                "SUB_LK_SHIFT", "SUB_LK_16",
                "ADD_SMEM_SHIFT", "SUB_SMEM_SHIFT",
@@ -174,6 +175,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "ADDC_SMEM",
                                                        "ADDS_SMEM",
                                                        "SUBC_SMEM",
+                                                       "LTD_SMEM",
                                                        "ADD_SMEM_SHIFT",
                                                        "SUB_SMEM_SHIFT",
                                                        "MPY_SMEM_LK",

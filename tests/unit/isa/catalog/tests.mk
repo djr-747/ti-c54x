@@ -37,6 +37,7 @@ $(eval $(call ti_c54x_add_test,ccd_metadata,isa/catalog,test_ccd_metadata.c))
 # W73 RED contract: CC catalog row.
 $(eval $(call ti_c54x_add_test,cc_metadata,isa/catalog,test_cc_metadata.c))
 $(eval $(call ti_c54x_add_test,ldr_smem_metadata,isa/catalog,test_ldr_smem_metadata.c))
+$(eval $(call ti_c54x_add_test,ltd_smem_metadata,isa/catalog,test_ltd_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_xmem_shift_metadata,isa/catalog,test_ld_xmem_shift_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_src_asm_metadata,isa/catalog,test_ld_src_asm_metadata.c))
 $(eval $(call ti_c54x_add_test,ld_smem_ts_metadata,isa/catalog,test_ld_smem_ts_metadata.c))
