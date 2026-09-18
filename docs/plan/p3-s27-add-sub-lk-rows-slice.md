@@ -1,4 +1,4 @@
-### P3-S27: ADD/SUB #lk rows (planned)
+### P3-S27: ADD/SUB #lk rows (implemented; local verification green)
 
 This immutable anchor heads the P3-S27 evidence freeze. Four
 catalog rows land the wave-5 #lk leaves over the shared 2-word

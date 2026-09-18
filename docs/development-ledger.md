@@ -12613,3 +12613,37 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `c4b5b21`, this ledger-only
   follow-up. Slice doc born `(planned)` in the impl commit,
   flipped here with its anchor.
+
+## 2026-09-18 — P3-S27 ADD/SUB #lk rows (slice 55)
+
+- Commit `60e8888` lands ADD_LK_SHIFT (0xF000/0xFCF0), ADD_LK_16
+  (0xF060/0xFCFF), SUB_LK_SHIFT (0xF010/0xFCF0), and SUB_LK_16
+  (0xF061/0xFCFF) over the shared 2-word accumulator layouts.
+  The schema forbids shared handler tokens, so eight thin
+  per-syntax checked entries (plain layout-gated plus trusted
+  operand-count-gated) delegate to the landed wave-5 cores,
+  mirroring the Smem _TS/_SH16 precedent; four focused wrapper
+  tests join the suites. Census: 266 rows, ID count 267, lookup
+  26641 to 26777 as 136 insertions with zero neighbor moves,
+  SUBSET bindings 228 to 232, FORMs 104 to 108/205 at 52.683%.
+  Full `make test` green (exit 0); evidence PASS at 448 evidence,
+  694 requirements, 554 tests.
+- Decisions: forms bind at SUBSET under IMMEDIATE_LK (the RPT_LK
+  precedent; the schema forbids SUBSET bindings at ALL). Seven
+  decode flip sweeps absorb nearby words by design
+  (ld_lk16/ld_lk_shift/bc_pmad/bcd/cc/ccd/rpt_lk); each gains an
+  explicit valid-row sibling pin per the file-local convention
+  instead of weakening the sweep. New house rule from this
+  slice: after adding rows, sweep ALL unit binaries directly
+  (seconds) before the slow full suite — it found four of the
+  seven absorptions in one pass.
+- Near-miss worth recording: the SUB syn7 TI vector comment
+  reads ambiguously until you decode 0xF118 as S=0/D=1 (src A,
+  dst B); verified by hand against the manual before trusting
+  the green suite. Rule restated: a passing suite never retires
+  TI-vector doubt — recompute the vector by hand.
+- Follow-up: S28/S29 Xmem/src-ASM rows, then wave-6 MPY/MAC
+  leaves merge (workers report green).
+- Split commit discipline: impl `60e8888`, this ledger-only
+  follow-up. Slice doc born `(planned)` in the impl commit,
+  flipped here with its anchor.

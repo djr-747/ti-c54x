@@ -7784,7 +7784,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s27-add-sub-lk-rows-slice.md",
-        "anchor": "P3-S27: ADD/SUB #lk rows (planned)"
+        "anchor": "P3-S27: ADD/SUB #lk rows (implemented; local verification green)"
       },
       "assertion": "P3-S27 activates the four ADD/SUB #lk rows ADD_LK_SHIFT (0xF000/0xFCF0), ADD_LK_16 (0xF060/0xFCFF), SUB_LK_SHIFT (0xF010/0xFCF0), and SUB_LK_16 (0xF061/0xFCFF) over the shared 2-word accumulator layouts with the landed plain plus trusted op_add_lk/op_sub_lk per-syntax handlers. FORM-T2-01-07, FORM-T2-01-08, FORM-T2-02-07, and FORM-T2-02-08 stay SUBSET under IMMEDIATE_LK."
     },
