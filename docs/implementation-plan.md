@@ -685,6 +685,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S37: W7 pilot ABS/NEG/NORM accumulator rows (planned)](plan/p3-s37-w7-abs-neg-norm-acc-rows-slice.md)
 
+- [P3-S38: W7 batch-2 ADDC/ADDS/SUBC Smem rows (planned)](plan/p3-s38-w7-addc-adds-subc-smem-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

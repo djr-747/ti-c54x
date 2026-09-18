@@ -8207,6 +8207,60 @@
         "printed_page_end": "4-122"
       },
       "assertion": "SPRU172C NORM defines the single-word operation NORM src[,dst] with opcode diagram 1111_01SD_1000_1111 (S selects the source accumulator, D the destination): dst is loaded with src shifted left by TS, or src itself when dst is omitted. The shift value is T(5-0) as a 2s-complement number with valid values -16 to 31; T is read in the read phase and unchanged. Affected by SXM and OVM; affects OVdst (or OVsrc when dst = src). Example 1 (NORM A with A = FF FFFF F001h, T = 0013h) stores FF 8008 0000h into A; Example 2 (NORM B,A with T = 0FF9h) stores 00 4214 1414h into A while B is unchanged."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADDC-P4-8",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADDC",
+        "printed_page_start": "4-8",
+        "printed_page_end": "4-8"
+      },
+      "assertion": "SPRU172C ADDC defines the single-word operation ADDC Smem,src with opcode diagram 0000_001S_IAAAAAAA (S selects the source and destination accumulator): src is loaded with Smem plus src plus the carry bit C. Sign extension of Smem is suppressed regardless of SXM. Affected by OVM and C; affects C and OVsrc. Worked example (ADDC *+AR2(5),A with A = 00 0000 0013h) stores 00 0000 0018h into A."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ADDS-P4-10",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ADDS",
+        "printed_page_start": "4-10",
+        "printed_page_end": "4-10"
+      },
+      "assertion": "SPRU172C ADDS defines the single-word operation ADDS Smem,src with opcode diagram 0000_0001_SIAA_AAAA (S selects the source and destination accumulator): src is loaded with src plus the unsigned 16-bit Smem value, suppressing sign extension. Affected by OVM; affects C and OVsrc. Worked example (ADDS *AR2-,B with B = 00 0000 0003h and data word 0104h = F006h) stores 00 0000 F009h into B with C cleared and AR2 postdecremented."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SUBC-P4-192",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SUBC",
+        "printed_page_start": "4-192",
+        "printed_page_end": "4-193"
+      },
+      "assertion": "SPRU172C SUBC defines the single-word operation SUBC Smem,src with opcode diagram 0001_111S_IAAA_AAAA (S selects accumulator A or B): the divide step subtracts Smem shifted left by 15 from src, and when the ALU output is greater than 0 the output shifted left by 1 with a 1 shifted into LSB returns to src, otherwise src shifted left by 1 returns to src. Affected by SXM (with SXM = 1 the Smem MSB must be 0); affects C and OVsrc; not affected by OVM. Worked example 1 (SUBC 2,A with data word 0001h and A = 4) stores 8 into A with C cleared."
     }
   ],
   "requirements": [
@@ -18937,6 +18991,132 @@
       "test_ids": [
         "T-COMMON-NORM-ACC-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-ADDC-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for ADDC Smem,src using base 0x0600 with mask 0xFE00, the SELECT_INDIRECT_ADDR7 layout, accumulator plus C/OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 512 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDC-P4-8"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDC-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ADDC-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every ADDC Smem,src first word through the SELECT_INDIRECT_ADDR7 layout, extracting the S select bit, I indirect bit, and 7-bit Smem address with exact 512-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDC-P4-8"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ADDC-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted ADDC Smem,src semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDC-P4-8"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDC-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ADDS-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for ADDS Smem,src using base 0x0200 with mask 0xFE00, the SELECT_INDIRECT_ADDR7 layout, accumulator plus OVM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 512 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDS-P4-10"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDS-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ADDS-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every ADDS Smem,src first word through the SELECT_INDIRECT_ADDR7 layout, extracting the S select bit, I indirect bit, and 7-bit Smem address with exact 512-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDS-P4-10"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDS-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ADDS-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted ADDS Smem,src semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ADDS-P4-10"
+      ],
+      "test_ids": [
+        "T-COMMON-ADDS-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SUBC-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for SUBC Smem,src using base 0x1E00 with mask 0xFE00, the SELECT_INDIRECT_ADDR7 layout, accumulator plus SXM input resources, and repeatability UNRESOLVED; the slot is disjoint from every established first-word identity and projects 512 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SUBC-P4-192"
+      ],
+      "test_ids": [
+        "T-COMMON-SUBC-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SUBC-SMEM-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every SUBC Smem,src first word through the SELECT_INDIRECT_ADDR7 layout, extracting the S select bit, I indirect bit, and 7-bit Smem address with exact 512-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SUBC-P4-192"
+      ],
+      "test_ids": [
+        "T-COMMON-SUBC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-SUBC-SMEM-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute the checked and trusted SUBC Smem,src semantic leaves with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SUBC-P4-192"
+      ],
+      "test_ids": [
+        "T-COMMON-SUBC-SMEM-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -27409,6 +27589,132 @@
       },
       "requirement_ids": [
         "REQ-COMMON-NORM-ACC-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDC-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_addc_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.addc_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDC-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDC-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_addc_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.addc_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDC-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_addc_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.addc_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDC-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDS-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_adds_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.adds_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDS-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDS-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_adds_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.adds_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDS-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-ADDS-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_adds_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.adds_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ADDS-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-SUBC-SMEM-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_subc_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.subc_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SUBC-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-SUBC-SMEM-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_subc_smem_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.subc_smem_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SUBC-SMEM-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-SUBC-SMEM-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_subc_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.subc_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-SUBC-SMEM-EFFECTS"
       ]
     }
   ]

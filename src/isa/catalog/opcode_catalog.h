@@ -234,6 +234,10 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* SUBC Smem reads the destination accumulator plus SXM; OVM is ignored. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \

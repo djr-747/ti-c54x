@@ -81,6 +81,33 @@ ROWS = {
         "coverage": "SUBSET",
         "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
     },
+    "ADDC_SMEM": {
+        "form": "FORM-T2-01-11",
+        "base": 0x0600,
+        "mask": 0xFE00,
+        "layout": "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_OVM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
+    "ADDS_SMEM": {
+        "form": "FORM-T2-01-13",
+        "base": 0x0200,
+        "mask": 0xFE00,
+        "layout": "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_OVM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
+    "SUBC_SMEM": {
+        "form": "FORM-T2-02-12",
+        "base": 0x1E00,
+        "mask": 0xFE00,
+        "layout": "TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM",
+        "coverage": "SUBSET",
+        "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+    },
     "ADD_LK_SHIFT": {
         "form": "FORM-T2-01-07",
         "words": 2,
@@ -201,9 +228,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 286)
-        self.assertEqual(len(rows) + 1, 287)
-        self.assertEqual(len(inventory["catalog_bindings"]), 292)
+        self.assertEqual(len(rows), 289)
+        self.assertEqual(len(rows) + 1, 290)
+        self.assertEqual(len(inventory["catalog_bindings"]), 295)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -229,10 +256,10 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                     binding["addressing_subset"], expected["addressing"]
                 )
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 30345)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 31881)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 134, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 137, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],

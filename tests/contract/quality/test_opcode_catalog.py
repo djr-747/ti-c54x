@@ -74,6 +74,9 @@ RESOURCES_ACCUMULATORS_STATUS_C_OVM = (
 RESOURCES_ACCUMULATORS_STATUS_OVM = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_OVM"
 )
+RESOURCES_ACCUMULATORS_STATUS_SXM = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM"
+)
 RESOURCES_AUXILIARY_REGISTERS = (
     "TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS"
 )
@@ -169,7 +172,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 286)
+        self.assertEqual(len(catalog_rows), 289)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -351,7 +354,8 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         # immediately after; P3-S20/21/22 insert the AND/OR/XOR Smem rows
         # after those, P3-S25 the SUBB Smem row, and P3-S26 the SUBS Smem
         # row after those; P3-S27 appends the four ADD/SUB #lk rows at
-        # the end; later positional indices shift by fifteen.
+        # the end; P3-S38 inserts the ADDC/ADDS/SUBC Smem rows after
+        # SUBS; later positional indices shift by eighteen.
         for row, symbol, handler, value, mask, layout, resources in (
             (rows[20], "ADD_SMEM", "add_smem",
              0x0000, 0xFE00,
@@ -397,6 +401,18 @@ class OpcodeCatalogContractTests(unittest.TestCase):
              0x0A00, 0xFE00,
              LAYOUT_SELECT_INDIRECT_ADDR7,
              RESOURCES_ACCUMULATORS_STATUS_OVM),
+            (rows[31], "ADDC_SMEM", "addc_smem",
+             0x0600, 0xFE00,
+             LAYOUT_SELECT_INDIRECT_ADDR7,
+             RESOURCES_ACCUMULATORS_STATUS_C_OVM),
+            (rows[32], "ADDS_SMEM", "adds_smem",
+             0x0200, 0xFE00,
+             LAYOUT_SELECT_INDIRECT_ADDR7,
+             RESOURCES_ACCUMULATORS_STATUS_OVM),
+            (rows[33], "SUBC_SMEM", "subc_smem",
+             0x1E00, 0xFE00,
+             LAYOUT_SELECT_INDIRECT_ADDR7,
+             RESOURCES_ACCUMULATORS_STATUS_SXM),
         ):
             with self.subTest(symbol=symbol):
                 self.assertEqual(row.symbol, symbol)
@@ -408,43 +424,43 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                 self.assertEqual(row.repeatability, REPEAT_UNRESOLVED)
                 self.assertEqual(row.input_resources, resources)
         for row, symbol, handler, value, mask, layout, resources in (
-            (rows[31], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
+            (rows[34], "AND_IMMEDIATE_SHIFT", "and_immediate_shift",
              0xF030, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
              RESOURCES_ACCUMULATORS),
-            (rows[32], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
+            (rows[35], "AND_IMMEDIATE_SHIFT16", "and_immediate_shift16",
              0xF063, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
              RESOURCES_ACCUMULATORS),
-            (rows[33], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
+            (rows[36], "OR_IMMEDIATE_SHIFT", "or_immediate_shift",
              0xF040, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
              RESOURCES_ACCUMULATORS),
-            (rows[34], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
+            (rows[37], "OR_IMMEDIATE_SHIFT16", "or_immediate_shift16",
              0xF064, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
              RESOURCES_ACCUMULATORS),
-            (rows[35], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
+            (rows[38], "XOR_IMMEDIATE_SHIFT", "xor_immediate_shift",
              0xF050, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
              RESOURCES_ACCUMULATORS),
-            (rows[36], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
+            (rows[39], "XOR_IMMEDIATE_SHIFT16", "xor_immediate_shift16",
              0xF065, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
              RESOURCES_ACCUMULATORS),
-            (rows[37], "ADD_LK_SHIFT", "add_lk_shift",
+            (rows[40], "ADD_LK_SHIFT", "add_lk_shift",
              0xF000, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
-            (rows[38], "ADD_LK_16", "add_lk_16",
+            (rows[41], "ADD_LK_16", "add_lk_16",
              0xF060, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
-            (rows[39], "SUB_LK_SHIFT", "sub_lk_shift",
+            (rows[42], "SUB_LK_SHIFT", "sub_lk_shift",
              0xF010, 0xFCF0,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),
-            (rows[40], "SUB_LK_16", "sub_lk_16",
+            (rows[43], "SUB_LK_16", "sub_lk_16",
              0xF061, 0xFCFF,
              LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16,
              RESOURCES_ACCUMULATORS_STATUS_SXM_OVM),

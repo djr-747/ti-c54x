@@ -23,6 +23,10 @@ ti_c54x_add_unit_test(sub_src_asm_ops test_sub_src_asm.c)
 ti_c54x_add_unit_test(subs_smem_ops test_subs_smem.c)
 # FORM-T2-02-11 RED contract: SUBB Smem.
 ti_c54x_add_unit_test(subb_smem_ops test_subb_smem.c)
+# W7B RED contract: ADDC/ADDS/SUBC Smem.
+ti_c54x_add_unit_test(addc_smem_ops test_addc_smem.c)
+ti_c54x_add_unit_test(adds_smem_ops test_adds_smem.c)
+ti_c54x_add_unit_test(subc_smem_ops test_subc_smem.c)
 ti_c54x_add_unit_test(add_xmem_ops test_add_xmem.c)
 ti_c54x_add_unit_test(sub_xmem_ops test_sub_xmem.c)
 # W7A RED contract: RND src[,dst] and SAT src accumulator semantics.

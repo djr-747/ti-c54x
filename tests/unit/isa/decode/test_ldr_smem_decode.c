@@ -149,7 +149,7 @@ test_fixed_bit_near_misses(void)
      * bit 10 lands on LDU_SMEM, flipping bit 9 lands on LD_SMEM_TS;
      * every other fixed-bit flip misses every catalog row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x2000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -177,6 +177,24 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(bit9.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(bit9.id == TI_C54X_OPCODE_ID_LD_SMEM_TS);
+    }
+
+    /* Flipping bit 11 lands on 0x1E80, claimed by the P3-S38
+     * SUBC_SMEM row: a valid cross-row near miss, not an overaccept. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(LDR_SMEM_VALUE ^ UINT16_C(0x0800)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_SUBC_SMEM);
+    }
+
+    /* Flipping bit 12 lands on 0x0680, claimed by the P3-S38
+     * ADDC_SMEM row: a valid cross-row near miss, not an overaccept. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(LDR_SMEM_VALUE ^ UINT16_C(0x1000)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_ADDC_SMEM);
     }
 }
 

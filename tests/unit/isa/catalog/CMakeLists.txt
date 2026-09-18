@@ -165,3 +165,9 @@ ti_c54x_add_unit_test(neg_acc_metadata
                       test_neg_acc_metadata.c)
 ti_c54x_add_unit_test(norm_acc_metadata
                       test_norm_acc_metadata.c)
+ti_c54x_add_unit_test(addc_smem_metadata
+                      test_addc_smem_metadata.c)
+ti_c54x_add_unit_test(adds_smem_metadata
+                      test_adds_smem_metadata.c)
+ti_c54x_add_unit_test(subc_smem_metadata
+                      test_subc_smem_metadata.c)
