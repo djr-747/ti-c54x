@@ -13149,3 +13149,42 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)`.
+
+## 2026-09-18 — P3-S39 W7 batch-3 SFTA accumulator row (slice 68)
+
+- Landed: third managed fan-out — one TI-pinned row (SFTA
+  `0xF460/0xFCE0`) on the existing accumulator S/D/shift5
+  layout, `UNRESOLVED` repeatability (SFTL precedent). Leaf
+  built row-less by an isolated worker (W7-SFTA) against a
+  maintainer TI brief sourced from the mnemonic reference
+  (both worked examples hand-verified: `FF 8765 0055h,-5`
+  gives `FF FC3B 2802h`/C=1; `80 AA00 1234h,+5` gives
+  `15 4002 4680h`/C=0), merged with a row-id flip, dispatch
+  include, manifests, 3 leaf/metadata/decode suites, inventory
+  flip (`FORM-T2-10-04` to `COMMON_CANDIDATE`/`SUBSET` +
+  `REGISTER_DST` binding), 7 evidence records (1 TI + 3 req +
+  3 test), index rows, frozen-count bumps (290 rows, 296
+  bindings, 32,009 lookup, 256 SUBSET, 138/205 at 67.317%,
+  751 requirements, 607 tests), README/plan/slice.
+- Validation: `make build` clean, `make test` exit 0 (581 C
+  binaries ok, 286 Python tests), `check_evidence.py` PASS
+  (751/607), `check_isa_inventory.py` exit 0 (138/205, strict
+  40/205), lookup regen pure (+128), sanitizer rebuild of all
+  touched files exit 0.
+- Decisions: SFTA overflow uses the no-sign-loss rule (src
+  bits 39..(32-N) must equal the landing sign); right/zero
+  shifts never overflow. The new words collided with ten old
+  probes (branch `0x0400` flips, RETE/RETED `0x0080` flips,
+  LD_LK16/LD_SRC_SHIFT/RPT_LK flips, MACA_T `0xF47F`
+  literal) — all converted to pinned SFTA siblings. Six C
+  population pins and two out-of-dir `COUNT` pins swept.
+- Near-misses: none beyond the probe collisions above; the
+  worker leaf needed zero merge fixes.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 67 unbound forms; W7 fan-out
+  continues with the next TI-pinned briefs. Wave-7 plan doc
+  still untracked.
+- Split commit discipline: impl `db883f9`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)`.
