@@ -12980,3 +12980,38 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S35 rounded-variant shared-row bindings (slice 63)
+
+- Landed: six R-suffixed forms bound to established rows with no
+  catalog, decode, or leaf change (MPYR Smem→MPY_SMEM, MACR
+  Smem→MAC_SMEM, MACAR Smem→MACA_SMEM, MACAR T→MACA_T, MASR
+  Smem→MAS_SMEM, MASAR T→MASA_T), each SUBSET under its row's
+  addressing token, flipping UNRESOLVED/UNIMPLEMENTED to
+  COMMON_CANDIDATE/SUBSET (covered 127/205, 61.951%). Minimal
+  schema evolution: symbol-uniqueness retired for exact-pair
+  uniqueness, with positive plus negative schema tests. Full
+  `make test` green (exit 0); contract suite 286 tests OK;
+  sanitizer rebuild clean; requirements/tests unchanged at 718
+  and 574. README snapshot refreshed to P3-S35.
+- Decisions: every R bit pinned against its TI [R]-section
+  diagram (MPY 4-101, MAC 4-82, MACA 4-85, MAS 4-94, MASA
+  4-97); MASA_T/MACA_T carry R at bit 0, the Smem rows at bit
+  9. No new evidence/requirement/test records: row CATALOG,
+  DECODE, and EFFECTS records plus existing rounding suites
+  already cover the behavior. Dual-memory MACR/MASR Xmem,Ymem
+  stay deferred to the dual seam. Branch-leaf uninitialized
+  `staged` hygiene noted in S34 stands.
+- Near-misses worth recording: schema v1's one-binding-per-
+  symbol rule initially rejected the shared rows (6 checker
+  errors); the report already counted distinct bound forms, so
+  the relaxation cannot inflate the denominator (alias test
+  still guards). Reverse-carry coverage assertion used the
+  compact `{"covered":121` spelling the sweep missed — fixed
+  by direct edit.
+- Follow-up: remaining census 78 UNIMPLEMENTED; next is
+  continued Wave-7 leaf fan-out per the fan-out plan.
+- Split commit discipline: impl `ac9ed63`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
