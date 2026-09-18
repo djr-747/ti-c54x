@@ -8347,6 +8347,42 @@
         "printed_page_end": "4-41"
       },
       "assertion": "SPRU172C DELAY defines the single-word operation DELAY Smem with opcode diagram 0100_1101_IAAAAAAA (I selects indirect addressing, A the 7-bit Smem address): the content of Smem is copied into the next higher address (Smem+1), leaving Smem itself unchanged, which implements a Z delay; the same delay operation is contained in LTD (page 4-81) and MACD (page 4-87). No status bits are affected. One word (one more with long-offset indirect or absolute Smem); classes 24A and 24B. Worked example (DELAY *AR3 with AR3 0100, data word 0100h holding 6CACh, 0101h holding 0000h) keeps AR3 0100 and 0100h 6CACh while storing 6CACh into 0101h."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-STLM-P4-175",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "STLM",
+        "printed_page_start": "4-175",
+        "printed_page_end": "4-175"
+      },
+      "assertion": "SPRU172C STLM defines STLM src,MMR with opcode diagram 1000_100S_IAAAAAAA (S selects accumulator A/B, I selects direct/indirect addressing, A the 7-bit address): the low part of src is stored into the addressed MMR with the nine MSBs of the effective address cleared to 0 regardless of DP. Status Bits None; one word (one more with indirect addressing); class 10A. Worked examples STLM A,BRC (stores low A 0x4321 into BRC 0x001A) and STLM B,*AR1- (writes memory through AR1)."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LDM-P4-73",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "LDM",
+        "printed_page_start": "4-73",
+        "printed_page_end": "4-73"
+      },
+      "assertion": "SPRU172C LDM defines LDM MMR,dst with opcode diagram 0100_100D_IAAAAAAA (D selects accumulator A/B, I selects direct/indirect addressing, A the 7-bit address): (MMR) loads dst(15-0) with 00_0000h into dst(39-16), and the nine MSBs of the effective address are cleared to 0 regardless of DP or the upper nine bits of ARx. Status Bits None and not affected by SXM; one word; class 3A. Worked examples LDM AR4,A (AR4 FFFF into A low) and LDM 060h,B (data 0060h 1234 into B low)."
     }
   ],
   "requirements": [
@@ -19525,6 +19561,90 @@
       "test_ids": [
         "T-COMMON-STL-ASM-SMEM-DIRECT-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-STLM-SMEM-DIRECT-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for the STLM src,MMR direct slice using base 0x8800 with mask 0xFE80 (S free, I pinned zero), the SELECT_INDIRECT_ADDR7 layout, accumulator inputs, and repeatability UNRESOLVED; the slot projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STLM-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-STLM-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STLM-SMEM-DIRECT-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every STLM src,MMR direct first word through SELECT_INDIRECT_ADDR7 with S select and the I bit pinned zero, extracting the 7-bit page-0 MMR address with exact 256-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STLM-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-STLM-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STLM-SMEM-DIRECT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the checked and trusted STLM src,MMR direct leaves, staging a page-0 DATA WRITE of the selected accumulator low word with a null completion, rejecting a bad select, a set I bit, and unknown accumulator input, with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STLM-P4-175"
+      ],
+      "test_ids": [
+        "T-COMMON-STLM-SMEM-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-LDM-SMEM-DIRECT-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for the LDM MMR,dst direct slice using base 0x4800 with mask 0xFE80 (D free, I pinned zero), the SELECT_INDIRECT_ADDR7 layout, no inputs, and repeatability UNRESOLVED; the slot projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LDM-P4-73"
+      ],
+      "test_ids": [
+        "T-COMMON-LDM-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-LDM-SMEM-DIRECT-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every LDM MMR,dst direct first word through SELECT_INDIRECT_ADDR7 with D select and the I bit pinned zero, extracting the 7-bit page-0 MMR address with exact 256-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LDM-P4-73"
+      ],
+      "test_ids": [
+        "T-COMMON-LDM-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-LDM-SMEM-DIRECT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/load/",
+      "claim": "Execute the checked and trusted LDM MMR,dst direct leaves, staging a page-0 DATA READ whose completion zero-extends the WORD16 into dst(15:0) and clears dst(39:16), rejecting a bad select and a set I bit, with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LDM-P4-73"
+      ],
+      "test_ids": [
+        "T-COMMON-LDM-SMEM-DIRECT-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -28445,6 +28565,90 @@
       },
       "requirement_ids": [
         "REQ-COMMON-STL-ASM-SMEM-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-STLM-SMEM-DIRECT-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_stlm_smem_direct_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stlm_smem_direct_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STLM-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-STLM-SMEM-DIRECT-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_stlm_smem_direct_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stlm_smem_direct_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STLM-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-STLM-SMEM-DIRECT-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_stlm_smem_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stlm_smem_direct_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STLM-SMEM-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-LDM-SMEM-DIRECT-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ldm_smem_direct_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.ldm_smem_direct_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-LDM-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-LDM-SMEM-DIRECT-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_ldm_smem_direct_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.ldm_smem_direct_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-LDM-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-LDM-SMEM-DIRECT-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/load/test_ldm_smem_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.ldm_smem_direct_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-LDM-SMEM-DIRECT-EFFECTS"
       ]
     }
   ]

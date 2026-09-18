@@ -703,6 +703,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S46: W7 batch-8 STL direct rows (implemented; local verification green)](plan/p3-s46-w7-stl-direct-rows-slice.md)
 
+- [P3-S47: W7 batch-9 STLM/LDM direct rows (implemented; local verification green)](plan/p3-s47-w7-stlm-ldm-direct-rows-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

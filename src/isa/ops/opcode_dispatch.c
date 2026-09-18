@@ -101,6 +101,8 @@
 #include "store/op_st_trn_smem_direct.h"
 #include "store/op_stl_smem_direct.h"
 #include "store/op_stl_asm_smem_direct.h"
+#include "store/op_stlm_smem_direct.h"
+#include "load/op_ldm_smem_direct.h"
 #include "store/op_st_lk_smem.h"
 #include "store/op_dst_long32.h"
 #include "status/op_status_bits.h"

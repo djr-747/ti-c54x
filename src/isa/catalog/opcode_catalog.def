@@ -171,6 +171,19 @@ TI_C54X_OPCODE_MASKED(STL_SMEM_DIRECT, stl_smem_direct, 0x8000, 0xFE80, 1, TI_C5
  * shared select/indirect/addr7 layout into the landed
  * op_stl_asm_smem_direct core. */
 TI_C54X_OPCODE_MASKED(STL_ASM_SMEM_DIRECT, stl_asm_smem_direct, 0x8400, 0xFE80, 1, TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_ASM)
+/* STLM src,MMR (direct only): accumulator low stages into page-0
+ * MMR over the 0x8800 first word with S free and the I bit fixed
+ * zero (mask 0xFE80, 256 encodings) through the shared
+ * select/indirect/addr7 layout into the landed
+ * op_stlm_smem_direct core. MMR-register routing is downstream;
+ * the I-set half rejects in the leaf. */
+TI_C54X_OPCODE_MASKED(STLM_SMEM_DIRECT, stlm_smem_direct, 0x8800, 0xFE80, 1, TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
+/* LDM MMR,dst (direct only): page-0 MMR stages into dst(15:0)
+ * with dst(39:16) cleared over the 0x4800 first word with D free
+ * and the I bit fixed zero (mask 0xFE80, 256 encodings) through
+ * the shared select/indirect/addr7 layout into the landed
+ * op_ldm_smem_direct core with a zero-extending completion. */
+TI_C54X_OPCODE_MASKED(LDM_SMEM_DIRECT, ldm_smem_direct, 0x4800, 0xFE80, 1, TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
 /* BITF Smem,#lk: TC stages ((Smem & lk) != 0) over the 0x6100
  * first word with the copied lk extension through the shared
  * Smem,#lk layout into the landed op_bitf_smem_lk core. Table
