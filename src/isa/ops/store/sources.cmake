@@ -9,6 +9,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_sth_shift_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_immediate_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_t_smem.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_st_t_smem_direct.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_lk_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_stm.c")
 list(APPEND ti_c54x_core_sources

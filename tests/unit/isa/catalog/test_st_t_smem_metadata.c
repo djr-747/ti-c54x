@@ -33,7 +33,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_ST_T_SMEM);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 293);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 294);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_ST_T_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == ST_T_VALUE);
@@ -80,11 +80,11 @@ test_exact_population(void)
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
-    /* These flip fixed bits, including bit 8; the low three ARF bits remain.
-     * Bit 15 (0x8000) leaves in P3-S19: 0x8C90 ^ 0x8000 is 0x0C90, a
-     * valid SUB_SMEM_TS word asserted below. */
+    /* These flip fixed bits; the low three ARF bits remain. Clearing
+     * bit 7 lands the pinned direct sibling (asserted below); bit 15
+     * (0x8000) leaves in P3-S19: 0x8C90 ^ 0x8000 is 0x0C90, a valid
+     * SUB_SMEM_TS word asserted below. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
         UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x4000)};
@@ -98,6 +98,14 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(
             ti_c54x_opcode_catalog_lookup_first_word(word) ==
             TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+    {
+        const uint16_t direct_word = (uint16_t)(ST_T_VALUE ^ UINT16_C(0x0080));
+
+        TI_C54X_TEST_CHECK(!matches_st_t(direct_word));
+        TI_C54X_TEST_CHECK(
+            ti_c54x_opcode_catalog_lookup_first_word(direct_word) ==
+            TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
     }
 
     /* The nearby STL sibling remains distinct despite sharing ST's low bits. */

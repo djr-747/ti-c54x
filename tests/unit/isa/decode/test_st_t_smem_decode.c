@@ -92,8 +92,10 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* Bit 15 (0x8000) leaves in P3-S19: 0x8C90 ^ 0x8000 is 0x0C90, a
      * valid SUB_SMEM_TS word asserted below. */
+    /* Clearing bit 7 lands the pinned direct sibling; every other
+     * fixed-bit flip stays unbound. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080), UINT16_C(0x0100), UINT16_C(0x0200),
+        UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x0800),
         UINT16_C(0x1000), UINT16_C(0x2000), UINT16_C(0x4000)};
 
@@ -106,6 +108,16 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+    {
+        const ti_c54x_decode_result direct_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(ST_T_VALUE ^ UINT16_C(0x0080)));
+
+        TI_C54X_TEST_CHECK(direct_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(direct_sibling.id ==
+                           TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
     }
 
     {

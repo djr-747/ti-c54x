@@ -2461,9 +2461,11 @@
       "table_ordinal": 1,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ST_T_SMEM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-22-02",
@@ -4524,6 +4526,12 @@
       "form_id": "FORM-T2-06-04",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "ST_T_SMEM_DIRECT",
+      "form_id": "FORM-T2-22-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
     }
   ]
 }

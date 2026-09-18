@@ -145,6 +145,13 @@ TI_C54X_OPCODE_MASKED(LD_DP_SMEM, ld_dp_smem, 0x4680, 0xFFE0, 1, TI_C54X_OPERAND
 TI_C54X_OPCODE_MASKED(LD_ASM_SMEM, ld_asm_smem, 0x3280, 0xFFE0, 1, TI_C54X_OPERAND_LAYOUT_ARF_MOD, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(LD_SMEM_SHIFT16, ld_smem_shift16, 0x4480, 0xFEE0, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
 TI_C54X_OPCODE_MASKED(ST_T_SMEM, st_t_smem, 0x8C80, 0xFFE0, 1, TI_C54X_OPERAND_LAYOUT_ARF_MOD, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_T_REGISTER)
+/* ST T,Smem (syntax 1, direct only): T stages into page-0 Smem
+ * over the 0x8C00 first word with the I bit fixed zero (mask
+ * 0xFF80, 128 encodings) through the shared indirect/addr7
+ * layout into the landed op_st_t_smem_direct core. Indirect
+ * composes through the established ST_T MOD rows above, which
+ * start at 0x8C80. */
+TI_C54X_OPCODE_MASKED(ST_T_SMEM_DIRECT, st_t_smem_direct, 0x8C00, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_T_REGISTER)
 /* BITF Smem,#lk: TC stages ((Smem & lk) != 0) over the 0x6100
  * first word with the copied lk extension through the shared
  * Smem,#lk layout into the landed op_bitf_smem_lk core. Table

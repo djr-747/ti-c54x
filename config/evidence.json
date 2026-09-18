@@ -19327,6 +19327,48 @@
       "test_ids": [
         "T-COMMON-DELAY-SMEM-EFFECTS"
       ]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-DIRECT-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly one single-word catalog identity for the ST T direct slice using base 0x8C00 with mask 0xFF80, the INDIRECT_ADDR7 layout, T-register inputs, and repeatability UNRESOLVED; the slot is disjoint from the established indirect ST_T rows and projects 128 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-T-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-DIRECT-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every ST T direct first word through the INDIRECT_ADDR7 layout with the I bit pinned zero, extracting the 7-bit page-0 Smem address with exact 128-word population.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-T-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-ST-T-SMEM-DIRECT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the checked and trusted ST T direct semantic leaves, staging a page-0 DATA WRITE of the T register with a null completion, rejecting a set I bit and unknown T input, with transactional rejection and checked/trusted parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-T-P4-166-4-168"
+      ],
+      "test_ids": [
+        "T-COMMON-ST-T-SMEM-DIRECT-EFFECTS"
+      ]
     }
   ],
   "tests": [
@@ -28065,6 +28107,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-DELAY-SMEM-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-DIRECT-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_t_smem_direct_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_t_smem_direct_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-T-SMEM-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-DIRECT-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_st_t_smem_direct_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_t_smem_direct_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-T-SMEM-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-ST-T-SMEM-DIRECT-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_st_t_smem_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_t_smem_direct_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-ST-T-SMEM-DIRECT-EFFECTS"
       ]
     }
   ]
