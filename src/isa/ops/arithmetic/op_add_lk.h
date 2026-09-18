@@ -8,10 +8,9 @@
  * and syn8 ADD #lk,16,src[,dst] shifts the widened value left by
  * 16. Both compute (lk << shift) + src -> dst with OVM saturation
  * plus sticky OVdst. C is written from the low-32 carry; TC is
- * preserved. No catalog rows exist for these forms yet, so entry
- * points key on the shared layouts plus the ADD first-word
- * discriminators instead of opcode metadata; dispatch binding
- * follows when the rows land.
+ * preserved. The shared entries key on either layout; the
+ * per-syntax checked entries below gate one layout each for the
+ * catalog rows that bind them.
  * Does not own: catalog lookup generation, operand-layout
  * definitions, buses, CPU/state mutation, sequencing, timing,
  * observers, allocation, logging, environment, or diagnostics.
@@ -36,6 +35,26 @@ ti_c54x_op_status ti_c54x_op_add_lk(
     ti_c54x_op_effect *effect);
 
 ti_c54x_op_status ti_c54x_trusted_op_add_lk(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_add_lk_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_add_lk_16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_trusted_op_add_lk_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_trusted_op_add_lk_16(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);

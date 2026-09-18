@@ -163,9 +163,10 @@ test_fixed_bit_near_misses(void)
      * lands on the W72 CCD row, flipping fixed bit 12 lands on
      * LD_IMMEDIATE_DP, flipping fixed bit 10 lands on RETD, and
      * flipping fixed bit 15 lands on the S3r MACD_SMEM row;
+     * clearing fixed bit 11 lands on the P3-S27 ADD_LK_SHIFT
+     * sibling (pinned below);
      * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0800),
         UINT16_C(0x2000)};
     const ti_c54x_decode_result bc_sibling =
         ti_c54x_decode_first_word(
@@ -200,6 +201,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* Clearing fixed bit 11 lands on the P3-S27 ADD_LK_SHIFT row
+     * (0xF200: S=1 (src B), D=0 (dst A), SHFT=0). */
+    {
+        const ti_c54x_decode_result add_lk_shift_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BCD_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(add_lk_shift_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(add_lk_shift_sibling.id ==
+                           TI_C54X_OPCODE_ID_ADD_LK_SHIFT);
     }
 
     /* Clearing fixed bit 14 lands on the S3i MAS dual row. */

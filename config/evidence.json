@@ -7773,6 +7773,22 @@
       "assertion": "P3-S26 activates the SUBS Smem row SUBS_SMEM (0x0A00/0xFE00) over the shared SELECT_INDIRECT_ADDR7 layout with the landed plain plus trusted op_subs_smem handlers, registering the ACCUMULATORS_STATUS_OVM input combination. Long-offset and absolute Smem extension words stay undecoded; FORM-T2-02-13 stays SUBSET."
     },
     {
+      "id": "E-PROJECT-P3-S27-ADD-SUB-LK-ROWS-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s27-add-sub-lk-rows-slice.md",
+        "anchor": "P3-S27: ADD/SUB #lk rows (planned)"
+      },
+      "assertion": "P3-S27 activates the four ADD/SUB #lk rows ADD_LK_SHIFT (0xF000/0xFCF0), ADD_LK_16 (0xF060/0xFCFF), SUB_LK_SHIFT (0xF010/0xFCF0), and SUB_LK_16 (0xF061/0xFCFF) over the shared 2-word accumulator layouts with the landed plain plus trusted op_add_lk/op_sub_lk per-syntax handlers. FORM-T2-01-07, FORM-T2-01-08, FORM-T2-02-07, and FORM-T2-02-08 stay SUBSET under IMMEDIATE_LK."
+    },
+    {
       "id": "E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN78-LK-P4-3-4-187",
       "immutable": true,
       "state": "PINNED",
@@ -17839,6 +17855,21 @@
       ]
     },
     {
+      "id": "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "tools/quality/",
+      "claim": "Bind the four ADD/SUB #lk production symbols to FORM-T2-01-07, FORM-T2-01-08, FORM-T2-02-07, and FORM-T2-02-08 at SUBSET under IMMEDIATE_LK addressing tokens with audit-only inventory metadata.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S27-ADD-SUB-LK-ROWS-ACTIVATION"
+      ],
+      "test_ids": [
+        "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING",
+        "T-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY"
+      ]
+    },
+    {
       "id": "REQ-COMMON-P3-WAVE5-ADD-LK-SEMANTICS",
       "state": "IMPLEMENTED",
       "target_id": "C54X_CORE_COMMON_V1",
@@ -21128,7 +21159,8 @@
         "REQ-PROJECT-P3-S21-OR-SMEM-ROWS",
         "REQ-PROJECT-P3-S22-XOR-SMEM-ROWS",
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
-        "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS"
+        "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
+        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS"
       ]
     },
     {
@@ -21862,7 +21894,8 @@
         "REQ-PROJECT-P2-W49B-ADD-SUB-ACC-SHIFT5-INVENTORY",
         "REQ-PROJECT-P3-S19-SUB-SMEM-ROWS",
         "REQ-PROJECT-P3-S25-SUBB-SMEM-ROWS",
-        "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS"
+        "REQ-PROJECT-P3-S26-SUBS-SMEM-ROWS",
+        "REQ-PROJECT-P3-S27-ADD-SUB-LK-ROWS"
       ]
     },
     {

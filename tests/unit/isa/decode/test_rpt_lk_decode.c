@@ -135,10 +135,10 @@ test_fixed_bit_near_misses(void)
      * XOR_IMMEDIATE_SHIFT, bit 6 on AND_IMMEDIATE_SHIFT, bit 7 on
      * SFTL_ACC, and bit 11 on BC_PMAD (each pinned below); bit 14
      * lands on the P3-S3g MAC_DUAL_M1_M0 sibling (pinned below); all
-     * other single-bit flips must miss every row. */
+     * other single-bit flips must miss every row; flipping bit 4
+     * lands on the P3-S27 ADD_LK_16 sibling (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0008),
-        UINT16_C(0x0010),
         UINT16_C(0x0100), UINT16_C(0x0200),
         UINT16_C(0x0400), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0x8000)};
@@ -153,6 +153,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* 0xF060 (flipping bit 4) is the ADD_LK_16 encoding with S=0
+     * (src A), D=0 (dst A): valid row, wrong identity. */
+    {
+        const ti_c54x_decode_result add_lk16_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RPT_LK_VALUE ^ UINT16_C(0x0010)));
+
+        TI_C54X_TEST_CHECK(add_lk16_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(add_lk16_sibling.id ==
+                           TI_C54X_OPCODE_ID_ADD_LK_16);
     }
 
     /* 0xB070 (flipping bit 14) is the MAC_DUAL_M1_M0 encoding with

@@ -445,6 +445,80 @@ static void test_null_rejects(void)
                        TI_C54X_OP_STATUS_INVALID_ARGUMENT);
 }
 
+/* Per-syntax checked entries: the shift entry serves the syn7 TI
+ * vector and rejects the syn8 layout; the _16 entry serves syn8
+ * and rejects the syn7 layout. */
+static void test_plain_syntax_entries_dispatch(void)
+{
+    ti_c54x_decoded_instruction syn7 =
+        make_instruction(UINT16_C(0xF118), UINT16_C(0x3039), LAYOUT_SYN7);
+    ti_c54x_decoded_instruction syn8 =
+        make_instruction(UINT16_C(0xF161), UINT16_C(0x1234), LAYOUT_SYN8);
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_shift(&syn7, &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFFFCFD900));
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_shift(&syn8, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_16(&syn8, &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFEDCC1200));
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_16(&syn7, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_DECODE);
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_shift(NULL, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+    TI_C54X_TEST_CHECK(ti_c54x_op_sub_lk_16(NULL, &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_ARGUMENT);
+}
+
+/* Per-syntax trusted entries gate on operand count: four values
+ * for syn7, three for syn8. */
+static void test_trusted_syntax_entries_gate(void)
+{
+    ti_c54x_decoded_instruction instruction =
+        make_instruction(UINT16_C(0xF118), UINT16_C(0x3039), LAYOUT_SYN7);
+    ti_c54x_trusted_operand_values operands = {0};
+    ti_c54x_op_input_snapshot input = known_input();
+    ti_c54x_op_effect effect = {0};
+
+    operands.count = UINT8_C(4);
+    operands.values[0].raw_value = UINT64_C(1);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(0);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(2);
+    operands.values[2].width_bits = UINT8_C(4);
+    operands.values[3].raw_value = UINT64_C(0x0100);
+    operands.values[3].width_bits = UINT8_C(16);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_sub_lk_shift(&instruction, &operands,
+                                                      &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0x1400));
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_sub_lk_16(&instruction, &operands,
+                                                   &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_OPERAND);
+    operands.count = UINT8_C(3);
+    operands.values[0].raw_value = UINT64_C(0);
+    operands.values[0].width_bits = UINT8_C(1);
+    operands.values[1].raw_value = UINT64_C(0);
+    operands.values[1].width_bits = UINT8_C(1);
+    operands.values[2].raw_value = UINT64_C(0x0002);
+    operands.values[2].width_bits = UINT8_C(16);
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_sub_lk_16(&instruction, &operands,
+                                                   &input, &effect) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(effect.payload.accumulator_write.value_raw40 ==
+                       UINT64_C(0xFFFFFE1200));
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_op_sub_lk_shift(&instruction, &operands,
+                                                      &input, &effect) ==
+                       TI_C54X_OP_STATUS_INVALID_OPERAND);
+}
+
 int
 main(void)
 {
@@ -460,5 +534,7 @@ main(void)
     test_trusted_completions();
     test_trusted_shape_rejects();
     test_null_rejects();
+    test_plain_syntax_entries_dispatch();
+    test_trusted_syntax_entries_gate();
     return 0;
 }

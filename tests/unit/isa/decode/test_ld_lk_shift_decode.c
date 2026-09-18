@@ -153,10 +153,12 @@ test_fixed_bit_near_misses(void)
      * bit 4 lands on the AND_IMMEDIATE_SHIFT sibling, flipping fixed
      * bit 7 lands on OR_ACC_SHIFT, flipping fixed bit 10 lands on
      * SUB_ACC_SHIFT, and flipping fixed bit 14 lands on the P3-S3g
-     * MAC_DUAL_M0_M0 sibling; all other fixed-bit flips must miss
-     * every row. */
+     * MAC_DUAL_M0_M0 sibling; flipping fixed bit 5 lands on the
+     * P3-S27 ADD_LK_SHIFT sibling and flipping fixed bit 6 lands on
+     * the P3-S27 ADD_LK_16 sibling; all other fixed-bit flips must
+     * miss every row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0020), UINT16_C(0x0040), UINT16_C(0x0200),
+        UINT16_C(0x0200),
         UINT16_C(0x1000), UINT16_C(0x2000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result and_sibling =
@@ -190,6 +192,22 @@ test_fixed_bit_near_misses(void)
                                             UINT16_C(0x4000)));
     TI_C54X_TEST_CHECK(mac_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(mac_dual_sibling.id == TI_C54X_OPCODE_ID_MAC_DUAL_M0_M0);
+    /* 0xF000 (fixed bit 5 cleared) is the ADD_LK_SHIFT encoding with
+     * S=0 (src A), D=0 (dst A), SHFT=0: valid row, wrong identity.
+     * 0xF060 (fixed bit 6 set) is the ADD_LK_16 encoding with S=0,
+     * D=0: valid row, wrong identity. */
+    const ti_c54x_decode_result add_lk_shift_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
+                                            UINT16_C(0x0020)));
+    TI_C54X_TEST_CHECK(add_lk_shift_sibling.status ==
+                       TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(add_lk_shift_sibling.id ==
+                       TI_C54X_OPCODE_ID_ADD_LK_SHIFT);
+    const ti_c54x_decode_result add_lk16_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
+                                            UINT16_C(0x0040)));
+    TI_C54X_TEST_CHECK(add_lk16_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(add_lk16_sibling.id == TI_C54X_OPCODE_ID_ADD_LK_16);
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

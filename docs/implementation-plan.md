@@ -659,7 +659,9 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S26: SUBS Smem rows (implemented; local verification green)](plan/p3-s26-subs-smem-rows-slice.md)
 
-- [P3-WAVE5: ADD/SUB leaf fan-out (planned)](plan/p3-wave5-add-sub-leaves-slice.md)
+- [P3-WAVE5: ADD/SUB leaf fan-out (implemented; local verification green)](plan/p3-wave5-add-sub-leaves-slice.md)
+
+- [P3-S27: ADD/SUB #lk rows (planned)](plan/p3-s27-add-sub-lk-rows-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

@@ -219,6 +219,36 @@ ti_c54x_op_status ti_c54x_op_add_lk(
     return add_lk_values(&fields, input, effect);
 }
 
+ti_c54x_op_status ti_c54x_op_add_lk_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    if (instruction == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (instruction->operand_layout !=
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+    return ti_c54x_op_add_lk(instruction, input, effect);
+}
+
+ti_c54x_op_status ti_c54x_op_add_lk_16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    if (instruction == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (instruction->operand_layout !=
+        TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+    return ti_c54x_op_add_lk(instruction, input, effect);
+}
+
 ti_c54x_op_status ti_c54x_trusted_op_add_lk(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *operands,
@@ -262,4 +292,32 @@ ti_c54x_op_status ti_c54x_trusted_op_add_lk(
         return TI_C54X_OP_STATUS_INVALID_OPERAND;
     }
     return add_lk_values(&fields, input, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_add_lk_shift(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    if (operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count != UINT8_C(4)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    return ti_c54x_trusted_op_add_lk(instruction, operands, input, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_add_lk_16(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect)
+{
+    if (operands == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count != UINT8_C(3)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    return ti_c54x_trusted_op_add_lk(instruction, operands, input, effect);
 }

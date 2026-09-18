@@ -138,9 +138,11 @@
       "table_ordinal": 7,
       "mnemonic": "ADD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ADD_LK_SHIFT"
+      ]
     },
     {
       "id": "FORM-T2-01-08",
@@ -149,9 +151,11 @@
       "table_ordinal": 8,
       "mnemonic": "ADD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "ADD_LK_16"
+      ]
     },
     {
       "id": "FORM-T2-01-09",
@@ -306,9 +310,11 @@
       "table_ordinal": 7,
       "mnemonic": "SUB",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SUB_LK_SHIFT"
+      ]
     },
     {
       "id": "FORM-T2-02-08",
@@ -317,9 +323,11 @@
       "table_ordinal": 8,
       "mnemonic": "SUB",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "SUB_LK_16"
+      ]
     },
     {
       "id": "FORM-T2-02-09",
@@ -4236,6 +4244,30 @@
       "form_id": "FORM-T2-02-13",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "ADD_LK_SHIFT",
+      "form_id": "FORM-T2-01-07",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_LK"
+    },
+    {
+      "catalog_symbol": "ADD_LK_16",
+      "form_id": "FORM-T2-01-08",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_LK"
+    },
+    {
+      "catalog_symbol": "SUB_LK_SHIFT",
+      "form_id": "FORM-T2-02-07",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_LK"
+    },
+    {
+      "catalog_symbol": "SUB_LK_16",
+      "form_id": "FORM-T2-02-08",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_LK"
     }
   ]
 }

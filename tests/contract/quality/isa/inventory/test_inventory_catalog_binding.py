@@ -72,10 +72,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings), 262)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 262)
+        self.assertEqual(len(bindings), 266)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 266)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 34)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 228)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 232)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -97,7 +97,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "PORTW_DIRECT", "PORTW_SMEM",
                "SUB_SMEM", "SUB_SMEM_TS", "SUB_SMEM_SH16",
                "AND_SMEM", "OR_SMEM", "XOR_SMEM", "SUBB_SMEM",
-               "SUBS_SMEM"},
+               "SUBS_SMEM", "ADD_LK_SHIFT", "ADD_LK_16",
+               "SUB_LK_SHIFT", "SUB_LK_16"},
         )
         for binding in bindings:
             if binding["coverage"] == "COMPLETE":
@@ -160,7 +161,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     else "IMMEDIATE_K"
                     if binding["catalog_symbol"] == "RPT_K"
                     else "IMMEDIATE_LK"
-                    if binding["catalog_symbol"] == "RPT_LK"
+                    if binding["catalog_symbol"] in ("RPT_LK", "ADD_LK_SHIFT",
+                                                     "ADD_LK_16",
+                                                     "SUB_LK_SHIFT",
+                                                     "SUB_LK_16")
                     else "STANDARD_INDIRECT_MOD0_MOD3"
                     if binding["catalog_symbol"] in ATOMIC_LOGICAL_SUBSET
                     or binding["catalog_symbol"] == "LD_SMEM_SHIFT"

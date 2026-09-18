@@ -81,6 +81,46 @@ ROWS = {
         "coverage": "SUBSET",
         "addressing": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
     },
+    "ADD_LK_SHIFT": {
+        "form": "FORM-T2-01-07",
+        "words": 2,
+        "base": 0xF000,
+        "mask": 0xFCF0,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "IMMEDIATE_LK",
+    },
+    "ADD_LK_16": {
+        "form": "FORM-T2-01-08",
+        "words": 2,
+        "base": 0xF060,
+        "mask": 0xFCFF,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "IMMEDIATE_LK",
+    },
+    "SUB_LK_SHIFT": {
+        "form": "FORM-T2-02-07",
+        "words": 2,
+        "base": 0xF010,
+        "mask": 0xFCF0,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_SHIFT4_EXTENSION16",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "IMMEDIATE_LK",
+    },
+    "SUB_LK_16": {
+        "form": "FORM-T2-02-08",
+        "words": 2,
+        "base": 0xF061,
+        "mask": 0xFCFF,
+        "layout": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_SOURCE_DESTINATION_EXTENSION16_SHIFT16",
+        "resources": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM",
+        "coverage": "SUBSET",
+        "addressing": "IMMEDIATE_LK",
+    },
 }
 
 
@@ -101,9 +141,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 262)
-        self.assertEqual(len(rows) + 1, 263)
-        self.assertEqual(len(inventory["catalog_bindings"]), 262)
+        self.assertEqual(len(rows), 266)
+        self.assertEqual(len(rows) + 1, 267)
+        self.assertEqual(len(inventory["catalog_bindings"]), 266)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -111,7 +151,7 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                 binding = bindings[symbol]
                 self.assertEqual(row.first_word_value, expected["base"])
                 self.assertEqual(row.first_word_mask, expected["mask"])
-                self.assertEqual(row.program_word_count, 1)
+                self.assertEqual(row.program_word_count, expected.get("words", 1))
                 self.assertEqual(row.operand_layout, expected["layout"])
                 self.assertEqual(
                     row.repeatability, "TI_C54X_REPEATABILITY_UNRESOLVED"
@@ -126,10 +166,10 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                     binding["addressing_subset"], expected["addressing"]
                 )
 
-        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 26641)
+        self.assertEqual(render_lookup(rows).count("= (uint16_t)"), 26777)
         report = report_inventory(self.root)
         self.assertEqual(
-            report["catalog_family_progress"], {"covered": 104, "denominator": 205}
+            report["catalog_family_progress"], {"covered": 108, "denominator": 205}
         )
         self.assertEqual(
             report["strict_complete_lower_bound"],
