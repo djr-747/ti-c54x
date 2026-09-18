@@ -26,10 +26,11 @@ S4 `XC`; S10–S13 `STH` stores; S14–S26 `SUB`/`AND`/`OR`/`XOR`/`SUBB`/`SUBS`
 Smem rows; Wave-5 `ADD`/`SUB` leaf fan-out with S27–S29 `#lk`/`Xmem`/src-ASM
 rows; Wave-6 `MPY`/`MAC` `#lk` leaves with S30 rows; S31 `ADD`/`SUB` Smem
 SHIFT rows; S32 `ADDM` RMW-ADD seam; S33 `MPY` syn3 / `MAC` syn4 Smem-`#lk`
-rows; S34 `RND`/`SAT` accumulator rows with the `WRITE_0` overflow seam).
+rows; S34 `RND`/`SAT` accumulator rows with the `WRITE_0` overflow seam;
+S35 `MPYR`/`MACR`/`MACAR`/`MASR`/`MASAR` shared-row bindings).
 
 - 279 runnable catalog rows under 29,437 populated first-word lookup entries.
-  Inventory coverage is 121/205 forms SUBSET-or-better (59.024%) and 40/205
+  Inventory coverage is 127/205 forms SUBSET-or-better (61.951%) and 40/205
   strict-complete (19.512%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release

@@ -4,7 +4,9 @@ Module contract
 ---------------
 Owns: JSON shape, lexical fields, summary checkpoints, stable form identities,
 and internal form/catalog cross-reference validation, including multiple
-addressing-mode bindings for one stable form identity.  Does not own: opcode
+addressing-mode bindings for one stable form identity and multiple form
+identities sharing one catalog row (for example an R-suffixed rounded
+variant riding its base row through a mode bit).  Does not own: opcode
 values or masks, production catalog membership, instruction semantics, or
 coverage claims beyond the explicit inventory records.  Parsing retains no
 caller-owned mutable state and performs no environment or network reads.
@@ -251,8 +253,10 @@ def validate_inventory(value: Any) -> list[str]:
         coverage = binding["coverage"]
         if not isinstance(symbol, str) or _SYMBOL_RE.fullmatch(symbol) is None:
             _error(errors, f"{location}.catalog_symbol", "must be an uppercase symbol")
-        elif symbol in seen_symbols:
-            _error(errors, location, f"duplicate catalog symbol {symbol}")
+        # One catalog row may serve several forms (for example an
+        # R-suffixed rounded variant riding its base row), so symbol
+        # reuse across forms is legal; only the exact pair must be
+        # unique (checked below).
         seen_symbols.add(symbol)
         if form_id not in form_ids:
             _error(errors, f"{location}.form_id", f"unknown form ID {form_id!r}")

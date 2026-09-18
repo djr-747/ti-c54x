@@ -162,6 +162,28 @@ class InventorySchemaTests(unittest.TestCase):
         errors = validate_inventory(altered)
         self.assertTrue(any("exactly one" in error for error in errors))
 
+    def test_shared_row_binding_across_forms_validates(self) -> None:
+        altered = copy.deepcopy(self.inventory())
+        form = next(item for item in altered["forms"] if item["coverage"] == "UNIMPLEMENTED")
+        form["scope"] = "COMMON_CANDIDATE"
+        form["coverage"] = "SUBSET"
+        form["catalog_symbols"] = ["MPY_SMEM"]
+        altered["catalog_bindings"].append(
+            {
+                "catalog_symbol": "MPY_SMEM",
+                "form_id": form["id"],
+                "coverage": "SUBSET",
+                "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3",
+            }
+        )
+        self.assertEqual(validate_inventory(altered), [])
+
+    def test_exact_duplicate_binding_pair_is_rejected(self) -> None:
+        altered = copy.deepcopy(self.inventory())
+        altered["catalog_bindings"].append(copy.deepcopy(altered["catalog_bindings"][0]))
+        errors = validate_inventory(altered)
+        self.assertTrue(any("duplicate catalog/form binding" in error for error in errors))
+
     def test_unimplemented_form_cannot_have_a_binding(self) -> None:
         altered = copy.deepcopy(self.inventory())
         form = next(item for item in altered["forms"] if item["coverage"] == "UNIMPLEMENTED")

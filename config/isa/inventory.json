@@ -424,9 +424,11 @@
       "table_ordinal": 2,
       "mnemonic": "MPYR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MPY_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-03-03",
@@ -607,9 +609,11 @@
       "table_ordinal": 5,
       "mnemonic": "MACR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAC_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-06",
@@ -655,9 +659,11 @@
       "table_ordinal": 9,
       "mnemonic": "MACAR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MACA_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-10",
@@ -666,9 +672,11 @@
       "table_ordinal": 10,
       "mnemonic": "MACAR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MACA_T"
+      ]
     },
     {
       "id": "FORM-T2-04-11",
@@ -737,9 +745,11 @@
       "table_ordinal": 15,
       "mnemonic": "MASR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAS_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-04-16",
@@ -806,9 +816,11 @@
       "table_ordinal": 20,
       "mnemonic": "MASAR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MASA_T"
+      ]
     },
     {
       "id": "FORM-T2-04-21",
@@ -4370,6 +4382,42 @@
     {
       "catalog_symbol": "SAT_ACC",
       "form_id": "FORM-T2-06-14",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "MPY_SMEM",
+      "form_id": "FORM-T2-03-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MAC_SMEM",
+      "form_id": "FORM-T2-04-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MACA_SMEM",
+      "form_id": "FORM-T2-04-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MACA_T",
+      "form_id": "FORM-T2-04-10",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST"
+    },
+    {
+      "catalog_symbol": "MAS_SMEM",
+      "form_id": "FORM-T2-04-15",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MASA_T",
+      "form_id": "FORM-T2-04-20",
       "coverage": "SUBSET",
       "addressing_subset": "REGISTER_DST"
     }

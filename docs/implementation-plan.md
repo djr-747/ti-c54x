@@ -679,6 +679,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S34: RND/SAT accumulator rows (planned)](plan/p3-s34-rnd-sat-acc-rows-slice.md)
 
+- [P3-S35: rounded-variant shared-row bindings (planned)](plan/p3-s35-rounded-shared-row-bindings-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
