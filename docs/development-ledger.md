@@ -13319,3 +13319,48 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `45f1adb`, this ledger-only
   follow-up. Plan link stays `(planned)` until the slice lands
   (matches S40 convention).
+
+## 2026-09-18 — P3-S43 W7 batch-6 ST T direct row (slice 72)
+
+- Landed: direct slice of TI syntax-1 ST T,Smem on a fixed-zero
+  I bit (FORM-T2-22-01 ST T direct, 0x8C00/0xFF80, SPRU172C ST
+  pp. 4-167–4-168) on the shared INDIRECT_ADDR7 layout with
+  UNRESOLVED repeatability per the LD_T/LTD/ST_T precedent.
+  The leaf stages one DIRECT_WORD16 page-0 DATA WRITE of the
+  copied T register with a null completion and no delay flag;
+  a set I bit rejects as INVALID_OPERAND since the indirect
+  half composes through the established ST_T MOD rows from
+  0x8C80. Leaf built row-less by an isolated worker against a
+  maintainer TI brief and merged with no fixes. Maintainer
+  wired the row, lookup regen (+128 pure), dispatch include,
+  store sources, ops/decode/metadata suites plus
+  registrations, ST_T neighbor flips, inventory form flip plus
+  binding, evidence records, index rows, README, and
+  frozen-count bumps (293 rows, 299 bindings, 32,649 lookup,
+  141/205 at 68.780%, strict 40/205, 761 requirements, 617
+  tests). Slice doc born `(implemented; local verification
+  green)` in the impl commit.
+- Validation: `make build` clean, `make test` exit 0 (full
+  gate), focused `test_st_t_smem_direct_{metadata,decode,ops}`
+  pass, `check_evidence.py` PASS (761/617),
+  `check_isa_inventory.py` exit 0 (141/205, strict 40/205).
+  Evidence gate takes ~5m20s wall (99% CPU, single-threaded
+  manifest/requirement cross-checks); slow but finite, no fix
+  needed.
+- Decisions: no CPU-level retirement test (ST_T MOD precedent;
+  execution is covered by the shared staging core proof).
+  PROJECT/COMMON scope policy held: new ARCHITECTURAL reqs
+  cite COMMON_TI evidence only. ST TRN (FORM-T2-22-02) stays
+  deferred: the copied input snapshot carries no TRN field, so
+  it needs a TRN input seam (P2-W39 T_REGISTER precedent)
+  before its leaf.
+- Near-misses: none; frozen COUNT/lookup/SUBSET pins flipped
+  in the same maintainer pass with no sibling fallout beyond
+  the pinned ST_T probes.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 64 unbound forms; W7 fan-out
+  continues with the next TI-pinned briefs, starting with the
+  TRN input seam. Wave-7 plan doc still untracked.
+- Split commit discipline: impl `8953957`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
