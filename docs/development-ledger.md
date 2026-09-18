@@ -12934,3 +12934,49 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S34 RND/SAT accumulator rows with WRITE_0 seam (slice 62)
+
+- Landed: worker-built W7A pilot leaves op_rnd_acc (dst40 = src40
+  plus 8000h, 40-bit wrap, OVM-gated saturation, sticky OVdst,
+  preserved C/TC) and op_sat_acc (src40 clamp to signed 32 bits
+  regardless of OVM, OVsrc recomputed) with checked plus trusted
+  entries; shared-contract WRITE_0 recompute-to-clear
+  destination-overflow action with sequencer commit branch;
+  RND_ACC (0xF49F/0xFCFF, INELIGIBLE, ACCUMULATORS_STATUS_OVM)
+  and SAT_ACC (0xF483/0xFEFF, UNRESOLVED, ACCUMULATORS) rows;
+  regenerated first-word lookup (+6 encodings, zero neighbor
+  moves); FORM-T2-06-13/FORM-T2-06-14 bound at SUBSET under
+  REGISTER_DST with the rows (covered 121/205, 59.024%). Full
+  `make test` green (exit 0); contract suite 284 tests OK;
+  evidence PASS at 461 evidence, 718 requirements, 574 tests;
+  sanitizer rebuild plus targeted runs clean. README snapshot
+  refreshed to P3-S34 (279 rows, 29,437 entries).
+- Decisions: SAT stays UNRESOLVED (omission from Tables 2-28/6-18
+  never implies eligibility) matching its MAX/MIN/EXP/CMPL
+  accumulator-unary neighbors; RND is INELIGIBLE by explicit
+  section note plus Table 2-28 listing. SAT Example 3 (OVB x→0)
+  forced the WRITE_0 vocabulary extension (appended as value 2
+  to avoid renumbering) instead of PRESERVE. Pilot row-less
+  UNKNOWN id checks graduated to real row ids at merge; pilot
+  uninitialized stack `staged` structs fixed to `= {0}` after
+  the trusted/checked parity sweep caught padding divergence.
+- Near-misses worth recording: (1) SAT mask 0xFEFF covers
+  {0xF483,0xF583}, not {0xF482,0xF483} — no overlap with
+  LD_SRC_ASM, verified in the generator output; (2) two
+  established decode tests pinned fixed-bit flips as UNKNOWN
+  that the new rows claim (LD_SRC_ASM 0xF483, RETF 0xF49F) —
+  each converted to a pinned cross-row sibling assertion;
+  (3) MACAR T,src / MASAR T,src already ride the MACA_T/MASA_T
+  R-bit rows (row comments say so) — future COVERED bindings,
+  not new rows; MACR/MASR Xmem,Ymem are dual-memory and need
+  the deferred dual seam.
+- Follow-up: pre-existing branch leaves share the
+  uninitialized-`staged` pattern (passing by luck of identical
+  stack layout); candidate hygiene sweep in a later slice.
+  Remaining census 84 UNIMPLEMENTED; next is the COVERED
+  rounded-variant bindings plus continued Wave-7 fan-out.
+- Split commit discipline: impl `b9a5e75`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
