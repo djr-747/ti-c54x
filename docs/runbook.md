@@ -232,12 +232,16 @@ every line checks out.
 
 ## 9. Live follow-ups (update as they close)
 
-- P3 5110-DSP execution focus (plan-only, no code): the `### P3`
-  plan section sequences control flow → STM/STH → repeat →
-  MAC/MPY → MMR/stack → bit ops → shifts/misc → port I/O from a
-  36,202-word mnemonic census over the sibling `re/dsp-5110`
-  disassembly. Counts only; no sibling source ingested, no `.bin`
-  bytes used as vectors (P0-W4 licensing still open).
+- P3 5110-DSP execution focus (harness landed 2026-09-19 at user
+  direction; profile facts sourced read-only from the legacy core
+  review, no source/tables/comments copied): the `### P3` plan
+  section sequences control flow → STM/STH → repeat → MAC/MPY →
+  MMR/stack → bit ops → shifts/misc → port I/O from a 36,202-word
+  mnemonic census over the sibling `re/dsp-5110` disassembly.
+  `tools/hosted/ti_c54x_run_image.c` runs caller-supplied images
+  with explicit argv config and a `nokia-ti-lead-rom4` profile doc;
+  no sibling source ingested, no `.bin` bytes used as vectors
+  (P0-W4 licensing still open).
 - LD syntax 5 (`FORM-T2-19-06` Xmem/SHFT, P2-W59): CLOSED by
   `fcc9ead` — X-only dual seam landed (one D-bus read, X commit
   only, no CMPT/ARP observation).

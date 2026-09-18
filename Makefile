@@ -1,4 +1,4 @@
-.PHONY: all build test quality-test bench bench-release bench-smoke bench-record bench-compare bench-rmw bench-rmw-smoke bench-rmw-compare bench-dld-dst bench-dld-dst-smoke bench-add-sub bench-add-sub-smoke cmake-build install clean format
+.PHONY: all build test quality-test bench bench-release bench-smoke bench-record bench-compare bench-rmw bench-rmw-smoke bench-rmw-compare bench-dld-dst bench-dld-dst-smoke bench-add-sub bench-add-sub-smoke run-image run-image-selftest cmake-build install clean format
 
 # Root policy: compiler flags, artifacts, orchestration, and packaging. Source
 # and test ownership manifests live beside the files they register.
@@ -36,6 +36,9 @@ RMW_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_rmw_bench
 DLD_DST_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_dld_dst_bench
 ADD_SUB_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_add_sub_bench
 DUAL_ADD_SUB_BENCH_EXE := $(BENCH_BUILD_DIR)/ti_c54x_dual_add_sub_bench
+HOSTED_BUILD_DIR := build-hosted
+HOSTED_LIB := $(HOSTED_BUILD_DIR)/libti_c54x.a
+RUN_IMAGE_EXE := $(HOSTED_BUILD_DIR)/ti_c54x_run_image
 BENCH_CPPFLAGS := -Iinclude -Isrc -DTI_C54X_ENABLE_OBSERVERS=0
 BENCH_DIAGNOSTIC_CFLAGS := -O2 -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic -Wconversion \
 	-Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
@@ -43,6 +46,7 @@ BENCH_RELEASE_CFLAGS := -O3 -flto -DNDEBUG -std=c11 -Wall -Wextra -Wpedantic \
 	-Wconversion -Wsign-conversion -Wshadow -Wundef -Wdouble-promotion -Werror
 BENCH_CFLAGS ?= $(BENCH_DIAGNOSTIC_CFLAGS)
 BENCH_OBJECTS = $(patsubst src/%.c,$(BENCH_BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
+HOSTED_OBJECTS = $(patsubst src/%.c,$(HOSTED_BUILD_DIR)/obj/%.o,$(ti_c54x_core_sources))
 
 # Each owner appends its source files; this is the sole source inventory used
 # by normal, observer-on, and observer-off static-library builds.
@@ -224,6 +228,28 @@ $(BENCH_BUILD_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)
 	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) -MMD -MP -c $< -o $@
 
+# Hosted DSP-image smoke runner. Like the benchmarks it links the static
+# core archive but is not part of any test gate: it reads caller-supplied
+# image files at run time and never embeds firmware bytes.
+run-image: $(RUN_IMAGE_EXE)
+	$(RUN_IMAGE_EXE) $(IMAGE) $(PROG_BASE) $(ENTRY) $(BUDGET) $(ORDER) \
+		$(if $(DATA_IMAGE),$(DATA_IMAGE) $(DATA_BASE))
+
+run-image-selftest: $(RUN_IMAGE_EXE)
+	$(RUN_IMAGE_EXE) --selftest
+
+$(HOSTED_LIB): $(HOSTED_OBJECTS)
+	@mkdir -p $(@D)
+	$(AR) $(ARFLAGS) $@ $^
+
+$(RUN_IMAGE_EXE): tools/hosted/ti_c54x_run_image.c $(HOSTED_LIB)
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(HOSTED_LIB) -o $@
+
+$(HOSTED_BUILD_DIR)/obj/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) -MMD -MP -c $< -o $@
+
 $(MINIMAL): examples/minimal.c $(LIB)
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB) $(LDFLAGS) $(LDLIBS) -o $@
@@ -252,8 +278,9 @@ format:
 		tests/unit/isa/decode/*.c tests/unit/isa/ops/*.c examples/*.c
 
 clean:
-	@rm -rf -- build-fast build-bench build-bench-release build-cmake build-bench-cmake
+	@rm -rf -- build-fast build-bench build-bench-release build-cmake build-bench-cmake build-hosted
 
 -include $(LIB_OBJECTS:.o=.d) $(OBSERVER_ON_OBJECTS:.o=.d) \
 	$(OBSERVER_OFF_OBJECTS:.o=.d) $(BENCH_OBJECTS:.o=.d) \
+	$(HOSTED_OBJECTS:.o=.d) \
 	$(ti_c54x_test_depfiles)
