@@ -13227,3 +13227,49 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)`.
+
+## 2026-09-18 — P3-S41 single-word Smem delay write-back seam (slice 70)
+
+- Landed: arch seam unblocking LTD execution (S40 staged the leaf
+  with `write_smem_delay` set, which the WORD16 root rejected) and
+  the future DELAY leaf. Carrier generalizes the flag to
+  single-word DIRECT/SINGLE_INDIRECT DATA READs (READ-only, no RMW,
+  optional completion; 48-byte ABI unchanged); new
+  `memory_instruction_single_delay` owner issues/resumes the DATA
+  Smem+1 WRITE through the reused child with the READ word stashed
+  in an RMW-disjoint union slot; shared READY tail moves to the
+  commit owner (transaction.c 786 -> 780 lines, stays under the 800
+  split limit); delay on MMR-routed reads rejects transactionally.
+  RED seam proof `test_single_word_delay_write` (LTD shape with the
+  TI 6CACh worked example, null-completion DELAY shape, WAIT
+  resume, delay FAULT silence, WRITE/RMW and MMR rejects), 3
+  evidence records (1 activation + 1 req + 1 test), index rows,
+  frozen-count bumps (755 requirements, 611 tests; rows/bindings/
+  lookup unchanged at 291/297/32,265). Slice doc born
+  `(implemented; local verification green)` in the impl commit.
+- Validation: `make build` clean, `make test` exit 0,
+  `check_evidence.py` PASS (755/611),
+  `check_isa_inventory.py` exit 0 (139/205, strict 40/205),
+  sanitizer rebuild of the four touched sources + focused test
+  exit 0 with no findings, normal build restored (0 asan
+  symbols) with the focused test re-passing.
+- Decisions: delay WRITE is DATA-space endpoint traffic by the
+  MACD pair precedent (no MMR branch); null completion skips both
+  the completion call and the follow-on stage; MMR+1 semantics
+  stay fail-closed (INVALID_CANDIDATE, preserving the S40 freeze
+  behavior). PROJECT requirement cites PROJECT evidence only (TI
+  LTD pin lives in the activation assertion prose) per the scope
+  policy — first submission leaked COMMON_TI and was fixed.
+- Near-misses: initial tail refactor pushed transaction.c to 904
+  lines (quality-gate split violation); fixed by moving the tail
+  to the commit owner and the orchestration to the delay owner.
+  Test endpoint needed a cancel callback (adapter rejects
+  partial endpoints); WAIT test first used MMR-range direct
+  addresses and was retargeted to 0x20+.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 66 unbound forms; DELAY leaf/row
+  next on this seam; W7 fan-out continues. Wave-7 plan doc still
+  untracked.
+- Split commit discipline: impl `51fe34e`, this ledger-only
+  follow-up. Plan link stays `(planned)` until the slice lands
+  (matches S40 convention).
