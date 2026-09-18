@@ -13104,3 +13104,48 @@ entries are not rewritten after publication.
 - Split commit discipline: impl `a9bdced`, this ledger-only follow-up.
   Slice doc born `(implemented; local verification green)` in the
   impl commit with its anchor; plan link stays `(planned)`.
+
+## 2026-09-18 — P3-S38 W7 batch-2 ADDC/ADDS/SUBC Smem rows (slice 67)
+
+- Landed: second managed fan-out — three TI-pinned rows (ADDC
+  `0x0600/0xFE00`, ADDS `0x0200/0xFE00`, SUBC `0x1E00/0xFE00`)
+  on the existing select/indirect/addr7 layout, all `UNRESOLVED`
+  repeatability (SUBB precedent). Leaves built row-less by
+  isolated workers (W7-ADDC/W7-ADDS/W7-SUBC) against maintainer
+  TI briefs from SPRU172C, merged with row-id flips, dispatch
+  includes, manifests, 9 leaf/metadata/decode suites, inventory
+  flips (`FORM-T2-01-11/01-13/02-12` to `COMMON_CANDIDATE`/
+  `SUBSET` + `DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3`
+  bindings), 18 evidence records (9 req + 9 test; TI assertions
+  already pinned), index rows, frozen-count bumps (289 rows, 295
+  bindings, 31,881 lookup, 255 SUBSET, 137/205 at 66.829%, 748
+  requirements, 604 tests), README/plan/slice.
+- Validation: `make build` clean, `make test` exit 0 (578 C
+  binaries ok, 286 Python tests), `check_evidence.py` PASS
+  (748/604), `check_isa_inventory.py` exit 0 (137/205, strict
+  40/205), lookup regen pure (+1,536), sanitizer rebuild of all
+  touched files exit 0.
+- Decisions: SUBC needs its own `ACCUMULATORS_STATUS_SXM`
+  composite (reads SXM, ignores OVM); ADDS saturation stays
+  OVM-gated per the ADD_SMEM sibling. Worker ADDC test vector
+  fixed at merge (SXM-suppression case forgot C=1; the comment
+  stated `0 + 0x8000 + 0`). New words collided with three old
+  probes (`0x0290` LDU decode/metadata, `0x0680`/`0x1E80` LDR
+  decode) — all converted to pinned ADDC/ADDS/SUBC siblings.
+  Evidence ids follow the S37 hyphen convention
+  (`REQ-COMMON-ADDC-SMEM-*`, not `_SMEM-`); first append used
+  the wrong separator and the registry gate caught it.
+- Near-misses: `sort_keys=True` JSON dumps reshuffled
+  `inventory.json` again — repaired by checkout plus
+  order-preserving re-application (final diff +33/-9, no
+  bloat). Two `OPCODE_ID_COUNT == 287` pins hid outside the
+  catalog dir (sequencer repeat, branch XC) plus one spaceless
+  `COUNT==287` variant — now swept repo-wide.
+- Knobs: none added, changed, or retired.
+- Follow-up: remaining census 68 unbound forms; next is W7
+  batch 3 (SFTA needs the 5-bit-shift layout micro-seam first).
+  Wave-7 plan doc still untracked.
+- Split commit discipline: impl `c377c07`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)`.
