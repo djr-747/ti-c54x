@@ -12789,3 +12789,44 @@ entries are not rewritten after publication.
   follow-up. Slice doc born `(implemented; local verification
   green)` in the impl commit with its anchor; plan link stays
   `(planned)` per convention.
+
+## 2026-09-18 — P3-S31 ADD/SUB Smem SHIFT rows with layout seam (slice 59)
+
+- Commit `7912b1d` lands Seam 1 end to end: the shared two-word
+  layout INDIRECT_ADDR7_SOURCE_DESTINATION_SHIFT5, catalog-free
+  op_add_smem_shift/op_sub_smem_shift leaves with plain plus
+  trusted entries, MASKED2 rows ADD_SMEM_SHIFT and SUB_SMEM_SHIFT
+  (0x6F00/0xFF00 with 0x0C00/0x0C20 word-1 patterns), seven STH
+  shift rows converted MASKED to MASKED2 (0x0C60/0xFEE0), schema
+  layout-token registration, bindings SUBSET, and forms
+  FORM-T2-01-04/FORM-T2-02-04 at 116/205 (56.585%). Full `make
+  test` green (exit 0); evidence PASS at 456 evidence, 702
+  requirements, 558 tests; sanitizer spot rebuild clean. The
+  commit also refreshes the README status section past the S3s
+  era at the user's request (P3-S30 snapshot, S3t-S31 coverage,
+  remaining-work list).
+- Decisions: Smem cookie rides ONE 8-bit operand (two pieces)
+  because trusted packets cap at four operands — the first
+  layout to need the merge. STH conversions carry the TI-pinned
+  0x0C60/0xFEE0 pattern with no handler change (completion
+  already rejects bad second words wherever a slot exists).
+  Syn4 rows sit after every 0x6Fxx row so first-match keeps
+  LD/STH first-word identities (the file's own convention).
+- Near-misses worth recording: (1) the word-0 mask must be
+  0xFF00, not 0xFF80 — the I bit is free, and 0xFF80 silently
+  excludes every indirect word (caught by the MOD0 unit lane);
+  (2) the schema has its own layout-token registry, so a new
+  layout fails generation until the token lands there; (3) the
+  qualified-slots fragment needs the opt-in --qualified-output
+  flag — a bare regenerate leaves it stale; (4) the evidence
+  index TI locator needs the §-section backtick-page form, not
+  prose; (5) shared-first-word rows only surface in the
+  trusted-packet sweep, so probe every binding, not just the
+  new rows.
+- Follow-up: Seam 2 (ADDM RMW-ADD: carrier op + reducer + C/OVA
+  status design decision), Seam 3 (MPY syn3 / MAC syn4 layouts
+  with D/S+D + Smem + lk), then leaf fan-out.
+- Split commit discipline: impl `7912b1d`, this ledger-only
+  follow-up. Slice doc born `(implemented; local verification
+  green)` in the impl commit with its anchor; plan link stays
+  `(planned)` per convention.
