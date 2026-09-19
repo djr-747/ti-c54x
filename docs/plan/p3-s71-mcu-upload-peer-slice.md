@@ -1,4 +1,4 @@
-### P3-S71: MCU upload peer slice (planned)
+### P3-S71: MCU upload peer slice (implemented; local verification green)
 
 The loader1 MBOX spin needs its MCU counterpart: a
 hosted-side peer that plays the oracle-verified upload

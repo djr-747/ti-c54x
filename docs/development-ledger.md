@@ -14659,3 +14659,46 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: MVDP absolute slice for `0x7DF8`; loader1
   MBOX spin still needs MCU emulation (P3-S71).
+
+## 2026-09-20 — P3-S71 lands as 2873b36 (MCU upload peer slice)
+
+- Implementation commit `2873b36`: hosted MCU upload peer
+  (`tools/hosted/mcu_upload_peer.h/.c`, core untouched)
+  playing the oracle-verified MBOX ping-pong protocol
+  (boot-sequence doc sections 2-3, cross-checked against
+  the architecture doc's live trace: UPLOADHEADER
+  `0x87B-0x881`, MBOX0 `0x87F`, MBOX1 `0x880`, 512-word
+  buffers A `0x900-0xAFF`/B `0xB00-0xCFF`, polarity 1 =
+  MCU owns / 0 = ready, DSP ACKs with 1, 64 blocks
+  32+32). Init publishes the canonical header, fills
+  buffer A from flash block 0, hands it off; each ACK
+  refills the other buffer until the 1-64 block limit,
+  then holds. Flash block n streams 512 words from bus
+  `0x200040 + n * 0x4000` (verified: loader1 block25
+  payload at descriptor `0x2996F8 + 0xC`, first word
+  `0xF7BB`, byte-identical to the staged DSP image).
+  Runner gains trailing `--mcu-upload <flash> <blocks>`;
+  `*.fls` joins the gitignored probe images (5110
+  v5.30 A staged at `probe-images/`).
+- Validation evidence: `make test` exit 0 (new
+  `tests/unit/hosted/test_mcu_upload.c` RED-first green:
+  header, polarity, ACK advance, flash slices,
+  64-iteration 32+32 split, bounded hold, neighbors
+  untouched, init rejection; 286+ contract quality and
+  all checkers PASS). Live BUDGET=400 staged loader1 run
+  with the peer attached reaches the `0xF0F` frontier
+  unchanged (332 attempted, 331 retired, `fills_a=1`,
+  zero data faults) — MVDP absolute stops the DSP before
+  any MBOX traffic, so end-to-end finalize waits on the
+  DSP ISA chain.
+- Decisions: unit-test-only `hosted` owner arm in the
+  boundary gate (hosted peers live under `tools/`,
+  outside the scanned production tree); flash geometry
+  as explicit peer parameters with oracle production
+  values in the runner; no-data peer runs own a zeroed
+  `0x800-0x2800` window; stages 4-5 stay out per slice.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVDP absolute slice for `0x7DF8`, then the
+  DSP CRC/finalize chain; full 64-block upload stays
+  bounded (~5h at current core speed, correctness first
+  per standing direction).
