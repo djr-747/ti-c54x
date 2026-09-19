@@ -119,3 +119,21 @@ currently unreachable — only `prog_reads`, `prog_unmapped`, and
 `prog_covered` can be nonzero. Reaching them needs harness-side
 register seeding (no public setters exist yet) or broader reset
 coverage, tracked as a harness gap, not a report bug.
+
+Staged cold boot (verified 2026-09-19 against the cosim boot
+doc as oracle): the MCU stages loader1 (flash boot-block
+descriptor `[entry,ctrl,size,dest,len,0]`, payload at
+descriptor+`0xC`, run address DSP `0x800+dest`) at DSP `0xF00`
+before releasing reset — block 25 (`0xF7BB` first word, 180
+words) — then the reset vector enters it. Staging recipe:
+`probe-images/dsp_full.bin` overlaid with the descriptor
+payload at `0xF00`; run with `BUDGET=200`. Observed through
+this runner: `attempted=7 retired=6`, loader1 sets SP itself
+(`STM` at `0xF01`) and PMST, then stops `BUS_FAULT` on its
+first DATA touch at `0x0028` (`data_txn=1`,
+`first_data_fault=0x0028`). No register seeding was needed to
+reach live DATA traffic — the code self-initializes; the next
+boot-path need is the `0x0028` map fact (peripheral MMR
+region, device gap), not an ISA form. The earlier block04
+overlay experiment is superseded: block04 is run-mode code,
+not the cold-boot `0xF00` content.

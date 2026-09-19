@@ -14462,3 +14462,30 @@ entries are not rewritten after publication.
   block files, per the authorized black-box use.
 - Follow-up: LDU-direct slice, then DP seeding, then
   re-probe again.
+
+## 2026-09-19 — Correction: faithful cold 0xF00 is loader1, not block04
+
+- The previous entry's block04 overlay was unfaithful: the
+  cosim boot doc (used as oracle, no source read) shows the
+  MCU stages **loader1** (flash boot-block 25, 180 words,
+  first word `0xF7BB`, verified against the descriptor) at
+  DSP `0xF00` before reset release; block04 is run-mode
+  code placed later. The `0x1377`/LDU-direct identification
+  stands as pure TI evidence (p. 4-78 diagram, and
+  `0x1300-0x137F` is a real catalog gap below the LDU
+  fan-out), but it is NOT the boot path's next form.
+- Faithful cold run through this runner
+  (`probe-images/dsp_full.bin` + loader1 at `0xF00`,
+  `BUDGET=200`): `attempted=7 retired=6` — STM, B, B, then
+  three loader1 words including its own SP/PMST setup —
+  then `BUS_FAULT` on the first DATA touch at `0x0028`
+  (`data_txn=1`). No register seeding was needed to reach
+  live DATA traffic. Profile `nokia-ti-lead-rom4` updated
+  with the staged-boot recipe and observation.
+- Next boot-path need: the `0x0028` map fact (peripheral
+  MMR region — device gap, out of scope since S57), then
+  loader1's MBOX spin (needs an MCU counterpart, harness
+  gap). S56's `MVDM` at `0xF07` prediction stays parked
+  behind the warm-boot rehome sequence.
+- Follow-up: `0x0028` device-map decision; loader1
+  continuation past the MBOX spin needs MCU emulation.
