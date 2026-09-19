@@ -1,7 +1,7 @@
-### P3-S6: port I/O seam (planned)
+### P3-S6: port I/O seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S6 FIT/ownership
-anchor. S6 is a sealed architectural seam with no catalog rows, no
+This immutable heading is the durable S6 FIT/ownership
+anchor (status parenthetical advanced at exit review; title text unchanged). S6 is a sealed architectural seam with no catalog rows, no
 opcode identities, no handlers, and no CPU opcode branch, following
 the S1/W43A pattern. TI SPRU172C Table 2-26 (p. 2-17) lists `PORTR
 PA,Smem` and `PORTW Smem,PA` (2 words, 2 cycles, classes 27A/27B and

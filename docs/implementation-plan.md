@@ -639,9 +639,9 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S17: XOR Smem slice (implemented; local verification green)](plan/p3-s17-xor-smem-slice.md)
 
-- [P3-S18: STH MOD0-MOD3 second-word disambiguation seam (planned)](plan/p3-s18-sth-mod0-3-second-word-seam.md)
+- [P3-S18: STH MOD0-MOD3 second-word disambiguation seam (implemented; local verification green)](plan/p3-s18-sth-mod0-3-second-word-seam.md)
 
-- [P3-S6: port I/O seam (planned)](plan/p3-s6-port-io-seam.md)
+- [P3-S6: port I/O seam (implemented; local verification green)](plan/p3-s6-port-io-seam.md)
 
 - [P3-S19: SUB Smem rows (implemented; local verification green)](plan/p3-s19-sub-smem-rows-slice.md)
 

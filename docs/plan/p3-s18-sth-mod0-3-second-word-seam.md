@@ -1,7 +1,7 @@
-### P3-S18: STH MOD0-MOD3 second-word disambiguation seam (planned)
+### P3-S18: STH MOD0-MOD3 second-word disambiguation seam (implemented; local verification green)
 
-This immutable `(planned)` heading is the durable S18 FIT/ownership
-anchor. S18 is a sealed decode seam with no handlers of its own: STH
+This immutable heading is the durable S18 FIT/ownership
+anchor (status parenthetical advanced at exit review; title text unchanged). S18 is a sealed decode seam with no handlers of its own: STH
 syntax-4 single-indirect words with MOD0–MOD3 address modes carry first
 words inside the `LD_SMEM_SHIFT` slot (`0x6F80` under mask `0xFFE0`,
 `src/isa/catalog/opcode_catalog.def`), which the first-word-only lookup

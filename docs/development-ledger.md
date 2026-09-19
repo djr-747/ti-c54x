@@ -13872,3 +13872,25 @@ entries are not rewritten after publication.
   (MMR direct only); indirect forms stay SUBSET.
 - Split commit discipline: impl `d540229`, this ledger-only
   follow-up.
+
+## 2026-09-19 — Correction: P3-S18 and P3-S6 exit-review flips land late
+
+- Correction (appended, no rewrite): S18 lanes 1/2a/2b (`2e1c972`,
+  `a3f931d`, `a74cb5a`) plus the exit review recorded in the S6
+  planning entry, and S6 lanes 1/2 plus family rows (`6321be6`,
+  `7ecca10`, `6de7192`, `f3a4731`), all verified green at the time,
+  but both plan-doc `###` headings and both
+  `implementation-plan.md` slice links still read `(planned)`.
+  This entry advances all four parentheticals to `(implemented;
+  local verification green)`; title text is unchanged.
+- The lane-2b note that the S18 heading "stays `(planned)` as the
+  immutable anchor" is superseded: the anchor is the title text,
+  and the status parenthetical follows the same exit-review rule
+  as S13/S52/S53. The two plan bodies' stale `` `(planned)` ``
+  quotes are dropped by the same token; no semantics change.
+- Verification for this flip: full `make test` exit 0 this
+  session (only match for fail/error patterns is the pre-existing
+  SIZE_REVIEW warning line). No code, registry, or generated
+  artifact changes in this commit.
+- Split commit discipline: ledger-and-status-only follow-up; no
+  impl hash. Next remains the planned P3-S27 ADD/SUB #lk rows.
