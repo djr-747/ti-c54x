@@ -26,6 +26,8 @@
 #include <ti_c54x/bus.h>
 #include <ti_c54x/cpu.h>
 
+#include "mcu_upload_peer.h"
+
 typedef struct run_image_bus {
     const uint16_t *program_words;
     uint32_t program_base;
@@ -33,6 +35,8 @@ typedef struct run_image_bus {
     uint16_t *data_words;
     uint32_t data_base;
     uint32_t data_count;
+    ti_c54x_mcu_upload_peer_state mcu_peer;
+    bool have_mcu_peer;
     unsigned char *visited;
     uint64_t program_reads;
     uint64_t program_unmapped;
@@ -126,6 +130,12 @@ run_image_advance(void *context,
         }
         observation->bus_status = TI_C54X_BUS_OK;
         observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
+        if (bus->have_mcu_peer &&
+            request->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+            ti_c54x_mcu_upload_peer_notify_data_write(
+                &bus->mcu_peer, request->address_word,
+                request->write_value_word);
+        }
     }
 }
 
@@ -316,12 +326,16 @@ usage(const char *argv0)
                   "usage: %s --selftest\n"
                   "   or: %s <prog_image> <prog_base> <entry> <budget> "
                   "<be|le> [data_image data_base]\n"
+                  "   [--mcu-upload <flash_image> <blocks>]\n"
                   "\n"
                   "Runs one program-word image from <entry> for <budget>\n"
                   "retirements and prints a stop report. Bases, entry,\n"
                   "and budget accept C integer syntax (0x hex or\n"
                   "decimal). Unmapped program/data words stop the run\n"
-                  "explicitly; nothing is invented.\n",
+                  "explicitly; nothing is invented. The trailing\n"
+                  "--mcu-upload form attaches the MCU upload peer\n"
+                  "(1-64 flash blocks); without a data image the peer\n"
+                  "owns a zeroed 0x800-0x2800 DATA window.\n",
                   argv0, argv0);
 }
 
@@ -441,14 +455,19 @@ main(int argc, char **argv)
     ti_c54x_config config;
     uint16_t *program = NULL;
     uint16_t *data = NULL;
+    uint16_t *flash = NULL;
     uint32_t program_count = 0U;
     uint32_t data_count = 0U;
+    uint32_t flash_count = 0U;
     uint32_t prog_base = 0U;
     uint32_t entry = 0U;
     uint32_t data_base = 0U;
     uint64_t budget = 0U;
+    uint64_t block_limit = 0U;
+    const char *flash_path = NULL;
     bool big_endian = false;
     bool have_data = false;
+    bool want_mcu_peer = false;
     unsigned char *visited = NULL;
     uint16_t *ram = NULL;
     unsigned char *storage = NULL;
@@ -463,7 +482,7 @@ main(int argc, char **argv)
     if (argc == 2 && strcmp(argv[1], "--selftest") == 0) {
         return selftest();
     }
-    if (argc != 6 && argc != 8) {
+    if (argc != 6 && argc != 8 && argc != 9 && argc != 11) {
         usage(argv[0]);
         return 2;
     }
@@ -487,7 +506,7 @@ main(int argc, char **argv)
                       argv[1]);
         return 1;
     }
-    if (argc == 8) {
+    if (argc == 8 || argc == 11) {
         if (parse_u32(argv[7], &data_base) != 0) {
             usage(argv[0]);
             goto done;
@@ -500,6 +519,27 @@ main(int argc, char **argv)
             goto done;
         }
         have_data = true;
+    }
+    if (argc == 9 || argc == 11) {
+        const char *flag = (argc == 9) ? argv[6] : argv[8];
+
+        flash_path = (argc == 9) ? argv[7] : argv[9];
+        if (strcmp(flag, "--mcu-upload") != 0 ||
+            parse_u64((argc == 9) ? argv[8] : argv[10],
+                      &block_limit) != 0 ||
+            block_limit == UINT64_C(0) ||
+            block_limit > UINT64_C(64)) {
+            usage(argv[0]);
+            goto done;
+        }
+        want_mcu_peer = true;
+        flash = load_words(flash_path, big_endian, &flash_count);
+        if (flash == NULL) {
+            (void)fprintf(stderr,
+                          "error: cannot load flash image '%s'\n",
+                          flash_path);
+            goto done;
+        }
     }
 
     visited =
@@ -517,6 +557,19 @@ main(int argc, char **argv)
         }
         (void)memcpy(ram, data, (size_t)data_count * sizeof(uint16_t));
     }
+    if (want_mcu_peer && !have_data) {
+        /* Peer-owned zeroed OVLY window when no data image
+         * is supplied. */
+        ram = (uint16_t *)calloc((size_t)UINT32_C(0x2000),
+                                 sizeof(uint16_t));
+        if (ram == NULL) {
+            (void)fprintf(stderr, "error: peer data alloc failed\n");
+            goto done;
+        }
+        data_base = UINT32_C(0x0800);
+        data_count = UINT32_C(0x2000);
+        have_data = true;
+    }
     memset(&bus, 0, sizeof(bus));
     bus.program_words = program;
     bus.program_base = prog_base;
@@ -525,6 +578,25 @@ main(int argc, char **argv)
     bus.data_base = data_base;
     bus.data_count = have_data ? data_count : UINT32_C(0);
     bus.visited = visited;
+    if (want_mcu_peer) {
+        ti_c54x_mcu_upload_peer_status peer_status =
+            ti_c54x_mcu_upload_peer_init(
+                &bus.mcu_peer, bus.data_words, bus.data_base,
+                bus.data_count, flash, flash_count,
+                (uint32_t)(TI_C54X_MCU_UPLOAD_FLASH_BLOCK0_BUS -
+                           TI_C54X_MCU_UPLOAD_FLASH_BUS_BASE) /
+                    UINT32_C(2),
+                (uint32_t)TI_C54X_MCU_UPLOAD_FLASH_STRIDE_BYTES /
+                    UINT32_C(2),
+                (uint32_t)block_limit);
+        if (peer_status != TI_C54X_MCU_UPLOAD_PEER_OK) {
+            (void)fprintf(stderr,
+                          "error: mcu upload peer init failed (%d)\n",
+                          (int)peer_status);
+            goto done;
+        }
+        bus.have_mcu_peer = true;
+    }
     endpoint.context = &bus;
     endpoint.advance = run_image_advance;
     endpoint.cancel = run_image_cancel;
@@ -578,6 +650,12 @@ main(int argc, char **argv)
                  bus.data_transactions, bus.data_faults, bus.io_calls,
                  visited_count, program_count, data_fault_text,
                  io_text);
+    if (bus.have_mcu_peer) {
+        (void)printf("mcu_upload fills_a=%" PRIu32 " fills_b=%" PRIu32
+                     " fills_done=%" PRIu32 "\n",
+                     bus.mcu_peer.fills_a, bus.mcu_peer.fills_b,
+                     bus.mcu_peer.fills_done);
+    }
     rc = 0;
 
 done:
@@ -589,5 +667,6 @@ done:
     free(ram);
     free(program);
     free(data);
+    free(flash);
     return rc;
 }

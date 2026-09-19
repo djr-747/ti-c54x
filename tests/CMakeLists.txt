@@ -55,6 +55,7 @@ add_subdirectory(unit/state)
 add_subdirectory(unit/sequencer)
 add_subdirectory(unit/debug)
 add_subdirectory(unit/isa)
+add_subdirectory(unit/hosted)
 
 add_test(
     NAME ti_c54x.quality.python

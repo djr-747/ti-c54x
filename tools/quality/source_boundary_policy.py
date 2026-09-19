@@ -18,6 +18,10 @@ ALLOWED_SRC_OWNERS = {
     "state",
 }
 ALLOWED_ISA_OWNERS = {"catalog", "decode", "ops"}
+# Unit-test-only owners with no src/ counterpart. Hosted tooling
+# peers live under tools/ (outside the scanned production tree)
+# and their tests live under tests/unit/.
+ALLOWED_UNIT_ONLY_OWNERS = {"hosted"}
 PRODUCTION_SUFFIXES = {".c", ".h"}
 TEST_SUFFIXES = {".c", ".h"}
 TEST_ROOTS = {"contract", "differential", "fuzz"}

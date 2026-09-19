@@ -42,6 +42,7 @@ try:  # Package import for tests; direct import for the standalone CLI.
     )
     from .source_boundary_policy import (
         ALLOWED_ISA_OWNERS,
+        ALLOWED_UNIT_ONLY_OWNERS,
         ALLOWED_SRC_OWNERS,
         ENV_API_NAMES,
         FORBIDDEN_API_NAMES,
@@ -66,6 +67,7 @@ except ImportError:  # pragma: no cover - exercised by direct CLI execution.
     )
     from source_boundary_policy import (  # type: ignore[no-redef]
         ALLOWED_ISA_OWNERS,
+        ALLOWED_UNIT_ONLY_OWNERS,
         ALLOWED_SRC_OWNERS,
         ENV_API_NAMES,
         FORBIDDEN_API_NAMES,
@@ -182,7 +184,7 @@ def _check_test_ownership(path: Path, root: Path, report: BoundaryReport) -> Non
             Violation(path, 1, "TEST_OWNERSHIP", f"unknown tests ownership module: {owner}")
         )
         return
-    if len(relative) < 4 or relative[2] not in ALLOWED_SRC_OWNERS | {"isa"}:
+    if len(relative) < 4 or relative[2] not in ALLOWED_SRC_OWNERS | {"isa"} | ALLOWED_UNIT_ONLY_OWNERS:
         report.violations.append(
             Violation(path, 1, "TEST_OWNERSHIP", "unit tests must mirror a src ownership module")
         )

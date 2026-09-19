@@ -159,6 +159,7 @@ include tests/unit/state/tests.mk
 include tests/unit/sequencer/tests.mk
 include tests/unit/debug/tests.mk
 include tests/unit/isa/tests.mk
+include tests/unit/hosted/tests.mk
 
 build: $(ti_c54x_test_targets) $(MINIMAL) $(OBSERVER_OFF_LIB)
 
@@ -244,9 +245,9 @@ $(HOSTED_LIB): $(HOSTED_OBJECTS)
 	@mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(RUN_IMAGE_EXE): tools/hosted/ti_c54x_run_image.c $(HOSTED_LIB)
+$(RUN_IMAGE_EXE): tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c $(HOSTED_LIB)
 	@mkdir -p $(@D)
-	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) $< $(HOSTED_LIB) -o $@
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c $(HOSTED_LIB) -o $@
 
 $(HOSTED_BUILD_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)

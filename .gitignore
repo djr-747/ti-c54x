@@ -30,6 +30,7 @@ compile_commands.json
 *.dspimg
 *.rom
 *.bin
+*.fls
 
 # Vendored TI reference PDFs and their text extractions (see
 # vendor/ti/README.md); never committed
