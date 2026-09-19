@@ -1,4 +1,4 @@
-### P3-S61: MVKD absolute-to-Smem move slice (planned)
+### P3-S61: MVKD absolute-to-Smem move slice (implemented; local verification green)
 
 `MVKD dmad, Smem` (FORM-T2-26-05) copies the DATA word at a
 16-bit-immediate address into Smem. It is the MVDK mirror

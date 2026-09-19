@@ -14201,3 +14201,34 @@ entries are not rewritten after publication.
 - Follow-up: MVKD mirror on the same carrier (access READ),
   three-word absolute/long-offset Smem, then the `0xF00` halt
   re-probe.
+
+## 2026-09-19 — P3-S61 lands as 304b1d8 (MVKD absolute-to-Smem slice)
+
+- Implementation commit `304b1d8`: two rows (`MVKD_DIRECT`
+  `0x7000`, `MVKD_SMEM` `0x7080`) reuse the S60
+  `SMEM_ABSOLUTE_PAIR` carrier with access READ (POPD
+  convention): the dmad leg reads first, the Smem leg writes
+  second. No resolver, issue, or commit changes — the S60 root
+  already implemented both leg orders. New leaf, CPU (TI
+  p. 4-113 examples both directions with AR update), and
+  metadata tests; FORM-T2-26-05 binds SUBSET with DIRECT_DP +
+  STANDARD_INDIRECT_MOD0_MOD3. Catalog IDs shift 315 to 317
+  with pins green.
+- Validation evidence: `make test` exit 0, ctest 661/661 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2, sources=7,
+  requirements=801, tests=654), lookup regenerated (+256 words
+  at `38729`), coverage now 162/205 (79.024%) with
+  strict-complete steady at 45/205.
+- Decisions: the pair shape validator derives the Smem-leg
+  access as the inverse of the effect access; the shape tail
+  gains an explicit READ-template arm (the generic slot aliases
+  pair snapshots and would read union garbage). The feared
+  `0x73` MVMD/MVKD collision does not exist: MVKD pins `0x70`
+  (TI p. 4-113), a clean nibble ladder 0x70/0x71/0x72/0x73.
+  Five neighbor near-miss tests pin new MVKD siblings
+  (LD_T/MVKD_SMEM, LD_LK16/LD_LK_SHIFT/B_PMAD/CALL_PMAD/RPT_LK
+  MVKD_DIRECT, LD_T catalog).
+- Knobs: none added, changed, or retired.
+- Follow-up: MVPD/MVDP parallel moves, READA/WRITA, then the
+  `0xF00` halt re-probe with the full move group in the image
+  path.

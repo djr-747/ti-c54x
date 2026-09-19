@@ -731,6 +731,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S60: MVDK Smem-to-absolute move slice (implemented; local verification green)](plan/p3-s60-mvdk-smem-to-absolute-slice.md)
 
+- [P3-S61: MVKD absolute-to-Smem move slice (implemented; local verification green)](plan/p3-s61-mvkd-absolute-to-smem-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
