@@ -14622,3 +14622,40 @@ entries are not rewritten after publication.
 - Follow-up: absolute `ST #lk` slice for `0x76F8`
   (MVDP at `0xF0F` waits behind it); loader1 MBOX spin
   still needs MCU emulation.
+
+## 2026-09-19 — P3-S70 lands as 4eea349 (ST absolute-immediate slice)
+
+- Implementation commit `4eea349`: new `EXACT` row
+  `ST_LK_SMEM_ABSOLUTE` (`0x76F8`, 3 words,
+  `INDIRECT_ADDR7_ABSOLUTE16_LK`, `INELIGIBLE`) for TI
+  SPRU172C section ST syntax 3 (`ST #lk,*(abs)`, `lk ->
+  Smem`, no status bits). New checked/trusted
+  `op_st_lk_smem_absolute` pair beside the direct leaf,
+  staged through MVDM/MVMD absolute address resolution.
+  Bundle capacity 2 to 3 with the 3-word extension-fetch
+  loop; decoded carrier 20 to 24 bytes (LP64 packet stays
+  104, ILP32 root 420 to 424); lookup regenerated (+1
+  word, 40010 populated); catalog IDs 326 to 327;
+  FORM-T2-20-03 binds the row SUBSET with `ABSOLUTE_DATA`.
+  The `ABSOLUTE_DATA` WRITE arm admits plain sidecar-free
+  stores (MVMD zero-template gate unchanged). Coverage
+  166/205 family (80.976%), strict 45/205.
+- Validation evidence: `make test` exit 0 (full C suite
+  incl. new decode/ops/metadata/CPU proofs, 286/286
+  contract quality, all checkers PASS). RED observed
+  first (effect-shape gate, 3-word fetch, carrier pins,
+  catalog pins, CPU retirement). Hosted acceptance:
+  BUDGET=400 staged loader1 run retires `ST #4,*(0x803)`
+  at `0xF0C` (332 attempted, 331 retired, zero data
+  faults with the `0x800` RAM window) and reaches `0xF0F`,
+  stopping `INVALID_STATE` on `0x7DF8` (MVDP absolute).
+- Decisions: minimal `FORM-T2-20-03` binding (`SUBSET` +
+  `ABSOLUTE_DATA`, MVDM/MVMD precedent) to satisfy the
+  inventory gate while FORM census stays deferred;
+  `0x7680` neighbor probe corrected to `ST_IMMEDIATE_SMEM`
+  with `0x76F9` as the long-offset probe; trusted
+  deferral forges operands (operands authoritative per
+  sibling-leaf precedent).
+- Knobs: none added, changed, or retired.
+- Follow-up: MVDP absolute slice for `0x7DF8`; loader1
+  MBOX spin still needs MCU emulation (P3-S71).

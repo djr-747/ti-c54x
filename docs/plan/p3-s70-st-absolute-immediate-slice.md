@@ -1,4 +1,4 @@
-### P3-S70: ST absolute-immediate slice (planned)
+### P3-S70: ST absolute-immediate slice (implemented; local verification green)
 
 `ST #lk, *(abs)` is TI SPRU172C section ST syntax 3 with
 absolute addressing (3 words: first, 16-bit absolute
