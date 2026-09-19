@@ -14053,3 +14053,45 @@ entries are not rewritten after publication.
   peripheral DATA read. No firmware bytes enter the repo.
 - Split commit discipline: impl `31bc99d`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S56 lands as 59d1398 (MVDM absolute + ABSOLUTE source)
+
+- Commit `59d1398` binds the MVDM absolute row (`0x7200/0xFFE0`,
+  MMR5_ABSOLUTE16 layout: 5-bit MMR destination plus second-word
+  16-bit absolute DATA address) with the pure `op_mvdm` leaf (one
+  ABSOLUTE_DATA_WORD16 READ with the read-phase MMR store sidecar)
+  and the full root seam through CPU retirement. Registry:
+  FORM-T2-26-03 SUBSET (`ABSOLUTE_DATA`), regenerated lookup
+  (+32, census 37929), coverage 158/205 (77.073%).
+- Root causes fixed during bring-up (all reproduced RED-first
+  against `test_cpu_mvdm`): (1) the test word targeted a
+  single-word form that does not exist — MVDM absolute is two
+  words (`0x7214` + extension, per the 5110 boot halt); the
+  shared CPU fixture learned a second program word for extension
+  fetch. (2) Borrowing the DP planner stamped DIRECT_DP, whose
+  dependency gate demands live CPL/DP — wrong for absolute
+  addressing. New ABSOLUTE source kind (10) with its own planner
+  (`src/address/absolute.c`), intrinsic/dependency arms, and
+  candidate echo; the absolute resolution branch then extracted
+  to its own module. (3) `valid_source_kind` (not the policy
+  predicate) gates new kinds — one-line miss, caught by direct
+  validate probing. (4) the MMR sidecar's spare byte broke the
+  ILP32 40-byte effect ABI (LP64 padding hid it); dropped the
+  spare, both ABIs hold.
+- Decisions: MMR store rides the local `mmr_route` (no endpoint
+  traffic; one DATA READ per retirement), publishing after the
+  read resolves and before the architecture commit; unroutable
+  MMR ids (2,3,4,5,0x1E,0x1F) reject at the shape gate, so the
+  commit-sidecar decline arm is forgery-only. Absolute observes
+  no state: DP/CPL/CMPT/ARP/AR unknownness never rejects.
+- Validation: full `make test` exit 0 (640/640 unit binaries
+  direct plus 286 quality tests, evidence PASS); `make cmake-build`
+  plus full ctest 647/647. ABI pins moved: rows 310, IDs 311,
+  lookup 37929.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVDM indirect flavor (own slice), then MVMD/MVMM;
+  the 5110 boot probe now retires past `MVDM 0x0000,AR4` at
+  `0xF07` toward the unbound `LD #lk` halt. No firmware bytes
+  enter the repo.
+- Split commit discipline: impl `59d1398`, this ledger-only
+  follow-up.
