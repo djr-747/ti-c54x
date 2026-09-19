@@ -121,6 +121,7 @@ $(eval $(call ti_c54x_add_test,stlm_smem_direct_metadata,isa/catalog,test_stlm_s
 $(eval $(call ti_c54x_add_test,cmps_smem_direct_metadata,isa/catalog,test_cmps_smem_direct_metadata.c))
 # P3-S51 RED contract: FRAME metadata.
 $(eval $(call ti_c54x_add_test,frame_k_metadata,isa/catalog,test_frame_k_metadata.c))
+$(eval $(call ti_c54x_add_test,pshd_popd_direct_metadata,isa/catalog,test_pshd_popd_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,ldm_smem_direct_metadata,isa/catalog,test_ldm_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,stl_smem_direct_metadata,isa/catalog,test_stl_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,stl_asm_smem_direct_metadata,isa/catalog,test_stl_asm_smem_direct_metadata.c))

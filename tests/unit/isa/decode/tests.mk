@@ -146,6 +146,7 @@ $(eval $(call ti_c54x_add_test,stlm_smem_direct_decode,isa/decode,test_stlm_smem
 $(eval $(call ti_c54x_add_test,cmps_smem_direct_decode,isa/decode,test_cmps_smem_direct_decode.c))
 # P3-S51 RED contract: FRAME decode.
 $(eval $(call ti_c54x_add_test,frame_k_decode,isa/decode,test_frame_k_decode.c))
+$(eval $(call ti_c54x_add_test,pshd_popd_direct_decode,isa/decode,test_pshd_popd_direct_decode.c))
 $(eval $(call ti_c54x_add_test,ldm_smem_direct_decode,isa/decode,test_ldm_smem_direct_decode.c))
 $(eval $(call ti_c54x_add_test,stl_smem_direct_decode,isa/decode,test_stl_smem_direct_decode.c))
 $(eval $(call ti_c54x_add_test,stl_asm_smem_direct_decode,isa/decode,test_stl_asm_smem_direct_decode.c))

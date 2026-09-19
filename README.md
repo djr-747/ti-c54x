@@ -31,8 +31,8 @@ Smem SHIFT), `ADDM`/`ADDC`/`ADDS`/`SUBC`, `RND`/`SAT`/`ABS`/`NEG`/`NORM`/
 (`SACCD`/`SRCCD`/`STRCD`), `CMPS`, and `PORTR`/`PORTW` are all retired
 through CPU tests.
 
-- 303 runnable catalog rows under 35,337 populated first-word lookup entries.
-  Inventory coverage is 151/205 forms SUBSET-or-better (73.659%) and 43/205
+- 307 runnable catalog rows under 36,361 populated first-word lookup entries.
+  Inventory coverage is 155/205 forms SUBSET-or-better (75.610%) and 43/205
   strict-complete (20.976%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release

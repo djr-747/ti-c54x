@@ -126,7 +126,21 @@ typedef enum ti_c54x_op_memory_address_kind {
      * value the reducer replaces with the observed DATA word before
      * issue). No AR, CMPT, CPL, or DP dependence and no post-update;
      * Smem unknownness is gated at the leaf. */
-    TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16 = 18
+    TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16 = 18,
+    /* Stack-push pair WORD16 (PSHD): the Smem DATA leg is read
+     * first and the observed word is written to the TOS DATA
+     * WORD16 at old SP - 1 with a PRE_ACCESS SP update. The
+     * effect `access` is WRITE (the stack-leg direction). No AR,
+     * CMPT, CPL, or DP dependence and no post-update; Smem and
+     * SP unknownness are gated at the leaf and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 = 19,
+    /* Stack-pop pair WORD16 (POPD): the TOS DATA WORD16 at old
+     * SP is read first with a POST_ACCESS SP update and the
+     * observed word is written to the Smem DATA leg. The effect
+     * `access` is READ (the stack-leg direction). No AR, CMPT,
+     * CPL, or DP dependence and no post-update; Smem and SP
+     * unknownness are gated at the leaf and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16 = 20
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -239,6 +253,28 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } port;
+        struct {
+            /* Stack-push/pop pair: the Smem DATA leg selector. Zero
+             * selects the direct page-0 leg (`smem_dma7`); one
+             * selects the standard-indirect leg (`smem_mode` with
+             * `smem_arf`). This slice admits direct only. */
+            uint8_t indirect;
+            /* Indirect-leg mode. Must remain zero for the direct
+             * leg. */
+            uint8_t smem_mode;
+            /* Indirect-leg AR selector. Must remain zero for the
+             * direct leg. */
+            uint8_t smem_arf;
+            /* Direct-leg 7-bit DATA address. Must remain zero for
+             * the indirect leg. */
+            uint8_t smem_dma7;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation scalar comparisons. */
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } stack_pair;
     };
 } ti_c54x_op_memory_address_spec;
 

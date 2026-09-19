@@ -61,6 +61,9 @@ ti_c54x_add_unit_test(dual_mod3_root
 # W47B1 RED contract: DLD/DST MOD13 LONG32 root failure lifecycle.
 ti_c54x_add_unit_test(dld_dst_long32_failure_lifecycle
                       test_dld_dst_long32_failure_lifecycle.c)
+# P3-S52 RED contract: stack-pair WORD16 root transaction lifecycle.
+ti_c54x_add_unit_test(stack_pair_transaction
+                      test_stack_pair_memory_transaction.c)
 # W65A RED contract: stack-push WORD16 root transaction lifecycle.
 ti_c54x_add_unit_test(stack_push_root
                       test_stack_push_root.c)

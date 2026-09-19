@@ -418,6 +418,45 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                effect->complete == NULL &&
                effect->transfer_reserved == UINT8_C(0);
 
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16:
+        /* Stack push/pop pair: the Smem DATA leg is read or written
+         * with the TOS stack leg on the other side; the staged
+         * value is zero in both directions (the second-leg value
+         * is a bus observation, and the reducer replaces the WRITE
+         * template before issue). No RMW and no leaf completion:
+         * the reducer owns the chaining internally. This slice
+         * admits direct (indirect == 0) only. */
+        if (effect->address_spec.stack_pair.indirect != UINT8_C(0) ||
+            effect->address_spec.stack_pair.smem_mode != UINT8_C(0) ||
+            effect->address_spec.stack_pair.smem_arf != UINT8_C(0) ||
+            effect->address_spec.stack_pair.smem_dma7 > UINT8_C(0x7F) ||
+            effect->address_spec.stack_pair.reserved_half !=
+                UINT16_C(0) ||
+            effect->address_spec.stack_pair.reserved_word0 !=
+                UINT32_C(0) ||
+            effect->address_spec.stack_pair.reserved_word1 !=
+                UINT32_C(0) ||
+            effect->address_spec.stack_pair.reserved_word2 !=
+                UINT32_C(0)) {
+            return false;
+        }
+        if (effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16) {
+            if (effect->access !=
+                TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+                return false;
+            }
+        } else if (effect->access !=
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+            return false;
+        }
+        return effect->value_word == UINT16_C(0) &&
+               effect->rmw_operation ==
+                   (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+               effect->complete == NULL &&
+               effect->transfer_reserved == UINT8_C(0);
+
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:
         return false;

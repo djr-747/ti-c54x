@@ -36,12 +36,22 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
 {
     /* The PORT DATA-leg commit rides the pair snapshot: the generic
      * slot shares union storage with that snapshot, so it holds no
-     * DATA commit for PORT candidates. */
+     * DATA commit for PORT candidates. The stack-pair SP commit
+     * rides the snapshot's TOS stack-leg resolution for the same
+     * reason. */
     const ti_c54x_sequencer_address_commit *const address_commit =
         transaction->candidate.effect.payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16
             ? &transaction->candidate.port_address_snapshot.data_resolution
                    .address_commit
+            : (transaction->candidate.effect.payload.memory.address_spec
+                       .kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
+               transaction->candidate.effect.payload.memory.address_spec
+                       .kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16)
+            ? &transaction->candidate.stack_pair_address_snapshot
+                   .stack_resolution.address_commit
             : &transaction->candidate.address_resolution.address_commit;
 
     if (address_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {

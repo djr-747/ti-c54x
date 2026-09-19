@@ -33,6 +33,7 @@
 #include "memory_instruction_dual.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_port.h"
+#include "memory_instruction_stack_pair.h"
 #include "memory_instruction_pair_dispatch.h"
 
 static void
@@ -89,6 +90,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_memory_instruction_transaction *target = transaction;
     bool dual_read;
     bool port_pair;
+    bool stack_pair;
     bool stack_push;
     bool stack_pop;
     bool stack_pop_rtn;
@@ -114,6 +116,10 @@ ti_c54x_memory_instruction_transaction_prepare(
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
     port_pair = effect->payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16;
+    stack_pair = effect->payload.memory.address_spec.kind ==
+                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
+                 effect->payload.memory.address_spec.kind ==
+                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16;
     stack_push = effect->payload.memory.address_spec.kind ==
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
                  effect->payload.memory.address_spec.kind ==
@@ -185,6 +191,11 @@ ti_c54x_memory_instruction_transaction_prepare(
         /* PORT resolution lives in the child: the IO-leg planner plus
          * the DATA leg through the single-leg resolver. Nothing is
          * resolved here. */
+    } else if (stack_pair) {
+        /* Stack-pair resolution lives in the child: the TOS leg
+         * through the generic stack resolver plus the Smem DATA leg
+         * through the single-leg resolver. Nothing is resolved
+         * here: the generic resolver knows no pair kinds. */
     } else if (effect->payload.memory.address_spec.kind !=
                TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
         if (ti_c54x_sequencer_resolve_memory_address(
@@ -258,6 +269,11 @@ ti_c54x_memory_instruction_transaction_prepare(
     } else if (port_pair) {
         if (!ti_c54x_memory_instruction_port_prepare_snapshot(target,
                                                               state)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else if (stack_pair) {
+        if (!ti_c54x_memory_instruction_stack_pair_prepare_snapshot(
+                target, state)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
     } else {

@@ -1761,9 +1761,11 @@
       "table_ordinal": 2,
       "mnemonic": "POPD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "POPD_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-17-03",
@@ -1772,9 +1774,11 @@
       "table_ordinal": 3,
       "mnemonic": "POPM",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "POPM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-17-04",
@@ -1783,9 +1787,11 @@
       "table_ordinal": 4,
       "mnemonic": "PSHD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "PSHD_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-17-05",
@@ -1794,9 +1800,11 @@
       "table_ordinal": 5,
       "mnemonic": "PSHM",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "PSHM_DIRECT"
+      ]
     },
     {
       "id": "FORM-T2-18-01",
@@ -4612,6 +4620,30 @@
       "form_id": "FORM-T2-17-01",
       "coverage": "SUBSET",
       "addressing_subset": "IMMEDIATE_K"
+    },
+    {
+      "catalog_symbol": "POPD_DIRECT",
+      "form_id": "FORM-T2-17-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "POPM_DIRECT",
+      "form_id": "FORM-T2-17-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "PSHD_DIRECT",
+      "form_id": "FORM-T2-17-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "PSHM_DIRECT",
+      "form_id": "FORM-T2-17-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0"
     }
   ]
 }

@@ -28,7 +28,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 304);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 308);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(metadata->first_word_value == ST_T_SMEM_DIRECT_VALUE);
@@ -71,7 +71,8 @@ static void
 test_row_boundaries(void)
 {
     /* 0x8C00 and 0x8C7F are the direct slice ends; 0x8BFF is
-     * unbound; 0x8C80 opens the established indirect ST_T rows. */
+     * the pinned POPD sibling; 0x8C80 opens the established
+     * indirect ST_T rows. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x8C00)) ==
                        TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
@@ -80,7 +81,7 @@ test_row_boundaries(void)
                        TI_C54X_OPCODE_ID_ST_T_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x8BFF)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_POPD_DIRECT);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x8C80)) ==
                        TI_C54X_OPCODE_ID_ST_T_SMEM);

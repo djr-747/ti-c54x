@@ -8489,6 +8489,79 @@
         "printed_page_end": "4-60"
       },
       "assertion": "SPRU172C FRAME defines FRAME K with opcode diagram 1110_1110_KKKKKKKK (K is the signed 8-bit short-immediate offset in bits 7:0, -128 to 127): the offset is added to SP with no address-generation or stack-manipulation latency for the following instruction. Status Bits None; one word; Class 1."
+
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PSHD",
+        "printed_page_start": "4-131",
+        "printed_page_end": "4-131"
+      },
+      "assertion": "SPRU172C PSHD defines PSHD Smem with opcode diagram 0100_1011_IAAAAAAA (I selects direct/indirect Smem addressing, A the 7-bit address): after SP is decremented by 1, the content of Smem is stored in the data-memory location addressed by SP; SP is read during the decode phase and stored during the access phase. Status Bits None; one word; Classes 16A and 16B."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "PSHM",
+        "printed_page_start": "4-132",
+        "printed_page_end": "4-132"
+      },
+      "assertion": "SPRU172C PSHM defines PSHM MMR with opcode diagram 0100_1010_IAAAAAAA (A the 7-bit memory-mapped-register selector): after SP is decremented by 1, the content of the memory-mapped register MMR is stored in the data-memory location addressed by SP. Status Bits None; one word; Class 16A only. The PSHM BRC example moves 0x1234 with SP 0x2000 to 0x1FFF."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "POPD",
+        "printed_page_start": "4-127",
+        "printed_page_end": "4-127"
+      },
+      "assertion": "SPRU172C POPD defines POPD Smem with opcode diagram 1000_1011_IAAAAAAA (I selects direct/indirect Smem addressing, A the 7-bit address): the content of the data-memory location addressed by SP is moved to Smem and SP is incremented by 1. Status Bits None; one word; Classes 17A and 17B. The POPD 10 example moves 0x0092 from 0x0300 to 0x040A with SP 0x0300 to 0x0301."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-POPM-P4-128",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "POPM",
+        "printed_page_start": "4-128",
+        "printed_page_end": "4-128"
+      },
+      "assertion": "SPRU172C POPM defines POPM MMR with opcode diagram 1000_1010_IAAAAAAA (A the 7-bit memory-mapped-register selector): the content of the data-memory location addressed by SP is moved to the memory-mapped register MMR and SP is incremented by 1. Status Bits None; one word; Class 17A only. The POPM AR5 example moves 0x0060 with SP 0x03F0 to 0x03F1."
     }
   ],
   "requirements": [
@@ -19951,6 +20024,91 @@
       "test_ids": [
         "T-COMMON-FRAME-K-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-DIRECT-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register exactly four single-word catalog identities for the direct stack pair legs (PSHD 0x4B00, POPD 0x8B00, PSHM 0x4A00, POPM 0x8A00, each mask 0xFF00 with the I flag at bit 7 and the 7-bit cookie at bits 6:0), the INDIRECT_ADDR7 layout, stack-pointer input, and repeatability UNRESOLVED; each slot projects 256 first-word encodings.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+        "E-TI-C54X-SPRU172C-S4-POPM-P4-128"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-DIRECT-DECODE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/decode/",
+      "claim": "Decode every direct stack-pair first word through INDIRECT_ADDR7, extracting the 1-bit indirect flag and the 7-bit cookie with exact 256-word population per row.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+        "E-TI-C54X-SPRU172C-S4-POPM-P4-128"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-DIRECT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/stack/",
+      "claim": "Execute the checked and trusted direct stack-pair leaves, staging one STACK_PUSH_PAIR or STACK_POP_PAIR MEMORY effect with a zero template value: Smem forms admit the full page-0 cookie range, MMR forms admit cookies below 0x20 only, the I-set half rejects in the leaf, unknown SP rejects transactionally, with checked/trusted/dispatch parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+        "E-TI-C54X-SPRU172C-S4-POPM-P4-128"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire one stack push/pop pair through the pair root with both legs frozen in the pair snapshot: PSHD reads Smem first and writes the observed word to TOS, POPD reads TOS first and writes the observed word to Smem, MMR legs serve synchronously through the S1 seam with endpoint traffic only for DATA-space legs, SP commits atomically with sequential PC, leg faults stay transactional with no second issue, stale SP rejects on resume, and in-flight cancel reaches the endpoint.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+        "E-TI-C54X-SPRU172C-S4-POPM-P4-128"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-ROOT"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire PSHD, POPD, PSHM, and POPM on the CPU with Smem/TOS observation handoff through the DATA endpoint, MMR-leg routing with TOS-only endpoint traffic, SP publication, sequential PC advance, and transactional rejection on unknown SP input.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-PSHM-P4-132",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127",
+        "E-TI-C54X-SPRU172C-S4-POPM-P4-128"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-CPU"
+      ]
     }
   ],
   "tests": [
@@ -29151,6 +29309,76 @@
       },
       "requirement_ids": [
         "REQ-COMMON-FRAME-K-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-STACK-PAIR-DIRECT-CATALOG",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_pshd_popd_direct_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.pshd_popd_direct_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STACK-PAIR-DIRECT-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-STACK-PAIR-DIRECT-DECODE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/decode/test_pshd_popd_direct_decode.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.pshd_popd_direct_decode"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STACK-PAIR-DIRECT-DECODE"
+      ]
+    },
+    {
+      "id": "T-COMMON-STACK-PAIR-DIRECT-EFFECTS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/stack/test_pshd_popd_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.pshd_popd_direct_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STACK-PAIR-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "T-COMMON-STACK-PAIR-ROOT",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/sequencer/instruction/test_stack_pair_memory_transaction.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stack_pair_transaction"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STACK-PAIR-ROOT"
+      ]
+    },
+    {
+      "id": "T-COMMON-STACK-PAIR-DIRECT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/stack/test_cpu_pshd_popd_direct.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_pshd_popd_direct"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT"
       ]
     }
   ]

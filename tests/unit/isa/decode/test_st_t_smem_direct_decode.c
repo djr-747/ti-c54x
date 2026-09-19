@@ -87,10 +87,10 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_direct == 128U);
 
     {
-        /* Below-neighbor is unbound; above-neighbor is the
-         * established indirect ST_T row. */
+        /* Below-neighbor is the pinned POPD sibling; above-neighbor
+         * is the established indirect ST_T row. */
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x8BFF)).id ==
-                           TI_C54X_OPCODE_ID_UNKNOWN);
+                           TI_C54X_OPCODE_ID_POPD_DIRECT);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x8C80)).id ==
                            TI_C54X_OPCODE_ID_ST_T_SMEM);
     }

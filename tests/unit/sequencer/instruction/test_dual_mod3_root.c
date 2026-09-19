@@ -35,7 +35,7 @@
  * snapshot with the TRN fields, so the root holds at 392. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 392U,
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 448U,
                "S44 LP64 root holds the TRN input fields");
 
 static ti_c54x_op_memory_address_spec

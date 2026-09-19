@@ -3,13 +3,16 @@
  *
  * Owns: structural and live-state validation of copied root memory
  * instruction candidates: dispatch across dual, DATA+PROGRAM, PORT,
- * LONG32, X-only, and mode-independent STACK_PUSH/STACK_POP arms
- * with their delayed-branch twins, plus the shared single-leg tail
+ * LONG32, X-only, mode-independent STACK_PUSH/STACK_POP arms
+ * with their delayed-branch twins, and STACK_PUSH_PAIR/STACK_POP_PAIR
+ * arms, plus the shared single-leg tail
  * (generic resolution selection, CMPT=0/ARP=0 gating, and the
  * indirect-family liveness switch). Single-leg DATA resolution
  * shape lives in the memory_candidate_single_leg module, page-0 and
- * DP-relative direct arms in memory_candidate_direct, and PORT pair
- * checks in memory_instruction_port_candidate_validate.
+ * DP-relative direct arms in memory_candidate_direct, PORT pair
+ * checks in memory_instruction_port_candidate_validate, and
+ * stack-pair checks in
+ * memory_instruction_stack_pair_candidate_validate.
  * Does not own: transaction lifecycle, endpoint I/O, architectural mutation,
  * effect completion, opcode dispatch, timing, observers, or diagnostics.
  */
@@ -24,6 +27,7 @@
 #include "memory_instruction_data_program_candidate_validate.h"
 #include "memory_instruction_dual_candidate_validate.h"
 #include "memory_instruction_port_candidate_validate.h"
+#include "memory_instruction_stack_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
 
@@ -50,6 +54,14 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     } else if (candidate->effect.payload.memory.address_spec.kind ==
                TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16) {
         if (!ti_c54x_memory_instruction_port_candidate_shape_is_valid(
+                candidate)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
+               candidate->effect.payload.memory.address_spec.kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
+        if (!ti_c54x_memory_instruction_stack_pair_candidate_shape_is_valid(
                 candidate)) {
             return false;
         }
@@ -102,6 +114,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
             return candidate->port_address_snapshot.data_resolution.request
                        .write_value_word == UINT16_C(0);
         }
+        if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
+            /* POPD reads the TOS stack leg first; that frozen READ
+             * template carries no store value. */
+            return candidate->stack_pair_address_snapshot.stack_resolution
+                       .request.write_value_word == UINT16_C(0);
+        }
         return candidate->address_resolution.request.write_value_word ==
                UINT16_C(0);
     }
@@ -115,6 +134,15 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
         /* PORTR resolves the DATA WRITE with a zero template until
          * the IO observation replaces it at second-leg issue. */
         return candidate->port_address_snapshot.data_resolution.request
+                   .write_value_word ==
+               candidate->effect.payload.memory.value_word;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16) {
+        /* PSHD freezes the TOS stack-leg WRITE with a zero template;
+         * the observed Smem word replaces it in the built second-leg
+         * request at issue, never in the snapshot. */
+        return candidate->stack_pair_address_snapshot.stack_resolution.request
                    .write_value_word ==
                candidate->effect.payload.memory.value_word;
     }
@@ -230,6 +258,13 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY) {
         return x_only_candidate_matches_live(candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_stack_pair_matches_live(candidate,
+                                                                  state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||

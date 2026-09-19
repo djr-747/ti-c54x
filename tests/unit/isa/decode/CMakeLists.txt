@@ -149,6 +149,7 @@ ti_c54x_add_unit_test(stlm_smem_direct_decode test_stlm_smem_direct_decode.c)
 ti_c54x_add_unit_test(cmps_smem_direct_decode test_cmps_smem_direct_decode.c)
 # P3-S51 RED contract: FRAME decode.
 ti_c54x_add_unit_test(frame_k_decode test_frame_k_decode.c)
+ti_c54x_add_unit_test(pshd_popd_direct_decode test_pshd_popd_direct_decode.c)
 ti_c54x_add_unit_test(ldm_smem_direct_decode test_ldm_smem_direct_decode.c)
 ti_c54x_add_unit_test(stl_smem_direct_decode test_stl_smem_direct_decode.c)
 ti_c54x_add_unit_test(stl_asm_smem_direct_decode test_stl_asm_smem_direct_decode.c)

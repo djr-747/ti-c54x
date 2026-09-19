@@ -113,7 +113,7 @@ static void check_carrier_shape_and_size(void)
      * snapshot delta at 4-alignment, unverifiable on a 64-bit
      * host). */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 392U : 360U));
+                       (sizeof(void *) == 8U ? 448U : 416U));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&read));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
     TI_C54X_TEST_CHECK(read.first_value_msw == UINT16_C(0));

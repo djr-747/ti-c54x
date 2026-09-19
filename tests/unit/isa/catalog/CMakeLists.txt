@@ -169,6 +169,8 @@ ti_c54x_add_unit_test(cmps_smem_direct_metadata
 # P3-S51 RED contract: FRAME metadata.
 ti_c54x_add_unit_test(frame_k_metadata
                       test_frame_k_metadata.c)
+ti_c54x_add_unit_test(pshd_popd_direct_metadata
+                      test_pshd_popd_direct_metadata.c)
 ti_c54x_add_unit_test(ldm_smem_direct_metadata
                       test_ldm_smem_direct_metadata.c)
 ti_c54x_add_unit_test(stl_smem_direct_metadata

@@ -18,6 +18,8 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_data_program.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_port.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_port_candidate_validate.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_stack_pair.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_stack_pair_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_pair_dispatch.c"
     "${CMAKE_CURRENT_LIST_DIR}/data_program_word16_read_transaction.c"
     "${CMAKE_CURRENT_LIST_DIR}/dual_word16_read_transaction.c"
