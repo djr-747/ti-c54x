@@ -184,6 +184,11 @@ typedef enum ti_c54x_operand_layout_id {
      * with the copied 16-bit absolute DATA address from word 1
      * and the copied 16-bit immediate from word 2. */
     TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_LK,
+    /* Three-word move Smem,pmad absolute fields: indirect flag
+     * I[7:7] and 7-bit absolute selector A[6:0] from word 0
+     * with the copied 16-bit absolute DATA address from word 1
+     * and the copied 16-bit program address from word 2. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

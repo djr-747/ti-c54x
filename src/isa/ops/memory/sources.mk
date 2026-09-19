@@ -6,5 +6,6 @@ ti_c54x_core_sources += \
 	src/isa/ops/memory/memory_effect_smem_absolute_pair.c \
 	src/isa/ops/memory/memory_effect_smem_program_pair.c \
 	src/isa/ops/memory/memory_effect_smem_program_a_pair.c \
+	src/isa/ops/memory/memory_effect_smem_absolute_program_pair.c \
 	src/isa/ops/memory/memory_effect_long32_single.c \
 	src/isa/ops/memory/op_atomic_logical_memory.c

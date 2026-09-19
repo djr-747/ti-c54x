@@ -50,9 +50,9 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 326)
-        self.assertEqual(len(rows) + 1, 327)  # UNKNOWN retains identity zero.
-        self.assertEqual(len(inventory["catalog_bindings"]),332)
+        self.assertEqual(len(rows), 327)
+        self.assertEqual(len(rows) + 1, 328)  # UNKNOWN retains identity zero.
+        self.assertEqual(len(inventory["catalog_bindings"]),333)
         self.assertEqual(
             {symbol for symbol in SYMBOLS if symbol in by_symbol},
             set(SYMBOLS),

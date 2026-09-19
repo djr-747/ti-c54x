@@ -103,11 +103,13 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16) {
         /* The PROGRAM leg carries no update; the Smem DATA leg
-         * publishes its own AR update beside it. Direct DATA
-         * legs carry no update; indirect legs publish the AR
-         * update. */
+         * publishes its own AR update beside it. Direct and
+         * absolute DATA legs carry no update; indirect legs
+         * publish the AR update. */
         const ti_c54x_sequencer_address_commit *const data_commit =
             &transaction->candidate.smem_program_address_snapshot
                  .smem_resolution.address_commit;

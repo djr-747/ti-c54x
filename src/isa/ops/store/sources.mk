@@ -29,6 +29,7 @@ ti_c54x_core_sources += src/isa/ops/store/op_mvdm.c \
 	src/isa/ops/store/op_mvkd.c \
 	src/isa/ops/store/op_mvpd.c \
 	src/isa/ops/store/op_mvdp.c \
+	src/isa/ops/store/op_mvdp_smem_absolute.c \
 	src/isa/ops/store/op_reada.c \
 	src/isa/ops/store/op_writa.c
 ti_c54x_core_sources += src/isa/ops/store/op_store_reverse_carry_common.c

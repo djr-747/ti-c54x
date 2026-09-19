@@ -2682,7 +2682,8 @@
       "coverage": "SUBSET",
       "catalog_symbols": [
         "MVDP_DIRECT",
-        "MVDP_SMEM"
+        "MVDP_SMEM",
+        "MVDP_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -4758,6 +4759,12 @@
       "form_id": "FORM-T2-26-04",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "MVDP_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-26-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "READA_DIRECT",

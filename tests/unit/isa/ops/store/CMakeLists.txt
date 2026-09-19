@@ -30,6 +30,7 @@ ti_c54x_add_unit_test(mvkd_ops test_mvkd.c)
 ti_c54x_add_unit_test(mvpd_ops test_mvpd.c)
 # P3-S63 RED contract: MVDP Smem-to-program copy effects.
 ti_c54x_add_unit_test(mvdp_ops test_mvdp.c)
+ti_c54x_add_unit_test(mvdp_smem_absolute_ops test_mvdp_smem_absolute.c)
 # P3-S64 RED contract: READA accumulator-addressed program-to-Smem effects.
 ti_c54x_add_unit_test(reada_ops test_reada.c)
 # P3-S65 RED contract: WRITA accumulator-addressed Smem-to-program effects.

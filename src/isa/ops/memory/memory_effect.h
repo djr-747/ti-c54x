@@ -187,7 +187,17 @@ typedef enum ti_c54x_op_memory_address_kind {
      * the arm stages the Smem selectors only. Direct and
      * indirect legs mirror the immediate-pmad pair;
      * DP/AR/A unknownness is gated at the leaf and root. */
-    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 = 25
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 = 25,
+    /* Smem-absolute-to-program DATA pair WORD16 (MVDP with an
+     * absolute Smem): the 16-bit absolute DATA leg and the
+     * absolute 16-bit PROGRAM leg move one word with the
+     * PROGRAM leg inverse to the effect `access` (MVDP reads
+     * Smem). The staged value stays zero (the second-leg
+     * value is a bus observation the reducer replaces before
+     * issue). No RMW, no T load, no delay, and no leaf
+     * completion: the pair root owns the chaining
+     * internally. */
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16 = 26
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -374,6 +384,18 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } smem_program;
+        struct {
+            /* Smem-absolute-to-program pair: the 16-bit
+             * absolute DATA address and the absolute 16-bit
+             * PROGRAM address. Same footprint as the pair arms:
+             * the address ABI is unchanged. */
+            uint16_t absolute;
+            uint16_t pmad;
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } smem_absolute_program;
         struct {
             /* Smem-to-accumulator-addressed-program pair: same
              * Smem DATA leg shape as `smem_program` but the

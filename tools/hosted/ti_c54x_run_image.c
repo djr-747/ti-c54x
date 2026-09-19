@@ -37,6 +37,14 @@ typedef struct run_image_bus {
     uint32_t data_count;
     ti_c54x_mcu_upload_peer_state mcu_peer;
     bool have_mcu_peer;
+    /* Writable program overlay: MVDP/WRITA-style PROGRAM writes
+     * land here and are visible to the fetch callback, so the
+     * boot can copy code into program space. Reads fall back
+     * to the loaded image; never-written, never-loaded words
+     * still fault explicitly. */
+    uint16_t *program_overlay;
+    unsigned char *program_overlay_written;
+    unsigned program_writes;
     unsigned char *visited;
     uint64_t program_reads;
     uint64_t program_unmapped;
@@ -61,6 +69,16 @@ run_image_program_read(void *context,
         return TI_C54X_BUS_FAULT;
     }
     bus->program_reads++;
+    /* A PROGRAM write through the endpoint shadows the loaded
+     * image for later fetches (boot code overlays). */
+    if (bus->program_overlay != NULL &&
+        bus->program_overlay_written != NULL &&
+        bus->program_overlay_written[address_word & UINT32_C(0xFFFF)] !=
+            (unsigned char)0) {
+        *value_word =
+            bus->program_overlay[address_word & UINT32_C(0xFFFF)];
+        return TI_C54X_BUS_OK;
+    }
     if (address_word < bus->program_base) {
         bus->program_unmapped++;
         return TI_C54X_BUS_UNMAPPED;
@@ -96,6 +114,44 @@ run_image_advance(void *context,
         .bus_status = TI_C54X_BUS_FAULT,
         .read_value_word = UINT16_C(0),
         .kind = TI_C54X_BUS_WORD16_OBSERVATION_FAULT};
+    if (request->space ==
+        TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM) {
+        if (request->address_word > UINT32_C(0xFFFF) ||
+            bus->program_overlay == NULL ||
+            bus->program_overlay_written == NULL) {
+            bus->data_faults++;
+            if (!bus->have_data_fault) {
+                bus->have_data_fault = true;
+                bus->first_data_fault = request->address_word;
+            }
+            return;
+        }
+        if (request->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+            bus->program_overlay[request->address_word] =
+                request->write_value_word;
+            bus->program_overlay_written[request->address_word] =
+                (unsigned char)1;
+            bus->program_writes++;
+            observation->bus_status = TI_C54X_BUS_OK;
+            observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
+            return;
+        }
+        if (request->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+            bus->program_overlay_written[request->address_word] !=
+                (unsigned char)0) {
+            observation->read_value_word =
+                bus->program_overlay[request->address_word];
+            observation->bus_status = TI_C54X_BUS_OK;
+            observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
+            return;
+        }
+        bus->data_faults++;
+        if (!bus->have_data_fault) {
+            bus->have_data_fault = true;
+            bus->first_data_fault = request->address_word;
+        }
+        return;
+    }
     if (request->space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
         bus->data_words == NULL) {
         bus->data_faults++;
@@ -454,6 +510,8 @@ main(int argc, char **argv)
     ti_c54x_bus bus_desc;
     ti_c54x_config config;
     uint16_t *program = NULL;
+    /* done: frees the overlay scalars on every exit path. */
+    memset(&bus, 0, sizeof(bus));
     uint16_t *data = NULL;
     uint16_t *flash = NULL;
     uint32_t program_count = 0U;
@@ -578,6 +636,14 @@ main(int argc, char **argv)
     bus.data_base = data_base;
     bus.data_count = have_data ? data_count : UINT32_C(0);
     bus.visited = visited;
+    bus.program_overlay =
+        (uint16_t *)calloc((size_t)UINT32_C(0x10000), sizeof(uint16_t));
+    bus.program_overlay_written =
+        (unsigned char *)calloc((size_t)UINT32_C(0x10000), sizeof(unsigned char));
+    if (bus.program_overlay == NULL || bus.program_overlay_written == NULL) {
+        (void)fprintf(stderr, "error: program overlay alloc failed\n");
+        goto done;
+    }
     if (want_mcu_peer) {
         ti_c54x_mcu_upload_peer_status peer_status =
             ti_c54x_mcu_upload_peer_init(
@@ -639,7 +705,8 @@ main(int argc, char **argv)
                  " prog_reads=%" PRIu64 " prog_unmapped=%" PRIu64
                  " data_txn=%" PRIu64 " data_faults=%" PRIu64
                  " io_calls=%" PRIu64 " prog_covered=%" PRIu64
-                 "/%" PRIu32 " first_data_fault=%s first_io=%s\n",
+                 "/%" PRIu32 " prog_writes=%u first_data_fault=%s"
+                 " first_io=%s\n",
                  stop_reason_name(result.reason),
                  bus_status_name(result.bus_status),
                  result.instructions_attempted,
@@ -648,8 +715,8 @@ main(int argc, char **argv)
                  result.opcode_valid ? result.opcode_word : UINT16_C(0),
                  bus.program_reads, bus.program_unmapped,
                  bus.data_transactions, bus.data_faults, bus.io_calls,
-                 visited_count, program_count, data_fault_text,
-                 io_text);
+                 visited_count, program_count, bus.program_writes,
+                 data_fault_text, io_text);
     if (bus.have_mcu_peer) {
         (void)printf("mcu_upload fills_a=%" PRIu32 " fills_b=%" PRIu32
                      " fills_done=%" PRIu32 "\n",
@@ -668,5 +735,7 @@ done:
     free(program);
     free(data);
     free(flash);
+    free(bus.program_overlay);
+    free(bus.program_overlay_written);
     return rc;
 }

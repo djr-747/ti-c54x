@@ -26,6 +26,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_smem_absolute_pair.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_smem_absolute_pair_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_smem_program_pair.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_smem_program_pair_prepare.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_smem_program_pair_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_child_route.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_pair_dispatch.c"

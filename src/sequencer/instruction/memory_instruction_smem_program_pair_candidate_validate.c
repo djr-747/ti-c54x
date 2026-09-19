@@ -18,6 +18,7 @@
 #include "bus/adapter/word16_adapter.h"
 #include "isa/ops/memory/memory_effect.h"
 #include "bus/request/word16_request.h"
+#include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
 #include "sequencer/instruction/memory_instruction_smem_program_pair.h"
@@ -63,7 +64,9 @@ ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
         (candidate->effect.payload.memory.address_spec.kind !=
              TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 &&
          candidate->effect.payload.memory.address_spec.kind !=
-             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16)) {
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 &&
+         candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16)) {
         return false;
     }
     /* Both legs ride the pair snapshot, not the candidate's
@@ -81,9 +84,25 @@ ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
         return false;
     }
     smem_effect.address_spec = smem_spec;
-    if (!ti_c54x_memory_candidate_single_leg_shape_is_valid(
-            &candidate->smem_program_address_snapshot.smem_resolution,
-            &smem_effect)) {
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16) {
+        /* Absolute Smem leg: the synthesized ABSOLUTE_DATA spec
+         * validates through the absolute-data shape (MVDM/MVMD
+         * precedent), not the single-indirect leg checker. */
+        ti_c54x_op_memory_effect absolute_effect =
+            candidate->effect.payload.memory;
+
+        absolute_effect.address_spec = smem_spec;
+        if (!ti_c54x_memory_candidate_absolute_data_shape_is_valid(
+                &candidate->smem_program_address_snapshot
+                     .smem_resolution,
+                &absolute_effect)) {
+            return false;
+        }
+    } else if (!ti_c54x_memory_candidate_single_leg_shape_is_valid(
+                   &candidate->smem_program_address_snapshot
+                        .smem_resolution,
+                   &smem_effect)) {
         return false;
     }
     /* The PROGRAM request template stays zero until the observed
@@ -98,6 +117,11 @@ ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
          * frozen input low16, matching the planner. */
         program_address_word =
             (uint16_t)candidate->input.accumulator_a_raw40;
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16) {
+        program_address_word =
+            candidate->effect.payload.memory.address_spec
+                .smem_absolute_program.pmad;
     } else {
         program_address_word =
             candidate->effect.payload.memory.address_spec.smem_program
@@ -137,7 +161,9 @@ ti_c54x_memory_instruction_smem_program_pair_matches_live(
         (candidate->effect.payload.memory.address_spec.kind !=
              TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 &&
          candidate->effect.payload.memory.address_spec.kind !=
-             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16)) {
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 &&
+         candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16)) {
         return false;
     }
     /* The PROGRAM leg observes no state: echo the frozen address
@@ -147,6 +173,11 @@ ti_c54x_memory_instruction_smem_program_pair_matches_live(
         TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
         program_address_word =
             (uint16_t)candidate->input.accumulator_a_raw40;
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16) {
+        program_address_word =
+            candidate->effect.payload.memory.address_spec
+                .smem_absolute_program.pmad;
     } else {
         program_address_word =
             candidate->effect.payload.memory.address_spec.smem_program
@@ -185,6 +216,22 @@ ti_c54x_memory_instruction_smem_program_pair_smem_matches_live(
     }
     address_effect = &resolution->address_result.effect;
     arm = &candidate->effect.payload.memory.address_spec;
+    if (address_effect->source.kind == TI_C54X_ADDRESS_SOURCE_ABSOLUTE) {
+        /* Absolute DATA leg: the arm carries the address with no
+         * state dependence (MVDM/MVMD absolute precedent), so
+         * liveness echoes the frozen address under the NONE
+         * policy and then the sequential PC. */
+        if (arm->kind !=
+                TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16 ||
+            address_effect->state_policy !=
+                TI_C54X_ADDRESS_STATE_POLICY_NONE ||
+            address_effect->source.value.absolute.address !=
+                arm->smem_absolute_program.absolute) {
+            return false;
+        }
+        return ti_c54x_memory_candidate_pc_matches_live(
+            &candidate->pc_effect, state);
+    }
     if (address_effect->source.kind ==
         TI_C54X_ADDRESS_SOURCE_DIRECT_DP) {
         /* DP-relative direct DATA leg: the arm carries no DP page
