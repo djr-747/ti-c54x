@@ -13985,3 +13985,29 @@ entries are not rewritten after publication.
   S3f R-sharing convention.
 - Split commit discipline: impl `6c16ff7`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S55 lane 1 lands as 55acf82 (Lmem LONG32 seam)
+
+- Commit `55acf82` opens the T2-05 double-precision thread
+  (chosen over READA/WRITA: DADD-family words weigh heavily in
+  the 5110 census, LONG32/C16 ground exists, PAR does not):
+  address kind 21 plus the pair-shaped `long32_single` arm plus
+  the pure LONG32 leg planner, with no catalog rows and no
+  registry deltas (S6-lane-1 precedent). The DADD pilot row
+  plus C16 ALU core follow as lane 2.
+- RED-first `long32_single_resolver` (observed RED on the
+  missing planner header): direct even/odd canonical pairing,
+  MOD0-MOD2 two-word deltas, MOD3 WRITE pre-update with READ
+  decline, nine malformed arms plus wrong-kind/argument
+  rejects. 631/631 unit binaries direct, quality-test green,
+  cmake ctest 1/1.
+- Decisions: reuse (not new) union footprint; compose (not
+  fork) the landed DP/indirect resolvers; single planner entry
+  with caller-supplied AR (direct legs ignore it); READ and
+  WRITE pass through (MOD3-write serves future DST-side use).
+- Knobs: none added, changed, or retired.
+- Follow-up: lane 2 (pair-transaction commit root, DADD row +
+  leaves, FORM-T2-05-01 binding), then the five sibling
+  doubles.
+- Split commit discipline: impl `55acf82`, this ledger-only
+  follow-up.
