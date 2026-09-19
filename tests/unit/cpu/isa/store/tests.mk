@@ -23,5 +23,7 @@ $(eval $(call ti_c54x_add_test,cpu_mvdm,cpu/isa/store,test_cpu_mvdm.c))
 $(eval $(call ti_c54x_add_test,cpu_stm,cpu/isa/store,test_cpu_stm.c))
 # P3-S67 RED contract: SWWSR peripheral-cell CPU round trip.
 $(eval $(call ti_c54x_add_test,cpu_swwsr,cpu/isa/store,test_cpu_swwsr.c))
+# P3-S68 RED contract: CLKMD peripheral-cell CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_clkmd,cpu/isa/store,test_cpu_clkmd.c))
 $(eval $(call ti_c54x_add_test,cpu_st_t_smem,cpu/isa/store,test_cpu_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,cpu_cmps_smem_direct,cpu/isa/store,test_cpu_cmps_smem_direct.c))

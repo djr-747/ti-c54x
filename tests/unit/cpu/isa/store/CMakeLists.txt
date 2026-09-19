@@ -24,5 +24,7 @@ ti_c54x_add_unit_test(cpu_writa test_cpu_writa.c)
 ti_c54x_add_unit_test(cpu_stm test_cpu_stm.c)
 # P3-S67 RED contract: SWWSR peripheral-cell CPU round trip.
 ti_c54x_add_unit_test(cpu_swwsr test_cpu_swwsr.c)
+# P3-S68 RED contract: CLKMD peripheral-cell CPU retirement.
+ti_c54x_add_unit_test(cpu_clkmd test_cpu_clkmd.c)
 ti_c54x_add_unit_test(cpu_st_t_smem test_cpu_st_t_smem.c)
 ti_c54x_add_unit_test(cpu_cmps_smem_direct test_cpu_cmps_smem_direct.c)

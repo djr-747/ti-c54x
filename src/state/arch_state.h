@@ -26,6 +26,7 @@
 
 #include <ti_c54x/address.h>
 
+#include "../devices/clock_mode_register.h"
 #include "../devices/software_wait_state_register.h"
 #include "mmr_file.h"
 #include "register_layout.h"
@@ -48,6 +49,7 @@ typedef struct ti_c54x_arch_state {
     ti_c54x_status_register_state status;
     ti_c54x_mmr_file_state mmr_file;
     ti_c54x_swwsr_state swwsr;
+    ti_c54x_clkmd_state clkmd;
     uint8_t scalar_known_mask;
     uint8_t ar_known_mask;
 } ti_c54x_arch_state;

@@ -5,13 +5,14 @@
  * Module contract
  *
  * Owns: the Table 3-3 MMR address map plus the Table 8-2
- * SWWSR peripheral cell at 0x28, and the pure DATA-space
- * WORD16 request router: owner-backed registers dispatch to
- * checked whole-word access, IMR/TRN/BRC/RSA/REA dispatch to
- * the private MMR file, 0x28 dispatches to the devices-owned
- * SWWSR cell, and reserved 0x02–0x05, XPC 0x1E, 0x1F, and
- * every other space or address decline without touching
- * state. Unknown reads report UNKNOWN with canonical zero.
+ * SWWSR cell at 0x28 and the §8 CLKMD cell at 0x58, and the
+ * pure DATA-space WORD16 request router: owner-backed
+ * registers dispatch to checked whole-word access,
+ * IMR/TRN/BRC/RSA/REA dispatch to the private MMR file,
+ * 0x28/0x58 dispatch to their devices-owned cells, and
+ * reserved 0x02–0x05, XPC 0x1E, 0x1F, and every other space
+ * or address decline without touching state. Unknown reads
+ * report UNKNOWN with canonical zero.
  * Does not own: register storage, bus transfers, endpoint
  * callbacks, arbitration, opcode semantics, CPU lifecycle,
  * timing, or diagnostics. All inputs are borrowed read-only
@@ -57,6 +58,9 @@ extern "C" {
 /* SPRU131G Table 8-2 C542 peripheral MMR: SWWSR lives past the
  * CPU window and routes explicitly, never by window widening. */
 #define TI_C54X_BUS_MMR_ADDRESS_SWWSR UINT16_C(0x0028)
+/* SPRU131G §8 clock-generator module: CLKMD lives past the CPU
+ * window on this device and routes explicitly likewise. */
+#define TI_C54X_BUS_MMR_ADDRESS_CLKMD UINT16_C(0x0058)
 
 typedef enum ti_c54x_bus_mmr_status {
     TI_C54X_BUS_MMR_STATUS_SERVICED = 0,
