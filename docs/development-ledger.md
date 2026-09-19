@@ -14590,3 +14590,35 @@ entries are not rewritten after publication.
 - Follow-up: RPT+NOP repeat-eligibility (Table 2-28
   evidence for the delay-loop idiom); loader1 MBOX spin
   still needs MCU emulation.
+
+## 2026-09-19 — P3-S69 lands as 634b25c (NOP repeat-eligibility slice)
+
+- Implementation commit `634b25c`: one-field catalog
+  change, NOP row `UNRESOLVED` to `ELIGIBLE`. NOP is
+  absent from the Table 2-28 nonrepeatable list (TI
+  SPRU172C section 2, vendored in-repo), resolved per the
+  W52A rule with BITF/CMPM/BITT precedent. No sequencer,
+  eligibility, planner, knob, or timing changes.
+- Siblings: metadata NOP pin and catalog-contract NOP row
+  pin to ELIGIBLE; the two `test_cpu_rpt` UNRESOLVED-body
+  cases move to the still-UNRESOLVED `STM #0x2468,T` body
+  with identical block semantics; the rpt `read_program`
+  serves by address (HOLD re-drives body fetches, MAC
+  replay precedent). New eligible-body retirement proof
+  (`RPT #2` + NOP retires 4/4, RC 0, phase COMPLETE).
+- Validation evidence: `make test` exit 0 (full C suite,
+  286/286 contract quality incl. the fixed catalog pin,
+  all checkers PASS), coverage steady at 166/205 family
+  with strict 45/205. RED observed first (metadata pin,
+  CPU retirement). Hosted acceptance: BUDGET=200 spins
+  200/200 inside the `0xF09` loop; BUDGET=400 completes
+  it (331 attempted, 330 retired, zero data faults) and
+  reaches `0xF0C`, stopping UNIMPLEMENTED_OPCODE on
+  `0x76F8` (`ST #4,*(0x803)`, absolute ST immediate).
+- Decisions: single-row resolution only — other
+  UNRESOLVED rows wait for their own Table 2-28 evidence;
+  RPTB/RPTBD block repeat stays out.
+- Knobs: none added, changed, or retired.
+- Follow-up: absolute `ST #lk` slice for `0x76F8`
+  (MVDP at `0xF0F` waits behind it); loader1 MBOX spin
+  still needs MCU emulation.

@@ -1,4 +1,4 @@
-### P3-S69: NOP repeat-eligibility slice (planned)
+### P3-S69: NOP repeat-eligibility slice (implemented; local verification green)
 
 `NOP` (`0xF495`) is absent from the Table 2-28
 nonrepeatable list (TI SPRU172C §2, vendored in-repo),
