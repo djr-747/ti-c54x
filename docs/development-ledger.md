@@ -14702,3 +14702,37 @@ entries are not rewritten after publication.
   DSP CRC/finalize chain; full 64-block upload stays
   bounded (~5h at current core speed, correctness first
   per standing direction).
+
+## 2026-09-20 — P3-S72 lands as adc6633 (MVDP absolute-Smem slice)
+
+- Implementation commit `adc6633`: exact row
+  MVDP_SMEM_ABSOLUTE `0x7DF8` with
+  INDIRECT_ADDR7_ABSOLUTE16_PMAD plus the new
+  SMEM_ABSOLUTE_PROGRAM_PAIR sequencer arm
+  (`src/sequencer/instruction/memory_instruction_smem_program_pair*.c`,
+  split out of the overgrown pair engine; op leaf
+  `src/isa/ops/store/op_mvdp_smem_absolute.c`,
+  effect `src/isa/ops/memory/memory_effect_smem_absolute_program_pair.c`).
+  Exact-before-masked shadow keeps the `0x7D` neighbors
+  on MVDP; pair-validator gate extended for the absolute
+  arm. Runner bus zero-initialized and gains a
+  `prog_writes` counter (hosted-only reporting).
+- Validation evidence: `make test` exit 0 (new
+  `test_mvdp_smem_absolute_decode/ops/metadata`,
+  `test_cpu_mvdp_smem_absolute` RED-first green; masked
+  sweep pins hold neighbors; registries and checkers
+  PASS). Boot repro past `0xF0F`: BUDGET=400 staged
+  loader1 run with the MCU peer retires 333/332 with
+  `prog_writes=1` and PC at `0xF12` (`0x7CF8`,
+  MVPD-family follower); targeted ENTRY=0xF0F run
+  retires the MVDP alone (data_txn=2, smem read plus
+  program write, zero data faults).
+- Decisions: absolute destination keeps the S70/S62
+  exact-hole pattern (`0x76F8`/`0x7CF8`/`0x7DF8`
+  within their masked families); bundle capacity 3 for
+  the 3-word absolute fetch; runner zero-init fixes a
+  real uninitialized-bus defect, not just reporting.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVPD absolute slice for `0x7CF8` at
+  `0xF12`, then the DSP CRC/finalize chain; full
+  64-block upload stays bounded per standing direction.

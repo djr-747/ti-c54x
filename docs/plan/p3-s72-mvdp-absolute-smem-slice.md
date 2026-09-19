@@ -1,4 +1,4 @@
-### P3-S72: MVDP absolute-Smem slice (planned)
+### P3-S72: MVDP absolute-Smem slice (implemented; local verification green)
 
 `MVDP *(abs),pmad` is TI SPRU172C section MVDP (p. 4-111)
 with absolute Smem addressing (3 words: first `0x7DF8`
