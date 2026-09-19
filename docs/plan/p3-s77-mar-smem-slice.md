@@ -1,4 +1,4 @@
-### P3-S77: MAR Smem slice (planned)
+### P3-S77: MAR Smem slice (implemented; local verification green)
 
 `MAR Smem` is TI SPRU172C section MAR (`0110 1101
 IAAA AAAA`, modify auxiliary register, one word, no

@@ -14924,3 +14924,56 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x6D8A` at `0x8023`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S77 lands as ae23008 (MAR Smem slice)
+
+- Implementation commit `ae23008`: masked row
+  MAR_SMEM `0x6D00/0xFF00` (TI SPRU172C section
+  MAR, modify auxiliary register, one word with the
+  8-bit Smem byte) reusing the `FRAME_K8` set shape
+  through a new `MAR_SMEM8` layout, plus the
+  auxiliary leaf gating the evidenced indirect MOD1
+  postdecrement cookie (`MAR *AR2-`, word `0x6D8A`)
+  with an AR-knownness gate. A new `AR_WRITE` arm
+  (kind 13: addressed index plus frozen
+  value-after) retires through a new `ar_write`
+  sequencer owner on the shared pointer-write
+  `run.c` route (bridge first, checked AR writer
+  marking known, sequential PC, no bus traffic).
+  No repeat evidence, so `UNRESOLVED` (`FRAME`
+  precedent, blocking repeat admission). New
+  catalog ID moves `ID_COUNT` 332 to 333 with pins;
+  `FORM-T2-18-02` binds `SUBSET` with
+  `STANDARD_INDIRECT_MOD1`; populated first words
+  40013 to 40269 (first mapped words of the
+  `0x6Dxx` gap); no MMR-model, knob, or timing
+  changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_mar_smem_decode/ops/metadata`,
+  `test_cpu_mar_smem` RED-first green; registries
+  and checkers PASS, including the `FRAME` CPU
+  regression). Boot repro past `0x8023`: BUDGET=400
+  staged loader1 run with the MCU peer retires
+  346/345 with `data_txn=13` (zero data faults)
+  and reaches `0x8024`, where `0x56F8` is the next
+  explicit stop.
+- Decisions: the `0x6D8A` identity (MAR, one word,
+  Smem byte `0x8A` = MOD1 postdecrement AR2) is
+  triangulated from the TI opcode (`0110 1101
+  IAAA AAAA`), the public disassembler map, and
+  the repo MOD table; the `0x8024` word matches no
+  row, confirming the single-word length. The leaf
+  gates mode (I=1, MOD1) but admits any AR index
+  as data. The size gate (`run.c`, layout sets at
+  the 800-line ceiling) forced sharing the
+  pointer-write retirement tail and the 8-bit set
+  shape instead of new near-duplicates. Mid-work
+  `git add -A` swept session-memory files
+  (`.agents/`) into the draft commit; they were
+  removed with `git rm --cached` plus an amend of
+  the seconds-old unpushed commit, restoring
+  atomicity with the files preserved untracked.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x56F8` at `0x8024`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
