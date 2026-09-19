@@ -14828,3 +14828,47 @@ entries are not rewritten after publication.
   at `0xF17` (`10F8 087F F844`), then the DSP
   CRC/finalize chain; full 64-block upload stays
   bounded per standing direction.
+
+## 2026-09-20 — P3-S75 lands as 422b14e (LD absolute-Smem slice)
+
+- Implementation commit `422b14e`: exact row
+  LD_SMEM_ABSOLUTE `0x10F8` (TI SPRU172C LD
+  `0001 000D IAAA AAAA`, D=0 selects A) reusing the
+  S74 ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16 layout,
+  plus the `src/isa/ops/load/op_ld_smem_absolute.c`
+  leaf (SXM knownness gate, S-masked exact-word
+  extract) staging the established ABSOLUTE_DATA
+  arm (kind 22, READ, sidecar NONE) with an
+  SXM-widening accumulator-write read-value
+  completion (LD_SMEM completion precedent, C/TC
+  preserved). No new effect kind, no sequencer
+  changes. New catalog ID moves `ID_COUNT` 330 to
+  331 with pins; `FORM-T2-19-02` binds the row
+  `SUBSET` with `ABSOLUTE_DATA` (with the S66-style
+  carve in the three multi-binding tests);
+  populated first words 40011 to 40012; no MMR,
+  knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_ld_smem_absolute_decode/ops/metadata`,
+  `test_cpu_ld_smem_absolute` RED-first green;
+  MOD5/MOD6 and fixed-mod2 sweeps hold neighbors;
+  registries and checkers PASS). Boot repro past
+  `0xF17` with the page-0 DATA window: BUDGET=400
+  staged loader1 run with the MCU peer retires
+  343/342 with `data_txn=12` (MBOX0 poll issued,
+  zero data faults) and reaches `0xF1F` (`0x6BF8`,
+  ADDM absolute hole `6BF8 0013 0800`) via the
+  implemented `0xF844` row at `0xF19` and two
+  `0x72xx` moves.
+- Decisions: row sits after the LD_SMEM indirect
+  family (not adjacent to LD_SMEM) to keep the
+  positionally pinned catalog head (`rows[5]` STL,
+  `rows[6]` STH) stable; 40-bit SXM widening
+  follows the leaf formula (`0xFFFFFF87F0`, not a
+  56-bit value); completion is a public leaf entry
+  point for direct RED tests.
+- Knobs: none added, changed, or retired.
+- Follow-up: ADDM absolute slice for `0x6BF8` at
+  `0xF1F` (`6BF8 0013 0800`), then the DSP
+  CRC/finalize chain; full 64-block upload stays
+  bounded per standing direction.

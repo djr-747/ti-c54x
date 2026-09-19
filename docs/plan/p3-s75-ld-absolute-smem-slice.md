@@ -1,4 +1,4 @@
-### P3-S75: LD absolute-Smem slice (planned)
+### P3-S75: LD absolute-Smem slice (implemented; local verification green)
 
 `LD *(abs),dst` is TI SPRU172C section LD (`LD Smem,dst`,
 opcode `0001 000D IAAA AAAA`, 1 base word, "add 1 word
