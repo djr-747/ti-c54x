@@ -13894,3 +13894,16 @@ entries are not rewritten after publication.
   artifact changes in this commit.
 - Split commit discipline: ledger-and-status-only follow-up; no
   impl hash. Next remains the planned P3-S27 ADD/SUB #lk rows.
+
+## 2026-09-19 — Correction: P3-S27 checklist link lands late
+
+- Correction (appended, no rewrite): commit `60e8888` plus
+  ledger `0cb344b` landed S27 green (266 rows, FORMs 108/205)
+  and the plan-doc heading already reads `(implemented; local
+  verification green)`, but the `implementation-plan.md` slice
+  link still read `(planned)`. This entry advances that link;
+  title text is unchanged.
+- No code, registry, or generated artifact changes: the tree
+  is code-identical to the green `make test` run this session.
+- Split commit discipline: ledger-and-status-only follow-up.
+  Next remains the planned P3-S28 Xmem rows.
