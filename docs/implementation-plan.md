@@ -725,6 +725,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S57: 5110 boot-probe first light (implemented; local verification green)](plan/p3-s57-5110-boot-probe-first-light.md)
 
+- [P3-S58: MVMD MMR-to-Smem move slice (implemented; local verification green)](plan/p3-s58-mvmd-mmr-to-smem-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

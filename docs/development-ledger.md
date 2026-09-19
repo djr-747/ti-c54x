@@ -14120,3 +14120,25 @@ entries are not rewritten after publication.
 - Follow-up: MCU overlay upload map, harness DP/AR/SP seeding
   (or core reset coverage), then MVMD/MVMM rows toward the next
   halt.
+
+## 2026-09-19 — P3-S58 lands as d9349db (MVMD MMR-to-Smem slice)
+
+- Implementation commit `d9349db`: MVMD `0x73` row mirrors MVDM on
+  the shared MMR5_ABSOLUTE16 layout with the MMR sidecar in the
+  absolute DATA spec arm (`STORE_WITH_READ`/`LOAD_WITH_WRITE`);
+  resume-path MMR snapshot patching prepared WRITE; MMR load leg
+  extracted to `memory_instruction_mmr_load`. New leaf, CPU,
+  resolution, and metadata tests; STM near-miss test pins the
+  `0x7300` sibling; catalog IDs shift 311 to 312 with pins green.
+- Validation evidence: `make test` exit 0, ctest 650/650 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2, sources=7,
+  requirements=801, tests=654), lookup regenerated.
+- Decisions: snapshot matcher moved from a static copy in
+  `memory_instruction_transaction.c` into the candidate-validate
+  module (implements the already-declared public symbol); the
+  LOAD leg is exempt from the full-shape value echo in candidate
+  validate because the snapshot design stages MMR values on the
+  transaction, not the copied shape.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVMM/MVDK/MVKD rows toward the `0xF00` halt, MCU
+  overlay upload map, harness DP/AR/SP seeding.

@@ -1,4 +1,4 @@
-### P3-S58: MVMD MMR-to-Smem move slice (planned)
+### P3-S58: MVMD MMR-to-Smem move slice (implemented; local verification green)
 
 `MVMD MMR, dmad` (FORM-T2-26-06) moves one memory-mapped
 register into a DATA word. It is the `MVDM` mirror and the
