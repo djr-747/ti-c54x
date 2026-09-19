@@ -14489,3 +14489,37 @@ entries are not rewritten after publication.
   behind the warm-boot rehome sequence.
 - Follow-up: `0x0028` device-map decision; loader1
   continuation past the MBOX spin needs MCU emulation.
+
+## 2026-09-19 — P3-S66 lands as 546a396 (LDU Smem-direct load slice)
+
+- Implementation commit `546a396`: one row (`LDU_DIRECT`
+  `0x1200` under `0xFE80`, D destination at bit 8, I pinned 0
+  at bit 7, 7-bit DP-relative direct cookie at bits 6:0)
+  zero-extends the DP-relative Smem word into accumulator A
+  or B. New checked/trusted `op_ldu_direct` leaf mirroring
+  `op_ldm_smem_direct` (same layout, same `DIRECT_WORD16`
+  read effect, same zero-extending completion) plus the
+  DP-knownness `UNKNOWN_INPUT` gate the MMR-addressed LDM
+  leaf does not need. The I=1 indirect half stays with the
+  S34 rows. FORM-T2-19-20 binds the row SUBSET with
+  `DIRECT_DP` (eighth binding on that form). Catalog IDs
+  move 325 to 326 with pins green.
+- Validation evidence: `make test` exit 0 (105 C suites ok,
+  286/286 contract quality, evidence/knob/boundary/
+  manifest/observer checks PASS), lookup regenerated (+256
+  `LDU_DIRECT` words, 40009 populated entries), coverage
+  holds at 166/205 family (80.976%) with strict-complete
+  steady at 45/205. CMake ctest not re-run (stale trees
+  removed in S64; manifest parity covered by
+  check_build_manifests).
+- Decisions: the `0x1234` probe word now decodes as
+  `LDU_DIRECT`, so unrelated CPU/observer probe fixtures
+  moved to `0x1000` and the LDU_SMEM fixed-bit near-miss
+  pins claim the `0x1200` cross-row instead of UNKNOWN;
+  three per-form inventory pin tests (multi, circular,
+  reverse-carry) now expect the 8-row LDU family shape with
+  the `DIRECT_DP` subset; README census counts stay frozen
+  (last refreshed S57) per sibling-slice scope.
+- Knobs: none added, changed, or retired.
+- Follow-up: `0x0028` device-map decision; loader1
+  continuation past the MBOX spin needs MCU emulation.

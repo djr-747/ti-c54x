@@ -1,4 +1,4 @@
-### P3-S66: LDU Smem-direct load slice (planned)
+### P3-S66: LDU Smem-direct load slice (implemented; local verification green)
 
 `LDU Smem, dst` direct (FORM-T2-19-20) zero-extends the
 DP-relative Smem word into accumulator A or B. It extends
