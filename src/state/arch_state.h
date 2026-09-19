@@ -7,8 +7,10 @@
  * knownness-aware AR/SP/RTN and ARP/CMPT status-field access, knownness,
  * and field-limited mutation for ARP, DP, CPL, and CMPT. Status register
  * storage is composed from the status owner; block_size_register.h owns
- * BK access, repeat_counter_register.h owns RC access, and
- * interrupt_flag_register.h owns IFR access. RTN is the CPU-internal
+ * BK access, repeat_counter_register.h owns RC access,
+ * interrupt_flag_register.h owns IFR access, and
+ * software_wait_state_register.h owns the SWWSR peripheral
+ * cell embedded below. RTN is the CPU-internal
  * fast-return register (SPRU131G §6, SPRU172C §4 RETF[D]): no ISA
  * operand reads or writes it, so only sequencer commit paths and
  * tests use these accessors.
@@ -24,6 +26,7 @@
 
 #include <ti_c54x/address.h>
 
+#include "../devices/software_wait_state_register.h"
 #include "mmr_file.h"
 #include "register_layout.h"
 #include "status/registers.h"
@@ -44,6 +47,7 @@ typedef struct ti_c54x_arch_state {
     uint16_t ar[8];
     ti_c54x_status_register_state status;
     ti_c54x_mmr_file_state mmr_file;
+    ti_c54x_swwsr_state swwsr;
     uint8_t scalar_known_mask;
     uint8_t ar_known_mask;
 } ti_c54x_arch_state;

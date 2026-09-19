@@ -71,6 +71,27 @@ static ti_c54x_bus_mmr_route_result route_file(
     return invalid();
 }
 
+static ti_c54x_bus_mmr_route_result route_swwsr(
+    ti_c54x_arch_state *state, bool is_write,
+    uint16_t write_value_word)
+{
+    uint16_t value = UINT16_C(0);
+    ti_c54x_swwsr_status op;
+
+    if (is_write) {
+        op = ti_c54x_swwsr_write(&state->swwsr, write_value_word);
+    } else {
+        op = ti_c54x_swwsr_read(&state->swwsr, &value);
+    }
+    if (op == TI_C54X_SWWSR_OK) {
+        return serviced(value);
+    }
+    if (op == TI_C54X_SWWSR_UNKNOWN) {
+        return unknown();
+    }
+    return invalid();
+}
+
 static ti_c54x_bus_mmr_route_result route_ar(
     ti_c54x_arch_state *state, uint16_t address, bool is_write,
     uint16_t write_value_word)
@@ -220,8 +241,15 @@ bool ti_c54x_bus_mmr_is_routed_address(
 {
     uint16_t address;
 
-    if (space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
-        address_word > TI_C54X_BUS_MMR_ADDRESS_MAX) {
+    if (space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA) {
+        return false;
+    }
+    /* The SWWSR peripheral cell routes explicitly; the CPU
+     * window itself stays capped at MAX. */
+    if (address_word == TI_C54X_BUS_MMR_ADDRESS_SWWSR) {
+        return true;
+    }
+    if (address_word > TI_C54X_BUS_MMR_ADDRESS_MAX) {
         return false;
     }
     address = (uint16_t)address_word;
@@ -260,7 +288,8 @@ ti_c54x_bus_mmr_route_result ti_c54x_bus_mmr_route(
         return invalid();
     }
     if (request->space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
-        request->address_word > TI_C54X_BUS_MMR_ADDRESS_MAX) {
+        (request->address_word > TI_C54X_BUS_MMR_ADDRESS_MAX &&
+         request->address_word != TI_C54X_BUS_MMR_ADDRESS_SWWSR)) {
         return declined();
     }
     is_write = request->access ==
@@ -330,6 +359,9 @@ ti_c54x_bus_mmr_route_result ti_c54x_bus_mmr_route(
         }
         return route_arch(value, ti_c54x_arch_state_read_bk(state,
                                                             &value));
+    case TI_C54X_BUS_MMR_ADDRESS_SWWSR:
+        return route_swwsr(state, is_write,
+                           request->write_value_word);
     default:
         return declined();
     }

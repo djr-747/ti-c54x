@@ -2,13 +2,16 @@
  * Module contract
  *
  * Owns: PROJECT_CONTRACT executable proof of the S1 MMR route
- * (SPRU131G Table 3-3 §3.3.4): DATA-space WORD16 traffic at
- * 0x00–0x1F routes to register state — owned registers through
- * checked whole-word access, IMR/TRN/BRC/RSA/REA through the
- * private MMR file — while reserved 0x02–0x05, XPC 0x1E, 0x1F,
- * and every other space or address decline untouched with no
- * endpoint traffic. Unknown reads report UNKNOWN without
- * touching state; NULL and invalid requests reject.
+ * (SPRU131G Table 3-3 §3.3.4) plus the P3-S67 Table 8-2 SWWSR
+ * cell: DATA-space WORD16 traffic at 0x00–0x1F routes to
+ * register state — owned registers through checked whole-word
+ * access, IMR/TRN/BRC/RSA/REA through the private MMR file —
+ * and DATA 0x28 routes to the reset-known SWWSR cell, while
+ * reserved 0x02–0x05, XPC 0x1E, 0x1F, the 0x27/0x29
+ * neighbors, and every other space or address decline
+ * untouched with no endpoint traffic. Unknown reads report
+ * UNKNOWN without touching state; NULL and invalid requests
+ * reject.
  * Does not own: MMR storage, bus transfers, endpoint callbacks,
  * arbitration, opcode semantics, CPU lifecycle, or timing.
  */
@@ -92,6 +95,7 @@ test_table_addresses_are_documented(void)
     TI_C54X_TEST_CHECK_U64(TI_C54X_BUS_MMR_ADDRESS_REA, UINT16_C(0x001C));
     TI_C54X_TEST_CHECK_U64(TI_C54X_BUS_MMR_ADDRESS_PMST, UINT16_C(0x001D));
     TI_C54X_TEST_CHECK_U64(TI_C54X_BUS_MMR_ADDRESS_MAX, UINT16_C(0x001F));
+    TI_C54X_TEST_CHECK_U64(TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0x0028));
 }
 
 static void
@@ -302,6 +306,53 @@ test_null_and_invalid_reject(void)
                        TI_C54X_BUS_MMR_STATUS_INVALID_ARGUMENT);
 }
 
+static void
+test_swwsr_peripheral_cell_routes(void)
+{
+    mmr_fixture fixture;
+    ti_c54x_bus_mmr_route_result result;
+
+    fixture_init(&fixture);
+    /* P3-S67: DATA 0x28 is SWWSR (SPRU131 Tables 8-2/10-2),
+     * reset 0x7FFF and known, not endpoint RAM. */
+    TI_C54X_TEST_CHECK(ti_c54x_bus_mmr_is_routed_address(
+                           TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                           (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR));
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                   (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_SERVICED);
+    TI_C54X_TEST_CHECK_U64(result.read_value_word, UINT16_C(0x7FFF));
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                   (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0x2000));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_SERVICED);
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                   (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_SERVICED);
+    TI_C54X_TEST_CHECK_U64(result.read_value_word, UINT16_C(0x2000));
+    /* Reserved bit 15 always reads zero. */
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                   (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0xFFFF));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_SERVICED);
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                   (uint32_t)TI_C54X_BUS_MMR_ADDRESS_SWWSR, UINT16_C(0));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_SERVICED);
+    TI_C54X_TEST_CHECK_U64(result.read_value_word, UINT16_C(0x7FFF));
+    /* Neighbors stay declined: 0x27 reserved, 0x29 BSCR unmodeled. */
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                   UINT32_C(0x0027), UINT16_C(0));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_DECLINED);
+    result = route(&fixture, TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                   UINT32_C(0x0029), UINT16_C(0x1234));
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_BUS_MMR_STATUS_DECLINED);
+}
+
 int
 main(void)
 {
@@ -310,6 +361,7 @@ main(void)
     test_owned_registers_round_trip();
     test_private_file_round_trip();
     test_unknown_owned_reads_report_unknown();
+    test_swwsr_peripheral_cell_routes();
     test_null_and_invalid_reject();
     return 0;
 }

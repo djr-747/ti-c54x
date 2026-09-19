@@ -22,5 +22,7 @@ ti_c54x_add_unit_test(cpu_reada test_cpu_reada.c)
 ti_c54x_add_unit_test(cpu_writa test_cpu_writa.c)
 # P3-S7 RED contract: STM CPU retirement.
 ti_c54x_add_unit_test(cpu_stm test_cpu_stm.c)
+# P3-S67 RED contract: SWWSR peripheral-cell CPU round trip.
+ti_c54x_add_unit_test(cpu_swwsr test_cpu_swwsr.c)
 ti_c54x_add_unit_test(cpu_st_t_smem test_cpu_st_t_smem.c)
 ti_c54x_add_unit_test(cpu_cmps_smem_direct test_cpu_cmps_smem_direct.c)

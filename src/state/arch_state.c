@@ -35,6 +35,10 @@ ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state)
         TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
     }
+    /* SWWSR adopts its documented SPRU131 Table 10-2 reset value. */
+    if (ti_c54x_swwsr_reset(&state->swwsr) != TI_C54X_SWWSR_OK) {
+        return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
+    }
     state->scalar_known_mask = (uint8_t)(TI_C54X_ARCH_STATE_KNOWN_PC |
                                          TI_C54X_ARCH_STATE_KNOWN_IFR |
                                          TI_C54X_ARCH_STATE_KNOWN_RC);
