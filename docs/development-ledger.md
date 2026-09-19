@@ -14232,3 +14232,41 @@ entries are not rewritten after publication.
 - Follow-up: MVPD/MVDP parallel moves, READA/WRITA, then the
   `0xF00` halt re-probe with the full move group in the image
   path.
+
+## 2026-09-19 — P3-S62 lands as f056263 (MVPD program-to-Smem slice)
+
+- Implementation commit `f056263`: two rows (`MVPD_DIRECT`
+  `0x7D00`, `MVPD_SMEM` `0x7D80`) on a new
+  `SMEM_PROGRAM_PAIR` carrier with access WRITE (PORT
+  convention): the PROGRAM leg reads first, the Smem leg
+  writes second. New pair root mirrors the S60 root with
+  per-leg MMR-route-or-endpoint service; the Smem AR update
+  publishes beside the stack pair's. New leaf, CPU (direct
+  copy plus MOD3 pre-increment with AR update), catalog, and
+  neighbor-row tests; FORM-T2-26-08 binds SUBSET with
+  DIRECT_DP + STANDARD_INDIRECT_MOD0_MOD3. Catalog IDs shift
+  317 to 319 with pins green.
+- Validation evidence: `make test` exit 0, ctest 665/665 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2,
+  sources=3, requirements=4, tests=3), lookup regenerated
+  (+256 words at `38985`), coverage now 163/205 (79.512%)
+  with strict-complete steady at 45/205.
+- Decisions: the first-drafted rows sat on `0x7800` inside the
+  `MACP_SMEM` `0xFE00` mask and were moved to `0x7D00`/`0x7D80`
+  (the MACP CPU tests behaviorally pin `0x78`/`0x79` with `S`
+  at bit 8); neighbor pins assert `0x78`/`0x79` stay MACP and
+  `0x7C` stays undecoded for MVDP. The leaf initially staged
+  the S61 `SMEM_ABSOLUTE_PAIR` kind and now stages
+  `SMEM_PROGRAM_PAIR`. PROGRAM legs bypass the DATA/IO-only
+  endpoint adapter with the same begin/poll/complete sequence
+  (DATA_PROGRAM precedent). The indirect CPU test asserts the
+  library MOD3 pre-increment (address and post AR `0x0FFF`),
+  not TI subtract-AR0 (outside the MOD0--MOD3 model).
+  Required split: pair-route classification moves out of
+  `memory_instruction_transaction.c` (810 to 767 lines) into
+  `memory_instruction_child_route`; the next pair slices add
+  no lines there.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVDP mirror on the same carrier (READ access,
+  `0x7C` rows), READA/WRITA, then the `0xF00` halt re-probe
+  with the full move group in the image path.

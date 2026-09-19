@@ -1,4 +1,4 @@
-### P3-S62: MVPD program-to-Smem move slice (planned)
+### P3-S62: MVPD program-to-Smem move slice (implemented; local verification green)
 
 `MVPD pmad, Smem` (FORM-T2-26-08) copies the program word at
 a 16-bit-immediate address into Smem. It is the fifth 5110
