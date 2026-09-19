@@ -168,8 +168,19 @@ test_fixed_bit_near_misses(void)
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002),
         UINT16_C(0x0008), UINT16_C(0x0100),
-        UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x1000), UINT16_C(0x2000)};
+    /* This former near-miss is the P3-S61 MVKD direct sibling:
+     * 0xF074 ^ 0x8000 = 0x7074 classifies into the MVKD_DIRECT
+     * row. */
+    {
+        const ti_c54x_decode_result mvkd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(CALL_PMAD_VALUE ^ UINT16_C(0x8000)));
+        TI_C54X_TEST_CHECK(mvkd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mvkd_sibling.id ==
+                           TI_C54X_OPCODE_ID_MVKD_DIRECT);
+    }
     const ti_c54x_decode_result calld_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(CALL_PMAD_VALUE ^ UINT16_C(0x0200)));

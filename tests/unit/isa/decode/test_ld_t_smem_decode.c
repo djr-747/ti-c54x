@@ -87,8 +87,7 @@ static void
 test_fixed_bit_near_misses_and_forged_completion(void)
 {
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
-        UINT16_C(0x4000)};
+        UINT16_C(0x0080)};
     const uint16_t word = LD_T_VALUE;
     const ti_c54x_decode_result valid = ti_c54x_decode_first_word(word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -107,6 +106,15 @@ test_fixed_bit_near_misses_and_forged_completion(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* This former near-miss is the P3-S61 MVKD Smem sibling:
+     * 0x3090 ^ 0x4000 = 0x7090 classifies into the MVKD_SMEM row. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x4000)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_MVKD_SMEM);
     }
 
     /* The 0x8000 flip (0xB090) is the P3-S3g MAC_DUAL_M2_M0 sibling:

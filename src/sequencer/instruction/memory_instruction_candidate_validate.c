@@ -137,6 +137,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
             return candidate->stack_pair_address_snapshot.stack_resolution
                        .request.write_value_word == UINT16_C(0);
         }
+        if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
+            /* MVKD reads the dmad leg first; that frozen READ
+             * template carries no store value. */
+            return candidate->smem_absolute_address_snapshot.dmad_resolution
+                       .request.write_value_word == UINT16_C(0);
+        }
         return candidate->address_resolution.request.write_value_word ==
                UINT16_C(0);
     }

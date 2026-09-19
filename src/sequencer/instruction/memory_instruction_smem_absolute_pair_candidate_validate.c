@@ -45,10 +45,14 @@ ti_c54x_memory_instruction_smem_absolute_pair_candidate_shape_is_valid(
      * with the snapshot. Re-derive both leg specs from the frozen
      * arm and input, then validate each leg against its
      * resolution. The Smem DATA leg runs inverse to the effect
-     * access (MVDK reads Smem while the effect completes
-     * WRITE). */
+     * access (MVDK reads Smem while the effect completes WRITE;
+     * MVKD writes Smem while the effect completes READ). */
     data_effect = candidate->effect.payload.memory;
-    data_effect.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
+    data_effect.access =
+        (candidate->effect.payload.memory.access ==
+                 TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)
+            ? TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
+            : TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
     if (!ti_c54x_memory_instruction_smem_absolute_pair_synthesize_data_spec(
             &candidate->effect.payload.memory.address_spec,
             &candidate->input, &data_spec)) {

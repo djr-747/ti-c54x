@@ -24,6 +24,8 @@ $(eval $(call ti_c54x_add_test,mvmd_ops,isa/ops/store,test_mvmd.c))
 $(eval $(call ti_c54x_add_test,mvmm_ops,isa/ops/store,test_mvmm.c))
 # P3-S60 RED contract: MVDK Smem-to-absolute copy effects.
 $(eval $(call ti_c54x_add_test,mvdk_ops,isa/ops/store,test_mvdk.c))
+# P3-S61 RED contract: MVKD absolute-to-Smem copy effects.
+$(eval $(call ti_c54x_add_test,mvkd_ops,isa/ops/store,test_mvkd.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_ops,isa/ops/store,test_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_ops,isa/ops/store,test_st_t_smem_direct.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_ops,isa/ops/store,test_stlm_smem_direct.c))

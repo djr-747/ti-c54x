@@ -25,15 +25,15 @@ ti_c54x_op_memory_effect_smem_absolute_pair_shape_is_valid(
             TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
         return false;
     }
-    /* Smem-to-absolute pair: the Smem DATA leg is read first and
-     * the observed word is written to `dmad`; the staged value is
-     * zero (the second-leg value is a bus observation the reducer
+    /* Smem-absolute pair: the first leg is read and the observed
+     * word is written to the second leg; the staged value is zero
+     * (the second-leg value is a bus observation the reducer
      * replaces before issue). No RMW, no T load, no delay, and no
      * leaf completion: the pair root owns the chaining
      * internally. Direct legs carry the DP-relative offset;
      * indirect legs carry the MOD0--MOD3/ARF selector with no
-     * direct address. MVDK completes WRITE; MVKD reuses this
-     * carrier with READ. */
+     * direct address. MVDK reads Smem first (access WRITE); MVKD
+     * reads dmad first (access READ). */
     if (effect->address_spec.smem_absolute.indirect > UINT8_C(1) ||
         effect->address_spec.smem_absolute.reserved_half !=
             UINT16_C(0) ||
@@ -62,7 +62,8 @@ ti_c54x_op_memory_effect_smem_absolute_pair_shape_is_valid(
                    UINT8_C(3)) {
         return false;
     }
-    if (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+    if (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
+        effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
         return false;
     }
     return effect->value_word == UINT16_C(0) &&

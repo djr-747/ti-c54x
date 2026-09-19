@@ -159,8 +159,7 @@ test_fixed_bit_near_misses(void)
      * miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0200),
-        UINT16_C(0x1000), UINT16_C(0x2000),
-        UINT16_C(0x8000)};
+        UINT16_C(0x1000), UINT16_C(0x2000)};
     const ti_c54x_decode_result and_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
                                             UINT16_C(0x0010)));
@@ -170,6 +169,18 @@ test_fixed_bit_near_misses(void)
     const ti_c54x_decode_result sub_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
                                             UINT16_C(0x0400)));
+    /* This former near-miss is the P3-S61 MVKD direct sibling:
+     * 0xF020 ^ 0x8000 = 0x7020 classifies into the MVKD_DIRECT
+     * row. */
+    {
+        const ti_c54x_decode_result mvkd_sibling =
+            ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
+                                                UINT16_C(0x8000)));
+        TI_C54X_TEST_CHECK(mvkd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mvkd_sibling.id ==
+                           TI_C54X_OPCODE_ID_MVKD_DIRECT);
+    }
     /* 0xF820 (fixed bit 11 set) is the BC_PMAD encoding with
      * cond=0x20 (NTC): valid row, wrong identity. */
     const ti_c54x_decode_result bc_sibling =

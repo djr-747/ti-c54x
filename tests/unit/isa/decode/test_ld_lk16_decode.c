@@ -158,7 +158,20 @@ test_fixed_bit_near_misses(void)
         UINT16_C(0x0008),
         UINT16_C(0x0010), UINT16_C(0x0200),
         UINT16_C(0x1000),
-        UINT16_C(0x2000), UINT16_C(0x8000)};
+        UINT16_C(0x2000)};
+    /* This former near-miss is the P3-S61 MVKD direct sibling:
+     * 0xF062 ^ 0x8000 = 0x7062 classifies into the MVKD_DIRECT
+     * row. */
+    {
+        const ti_c54x_decode_result mvkd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x8000)));
+        TI_C54X_TEST_CHECK(mvkd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mvkd_sibling.id ==
+                           TI_C54X_OPCODE_ID_MVKD_DIRECT);
+    }
+
     /* 0xB062 (fixed bit 14 set) is the MAC_DUAL_M1_M0 encoding with
      * R=0, S=0 (src A), D=0 (dst A), XMOD1 XAR=AR4, YMOD0 YAR=AR4:
      * valid row, wrong identity. */
