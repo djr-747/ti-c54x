@@ -1,4 +1,4 @@
-### P3-S79: RPTB block-repeat slice (planned)
+### P3-S79: RPTB block-repeat slice (implemented; local verification green)
 
 `RPTB pmad` is TI SPRU172C section RPTB[D] (vendored
 `vendor/ti/spru172c.txt` pp. 4-147–4-148): syntax

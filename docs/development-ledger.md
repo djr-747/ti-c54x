@@ -15029,3 +15029,58 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0xF072` at `0x802F`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S79 lands as 30b868e (RPTB block-repeat slice)
+
+- Plan state: `P3-S79: RPTB block-repeat slice` is
+  `implemented; local verification green` (slice doc
+  plus implementation-plan link flipped).
+- Scope: exact row `RPTB` (`0xF072`, 2 words,
+  `BRANCH_PMAD16` reused, `INELIGIBLE`, no input
+  resources) retires `RPTB pmad` (TI SPRU172C
+  section RPTB[D], Z=0, RSA=PC+2); new effect kind
+  14 `REPEAT_BLOCK_START` (pmad payload) and new
+  `repeat_block` driver (BRAF plus RSA/REA through
+  the MMR file, BRC-knownness and delay-slot
+  guards, REA fall-through LOOP/END). Loop control
+  rides the existing tails with zero new tail
+  sites: `run.c` records fetch address plus decoded
+  width (2 fields, 2 lines; `run.c` now 782 lines,
+  split decision looms at 800). New catalog ID
+  moves `ID_COUNT` 334 to 335 with pins;
+  `FORM-T2-16-04` binds the row `SUBSET` with
+  `ABSOLUTE_PMAD_NONDELAYED` (scope/coverage flip);
+  family coverage 167/205 to 168/205; populated
+  first words 40271; no MMR, knob, or timing
+  changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_rptb_decode/ops/metadata`,
+  `test_cpu_rptb`, `test_repeat_block_flow`
+  RED-first green; all 715 C binaries pass; 286
+  Python quality tests OK; fresh CMake Debug
+  `ctest` 722/722; focused ASan/UBSan on the
+  repeat tests green; registries and checkers
+  PASS). Boot repro past `0x802F`: BUDGET=400
+  staged loader1 run with the MCU peer (page-0
+  DATA window) retires 400/400 with zero data
+  faults mid-block; budget 348 lands pc=`0x8031`,
+  proving the `0x802F` RPTB retired; BUDGET=10000
+  escapes the block and outer loop with 6534
+  retired to `0xF27`, where `0x44F8` is the next
+  explicit stop.
+- Decisions: the `0xF072` identity is RPTB plain
+  (Z=0), not RPTBD — the Z bit selects delay with
+  the `B`/`BD` precedent, and `RPTBD` (`0xF272`)
+  is an own slice. The second word is pmad
+  (`0x803A` end, RSA `0x8031`). RPT-at-REA and
+  RPTB-at-REA corners complete the outer loop
+  instead of starting nested repeats
+  (documented). Neighbor pins: the `LD_LK16`,
+  `B_PMAD`, and `RPT_LK` near-miss probes now
+  classify into `RPTB`. `run.c` approaches the
+  800-line ceiling (+3 lines); the next slice
+  touching it needs the explicit split decision.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x44F8` at `0xF27`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
