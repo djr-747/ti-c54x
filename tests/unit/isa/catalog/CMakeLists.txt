@@ -120,6 +120,10 @@ ti_c54x_add_unit_test(reada_direct_metadata
                       test_reada_direct_metadata.c)
 ti_c54x_add_unit_test(reada_smem_metadata
                       test_reada_smem_metadata.c)
+ti_c54x_add_unit_test(writa_direct_metadata
+                      test_writa_direct_metadata.c)
+ti_c54x_add_unit_test(writa_smem_metadata
+                      test_writa_smem_metadata.c)
 # P3-S2 RED contract: RPT immediate rows.
 ti_c54x_add_unit_test(rpt_k_metadata
                       test_rpt_k_metadata.c)

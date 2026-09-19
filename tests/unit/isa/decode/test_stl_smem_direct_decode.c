@@ -95,10 +95,11 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_direct == 256U);
 
     {
-        /* Below-neighbor is unbound; above-neighbor is the
-         * established indirect STL_SMEM row. */
+        /* Below-neighbor is the P3-S65 WRITA indirect row;
+         * above-neighbor is the established indirect STL_SMEM
+         * row. */
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7FFF)).id ==
-                           TI_C54X_OPCODE_ID_UNKNOWN);
+                           TI_C54X_OPCODE_ID_WRITA_SMEM);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x8080)).id ==
                            TI_C54X_OPCODE_ID_STL_SMEM);
     }

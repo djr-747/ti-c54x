@@ -28,7 +28,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_STL_SMEM_DIRECT);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 323);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 325);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_STL_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(metadata->first_word_value == STL_SMEM_DIRECT_VALUE);
@@ -71,8 +71,9 @@ static void
 test_row_boundaries(void)
 {
     /* 0x8000 and 0x817F are the direct slice ends (S=0/I=0/addr=0 and
-     * S=1/I=0/addr=0x7F); 0x7FFF is unbound; 0x8080 opens the
-     * established indirect STL_SMEM rows. */
+     * S=1/I=0/addr=0x7F); 0x7FFF is the P3-S65 WRITA indirect
+     * row; 0x8080 opens the established indirect STL_SMEM
+     * rows. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x8000)) ==
                        TI_C54X_OPCODE_ID_STL_SMEM_DIRECT);
@@ -84,7 +85,7 @@ test_row_boundaries(void)
                        TI_C54X_OPCODE_ID_STL_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x7FFF)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_WRITA_SMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x8080)) ==
                        TI_C54X_OPCODE_ID_STL_SMEM);

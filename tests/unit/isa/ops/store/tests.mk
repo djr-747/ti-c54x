@@ -32,6 +32,8 @@ $(eval $(call ti_c54x_add_test,mvpd_ops,isa/ops/store,test_mvpd.c))
 $(eval $(call ti_c54x_add_test,mvdp_ops,isa/ops/store,test_mvdp.c))
 # P3-S64 RED contract: READA accumulator-addressed program-to-Smem effects.
 $(eval $(call ti_c54x_add_test,reada_ops,isa/ops/store,test_reada.c))
+# P3-S65 RED contract: WRITA accumulator-addressed Smem-to-program effects.
+$(eval $(call ti_c54x_add_test,writa_ops,isa/ops/store,test_writa.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_ops,isa/ops/store,test_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_ops,isa/ops/store,test_st_t_smem_direct.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_ops,isa/ops/store,test_stlm_smem_direct.c))

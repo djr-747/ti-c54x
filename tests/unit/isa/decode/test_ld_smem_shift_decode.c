@@ -168,8 +168,10 @@ test_malformed_two_word_inputs_reject_transactionally(void)
 static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
+    /* Flipping fixed bit 12 lands on the P3-S65 WRITA Smem row
+     * (0x6F80 ^ 0x1000 = 0x7F80; pinned below). */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x1000), UINT16_C(0x8000)};
+        UINT16_C(0x8000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -215,6 +217,19 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(banzd_sibling.status ==
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(banzd_sibling.id == TI_C54X_OPCODE_ID_BANZD);
+    }
+
+    /* Flipping fixed bit 12 lands on the P3-S65 WRITA Smem
+     * row (0x6F80 ^ 0x1000 = 0x7F80). */
+    {
+        const ti_c54x_decode_result writa_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SMEM_SHIFT_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(writa_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(writa_sibling.id ==
+                           TI_C54X_OPCODE_ID_WRITA_SMEM);
     }
 
     /* MOD3 classifies here; the semantic leaf rejects it. */

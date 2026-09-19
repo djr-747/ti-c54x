@@ -151,10 +151,12 @@ test_fixed_bit_near_misses(void)
      * clearing fixed bit 12 lands on the P3-S33 MAC_SMEM_LK row
      * (pinned below); clearing fixed bit 8 lands on the P3-S36
      * ST_LK_SMEM row (pinned below); clearing fixed bit 10 lands
-     * on the P3-S58 MVMD row (pinned below); all other fixed-bit
-     * flips must miss every row. */
+     * on the P3-S58 MVMD row (pinned below); setting fixed bit
+     * 11 lands on the P3-S65 WRITA direct row (0x7700 ^ 0x0800
+     * = 0x7F00; pinned below); all other fixed-bit flips must
+     * miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0800), UINT16_C(0x2000)};
+        UINT16_C(0x2000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -188,6 +190,19 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_sibling.id == TI_C54X_OPCODE_ID_MAC_SMEM_LK);
+    }
+
+    /* This former near-miss is the P3-S65 WRITA direct sibling:
+     * 0x7700 ^ 0x0800 = 0x7F00 classifies into the WRITA_DIRECT
+     * row. */
+    {
+        const ti_c54x_decode_result writa_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(STM_VALUE ^ UINT16_C(0x0800)));
+
+        TI_C54X_TEST_CHECK(writa_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(writa_sibling.id ==
+                           TI_C54X_OPCODE_ID_WRITA_DIRECT);
     }
 
     /* This former near-miss is the P3-S36 ST #lk,Smem sibling:

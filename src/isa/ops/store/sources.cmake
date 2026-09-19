@@ -29,7 +29,8 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_mvkd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvpd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvdp.c"
-    "${CMAKE_CURRENT_LIST_DIR}/op_reada.c")
+    "${CMAKE_CURRENT_LIST_DIR}/op_reada.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_writa.c")
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_store_reverse_carry_common.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_stl_smem_reverse.c"

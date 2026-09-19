@@ -31,8 +31,7 @@
 /* TI SPRU172C READA p. 4-136: word 0 pins 0x7E00 with the Smem
  * cookie at bits 6:0 (I at bit 7); the PROGRAM address comes
  * from accumulator A (PAR <- A), so there is no second word.
- * The 0x7C/0x7D neighbors stay MVPD/MVDP and 0x7F stays
- * undecoded for WRITA. */
+ * The 0x7C/0x7D/0x7F neighbors stay MVPD/MVDP/WRITA. */
 static ti_c54x_decoded_instruction
 decode_direct(uint8_t dma)
 {
@@ -310,8 +309,8 @@ test_crossed_row_rejects(void)
 static void
 test_neighbor_rows_reject(void)
 {
-    /* 0x7C is MVPD, 0x7D is MVDP (both directions); 0x7F is the
-     * future WRITA row. None may decode as READA. */
+    /* 0x7C is MVPD, 0x7D is MVDP (both directions); 0x7F is
+     * WRITA. None may decode as READA. */
     static const uint16_t neighbors[] = {
         UINT16_C(0x7C05), UINT16_C(0x7C9F), UINT16_C(0x7D05),
         UINT16_C(0x7D9F), UINT16_C(0x7F05), UINT16_C(0x7F9F)};

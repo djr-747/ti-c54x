@@ -664,10 +664,17 @@ TI_C54X_OPCODE_MASKED(MVDP_SMEM, mvdp_smem, 0x7D80, 0xFF80, 2, TI_C54X_OPERAND_L
  * 0x7E00 with the Smem cookie at bits 6:0 (I at bit 7); the
  * PROGRAM address comes from accumulator A (PAR <- A), so no
  * extension word follows. The 0x7C/0x7D neighbors stay
- * MVPD/MVDP; 0x7F stays undecoded for WRITA. The one-word
- * INDIRECT_ADDR7 layout is shared. */
+ * MVPD/MVDP. The one-word INDIRECT_ADDR7 layout is shared. */
 TI_C54X_OPCODE_MASKED(READA_DIRECT, reada_direct, 0x7E00, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP)
 TI_C54X_OPCODE_MASKED(READA_SMEM, reada_smem, 0x7E80, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS)
+/* P3-S65 WRITA Smem (TI SPRU172C WRITA p. 4-196): one word pins
+ * 0x7F00 with the Smem cookie at bits 6:0 (I at bit 7); the
+ * Smem word moves to the accumulator-A-addressed PROGRAM word
+ * (PAR <- A, low 16 bits), so no extension word follows. The
+ * 0x7C/0x7D/0x7E neighbors stay MVPD/MVDP/READA. The one-word
+ * INDIRECT_ADDR7 layout is shared. */
+TI_C54X_OPCODE_MASKED(WRITA_DIRECT, writa_direct, 0x7F00, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_DP)
+TI_C54X_OPCODE_MASKED(WRITA_SMEM, writa_smem, 0x7F80, 0xFF80, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS)
 /* P3-S52a PSHD Smem (TI SPRU172C 4-131): word 0 pins 0x4B with the I
  * flag at bit 7 and the 7-bit Smem cookie at bits 6:0. Direct
  * (I=0) reads page-0 dma; indirect (I=1, class 16B) reads MOD0--MOD2
