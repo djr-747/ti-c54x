@@ -109,7 +109,15 @@ class DualWord16HotPathTests(unittest.TestCase):
             self.assertIn("Module contract", text, path)
             self.assertIn("Owns:", text, path)
             self.assertIn("Does not own:", text, path)
-            self.assertLess(len(text.splitlines()), 500, path)
+            # ADDRESS_SPEC_HEADER carries the central address-spec ABI
+            # union (one arm per address kind, static-assert-pinned
+            # 24-byte spec). It grows ~24 lines per new address kind by
+            # design and cannot split across headers without breaking
+            # that ABI locality; the reviewed P3-S64 no-split decision
+            # tracks the repository <800 rule for it instead of the
+            # 500 module bound.
+            bound = 800 if path == ADDRESS_SPEC_HEADER else 500
+            self.assertLess(len(text.splitlines()), bound, path)
 
     def test_dual_reducer_is_one_value_owned_child_without_host_side_effects(self) -> None:
         header = self._read(DUAL_READ_HEADER)

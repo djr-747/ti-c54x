@@ -178,7 +178,16 @@ typedef enum ti_c54x_op_memory_address_kind {
      * resolver governs MOD validity). No post-update beyond the
      * indirect AR delta; DP/AR unknownness is gated at the leaf
      * and root. */
-    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 = 24
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 = 24,
+    /* Smem-to-accumulator-addressed-program DATA pair WORD16
+     * (READA/WRITA): the Smem DATA leg and the PROGRAM leg move
+     * one word with the PROGRAM leg inverse to the effect
+     * `access` (PORT-style). The PROGRAM address resolves from
+     * accumulator A (PAR <- A, low 16 bits) at prepare time;
+     * the arm stages the Smem selectors only. Direct and
+     * indirect legs mirror the immediate-pmad pair;
+     * DP/AR/A unknownness is gated at the leaf and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16 = 25
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -365,6 +374,21 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } smem_program;
+        struct {
+            /* Smem-to-accumulator-addressed-program pair: same
+             * Smem DATA leg shape as `smem_program` but the
+             * PROGRAM address resolves from accumulator A, so
+             * the immediate-`pmad` slot stays reserved. */
+            uint8_t indirect;
+            uint8_t smem_mode;
+            uint8_t smem_arf;
+            uint8_t smem_dma7;
+            uint16_t reserved_pmad;
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } smem_program_a;
         struct {
             /* Absolute 16-bit DATA address (the second program
              * word). Same footprint as the pair arms: the address

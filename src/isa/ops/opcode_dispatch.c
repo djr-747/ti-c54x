@@ -110,6 +110,7 @@
 #include "store/op_mvkd.h"
 #include "store/op_mvpd.h"
 #include "store/op_mvdp.h"
+#include "store/op_reada.h"
 #include "store/op_st_t_smem.h"
 #include "store/op_st_t_smem_direct.h"
 #include "store/op_st_trn_smem_direct.h"

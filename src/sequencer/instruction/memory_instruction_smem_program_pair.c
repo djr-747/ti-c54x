@@ -18,6 +18,7 @@
 #include "bus/mmr/mmr_route.h"
 #include "bus/request/word16_request.h"
 #include "bus/transaction/word16_transaction.h"
+#include "foundation/arithmetic40.h"
 #include "memory_instruction_candidate_validate.h"
 #include "memory_instruction_commit.h"
 #include "sequencer/memory/address_resolution.h"
@@ -43,27 +44,25 @@ ti_c54x_memory_instruction_smem_program_pair_is_candidate(
                TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16;
 }
 
-bool
-ti_c54x_memory_instruction_smem_program_pair_synthesize_smem_spec(
-    const ti_c54x_op_memory_address_spec *arm,
-    const ti_c54x_op_input_snapshot *input,
-    ti_c54x_op_memory_address_spec *smem_spec)
+static bool
+synthesize_smem_spec_from_fields(uint8_t indirect, uint8_t smem_mode,
+                                 uint8_t smem_arf, uint8_t smem_dma7,
+                                 const ti_c54x_op_input_snapshot *input,
+                                 ti_c54x_op_memory_address_spec *smem_spec)
 {
     ti_c54x_op_memory_address_spec staged = {0};
 
-    if (arm == NULL || input == NULL || smem_spec == NULL) {
+    if (input == NULL || smem_spec == NULL) {
         return false;
     }
-    if (arm->smem_program.indirect == UINT8_C(0)) {
-        if (arm->smem_program.smem_mode != UINT8_C(0) ||
-            arm->smem_program.smem_arf != UINT8_C(0) ||
-            arm->smem_program.smem_dma7 > UINT8_C(0x7F) ||
-            !input->status_dp_known) {
+    if (indirect == UINT8_C(0)) {
+        if (smem_mode != UINT8_C(0) || smem_arf != UINT8_C(0) ||
+            smem_dma7 > UINT8_C(0x7F) || !input->status_dp_known) {
             return false;
         }
         staged.kind = TI_C54X_OP_MEMORY_ADDRESS_DIRECT_DP_WORD16;
         staged.long_offset_word = input->status_dp;
-        staged.direct_dma7 = arm->smem_program.smem_dma7;
+        staged.direct_dma7 = smem_dma7;
         *smem_spec = staged;
         return true;
     }
@@ -71,26 +70,45 @@ ti_c54x_memory_instruction_smem_program_pair_synthesize_smem_spec(
      * mode exactly like the effect validation (MOD0--MOD3; the
      * leaf already gates this, the check here is defense in
      * depth). */
-    if (arm->smem_program.indirect != UINT8_C(1) ||
-        arm->smem_program.smem_dma7 != UINT8_C(0) ||
-        arm->smem_program.smem_arf > UINT8_C(7) ||
-        arm->smem_program.smem_mode > UINT8_C(3)) {
+    if (indirect != UINT8_C(1) || smem_dma7 != UINT8_C(0) ||
+        smem_arf > UINT8_C(7) || smem_mode > UINT8_C(3)) {
         return false;
     }
     staged.kind = TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16;
-    staged.mode =
-        (ti_c54x_indirect_single_mode)arm->smem_program.smem_mode;
-    staged.arf = arm->smem_program.smem_arf;
+    staged.mode = (ti_c54x_indirect_single_mode)smem_mode;
+    staged.arf = smem_arf;
     *smem_spec = staged;
     return true;
 }
 
-/* The PROGRAM leg is absolute: the 16-bit pmad names the word
+bool
+ti_c54x_memory_instruction_smem_program_pair_synthesize_smem_spec(
+    const ti_c54x_op_memory_address_spec *arm,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_memory_address_spec *smem_spec)
+{
+    if (arm == NULL) {
+        return false;
+    }
+    if (arm->kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        return synthesize_smem_spec_from_fields(
+            arm->smem_program_a.indirect, arm->smem_program_a.smem_mode,
+            arm->smem_program_a.smem_arf, arm->smem_program_a.smem_dma7,
+            input, smem_spec);
+    }
+    return synthesize_smem_spec_from_fields(
+        arm->smem_program.indirect, arm->smem_program.smem_mode,
+        arm->smem_program.smem_arf, arm->smem_program.smem_dma7,
+        input, smem_spec);
+}
+
+/* The PROGRAM leg is absolute: the 16-bit address names the word
  * with no state dependence and no post-update (DATA_PROGRAM
  * precedent). The template value stays zero until the observed
  * first-leg word replaces it at second-leg issue. */
 static bool
-build_program_request(const ti_c54x_op_memory_address_spec *arm,
+build_program_request(uint16_t program_address_word,
                       ti_c54x_bus_word16_request_access access,
                       ti_c54x_bus_word16_request *out_request)
 {
@@ -99,11 +117,11 @@ build_program_request(const ti_c54x_op_memory_address_spec *arm,
     if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
         built = ti_c54x_bus_word16_request_read(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM,
-            (uint32_t)arm->smem_program.pmad);
+            (uint32_t)program_address_word);
     } else if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
         built = ti_c54x_bus_word16_request_write(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM,
-            (uint32_t)arm->smem_program.pmad, UINT16_C(0));
+            (uint32_t)program_address_word, UINT16_C(0));
     } else {
         return false;
     }
@@ -126,6 +144,8 @@ ti_c54x_memory_instruction_smem_program_pair_prepare_snapshot(
     ti_c54x_memory_address_resolution smem_resolution = {0};
     ti_c54x_bus_word16_request program_request = {0};
     ti_c54x_bus_word16_request_access program_access;
+    ti_c54x_smem_program_pair_address_snapshot *snapshot;
+    uint16_t program_address_word;
 
     if (transaction == NULL || state == NULL ||
         transaction->candidate.effect.kind != TI_C54X_OP_EFFECT_MEMORY) {
@@ -133,12 +153,38 @@ ti_c54x_memory_instruction_smem_program_pair_prepare_snapshot(
     }
     memory = &transaction->candidate.effect.payload.memory;
     arm = &memory->address_spec;
-    if (arm->kind !=
+    if (arm->kind ==
         TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
-        return false;
-    }
-    if (!ti_c54x_memory_instruction_smem_program_pair_synthesize_smem_spec(
-            arm, &transaction->candidate.input, &smem_spec)) {
+        /* Immediate-pmad pair: the PROGRAM address rides the arm. */
+        if (!synthesize_smem_spec_from_fields(
+                arm->smem_program.indirect,
+                arm->smem_program.smem_mode, arm->smem_program.smem_arf,
+                arm->smem_program.smem_dma7,
+                &transaction->candidate.input, &smem_spec)) {
+            return false;
+        }
+        program_address_word = arm->smem_program.pmad;
+    } else if (arm->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        /* Accumulator-addressed pair: PAR <- A resolves from the
+         * frozen input (the leaf gates A knownness; the u40 mask
+         * check here is defense in depth). */
+        if (!synthesize_smem_spec_from_fields(
+                arm->smem_program_a.indirect,
+                arm->smem_program_a.smem_mode,
+                arm->smem_program_a.smem_arf,
+                arm->smem_program_a.smem_dma7,
+                &transaction->candidate.input, &smem_spec)) {
+            return false;
+        }
+        if (!transaction->candidate.input.accumulator_a_known ||
+            transaction->candidate.input.accumulator_a_raw40 >
+                TI_C54X_U40_MASK) {
+            return false;
+        }
+        program_address_word =
+            (uint16_t)transaction->candidate.input.accumulator_a_raw40;
+    } else {
         return false;
     }
     /* The Smem leg runs at the effect access (the access names
@@ -152,15 +198,16 @@ ti_c54x_memory_instruction_smem_program_pair_prepare_snapshot(
         (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)
             ? TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
             : TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE;
-    if (!build_program_request(arm, program_access, &program_request)) {
+    if (!build_program_request(program_address_word, program_access,
+                               &program_request)) {
         return false;
     }
-    transaction->candidate.smem_program_address_snapshot
-        .smem_resolution = smem_resolution;
-    transaction->candidate.smem_program_address_snapshot
-        .program_request = program_request;
-    transaction->candidate.smem_program_address_snapshot
-        .second_leg_issued = UINT8_C(0);
+    snapshot =
+        ti_c54x_memory_instruction_smem_program_pair_mutable_snapshot_for_kind(
+            &transaction->candidate);
+    snapshot->smem_resolution = smem_resolution;
+    snapshot->program_request = program_request;
+    snapshot->second_leg_issued = UINT8_C(0);
     transaction->child_kind =
         TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16;
     return true;
@@ -298,11 +345,13 @@ first_leg_request(
      * snapshot. */
     if (transaction->candidate.effect.payload.memory.access ==
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
-        return transaction->candidate.smem_program_address_snapshot
-            .program_request;
+        return ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+                   &transaction->candidate)
+            ->program_request;
     }
-    return transaction->candidate.smem_program_address_snapshot
-        .smem_resolution.request;
+    return ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+                   &transaction->candidate)
+            ->smem_resolution.request;
 }
 
 static bool
@@ -317,15 +366,17 @@ build_second_leg_request(
         /* MVPD writes the PROGRAM observation to Smem. */
         built = ti_c54x_bus_word16_request_write(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-            transaction->candidate.smem_program_address_snapshot
-                .smem_resolution.request.address_word,
+            ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+                &transaction->candidate)
+                ->smem_resolution.request.address_word,
             observed_word);
     } else {
         /* MVDP writes the Smem observation to PROGRAM. */
         built = ti_c54x_bus_word16_request_write(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM,
-            transaction->candidate.smem_program_address_snapshot
-                .program_request.address_word,
+            ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+                &transaction->candidate)
+                ->program_request.address_word,
             observed_word);
     }
     if (built.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
@@ -391,10 +442,13 @@ snapshot_matches(const ti_c54x_memory_instruction_transaction *transaction)
     }
     memory = &transaction->candidate.effect.payload.memory;
     arm = &memory->address_spec;
-    if (arm->kind !=
-            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
-        transaction->candidate.smem_program_address_snapshot
-                .second_leg_issued > UINT8_C(1)) {
+    if ((arm->kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 &&
+         arm->kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) ||
+        ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+            &transaction->candidate)
+                ->second_leg_issued > UINT8_C(1)) {
         return false;
     }
     /* The PROGRAM template stays zero until the observed word
@@ -404,17 +458,25 @@ snapshot_matches(const ti_c54x_memory_instruction_transaction *transaction)
     {
         ti_c54x_op_memory_address_spec smem_spec = {0};
         const ti_c54x_bus_word16_request *program_request =
-            &transaction->candidate.smem_program_address_snapshot
-                 .program_request;
+            &ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+                 &transaction->candidate)
+                 ->program_request;
 
         if (!ti_c54x_memory_instruction_smem_program_pair_synthesize_smem_spec(
                 arm, &transaction->candidate.input, &smem_spec)) {
             return false;
         }
         if (program_request->space !=
-                TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM ||
-            program_request->address_word !=
-                (uint32_t)arm->smem_program.pmad) {
+                TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM) {
+            return false;
+        }
+        if (arm->kind == TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+            if (program_request->address_word !=
+                (uint32_t)(uint16_t)transaction->candidate.input.accumulator_a_raw40) {
+                return false;
+            }
+        } else if (program_request->address_word !=
+                   (uint32_t)arm->smem_program.pmad) {
             return false;
         }
         if (memory->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
@@ -574,8 +636,9 @@ ti_c54x_memory_instruction_smem_program_pair_advance(
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         return result->status;
     }
-    if (transaction->candidate.smem_program_address_snapshot
-            .second_leg_issued == UINT8_C(0)) {
+    if (ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+            &transaction->candidate)
+            ->second_leg_issued == UINT8_C(0)) {
         ti_c54x_bus_word16_request leg;
         uint64_t id;
         smem_program_pair_leg_path path;
@@ -608,8 +671,9 @@ ti_c54x_memory_instruction_smem_program_pair_advance(
                 TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             return result->status;
         }
-        transaction->candidate.smem_program_address_snapshot
-            .second_leg_issued = UINT8_C(1);
+        ti_c54x_memory_instruction_smem_program_pair_mutable_snapshot_for_kind(
+            &transaction->candidate)
+            ->second_leg_issued = UINT8_C(1);
         if (path == SMEM_PROGRAM_PAIR_LEG_ENDPOINT) {
             result->transaction_id = id;
             adapter_result = advance_leg(

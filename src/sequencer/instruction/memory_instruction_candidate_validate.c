@@ -76,7 +76,9 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
             return false;
         }
     } else if (candidate->effect.payload.memory.address_spec.kind ==
-               TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
+           candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
         if (!ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
                 candidate)) {
             return false;
@@ -152,7 +154,9 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                        .request.write_value_word == UINT16_C(0);
         }
         if (candidate->effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
+            candidate->effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
             /* MVDP reads the Smem leg first; that frozen READ
              * template carries no store value (the PROGRAM WRITE
              * template below rides the built request, not the
@@ -195,7 +199,9 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                candidate->effect.payload.memory.value_word;
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
+            candidate->effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
         /* MVPD freezes the Smem-leg WRITE with a zero template; the
          * observed PROGRAM word replaces it in the built
          * second-leg request at issue, never in the snapshot. */
@@ -343,7 +349,9 @@ ti_c54x_memory_instruction_candidate_matches_live(
             candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||
+            candidate->effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
         return ti_c54x_memory_instruction_smem_program_pair_matches_live(
             candidate, state);
     }

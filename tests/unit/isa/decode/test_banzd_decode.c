@@ -167,10 +167,11 @@ test_fixed_bit_near_misses(void)
      * (pinned above) and clearing fixed bit 14 lands on the
      * MAS_SMEM row (pinned below); clearing fixed bit 11 lands
      * on the MAC_SMEM_LK row (pinned below); setting bit 8 lands
-     * on the STH syntax-4 direct row (pinned below); all other
+     * on the STH syntax-4 direct row (pinned below); setting bit
+     * 12 lands on the READA direct row (pinned below); all other
      * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0400), UINT16_C(0x1000),
+        UINT16_C(0x0400),
         UINT16_C(0x2000)};
 
     /* Flipping bit 15 lands on the P3-S51 FRAME row:
@@ -218,6 +219,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(mas_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mas_sibling.id == TI_C54X_OPCODE_ID_MAS_SMEM);
+    }
+
+    /* Setting bit 12 lands on the P3-S64 READA direct row:
+     * 0x6E00 ^ 0x1000 = 0x7E00 classifies as READA_DIRECT. */
+    {
+        const ti_c54x_decode_result reada_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZD_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(reada_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(reada_sibling.id == TI_C54X_OPCODE_ID_READA_DIRECT);
     }
 
     for (size_t index = 0U;

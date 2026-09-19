@@ -139,9 +139,11 @@ test_fixed_bit_near_misses(void)
      * fixed bit 14 lands on MAS_DUAL_M0_M0 (S3i claims the 0xB8xx
      * neighborhood; the UNKNOWN loop drops that mask under the
      * cross-slice hazard rule); clearing fixed bit 12 lands on the
-     * P3-S51 FRAME row (0xFE00 ^ 0x1000 = 0xEE00; pinned below). */
+     * P3-S51 FRAME row (0xFE00 ^ 0x1000 = 0xEE00; pinned below);
+     * clearing fixed bit 15 lands on the P3-S64 READA direct row
+     * (0xFE00 ^ 0x8000 = 0x7E00; pinned below). */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x2000), UINT16_C(0x8000)};
+        UINT16_C(0x2000)};
     static const uint16_t rcd_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
@@ -212,6 +214,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(frame_sibling.status ==
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(frame_sibling.id == TI_C54X_OPCODE_ID_FRAME);
+    }
+
+    /* Clearing fixed bit 15 lands on the P3-S64 READA direct
+     * row (0xFE00 ^ 0x8000 = 0x7E00). */
+    {
+        const ti_c54x_decode_result reada_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETD_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(reada_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(reada_sibling.id ==
+                           TI_C54X_OPCODE_ID_READA_DIRECT);
     }
 }
 

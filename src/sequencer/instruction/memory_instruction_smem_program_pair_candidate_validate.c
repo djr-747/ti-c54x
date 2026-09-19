@@ -24,6 +24,30 @@
 #include "sequencer/instruction/memory_instruction_transaction.h"
 #include "state/arch_state.h"
 
+/* Accumulator-addressed pairs ride the smem_program_a union member;
+ * immediate-pmad pairs ride smem_program. The Smem leg fields sit
+ * at the same offsets, but C requires the addressed member, so
+ * these helpers select by carrier kind. */
+static uint8_t
+pair_arm_indirect(const ti_c54x_op_memory_address_spec *arm)
+{
+    if (arm->kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        return arm->smem_program_a.indirect;
+    }
+    return arm->smem_program.indirect;
+}
+
+static uint8_t
+pair_arm_arf(const ti_c54x_op_memory_address_spec *arm)
+{
+    if (arm->kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        return arm->smem_program_a.smem_arf;
+    }
+    return arm->smem_program.smem_arf;
+}
+
 bool
 ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
     const struct ti_c54x_memory_instruction_candidate *candidate)
@@ -32,12 +56,14 @@ ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
     ti_c54x_op_memory_address_spec smem_spec = {0};
     const ti_c54x_smem_program_pair_address_snapshot *snapshot;
     const ti_c54x_bus_word16_request *program_request;
-    uint16_t pmad;
+    uint16_t program_address_word;
 
     if (candidate == NULL ||
         candidate->effect.kind != TI_C54X_OP_EFFECT_MEMORY ||
-        candidate->effect.payload.memory.address_spec.kind !=
-            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        (candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 &&
+         candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16)) {
         return false;
     }
     /* Both legs ride the pair snapshot, not the candidate's
@@ -66,12 +92,21 @@ ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
      * never the value. */
     snapshot = &candidate->smem_program_address_snapshot;
     program_request = &snapshot->program_request;
-    pmad = candidate->effect.payload.memory.address_spec.smem_program
-               .pmad;
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        /* Accumulator-addressed pair: PAR <- A resolves from the
+         * frozen input low16, matching the planner. */
+        program_address_word =
+            (uint16_t)candidate->input.accumulator_a_raw40;
+    } else {
+        program_address_word =
+            candidate->effect.payload.memory.address_spec.smem_program
+                .pmad;
+    }
     if (snapshot->second_leg_issued > UINT8_C(1) ||
         program_request->space !=
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM ||
-        program_request->address_word != (uint32_t)pmad ||
+        program_request->address_word != (uint32_t)program_address_word ||
         program_request->write_value_word != UINT16_C(0)) {
         return false;
     }
@@ -95,20 +130,30 @@ ti_c54x_memory_instruction_smem_program_pair_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
     const struct ti_c54x_arch_state *state)
 {
-    uint16_t pmad;
+    uint16_t program_address_word;
 
     if (candidate == NULL || state == NULL ||
         candidate->effect.kind != TI_C54X_OP_EFFECT_MEMORY ||
-        candidate->effect.payload.memory.address_spec.kind !=
-            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        (candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 &&
+         candidate->effect.payload.memory.address_spec.kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16)) {
         return false;
     }
-    /* The PROGRAM leg observes no state: echo the frozen pmad
+    /* The PROGRAM leg observes no state: echo the frozen address
+     * (pmad, or frozen A low16 for accumulator-addressed pairs)
      * against the built request and pin the sequential PC. */
-    pmad = candidate->effect.payload.memory.address_spec.smem_program
-               .pmad;
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        program_address_word =
+            (uint16_t)candidate->input.accumulator_a_raw40;
+    } else {
+        program_address_word =
+            candidate->effect.payload.memory.address_spec.smem_program
+                .pmad;
+    }
     if (candidate->smem_program_address_snapshot.program_request
-                .address_word != (uint32_t)pmad ||
+                .address_word != (uint32_t)program_address_word ||
         candidate->smem_program_address_snapshot.program_request.space !=
             TI_C54X_BUS_WORD16_REQUEST_SPACE_PROGRAM ||
         !ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect,
@@ -147,7 +192,7 @@ ti_c54x_memory_instruction_smem_program_pair_smem_matches_live(
          * it on every check), so liveness pins the CPL0 policy
          * plus live CPL/DP against the leg's own page and then
          * the sequential PC (PORT precedent). */
-        if (arm->smem_program.indirect != UINT8_C(0) ||
+        if (pair_arm_indirect(arm) != UINT8_C(0) ||
             address_effect->state_policy !=
                 TI_C54X_ADDRESS_STATE_POLICY_DIRECT_CPL0 ||
             ti_c54x_arch_state_read_cpl(state, &cpl) !=
@@ -162,7 +207,7 @@ ti_c54x_memory_instruction_smem_program_pair_smem_matches_live(
             &candidate->pc_effect, state);
     }
     if (address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR ||
-        arm->smem_program.indirect != UINT8_C(1)) {
+        pair_arm_indirect(arm) != UINT8_C(1)) {
         return false;
     }
     /* Single-indirect DATA leg: mirror the generic CMPT0/ARP0
@@ -184,8 +229,7 @@ ti_c54x_memory_instruction_smem_program_pair_smem_matches_live(
                                                   state)) {
         return false;
     }
-    if (address_effect->source.value.ar.index !=
-        arm->smem_program.smem_arf) {
+    if (address_effect->source.value.ar.index != pair_arm_arf(arm)) {
         return false;
     }
     if (ti_c54x_arch_state_read_ar(

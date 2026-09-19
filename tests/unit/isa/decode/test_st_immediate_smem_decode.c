@@ -152,11 +152,11 @@ static void
 test_fixed_bit_near_misses_are_unknown(void)
 {
     /* Flipping fixed bit 12 lands in the MAC_SMEM_LK row
-     * (0x6690, pinned below); all other fixed-bit flips must miss
-     * every row. */
+     * (0x6690, pinned below); flipping fixed bit 11 lands in the
+     * P3-S64 READA Smem row (0x7E90, pinned below); all other
+     * fixed-bit flips must miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0400),
-        UINT16_C(0x0800),
         UINT16_C(0x4000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
@@ -199,6 +199,17 @@ test_fixed_bit_near_misses_are_unknown(void)
                                                  UINT16_C(0x1000)));
         TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(mac_sibling.id == TI_C54X_OPCODE_ID_MAC_SMEM_LK);
+    }
+
+    /* Flipping fixed bit 11 lands on 0x7E90, claimed by the P3-S64
+     * READA_SMEM row: a valid cross-row near miss, not an
+     * overaccept. */
+    {
+        const ti_c54x_decode_result reada_sibling =
+            ti_c54x_decode_first_word((uint16_t)(ST_IMMEDIATE_VALUE ^
+                                                 UINT16_C(0x0800)));
+        TI_C54X_TEST_CHECK(reada_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(reada_sibling.id == TI_C54X_OPCODE_ID_READA_SMEM);
     }
 
     {

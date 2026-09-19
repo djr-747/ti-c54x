@@ -85,6 +85,8 @@ $(eval $(call ti_c54x_add_test,mvpd_direct_metadata,isa/catalog,test_mvpd_direct
 $(eval $(call ti_c54x_add_test,mvpd_smem_metadata,isa/catalog,test_mvpd_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,mvdp_direct_metadata,isa/catalog,test_mvdp_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,mvdp_smem_metadata,isa/catalog,test_mvdp_smem_metadata.c))
+$(eval $(call ti_c54x_add_test,reada_direct_metadata,isa/catalog,test_reada_direct_metadata.c))
+$(eval $(call ti_c54x_add_test,reada_smem_metadata,isa/catalog,test_reada_smem_metadata.c))
 # P3-S2 RED contract: RPT immediate rows.
 $(eval $(call ti_c54x_add_test,rpt_k_metadata,isa/catalog,test_rpt_k_metadata.c))
 $(eval $(call ti_c54x_add_test,rpt_lk_metadata,isa/catalog,test_rpt_lk_metadata.c))

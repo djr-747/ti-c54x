@@ -88,11 +88,13 @@ test_fixed_bit_near_misses_are_unknown(void)
     /* These flip fixed bits, except bit 8, which lands in the STM
      * row (0x7780), bit 9, which lands in the P3-S6 PORTR
      * indirect row (0x74A0, TI SPRU172C 4-129 pins PORTR at 0x74xx),
-     * and bit 12, which lands in the P3-S33 MAC_SMEM_LK row
-     * (0x6690, handled below); the low three ARF bits remain. */
+     * bit 11, which lands in the P3-S64 READA Smem row (0x7E80,
+     * handled below), and bit 12, which lands in the P3-S33
+     * MAC_SMEM_LK row (0x6690, handled below); the low three ARF
+     * bits remain. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0400),
-        UINT16_C(0x0800), UINT16_C(0x4000)};
+        UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -129,6 +131,16 @@ test_fixed_bit_near_misses_are_unknown(void)
                            (uint16_t)(ST_IMMEDIATE_VALUE ^
                                       UINT16_C(0x0080))) ==
                        TI_C54X_OPCODE_ID_ST_LK_SMEM);
+
+    /* Flipping bit 11 lands on 0x7E80, claimed by the P3-S64
+     * READA_SMEM row: a valid cross-row near miss, not an
+     * overaccept. */
+    TI_C54X_TEST_CHECK(!matches_st_immediate(
+        (uint16_t)(ST_IMMEDIATE_VALUE ^ UINT16_C(0x0800))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(ST_IMMEDIATE_VALUE ^
+                                      UINT16_C(0x0800))) ==
+                       TI_C54X_OPCODE_ID_READA_SMEM);
 
     /* Flipping bit 12 lands on 0x6690, claimed by the P3-S33
      * MAC_SMEM_LK row: a valid cross-row near miss, not an

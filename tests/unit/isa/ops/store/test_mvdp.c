@@ -328,7 +328,7 @@ static void
 test_neighbor_rows_reject(void)
 {
     /* 0x7C is MVPD (both directions); 0x78/0x79 stay MACP;
-     * 0x7E is unmapped. None may decode as MVDP. */
+     * 0x7E is READA. None may decode as MVDP. */
     static const uint16_t neighbors[] = {
         UINT16_C(0x7C05), UINT16_C(0x7C9F), UINT16_C(0x7805),
         UINT16_C(0x789F), UINT16_C(0x7E05)};

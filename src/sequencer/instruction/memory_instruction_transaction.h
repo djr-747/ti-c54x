@@ -87,11 +87,38 @@ typedef struct ti_c54x_memory_instruction_candidate {
             smem_absolute_address_snapshot;
         ti_c54x_smem_program_pair_address_snapshot
             smem_program_address_snapshot;
+        ti_c54x_smem_program_pair_address_snapshot
+            smem_program_a_address_snapshot;
     };
     ti_c54x_program_pc_bridge_effect pc_effect;
     uint64_t instructions_attempted_after;
     uint64_t instructions_retired_after;
 } ti_c54x_memory_instruction_candidate;
+
+/* The immediate-pmad and accumulator-addressed program pairs
+ * share one snapshot payload type in sibling union members;
+ * select the stored member by address kind. */
+static inline const ti_c54x_smem_program_pair_address_snapshot *
+ti_c54x_memory_instruction_smem_program_pair_snapshot_for_kind(
+    const ti_c54x_memory_instruction_candidate *candidate)
+{
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        return &candidate->smem_program_a_address_snapshot;
+    }
+    return &candidate->smem_program_address_snapshot;
+}
+
+static inline ti_c54x_smem_program_pair_address_snapshot *
+ti_c54x_memory_instruction_smem_program_pair_mutable_snapshot_for_kind(
+    ti_c54x_memory_instruction_candidate *candidate)
+{
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16) {
+        return &candidate->smem_program_a_address_snapshot;
+    }
+    return &candidate->smem_program_address_snapshot;
+}
 
 typedef struct ti_c54x_memory_instruction_result {
     ti_c54x_memory_instruction_status status;

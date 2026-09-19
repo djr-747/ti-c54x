@@ -16,6 +16,7 @@ $(eval $(call ti_c54x_add_test,cpu_mvdk,cpu/isa/store,test_cpu_mvdk.c))
 $(eval $(call ti_c54x_add_test,cpu_mvkd,cpu/isa/store,test_cpu_mvkd.c))
 $(eval $(call ti_c54x_add_test,cpu_mvpd,cpu/isa/store,test_cpu_mvpd.c))
 $(eval $(call ti_c54x_add_test,cpu_mvdp,cpu/isa/store,test_cpu_mvdp.c))
+$(eval $(call ti_c54x_add_test,cpu_reada,cpu/isa/store,test_cpu_reada.c))
 $(eval $(call ti_c54x_add_test,cpu_mvdm,cpu/isa/store,test_cpu_mvdm.c))
 # P3-S7 RED contract: STM CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_stm,cpu/isa/store,test_cpu_stm.c))
