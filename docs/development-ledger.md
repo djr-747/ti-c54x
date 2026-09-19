@@ -13907,3 +13907,17 @@ entries are not rewritten after publication.
   is code-identical to the green `make test` run this session.
 - Split commit discipline: ledger-and-status-only follow-up.
   Next remains the planned P3-S28 Xmem rows.
+
+## 2026-09-19 — Correction: fourteen P3 checklist links land late
+
+- Correction (appended, no rewrite): P3-WAVE6 plus P3-S28
+  through P3-S40 all landed green with their plan-doc headings
+  already reading `(implemented; local verification green)`,
+  but fourteen `implementation-plan.md` slice links still read
+  `(planned)`. This entry advances all fourteen; title text is
+  unchanged. No code, registry, or generated artifact changes:
+  the tree is code-identical to the green `make test` run this
+  session.
+- Split commit discipline: ledger-and-status-only follow-up.
+  The P3 checklist is now fully consistent with git history;
+  no further landed-but-unflipped slice remains.

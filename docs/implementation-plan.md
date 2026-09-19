@@ -663,33 +663,33 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S27: ADD/SUB #lk rows (implemented; local verification green)](plan/p3-s27-add-sub-lk-rows-slice.md)
 
-- [P3-WAVE6: MPY/MAC #lk leaf fan-out (planned)](plan/p3-wave6-mpy-mac-leaves-slice.md)
+- [P3-WAVE6: MPY/MAC #lk leaf fan-out (implemented; local verification green)](plan/p3-wave6-mpy-mac-leaves-slice.md)
 
-- [P3-S28: ADD/SUB Xmem rows (planned)](plan/p3-s28-add-sub-xmem-rows-slice.md)
+- [P3-S28: ADD/SUB Xmem rows (implemented; local verification green)](plan/p3-s28-add-sub-xmem-rows-slice.md)
 
-- [P3-S29: ADD/SUB src-ASM rows (planned)](plan/p3-s29-add-sub-src-asm-rows-slice.md)
+- [P3-S29: ADD/SUB src-ASM rows (implemented; local verification green)](plan/p3-s29-add-sub-src-asm-rows-slice.md)
 
-- [P3-S30: MPY/MAC #lk rows (planned)](plan/p3-s30-mpy-mac-lk-rows-slice.md)
+- [P3-S30: MPY/MAC #lk rows (implemented; local verification green)](plan/p3-s30-mpy-mac-lk-rows-slice.md)
 
-- [P3-S31: ADD/SUB Smem SHIFT rows (planned)](plan/p3-s31-add-sub-smem-shift-rows-slice.md)
+- [P3-S31: ADD/SUB Smem SHIFT rows (implemented; local verification green)](plan/p3-s31-add-sub-smem-shift-rows-slice.md)
 
-- [P3-S32: ADDM RMW-ADD seam (planned)](plan/p3-s32-addm-rmw-add-seam-slice.md)
+- [P3-S32: ADDM RMW-ADD seam (implemented; local verification green)](plan/p3-s32-addm-rmw-add-seam-slice.md)
 
-- [P3-S33: MPY syn3 / MAC syn4 Smem-lk rows (planned)](plan/p3-s33-mpy-mac-smem-lk-rows-slice.md)
+- [P3-S33: MPY syn3 / MAC syn4 Smem-lk rows (implemented; local verification green)](plan/p3-s33-mpy-mac-smem-lk-rows-slice.md)
 
-- [P3-S34: RND/SAT accumulator rows (planned)](plan/p3-s34-rnd-sat-acc-rows-slice.md)
+- [P3-S34: RND/SAT accumulator rows (implemented; local verification green)](plan/p3-s34-rnd-sat-acc-rows-slice.md)
 
-- [P3-S35: rounded-variant shared-row bindings (planned)](plan/p3-s35-rounded-shared-row-bindings-slice.md)
+- [P3-S35: rounded-variant shared-row bindings (implemented; local verification green)](plan/p3-s35-rounded-shared-row-bindings-slice.md)
 
-- [P3-S36: BITF/CMPM/BITT/ST single-memory rows (planned)](plan/p3-s36-bitf-cmpm-bitt-st-rows-slice.md)
+- [P3-S36: BITF/CMPM/BITT/ST single-memory rows (implemented; local verification green)](plan/p3-s36-bitf-cmpm-bitt-st-rows-slice.md)
 
-- [P3-S37: W7 pilot ABS/NEG/NORM accumulator rows (planned)](plan/p3-s37-w7-abs-neg-norm-acc-rows-slice.md)
+- [P3-S37: W7 pilot ABS/NEG/NORM accumulator rows (implemented; local verification green)](plan/p3-s37-w7-abs-neg-norm-acc-rows-slice.md)
 
-- [P3-S38: W7 batch-2 ADDC/ADDS/SUBC Smem rows (planned)](plan/p3-s38-w7-addc-adds-subc-smem-rows-slice.md)
+- [P3-S38: W7 batch-2 ADDC/ADDS/SUBC Smem rows (implemented; local verification green)](plan/p3-s38-w7-addc-adds-subc-smem-rows-slice.md)
 
-- [P3-S39: W7 batch-3 SFTA accumulator row (planned)](plan/p3-s39-w7-sfta-acc-row-slice.md)
+- [P3-S39: W7 batch-3 SFTA accumulator row (implemented; local verification green)](plan/p3-s39-w7-sfta-acc-row-slice.md)
 
-- [P3-S40: W7 batch-4 LTD Smem row (planned)](plan/p3-s40-w7-ltd-smem-row-slice.md)
+- [P3-S40: W7 batch-4 LTD Smem row (implemented; local verification green)](plan/p3-s40-w7-ltd-smem-row-slice.md)
 
 - [P3-S41: single-word Smem delay write-back seam (implemented; local verification green)](plan/p3-s41-single-word-smem-delay-seam-slice.md)
 
