@@ -757,6 +757,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S73: MVPD absolute-Smem slice (implemented; local verification green)](plan/p3-s73-mvpd-absolute-smem-slice.md)
 
+- [P3-S74: DST absolute-Smem slice (implemented; local verification green)](plan/p3-s74-dst-absolute-smem-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

@@ -1,4 +1,4 @@
-### P3-S74: DST absolute-Smem slice (planned)
+### P3-S74: DST absolute-Smem slice (implemented; local verification green)
 
 `DST src,*(abs)` is TI SPRU172C section DST ("Store
 Accumulator in Long Word", opcode `0100 111S IAAA AAAA`,

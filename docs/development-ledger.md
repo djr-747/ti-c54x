@@ -14770,3 +14770,61 @@ entries are not rewritten after publication.
   `0xF71` (`4EF8 0060 FC00`), then the DSP CRC/finalize
   chain; full 64-block upload stays bounded per standing
   direction.
+
+## 2026-09-20 — P3-S74 lands as 0de98ce (DST absolute-Smem slice)
+
+- Implementation commit `0de98ce`: exact row
+  DST_SMEM_ABSOLUTE `0x4EF8` (TI SPRU172C DST
+  `0100 111S IAAA AAAA`, SPRU179 `dbl(Lmem) = src`,
+  S=0 selects A) with the new 2-word
+  ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16 layout
+  (S[8:8], I[7:7], 0x78 selector, abs16), plus the
+  `src/isa/ops/store/op_dst_smem_absolute.c` leaf
+  (accumulator+SXM/SST knownness gates, MOD13
+  saturation core) staging the new
+  LONG32_ABSOLUTE_STORE arm (kind 27: absolute DATA
+  address, staged MSW/LSW halves, WRITE) through the
+  established long32 pair engine (new resolver
+  `address_resolution_long32_absolute_store.c`, new
+  candidate shape/liveness
+  `memory_candidate_long32_absolute_store.c`, route
+  admissions). The MOD13 LONG32 branch splits out of
+  `address_resolution.c` into
+  `address_resolution_long32_mod13.c` (802 to 759
+  lines, SIZE gate holds). New catalog ID moves
+  `ID_COUNT` 329 to 330 with pins;
+  `FORM-T2-20-01` binds the row `SUBSET` with
+  `ABSOLUTE_DATA`; populated first words 40010 to
+  40011 (first exact row on a previously unmapped
+  word); no MMR, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_dst_smem_absolute_decode/ops/metadata`,
+  `test_cpu_dst_smem_absolute` RED-first green;
+  MOD13 lane untouched and green; registries and
+  checkers PASS). Boot repro past `0xF71` with a
+  page-0 DATA window (`/tmp/ram_0.bin` at base 0;
+  the old `0x800`-base window faulted the `0x60`
+  write): BUDGET=400 staged loader1 run with the MCU
+  peer retires 339/338 with `data_txn=9` (MSW/LSW
+  pair issued, zero data faults) and reaches `0xF17`
+  (`0x10F8`, LD-family absolute hole) via the
+  implemented `0xFC00` row at `0xF73`. Targeted
+  cold-start ENTRY=0xF71 run correctly rejects on
+  the unknown accumulator (UNKNOWN_INPUT), proving
+  the transactional gate.
+- Decisions: S bit decoded through the layout (not
+  the family mask) with an S-masked exact-word check
+  in extract; MSW/LSW halves alias the single-word
+  value/rmw union slots (MOD13 precedent), so the
+  kind-27 shape gate checks WRITE access and null
+  completion only; ABSOLUTE source admits canonical
+  LONG32 in the intrinsic validator (DIRECT_PAGE0
+  precedent); MSW-at-base/LSW-above order follows
+  the `data_operand_long32` canonical pairing, with
+  differential value-order check against the oracle
+  as follow-up.
+- Knobs: none added, changed, or retired.
+- Follow-up: LD-family absolute slice for `0x10F8`
+  at `0xF17` (`10F8 087F F844`), then the DSP
+  CRC/finalize chain; full 64-block upload stays
+  bounded per standing direction.
