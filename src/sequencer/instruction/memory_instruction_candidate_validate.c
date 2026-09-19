@@ -28,6 +28,7 @@
 #include "memory_instruction_dual_candidate_validate.h"
 #include "memory_instruction_port_candidate_validate.h"
 #include "memory_instruction_stack_pair_candidate_validate.h"
+#include "memory_instruction_smem_absolute_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_long32_single.h"
@@ -64,6 +65,12 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                candidate->effect.payload.memory.address_spec.kind ==
                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
         if (!ti_c54x_memory_instruction_stack_pair_candidate_shape_is_valid(
+                candidate)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
+        if (!ti_c54x_memory_instruction_smem_absolute_pair_candidate_shape_is_valid(
                 candidate)) {
             return false;
         }
@@ -153,6 +160,15 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
          * request at issue, never in the snapshot. */
         return candidate->stack_pair_address_snapshot.stack_resolution.request
                    .write_value_word ==
+               candidate->effect.payload.memory.value_word;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
+        /* MVDK freezes the dmad-leg WRITE with a zero template; the
+         * observed Smem word replaces it in the built second-leg
+         * request at issue, never in the snapshot. */
+        return candidate->smem_absolute_address_snapshot.dmad_resolution
+                   .request.write_value_word ==
                candidate->effect.payload.memory.value_word;
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
@@ -288,6 +304,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
         return ti_c54x_memory_instruction_stack_pair_matches_live(candidate,
                                                                   state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_smem_absolute_pair_matches_live(
+            candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||

@@ -122,7 +122,8 @@ test_kind_access_mismatch_rejects(void)
     ti_c54x_memory_address_resolution resolution = {0};
 
     {
-        /* WRITE without a load leg has no form. */
+        /* P3-S60: plain WRITE stages a zero template the pair
+         * second-leg issue replaces with the Smem observation. */
         const ti_c54x_op_memory_address_spec spec =
             absolute_spec(UINT16_C(0x0020));
 
@@ -131,7 +132,11 @@ test_kind_access_mismatch_rejects(void)
                                TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
                                UINT16_C(0),
                                &resolution) ==
-                           TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+                           TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK);
+        TI_C54X_TEST_CHECK(resolution.request.write_value_word ==
+                           UINT16_C(0));
+        TI_C54X_TEST_CHECK(resolution.request.address_word ==
+                           UINT32_C(0x0020));
     }
     {
         /* READ with a load leg has no form. */
@@ -161,10 +166,11 @@ test_kind_access_mismatch_rejects(void)
 }
 
 static void
-test_write_rejects(void)
+test_write_plain_resolves(void)
 {
-    /* WRITE without a load leg is a kind mismatch (INVALID_SPEC),
-     * even with a nonzero staged value. */
+    /* P3-S60: plain WRITE resolves with the staged value riding
+     * through; the pair root prepares zero and replaces it at
+     * second-leg issue. */
     const ti_c54x_op_memory_address_spec spec =
         absolute_spec(UINT16_C(0x0020));
     const ti_c54x_arch_state state = {0};
@@ -175,7 +181,9 @@ test_write_rejects(void)
                            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
                            UINT16_C(0x1234),
                            &resolution) ==
-                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK);
+    TI_C54X_TEST_CHECK(resolution.request.write_value_word ==
+                       UINT16_C(0x1234));
 }
 
 static void
@@ -243,7 +251,7 @@ main(void)
     test_page0_and_high_page();
     test_write_load_builds_staged_request();
     test_kind_access_mismatch_rejects();
-    test_write_rejects();
+    test_write_plain_resolves();
     test_malformed_spec_rejects();
     test_null_rejects();
     return 0;

@@ -106,6 +106,7 @@
 #include "store/op_mvdm.h"
 #include "store/op_mvmd.h"
 #include "store/op_mvmm.h"
+#include "store/op_mvdk.h"
 #include "store/op_st_t_smem.h"
 #include "store/op_st_t_smem_direct.h"
 #include "store/op_st_trn_smem_direct.h"

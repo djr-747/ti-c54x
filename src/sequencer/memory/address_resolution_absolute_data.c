@@ -44,9 +44,11 @@ ti_c54x_sequencer_resolve_absolute_data_address(
     }
     sidecar_kind = spec->absolute_data.mmr_sidecar_kind;
     /* The kind/access pairing mirrors the effect gate: READ legs
-     * run plain or with a store leg, while WRITE legs exist only
-     * with a load leg (the resume path snapshots the MMR into
-     * the request, so resolution takes the staged zero here). */
+     * run plain or with a store leg, while WRITE legs run with a
+     * load leg (the resume path snapshots the MMR into the
+     * request, so resolution takes the staged zero here) or plain
+     * (the Smem-absolute pair stages a zero dmad template the
+     * second-leg issue replaces with the Smem observation). */
     if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
         if (sidecar_kind !=
                 (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE &&
@@ -57,7 +59,9 @@ ti_c54x_sequencer_resolve_absolute_data_address(
         }
     } else if (access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
         if (sidecar_kind !=
-            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE) {
+                (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE &&
+            sidecar_kind !=
+                (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
     } else {

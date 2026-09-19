@@ -22,6 +22,8 @@ ti_c54x_add_unit_test(mvdm_ops test_mvdm.c)
 ti_c54x_add_unit_test(mvmd_ops test_mvmd.c)
 # P3-S59 RED contract: MVMM MMR-to-MMR move effects.
 ti_c54x_add_unit_test(mvmm_ops test_mvmm.c)
+# P3-S60 RED contract: MVDK Smem-to-absolute copy effects.
+ti_c54x_add_unit_test(mvdk_ops test_mvdk.c)
 ti_c54x_add_unit_test(st_t_smem_ops test_st_t_smem.c)
 ti_c54x_add_unit_test(st_t_smem_direct_ops test_st_t_smem_direct.c)
 ti_c54x_add_unit_test(stlm_smem_direct_ops test_stlm_smem_direct.c)

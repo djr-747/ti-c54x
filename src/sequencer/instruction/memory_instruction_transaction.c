@@ -35,6 +35,7 @@
 #include "memory_instruction_mmr_load.h"
 #include "memory_instruction_port.h"
 #include "memory_instruction_stack_pair.h"
+#include "memory_instruction_smem_absolute_pair.h"
 #include "memory_instruction_pair_dispatch.h"
 
 static void
@@ -66,6 +67,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     bool dual_read;
     bool port_pair;
     bool stack_pair;
+    bool smem_absolute_pair;
     bool stack_push;
     bool stack_pop;
     bool stack_pop_rtn;
@@ -95,6 +97,9 @@ ti_c54x_memory_instruction_transaction_prepare(
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
                  effect->payload.memory.address_spec.kind ==
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16;
+    smem_absolute_pair =
+        effect->payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16;
     stack_push = effect->payload.memory.address_spec.kind ==
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
                  effect->payload.memory.address_spec.kind ==
@@ -170,6 +175,11 @@ ti_c54x_memory_instruction_transaction_prepare(
         /* Stack-pair resolution lives in the child: the TOS leg
          * through the generic stack resolver plus the Smem DATA leg
          * through the single-leg resolver. Nothing is resolved
+         * here: the generic resolver knows no pair kinds. */
+    } else if (smem_absolute_pair) {
+        /* Smem-absolute resolution lives in the child: the Smem
+         * DATA leg through the single-leg resolver plus the dmad
+         * leg through the absolute resolver. Nothing is resolved
          * here: the generic resolver knows no pair kinds. */
     } else if (effect->payload.memory.address_spec.kind !=
                TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
@@ -250,6 +260,11 @@ ti_c54x_memory_instruction_transaction_prepare(
         }
     } else if (stack_pair) {
         if (!ti_c54x_memory_instruction_stack_pair_prepare_snapshot(
+                target, state)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else if (smem_absolute_pair) {
+        if (!ti_c54x_memory_instruction_smem_absolute_pair_prepare_snapshot(
                 target, state)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }

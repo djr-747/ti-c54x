@@ -2649,9 +2649,12 @@
       "table_ordinal": 2,
       "mnemonic": "MVDK",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MVDK_DIRECT",
+        "MVDK_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-26-03",
@@ -4684,6 +4687,18 @@
       "form_id": "FORM-T2-26-07",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "MVDK_DIRECT",
+      "form_id": "FORM-T2-26-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_DP"
+    },
+    {
+      "catalog_symbol": "MVDK_SMEM",
+      "form_id": "FORM-T2-26-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
     }
   ]
 }

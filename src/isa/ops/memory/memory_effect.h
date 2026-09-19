@@ -156,7 +156,18 @@ typedef enum ti_c54x_op_memory_address_kind {
      * address rides `address` (the second program word). No AR,
      * CMPT, CPL, or DP dependence and no post-update; Smem
      * unknownness is gated at the leaf and root. */
-    TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 = 22
+    TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 = 22,
+    /* Smem-to-absolute DATA pair WORD16 (MVDK): the Smem DATA leg
+     * is read first and the observed word is written to the
+     * absolute DATA address riding `dmad` (the second program
+     * word). The effect `access` is WRITE (the completing-leg
+     * direction, PSHD convention). Direct legs carry the
+     * DP-relative offset with no AR dependence; indirect legs
+     * read AR with CMPT=0/ARP=0 and admit MOD0--MOD3 (the
+     * resolver governs MOD validity). No post-update beyond the
+     * indirect AR delta; DP/AR unknownness is gated at the leaf
+     * and root. MVKD reuses this carrier with access READ. */
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16 = 23
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -304,6 +315,31 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } stack_pair;
+        struct {
+            /* Smem-to-absolute pair: the Smem DATA leg selector.
+             * Zero selects the DP-relative direct leg
+             * (`smem_dma7`); one selects the standard-indirect
+             * leg (`smem_mode` with `smem_arf`). */
+            uint8_t indirect;
+            /* Indirect-leg mode MOD0--MOD3. Must remain zero for
+             * the direct leg. */
+            uint8_t smem_mode;
+            /* Indirect-leg AR selector. Must remain zero for the
+             * direct leg. */
+            uint8_t smem_arf;
+            /* Direct-leg 7-bit DATA offset. Must remain zero for
+             * the indirect leg. */
+            uint8_t smem_dma7;
+            /* Absolute 16-bit DATA destination (the second
+             * program word). */
+            uint16_t dmad;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation scalar comparisons. */
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } smem_absolute;
         struct {
             /* Absolute 16-bit DATA address (the second program
              * word). Same footprint as the pair arms: the address
