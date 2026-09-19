@@ -162,10 +162,16 @@ int main(void)
                         TI_C54X_INPUT_RESOURCES_STATUS_C),
                     &missing_sources, &output);
 
-    /* Existing invalid-resource and null-output contracts remain intact. */
+    /* Null-output contracts remain intact. Bit 15 (0x8000) is the
+     * sixteenth and final resource (STATUS_C16): the 16-bit mask is
+     * fully allocated, so the old invalid-mask probe now collects
+     * reset-state C16 (0, known). */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)UINT32_C(0x8000), &sources,
-                    &output);
+    TI_C54X_TEST_CHECK(ti_c54x_input_collect(
+                           (ti_c54x_input_resource_mask)UINT16_C(0x8000),
+                           &sources,
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_T_REGISTER, &sources,
                            NULL) != TI_C54X_INPUT_COLLECT_OK);

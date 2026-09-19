@@ -35,10 +35,12 @@ long32_spec(uint8_t indirect, uint8_t mode, uint8_t arf, uint8_t dma7,
 }
 
 static ti_c54x_long32_single_access
-plan_direct(uint8_t dma7, uint16_t dp_page)
+plan_direct(uint8_t dma7)
 {
+    /* Single-word directs are page-0 (S7/STM precedent): the DP
+     * slot stays zero and no DP state is observed. */
     const ti_c54x_op_memory_address_spec spec =
-        long32_spec(UINT8_C(0), UINT8_C(0), UINT8_C(0), dma7, dp_page);
+        long32_spec(UINT8_C(0), UINT8_C(0), UINT8_C(0), dma7, UINT16_C(0));
 
     return ti_c54x_sequencer_plan_long32_single_access(
         &spec, UINT16_C(0),
@@ -48,20 +50,17 @@ plan_direct(uint8_t dma7, uint16_t dp_page)
 static void
 check_direct_even(void)
 {
-    /* DP 0x004, dma 0x0A: MSW at 0x020A, LSW at 0x020B. */
-    const ti_c54x_long32_single_access plan =
-        plan_direct(UINT8_C(0x0A), UINT16_C(0x004));
+    /* Page-0 dma 0x0A: MSW at 0x000A, LSW at 0x000B. */
+    const ti_c54x_long32_single_access plan = plan_direct(UINT8_C(0x0A));
 
     TI_C54X_TEST_CHECK(plan.status == TI_C54X_LONG32_SINGLE_ACCESS_OK);
     TI_C54X_TEST_CHECK(plan.effect.operand.width ==
                        TI_C54X_DATA_OPERAND_WIDTH_LONG32);
-    TI_C54X_TEST_CHECK(plan.effect.operand.first_word == UINT16_C(0x020A));
-    TI_C54X_TEST_CHECK(plan.effect.operand.second_word == UINT16_C(0x020B));
+    TI_C54X_TEST_CHECK(plan.effect.operand.first_word == UINT16_C(0x000A));
+    TI_C54X_TEST_CHECK(plan.effect.operand.second_word == UINT16_C(0x000B));
     TI_C54X_TEST_CHECK(plan.effect.source.kind ==
-                       TI_C54X_ADDRESS_SOURCE_DIRECT_DP);
-    TI_C54X_TEST_CHECK(plan.effect.source.value.direct_dp.dp9 ==
-                       UINT16_C(0x004));
-    TI_C54X_TEST_CHECK(plan.effect.source.value.direct_dp.dma7 ==
+                       TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0);
+    TI_C54X_TEST_CHECK(plan.effect.source.value.direct_page0.dma7 ==
                        UINT8_C(0x0A));
     TI_C54X_TEST_CHECK(plan.effect.update.target ==
                        TI_C54X_ADDRESS_UPDATE_NONE);
@@ -71,8 +70,7 @@ static void
 check_direct_odd_pairs_down(void)
 {
     /* Odd MSW canonical-pairs down per the LONG32 operand rule. */
-    const ti_c54x_long32_single_access plan =
-        plan_direct(UINT8_C(0x0B), UINT16_C(0x000));
+    const ti_c54x_long32_single_access plan = plan_direct(UINT8_C(0x0B));
 
     TI_C54X_TEST_CHECK(plan.status == TI_C54X_LONG32_SINGLE_ACCESS_OK);
     TI_C54X_TEST_CHECK(plan.effect.operand.first_word == UINT16_C(0x000B));
@@ -192,9 +190,9 @@ check_malformed_rejects(void)
         /* dma out of range */
         {.kind = TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE,
          .long32_single = {.dma7 = 0x80}},
-        /* dp page out of range */
+        /* dp slot nonzero (page-0 directs reserve it) */
         {.kind = TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE,
-         .long32_single = {.dp_page = 512}},
+         .long32_single = {.dma7 = 0x0A, .dp_page = 1}},
         /* reserved word nonzero */
         {.kind = TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE,
          .long32_single = {.reserved_word0 = 1}},

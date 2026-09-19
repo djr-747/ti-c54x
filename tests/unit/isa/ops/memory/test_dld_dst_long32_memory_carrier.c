@@ -111,9 +111,13 @@ static void check_carrier_shape_and_size(void)
      * 392 (tail padding absorbs the new fields, executed here);
      * native-32 moves 356 to 360 by construction (same +4
      * snapshot delta at 4-alignment, unverifiable on a 64-bit
-     * host). */
+     * host).
+     * P3-S55 lane 2 grows the embedded input snapshot with the C16
+     * fields: LP64 moves 448 to 456 (executed here); native-32
+     * moves 416 to 420 by construction (same +8 snapshot delta at
+     * 4-alignment, unverifiable on a 64-bit host). */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 448U : 416U));
+                       (sizeof(void *) == 8U ? 456U : 420U));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&read));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
     TI_C54X_TEST_CHECK(read.first_value_msw == UINT16_C(0));

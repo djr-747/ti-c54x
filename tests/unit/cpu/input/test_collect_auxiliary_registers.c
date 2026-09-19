@@ -191,7 +191,10 @@ int main(void)
     TI_C54X_TEST_CHECK(output.auxiliary_registers_raw16[0] == UINT16_C(0xCAFE));
     TI_C54X_TEST_CHECK(output.auxiliary_registers_known_mask == UINT8_C(1));
 
-    /* Missing AUX source, invalid masks, and null output reject transactionally. */
+    /* Missing AUX source and null output reject transactionally. Bit
+     * 15 (0x8000) is the sixteenth and final resource (STATUS_C16):
+     * the 16-bit mask is fully allocated, so the old invalid-mask
+     * probe now collects reset-state C16 (0, known). */
     output = sentinel();
     sources = sources_for(&accumulators, &status, NULL);
     expect_rejected((ti_c54x_input_resource_mask)(
@@ -201,8 +204,11 @@ int main(void)
                     &sources, &output);
     output = sentinel();
     sources = sources_for(&accumulators, &status, &arch_state);
-    expect_rejected((ti_c54x_input_resource_mask)UINT16_C(0x8000), &sources,
-                    &output);
+    TI_C54X_TEST_CHECK(ti_c54x_input_collect(
+                           (ti_c54x_input_resource_mask)UINT16_C(0x8000),
+                           &sources,
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
     output = sentinel();
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS,

@@ -9,6 +9,8 @@
  * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers,
  * plus the single-word DIRECT/SINGLE_INDIRECT delay write-back READ
  * shape (optional completion; WRITE/RMW access stays invalid).
+ * The single-word Lmem LONG32 arm delegates to the
+ * memory_effect_long32_single module.
  * Dual MOD3 remains deferred with the AR0/BK indexed/circular
  * dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
@@ -16,6 +18,8 @@
  */
 
 #include "memory_effect.h"
+
+#include "memory_effect_long32_single.h"
 
 #include <stddef.h>
 
@@ -251,6 +255,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
         }
         return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
                effect->complete_long32 == NULL;
+
+    case TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE:
+        return ti_c54x_op_memory_effect_long32_single_shape_is_valid(
+            effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16:
         return ti_c54x_op_memory_dual_address_is_valid(

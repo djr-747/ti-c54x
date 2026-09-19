@@ -217,10 +217,16 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
         }
         break;
     case TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0:
+        /* Page-0 admits WORD16 plus canonical LONG32 (single-word
+         * Lmem direct legs pair the dma slot). */
         if (effect->source.value.direct_page0.dma7 > UINT8_C(0x7f) ||
-            effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
             effect->operand.first_word !=
-                effect->source.value.direct_page0.dma7) {
+                effect->source.value.direct_page0.dma7 ||
+            (effect->operand.width !=
+                 TI_C54X_DATA_OPERAND_WIDTH_WORD16 &&
+             (effect->operand.width !=
+                  TI_C54X_DATA_OPERAND_WIDTH_LONG32 ||
+              !ti_c54x_data_operand_is_valid(&effect->operand)))) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
         break;

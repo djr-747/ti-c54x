@@ -6,3 +6,4 @@ ti_c54x_add_unit_test(cpu_add_sub_dual_modes test_cpu_add_sub_dual_modes.c)
 ti_c54x_add_unit_test(cpu_add_sub_dual_mod3 test_cpu_add_sub_dual_mod3.c)
 # P3-S3z RED contract: public-CPU ADD Smem syntaxes 1-3 retirement.
 ti_c54x_add_unit_test(cpu_add_smem test_cpu_add_smem.c)
+ti_c54x_add_unit_test(cpu_dadd test_cpu_dadd.c)

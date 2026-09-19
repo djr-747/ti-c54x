@@ -35,7 +35,7 @@ static const atomic_row rows[] = {
 static void
 test_rows_and_projection(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 309);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 310);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const atomic_row *row = &rows[index];
         const ti_c54x_opcode_metadata *metadata =
@@ -72,7 +72,7 @@ test_lookup_population_and_disjoint_rows(void)
             }
         }
     }
-    TI_C54X_TEST_CHECK(populated == 36873U);
+    TI_C54X_TEST_CHECK(populated == 37897U);
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         unsigned encodings = 0U;
         for (uint32_t low = 0U; low < UINT32_C(32); ++low) {

@@ -861,9 +861,11 @@
       "table_ordinal": 1,
       "mnemonic": "DADD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "DADD"
+      ]
     },
     {
       "id": "FORM-T2-05-02",
@@ -3458,6 +3460,12 @@
       "form_id": "FORM-T2-01-12",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "DADD",
+      "form_id": "FORM-T2-05-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD2"
     },
     {
       "catalog_symbol": "DLD_LONG32_MOD13",

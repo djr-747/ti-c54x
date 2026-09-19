@@ -7,6 +7,7 @@ ti_c54x_add_unit_test(collect_stack_pointer test_collect_stack_pointer.c)
 # W76 RED contract: return-register input collection.
 ti_c54x_add_unit_test(collect_return_register test_collect_return_register.c)
 ti_c54x_add_unit_test(cpu_input_collect_ovm_status test_collect_ovm_status.c)
+ti_c54x_add_unit_test(cpu_input_collect_c16_status test_collect_c16_status.c)
 ti_c54x_add_unit_test(cpu_input_collect_asm_status test_collect_asm_status.c)
 ti_c54x_add_unit_test(cpu_input_collect_frct_status test_collect_frct_status.c)
 ti_c54x_add_unit_test(cpu_input_collect_auxiliary_registers

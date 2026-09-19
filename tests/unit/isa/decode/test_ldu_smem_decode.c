@@ -95,10 +95,11 @@ static void
 test_fixed_bit_near_misses_and_forged_completion(void)
 {
     /* Bit 11 (0x0800) leaves in P3-S21: 0x1280 ^ 0x0800 is 0x1A80, a
-     * valid OR_SMEM word asserted below. */
+     * valid OR_SMEM word asserted below. Bit 14 (0x4000) leaves in
+     * P3-S55 lane 2: 0x1290 ^ 0x4000 is 0x5290, a valid DADD word
+     * asserted below. */
     static const uint16_t unknown_near_misses[] = {
-        UINT16_C(0x0080),
-        UINT16_C(0x4000)};
+        UINT16_C(0x0080)};
     const uint16_t word = LDU_VALUE;
     const ti_c54x_decode_result valid = ti_c54x_decode_first_word(word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -126,6 +127,14 @@ test_fixed_bit_near_misses_and_forged_completion(void)
             (uint16_t)(word ^ UINT16_C(0x0400)));
         TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LDR);
+    }
+
+    /* This former near-miss is the P3-S55 lane 2 DADD sibling. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x4000)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_DADD);
     }
 
     /* Flipping bit 11 lands on 0x1A80, claimed by the P3-S21

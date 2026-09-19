@@ -187,8 +187,9 @@ typedef uint16_t ti_c54x_input_resource_mask;
 /* Resource values are powers of two; RETURN_REGISTER is the eleventh
  * resource (1024), STATUS_FRCT is the twelfth resource (2048),
  * STATUS_DP is the thirteenth resource (4096), TRN_REGISTER is the
- * fourteenth resource (8192), and BRC_REGISTER is the fifteenth
- * resource (16384). */
+ * fourteenth resource (8192), BRC_REGISTER is the fifteenth
+ * resource (16384), and STATUS_C16 is the sixteenth and final
+ * resource (32768): the 16-bit mask is fully allocated. */
 #define TI_C54X_INPUT_RESOURCES_NONE ((ti_c54x_input_resource_mask)0U)
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS ((ti_c54x_input_resource_mask)1U)
 #define TI_C54X_INPUT_RESOURCES_STATUS_C ((ti_c54x_input_resource_mask)2U)
@@ -214,6 +215,9 @@ typedef uint16_t ti_c54x_input_resource_mask;
 /* BRC arrives from the MMR file cell; SRCCD is its first consumer. */
 #define TI_C54X_INPUT_RESOURCES_BRC_REGISTER \
     ((ti_c54x_input_resource_mask)16384U)
+/* C16 arrives from ST1 bit 7; DADD is its first consumer. */
+#define TI_C54X_INPUT_RESOURCES_STATUS_C16 \
+    ((ti_c54x_input_resource_mask)32768U)
 /* CMPS Smem bodies read one S-selected accumulator plus the MMR TRN cell. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_TRN_REGISTER \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
@@ -286,6 +290,11 @@ typedef uint16_t ti_c54x_input_resource_mask;
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_C16 \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C16))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_ASM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
@@ -357,7 +366,8 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_DP | \
                                    TI_C54X_INPUT_RESOURCES_TRN_REGISTER | \
-                                   TI_C54X_INPUT_RESOURCES_BRC_REGISTER))
+                                   TI_C54X_INPUT_RESOURCES_BRC_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_C16))
 
 typedef struct ti_c54x_opcode_metadata {
     ti_c54x_opcode_id id;

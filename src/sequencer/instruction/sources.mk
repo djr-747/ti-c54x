@@ -3,6 +3,7 @@
 ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_candidate_validate.c \
 	src/sequencer/instruction/memory_candidate_direct.c \
+	src/sequencer/instruction/memory_candidate_long32_single.c \
 	src/sequencer/instruction/memory_candidate_single_leg.c \
 	src/sequencer/instruction/memory_instruction_commit.c \
 	src/sequencer/instruction/memory_instruction_data_program_candidate_validate.c \

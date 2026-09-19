@@ -9,8 +9,9 @@
  * AR0-indexed MOD5/MOD6, circular MOD8/MOD10, reverse-carry
  * MOD4/MOD7, LONG32, X-only dual MOD0--MOD3, and mode-independent
  * STACK_PUSH/STACK_POP operands with their delayed-branch twins.
- * Page-0 and DP-relative direct arms delegate to the
- * memory_candidate_direct module.
+ * The LONG32_SINGLE arm delegates to the
+ * memory_candidate_long32_single module. Page-0 and DP-relative
+ * direct arms delegate to the memory_candidate_direct module.
  * Does not own: transaction lifecycle, endpoint I/O, architectural
  * mutation, effect completion, opcode dispatch, timing, observers,
  * or diagnostics. Resolution and effect arguments are borrowed for

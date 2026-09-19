@@ -18,8 +18,8 @@
 #include <string.h>
 
 #if UINTPTR_MAX == UINT64_MAX
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 72U,
-               "op input layout must remain 72 bytes on LP64");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 80U,
+               "op input layout must remain 80 bytes on LP64");
 _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U,
                "metadata carrier must not grow on LP64");
 _Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U,
@@ -31,8 +31,8 @@ _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U,
                "metadata carrier must remain 24 bytes on ILP32");
 _Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U,
                "decoded carrier must remain 20 bytes on ILP32");
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 72U,
-               "op input carrier must remain 72 bytes on ILP32");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 76U,
+               "op input carrier must remain 76 bytes on ILP32");
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 76U,
                "trusted packet must remain 76 bytes on ILP32");
 #endif
@@ -51,7 +51,6 @@ int main(void)
     ti_c54x_accumulator_state accumulators;
     ti_c54x_input_sources sources;
     ti_c54x_op_input_snapshot output;
-    ti_c54x_op_input_snapshot before;
 
 
     TI_C54X_TEST_CHECK(ti_c54x_status_register_reset_common(&status) ==
@@ -94,13 +93,15 @@ int main(void)
                            &output) == TI_C54X_INPUT_COLLECT_OK);
     TI_C54X_TEST_CHECK(output.status_ovm == 0U && !output.status_ovm_known);
 
+    /* Bit 15 (0x8000) is the sixteenth and final resource
+     * (STATUS_C16): the 16-bit mask is fully allocated, so the old
+     * invalid-mask probe now collects reset-state C16 (0, known). */
     output.status_ovm = 1U;
     output.status_ovm_known = true;
-    before = output;
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            (ti_c54x_input_resource_mask)0x8000U, &sources,
-                           &output) == TI_C54X_INPUT_COLLECT_INVALID_RESOURCE_MASK);
-    TI_C54X_TEST_CHECK(memcmp(&before, &output, sizeof(output)) == 0);
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_STATUS_OVM, NULL, &output) ==
                        TI_C54X_INPUT_COLLECT_INVALID_SOURCE);

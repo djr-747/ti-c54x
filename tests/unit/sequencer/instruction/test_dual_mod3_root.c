@@ -32,11 +32,13 @@
  * at 360. S6 grows the PORT pair snapshot with the DATA-leg
  * resolution (the generic slot aliases the snapshot in the candidate
  * union), so the root holds at 384. S44 grows the embedded input
- * snapshot with the TRN fields, so the root holds at 392. */
+ * snapshot with the TRN fields, so the root holds at 392. P3-S55
+ * lane 2 grows the embedded input snapshot with the C16 fields, so
+ * the root holds at 456. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 448U,
-               "S44 LP64 root holds the TRN input fields");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 456U,
+               "P3-S55 LP64 root holds the C16 input fields");
 
 static ti_c54x_op_memory_address_spec
 dual_spec_modes(uint8_t x_ar,

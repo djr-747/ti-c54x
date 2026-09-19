@@ -16,8 +16,8 @@
 #include <stdint.h>
 #include <string.h>
 
-_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 72U,
-               "op input snapshot must retain its fixed 72-byte layout");
+_Static_assert(sizeof(ti_c54x_op_input_snapshot) == 80U,
+               "op input snapshot must retain its fixed 80-byte layout");
 
 static ti_c54x_input_sources sources_for(
     const ti_c54x_status_register_state *status)
@@ -132,12 +132,18 @@ int main(void)
     TI_C54X_TEST_CHECK(output.status_asm == 19U);
     TI_C54X_TEST_CHECK(output.status_asm_known);
 
-    /* Missing ASM sources, invalid masks, and NULL outputs are
+    /* Missing ASM sources and NULL outputs are
      * nonmutating. */
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_ASM, NULL, &output);
+    /* Bit 15 (0x8000) is the sixteenth and final resource
+     * (STATUS_C16): the 16-bit mask is fully allocated, so the old
+     * invalid-mask probe now collects reset-state C16 (0, known). */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x8000U, &sources, &output);
+    TI_C54X_TEST_CHECK(ti_c54x_input_collect(
+                           (ti_c54x_input_resource_mask)0x8000U, &sources,
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
     TI_C54X_TEST_CHECK(ti_c54x_input_collect(
                            TI_C54X_INPUT_RESOURCES_STATUS_ASM, &sources,
                            NULL) != TI_C54X_INPUT_COLLECT_OK);

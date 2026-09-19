@@ -138,9 +138,15 @@ int main(void)
     TI_C54X_TEST_CHECK(output.status_sxm == 1U);
     TI_C54X_TEST_CHECK(output.status_sxm_known);
 
-    /* Invalid masks and missing requested status reject without mutation. */
+    /* Missing requested status rejects without mutation. */
+    /* Bit 15 (0x8000) is the sixteenth and final resource
+     * (STATUS_C16): the 16-bit mask is fully allocated, so the old
+     * invalid-mask probe now collects reset-state C16 (0, known). */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x8000U, &sources, &output);
+    TI_C54X_TEST_CHECK(ti_c54x_input_collect(
+                           (ti_c54x_input_resource_mask)0x8000U, &sources,
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
     missing_sources = sources_for(NULL, NULL);
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_SXM,

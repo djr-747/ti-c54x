@@ -20,3 +20,5 @@ $(eval $(call ti_c54x_add_test,mmr_resolver,sequencer/memory,test_mmr_address_re
 $(eval $(call ti_c54x_add_test,port_resolver,sequencer/memory,test_port_address_resolution.c))
 # P3-S55 RED contract: single-word Lmem LONG32 planning.
 $(eval $(call ti_c54x_add_test,long32_single_resolver,sequencer/memory,test_long32_single_access_plan.c))
+# P3-S55 lane 2 RED contract: LONG32_SINGLE generic resolution.
+$(eval $(call ti_c54x_add_test,long32_single_resolution,sequencer/memory,test_long32_single_memory_resolution.c))

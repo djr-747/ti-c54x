@@ -145,11 +145,12 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16 = 20,
     /* Single-word Lmem LONG32 (double-precision family): the 32-bit
      * operand is addressed by one I + 7-bit cookie word. The direct
-     * leg reads MSW/LSW at the DP-relative `(dp_page << 7) | dma7`
-     * address; the indirect leg reads at the standard-indirect
-     * MOD0--MOD3 AR address with the landed two-word AR deltas
-     * (MOD3 stays write-only). No post-update beyond the indirect
-     * AR delta; DP/AR unknownness is gated at the leaf and root. */
+     * leg reads MSW/LSW at the page-0 dma7 address (the DP slot
+     * stays reserved zero); the indirect leg reads at the
+     * standard-indirect MOD0--MOD3 AR address with the landed
+     * two-word AR deltas (MOD3 stays write-only). No post-update
+     * beyond the indirect AR delta; DP/AR unknownness is gated at
+     * the leaf and root. */
     TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE = 21
 } ti_c54x_op_memory_address_kind;
 
@@ -299,11 +300,12 @@ typedef struct ti_c54x_op_memory_address_spec {
             /* Indirect-leg AR selector (AR0--AR7). Must remain
              * zero for the direct leg. */
             uint8_t arf;
-            /* Direct-leg 7-bit DATA offset. Must remain zero for
-             * the indirect leg. */
+            /* Direct-leg 7-bit page-0 DATA offset. Must remain
+             * zero for the indirect leg. */
             uint8_t dma7;
-            /* Direct-leg frozen 9-bit DP page (0..511). Must
-             * remain zero for the indirect leg. */
+            /* Reserved: single-word directs are page-0 (S7/STM
+             * precedent), so this DP slot stays zero on both
+             * legs. Must remain zero. */
             uint16_t dp_page;
             /* Reserved words keep the arm fixed-size and make the
              * checked hot-path validation scalar comparisons. */

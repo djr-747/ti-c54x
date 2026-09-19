@@ -2,7 +2,9 @@
  * Module contract
  *
  * Owns: structural validation of one copied single-leg DATA address
- * resolution against its memory effect; see memory_candidate_single_leg.h.
+ * resolution against its memory effect; the LONG32_SINGLE arm
+ * delegates to the memory_candidate_long32_single module.
+ * See memory_candidate_single_leg.h.
  * Does not own: transaction lifecycle, endpoint I/O, architectural
  * mutation, effect completion, opcode dispatch, timing, observers,
  * diagnostics, allocation, or global state. Inputs are borrowed for
@@ -20,6 +22,7 @@
 #include "address/indirect_reverse_carry.h"
 #include "bus/request/word16_request.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
+#include "sequencer/instruction/memory_candidate_long32_single.h"
 #include "sequencer/memory/address_resolution.h"
 
 bool
@@ -60,6 +63,12 @@ ti_c54x_memory_candidate_single_leg_shape_is_valid(
                address_commit->ar_index == source->index &&
                address_commit->value_after ==
                    address_effect->update.value_after;
+    }
+
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE) {
+        return ti_c54x_memory_candidate_long32_single_shape_is_valid(
+            resolution, effect);
     }
     if (address_effect->operand.width != TI_C54X_DATA_OPERAND_WIDTH_WORD16) {
         return false;

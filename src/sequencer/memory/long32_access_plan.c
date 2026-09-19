@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: the pure single-word Lmem LONG32 read leg plan: arm
- * validation plus direct-DP concatenation or landed indirect
+ * validation plus page-0 direct formation or landed indirect
  * LONG32 resolution into a canonical operand. Does not own:
  * request issue, endpoint traffic, the pair-transaction commit
  * root, opcode semantics, CPU lifecycle, timing, diagnostics,
@@ -15,7 +15,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "address/direct_dp.h"
+#include "address/direct_page0.h"
 #include "address/indirect_single.h"
 
 static ti_c54x_long32_single_access
@@ -43,7 +43,7 @@ long32_single_arm_is_valid(const ti_c54x_op_memory_address_spec *spec)
         return spec->long32_single.mode == UINT8_C(0) &&
                spec->long32_single.arf == UINT8_C(0) &&
                spec->long32_single.dma7 <= UINT8_C(0x7F) &&
-               spec->long32_single.dp_page <= UINT16_C(511);
+               spec->long32_single.dp_page == UINT16_C(0);
     }
     return spec->long32_single.mode <= UINT8_C(3) &&
            spec->long32_single.arf <= UINT8_C(7) &&
@@ -54,9 +54,11 @@ long32_single_arm_is_valid(const ti_c54x_op_memory_address_spec *spec)
 static ti_c54x_long32_single_access
 plan_direct_leg(const ti_c54x_op_memory_address_spec *spec)
 {
-    const ti_c54x_direct_dp9 dp = {.bits = spec->long32_single.dp_page};
-    const ti_c54x_direct_dma7 dma = {.bits = spec->long32_single.dma7};
-    const ti_c54x_address_result resolved = ti_c54x_direct_dp_word(dp, dma);
+    /* Single-word directs are page-0 (S7/STM precedent): the nine
+     * MSBs clear regardless of DP and no DP state is observed. */
+    const ti_c54x_direct_page0_dma7 dma = {
+        .bits = spec->long32_single.dma7};
+    const ti_c54x_address_result resolved = ti_c54x_direct_page0_word(dma);
     ti_c54x_long32_single_access plan = invalid_output(
         TI_C54X_LONG32_SINGLE_ACCESS_ADDRESS_PLAN_REJECTED);
 

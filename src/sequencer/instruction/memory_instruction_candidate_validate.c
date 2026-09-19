@@ -29,6 +29,7 @@
 #include "memory_instruction_port_candidate_validate.h"
 #include "memory_instruction_stack_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
+#include "sequencer/instruction/memory_candidate_long32_single.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
 
 bool
@@ -293,6 +294,17 @@ ti_c54x_memory_instruction_candidate_matches_live(
     }
     address_effect = &resolution->address_result.effect;
 
+    /* The LONG32_SINGLE direct leg reads its dma echo from its own
+     * arm: the DIRECT alias slot overlays reserved storage, so the
+     * shared direct liveness would misread it. Indirect LONG32 legs
+     * keep the generic CMPT=0/ARP=0 tail below. */
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE &&
+        address_effect->source.kind ==
+            TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
+        return ti_c54x_memory_candidate_long32_single_direct_matches_live(
+            candidate, state);
+    }
     if (address_effect->source.kind ==
             TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 ||
         address_effect->source.kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP) {

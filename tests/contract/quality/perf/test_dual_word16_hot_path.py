@@ -302,7 +302,7 @@ int main(void)
         self.assertEqual(pointer, ctypes.sizeof(ctypes.c_void_p), output)
         self.assertEqual(uint64, ctypes.sizeof(ctypes.c_uint64), output)
         self.assertEqual(
-            (address, effect, op_effect, dual, root), (24, 48, 56, 80, 448), output
+            (address, effect, op_effect, dual, root), (24, 48, 56, 80, 456), output
         )
 
     def test_supported_m32_abi_probe_freezes_carriers(self) -> None:
@@ -337,7 +337,7 @@ int main(void)
         )
         self.assertEqual((pointer, uint64), (4, 8), output)
         self.assertEqual(
-            (address, effect, op_effect, dual, root), (24, 40, 44, 72, 416), output
+            (address, effect, op_effect, dual, root), (24, 40, 44, 72, 420), output
         )
 
 

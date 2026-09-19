@@ -139,8 +139,14 @@ int main(void)
     output = sentinel();
     expect_rejected(TI_C54X_INPUT_RESOURCES_STATUS_TC, &missing_sources,
                     &output);
+    /* Bit 15 (0x8000) is the sixteenth and final resource
+     * (STATUS_C16): the 16-bit mask is fully allocated, so the old
+     * invalid-mask probe now collects reset-state C16 (0, known). */
     output = sentinel();
-    expect_rejected((ti_c54x_input_resource_mask)0x8000U, &sources, &output);
+    TI_C54X_TEST_CHECK(ti_c54x_input_collect(
+                           (ti_c54x_input_resource_mask)0x8000U, &sources,
+                           &output) == TI_C54X_INPUT_COLLECT_OK);
+    TI_C54X_TEST_CHECK(output.status_c16 == 0U && output.status_c16_known);
 
     /* Raw carriers stay canonical even when their knownness says unknown. */
     accumulators.a_raw40 = TI_C54X_U40_MASK + UINT64_C(1);

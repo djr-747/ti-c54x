@@ -7,10 +7,11 @@
  * Owns: the pure single-word Lmem LONG32 read leg plan for one
  * copied LONG32_SINGLE spec: a validated canonical LONG32 data
  * operand with its source snapshot and AR update, or a
- * transactional reject. Direct legs concatenate the frozen DP
- * page and dma7; indirect legs compose the landed two-word-delta
- * single-indirect LONG32 resolver (MOD3 reads decline there).
- * Planning observes no state beyond the copied AR value.
+ * transactional reject. Direct legs address page-0 (the DP slot
+ * stays reserved zero); indirect legs compose the landed
+ * two-word-delta single-indirect LONG32 resolver (MOD3 reads
+ * decline there). Planning observes no state beyond the copied
+ * AR value.
  * Does not own: request issue, endpoint traffic, the
  * pair-transaction commit root, opcode semantics, CPU lifecycle,
  * or timing. All inputs are borrowed for one call; no pointer is
