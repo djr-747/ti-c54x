@@ -13921,3 +13921,67 @@ entries are not rewritten after publication.
 - Split commit discipline: ledger-and-status-only follow-up.
   The P3 checklist is now fully consistent with git history;
   no further landed-but-unflipped slice remains.
+
+## 2026-09-19 — P3-S54 STL SHFT Xmem store slice lands as 6c16ff7
+
+- Commit `6c16ff7` closes FORM-T2-20-12 (the only unbound STL
+  form) as an exact S12 mirror: `STL_SHFT_XMEM` (`0x9800/0xFE00`,
+  TI SPRU172C STL syntax 3 opcode `1001_100S_XXXXSHFT`,
+  pp. 4-171-4-172) over the shared
+  `ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4` layout, with plain plus
+  trusted `op_stl_shft_xmem` leaves staging X-only WRITE effects
+  carrying bits 15-0 of the left-shifted accumulator. The stored
+  low 16 bits of a left shift are pure source bits, so SXM rides
+  hostile and unconsumed (same proof as S12). Dispatch and
+  trusted binding pick the row up through the catalog X-macro;
+  no other handler, layout, decode, or CPU change.
+- RED-first: new `test_stl_shft_xmem` (exhaustive 1024
+  encodings, 8 hand-computed vectors including the TI STL A,7
+  example storing `0x1A00`, SXM-hostile seeds, trusted
+  equivalence, transactional rejects; observed RED on the
+  missing header), new `test_stl_shft_xmem_metadata` (512-word
+  population with `0x97FF` UNKNOWN and `0x9A00` STH sibling
+  pins), new `test_cpu_stl_shft_xmem` (retirement, WAIT resume,
+  unknown-accumulator rejection). Direct unit sweep caught six
+  population-pin failures plus one spaceless ID pin before the
+  slow suite (S27 house rule working).
+- Census pins move: ID 308 to 309 (81 sites plus one spaceless),
+  lookup 36361 to 36873 (+512, zero neighbor moves), quality
+  census to 308 rows / 314 bindings / 156/205 forms (76.098%) /
+  44 strict-complete (21.463%). FORM-T2-20-12 binds COMPLETE
+  under ALL.
+- Registry: `E-TI-...-STL-SHFT-OPCODE-P4-171`,
+  `E-TI-...-STL-SHFT-SEMANTICS-P4-171-4-172`, and
+  `E-PROJECT-P3-S54-STL-SHFT-ACTIVATION` plus
+  `REQ-COMMON-P3-S54-STL-SHFT-SEMANTICS` and
+  `-CPU-RETIREMENT` (evidence 491, requirements 801). No
+  per-slice PROJECT inventory requirement (S32 precedent); the
+  binding rides the shared inventory-catalog-binding sweep.
+  Index gains the 3 evidence plus 2 REQ plus 2 TEST rows beside
+  the S12 block.
+- Decisions: (1) S54 chosen over the larger unbound clusters
+  (T2-05 doubles need Lmem/C16 ALU; T2-23/24/25 are parallel
+  forms; MVxx touches MMR-pending-P0-W4; far/RPTB/INTR are
+  arch-excluded) as the only single-row S12-shaped gap.
+  (2) Evidence edits done by surgical text insertion after a
+  whole-file rewrite attempt produced formatting churn on
+  unrelated records (reverted). (3) The dropped PROJECT
+  inventory REQ keeps LINK bidirectional-clean; a planned
+  PROJECT-contract row would have forced shared-test growth
+  the S32 line deliberately avoids. (4) S18/S6 plan docs gain
+  superseded-anchor notes: the exit-review flips removed the
+  `(planned)` strings the PINNED activation locators
+  substring-match, and immutable records cannot be edited.
+  (5) README remaining-work 55 to 54 by exactly the closed
+  item (the 55 was never the raw unbound count).
+- Validation: full `make test` exit 0 (629/629 unit binaries
+  direct plus 286 quality tests, evidence PASS); generator
+  `--check` clean; `make cmake-build` plus ctest slice 8/8
+  (ops, metadata, CPU, STH siblings); harness selftest PASS.
+- Knobs: none added, changed, or retired.
+- Follow-up: next genuine thread is T2-05 doubles (Lmem/C16
+  seam, needs a plan slice) or READA/WRITA (PAR/RC, needs a
+  plan slice); T2-04 MACR/MASR leftovers stay unbound by the
+  S3f R-sharing convention.
+- Split commit discipline: impl `6c16ff7`, this ledger-only
+  follow-up.
