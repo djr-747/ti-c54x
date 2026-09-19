@@ -1,4 +1,4 @@
-### P3-S78: DLD absolute-Smem slice (planned)
+### P3-S78: DLD absolute-Smem slice (implemented; local verification green)
 
 `DLD *(abs),dst` is TI SPRU172C section DLD ("Load
 Accumulator with Long Word", opcode `0101 011D IAAA

@@ -14977,3 +14977,55 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x56F8` at `0x8024`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S78 lands as 3de0adb (DLD absolute-Smem slice)
+
+- Plan state: `P3-S78: DLD absolute-Smem slice` is
+  `implemented; local verification green` (slice doc
+  plus implementation-plan link flipped).
+- Scope: exact row `DLD_SMEM_ABSOLUTE` (`0x56F8`, 2
+  words, `ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16`
+  reused, `INELIGIBLE`, `STATUS_SXM`) retires
+  `DLD *(abs),dst` with SXM widening; new address
+  kind 29 `LONG32_ABSOLUTE_LOAD_WORD16` (READ,
+  staged-zero halves, non-null `complete_long32`)
+  through the long32 pair engine with an
+  absolute-load resolver/candidate leg; new
+  `op_dld_smem_absolute` checked/trusted leaves plus
+  public long32 completion. New catalog ID moves
+  `ID_COUNT` 333 to 334 with pins; `FORM-T2-19-01`
+  binds the row `SUBSET` with `ABSOLUTE_DATA`;
+  populated first words 40270 (one exact word); no
+  MMR, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_dld_smem_absolute_decode/ops/metadata`,
+  `test_cpu_dld_smem_absolute` RED-first green; all
+  710 C binaries pass; 286 Python quality tests OK;
+  fresh CMake Debug `ctest` 717/717; focused
+  ASan/UBSan on the 4 new tests green; registries
+  and checkers PASS). Boot repro past `0x8024`:
+  BUDGET=400 staged loader1 run with the MCU peer
+  (page-0 DATA window) retires 348/347 with
+  `data_txn=17` (zero data faults) and reaches
+  `0x802F`, where `0xF072` is the next explicit
+  stop; budget 343 lands pc=`0x8026`, proving the
+  `0x8024` DLD retired.
+- Decisions: the `0x56F8` identity (DLD, I=1 with
+  the `0x78` absolute selector, D=0 selects A) is
+  the S74 DST-absolute mirror: same layout set,
+  same long32 pair engine, load direction with the
+  MOD13 DLD widening (SXM-only gate, no SST).
+  Recorded split (not deferred): the kind-29 case
+  tipped `memory_effect.c` to 502 lines against the
+  500-line hot-path bound, so the eight
+  absolute-addressed arms dispatch through the new
+  `memory_effect_absolute_dispatch.[ch]`
+  (`memory_effect.c` falls to 483 lines); existing
+  absolute ops tests cover every arm through the
+  generic gate. Probe hygiene: `make` target output
+  masked by `; echo` hid the first link failure;
+  rerun targets without masking wrappers.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0xF072` at `0x802F`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
