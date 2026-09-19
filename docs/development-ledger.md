@@ -14142,3 +14142,28 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: MVMM/MVDK/MVKD rows toward the `0xF00` halt, MCU
   overlay upload map, harness DP/AR/SP seeding.
+
+## 2026-09-19 — P3-S59 lands as 7cdb2ff (MVMM MMR-to-MMR slice)
+
+- Implementation commit `7cdb2ff`: MVMM `0xE7` row with the new
+  one-word `MMR4_MMR4` layout stages an absolute DATA READ from
+  `0x10+MMRX` with a `STORE_WITH_READ` sidecar to `0x10+MMRY`,
+  reusing the MVDM read leg, the MMR-routed issue path, and the
+  read-phase MMR store commit block with zero sequencer changes.
+  New leaf, CPU (incl. the TI SP-to-AR1 example), resolution-free,
+  and metadata tests; repeat eligibility pins Table 2-28
+  INELIGIBLE. Catalog IDs shift 312 to 313 with pins green.
+- Validation evidence: `make test` exit 0, ctest 653/653 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2, sources=7,
+  requirements=801, tests=654), lookup regenerated (+256 words
+  at `38217`), coverage now 160/205 with strict-complete 45/205.
+- Decisions: nibble codes above 8 are rejected with
+  INVALID_OPERAND on both leaves (not INVALID_DECODE on the
+  checked path) because extraction succeeds structurally and the
+  trusted dispatch sweep gates status parity; codes 9-13 would
+  otherwise touch routed BK/BRC/RSA/REA/PMST cells the hardware
+  form never allows. FORM-T2-26-07 binds COMPLETE/ALL: the one
+  row covers the full legal operand space.
+- Knobs: none added, changed, or retired.
+- Follow-up: MVDK/MVKD class-19 Smem-immediate moves, MVPD/MVDP,
+  then the `0xF00` halt re-probe with MVMM in the image path.

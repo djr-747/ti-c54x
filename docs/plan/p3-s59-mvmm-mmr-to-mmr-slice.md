@@ -1,4 +1,4 @@
-### P3-S59: MVMM MMR-to-MMR move slice (planned)
+### P3-S59: MVMM MMR-to-MMR move slice (implemented; local verification green)
 
 `MVMM MMRx, MMRy` (FORM-T2-26-07) moves one memory-mapped
 register into another. It is the third 5110 census MMR move
