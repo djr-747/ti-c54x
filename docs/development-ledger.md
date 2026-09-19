@@ -14736,3 +14736,37 @@ entries are not rewritten after publication.
 - Follow-up: MVPD absolute slice for `0x7CF8` at
   `0xF12`, then the DSP CRC/finalize chain; full
   64-block upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S73 lands as 4801cdf (MVPD absolute-Smem slice)
+
+- Implementation commit `4801cdf`: exact row
+  MVPD_SMEM_ABSOLUTE `0x7CF8` with the S72
+  INDIRECT_ADDR7_ABSOLUTE16_PMAD layout, plus the
+  `src/isa/ops/store/op_mvpd_smem_absolute.c` leaf
+  staging the established SMEM_ABSOLUTE_PROGRAM_PAIR
+  arm (kind 26) with WRITE access. No new effect kind,
+  no sequencer changes: the pair prepare/root already
+  run the PROGRAM leg first and the Smem leg second
+  for WRITE access. Exact-before-masked shadow keeps
+  the `0x7C` neighbors on MVPD (masked row keeps 127
+  of 128). New catalog ID moves `ID_COUNT` 328 to 329
+  with pins; `FORM-T2-26-08` binds the row `SUBSET`
+  with `ABSOLUTE_DATA`; no MMR, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_mvpd_smem_absolute_decode/ops/metadata`,
+  `test_cpu_mvpd_smem_absolute` RED-first green; masked
+  sweep pins hold neighbors; registries and checkers
+  PASS). Boot repro past `0xF12`: BUDGET=400 staged
+  loader1 run with the MCU peer retires 337/336 with
+  `data_txn=6` and PC at `0xF71` (`0x4EF8`, DST-family
+  follower); zero data faults.
+- Decisions: reuse the direction-neutral kind-26 arm
+  with WRITE access (the access names the Smem-leg
+  direction, MVPD convention) rather than a mirrored
+  kind; sibling `test_mvpd_smem_metadata` sweep takes
+  the S72 shadow-carve (127 of 128).
+- Knobs: none added, changed, or retired.
+- Follow-up: DST-family absolute slice for `0x4EF8` at
+  `0xF71` (`4EF8 0060 FC00`), then the DSP CRC/finalize
+  chain; full 64-block upload stays bounded per standing
+  direction.

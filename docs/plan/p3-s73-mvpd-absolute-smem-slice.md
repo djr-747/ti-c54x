@@ -1,4 +1,4 @@
-### P3-S73: MVPD absolute-Smem slice (planned)
+### P3-S73: MVPD absolute-Smem slice (implemented; local verification green)
 
 `MVPD pmad,*(abs)` is TI SPRU172C section MVPD (p. 4-117)
 with absolute Smem addressing (3 words: first `0x7CF8`
