@@ -1,4 +1,4 @@
-### P3-S76: ADDM absolute-Smem slice (planned)
+### P3-S76: ADDM absolute-Smem slice (implemented; local verification green)
 
 `ADDM #lk,*(abs)` is TI SPRU172C section ADDM (`0110
 1011 I addr7`, add long immediate to Smem, nonrepeatable):

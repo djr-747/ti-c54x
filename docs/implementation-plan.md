@@ -761,6 +761,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S75: LD absolute-Smem slice (implemented; local verification green)](plan/p3-s75-ld-absolute-smem-slice.md)
 
+- [P3-S76: ADDM absolute-Smem slice (implemented; local verification green)](plan/p3-s76-addm-absolute-smem-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

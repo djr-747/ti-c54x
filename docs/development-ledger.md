@@ -14872,3 +14872,55 @@ entries are not rewritten after publication.
   `0xF1F` (`6BF8 0013 0800`), then the DSP
   CRC/finalize chain; full 64-block upload stays
   bounded per standing direction.
+
+## 2026-09-20 — P3-S76 lands as bfb2b92 (ADDM absolute-Smem slice)
+
+- Implementation commit `bfb2b92`: exact row
+  ADDM_LK_SMEM_ABSOLUTE `0x6BF8` (TI SPRU172C ADDM
+  `0110 1011 I addr7`, I=1 with the `0x78` absolute
+  selector) reusing the S70
+  INDIRECT_ADDR7_ABSOLUTE16_LK layout, plus the
+  `src/isa/ops/memory/op_addm_lk_smem_absolute.c`
+  leaf (OVM/SXM knownness gate, checked plus trusted
+  leaves sharing one values core) staging the new
+  ATOMIC_ABSOLUTE arm (kind 28: absolute DATA
+  address, staged `#lk` immediate, RMW ADD, no
+  completion) through the WORD16 RMW engine with a
+  new resolver plus candidate shape/liveness (S74
+  LONG32 precedent). Absolute operands cannot repeat
+  so the row marks `INELIGIBLE`; the
+  `ADDM_SMEM_MOD0_3` mask never matches `0x6BF8` so
+  no shadow carve was needed. New catalog ID moves
+  `ID_COUNT` 331 to 332 with pins;
+  `FORM-T2-01-12` binds the row `SUBSET` with
+  `ABSOLUTE_DATA`; populated first words 40012 to
+  40013; no MMR-model, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_addm_lk_smem_absolute_decode/ops/metadata`,
+  `test_cpu_addm_lk_smem_absolute` RED-first green;
+  registries and checkers PASS). Boot repro past
+  `0xF1F` with the page-0 DATA window: BUDGET=400
+  staged loader1 run with the MCU peer retires
+  345/344 with `data_txn=13` (zero data faults) and
+  reaches `0x8023`, where `0x6D8A` is the next
+  explicit stop; budget 343 lands pc=`0xF22`,
+  proving the `0xF1F` ADDM retired.
+- Decisions: DATA `0x13` falls in the MMR-routed
+  AR0-AR7 window (AR3), so the CPU test seeds AR3
+  known (`0x0100`) and asserts the local RMW
+  writeback (`0x0900`) with zero endpoint traffic.
+  The first MMR-routed RMW retiree exposed a
+  sequencer lifecycle fault: the locally served read
+  left `staged_read_value_word` set on a still-IDLE
+  bus transaction, breaking IDLE-canonical and
+  failing the retirement-tail reset, so
+  `advance_rmw_write_mmr` now consumes the staged
+  value on retire. Probe hygiene: never read an
+  out-parameter in the same `printf` as the call
+  (indeterminate argument order reads stale
+  values); sequence a statement between call and
+  read.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x6D8A` at `0x8023`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
