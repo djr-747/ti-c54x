@@ -14410,3 +14410,28 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: the `0xF00` halt re-probe with the full move
   group in the image path.
+
+## 2026-09-19 — 0xF00 halt re-probe with the full move group (no behavior change)
+
+- Re-ran the S57 boot probe (`make run-image`, image
+  `dsp_full.bin` staged at `/tmp` only, `nokia-ti-lead-rom4`
+  profile, `ORDER=be DATA_BASE=0x800`) after the S58–S65
+  move-group landings
+  (MVDM/MVMD/MVMM/MVDK/MVKD/MVPD/MVDP/READA/WRITA).
+- Reset `ENTRY=0xFF80` budget 10: identical to S57 —
+  `attempted=4 retired=3 pc=0xF00 opcode=0x0000
+  prog_reads=7`, stop INVALID_STATE on the zero overlay
+  word (unknown DP), no DATA/IO traffic.
+- PROM `ENTRY=0x3000` budget 50: identical to S57 —
+  `attempted=1 retired=0`, stop INVALID_STATE on `CALL_PMAD
+  0x23CC` (unknown SP).
+- Conclusion: both stops are unchanged correct cold-reset
+  behavior; no move-group form executes on either path
+  before the halt, so the new coverage is unreachable from
+  a cold reset. Reaching it still needs the recorded gaps:
+  MCU overlay staging at `0xF00` (S56 predicts `MVDM
+  0x0000,AR4` at `0xF07`) and harness-side DP/AR/SP
+  seeding. Hosted runner selftest PASS (2 vectors) on the
+  WRITA-inclusive build.
+- Follow-up: overlay staging plus register seeding (harness
+  gap); then re-probe again.
