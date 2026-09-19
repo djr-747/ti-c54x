@@ -665,6 +665,18 @@ TI_C54X_OPCODE_MASKED(MVKD_SMEM, mvkd_smem, 0x7080, 0xFF80, 2, TI_C54X_OPERAND_L
  * shared INDIRECT_ADDR7_EXTENSION16 layout rides both
  * directions. */
 TI_C54X_OPCODE_MASKED(MVPD_DIRECT, mvpd_direct, 0x7C00, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_DP)
+/* P3-S73 MVPD absolute pmad,Smem (TI SPRU172C MVPD p. 4-117):
+ * the exact 0x7CF8 first word (I=1 with the 0x78 absolute
+ * selector) carries the 16-bit absolute DATA address in word
+ * 1 and the 16-bit pmad in word 2; execution copies
+ * Pmem[pmad] to the DATA word with no status bits. The exact row
+ * precedes the covering MVPD_SMEM row, so first-match
+ * resolution keeps this single word (the masked row owns
+ * only the remaining I=1 indirect half); long-offset
+ * indirect stays deferred. Absolute operands cannot repeat
+ * (section 2 repeat rules), so the row is INELIGIBLE with
+ * evidence. */
+TI_C54X_OPCODE_EXACT(MVPD_SMEM_ABSOLUTE, mvpd_smem_absolute, 0x7CF8, 3, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(MVPD_SMEM, mvpd_smem, 0x7C80, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS)
 /* P3-S63 MVDP Smem,pmad (TI SPRU172C MVDP p. 4-111): word 0 pins
  * 0x7D00 with the Smem cookie at bits 6:0 (I at bit 7); word 1

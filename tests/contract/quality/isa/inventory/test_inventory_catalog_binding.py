@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),333)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 327)
+        self.assertEqual(len(bindings),334)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 328)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 45)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 288)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 289)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -87,7 +87,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             | MAS_DUAL_SUBSET
             | {"DLD_LONG32_MOD13", "DST_LONG32_MOD13", "DADD", "MVDM", "MVMD",
                "MVDK_DIRECT", "MVDK_SMEM", "MVKD_DIRECT", "MVKD_SMEM",
-               "MVPD_DIRECT", "MVPD_SMEM", "MVDP_DIRECT", "MVDP_SMEM",
+               "MVPD_DIRECT", "MVPD_SMEM", "MVPD_SMEM_ABSOLUTE",
+               "MVDP_DIRECT", "MVDP_SMEM",
                "MVDP_SMEM_ABSOLUTE",
                "READA_DIRECT", "READA_SMEM", "WRITA_DIRECT", "WRITA_SMEM",
                "LDU_DIRECT"}
@@ -254,6 +255,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     if binding["catalog_symbol"] == "MVMD"
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "ST_LK_SMEM_ABSOLUTE"
+                    else "ABSOLUTE_DATA"
+                    if binding["catalog_symbol"] == "MVPD_SMEM_ABSOLUTE"
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "MVDP_SMEM_ABSOLUTE"
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"

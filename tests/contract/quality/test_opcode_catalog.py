@@ -183,7 +183,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 327)
+        self.assertEqual(len(catalog_rows), 328)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -269,6 +269,20 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD)
         self.assertEqual(mvdp_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(mvdp_abs.input_resources, RESOURCES_NONE)
+        # P3-S73 lands the MVPD_SMEM_ABSOLUTE row after MVPD_SMEM;
+        # symbol lookup keeps this assertion position-independent.
+        mvpd_abs = next(
+            row for row in catalog_rows
+            if row.symbol == "MVPD_SMEM_ABSOLUTE"
+        )
+        self.assertEqual(mvpd_abs.handler, "mvpd_smem_absolute")
+        self.assertEqual(mvpd_abs.first_word_value, 0x7CF8)
+        self.assertEqual(mvpd_abs.first_word_mask, 0xFFFF)
+        self.assertEqual(mvpd_abs.program_word_count, 3)
+        self.assertEqual(mvpd_abs.operand_layout,
+                         LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD)
+        self.assertEqual(mvpd_abs.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(mvpd_abs.input_resources, RESOURCES_NONE)
         # P3-S4 lands the XC row after RCD; symbol lookup keeps this
         # assertion position-independent.
         xc = next(row for row in catalog_rows if row.symbol == "XC")

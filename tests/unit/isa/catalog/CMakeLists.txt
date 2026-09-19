@@ -119,6 +119,8 @@ ti_c54x_add_unit_test(mvdp_smem_metadata
                       test_mvdp_smem_metadata.c)
 ti_c54x_add_unit_test(mvdp_smem_absolute_metadata
                       test_mvdp_smem_absolute_metadata.c)
+ti_c54x_add_unit_test(mvpd_smem_absolute_metadata
+                      test_mvpd_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(reada_direct_metadata
                       test_reada_direct_metadata.c)
 ti_c54x_add_unit_test(reada_smem_metadata

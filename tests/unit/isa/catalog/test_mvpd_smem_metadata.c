@@ -27,7 +27,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_MVPD_SMEM);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 328);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 329);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_MVPD_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == MVPD_SMEM_VALUE);
@@ -54,6 +54,14 @@ test_exact_population(void)
         ti_c54x_opcode_id id =
             ti_c54x_opcode_catalog_lookup_first_word(word);
 
+        /* The 0x7CF8 absolute word shadows into the exact
+         * MVPD_SMEM_ABSOLUTE row (first-match resolution);
+         * the masked row keeps the other 127. */
+        if (word == UINT16_C(0x7CF8)) {
+            TI_C54X_TEST_CHECK(id ==
+                               TI_C54X_OPCODE_ID_MVPD_SMEM_ABSOLUTE);
+            continue;
+        }
         if (matches_row) {
             TI_C54X_TEST_CHECK(id == TI_C54X_OPCODE_ID_MVPD_SMEM);
             matches++;
@@ -61,7 +69,7 @@ test_exact_population(void)
             TI_C54X_TEST_CHECK(false);
         }
     }
-    TI_C54X_TEST_CHECK(matches == 128U);
+    TI_C54X_TEST_CHECK(matches == 127U);
 }
 
 int

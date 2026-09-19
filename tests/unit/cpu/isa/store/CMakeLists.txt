@@ -19,6 +19,7 @@ ti_c54x_add_unit_test(cpu_mvkd test_cpu_mvkd.c)
 ti_c54x_add_unit_test(cpu_mvpd test_cpu_mvpd.c)
 ti_c54x_add_unit_test(cpu_mvdp test_cpu_mvdp.c)
 ti_c54x_add_unit_test(cpu_mvdp_smem_absolute test_cpu_mvdp_smem_absolute.c)
+ti_c54x_add_unit_test(cpu_mvpd_smem_absolute test_cpu_mvpd_smem_absolute.c)
 ti_c54x_add_unit_test(cpu_reada test_cpu_reada.c)
 ti_c54x_add_unit_test(cpu_writa test_cpu_writa.c)
 # P3-S7 RED contract: STM CPU retirement.

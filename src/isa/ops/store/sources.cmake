@@ -29,6 +29,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_mvdk.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvkd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvpd.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_mvpd_smem_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvdp.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvdp_smem_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_reada.c"

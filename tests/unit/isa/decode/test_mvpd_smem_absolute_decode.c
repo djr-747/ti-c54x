@@ -1,0 +1,100 @@
+/*
+ * Module contract
+ *
+ * Owns: exhaustive MVPD absolute Smem decode proof for the
+ * 0x7CF8 exact row (P3-S73, TI SPRU172C section MVPD with
+ * absolute addressing): first-word resolution, I/A/abs/pmad
+ * extraction through the shared absolute layout, and the single-encoding
+ * population with no shadow word.
+ * Does not own: opcode semantics, CPU state, sequencing, or timing.
+ */
+
+#include "../../../../src/isa/catalog/opcode_catalog.h"
+#include "../../../../src/isa/decode/opcode_decode.h"
+#include "../../../../src/isa/decode/operand_layout.h"
+#include "../../../support/test_harness.h"
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+int main(void)
+{
+    const ti_c54x_opcode_metadata *metadata =
+        ti_c54x_opcode_metadata_for_id(
+            TI_C54X_OPCODE_ID_MVPD_SMEM_ABSOLUTE);
+    const ti_c54x_decode_result first =
+        ti_c54x_decode_first_word(UINT16_C(0x7CF8));
+    const ti_c54x_instruction_word_bundle bundle = {
+        .program_words = {UINT16_C(0x7CF8), UINT16_C(0x0802),
+                          UINT16_C(0xFF87)},
+        .program_word_count = UINT8_C(3)};
+    ti_c54x_decoded_instruction instruction;
+
+    TI_C54X_TEST_CHECK(metadata != NULL);
+    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0x7CF8));
+    TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(3));
+    TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(first.id ==
+                       TI_C54X_OPCODE_ID_MVPD_SMEM_ABSOLUTE);
+    TI_C54X_TEST_CHECK(ti_c54x_decode_complete_instruction(
+                           &first, &bundle, &instruction) ==
+                       TI_C54X_INSTRUCTION_COMPLETION_STATUS_OK);
+    TI_C54X_TEST_CHECK(instruction.operand_layout ==
+                       TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD);
+    {
+        ti_c54x_operand_layout_set_view view;
+        ti_c54x_operand_field_value field = {0U, 0U};
+        const ti_c54x_program_words_view words = {
+            bundle.program_words, bundle.program_word_count};
+        TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_resolve(
+                               TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD,
+                               UINT8_C(3), &view) ==
+                           TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+        TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                               &view, &words, UINT8_C(0), &field) ==
+                           TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+        TI_C54X_TEST_CHECK(field.width_bits == UINT8_C(1));
+        TI_C54X_TEST_CHECK(field.raw_value == UINT8_C(1));
+        TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                               &view, &words, UINT8_C(1), &field) ==
+                           TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+        TI_C54X_TEST_CHECK(field.width_bits == UINT8_C(7));
+        TI_C54X_TEST_CHECK(field.raw_value == UINT8_C(0x78));
+        TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                               &view, &words, UINT8_C(2), &field) ==
+                           TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+        TI_C54X_TEST_CHECK(field.width_bits == UINT8_C(16));
+        TI_C54X_TEST_CHECK(field.raw_value == UINT16_C(0x0802));
+        TI_C54X_TEST_CHECK(ti_c54x_operand_layout_set_extract_operand(
+                               &view, &words, UINT8_C(3), &field) ==
+                           TI_C54X_OPERAND_LAYOUT_STATUS_OK);
+        TI_C54X_TEST_CHECK(field.width_bits == UINT8_C(16));
+        TI_C54X_TEST_CHECK(field.raw_value == UINT16_C(0xFF87));
+    }
+
+    /* Exact row: only 0x7CF8 resolves here. */
+    for (uint32_t raw = 0U; raw <= UINT16_MAX; ++raw) {
+        const uint16_t word = (uint16_t)raw;
+        const ti_c54x_decode_result decoded =
+            ti_c54x_decode_first_word(word);
+        const bool absolute =
+            decoded.id == TI_C54X_OPCODE_ID_MVPD_SMEM_ABSOLUTE;
+        TI_C54X_TEST_CHECK(absolute == (word == UINT16_C(0x7CF8)));
+    }
+
+    {
+        /* Neighbors belong elsewhere: the direct half and the
+         * I=1 indirect row keep their owners (the masked
+         * indirect row covers the whole I=1 half, so
+         * long-offset cookies decode there and reject at the
+         * leaf). */
+        TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7C00)).id ==
+                           TI_C54X_OPCODE_ID_MVPD_DIRECT);
+        TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7C80)).id ==
+                           TI_C54X_OPCODE_ID_MVPD_SMEM);
+        TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7CF9)).id ==
+                           TI_C54X_OPCODE_ID_MVPD_SMEM);
+    }
+    return 0;
+}
