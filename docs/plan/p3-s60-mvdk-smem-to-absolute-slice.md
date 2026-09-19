@@ -1,4 +1,4 @@
-### P3-S60: MVDK Smem-to-absolute move slice (planned)
+### P3-S60: MVDK Smem-to-absolute move slice (implemented; local verification green)
 
 `MVDK Smem, dmad` (FORM-T2-26-02) copies a single data-memory
 word to a 16-bit-immediate DATA address. It is the fourth 5110

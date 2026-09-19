@@ -14167,3 +14167,37 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: MVDK/MVKD class-19 Smem-immediate moves, MVPD/MVDP,
   then the `0xF00` halt re-probe with MVMM in the image path.
+
+## 2026-09-19 — P3-S60 lands as 80ad37b (MVDK Smem-to-absolute slice)
+
+- Implementation commit `80ad37b`: two rows (`MVDK_DIRECT`
+  `0x7100`, `MVDK_SMEM` `0x7180`) share
+  `INDIRECT_ADDR7_EXTENSION16` and stage the new
+  `SMEM_ABSOLUTE_PAIR_WORD16` carrier (Smem DATA leg read
+  first, absolute dmad WRITE second, PSHD access convention).
+  New pair root mirrors the PORT/stack roots: single-leg Smem
+  resolution, absolute dmad planning, per-leg
+  MMR-route-or-endpoint issue with observation handoff. New
+  leaf, CPU (direct copy, indirect with AR update, bad-mode
+  trap), and metadata tests; FORM-T2-26-02 binds
+  SUBSET with DIRECT_DP + STANDARD_INDIRECT_MOD0_MOD3.
+  Catalog IDs shift 313 to 315 with pins green.
+- Validation evidence: `make test` exit 0, ctest 657/657 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2, sources=7,
+  requirements=801, tests=654), lookup regenerated (+256 words
+  at `38473`), coverage now 161/205 (78.537%) with
+  strict-complete steady at 45/205.
+- Decisions: the absolute resolver now admits plain WRITE
+  templates (staged zero, replaced at second-leg issue); two
+  absolute-resolution tests move from reject to resolve pins.
+  The pair shape validator started inline in `memory_effect.c`
+  but tripped the 500-line module gate, so it extracted to
+  `memory_effect_smem_absolute_pair` (sibling-module pattern).
+  Split decision: the pair root stays one 627-line module
+  (mirrors 654-line `stack_pair.c`; under the 800 cap;
+  splitting prepare/advance would separate snapshot
+  producer/consumer).
+- Knobs: none added, changed, or retired.
+- Follow-up: MVKD mirror on the same carrier (access READ),
+  three-word absolute/long-offset Smem, then the `0xF00` halt
+  re-probe.
