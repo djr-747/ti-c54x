@@ -1,4 +1,4 @@
-### P3-S64: READA program-to-Smem move slice (planned)
+### P3-S64: READA program-to-Smem move slice (implemented; local verification green)
 
 `READA Smem` (FORM-T2-26-11) copies the program word
 addressed by accumulator A into Smem. It is the seventh 5110

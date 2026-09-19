@@ -14335,3 +14335,44 @@ entries are not rewritten after publication.
   accumulator-A-addressed forms needing their own carrier
   (PAR/RC repeat behavior stays out of scope); then the
   `0xF00` halt re-probe.
+
+## 2026-09-19 — P3-S64 lands as 62f9e36 (READA program-to-Smem slice)
+
+- Implementation commit `62f9e36`: two rows (`READA_DIRECT`
+  `0x7E00`, `READA_SMEM` `0x7E80`) on a new
+  `SMEM_PROGRAM_A_PAIR` carrier with access WRITE (PORT
+  convention): the PROGRAM leg address resolves from
+  accumulator A (PAR <- A, low 16 bits) and reads first, the
+  Smem leg writes second. The new kind routes through the
+  existing SMEM_PROGRAM pair route, root, resolver, and
+  commit seams with per-leg MMR-route-or-endpoint service.
+  New leaf (DP/A knownness gates, extension-cookie reject),
+  arm validator, CPU (direct copy, MOD2 post-increment with
+  AR update, bad-mode and A-unknown transactional rejects),
+  catalog, neighbor, and BANZD/RCD/RETD/ST decode-sibling
+  tests; FORM-T2-26-11 binds SUBSET with DIRECT_DP +
+  STANDARD_INDIRECT_MOD0_MOD3. Catalog IDs move 321 to 323
+  with pins green.
+- Validation evidence: `make test` exit 0 (286/286 contract
+  quality, evidence registry PASS, all C binaries, minimal),
+  lookup regenerated (+256 words at `39497`), coverage now
+  165/205 (80.488%) with strict-complete steady at 45/205.
+  CMake ctest not re-run (stale cmake/sanitizer build trees
+  removed this session; manifest parity covered by
+  check_build_manifests).
+- Decisions: the missing child-route mapping (new kind to the
+  existing pair route) was the CPU INVALID_STATE root cause
+  (ROUTE_NONE skips prepare, so no endpoint traffic issues);
+  trusted leaves keep the sibling `(void)instruction`
+  contract with no NULL-instruction guard (null test matches
+  test_mvdp.c); `memory_effect.h` stands at 517 lines with
+  the new arm under the reviewed no-split decision (the
+  one-arm-per-kind ABI union cannot split across headers;
+  the dual hot-path bound carries the <800 exemption). The
+  new `0x7E` rows absorbed five stale UNKNOWN pins
+  (BANZD/RCD/RETD bit-flips, ST decode/metadata invalid
+  lists), converted to READA sibling pins in matching style.
+- Knobs: none added, changed, or retired.
+- Follow-up: WRITA (`0x7F`, mirrors READA with access READ),
+  then the `0xF00` halt re-probe with the full move group in
+  the image path.
