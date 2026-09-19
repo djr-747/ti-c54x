@@ -97,11 +97,19 @@ make run-image IMAGE=<prog.bin> PROG_BASE=0 ENTRY=0xFF80 \
 ```
 
 Known gaps before a real ROM run means anything: block repeat
-(`RPTB`/`RPTBD`), `MAR`, `POPM`/`PSHM`, `MVxx` moves, `TRAP`
-vectors, timer-tick delivery, and the P0-W4 permitted-use
-decision. A run that stops with `UNIMPLEMENTED_OPCODE` names the
-next form; a `BUS_FAULT` on a plausible vector names the next
-map fact to check.
+(`RPTB`/`RPTBD`), `MAR`, the remaining `MVxx` moves
+(`MVMM`/`MVDK`/`MVKD`/`MVMD`/`MVPD`/`MVDP`, `MVDM` absolute and
+`POPM`/`PSHM` direct have landed), `TRAP` vectors, timer-tick
+delivery, the MCU overlay upload map, register seeding, and the
+P0-W4 permitted-use decision. A run that stops with
+`UNIMPLEMENTED_OPCODE` names the next form; an `INVALID_STATE`
+on a DATA-touching leaf names the next unknown reset register;
+a `BUS_FAULT` on a plausible vector names the next map fact to
+check. First light (2026-09-19, slice P3-S57): reset entry
+retires `STM`+`B`+`B` then stops `INVALID_STATE` on the zero
+overlay word at `0x0F00` (unknown DP); PROM entry stops
+`INVALID_STATE` on `CALL_PMAD` (unknown SP). Both stops are
+correct cold-reset behavior.
 
 Coverage limit (verified 2026-09-19): from a cold reset every
 DATA/IO-touching leaf rejects on unknown address inputs (DP/ARs)

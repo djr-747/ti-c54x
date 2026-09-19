@@ -14095,3 +14095,28 @@ entries are not rewritten after publication.
   enter the repo.
 - Split commit discipline: impl `59d1398`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S57 lands (5110 boot-probe first light, docs-only)
+
+- No code, test, registry, or generated changes: single docs
+  commit carrying the new slice doc, the profile refresh, the
+  README refresh, the plan link, and this entry. Tree verified
+  green by the S56 gates (`make test` exit 0, ctest 647/647);
+  docs changes re-run nothing.
+- Probe datum (image `dsp_full.bin` staged at `/tmp` only):
+  reset `ENTRY=0xFF80` retires `STM #0xFFA8,PMST`, `B 0xFF85`,
+  `B 0x0F00` (attempted=4, retired=3, `prog_reads=7`), then
+  `INVALID_STATE` on the zero overlay word at `0x0F00` (decodes
+  `ADD_SMEM`, DP unknown). PROM `ENTRY=0x3000` stops
+  `INVALID_STATE` on `CALL_PMAD 0x23CC` (SP unknown). Both stops
+  are correct cold-reset behavior and match the profile's
+  predicted coverage limit (`data_txn=0` in both reports).
+- Decisions: the S56-predicted `MVDM`-at-`0xF07` halt is not yet
+  observable — the `0xF00` overlay is MCU-uploaded (zeros in the
+  raw image) and the sibling `re/dsp/block*.bin` files are DATA
+  uploads, so the upload map stays a follow-up; no image bytes
+  staged, patched, or committed anywhere in this slice.
+- Knobs: none added, changed, or retired.
+- Follow-up: MCU overlay upload map, harness DP/AR/SP seeding
+  (or core reset coverage), then MVMD/MVMM rows toward the next
+  halt.

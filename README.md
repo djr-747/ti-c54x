@@ -20,19 +20,25 @@ and [evidence index](docs/evidence-index.md). The machine-readable
 [`config/evidence.json`](config/evidence.json) registry is checked by the standalone
 Python quality gate.
 
-Current snapshot: P3-S50 complete (`CMPS` direct row; table 2-21 fully
-bound). Wave-1 tail control flow is done (branches, calls, and returns
-with delayed companions, plus `RC`/`RCD`, `RETF`, and `XC`). Single-repeat
-immediates (`RPT #K`/`#lk`), the `MAC`/`MPY` datapath with single, dual,
-and program-coefficient rows, `STM`/`STH`/`STL`/`STLM`/`LDM` stores and
-loads, the `ADD`/`SUB`/`MPY`/`MAC` leaf fan-out (`#lk`, `Xmem`, src-ASM,
-Smem SHIFT), `ADDM`/`ADDC`/`ADDS`/`SUBC`, `RND`/`SAT`/`ABS`/`NEG`/`NORM`/
-`SFTA`, `LTD`/`DELAY`, `BITF`/`CMPM`/`BITT`, conditional stores
-(`SACCD`/`SRCCD`/`STRCD`), `CMPS`, and `PORTR`/`PORTW` are all retired
-through CPU tests.
+Current snapshot: P3-S56 complete (`MVDM` absolute Smem-to-MMR
+move; table 2-26 first bound form). Wave-1 tail control flow is
+done (branches, calls, and returns with delayed companions, plus
+`RC`/`RCD`, `RETF`, and `XC`). Single-repeat immediates
+(`RPT #K`/`#lk`), the `MAC`/`MPY` datapath with single, dual,
+and program-coefficient rows, `STM`/`STH`/`STL`/`STLM`/`LDM`
+stores and loads, the `ADD`/`SUB`/`MPY`/`MAC` leaf fan-out
+(`#lk`, `Xmem`, src-ASM, Smem SHIFT), `ADDM`/`ADDC`/`ADDS`/
+`SUBC`, `RND`/`SAT`/`ABS`/`NEG`/`NORM`/`SFTA`, `LTD`/`DELAY`,
+`BITF`/`CMPM`/`BITT`, conditional stores (`SACCD`/`SRCCD`/
+`STRCD`), `CMPS`, `PORTR`/`PORTW`, stack push/pop pairs, and
+the `MVDM` absolute MMR store are all retired through CPU tests.
+The 5110 boot probe has first light (P3-S57): the reset-vector
+prefix retires through the hosted runner against the staged ROM
+image; both entry vectors stop on correct cold-reset
+unknown-register behavior (see the slice doc).
 
-- 308 runnable catalog rows under 36,873 populated first-word lookup entries.
-  Inventory coverage is 156/205 forms SUBSET-or-better (76.098%) and 44/205
+- 310 runnable catalog rows under 37,929 populated first-word lookup entries.
+  Inventory coverage is 158/205 forms SUBSET-or-better (77.073%) and 44/205
   strict-complete (21.463%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -167,12 +173,15 @@ through CPU tests.
 - Against the Nokia 5110 DSP-image mnemonic census (~36.2k static words),
   roughly 89% of static words now use mnemonics with at least one covered
   form (mnemonic-level upper bound, not exact-syntax coverage). The
-  heaviest uncovered weights are `MAR`, `POPM`/`PSHM`, the `MVxx` moves,
-  block repeat (`RPTBD`/`RPTB`), and dual-40 `DADD`-family words; far
-  addressing stays out of scope for the common core. Feeding the image
-  to the core still needs a hosted loader/bus harness (none exists yet),
-  the missing high-weight forms above, block-repeat activation, and the
-  open P0-W4 permitted-use decision for DSP images.
+  heaviest uncovered weights are `MAR`, the remaining `MVxx` moves
+  (`MVMM` 288, `MVDK` 207, `MVKD` 204, `MVMD` 139, `MVPD`/`MVDP`),
+  and block repeat (`RPTBD`/`RPTB`); far addressing stays out of
+  scope for the common core. The hosted loader/bus harness exists
+  (`tools/hosted/ti_c54x_run_image` plus the `nokia-ti-lead-rom4`
+  profile) and the image runs to first light; pushing further needs
+  the MCU overlay upload map, harness register seeding, the missing
+  high-weight forms above, block-repeat activation, and the open
+  P0-W4 permitted-use decision for DSP images.
 
 See the [implementation plan](docs/implementation-plan.md) and
 [development ledger](docs/development-ledger.md) for detailed status and evidence.
