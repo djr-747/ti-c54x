@@ -14270,3 +14270,36 @@ entries are not rewritten after publication.
 - Follow-up: MVDP mirror on the same carrier (READ access,
   `0x7C` rows), READA/WRITA, then the `0xF00` halt re-probe
   with the full move group in the image path.
+
+## 2026-09-19 — P3-S63 lands as 4e5472d (MVDP Smem-to-program slice)
+
+- Implementation commit `4e5472d`: two rows (`MVDP_DIRECT`
+  `0x7C00`, `MVDP_SMEM` `0x7C80`) reuse the S62
+  `SMEM_PROGRAM_PAIR` carrier with access READ (PORT
+  convention): the Smem leg reads first, the PROGRAM leg
+  writes second. No carrier, root, resolver, issue, or
+  commit changes — the S62 root already implements both leg
+  orders keyed on the effect access, including the PROGRAM
+  second-leg direct endpoint drive. New leaf, CPU (direct
+  copy plus MOD2 post-increment with AR update, MOD3-read
+  transactional reject, extension-cookie reject), catalog,
+  neighbor, and BANZ/RET/RC/MACP/MACD decode-sibling tests;
+  FORM-T2-26-04 binds SUBSET with DIRECT_DP +
+  STANDARD_INDIRECT_MOD0_MOD3. Catalog IDs shift 319 to 321
+  with pins green.
+- Validation evidence: `make test` exit 0, ctest 669/669 in
+  `build-cmake`, `check_evidence.py` PASS (targets=2,
+  sources=3, requirements=4, tests=3), lookup regenerated
+  (+256 words at `39241`), coverage now 164/205 (80.000%)
+  with strict-complete steady at 45/205.
+- Decisions: the indirect CPU test uses MOD2 (post-inc)
+  because MOD3 reads are unsupported in the address planner
+  (established `UNSUPPORTED_ACCESS` rule for pre-access
+  updates on reads); a dedicated CPU test pins the
+  transactional reject with no endpoint traffic. The new
+  `0x7C` rows absorbed four stale UNKNOWN pins (BANZ/RET/RC
+  bit-flips, MACP/MACD invalid lists), converted to MVDP
+  sibling pins in matching style.
+- Knobs: none added, changed, or retired.
+- Follow-up: READA/WRITA, then the `0xF00` halt re-probe with
+  the full move group in the image path.

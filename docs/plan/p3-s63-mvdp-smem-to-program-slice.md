@@ -1,4 +1,4 @@
-### P3-S63: MVDP Smem-to-program move slice (planned)
+### P3-S63: MVDP Smem-to-program move slice (implemented; local verification green)
 
 `MVDP Smem, pmad` (FORM-T2-26-04) copies the Smem word into
 the program word at a 16-bit-immediate address. It is the
