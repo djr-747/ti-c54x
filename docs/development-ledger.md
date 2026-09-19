@@ -14556,3 +14556,37 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: `0x58` CLKMD slice (predicted next boot stop);
   loader1 MBOX spin still needs MCU emulation.
+
+## 2026-09-19 — P3-S68 lands as 76efb24 (CLKMD peripheral-MMR slice)
+
+- Implementation commit `76efb24`: DATA `0x58` routes to a
+  second devices-owned cell, the clock-mode register (TI
+  SPRU131 section 8, Figure 8-4, Tables 8-18/8-19, vendored
+  in-repo; RE loader1 symbol names the address `clkmd`):
+  bits 15:1 R/W PLL configuration, bit 0 PLLSTATUS R with
+  writes masked to zero. Reset is CLKMD-pin-dependent
+  (Table 8-16; the C542 table marks `0x58` reserved), so no
+  reset value is adopted — the cell resets UNKNOWN per
+  standing policy and loader1's `STM #0x3146` makes it
+  known. Router serves `0x58` both directions with the
+  `0x1F` window untouched; planner arms unchanged. No
+  opcode, catalog, inventory, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (full C suite
+  incl. new `devices_clkmd`/`cpu_clkmd`, 286/286 contract
+  quality, all checkers PASS), coverage steady at 166/205
+  family with strict 45/205. RED observed first (route
+  declined `0x58`, CPU retirement hit the endpoint).
+  Hosted acceptance: faithful loader1 run advances past
+  `0xF07` (`attempted=10 retired=9`, zero data faults) to
+  the next explicit stop at `0xF0B` (`RPT #0x140` then
+  NOP, `INVALID_STATE` — NOP repeatability is
+  UNRESOLVED in the catalog).
+- Decisions: reset-unknown (not a Table 8-16 default) since
+  strapping is unevidenced for this board; explicit
+  single-address routing with `0x57`/`0x59` declined pins;
+  PLL lock/status dynamics and clock function out per the
+  machine-cycle rule.
+- Knobs: none added, changed, or retired.
+- Follow-up: RPT+NOP repeat-eligibility (Table 2-28
+  evidence for the delay-loop idiom); loader1 MBOX spin
+  still needs MCU emulation.

@@ -745,6 +745,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S67: SWWSR peripheral-MMR slice (implemented; local verification green)](plan/p3-s67-swwsr-peripheral-mmr-slice.md)
 
+- [P3-S68: CLKMD peripheral-MMR slice (implemented; local verification green)](plan/p3-s68-clkmd-peripheral-mmr-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

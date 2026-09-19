@@ -1,4 +1,4 @@
-### P3-S68: CLKMD peripheral-MMR slice (planned)
+### P3-S68: CLKMD peripheral-MMR slice (implemented; local verification green)
 
 `CLKMD` at data `0x58` is the clock-mode register (TI
 SPRU131 §8 clock-generator module: Figure 8-4 diagram,
