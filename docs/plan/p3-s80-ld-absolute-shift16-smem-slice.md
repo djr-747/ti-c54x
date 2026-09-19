@@ -1,4 +1,4 @@
-### P3-S80: LD absolute-shift16 Smem slice (planned)
+### P3-S80: LD absolute-shift16 Smem slice (implemented; local verification green)
 
 `LD *(abs),16,dst` is TI SPRU172C section LD (load
 with shift, absolute addressing): first `0x44F8`

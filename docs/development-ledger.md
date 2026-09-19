@@ -15084,3 +15084,43 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x44F8` at `0xF27`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S80 lands as 35a55f5 (LD absolute-shift16 Smem slice)
+
+- Scope: exact row `LD_SMEM_ABSOLUTE_SHIFT16`
+  (`0x44F8`, 2 words, D selects A/B) reusing the
+  S74/S75/S78 `ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16`
+  layout set; new `op_ld_smem_absolute_shift16`
+  checked/trusted leaf stages the `ABSOLUTE_DATA`
+  WORD16 READ arm with an SXM-widening then `<<16`
+  accumulator-write completion (C/TC preserved,
+  `INELIGIBLE` for repeat). No MMR, knob, or timing
+  changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_ld_smem_absolute_shift16_decode/ops/metadata`,
+  `test_cpu_ld_smem_absolute_shift16` RED-first green;
+  all 719 C binaries pass; 286 Python quality tests
+  OK; fresh CMake Debug `ctest` 726/726; focused
+  ASan/UBSan on the four new tests green; registries
+  and checkers PASS). Boot repro past `0xF27`:
+  BUDGET=400 staged loader1 run with the MCU peer
+  (page-0 DATA window) retires 400/400 with zero data
+  faults mid-block at pc=`0x8032`; BUDGET=10000
+  escapes the block and outer loop with 6538 retired
+  to pc=`0xF29`, proving the `0xF27` LD retired;
+  `0x1AF8` is the next explicit stop (INVALID_STATE).
+- Decisions: widen-then-shift preserves the sign
+  through the shift (MOD shift16 precedent), so a
+  negative word sets the guard bits under SXM=1 —
+  the RED ops expectation claiming cleared guards
+  was corrected to `0xFF80010000`. New
+  `ID_COUNT` 335 to 336 with pins; `FORM-T2-19-04`
+  binds the row `SUBSET` with `ABSOLUTE_DATA` (S75
+  mirror); populated first words 40272. Stale
+  sanitizer objects in `build-fast` (mixed-flag
+  relink) were cleared with a clean rebuild, not a
+  flag change.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x1AF8` at `0xF29`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
