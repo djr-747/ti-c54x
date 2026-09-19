@@ -1,4 +1,4 @@
-### P3-S65: WRITA Smem-to-program move slice (planned)
+### P3-S65: WRITA Smem-to-program move slice (implemented; local verification green)
 
 `WRITA Smem` (FORM-T2-26-12) copies the Smem word into the
 program word addressed by accumulator A. It is the eighth

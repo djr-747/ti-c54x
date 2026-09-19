@@ -739,6 +739,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S64: READA program-to-Smem move slice (implemented; local verification green)](plan/p3-s64-reada-program-to-smem-slice.md)
 
+- [P3-S65: WRITA Smem-to-program move slice (implemented; local verification green)](plan/p3-s65-writa-smem-to-program-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

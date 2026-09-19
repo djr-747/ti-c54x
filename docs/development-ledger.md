@@ -14376,3 +14376,37 @@ entries are not rewritten after publication.
 - Follow-up: WRITA (`0x7F`, mirrors READA with access READ),
   then the `0xF00` halt re-probe with the full move group in
   the image path.
+
+## 2026-09-19 — P3-S65 lands as ee7bb59 (WRITA Smem-to-program slice)
+
+- Implementation commit `ee7bb59`: two rows (`WRITA_DIRECT`
+  `0x7F00`, `WRITA_SMEM` `0x7F80`) reuse the S64
+  `SMEM_PROGRAM_A_PAIR` carrier with access READ (PORT
+  convention): the Smem leg reads first, the PROGRAM leg
+  writes second with the address from accumulator A
+  (PAR <- A, low 16 bits). No carrier, root, resolver,
+  issue, or commit changes — the S64 root already implements
+  both leg orders keyed on the effect access with the
+  A-derived PROGRAM address. New leaf, CPU (direct copy
+  plus MOD2 post-increment with AR update, MOD3-read
+  transactional reject, extension-cookie and A-unknown
+  rejects), catalog, neighbor, and LD/STL/STM
+  decode-sibling tests; FORM-T2-26-12 binds SUBSET with
+  DIRECT_DP + STANDARD_INDIRECT_MOD0_MOD3. Catalog IDs move
+  323 to 325 with pins green.
+- Validation evidence: `make test` exit 0 (286/286 contract
+  quality, evidence registry PASS, all C binaries, minimal),
+  lookup regenerated (+256 words at `39753`), coverage now
+  166/205 (80.976%) with strict-complete steady at 45/205.
+  CMake ctest not re-run (stale trees removed in S64;
+  manifest parity covered by check_build_manifests).
+- Decisions: the S64 child-route fix covers WRITA with no
+  further root work (first CPU run retired cleanly);
+  trusted leaves mirror the `(void)instruction` contract;
+  the new `0x7F` rows absorbed four stale UNKNOWN pins
+  (LD-shift/STM bit-flips, STL decode/metadata 0x7FFF
+  boundaries), converted to WRITA sibling pins in matching
+  style.
+- Knobs: none added, changed, or retired.
+- Follow-up: the `0xF00` halt re-probe with the full move
+  group in the image path.
