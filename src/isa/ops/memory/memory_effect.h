@@ -167,7 +167,18 @@ typedef enum ti_c54x_op_memory_address_kind {
      * resolver governs MOD validity). No post-update beyond the
      * indirect AR delta; DP/AR unknownness is gated at the leaf
      * and root. MVKD reuses this carrier with access READ. */
-    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16 = 23
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16 = 23,
+    /* Smem-to-program DATA pair WORD16 (MVPD/MVDP): the Smem
+     * DATA leg and the absolute PROGRAM leg move one word with
+     * the PROGRAM leg inverse to the effect `access` (PORT-style:
+     * the access names the Smem-leg direction, so MVPD writes
+     * Smem while MVDP reads Smem). Direct legs carry the
+     * DP-relative offset with no AR dependence; indirect legs
+     * read AR with CMPT=0/ARP=0 and admit MOD0--MOD3 (the
+     * resolver governs MOD validity). No post-update beyond the
+     * indirect AR delta; DP/AR unknownness is gated at the leaf
+     * and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 = 24
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -340,6 +351,20 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } smem_absolute;
+        struct {
+            /* Smem-to-program pair: same Smem DATA leg shape as
+             * `smem_absolute`; only the second word differs (the
+             * absolute 16-bit PROGRAM address). */
+            uint8_t indirect;
+            uint8_t smem_mode;
+            uint8_t smem_arf;
+            uint8_t smem_dma7;
+            uint16_t pmad;
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } smem_program;
         struct {
             /* Absolute 16-bit DATA address (the second program
              * word). Same footprint as the pair arms: the address

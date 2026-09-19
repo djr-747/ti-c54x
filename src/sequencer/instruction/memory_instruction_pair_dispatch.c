@@ -20,6 +20,7 @@
 #include "memory_instruction_port.h"
 #include "memory_instruction_stack_pair.h"
 #include "memory_instruction_smem_absolute_pair.h"
+#include "memory_instruction_smem_program_pair.h"
 
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_pair_dispatch_advance(
@@ -60,6 +61,11 @@ ti_c54x_memory_instruction_pair_dispatch_advance(
         return ti_c54x_memory_instruction_smem_absolute_pair_advance(
             transaction, endpoint, state, accumulators, t_register, result);
     }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_smem_program_pair_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
+    }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
 }
 
@@ -95,6 +101,11 @@ ti_c54x_memory_instruction_pair_dispatch_cancel(
         return ti_c54x_memory_instruction_smem_absolute_pair_cancel(
             transaction, endpoint);
     }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_smem_program_pair_cancel(
+            transaction, endpoint);
+    }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
 }
 
@@ -125,6 +136,11 @@ ti_c54x_memory_instruction_pair_dispatch_reset(
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_ABSOLUTE_PAIR_WORD16) {
         return ti_c54x_memory_instruction_smem_absolute_pair_reset(
+            transaction);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_smem_program_pair_reset(
             transaction);
     }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;

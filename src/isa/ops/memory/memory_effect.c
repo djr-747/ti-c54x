@@ -20,6 +20,7 @@
 #include "memory_effect_absolute_data.h"
 #include "memory_effect_dual.h"
 #include "memory_effect_smem_absolute_pair.h"
+#include "memory_effect_smem_program_pair.h"
 #include "memory_effect_long32_single.h"
 
 #include <stddef.h>
@@ -469,6 +470,9 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16:
         return ti_c54x_op_memory_effect_smem_absolute_pair_shape_is_valid(
+            effect);
+    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16:
+        return ti_c54x_op_memory_effect_smem_program_pair_shape_is_valid(
             effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:

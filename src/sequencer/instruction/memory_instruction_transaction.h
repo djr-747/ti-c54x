@@ -31,6 +31,7 @@
 #include "sequencer/memory/port_access_plan.h"
 #include "sequencer/instruction/memory_instruction_stack_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_instruction_smem_absolute_pair_candidate_validate.h"
+#include "sequencer/instruction/memory_instruction_smem_program_pair_candidate_validate.h"
 #include "sequencer/program_pc_bridge.h"
 #include "state/accumulator/accumulator.h"
 #include "state/arch_state.h"
@@ -69,7 +70,8 @@ typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ = 4,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_PORT_WORD16_PAIR = 5,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_STACK_PAIR_WORD16 = 6,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_ABSOLUTE_PAIR_WORD16 = 7
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_ABSOLUTE_PAIR_WORD16 = 7,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16 = 8
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
@@ -83,6 +85,8 @@ typedef struct ti_c54x_memory_instruction_candidate {
         ti_c54x_stack_pair_address_snapshot stack_pair_address_snapshot;
         ti_c54x_smem_absolute_pair_address_snapshot
             smem_absolute_address_snapshot;
+        ti_c54x_smem_program_pair_address_snapshot
+            smem_program_address_snapshot;
     };
     ti_c54x_program_pc_bridge_effect pc_effect;
     uint64_t instructions_attempted_after;

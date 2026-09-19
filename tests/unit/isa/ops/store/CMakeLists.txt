@@ -26,6 +26,8 @@ ti_c54x_add_unit_test(mvmm_ops test_mvmm.c)
 ti_c54x_add_unit_test(mvdk_ops test_mvdk.c)
 # P3-S61 RED contract: MVKD absolute-to-Smem copy effects.
 ti_c54x_add_unit_test(mvkd_ops test_mvkd.c)
+# P3-S62 RED contract: MVPD program-to-Smem copy effects.
+ti_c54x_add_unit_test(mvpd_ops test_mvpd.c)
 ti_c54x_add_unit_test(st_t_smem_ops test_st_t_smem.c)
 ti_c54x_add_unit_test(st_t_smem_direct_ops test_st_t_smem_direct.c)
 ti_c54x_add_unit_test(stlm_smem_direct_ops test_stlm_smem_direct.c)

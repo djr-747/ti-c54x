@@ -85,6 +85,38 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         }
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
+        /* The absolute second leg carries no update; the Smem
+         * DATA leg publishes its own AR update beside it.
+         * Direct DATA legs carry no update; indirect legs
+         * publish the AR update. */
+        const ti_c54x_sequencer_address_commit *const data_commit =
+            &transaction->candidate.smem_absolute_address_snapshot
+                 .data_resolution.address_commit;
+
+        if (data_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
+            state->ar[data_commit->ar_index] = data_commit->value_after;
+            state->ar_known_mask |=
+                (uint8_t)(UINT8_C(1) << data_commit->ar_index);
+        }
+    }
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        /* The PROGRAM leg carries no update; the Smem DATA leg
+         * publishes its own AR update beside it. Direct DATA
+         * legs carry no update; indirect legs publish the AR
+         * update. */
+        const ti_c54x_sequencer_address_commit *const data_commit =
+            &transaction->candidate.smem_program_address_snapshot
+                 .smem_resolution.address_commit;
+
+        if (data_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
+            state->ar[data_commit->ar_index] = data_commit->value_after;
+            state->ar_known_mask |=
+                (uint8_t)(UINT8_C(1) << data_commit->ar_index);
+        }
+    }
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||

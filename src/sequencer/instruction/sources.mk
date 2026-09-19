@@ -25,6 +25,9 @@ ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_stack_pair_candidate_validate.c \
 	src/sequencer/instruction/memory_instruction_smem_absolute_pair.c \
 	src/sequencer/instruction/memory_instruction_smem_absolute_pair_candidate_validate.c \
+	src/sequencer/instruction/memory_instruction_smem_program_pair.c \
+	src/sequencer/instruction/memory_instruction_smem_program_pair_candidate_validate.c \
+	src/sequencer/instruction/memory_instruction_child_route.c \
 	src/sequencer/instruction/memory_instruction_pair_dispatch.c \
 	src/sequencer/instruction/data_program_word16_read_transaction.c \
 	src/sequencer/instruction/dual_word16_read_transaction.c \

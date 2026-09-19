@@ -29,6 +29,7 @@
 #include "memory_instruction_port_candidate_validate.h"
 #include "memory_instruction_stack_pair_candidate_validate.h"
 #include "memory_instruction_smem_absolute_pair_candidate_validate.h"
+#include "memory_instruction_smem_program_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_long32_single.h"
@@ -71,6 +72,12 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     } else if (candidate->effect.payload.memory.address_spec.kind ==
                TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
         if (!ti_c54x_memory_instruction_smem_absolute_pair_candidate_shape_is_valid(
+                candidate)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        if (!ti_c54x_memory_instruction_smem_program_pair_candidate_shape_is_valid(
                 candidate)) {
             return false;
         }
@@ -144,6 +151,15 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
             return candidate->smem_absolute_address_snapshot.dmad_resolution
                        .request.write_value_word == UINT16_C(0);
         }
+        if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+            /* MVDP reads the Smem leg first; that frozen READ
+             * template carries no store value (the PROGRAM WRITE
+             * template below rides the built request, not the
+             * Smem resolution). */
+            return candidate->smem_program_address_snapshot.smem_resolution
+                       .request.write_value_word == UINT16_C(0);
+        }
         return candidate->address_resolution.request.write_value_word ==
                UINT16_C(0);
     }
@@ -175,6 +191,15 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
          * observed Smem word replaces it in the built second-leg
          * request at issue, never in the snapshot. */
         return candidate->smem_absolute_address_snapshot.dmad_resolution
+                   .request.write_value_word ==
+               candidate->effect.payload.memory.value_word;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        /* MVPD freezes the Smem-leg WRITE with a zero template; the
+         * observed PROGRAM word replaces it in the built
+         * second-leg request at issue, never in the snapshot. */
+        return candidate->smem_program_address_snapshot.smem_resolution
                    .request.write_value_word ==
                candidate->effect.payload.memory.value_word;
     }
@@ -315,6 +340,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16) {
         return ti_c54x_memory_instruction_smem_absolute_pair_matches_live(
+            candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_smem_program_pair_matches_live(
             candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
