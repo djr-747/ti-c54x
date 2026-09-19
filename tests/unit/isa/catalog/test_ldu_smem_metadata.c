@@ -94,21 +94,17 @@ test_fixed_bit_near_misses(void)
     /* Bit 11 (0x0800) leaves in P3-S21: 0x1290 ^ 0x0800 is 0x1A90, a
      * valid OR_SMEM word asserted below. Bit 14 (0x4000) leaves in
      * P3-S55 lane 2: 0x1290 ^ 0x4000 is 0x5290, a valid DADD word
-     * asserted below. */
-    static const uint16_t unknown_near_misses[] = {
-        UINT16_C(0x0080)};
+     * asserted below. Clearing bit 7 lands in P3-S66: 0x1280 ^
+     * 0x0080 is 0x1200, a valid LDU_DIRECT word asserted below. */
 
-    for (size_t index = 0U;
-         index < sizeof(unknown_near_misses) /
-                    sizeof(unknown_near_misses[0]);
-         ++index) {
-        const uint16_t word =
-            (uint16_t)(LDU_VALUE ^ unknown_near_misses[index]);
-        TI_C54X_TEST_CHECK(!matches_ldu(word));
-        TI_C54X_TEST_CHECK(
-            ti_c54x_opcode_catalog_lookup_first_word(word) ==
-            TI_C54X_OPCODE_ID_UNKNOWN);
-    }
+    /* Clearing bit 7 lands on 0x1200, claimed by the P3-S66
+     * LDU_DIRECT row: a valid cross-row near miss, not an
+     * overaccept. */
+    TI_C54X_TEST_CHECK(!matches_ldu(
+        (uint16_t)(LDU_VALUE ^ UINT16_C(0x0080))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LDU_VALUE ^ UINT16_C(0x0080))) ==
+                       TI_C54X_OPCODE_ID_LDU_DIRECT);
 
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(LDU_VALUE ^ UINT16_C(0x0040))) ==

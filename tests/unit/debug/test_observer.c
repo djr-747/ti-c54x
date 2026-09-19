@@ -83,7 +83,7 @@ make_cpu(void **storage_out,
 static void
 test_mask_zero_has_no_events(void)
 {
-    observer_fixture fixture = {0x1234U, 0U};
+    observer_fixture fixture = {0x1000U, 0U};
     event_log log = {0};
     void *storage = NULL;
     ti_c54x_cpu *cpu = make_cpu(&storage, &fixture, UINT64_C(0), &log);
@@ -98,7 +98,7 @@ test_mask_zero_has_no_events(void)
 static void
 test_selected_events_preserve_order_and_unknown_bits(void)
 {
-    observer_fixture fixture = {0x1234U, 0U};
+    observer_fixture fixture = {0x1000U, 0U};
     event_log log = {0};
     void *storage = NULL;
     ti_c54x_cpu *cpu = make_cpu(&storage, &fixture, UINT64_MAX, &log);

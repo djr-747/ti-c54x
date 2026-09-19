@@ -97,9 +97,8 @@ test_fixed_bit_near_misses_and_forged_completion(void)
     /* Bit 11 (0x0800) leaves in P3-S21: 0x1280 ^ 0x0800 is 0x1A80, a
      * valid OR_SMEM word asserted below. Bit 14 (0x4000) leaves in
      * P3-S55 lane 2: 0x1290 ^ 0x4000 is 0x5290, a valid DADD word
-     * asserted below. */
-    static const uint16_t unknown_near_misses[] = {
-        UINT16_C(0x0080)};
+     * asserted below. Clearing bit 7 lands in P3-S66: 0x1290 ^
+     * 0x0080 is 0x1210, a valid LDU_DIRECT word asserted below. */
     const uint16_t word = LDU_VALUE;
     const ti_c54x_decode_result valid = ti_c54x_decode_first_word(word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -110,15 +109,12 @@ test_fixed_bit_near_misses_and_forged_completion(void)
     TI_C54X_TEST_CHECK(valid.id == TI_C54X_OPCODE_ID_LDU_SMEM);
     TI_C54X_TEST_CHECK((word & LDU_MASK) == (LDU_VALUE & LDU_MASK));
 
-    for (size_t index = 0U;
-         index < sizeof(unknown_near_misses) /
-                    sizeof(unknown_near_misses[0]);
-         ++index) {
-        const ti_c54x_decode_result result = ti_c54x_decode_first_word(
-            (uint16_t)(word ^ unknown_near_misses[index]));
-        TI_C54X_TEST_CHECK(result.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    /* This former near-miss is the P3-S66 LDU direct sibling. */
+    {
+        const ti_c54x_decode_result sibling = ti_c54x_decode_first_word(
+            (uint16_t)(word ^ UINT16_C(0x0080)));
+        TI_C54X_TEST_CHECK(sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(sibling.id == TI_C54X_OPCODE_ID_LDU_DIRECT);
     }
 
     /* This former near-miss is the W60 LDR sibling. */

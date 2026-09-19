@@ -2194,7 +2194,8 @@
         "LDU_SMEM_MOD6",
         "LDU_SMEM_MOD7",
         "LDU_SMEM_MOD8",
-        "LDU_SMEM_MOD10"
+        "LDU_SMEM_MOD10",
+        "LDU_DIRECT"
       ]
     },
     {
@@ -4774,6 +4775,12 @@
       "form_id": "FORM-T2-26-12",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "LDU_DIRECT",
+      "form_id": "FORM-T2-19-20",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_DP"
     }
   ]
 }

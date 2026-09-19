@@ -55,6 +55,7 @@
 #include "load/op_ld_status_smem.h"
 #include "load/op_ld_t_smem.h"
 #include "load/op_ldu_smem.h"
+#include "load/op_ldu_direct.h"
 #include "load/op_ltd_smem.h"
 #include "load/op_delay_smem.h"
 #include "load/op_ld_status_fields.h"

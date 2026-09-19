@@ -43,23 +43,29 @@ class InventoryMultiBindingTests(unittest.TestCase):
     def test_each_standard_indirect_form_has_five_deduplicated_subset_bindings(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),330)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 324)
+        self.assertEqual(len(bindings),331)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 325)
         by_form: dict[str, list[dict]] = {}
         for binding in bindings:
             by_form.setdefault(binding["form_id"], []).append(binding)
         for family, form_id in FAMILIES.items():
             rows = by_form[form_id]
-            self.assertEqual(len(rows), 7)
+            expected_symbols = {family, f"{family}_MOD4", f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD7", f"{family}_MOD8", f"{family}_MOD10"}
+            expected_subsets = {TOKEN}
+            if form_id == "FORM-T2-19-20":
+                # P3-S66: the LDU family form also binds the direct-DP
+                # LDU_DIRECT row outside the standard-indirect token.
+                expected_symbols.add("LDU_DIRECT")
+                expected_subsets.add("DIRECT_DP")
+            self.assertEqual(len(rows), len(expected_symbols))
             self.assertEqual(
                 {row["catalog_symbol"] for row in rows},
-                {family, f"{family}_MOD4", f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD7", f"{family}_MOD8", f"{family}_MOD10"},
+                expected_symbols,
             )
             self.assertTrue(all(row["coverage"] == "SUBSET" for row in rows))
-            self.assertEqual({row["addressing_subset"] for row in rows}, {TOKEN})
+            self.assertEqual({row["addressing_subset"] for row in rows}, expected_subsets)
             form = next(item for item in inventory["forms"] if item["id"] == form_id)
-            self.assertEqual(set(form["catalog_symbols"]),
-                             {family, f"{family}_MOD4", f"{family}_MOD5", f"{family}_MOD6", f"{family}_MOD7", f"{family}_MOD8", f"{family}_MOD10"})
+            self.assertEqual(set(form["catalog_symbols"]), expected_symbols)
 
     def test_report_counts_forms_once_after_multi_binding(self) -> None:
         report = report_inventory(self.root)

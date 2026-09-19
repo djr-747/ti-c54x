@@ -44,7 +44,7 @@ static ti_c54x_bus make_program_bus(bus_fixture *fixture)
 
 static void test_two_instances_are_isolated_and_extended_pc_fetches(void)
 {
-    bus_fixture first_fixture = {0x1234U, UINT32_C(0x10042),
+    bus_fixture first_fixture = {0x1000U, UINT32_C(0x10042),
                                  TI_C54X_BUS_OK, 0U};
     bus_fixture second_fixture = {0xABCDU, UINT32_C(0x000A0),
                                   TI_C54X_BUS_OK, 0U};
@@ -82,7 +82,7 @@ static void test_two_instances_are_isolated_and_extended_pc_fetches(void)
     TI_C54X_TEST_CHECK(result.instructions_attempted == 1U);
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
     TI_C54X_TEST_CHECK(result.opcode_valid);
-    TI_C54X_TEST_CHECK(result.opcode_word == 0x1234U);
+    TI_C54X_TEST_CHECK(result.opcode_word == 0x1000U);
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(0x10042));
     TI_C54X_TEST_CHECK(first_fixture.reads == 1U);
     TI_C54X_TEST_CHECK(second_fixture.reads == 0U);
@@ -92,7 +92,7 @@ static void test_two_instances_are_isolated_and_extended_pc_fetches(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(second, &second_state) ==
                        TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(first_state.pc_word == UINT32_C(0x10042));
-    TI_C54X_TEST_CHECK(first_state.last_fetched_word == 0x1234U);
+    TI_C54X_TEST_CHECK(first_state.last_fetched_word == 0x1000U);
     TI_C54X_TEST_CHECK(first_state.instructions_attempted_total == 1U);
     TI_C54X_TEST_CHECK(second_state.pc_word == UINT32_C(0x000A0));
     TI_C54X_TEST_CHECK(!second_state.last_fetch_valid);

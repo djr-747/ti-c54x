@@ -2,6 +2,8 @@
 $(eval $(call ti_c54x_add_test,ld_status_fields_ops,isa/ops/load,test_ld_status_fields.c))
 $(eval $(call ti_c54x_add_test,ld_smem_ops,isa/ops/load,test_ld_smem.c))
 $(eval $(call ti_c54x_add_test,ldu_smem_ops,isa/ops/load,test_ldu_smem.c))
+# P3-S66 RED contract: LDU DP-relative direct loads.
+$(eval $(call ti_c54x_add_test,ldu_direct_ops,isa/ops/load,test_ldu_direct.c))
 $(eval $(call ti_c54x_add_test,ldm_smem_direct_ops,isa/ops/load,test_ldm_smem_direct.c))
 $(eval $(call ti_c54x_add_test,ld_t_smem_ops,isa/ops/load,test_ld_t_smem.c))
 $(eval $(call ti_c54x_add_test,ltd_smem_ops,isa/ops/load,test_ltd_smem.c))

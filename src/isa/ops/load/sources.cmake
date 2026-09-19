@@ -5,6 +5,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_smem_indexed.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_smem_common.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ldu_smem.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_ldu_direct.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ldm_smem_direct.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ld_t_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_ltd_smem.c"

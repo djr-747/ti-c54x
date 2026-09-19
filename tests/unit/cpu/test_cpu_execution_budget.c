@@ -61,7 +61,7 @@ static void
 test_multi_nop_budget_and_cumulative_counts(void)
 {
     budget_bus_fixture fixture = {{UINT16_C(0xf495), UINT16_C(0xf495),
-                                   UINT16_C(0x1234), UINT16_C(0xf495)},
+                                   UINT16_C(0x1000), UINT16_C(0xf495)},
                                   {TI_C54X_BUS_OK, TI_C54X_BUS_OK,
                                    TI_C54X_BUS_OK, TI_C54X_BUS_OK},
                                   0U};
@@ -113,7 +113,7 @@ test_step_uses_one_instruction_budget(void)
 static void
 test_same_call_nop_then_unknown_stops_without_retry(void)
 {
-    budget_bus_fixture fixture = {{UINT16_C(0xf495), UINT16_C(0x1234), 0U, 0U},
+    budget_bus_fixture fixture = {{UINT16_C(0xf495), UINT16_C(0x1000), 0U, 0U},
                                   {TI_C54X_BUS_OK, TI_C54X_BUS_OK,
                                    TI_C54X_BUS_OK, TI_C54X_BUS_OK},
                                   0U};
@@ -128,7 +128,7 @@ test_same_call_nop_then_unknown_stops_without_retry(void)
     TI_C54X_TEST_CHECK(result.instructions_retired == 1U);
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(1));
     TI_C54X_TEST_CHECK(result.opcode_valid);
-    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1234));
+    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1000));
     TI_C54X_TEST_CHECK(fixture.reads == 2U);
     TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) == TI_C54X_ERROR_OK);
     TI_C54X_TEST_CHECK(state.instructions_attempted_total == 2U);

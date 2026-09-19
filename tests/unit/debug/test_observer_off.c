@@ -18,7 +18,7 @@ read_program(void *context,
 {
     (void)context;
     (void)address_word;
-    *value_word = UINT16_C(0x1234);
+    *value_word = UINT16_C(0x1000);
     return TI_C54X_BUS_OK;
 }
 

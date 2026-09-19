@@ -97,7 +97,7 @@ run_fixture(ti_c54x_program_word_address reset_pc,
 static void
 test_exact_fetch_and_unknown_low_word(void)
 {
-    contract_bus_fixture fixture = {{UINT16_C(0x1234), 0U},
+    contract_bus_fixture fixture = {{UINT16_C(0x1000), 0U},
                                     {TI_C54X_BUS_OK, TI_C54X_BUS_OK},
                                     {0U, 0U},
                                     0U};
@@ -112,7 +112,7 @@ test_exact_fetch_and_unknown_low_word(void)
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(0));
     TI_C54X_TEST_CHECK(result.opcode_valid);
-    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1234));
+    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1000));
     TI_C54X_TEST_CHECK(fixture.reads == 1U);
     TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_C(0));
     ti_c54x_cpu_deinit(cpu);
@@ -122,7 +122,7 @@ test_exact_fetch_and_unknown_low_word(void)
 static void
 test_unknown_high_word_is_fetched_exactly(void)
 {
-    contract_bus_fixture fixture = {{UINT16_C(0x1234), 0U},
+    contract_bus_fixture fixture = {{UINT16_C(0x1000), 0U},
                                     {TI_C54X_BUS_OK, TI_C54X_BUS_OK},
                                     {0U, 0U},
                                     0U};
@@ -138,7 +138,7 @@ test_unknown_high_word_is_fetched_exactly(void)
     TI_C54X_TEST_CHECK(result.instructions_retired == 0U);
     TI_C54X_TEST_CHECK(result.pc_word == UINT32_C(0x10042));
     TI_C54X_TEST_CHECK(result.opcode_valid);
-    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1234));
+    TI_C54X_TEST_CHECK(result.opcode_word == UINT16_C(0x1000));
     TI_C54X_TEST_CHECK(fixture.reads == 1U);
     TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_C(0x10042));
     ti_c54x_cpu_deinit(cpu);

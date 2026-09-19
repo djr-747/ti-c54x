@@ -74,7 +74,7 @@ static void test_fixed_mixed_stream(void)
 
 static void test_unknown_stops_before_packet_dispatch(void)
 {
-    static const uint16_t words[] = {UINT16_C(0x1234)};
+    static const uint16_t words[] = {UINT16_C(0x1000)};
     trusted_cpu_bus context = {words, 1U, UINT64_C(0)};
     const ti_c54x_bus bus = {
         .context = &context, .program_read_word = read_word};
