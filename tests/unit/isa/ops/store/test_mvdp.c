@@ -28,14 +28,14 @@
 #include <stdint.h>
 #include <string.h>
 
-/* TI SPRU172C MVDP: word 0 pins 0x7C00 with the Smem cookie
+/* TI SPRU172C MVDP: word 0 pins 0x7D00 with the Smem cookie
  * at bits 6:0 (I at bit 7); word 1 is the absolute pmad. The
- * 0x7D neighbor stays MVPD and must not decode here. */
+ * 0x7C neighbor stays MVPD and must not decode here. */
 static ti_c54x_decoded_instruction
 decode_direct(uint8_t dma, uint16_t pmad)
 {
     const uint16_t first_word =
-        (uint16_t)(UINT16_C(0x7C00) | (dma & UINT8_C(0x7F)));
+        (uint16_t)(UINT16_C(0x7D00) | (dma & UINT8_C(0x7F)));
     const ti_c54x_decode_result first =
         ti_c54x_decode_first_word(first_word);
     const ti_c54x_instruction_word_bundle bundle = {
@@ -66,7 +66,7 @@ decode_direct(uint8_t dma, uint16_t pmad)
 static ti_c54x_decoded_instruction
 decode_indirect(uint8_t mode4, uint8_t arf, uint16_t pmad)
 {
-    const uint16_t first_word = (uint16_t)(UINT16_C(0x7C80) |
+    const uint16_t first_word = (uint16_t)(UINT16_C(0x7D80) |
                                            ((uint16_t)(mode4 & UINT8_C(0x0F))
                                             << 3U) |
                                            (arf & UINT8_C(0x07)));
@@ -327,10 +327,10 @@ test_trusted_operand_rejects(void)
 static void
 test_neighbor_rows_reject(void)
 {
-    /* 0x7D is MVPD (both directions); 0x78/0x79 stay MACP;
+    /* 0x7C is MVPD (both directions); 0x78/0x79 stay MACP;
      * 0x7E is unmapped. None may decode as MVDP. */
     static const uint16_t neighbors[] = {
-        UINT16_C(0x7D05), UINT16_C(0x7D9F), UINT16_C(0x7805),
+        UINT16_C(0x7C05), UINT16_C(0x7C9F), UINT16_C(0x7805),
         UINT16_C(0x789F), UINT16_C(0x7E05)};
     size_t index;
 
@@ -348,9 +348,9 @@ test_neighbor_rows_reject(void)
         }
     }
     /* The MVPD neighbor still claims its words. */
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7D05)).id ==
+    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7C05)).id ==
                        TI_C54X_OPCODE_ID_MVPD_DIRECT);
-    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7D9F)).id ==
+    TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x7C9F)).id ==
                        TI_C54X_OPCODE_ID_MVPD_SMEM);
 }
 

@@ -18,14 +18,14 @@
 
 /* MVPD 0FE00h,5 (TI example 1 shape): pmad 0xFE00, direct dma 5
  * with DP 006 writes 0x0305. */
-#define MVPD_TEST_WORD0_DIRECT UINT16_C(0x7D05)
+#define MVPD_TEST_WORD0_DIRECT UINT16_C(0x7C05)
 #define MVPD_TEST_WORD1 UINT16_C(0xFE00)
 /* MOD3 cookie (mode 3, ARF 7): the library MOD3 pre-increment
  * addresses AR7+1 and posts AR7+1. */
-#define MVPD_TEST_WORD0_INDIRECT UINT16_C(0x7D9F)
+#define MVPD_TEST_WORD0_INDIRECT UINT16_C(0x7C9F)
 #define MVPD_TEST_WORD1_INDIRECT UINT16_C(0x2000)
 /* mode4 4 needs an extension word: the two-word leaf rejects. */
-#define MVPD_TEST_WORD0_BAD_MODE UINT16_C(0x7DA2)
+#define MVPD_TEST_WORD0_BAD_MODE UINT16_C(0x7CA2)
 
 static void
 test_direct_retires_with_copy(void)

@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: executable proof that the MVDP_SMEM catalog row carries
- * the 0x7C80 value under the 0xFF80 mask with two program words
+ * the 0x7D80 value under the 0xFF80 mask with two program words
  * (the indirect Smem cookie rides the low seven bits, the
  * 16-bit absolute pmad rides the second word), covering all
  * 128 first-word encodings with no shadow word.
@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint16_t MVDP_SMEM_VALUE = UINT16_C(0x7C80);
+static const uint16_t MVDP_SMEM_VALUE = UINT16_C(0x7D80);
 static const uint16_t MVDP_SMEM_MASK = UINT16_C(0xFF80);
 
 static void

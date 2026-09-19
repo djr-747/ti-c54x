@@ -99,12 +99,12 @@ int main(void)
     {
         /* 0x7600 is the P3-S36 ST_LK_SMEM base word (pinned in the
          * STM/ST decode sibling tests). 0x7C00 is the P3-S63
-         * MVDP_DIRECT base word. */
+         * MVPD_DIRECT base word. */
         const ti_c54x_decode_result mvdp_sibling =
             ti_c54x_decode_first_word(UINT16_C(0x7C00));
 
         TI_C54X_TEST_CHECK(mvdp_sibling.status == TI_C54X_DECODE_STATUS_OK);
-        TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVDP_DIRECT);
+        TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVPD_DIRECT);
     }
     return 0;
 }

@@ -142,7 +142,7 @@ test_fixed_bit_near_misses(void)
      * every row; clearing fixed bit 14 lands on MAS_DUAL_M0_M0
      * (S3i claims the 0xB8xx neighborhood; the UNKNOWN loop drops
      * that mask under the cross-slice hazard rule); clearing
-     * fixed bit 15 lands on the P3-S63 MVDP_DIRECT row
+     * fixed bit 15 lands on the MVPD_DIRECT row
      * (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x2000)};
@@ -180,7 +180,7 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(rpt_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(rpt_sibling.id == TI_C54X_OPCODE_ID_RPT_K);
     TI_C54X_TEST_CHECK(mvdp_sibling.status == TI_C54X_DECODE_STATUS_OK);
-    TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVDP_DIRECT);
+    TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVPD_DIRECT);
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);

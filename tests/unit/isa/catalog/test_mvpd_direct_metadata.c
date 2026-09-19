@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: executable proof that the MVPD_DIRECT catalog row
- * carries the 0x7D00 value under the 0xFF80 mask with two
+ * carries the 0x7C00 value under the 0xFF80 mask with two
  * program words (the DP-relative direct cookie rides the low
  * seven bits, the 16-bit absolute pmad rides the second word),
  * covering all 128 first-word encodings with no shadow word.
@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static const uint16_t MVPD_DIRECT_VALUE = UINT16_C(0x7D00);
+static const uint16_t MVPD_DIRECT_VALUE = UINT16_C(0x7C00);
 static const uint16_t MVPD_DIRECT_MASK = UINT16_C(0xFF80);
 
 static void

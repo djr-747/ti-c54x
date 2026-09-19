@@ -8,16 +8,16 @@ carrier with access READ: the Smem leg reads first, the
 PROGRAM leg writes second.
 
 Encoding (TI SPRU172C MVDP, vendored text): two words pin
-`0x7C00` with the standard 7-bit Smem cookie at bits 6:0
+`0x7D00` with the standard 7-bit Smem cookie at bits 6:0
 (`I` at bit 7); word 1 is the 16-bit absolute `pmad`. Two
-rows: `MVDP_DIRECT` (`0x7C00` under `0xFF80`, DP-relative
-direct, `STATUS_DP`) and `MVDP_SMEM` (`0x7C80` under `0xFF80`,
+rows: `MVDP_DIRECT` (`0x7D00` under `0xFF80`, DP-relative
+direct, `STATUS_DP`) and `MVDP_SMEM` (`0x7D80` under `0xFF80`,
 indirect `MOD0--MOD3`, `AUXILIARY_REGISTERS`). The
 direction-neutral `INDIRECT_ADDR7_EXTENSION16` layout is
 shared. The leaf admits `MOD0--MOD3`; `MOD3` reads reject in
 the address planner (established `UNSUPPORTED_ACCESS` rule
 for pre-access updates on reads), pinned by a CPU reject
-test. The `0x7D` neighbor stays MVPD (S62 pins both
+test. The `0x7C` neighbor stays MVPD (S62 pins both
 directions). Absolute and long-offset Smem (three-word
 forms) stay undecoded. Repeatability stays UNRESOLVED per
 the W52A rule.

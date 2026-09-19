@@ -18,15 +18,15 @@
 
 /* Direct dma 5 with DP 006: the 0x8A55 word at 0x0305 lands
  * in pmad 0xFE00. */
-#define MVDP_TEST_WORD0_DIRECT UINT16_C(0x7C05)
+#define MVDP_TEST_WORD0_DIRECT UINT16_C(0x7D05)
 #define MVDP_TEST_WORD1 UINT16_C(0xFE00)
 /* MOD2 cookie (mode 2, ARF 7): post-increment addresses AR7
  * and posts AR7+1. MOD3 reads are unsupported in the address
  * planner (see the reject test below). */
-#define MVDP_TEST_WORD0_INDIRECT UINT16_C(0x7C97)
+#define MVDP_TEST_WORD0_INDIRECT UINT16_C(0x7D97)
 #define MVDP_TEST_WORD1_INDIRECT UINT16_C(0x2000)
 /* mode4 4 needs an extension word: the two-word leaf rejects. */
-#define MVDP_TEST_WORD0_BAD_MODE UINT16_C(0x7CA2)
+#define MVDP_TEST_WORD0_BAD_MODE UINT16_C(0x7DA2)
 
 static void
 test_direct_retires_with_copy(void)
@@ -153,7 +153,7 @@ test_mod3_read_rejects(void)
      * transactionally with no endpoint traffic. */
     ti_c54x_cpu_isa_memory_fixture fixture = {
         .mode = TI_C54X_CPU_ISA_MEMORY_READY,
-        .program_word = UINT16_C(0x7C9F),
+        .program_word = UINT16_C(0x7D9F),
         .program_extension_word = MVDP_TEST_WORD1_INDIRECT,
         .program_has_extension = true,
         .read_value_word = UINT16_C(0x1234),
