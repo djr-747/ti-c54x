@@ -155,6 +155,20 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                    .write_value_word ==
                candidate->effect.payload.memory.value_word;
     }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 &&
+        candidate->effect.payload.memory.address_spec.absolute_data
+                .mmr_sidecar_kind ==
+            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE) {
+        /* MVMD freezes the DATA-leg WRITE with a zero template; the
+         * resume path snapshots the MMR source into the issued
+         * request, never into the staged effect (the gate rejects
+         * forged nonzero staged values). No value echo applies:
+         * the address and routability echoes ride the absolute
+         * shape arm above, and the snapshot is stable
+         * single-writer state across WAIT retries. */
+        return true;
+    }
     return candidate->address_resolution.request.write_value_word ==
            candidate->effect.payload.memory.value_word;
 }
@@ -411,4 +425,35 @@ ti_c54x_memory_instruction_candidate_matches_live(
     default:
         return false;
     }
+}
+
+/*
+ * Snapshot matcher (resume path):
+ * the prepared candidate snapshot must match the fresh shape
+ * before the resume state is accepted.
+ */
+bool
+ti_c54x_memory_instruction_candidate_snapshot_matches(
+    const ti_c54x_memory_instruction_transaction *transaction)
+{
+    const ti_c54x_op_memory_effect *const memory =
+        transaction == NULL || transaction->candidate.effect.kind !=
+                                  TI_C54X_OP_EFFECT_MEMORY
+            ? NULL
+            : &transaction->candidate.effect.payload.memory;
+
+    if (memory == NULL) {
+        return false;
+    }
+    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
+        return memory->address_spec.kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 &&
+               memory->first_value_msw ==
+                   transaction->long32_first_value_msw &&
+               memory->second_value_lsw ==
+                   transaction->long32_second_value_lsw;
+    }
+    return transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 &&
+           memory->rmw_operation == transaction->candidate_rmw_operation &&
+           memory->value_word == transaction->candidate_rmw_value_word;
 }

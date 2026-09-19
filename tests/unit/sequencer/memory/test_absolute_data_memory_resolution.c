@@ -76,9 +76,95 @@ test_page0_and_high_page(void)
     check_resolves_without_state(UINT16_C(0xFFFF));
 }
 
+static ti_c54x_op_memory_address_spec
+load_spec(uint16_t address, uint8_t mmr)
+{
+    ti_c54x_op_memory_address_spec spec = absolute_spec(address);
+
+    spec.absolute_data.mmr_sidecar_kind =
+        (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE;
+    spec.absolute_data.mmr_sidecar_number = mmr;
+    return spec;
+}
+
+static void
+test_write_load_builds_staged_request(void)
+{
+    /* The load leg stages the zero value at prepare time; the
+     * resume path snapshots the MMR into the request. */
+    const ti_c54x_op_memory_address_spec spec =
+        load_spec(UINT16_C(0x0020), UINT8_C(0x14));
+    const ti_c54x_arch_state state = {0};
+    ti_c54x_memory_address_resolution resolution = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_sequencer_resolve_memory_address(
+                           &state, &spec,
+                           TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                           UINT16_C(0),
+                           &resolution) ==
+                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK);
+    TI_C54X_TEST_CHECK(resolution.request.space ==
+                       TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA);
+    TI_C54X_TEST_CHECK(resolution.request.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
+    TI_C54X_TEST_CHECK(resolution.request.address_word ==
+                       UINT32_C(0x0020));
+    TI_C54X_TEST_CHECK(resolution.request.write_value_word ==
+                       UINT16_C(0));
+    TI_C54X_TEST_CHECK(resolution.address_result.effect.source.kind ==
+                       TI_C54X_ADDRESS_SOURCE_ABSOLUTE);
+}
+
+static void
+test_kind_access_mismatch_rejects(void)
+{
+    const ti_c54x_arch_state state = {0};
+    ti_c54x_memory_address_resolution resolution = {0};
+
+    {
+        /* WRITE without a load leg has no form. */
+        const ti_c54x_op_memory_address_spec spec =
+            absolute_spec(UINT16_C(0x0020));
+
+        TI_C54X_TEST_CHECK(ti_c54x_sequencer_resolve_memory_address(
+                               &state, &spec,
+                               TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                               UINT16_C(0),
+                               &resolution) ==
+                           TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+    }
+    {
+        /* READ with a load leg has no form. */
+        const ti_c54x_op_memory_address_spec spec =
+            load_spec(UINT16_C(0x0020), UINT8_C(0x14));
+
+        TI_C54X_TEST_CHECK(ti_c54x_sequencer_resolve_memory_address(
+                               &state, &spec,
+                               TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                               UINT16_C(0),
+                               &resolution) ==
+                           TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+    }
+    {
+        /* Unknown sidecar kinds never resolve. */
+        ti_c54x_op_memory_address_spec spec =
+            load_spec(UINT16_C(0x0020), UINT8_C(0x14));
+
+        spec.absolute_data.mmr_sidecar_kind = UINT8_C(3);
+        TI_C54X_TEST_CHECK(ti_c54x_sequencer_resolve_memory_address(
+                               &state, &spec,
+                               TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                               UINT16_C(0),
+                               &resolution) ==
+                           TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
+    }
+}
+
 static void
 test_write_rejects(void)
 {
+    /* WRITE without a load leg is a kind mismatch (INVALID_SPEC),
+     * even with a nonzero staged value. */
     const ti_c54x_op_memory_address_spec spec =
         absolute_spec(UINT16_C(0x0020));
     const ti_c54x_arch_state state = {0};
@@ -89,7 +175,7 @@ test_write_rejects(void)
                            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
                            UINT16_C(0x1234),
                            &resolution) ==
-                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS);
+                       TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC);
 }
 
 static void
@@ -155,6 +241,8 @@ int
 main(void)
 {
     test_page0_and_high_page();
+    test_write_load_builds_staged_request();
+    test_kind_access_mismatch_rejects();
     test_write_rejects();
     test_malformed_spec_rejects();
     test_null_rejects();

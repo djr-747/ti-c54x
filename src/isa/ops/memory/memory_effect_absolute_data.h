@@ -1,10 +1,11 @@
 /* Module contract
  *
- * Owns: structural validation of the absolute DATA WORD16 READ
- * effect arm (TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16):
- * the second-word address with reserved-zero slots, the
- * staged-zero value, the optional read-phase MMR store sidecar,
- * and the null single completion with no RMW.
+ * Owns: structural validation of the absolute DATA WORD16
+ * READ/WRITE effect arm
+ * (TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16): the
+ * second-word address with reserved-zero slots, the staged-zero
+ * value, the optional read-phase MMR sidecar (STORE with READ,
+ * LOAD with WRITE), and the null single completion with no RMW.
  * Does not own: other address kinds, address resolution, request
  * issue, endpoint traffic, opcode semantics, CPU lifecycle, timing,
  * observers, or diagnostics. The effect argument is borrowed for

@@ -5,8 +5,8 @@
  * second-word address with the ABSOLUTE source echo (full
  * address, no page/offset split), the NONE policy (no CPL/DP
  * observation),
- * the read-phase MMR store sidecar with a routable destination,
- * and the sequential PC.
+ * the read-phase MMR sidecar (STORE or LOAD) with a routable
+ * MMR number, and the sequential PC.
  * Does not own: other address kinds, transaction lifecycle,
  * endpoint I/O, architectural mutation, effect completion,
  * opcode dispatch, timing, observers, or diagnostics.

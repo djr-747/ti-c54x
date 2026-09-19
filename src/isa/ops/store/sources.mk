@@ -21,7 +21,8 @@ ti_c54x_core_sources += src/isa/ops/store/op_strcd_xmem_cond.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_t_smem_direct.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_lk_smem.c
 ti_c54x_core_sources += src/isa/ops/store/op_stm.c
-ti_c54x_core_sources += src/isa/ops/store/op_mvdm.c
+ti_c54x_core_sources += src/isa/ops/store/op_mvdm.c \
+	src/isa/ops/store/op_mvmd.c
 ti_c54x_core_sources += src/isa/ops/store/op_store_reverse_carry_common.c
 ti_c54x_core_sources += src/isa/ops/store/op_stl_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_sth_smem_reverse.c

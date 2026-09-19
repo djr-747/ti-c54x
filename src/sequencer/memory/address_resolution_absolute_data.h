@@ -22,13 +22,17 @@ extern "C" {
 #endif
 
 /* Resolve one absolute-DATA spec. NULL specs, non-absolute kinds,
- * and non-READ accesses decline; planner or request failures
- * surface as ADDRESS_PLAN_REJECTED or REQUEST_REJECTED. */
+ * and kind/access mismatches (READ takes NONE or STORE legs,
+ * WRITE takes only the LOAD leg) decline; planner or request
+ * failures surface as ADDRESS_PLAN_REJECTED or REQUEST_REJECTED.
+ * WRITE requests carry the staged value word (zero for load
+ * legs until the resume path snapshots the MMR). */
 ti_c54x_memory_address_resolution_status
 ti_c54x_sequencer_resolve_absolute_data_address(
     const ti_c54x_arch_state *state,
     const ti_c54x_op_memory_address_spec *spec,
     ti_c54x_bus_word16_request_access access,
+    uint16_t write_value_word,
     ti_c54x_memory_address_resolution *out);
 
 #ifdef __cplusplus

@@ -16,6 +16,7 @@ ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_stack_push.c \
 	src/sequencer/instruction/memory_instruction_transaction.c \
 	src/sequencer/instruction/memory_instruction_long32.c \
+	src/sequencer/instruction/memory_instruction_mmr_load.c \
 	src/sequencer/instruction/memory_instruction_dual.c \
 	src/sequencer/instruction/memory_instruction_data_program.c \
 	src/sequencer/instruction/memory_instruction_port.c \

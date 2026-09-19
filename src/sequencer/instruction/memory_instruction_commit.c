@@ -317,8 +317,17 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
          * completion and the follow-on stage below, falling through
          * to the address/PC tail. Reads without delay still
          * reject. Reads with the MMR store sidecar (MVDM) publish
-         * the MMR write in the sidecar block below. */
-        if (!memory->write_smem_delay && !memory->mmr_store_with_read) {
+         * the MMR write in the sidecar block below. The kind key
+         * comes first: the sidecar arm is union garbage on
+         * non-absolute effects. */
+        bool has_store_leg =
+            memory->address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 &&
+            memory->address_spec.absolute_data.mmr_sidecar_kind ==
+                (uint8_t)
+                    TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ;
+
+        if (!memory->write_smem_delay && !has_store_leg) {
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
@@ -360,7 +369,10 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
         }
         *t_register = t_candidate;
     }
-    if (memory->mmr_store_with_read) {
+    if (memory->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 &&
+        memory->address_spec.absolute_data.mmr_sidecar_kind ==
+            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ) {
         /* Read-phase MMR store (MVDM): the observed DATA word
          * publishes to the MMR destination through the router
          * after the read resolves. Mirror the RMW-MMR write
@@ -370,19 +382,20 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
         ti_c54x_sequencer_mmr_access store_plan;
         ti_c54x_bus_word16_request_result store_built;
         ti_c54x_bus_mmr_route_result store_result;
+        uint32_t store_number = (uint32_t)memory->address_spec
+                                    .absolute_data.mmr_sidecar_number;
 
         store_plan = ti_c54x_sequencer_plan_mmr_access(
             state, accumulators, t_register,
-            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-            (uint32_t)memory->mmr_store_number,
+            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA, store_number,
             TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE, read_value_word);
         if (store_plan != TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
         store_built = ti_c54x_bus_word16_request_write(
-            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-            (uint32_t)memory->mmr_store_number, read_value_word);
+            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA, store_number,
+            read_value_word);
         if (store_built.status !=
             TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;

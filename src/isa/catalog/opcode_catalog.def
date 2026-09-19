@@ -615,6 +615,12 @@ TI_C54X_OPCODE_MASKED(PORTW_SMEM, portw_smem, 0x7580, 0xFF80, 2, TI_C54X_OPERAND
  * MMRs); word 1 carries the absolute 16-bit DATA Smem address.
  * First words with bits 7:6 set (e.g. 0x72C2) stay undecoded. */
 TI_C54X_OPCODE_MASKED(MVDM, mvdm, 0x7200, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
+/* P3-S58 MVMD MMRx,Smem (TI SPRU172C MVMD): word 0 pins 0x7300
+ * with the 5-bit MMR source at bits 4:0 (0x00-0x1F CPU MMRs);
+ * word 1 carries the absolute 16-bit DATA Smem address. The
+ * direction-neutral MMR5_ABSOLUTE16 layout is shared with MVDM.
+ * First words with bits 7:6 set stay undecoded. */
+TI_C54X_OPCODE_MASKED(MVMD, mvmd, 0x7300, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S52a PSHD Smem (TI SPRU172C 4-131): word 0 pins 0x4B with the I
  * flag at bit 7 and the 7-bit Smem cookie at bits 6:0. Direct
  * (I=0) reads page-0 dma; indirect (I=1, class 16B) reads MOD0--MOD2

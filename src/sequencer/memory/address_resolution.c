@@ -183,8 +183,10 @@ ti_c54x_sequencer_resolve_memory_address(
         }
     } else if (spec->kind ==
                TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
-        if (spec->absolute_data.reserved_half != UINT16_C(0) ||
-            spec->absolute_data.reserved_word0 != UINT32_C(0) ||
+        /* The MMR sidecar half rides the arm: kind/number validity
+         * is proven by the absolute resolver below, so only the
+         * trailing reserved words gate here. */
+        if (spec->absolute_data.reserved_word0 != UINT32_C(0) ||
             spec->absolute_data.reserved_word1 != UINT32_C(0) ||
             spec->absolute_data.reserved_word2 != UINT32_C(0) ||
             spec->absolute_data.reserved_word3 != UINT32_C(0)) {
@@ -587,7 +589,7 @@ ti_c54x_sequencer_resolve_memory_address(
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
         return ti_c54x_sequencer_resolve_absolute_data_address(
-            state, spec, access, out);
+            state, spec, access, write_value_word, out);
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16) {

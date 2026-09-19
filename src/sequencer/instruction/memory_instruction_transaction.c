@@ -32,6 +32,7 @@
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
 #include "memory_instruction_long32.h"
+#include "memory_instruction_mmr_load.h"
 #include "memory_instruction_port.h"
 #include "memory_instruction_stack_pair.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -43,32 +44,6 @@ clear_preserving_sequence(ti_c54x_memory_instruction_transaction *transaction)
 
     *transaction = (ti_c54x_memory_instruction_transaction){0};
     transaction->last_transaction_id = last_id;
-}
-
-static bool
-candidate_snapshot_matches(
-    const ti_c54x_memory_instruction_transaction *transaction)
-{
-    const ti_c54x_op_memory_effect *const memory =
-        transaction == NULL || transaction->candidate.effect.kind !=
-                                  TI_C54X_OP_EFFECT_MEMORY
-            ? NULL
-            : &transaction->candidate.effect.payload.memory;
-
-    if (memory == NULL) {
-        return false;
-    }
-    if (transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32) {
-        return memory->address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 &&
-               memory->first_value_msw ==
-                   transaction->long32_first_value_msw &&
-               memory->second_value_lsw ==
-                   transaction->long32_second_value_lsw;
-    }
-    return transaction->child_kind == TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16 &&
-           memory->rmw_operation == transaction->candidate_rmw_operation &&
-           memory->value_word == transaction->candidate_rmw_value_word;
 }
 
 ti_c54x_memory_instruction_status
@@ -302,7 +277,7 @@ advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
 
     result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);
 
-    if (!candidate_snapshot_matches(transaction) ||
+    if (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
         !ti_c54x_memory_instruction_rmw_run_transform(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
@@ -348,7 +323,7 @@ advance_rmw_write(ti_c54x_memory_instruction_transaction *transaction,
     /* A READY WRITE is externally visible but architectural publication is
      * still local to this reducer. Recheck the frozen candidate and live
      * dependencies after the host callback before committing AR/PC. */
-    if (!candidate_snapshot_matches(transaction) ||
+    if (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
@@ -383,7 +358,7 @@ advance_rmw_write_mmr(ti_c54x_memory_instruction_transaction *transaction,
     /* Mirror the ordinary RMW write preflight: the staged MMR read
      * value transforms, then the write plans. No bus ID is
      * allocated and no endpoint issue happens on this path. */
-    if (!candidate_snapshot_matches(transaction) ||
+    if (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
         !ti_c54x_memory_instruction_rmw_run_transform(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
@@ -414,7 +389,7 @@ advance_rmw_write_mmr(ti_c54x_memory_instruction_transaction *transaction,
     /* A served MMR WRITE is locally visible but architectural
      * publication is still local to this reducer. Recheck the
      * frozen candidate and live dependencies before committing. */
-    if (!candidate_snapshot_matches(transaction) ||
+    if (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
@@ -469,6 +444,13 @@ ti_c54x_memory_instruction_transaction_advance(
                 &transaction->candidate)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+        /* Read-phase MMR load (MVMD): snapshot the MMR into
+         * the prepared DATA WRITE before first issue; decline
+         * or unknown fail closed ahead of endpoint traffic. */
+        if (!ti_c54x_memory_instruction_snapshot_mmr_load(
+                transaction, state, accumulators, t_register)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
     } else if (transaction->bus_transaction.state !=
                    TI_C54X_BUS_WORD16_TRANSACTION_STATE_IN_FLIGHT ||
                transaction->last_transaction_id == UINT64_C(0) ||
@@ -489,7 +471,7 @@ ti_c54x_memory_instruction_transaction_advance(
         }
     }
 
-    if (!candidate_snapshot_matches(transaction) ||
+    if (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
         !ti_c54x_memory_instruction_candidate_matches_live(
             &transaction->candidate, state)) {
         result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
@@ -677,7 +659,7 @@ ti_c54x_memory_instruction_transaction_advance(
     }
     /* Recheck the frozen candidate after READY before publication. */
     if (!rmw_read_phase &&
-        (!candidate_snapshot_matches(transaction) ||
+        (!ti_c54x_memory_instruction_candidate_snapshot_matches(transaction) ||
          !ti_c54x_memory_instruction_candidate_matches_live(
              &transaction->candidate, state))) {
         transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;

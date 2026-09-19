@@ -103,9 +103,13 @@ assert_absolute_store(const ti_c54x_op_effect *effect, uint8_t mmr,
         address);
     TI_C54X_TEST_CHECK(effect->payload.memory.access ==
                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
-    TI_C54X_TEST_CHECK(effect->payload.memory.mmr_store_with_read);
-    TI_C54X_TEST_CHECK(effect->payload.memory.mmr_store_number ==
-                       (mmr & UINT8_C(0x1F)));
+    TI_C54X_TEST_CHECK(
+        effect->payload.memory.address_spec.absolute_data
+            .mmr_sidecar_kind ==
+        (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ);
+    TI_C54X_TEST_CHECK(
+        effect->payload.memory.address_spec.absolute_data
+            .mmr_sidecar_number == (mmr & UINT8_C(0x1F)));
     TI_C54X_TEST_CHECK(effect->payload.memory.complete == NULL);
 }
 

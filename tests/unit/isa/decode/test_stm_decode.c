@@ -150,10 +150,10 @@ test_fixed_bit_near_misses(void)
      * (pinned below; TI SPRU172C 4-130 pins PORTW at 0x75xx);
      * clearing fixed bit 12 lands on the P3-S33 MAC_SMEM_LK row
      * (pinned below); clearing fixed bit 8 lands on the P3-S36
-     * ST_LK_SMEM row (pinned below); all other fixed-bit flips
-     * must miss every row. */
+     * ST_LK_SMEM row (pinned below); clearing fixed bit 10 lands
+     * on the P3-S58 MVMD row (pinned below); all other fixed-bit
+     * flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0400),
         UINT16_C(0x0800), UINT16_C(0x2000)};
 
     for (size_t index = 0U;
@@ -211,6 +211,18 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(maca_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(maca_sibling.id == TI_C54X_OPCODE_ID_MACA_SMEM);
+    }
+
+    /* This former near-miss is the P3-S58 MVMD sibling:
+     * 0x7700 ^ 0x0400 = 0x7300 classifies into the MVMD row. */
+    {
+        const ti_c54x_decode_result mvmd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(STM_VALUE ^ UINT16_C(0x0400)));
+
+        TI_C54X_TEST_CHECK(mvmd_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mvmd_sibling.id == TI_C54X_OPCODE_ID_MVMD);
     }
 
     /* 0x7700 ^ 0x0200 = 0x7500 classifies into the P3-S6 PORTW

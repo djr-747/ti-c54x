@@ -159,6 +159,18 @@ typedef enum ti_c54x_op_memory_address_kind {
     TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 = 22
 } ti_c54x_op_memory_address_kind;
 
+/* Read-phase MMR sidecar direction for the absolute DATA arm.
+ * The direction follows the leg: STORE_WITH_READ publishes the
+ * DATA read word to the MMR destination (MVDM); LOAD_WITH_WRITE
+ * snapshots the MMR source into the DATA write word (MVMD).
+ * NONE carries no MMR leg. Values are dense from zero; unknown
+ * enumerators never validate. */
+typedef enum ti_c54x_op_memory_mmr_sidecar_kind {
+    TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE = 0,
+    TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ = 1,
+    TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE = 2
+} ti_c54x_op_memory_mmr_sidecar_kind;
+
 /*
  * A WORD16 memory read may optionally feed one value-owned transform before
  * its paired write.  The carrier stores the operation in one byte of the
@@ -297,9 +309,13 @@ typedef struct ti_c54x_op_memory_address_spec {
              * word). Same footprint as the pair arms: the address
              * ABI is unchanged. */
             uint16_t address;
+            /* Read-phase MMR sidecar: direction plus the 5-bit
+             * MMR number. Reuses the reserved half with no
+             * footprint change; NONE requires a zero number. */
+            uint8_t mmr_sidecar_kind;
+            uint8_t mmr_sidecar_number;
             /* Reserved words keep the arm fixed-size and make the
              * checked hot-path validation scalar comparisons. */
-            uint16_t reserved_half;
             uint32_t reserved_word0;
             uint32_t reserved_word1;
             uint32_t reserved_word2;
@@ -373,15 +389,6 @@ typedef struct ti_c54x_op_memory_effect {
      * other carriers leave it false. Shares the existing padding:
      * the 48-byte effect ABI is unchanged. */
     bool write_smem_delay;
-    /* Read-phase MMR store (MVDM): when true on an absolute DATA
-     * READ, the root writes the read value word to the DATA MMR
-     * address `mmr_store_number` through the MMR router after the
-     * read completes and before the architecture commit. Only the
-     * absolute DATA READ may set this; all other carriers leave
-     * both fields zero. Shares the existing padding: both effect
-     * ABIs are unchanged. */
-    bool mmr_store_with_read;
-    uint8_t mmr_store_number;
     union {
         struct {
             /* Ordinary WRITE payload or RMW operand; ordinary READ requires

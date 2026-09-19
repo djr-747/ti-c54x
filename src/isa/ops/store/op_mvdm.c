@@ -84,10 +84,12 @@ static void mvdm_absolute_memory_read(uint8_t mmr, uint16_t address,
             .address_spec = {
                 .kind =
                     TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16,
-                .absolute_data = {.address = address}},
+                .absolute_data = {
+                    .address = address,
+                    .mmr_sidecar_kind = (uint8_t)
+                        TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ,
+                    .mmr_sidecar_number = mmr}},
             .access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
-            .mmr_store_with_read = true,
-            .mmr_store_number = mmr,
             .complete = NULL}};
 }
 

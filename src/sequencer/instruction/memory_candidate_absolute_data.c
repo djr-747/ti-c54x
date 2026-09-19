@@ -37,12 +37,27 @@ absolute_echo_matches(const ti_c54x_address_effect *address_effect,
 static bool
 sidecar_is_routable(const ti_c54x_op_memory_effect *effect)
 {
-    if (!effect->mmr_store_with_read) {
-        return effect->mmr_store_number == UINT8_C(0);
+    uint8_t sidecar_kind =
+        effect->address_spec.absolute_data.mmr_sidecar_kind;
+    uint8_t sidecar_number =
+        effect->address_spec.absolute_data.mmr_sidecar_number;
+
+    if (sidecar_kind ==
+        (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE) {
+        return sidecar_number == UINT8_C(0);
+    }
+    /* Both STORE and LOAD legs name a DATA MMR the router must
+     * serve; the kind/access pairing itself is proven by the
+     * effect gate. */
+    if (sidecar_kind !=
+            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_STORE_WITH_READ &&
+        sidecar_kind !=
+            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE) {
+        return false;
     }
     return ti_c54x_bus_mmr_is_routed_address(
         TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-        (uint32_t)effect->mmr_store_number);
+        (uint32_t)sidecar_number);
 }
 
 bool
@@ -59,7 +74,8 @@ ti_c54x_memory_candidate_absolute_data_shape_is_valid(
         resolution->address_result.status != TI_C54X_ADDRESS_STATUS_OK ||
         resolution->request.space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
         resolution->request.access != effect->access ||
-        effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ ||
+        (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
+         effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) ||
         !ti_c54x_bus_word16_request_is_valid(&resolution->request)) {
         return false;
     }

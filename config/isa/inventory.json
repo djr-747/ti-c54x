@@ -2695,9 +2695,11 @@
       "table_ordinal": 6,
       "mnemonic": "MVMD",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MVMD"
+      ]
     },
     {
       "id": "FORM-T2-26-07",
@@ -4666,6 +4668,12 @@
     {
       "catalog_symbol": "MVDM",
       "form_id": "FORM-T2-26-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
+    },
+    {
+      "catalog_symbol": "MVMD",
+      "form_id": "FORM-T2-26-06",
       "coverage": "SUBSET",
       "addressing_subset": "ABSOLUTE_DATA"
     }
