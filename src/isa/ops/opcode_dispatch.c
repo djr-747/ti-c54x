@@ -96,6 +96,7 @@
 #include "stack/op_popd_direct.h"
 #include "stack/op_pshm_direct.h"
 #include "stack/op_popm_direct.h"
+#include "auxiliary/op_mar_smem.h"
 #include "store/op_stl_smem.h"
 #include "store/op_sth_smem.h"
 #include "store/op_sth_shft_xmem.h"

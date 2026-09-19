@@ -208,6 +208,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             UINT8_C(2), &ti_c54x_accumulator_arf_extension16_mod4_set},
         [TI_C54X_OPERAND_LAYOUT_FRAME_K8] = {
             TI_C54X_OPERAND_LAYOUT_FRAME_K8, UINT8_C(1),
+            &ti_c54x_frame_k_set},
+        [TI_C54X_OPERAND_LAYOUT_MAR_SMEM8] = {
+            TI_C54X_OPERAND_LAYOUT_MAR_SMEM8, UINT8_C(1),
             &ti_c54x_frame_k_set}
 };
 
@@ -452,6 +455,11 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_accumulator_arf_extension16_mod4_set;
     case TI_C54X_OPERAND_LAYOUT_FRAME_K8:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_frame_k_set;
+    /* MAR shares the one-8-bit-operand set shape: the Smem
+     * byte occupies the same word 0 bits 7:0 as FRAME K. */
+    case TI_C54X_OPERAND_LAYOUT_MAR_SMEM8:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_frame_k_set;
     default:

@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),337)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 331)
+        self.assertEqual(len(bindings),338)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 332)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 45)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 292)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 293)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -117,6 +117,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "LDM_SMEM_DIRECT",
                "CMPS_SMEM_DIRECT",
                "FRAME",
+               "MAR_SMEM",
                "PSHD_DIRECT", "POPD_DIRECT",
                "PSHM_DIRECT", "POPM_DIRECT",
                "ADD_LK_SHIFT", "ADD_LK_16",
@@ -267,6 +268,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     if binding["catalog_symbol"] == "LD_SMEM_ABSOLUTE"
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "ADDM_LK_SMEM_ABSOLUTE"
+                    else "STANDARD_INDIRECT_MOD1"
+                    if binding["catalog_symbol"] == "MAR_SMEM"
                     else "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
                 )
                 self.assertEqual(binding["addressing_subset"], expected)

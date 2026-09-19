@@ -16,3 +16,4 @@ include tests/unit/isa/ops/multiply/tests.mk
 include tests/unit/isa/ops/branch/tests.mk
 include tests/unit/isa/ops/port/tests.mk
 include tests/unit/isa/ops/stack/tests.mk
+include tests/unit/isa/ops/auxiliary/tests.mk

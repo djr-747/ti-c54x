@@ -167,3 +167,5 @@ $(eval $(call ti_c54x_add_test,adds_smem_decode,isa/decode,test_adds_smem_decode
 $(eval $(call ti_c54x_add_test,subc_smem_decode,isa/decode,test_subc_smem_decode.c))
 # S36 RED contract: Smem,#lk test/store layout.
 $(eval $(call ti_c54x_add_test,indirect_addr7_extension16_layout,isa/decode,test_indirect_addr7_extension16_layout.c))
+# P3-S77 RED contract: MAR Smem decode.
+$(eval $(call ti_c54x_add_test,mar_smem_decode,isa/decode,test_mar_smem_decode.c))

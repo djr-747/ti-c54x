@@ -1828,8 +1828,10 @@
       "mnemonic": "MAR",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAR_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-18-03",
@@ -3503,6 +3505,12 @@
       "form_id": "FORM-T2-01-12",
       "coverage": "SUBSET",
       "addressing_subset": "ABSOLUTE_DATA"
+    },
+    {
+      "catalog_symbol": "MAR_SMEM",
+      "form_id": "FORM-T2-18-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "STANDARD_INDIRECT_MOD1"
     },
     {
       "catalog_symbol": "DADD",

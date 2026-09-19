@@ -123,6 +123,8 @@ ti_c54x_add_unit_test(mvpd_smem_absolute_metadata
                       test_mvpd_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(addm_lk_smem_absolute_metadata
                       test_addm_lk_smem_absolute_metadata.c)
+# P3-S77 RED contract: MAR Smem metadata.
+ti_c54x_add_unit_test(mar_smem_metadata test_mar_smem_metadata.c)
 ti_c54x_add_unit_test(ld_smem_absolute_metadata
                       test_ld_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(dst_smem_absolute_metadata

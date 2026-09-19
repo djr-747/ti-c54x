@@ -18,3 +18,4 @@ include src/isa/ops/memory/sources.mk
 include src/isa/ops/branch/sources.mk
 include src/isa/ops/port/sources.mk
 include src/isa/ops/stack/sources.mk
+include src/isa/ops/auxiliary/sources.mk

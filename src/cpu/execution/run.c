@@ -22,6 +22,7 @@
 #include "isa/ops/dispatch/trusted_opcode_binding.h"
 #include "sequencer/effect_transaction.h"
 #include "sequencer/stack/sp_write_apply.h"
+#include "sequencer/auxiliary/ar_write_apply.h"
 #include "sequencer/program_pc_bridge.h"
 #include "sequencer/program_pc_target.h"
 #include "repeat_activate.h"
@@ -663,21 +664,31 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
         }
 
-        /* FRAME retires through the stack-pointer leaf: the bridge
-         * resolves first (no SP mutation on bridge failure), then
-         * the staged value-after commits through checked
-         * architectural state (marking SP known) ahead of the
-         * effect-transaction stage, which admits no SP target.
+        /* FRAME and MAR retire through pointer-write leaves: the
+         * bridge resolves first (no pointer mutation on bridge
+         * failure), then the staged value-after commits through
+         * the checked architectural state writer for the SP or
+         * the addressed AR (marking it known) ahead of the
+         * effect-transaction stage, which admits neither target.
          * Rejected calls publish no state mutation. */
-        if (effect.kind == TI_C54X_OP_EFFECT_SP_WRITE) {
+        if (effect.kind == TI_C54X_OP_EFFECT_SP_WRITE ||
+            effect.kind == TI_C54X_OP_EFFECT_AR_WRITE) {
             if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
                 return ti_c54x_run_stop_result(cpu, ti_c54x_run_bridge_status_to_stop(bridge_status),
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);
             }
-            if (ti_c54x_sp_write_effect_apply(&effect,
-                                              &cpu->arch_state) !=
-                TI_C54X_SP_WRITE_EFFECT_OK) {
+            if (effect.kind == TI_C54X_OP_EFFECT_SP_WRITE) {
+                if (ti_c54x_sp_write_effect_apply(&effect,
+                                                  &cpu->arch_state) !=
+                    TI_C54X_SP_WRITE_EFFECT_OK) {
+                    return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                       TI_C54X_BUS_OK, instructions_attempted,
+                                       instructions_retired);
+                }
+            } else if (ti_c54x_ar_write_effect_apply(&effect,
+                                                     &cpu->arch_state) !=
+                       TI_C54X_AR_WRITE_EFFECT_OK) {
                 return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);

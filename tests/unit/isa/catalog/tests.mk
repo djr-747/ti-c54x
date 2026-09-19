@@ -160,3 +160,5 @@ $(eval $(call ti_c54x_add_test,sfta_acc_metadata,isa/catalog,test_sfta_acc_metad
 $(eval $(call ti_c54x_add_test,addc_smem_metadata,isa/catalog,test_addc_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,adds_smem_metadata,isa/catalog,test_adds_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,subc_smem_metadata,isa/catalog,test_subc_smem_metadata.c))
+# P3-S77 RED contract: MAR Smem metadata.
+$(eval $(call ti_c54x_add_test,mar_smem_metadata,isa/catalog,test_mar_smem_metadata.c))

@@ -159,6 +159,18 @@ test_delayed_word_decodes_banzd(void)
 }
 
 static void
+test_mar_word_decodes_mar(void)
+{
+    /* The P3-S77 MAR row claims the 0x6D00 word this pin held
+     * UNKNOWN before the MAR slice. */
+    const ti_c54x_decode_result result = ti_c54x_decode_first_word(
+        (uint16_t)(BANZ_VALUE ^ UINT16_C(0x0100)));
+
+    TI_C54X_TEST_CHECK(result.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_MAR_SMEM);
+}
+
+static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFF00 fixes bits 15:8 and leaves the Sind byte
@@ -170,10 +182,9 @@ test_fixed_bit_near_misses(void)
      * and setting fixed bit 15 lands on the RPT_K row (pinned
      * below); all other fixed-bit flips must miss every row.
      * Clearing fixed bit 13 lands on the P3-S40 LTD_SMEM row
-     * (pinned below). */
-    static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0100),
-        UINT16_C(0x0400)};
+     * (pinned below). Setting fixed bit 8 lands on the P3-S77
+     * MAR_SMEM row (pinned in test_mar_word_decodes_mar). */
+    static const uint16_t unknown_masks[] = {UINT16_C(0x0400)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -257,6 +268,7 @@ main(void)
     }
     test_malformed_inputs_reject_transactionally();
     test_delayed_word_decodes_banzd();
+    test_mar_word_decodes_mar();
     test_fixed_bit_near_misses();
     return 0;
 }
