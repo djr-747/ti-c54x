@@ -88,6 +88,7 @@ ti_c54x_add_unit_test(stm_decode test_stm_decode.c)
 # P3-S2 RED contract: RPT immediate rows.
 ti_c54x_add_unit_test(rpt_k_decode test_rpt_k_decode.c)
 ti_c54x_add_unit_test(rpt_lk_decode test_rpt_lk_decode.c)
+ti_c54x_add_unit_test(rptb_decode test_rptb_decode.c)
 # P3-S3 RED contract: MAC Smem row.
 ti_c54x_add_unit_test(mac_smem_decode test_mac_smem_decode.c)
 ti_c54x_add_unit_test(mpy_smem_decode test_mpy_smem_decode.c)

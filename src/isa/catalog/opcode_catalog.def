@@ -487,6 +487,20 @@ TI_C54X_OPCODE_MASKED(CALAD, calad, 0xF6E3, 0xFEFF, 1, TI_C54X_OPERAND_LAYOUT_AC
 TI_C54X_OPCODE_MASKED(STM, stm, 0x7700, 0xFF00, 2, TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(RPT_K, rpt_k, 0xEC00, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_K, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_EXACT(RPT_LK, rpt_lk, 0xF070, 2, TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+/* P3-S79 RPTB pmad (TI SPRU172C section RPTB[D],
+ * vendored pp. 4-147--4-148: 1111 000Z 0111 0010
+ * plus the 16-bit pmad word; Z=0 selects the plain
+ * form with RSA=PC+2, Z=1 is the delayed form with
+ * RSA=PC+4, own slice): the exact 0xF072 first word
+ * carries the block-end program address in word
+ * 1; execution sets BRAF and loads RSA/REA,
+ * and the block RSA..REA runs BRC+1 times. The
+ * neighboring exact rows never match 0xF072, so no
+ * shadow carve is needed; RPTBD stays deferred.
+ * "Not repeatable" marks the row INELIGIBLE with
+ * evidence. BRC reads at activation from MMR state,
+ * so the row takes no input resources. */
+TI_C54X_OPCODE_EXACT(RPTB, rptb, 0xF072, 2, TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S51 FRAME K (TI SPRU172C 4-60): 0xEE00 under mask 0xFF00 with
  * the signed 8-bit stack-pointer offset K in bits 7:0; one word,
  * Class 1, no status-bit effects. Table 2-28 lists no FRAME

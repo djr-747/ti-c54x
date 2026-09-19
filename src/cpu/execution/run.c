@@ -209,6 +209,7 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
 
         cpu->last_fetched_word = opcode_word;
         cpu->last_fetch_valid = true;
+        cpu->last_fetch_pc_word = cpu->arch_state.pc_word;
         TI_C54X_CPU_EMIT_TRACE(cpu, TI_C54X_TRACE_FETCH);
         binding = ti_c54x_trusted_opcode_binding_for_first_word(opcode_word);
         if (binding == NULL ||
@@ -257,6 +258,8 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
         }
+        cpu->last_fetch_word_count =
+            packet.instruction.bundle.program_word_count;
 
         if (packet.instruction.input_resources !=
                 TI_C54X_INPUT_RESOURCES_NONE &&

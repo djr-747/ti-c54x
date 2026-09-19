@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),339)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 333)
+        self.assertEqual(len(bindings),340)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 334)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 45)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 294)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 295)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -119,6 +119,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "CMPS_SMEM_DIRECT",
                "FRAME",
                "MAR_SMEM",
+               "RPTB",
                "PSHD_DIRECT", "POPD_DIRECT",
                "PSHM_DIRECT", "POPM_DIRECT",
                "ADD_LK_SHIFT", "ADD_LK_16",
@@ -149,7 +150,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
             else:
                 expected = (
                     "ABSOLUTE_PMAD_NONDELAYED"
-                    if binding["catalog_symbol"] in {"B_PMAD", "CALL_PMAD"}
+                    if binding["catalog_symbol"] in {"B_PMAD", "CALL_PMAD",
+                                                     "RPTB"}
                     else "ABSOLUTE_PMAD_DELAYED"
                     if binding["catalog_symbol"] in {"BD", "CALLD"}
                     else "ABSOLUTE_PMAD_COND"

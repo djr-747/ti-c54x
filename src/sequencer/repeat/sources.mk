@@ -4,4 +4,5 @@ ti_c54x_core_sources += \
 	src/sequencer/repeat/repeat_body_eligibility.c \
 	src/sequencer/repeat/repeat_request_gate.c \
 	src/sequencer/repeat/repeat_progress.c \
-	src/sequencer/repeat/repeat_single.c
+	src/sequencer/repeat/repeat_single.c \
+	src/sequencer/repeat/repeat_block.c

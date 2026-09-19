@@ -118,6 +118,7 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
         return TI_C54X_EFFECT_TRANSACTION_OK;
 
     case TI_C54X_OP_EFFECT_REPEAT_START:
+    case TI_C54X_OP_EFFECT_REPEAT_BLOCK_START:
         return TI_C54X_EFFECT_TRANSACTION_UNSUPPORTED;
 
     case TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE:

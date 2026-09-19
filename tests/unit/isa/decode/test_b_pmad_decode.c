@@ -163,9 +163,20 @@ test_fixed_bit_near_misses(void)
      * fixed bit 14 lands on the P3-S3g MAC_DUAL_M1_M0 sibling; all other
      * fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
+        UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000)};
+    /* This former near-miss is the P3-S79 RPTB sibling:
+     * 0xF073 ^ 0x0001 = 0xF072 classifies into the RPTB
+     * row. */
+    {
+        const ti_c54x_decode_result rptb_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0001)));
+        TI_C54X_TEST_CHECK(rptb_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rptb_sibling.id == TI_C54X_OPCODE_ID_RPTB);
+    }
     const ti_c54x_decode_result bd_sibling =
         ti_c54x_decode_first_word(
             (uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0200)));

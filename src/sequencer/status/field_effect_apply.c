@@ -62,6 +62,7 @@ ti_c54x_status_field_effect_apply(const ti_c54x_op_effect *effect,
         return apply_status_field_write(&effect->payload.status_field_write,
                                         state);
     case TI_C54X_OP_EFFECT_REPEAT_START:
+    case TI_C54X_OP_EFFECT_REPEAT_BLOCK_START:
     default:
         return TI_C54X_STATUS_FIELD_EFFECT_UNSUPPORTED;
     }

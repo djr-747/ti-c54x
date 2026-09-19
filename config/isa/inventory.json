@@ -1729,9 +1729,11 @@
       "table_ordinal": 4,
       "mnemonic": "RPTB",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RPTB"
+      ]
     },
     {
       "id": "FORM-T2-16-05",
@@ -3914,6 +3916,12 @@
       "form_id": "FORM-T2-16-03",
       "coverage": "SUBSET",
       "addressing_subset": "IMMEDIATE_LK"
+    },
+    {
+      "catalog_symbol": "RPTB",
+      "form_id": "FORM-T2-16-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"
     },
     {
       "catalog_symbol": "MAC_SMEM",

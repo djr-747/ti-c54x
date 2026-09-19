@@ -99,6 +99,7 @@ $(eval $(call ti_c54x_add_test,writa_smem_metadata,isa/catalog,test_writa_smem_m
 # P3-S2 RED contract: RPT immediate rows.
 $(eval $(call ti_c54x_add_test,rpt_k_metadata,isa/catalog,test_rpt_k_metadata.c))
 $(eval $(call ti_c54x_add_test,rpt_lk_metadata,isa/catalog,test_rpt_lk_metadata.c))
+$(eval $(call ti_c54x_add_test,rptb_metadata,isa/catalog,test_rptb_metadata.c))
 # P3-S3 RED contract: MAC Smem row.
 $(eval $(call ti_c54x_add_test,mac_smem_metadata,isa/catalog,test_mac_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,mpy_smem_metadata,isa/catalog,test_mpy_smem_metadata.c))

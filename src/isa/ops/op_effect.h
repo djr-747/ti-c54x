@@ -66,7 +66,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_CONDITIONAL_SKIP = 10,
     TI_C54X_OP_EFFECT_TRN_SHIFT_WRITE = 11,
     TI_C54X_OP_EFFECT_SP_WRITE = 12,
-    TI_C54X_OP_EFFECT_AR_WRITE = 13
+    TI_C54X_OP_EFFECT_AR_WRITE = 13,
+    TI_C54X_OP_EFFECT_REPEAT_BLOCK_START = 14
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -79,6 +80,10 @@ typedef enum ti_c54x_op_status_field_target {
 typedef struct ti_c54x_op_repeat_start_effect {
     uint16_t operand;
 } ti_c54x_op_repeat_start_effect;
+
+typedef struct ti_c54x_op_repeat_block_start_effect {
+    uint16_t pmad;
+} ti_c54x_op_repeat_block_start_effect;
 
 typedef struct ti_c54x_op_status_field_write_effect {
     ti_c54x_op_status_field_target target;
@@ -164,6 +169,7 @@ typedef struct ti_c54x_op_conditional_skip_effect {
 
 typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_repeat_start_effect repeat_start;
+    ti_c54x_op_repeat_block_start_effect repeat_block_start;
     ti_c54x_op_status_field_write_effect status_field_write;
     ti_c54x_op_status_bit_write_effect status_bit_write;
     ti_c54x_op_accumulator_write_effect accumulator_write;

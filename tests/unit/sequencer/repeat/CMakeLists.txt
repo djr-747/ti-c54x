@@ -10,3 +10,4 @@ ti_c54x_add_unit_test(repeat_request_gate_common test_single_repeat_irq_gate.c)
 ti_c54x_add_unit_test(repeat_body_eligibility_common test_single_repeat_body_eligibility.c)
 # P3-S2 RED contract: single-repeat driver composition.
 ti_c54x_add_unit_test(repeat_single_flow test_repeat_single_flow.c)
+ti_c54x_add_unit_test(repeat_block_flow test_repeat_block_flow.c)

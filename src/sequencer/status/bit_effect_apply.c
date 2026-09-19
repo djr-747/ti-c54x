@@ -58,6 +58,7 @@ ti_c54x_status_bit_effect_apply(const ti_c54x_op_effect *effect,
         return apply_status_bit_write(&effect->payload.status_bit_write,
                                       state);
     case TI_C54X_OP_EFFECT_REPEAT_START:
+    case TI_C54X_OP_EFFECT_REPEAT_BLOCK_START:
     case TI_C54X_OP_EFFECT_STATUS_FIELD_WRITE:
     case TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE:
     case TI_C54X_OP_EFFECT_T_REGISTER_WRITE:

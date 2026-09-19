@@ -4,15 +4,18 @@
 /*
  * Module contract
  *
- * Owns: CPU-side single-repeat run-loop wiring, composed from the
- * sequencer driver: REPEAT_START retirement (RC load with
+ * Owns: CPU-side single/block-repeat run-loop wiring, composed from the
+ * sequencer drivers: REPEAT_START retirement (RC load with
  * delay-slot and nesting guards plus sequential PC advance and
- * body-PC latch), the ACTIVE predecode admission check (only
- * ELIGIBLE bodies proceed; latched requests stay deferred inside
- * the driver), and the retirement-tail HOLD re-drive (body
- * retirement records RC progress and rewinds PC to the latched
- * body on HOLD). All future repeat run-loop growth (count-zero
- * take) extends this module, never run.c.
+ * body-PC latch), REPEAT_BLOCK_START retirement (BRAF plus
+ * RSA/REA programming with BRC-knownness guard), the ACTIVE
+ * predecode admission check (only ELIGIBLE bodies proceed;
+ * latched requests stay deferred inside the driver), and the
+ * retirement-tail HOLD re-drive (body retirement records RC
+ * progress and rewinds PC to the latched body on HOLD; the
+ * block tail loops to RSA on REA fall-through). All future
+ * repeat run-loop growth (count-zero take) extends this module,
+ * never run.c.
  * Borrowed CPU, effect, and bridge inputs are used for one call;
  * rejected calls publish no state mutation.
  * Does not own: repeat policy (sequencer driver), PC bridge
@@ -37,7 +40,7 @@ typedef enum ti_c54x_cpu_repeat_route_status {
     TI_C54X_CPU_REPEAT_ROUTE_REJECTED = 2
 } ti_c54x_cpu_repeat_route_status;
 
-/* Retire one RPT through the driver when the effect starts a
+/* Retire one RPT/RPTB through the driver when the effect starts a
  * repeat; NOT_REPEAT leaves every input untouched. REJECTED
  * publishes nothing: the caller maps it to its stop. */
 ti_c54x_cpu_repeat_route_status ti_c54x_cpu_repeat_route(
@@ -61,8 +64,9 @@ typedef enum ti_c54x_cpu_repeat_retire_step {
 
 /* Record one retired body while ACTIVE and re-drive the latched
  * body PC on HOLD. IDLE advances with no side effects; ADVANCE
- * clears the latch. INVALID publishes nothing: the caller maps it
- * to its stop. */
+ * clears the latch. The block tail then maps an REA fall-through
+ * to LOOP (PC rewinds to RSA) or END. INVALID publishes nothing:
+ * the caller maps it to its stop. */
 ti_c54x_cpu_repeat_retire_step ti_c54x_cpu_repeat_body_retired(
     ti_c54x_cpu *cpu);
 

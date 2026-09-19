@@ -2,4 +2,5 @@
 ti_c54x_core_sources += \
     src/isa/ops/repeat/op_rpt_immediate.c \
     src/isa/ops/repeat/op_rpt_k.c \
-    src/isa/ops/repeat/op_rpt_lk.c
+    src/isa/ops/repeat/op_rpt_lk.c \
+    src/isa/ops/repeat/op_rptb.c

@@ -189,7 +189,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 333)
+        self.assertEqual(len(catalog_rows), 334)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -332,6 +332,19 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
         self.assertEqual(dld_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(dld_abs.input_resources, RESOURCES_STATUS_SXM)
+        # P3-S79 lands the RPTB row after RPT_LK;
+        # symbol lookup keeps this assertion position-independent.
+        rptb = next(
+            row for row in catalog_rows
+            if row.symbol == "RPTB"
+        )
+        self.assertEqual(rptb.handler, "rptb")
+        self.assertEqual(rptb.first_word_value, 0xF072)
+        self.assertEqual(rptb.first_word_mask, 0xFFFF)
+        self.assertEqual(rptb.program_word_count, 2)
+        self.assertEqual(rptb.operand_layout, "TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16")
+        self.assertEqual(rptb.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(rptb.input_resources, RESOURCES_NONE)
         # P3-S76 lands the ADDM_LK_SMEM_ABSOLUTE row after ADDM_SMEM_MOD0_3;
         # symbol lookup keeps this assertion position-independent.
         addm_abs = next(

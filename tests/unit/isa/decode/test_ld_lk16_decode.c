@@ -152,13 +152,26 @@ test_fixed_bit_near_misses(void)
      * P3-S3g MAC_DUAL_M1_M0 sibling; flipping fixed bit 1 lands on
      * the P3-S27 ADD_LK_16 sibling; flipping fixed bit 2 lands on
      * the P3-S30 MPY_LK sibling (pinned below); flipping fixed bit
-     * 10 lands on the P3-S39 SFTA_ACC sibling (pinned below); all
-     * other fixed-bit flips must miss every row. */
+     * 10 lands on the P3-S39 SFTA_ACC sibling (pinned below);
+     * flipping fixed bit 4 lands on the P3-S79 RPTB sibling
+     * (pinned below); all other fixed-bit flips must miss
+     * every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0008),
-        UINT16_C(0x0010), UINT16_C(0x0200),
+        UINT16_C(0x0200),
         UINT16_C(0x1000),
         UINT16_C(0x2000)};
+    /* This former near-miss is the P3-S79 RPTB sibling:
+     * 0xF062 ^ 0x0010 = 0xF072 classifies into the RPTB
+     * row. */
+    {
+        const ti_c54x_decode_result rptb_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x0010)));
+        TI_C54X_TEST_CHECK(rptb_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rptb_sibling.id == TI_C54X_OPCODE_ID_RPTB);
+    }
     /* This former near-miss is the P3-S61 MVKD direct sibling:
      * 0xF062 ^ 0x8000 = 0x7062 classifies into the MVKD_DIRECT
      * row. */

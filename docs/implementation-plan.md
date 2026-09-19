@@ -767,6 +767,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S78: DLD absolute-Smem slice (implemented; local verification green)](plan/p3-s78-dld-absolute-smem-slice.md)
 
+- [P3-S79: RPTB block-repeat slice (planned)](plan/p3-s79-rptb-block-repeat-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

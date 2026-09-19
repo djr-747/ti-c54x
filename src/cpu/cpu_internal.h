@@ -22,6 +22,7 @@
 #include "../sequencer/delayed_branch/delayed_branch.h"
 #include "../sequencer/instruction/memory_instruction_transaction.h"
 #include "../sequencer/interrupt/repeat_pending_request.h"
+#include "../sequencer/repeat/repeat_block.h"
 #include "../sequencer/repeat/repeat_progress.h"
 #include "../state/arch_state.h"
 #include "../state/accumulator/accumulator.h"
@@ -51,6 +52,14 @@ struct ti_c54x_cpu {
     ti_c54x_repeat_progress repeat_progress;
     ti_c54x_repeat_pending_request repeat_pending;
     ti_c54x_program_word_address repeat_body_pc_word;
+    /* Block-repeat pipeline state: ACTIVE phase plus the last
+     * fetch address and decoded width the retirement tails use
+     * for REA fall-through detection (S79 wires the tails
+     * through the shared body-retired call), cleared by init
+     * and reset. Pipeline state, not architectural state. */
+    ti_c54x_repeat_block_progress repeat_block_progress;
+    ti_c54x_program_word_address last_fetch_pc_word;
+    uint8_t last_fetch_word_count;
     bool execution_active;
 };
 
