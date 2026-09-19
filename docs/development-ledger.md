@@ -13779,3 +13779,59 @@ entries are not rewritten after publication.
   unreachable from cold reset until register seeding exists.
 - Split commit discipline: impl `d7fb653`, hosted harness
   `3f987e6`, this ledger-only follow-up.
+
+## 2026-09-19 — P3-S52 PSHD/POPD/PSHM/POPM stack pair-leg slice (slice 81)
+
+- Scope: table 2-17 closure (FORM-T2-17-02..05, POPD/POPM/PSHD/PSHM,
+  to SUBSET): four direct rows (PSHD 0x4B00, POPD 0x8B00, PSHM
+  0x4A00, POPM 0x8A00, each 0xFF00, INDIRECT_ADDR7, STACK_POINTER
+  input, UNRESOLVED), checked/trusted pair leaves with zero
+  template (Smem full page-0 range; MMR below 0x20; I-set rejects
+  in the leaf; unknown SP rejects), and the pair root reusing the
+  S6 PORT carrier shape with both legs in the pair snapshot, MMR
+  legs through the S1 seam, routed SP commit, and CPU retirement.
+  Indirect Smem (16B/17B) defers to a follow-on over the same
+  carrier; no status-bit effects; no timing.
+- Validation: 5 new tests (catalog 4x256-population + neighbors,
+  decode + I/cookie extraction, 4-path parity over 14
+  cookie vectors with I-set/MMR-range/unknown-SP rejection, 8
+  root lifecycle proofs incl. MMR routing with TOS-only endpoint
+  traffic and stale-SP resume rejection, 5 CPU proofs incl. the
+  TI BRC/AR5 examples). Full `make test` exit 0; 286 contract
+  tests OK; evidence gate 796/652; cmake-build + full CTest
+  634/634; lookup `--check` clean; harness selftest PASS (2
+  vectors).
+- Decisions: (1) Both legs live in the pair snapshot, never the
+  generic slot: the candidate union aliases them, found by
+  reading the PORT hook comment before writing hooks; the SP
+  commit rides a routed address_commit. (2) MMR DATA legs route
+  inside the pair advance per leg (plan-then-serve, synchronous,
+  no bus ID); routed first legs fall through to second-leg issue
+  in the same call, so PENDING always implies an in-flight
+  endpoint leg and cancel/reset are unchanged. (3) All four rows
+  stay 0xFF00 per the slice plan with I=1 claimed-but-rejected
+  in the leaf (STLM precedent); PSHM/POPM have no indirect TI
+  class so their I-set half stays rejected permanently.
+  (4) Pair DATA liveness binds the resolution dma echo against
+  the frozen pair arm, not the generic direct-dma7 union offset.
+  (5) WAIT observations must carry a zero read value: the
+  stale-SP test leaves its read value zero; failure observed as
+  MALFORMED before the fix. Unsequenced `printf` of a result
+  beside its producing call reads stale state; probes now
+  sequence the read.
+- Near-misses: spaced and nospace ID_COUNT pins 304 to 308;
+  population pins 35337 to 36361 (three spellings); row pins 303
+  to 307; bindings 309 to 313 with the four pair symbols in the
+  frozen DIRECT_PAGE0 tuple; SUBSET 266 to 270; percents to
+  75.610 with 155/205; transaction pins 392/360 to 448/416
+  (LP64/ILP32, both probed); LTD/ST_T decode and metadata lanes
+  lost 0x4BFF/0x8BFF unbound lanes into PSHD/POPD and now pin
+  the siblings; evidence LEAKAGE gate rejects the word RAM in
+  common claims (rephrased to DATA endpoint).
+- Knobs: none added, changed, or retired.
+- Follow-up: 50 unbound forms remain (table 2-17 fully bound:
+  FRAME SUBSET, four pair legs SUBSET direct); PSHD/POPD
+  indirect (I=1, 16B/17B classes) deferred over the same pair
+  carrier; worker worktrees under `.muse/worktrees/` await GC.
+- Split commit discipline: impl `b79746b`, this ledger-only
+  follow-up.

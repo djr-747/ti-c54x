@@ -713,7 +713,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S51: FRAME stack-pointer-offset slice (implemented; local verification green)](plan/p3-s51-frame-stack-pointer-offset-slice.md)
 
-- [P3-S52: PSHD/POPD/PSHM/POPM stack pair-leg slice (planned)](plan/p3-s52-stack-push-pop-pair-leg-slice.md)
+- [P3-S52: PSHD/POPD/PSHM/POPM stack pair-leg slice (implemented; local verification green)](plan/p3-s52-stack-push-pop-pair-leg-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

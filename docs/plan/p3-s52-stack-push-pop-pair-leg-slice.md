@@ -1,4 +1,4 @@
-### P3-S52: PSHD/POPD/PSHM/POPM stack pair-leg slice (planned)
+### P3-S52: PSHD/POPD/PSHM/POPM stack pair-leg slice (implemented; local verification green)
 
 Closes table 2-17 (`FORM-T2-17-02` through `-05`) behind the
 landed S51 FRAME row. TI semantics (SPRU172C pp. 4-127/4-128,
