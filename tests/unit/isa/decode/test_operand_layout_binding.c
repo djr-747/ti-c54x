@@ -151,7 +151,9 @@ test_resolution_ids_and_widths(void)
                           TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_MISMATCH);
     check_resolve_failure(TI_C54X_OPERAND_LAYOUT_RPT_IMMEDIATE_LK, 1U,
                           TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_MISMATCH);
-    check_resolve_failure(TI_C54X_OPERAND_LAYOUT_NONE, 3U,
+    /* The bundle capacity admits three-word instructions, so the
+     * out-of-range count probe sits one past the new capacity. */
+    check_resolve_failure(TI_C54X_OPERAND_LAYOUT_NONE, 4U,
                           TI_C54X_OPERAND_LAYOUT_STATUS_PROGRAM_WORD_COUNT_INVALID);
 }
 

@@ -26,5 +26,7 @@ ti_c54x_add_unit_test(cpu_stm test_cpu_stm.c)
 ti_c54x_add_unit_test(cpu_swwsr test_cpu_swwsr.c)
 # P3-S68 RED contract: CLKMD peripheral-cell CPU retirement.
 ti_c54x_add_unit_test(cpu_clkmd test_cpu_clkmd.c)
+# P3-S70 RED contract: absolute ST-lk CPU retirement.
+ti_c54x_add_unit_test(cpu_st_lk_absolute test_cpu_st_lk_absolute.c)
 ti_c54x_add_unit_test(cpu_st_t_smem test_cpu_st_t_smem.c)
 ti_c54x_add_unit_test(cpu_cmps_smem_direct test_cpu_cmps_smem_direct.c)

@@ -21,6 +21,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_strcd_xmem_cond.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_t_smem_direct.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_lk_smem.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_st_lk_smem_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_stm.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvdm.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mvmd.c"

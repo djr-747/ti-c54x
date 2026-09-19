@@ -77,9 +77,16 @@ ti_c54x_op_memory_effect_absolute_data_shape_is_valid(
     if (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
         return false;
     }
-    /* WRITE legs exist only with a load leg: the leaf stages zero
-     * and the resume path snapshots the MMR into the request, so
-     * a nonzero staged value is a forged bypass of the snapshot. */
+    /* WRITE legs either carry the MMR load leg (MVMD: the leaf
+     * stages zero and the resume path snapshots the MMR into the
+     * request, so a nonzero staged value is a forged bypass of
+     * the snapshot) or are plain absolute stores (ST #lk: no
+     * sidecar, the staged immediate rides the request verbatim
+     * with a zero sidecar number). */
+    if (sidecar_kind ==
+        (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE) {
+        return sidecar_number == UINT8_C(0);
+    }
     return sidecar_kind ==
                (uint8_t)
                    TI_C54X_OP_MEMORY_MMR_SIDECAR_LOAD_WITH_WRITE &&

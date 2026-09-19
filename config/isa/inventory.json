@@ -2253,7 +2253,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "ST_LK_SMEM"
+        "ST_LK_SMEM",
+        "ST_LK_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -4535,6 +4536,12 @@
       "form_id": "FORM-T2-20-03",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0"
+    },
+    {
+      "catalog_symbol": "ST_LK_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-20-03",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "ABS_ACC",

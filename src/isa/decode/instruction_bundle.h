@@ -14,6 +14,8 @@
  * TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY is the current helper capacity,
  * not an ISA maximum. A bundle's program_words array always has exactly this
  * many copied slots, while program_word_count identifies the valid prefix.
+ * Three slots carry the longest current instructions (first word plus two
+ * extension words, e.g. absolute immediate stores).
  */
 
 #include <stdint.h>
@@ -23,7 +25,7 @@ extern "C" {
 #endif
 
 enum {
-    TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY = 2
+    TI_C54X_INSTRUCTION_WORD_BUNDLE_CAPACITY = 3
 };
 
 typedef struct ti_c54x_instruction_word_bundle {

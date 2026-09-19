@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: project-contract proof for the CPU-owned transactional collection of
- * one supplied program word plus at most one extension word.
+ * one supplied program word plus up to two extension words.
  * Does not own: first-word fetch orchestration, CPU state, program-counter
  * updates, instruction decoding, timing, observers, diagnostics, or opcode
  * semantics.
@@ -18,7 +18,7 @@
 typedef struct extension_bus_fixture {
     ti_c54x_bus_status status;
     uint16_t value_word;
-    uint32_t addresses[2];
+    uint32_t addresses[3];
     unsigned calls;
     bool scribble_on_failure;
 } extension_bus_fixture;
@@ -30,7 +30,7 @@ read_extension(void *context,
 {
     extension_bus_fixture *fixture = (extension_bus_fixture *)context;
 
-    TI_C54X_TEST_CHECK(fixture->calls < 2U);
+    TI_C54X_TEST_CHECK(fixture->calls < 3U);
     fixture->addresses[fixture->calls] = address_word;
     fixture->calls++;
     *value_word = fixture->value_word;
@@ -45,6 +45,7 @@ check_zero_bundle(const ti_c54x_instruction_word_bundle *bundle)
 {
     TI_C54X_TEST_CHECK(bundle->program_words[0] == UINT16_C(0));
     TI_C54X_TEST_CHECK(bundle->program_words[1] == UINT16_C(0));
+    TI_C54X_TEST_CHECK(bundle->program_words[2] == UINT16_C(0));
     TI_C54X_TEST_CHECK(bundle->program_word_count == UINT8_C(0));
 }
 
@@ -126,7 +127,7 @@ test_invalid_counts_and_null_bus_do_not_io(void)
         .context = &fixture,
         .program_read_word = read_extension,
     };
-    const uint8_t invalid_counts[] = {0U, 3U, UINT8_MAX};
+    const uint8_t invalid_counts[] = {0U, 4U, UINT8_MAX};
     size_t index;
 
     for (index = 0U;
@@ -198,12 +199,61 @@ test_callback_statuses_are_preserved_without_retry_or_partial_publish(void)
     }
 }
 
+static void
+test_count_three_reads_both_successors(void)
+{
+    extension_bus_fixture fixture = {TI_C54X_BUS_OK, UINT16_C(0xBEEF),
+                                     {0U, 0U, 0U}, 0U, false};
+    const ti_c54x_bus bus = {
+        .context = &fixture,
+        .program_read_word = read_extension,
+    };
+    ti_c54x_instruction_extension_fetch_result result;
+
+    result = ti_c54x_instruction_extension_fetch(
+        &bus, UINT32_C(0x10042), UINT16_C(0xCAFE), UINT8_C(3));
+    TI_C54X_TEST_CHECK(result.status ==
+                       TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_OK);
+    TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+    TI_C54X_TEST_CHECK(result.bundle.program_word_count == UINT8_C(3));
+    TI_C54X_TEST_CHECK(result.bundle.program_words[0] == UINT16_C(0xCAFE));
+    TI_C54X_TEST_CHECK(result.bundle.program_words[1] == UINT16_C(0xBEEF));
+    TI_C54X_TEST_CHECK(result.bundle.program_words[2] == UINT16_C(0xBEEF));
+    TI_C54X_TEST_CHECK(fixture.calls == 2U);
+    TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_C(0x10043));
+    TI_C54X_TEST_CHECK(fixture.addresses[1] == UINT32_C(0x10044));
+}
+
+static void
+test_count_three_rejects_second_overflow_before_second_io(void)
+{
+    extension_bus_fixture fixture = {TI_C54X_BUS_OK, UINT16_C(0xBEEF),
+                                     {0U, 0U, 0U}, 0U, false};
+    const ti_c54x_bus bus = {
+        .context = &fixture,
+        .program_read_word = read_extension,
+    };
+    ti_c54x_instruction_extension_fetch_result result;
+
+    result = ti_c54x_instruction_extension_fetch(
+        &bus, UINT32_MAX - UINT32_C(1), UINT16_C(0xCAFE), UINT8_C(3));
+    TI_C54X_TEST_CHECK(
+        result.status ==
+        TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_ADDRESS_OVERFLOW);
+    TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+    check_zero_bundle(&result.bundle);
+    TI_C54X_TEST_CHECK(fixture.calls == 1U);
+    TI_C54X_TEST_CHECK(fixture.addresses[0] == UINT32_MAX);
+}
+
 int
 main(void)
 {
     test_count_one_publishes_supplied_word_without_callback();
     test_count_two_reads_exact_low_and_high_successors();
     test_count_two_rejects_address_overflow_before_io();
+    test_count_three_reads_both_successors();
+    test_count_three_rejects_second_overflow_before_second_io();
     test_invalid_counts_and_null_bus_do_not_io();
     test_missing_callback_is_bus_fault_and_failure_is_zero();
     test_callback_statuses_are_preserved_without_retry_or_partial_publish();

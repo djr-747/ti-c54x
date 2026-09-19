@@ -48,6 +48,7 @@ ti_c54x_add_unit_test(strcd_xmem_cond_ops test_strcd_xmem_cond.c)
 ti_c54x_add_unit_test(cmps_smem_direct_ops test_cmps_smem_direct.c)
 # S36 RED contract: ST #lk Smem store effects.
 ti_c54x_add_unit_test(st_lk_smem_ops test_st_lk_smem.c)
+ti_c54x_add_unit_test(st_lk_smem_absolute_ops test_st_lk_smem_absolute.c)
 ti_c54x_add_unit_test(standard_indirect_store_modes
                       test_standard_indirect_store_modes.c)
 ti_c54x_add_unit_test(indexed_standard_indirect_store_effects

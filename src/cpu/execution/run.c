@@ -230,7 +230,8 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             fetched = (ti_c54x_instruction_extension_fetch_result){
                 .status = TI_C54X_INSTRUCTION_EXTENSION_FETCH_STATUS_OK,
                 .bus_status = TI_C54X_BUS_OK,
-                .bundle = {{opcode_word, UINT16_C(0)}, UINT8_C(1)}};
+                .bundle = {{opcode_word, UINT16_C(0), UINT16_C(0)},
+                             UINT8_C(1)}};
         } else {
             fetched = ti_c54x_instruction_extension_fetch(
                 &cpu->bus, cpu->arch_state.pc_word, opcode_word,

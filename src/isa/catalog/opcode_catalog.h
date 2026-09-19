@@ -179,6 +179,11 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word FRAME fields: signed 8-bit stack-pointer offset
      * K[7:0] from word 0; no other operand. */
     TI_C54X_OPERAND_LAYOUT_FRAME_K8,
+    /* Three-word store Smem,#lk absolute fields: indirect flag
+     * I[7:7] and 7-bit absolute selector A[6:0] from word 0
+     * with the copied 16-bit absolute DATA address from word 1
+     * and the copied 16-bit immediate from word 2. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_LK,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

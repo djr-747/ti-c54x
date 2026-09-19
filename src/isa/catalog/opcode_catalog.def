@@ -226,6 +226,15 @@ TI_C54X_OPCODE_MASKED(BITT_SMEM, bitt_smem, 0x3400, 0xFF00, 1, TI_C54X_OPERAND_L
  * established ST_IMMEDIATE_SMEM row and MOD4+ defers to later
  * mode rows. Table 6-18 omits ST, so the row is repeatable. */
 TI_C54X_OPCODE_MASKED(ST_LK_SMEM, st_lk_smem, 0x7600, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_EXTENSION16, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+/* ST #lk,*(abs) (syntax 3, absolute only): lk stages into the
+ * absolute DATA word over the exact 0x76F8 first word (I=1
+ * with the 0x78 absolute selector) with the copied absolute
+ * address and lk extensions through the new absolute store
+ * layout into the landed op_st_lk_smem_absolute core.
+ * Long-offset indirect stays deferred. Absolute operands
+ * cannot repeat (section 2 repeat rules), so the row is
+ * INELIGIBLE with evidence. */
+TI_C54X_OPCODE_EXACT(ST_LK_SMEM_ABSOLUTE, st_lk_smem_absolute, 0x76F8, 3, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_LK, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 
 /* CMPT=0 AR0-indexed standard-indirect MOD5/MOD6 rows. */
 TI_C54X_OPCODE_MASKED(LD_SMEM_MOD5, ld_smem_mod5, 0x10A8, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)

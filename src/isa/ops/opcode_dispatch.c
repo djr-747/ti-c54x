@@ -125,6 +125,7 @@
 #include "store/op_strcd_xmem_cond.h"
 #include "load/op_ldm_smem_direct.h"
 #include "store/op_st_lk_smem.h"
+#include "store/op_st_lk_smem_absolute.h"
 #include "store/op_dst_long32.h"
 #include "status/op_status_bits.h"
 #include "logical/op_logical.h"

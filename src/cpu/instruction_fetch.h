@@ -5,11 +5,12 @@
  * Module contract
  *
  * Owns: the CPU-owned, allocation-free transaction that extends a copied
- * first program word by zero or one bus-read word. It publishes a value-owned
- * fixed-capacity bundle only after a requested extension read succeeds.
+ * first program word by zero, one, or two bus-read words. It publishes
+ * a value-owned fixed-capacity bundle only after every requested
+ * extension read succeeds.
  * Does not own: the first-word read, CPU/state or program-counter mutation,
  * instruction decoding, timing, memory, observers, diagnostics, or opcode
- * semantics. The fixed two-word bundle is helper capacity, not an ISA limit.
+ * semantics. The fixed three-word bundle is helper capacity, not an ISA limit.
  *
  * The bus descriptor and its callback context are borrowed for one call only;
  * no pointer is retained. The first program word and its exact uint32_t word
@@ -40,7 +41,8 @@ typedef struct ti_c54x_instruction_extension_fetch_result {
     ti_c54x_instruction_word_bundle bundle;
 } ti_c54x_instruction_extension_fetch_result;
 
-/* Collect one supplied first word and, for count two, its exact successor. */
+/* Collect one supplied first word and, for counts two and three, its
+ * exact successors. */
 ti_c54x_instruction_extension_fetch_result
 ti_c54x_instruction_extension_fetch(const ti_c54x_bus *bus,
                                     uint32_t first_program_word_address,

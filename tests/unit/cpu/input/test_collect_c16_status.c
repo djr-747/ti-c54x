@@ -22,18 +22,18 @@ _Static_assert(sizeof(ti_c54x_op_input_snapshot) == 80U,
                "op input layout must remain 80 bytes on LP64");
 _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U,
                "metadata carrier must not grow on LP64");
-_Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U,
+_Static_assert(sizeof(ti_c54x_decoded_instruction) == 24U,
                "decoded carrier must not grow on LP64");
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 104U,
                "trusted packet must not grow on LP64");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_opcode_metadata) == 24U,
                "metadata carrier must remain 24 bytes on ILP32");
-_Static_assert(sizeof(ti_c54x_decoded_instruction) == 20U,
-               "decoded carrier must remain 20 bytes on ILP32");
+_Static_assert(sizeof(ti_c54x_decoded_instruction) == 24U,
+               "decoded carrier must remain 24 bytes on ILP32");
 _Static_assert(sizeof(ti_c54x_op_input_snapshot) == 76U,
                "op input carrier must remain 76 bytes on ILP32");
-_Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 76U,
+_Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 80U,
                "trusted packet must remain 76 bytes on ILP32");
 #endif
 
