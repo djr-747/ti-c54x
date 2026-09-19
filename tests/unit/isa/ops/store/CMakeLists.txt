@@ -6,6 +6,7 @@ ti_c54x_add_unit_test(sth_smem_ops test_sth_smem.c)
 ti_c54x_add_unit_test(sth_asm_smem_ops test_sth_asm_smem.c)
 # P3 slice 12 RED contract: STH-by-SHFT Xmem effects.
 ti_c54x_add_unit_test(sth_shft_xmem_ops test_sth_shft_xmem.c)
+ti_c54x_add_unit_test(stl_shft_xmem_ops test_stl_shft_xmem.c)
 # P3 slice 13 RED contract: STH-by-SHIFT direct effects.
 ti_c54x_add_unit_test(sth_shift_direct_ops test_sth_shift_direct.c)
 # P3 slice 13 RED contract: STH-by-SHIFT MOD effects.

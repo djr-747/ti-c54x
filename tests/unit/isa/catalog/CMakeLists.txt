@@ -162,6 +162,8 @@ ti_c54x_add_unit_test(st_lk_smem_metadata
                       test_st_lk_smem_metadata.c)
 ti_c54x_add_unit_test(st_t_smem_direct_metadata
                       test_st_t_smem_direct_metadata.c)
+ti_c54x_add_unit_test(stl_shft_xmem_metadata
+                      test_stl_shft_xmem_metadata.c)
 ti_c54x_add_unit_test(stlm_smem_direct_metadata
                       test_stlm_smem_direct_metadata.c)
 ti_c54x_add_unit_test(cmps_smem_direct_metadata

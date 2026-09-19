@@ -117,6 +117,8 @@ $(eval $(call ti_c54x_add_test,cmpm_smem_lk_metadata,isa/catalog,test_cmpm_smem_
 $(eval $(call ti_c54x_add_test,bitt_smem_metadata,isa/catalog,test_bitt_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_metadata,isa/catalog,test_st_lk_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_metadata,isa/catalog,test_st_t_smem_direct_metadata.c))
+# P3-S54 RED contract: STL-by-SHFT Xmem row.
+$(eval $(call ti_c54x_add_test,stl_shft_xmem_metadata,isa/catalog,test_stl_shft_xmem_metadata.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_metadata,isa/catalog,test_stlm_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,cmps_smem_direct_metadata,isa/catalog,test_cmps_smem_direct_metadata.c))
 # P3-S51 RED contract: FRAME metadata.

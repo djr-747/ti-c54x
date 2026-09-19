@@ -6,6 +6,8 @@ $(eval $(call ti_c54x_add_test,sth_smem_ops,isa/ops/store,test_sth_smem.c))
 $(eval $(call ti_c54x_add_test,sth_asm_smem_ops,isa/ops/store,test_sth_asm_smem.c))
 # P3 slice 12 RED contract: STH-by-SHFT Xmem effects.
 $(eval $(call ti_c54x_add_test,sth_shft_xmem_ops,isa/ops/store,test_sth_shft_xmem.c))
+# P3-S54 RED contract: STL-by-SHFT Xmem effects.
+$(eval $(call ti_c54x_add_test,stl_shft_xmem_ops,isa/ops/store,test_stl_shft_xmem.c))
 # P3 slice 13 RED contract: STH-by-SHIFT direct effects.
 $(eval $(call ti_c54x_add_test,sth_shift_direct_ops,isa/ops/store,test_sth_shift_direct.c))
 # P3 slice 13 RED contract: STH-by-SHIFT MOD effects.

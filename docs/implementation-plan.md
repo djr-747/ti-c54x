@@ -717,6 +717,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S53: PSHD/POPD indirect Smem pair-leg slice (implemented; local verification green)](plan/p3-s53-pshd-popd-indirect-pair-leg-slice.md)
 
+- [P3-S54: STL SHFT Xmem store slice (implemented; local verification green)](plan/p3-s54-stl-shft-xmem-store-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

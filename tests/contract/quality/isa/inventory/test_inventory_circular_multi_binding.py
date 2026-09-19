@@ -44,8 +44,8 @@ class InventoryCircularMultiBindingTests(unittest.TestCase):
     def test_each_form_has_five_deduplicated_subset_bindings(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),313)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 307)
+        self.assertEqual(len(bindings),314)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 308)
         by_form: dict[str, list[dict]] = {}
         for binding in bindings:
             by_form.setdefault(binding["form_id"], []).append(binding)
@@ -82,10 +82,10 @@ class InventoryCircularMultiBindingTests(unittest.TestCase):
 
     def test_report_counts_forms_once_after_circular_multi_binding(self) -> None:
         report = report_inventory(self.root)
-        self.assertEqual(report["catalog_family_progress"], {"covered": 155, "denominator": 205})
-        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 43, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 75.610, places=3)
-        self.assertAlmostEqual(report["strict_complete_percent"], 20.976, places=3)
+        self.assertEqual(report["catalog_family_progress"], {"covered": 156, "denominator": 205})
+        self.assertEqual(report["strict_complete_lower_bound"], {"covered": 44, "denominator": 205})
+        self.assertAlmostEqual(report["catalog_family_percent"], 76.098, places=3)
+        self.assertAlmostEqual(report["strict_complete_percent"], 21.463, places=3)
 
     def test_duplicate_symbol_or_pair_remains_invalid(self) -> None:
         inventory = self.inventory()

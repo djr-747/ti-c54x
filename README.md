@@ -31,9 +31,9 @@ Smem SHIFT), `ADDM`/`ADDC`/`ADDS`/`SUBC`, `RND`/`SAT`/`ABS`/`NEG`/`NORM`/
 (`SACCD`/`SRCCD`/`STRCD`), `CMPS`, and `PORTR`/`PORTW` are all retired
 through CPU tests.
 
-- 307 runnable catalog rows under 36,361 populated first-word lookup entries.
-  Inventory coverage is 155/205 forms SUBSET-or-better (75.610%) and 43/205
-  strict-complete (20.976%); lookup encodings are not instruction counts.
+- 308 runnable catalog rows under 36,873 populated first-word lookup entries.
+  Inventory coverage is 156/205 forms SUBSET-or-better (76.098%) and 44/205
+  strict-complete (21.463%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
   constraint: one-pass trusted packets, allocation-free opcode leaves, and
@@ -155,12 +155,11 @@ through CPU tests.
   `ABS`/`NEG`/`NORM`, `ADDC`/`ADDS`/`SUBC`, `SFTA`, `LTD`, `DELAY`,
   `ST T`/`ST TRN`/`STL`/`STLM`/`LDM` direct rows, the
   conditional-store seam and leaves, and the `CMPS` direct row.
-- Major remaining work (55/205 forms): dual-40 `DADD`-family arithmetic,
+- Major remaining work (54/205 forms): dual-40 `DADD`-family arithmetic,
   filter ops (`FIRS`/`LMS`/`POLY`/`SQDST`/`ABDST`), `BIT`, far/XPC
   branches and returns (`FB`/`FCALL`/`FRET` family), `INTR`/`TRAP`/`IDLE`/
   `RESET`/`MAR` control, block repeat (`RPTB`/`RPTBD`/`RPTZ`) plus `RPT`
-  Smem, the T2-17 stack family (`FRAME` via S51; `PSHD`/`POPD`/`PSHM`/
-  `POPM` next), one `STL` form, parallel `LD`/`ST` forms (tables 2-23
+  Smem, parallel `LD`/`ST` forms (tables 2-23
   through 2-25), MMR/pmad moves (`MVDD`/`MVDK`/`MVDM`/`MVDP`/`MVKD`/
   `MVMD`/`MVMM`/`MVPD`, `READA`/`WRITA`), and rounded single-memory
   `MACR`/`MASR`. Profiles/devices and evidenced machine timing stay

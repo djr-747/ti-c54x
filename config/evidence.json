@@ -8562,6 +8562,58 @@
         "printed_page_end": "4-128"
       },
       "assertion": "SPRU172C POPM defines POPM MMR with opcode diagram 1000_1010_IAAAAAAA (A the 7-bit memory-mapped-register selector): the content of the data-memory location addressed by SP is moved to the memory-mapped register MMR and SP is incremented by 1. Status Bits None; one word; Class 17A only. The POPM AR5 example moves 0x0060 with SP 0x03F0 to 0x03F1."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STL-SHFT-OPCODE-P4-171",
+      "locator": {
+        "chapter": "4",
+        "section": "STL",
+        "printed_page_start": "4-171",
+        "printed_page_end": "4-171"
+      },
+      "assertion": "STL syntax 3 encodes as 1001_100S_XXXXSHFT (catalog pins 0x9800 under mask 0xFE00): bit 8 (S) selects accumulator A (0) or B (1), bits 7-4 carry the dual Xmem selector (Xmod in bits 7-6, raw Xar in bits 5-4 mapping to AR2-AR5), and bits 3-0 carry the unsigned 4-bit SHFT field (0-15)."
+    },
+    {
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "id": "E-TI-C54X-SPRU172C-S4-STL-SHFT-SEMANTICS-P4-171-4-172",
+      "locator": {
+        "chapter": "4",
+        "section": "STL",
+        "printed_page_start": "4-171",
+        "printed_page_end": "4-172"
+      },
+      "assertion": "STL syntax 3 shifts the S-selected accumulator left by SHFT and stores bits 15-0 of the shifted value to Xmem in one word and one cycle (classes 10A/10B); the stored low 16 bits of a left shift are pure source bits, so SXM never perturbs them. The worked example STL A,7 with A FF 8421 1234 stores 1A00. SHFT=0 assembles as syntax 1 but still decodes as its own opcode. The description carries no not-repeatable note, so the row stays repeatability UNRESOLVED."
+    },
+    {
+      "id": "E-PROJECT-P3-S54-STL-SHFT-ACTIVATION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s54-stl-shft-xmem-store-slice.md",
+        "anchor": "P3-S54: STL SHFT Xmem store slice (implemented; local verification green)"
+      },
+      "assertion": "S54 is implemented and green: one new STL syntax-3 catalog row STL_SHFT_XMEM (0x9800) under the FE00 mask reusing the STH Xmem dual-indirect layout; checked and trusted leaves staging MEMORY dual-indirect X-only WRITE effects carrying bits 15-0 of the SHFT-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-12 lands COMPLETE under ALL."
     }
   ],
   "requirements": [
@@ -20154,6 +20206,35 @@
       "test_ids": [
         "T-COMMON-STACK-PAIR-DIRECT-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S54-STL-SHFT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute the STL syntax-3 row as an SHFT-shifted accumulator-low store: resolve source, Xmod, and raw Xar through the shared dual-X layout, shift the selected accumulator logically left by SHFT, store bits 15-0 of the shifted value to the X-only WRITE effect, gate on selected-accumulator knownness, stage no status, accumulator, or T-register effect, and leave the row repeatability UNRESOLVED on the absent TI repeatability note.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STL-SHFT-OPCODE-P4-171",
+        "E-TI-C54X-SPRU172C-S4-STL-SHFT-SEMANTICS-P4-171-4-172"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S54-STL-SHFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S54-STL-SHFT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire STL syntax-3 stores through the generic MEMORY route with the DATA WRITE carrying bits 15-0 of the shifted selected accumulator at the resolved Xmem address, applying the Xmod AR update, with WAIT resume, fault, and boundary transactionality.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-STL-SHFT-SEMANTICS-P4-171-4-172"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S54-STL-SHFT-CPU"
+      ]
     }
   ],
   "tests": [
@@ -29428,6 +29509,34 @@
         "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT"
       ,
         "REQ-COMMON-STACK-PAIR-INDIRECT-CPU-RETIREMENT"]
+    },
+    {
+      "id": "T-COMMON-P3-S54-STL-SHFT-SEMANTICS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_stl_shft_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.stl_shft_xmem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S54-STL-SHFT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S54-STL-SHFT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/store/test_cpu_stl_shft_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_stl_shft_xmem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S54-STL-SHFT-CPU-RETIREMENT"
+      ]
     }
   ]
 }

@@ -6,6 +6,7 @@ $(eval $(call ti_c54x_add_test,cpu_sth_smem,cpu/isa/store,test_cpu_sth_smem.c))
 $(eval $(call ti_c54x_add_test,cpu_sth_asm_smem,cpu/isa/store,test_cpu_sth_asm_smem.c))
 # P3 slice 12 RED contract: STH-by-SHFT CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_sth_shft_xmem,cpu/isa/store,test_cpu_sth_shft_xmem.c))
+$(eval $(call ti_c54x_add_test,cpu_stl_shft_xmem,cpu/isa/store,test_cpu_stl_shft_xmem.c))
 # P3 slice 13 RED contract: STH-by-SHIFT direct CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_sth_shift_direct,cpu/isa/store,test_cpu_sth_shift_direct.c))
 $(eval $(call ti_c54x_add_test,cpu_st_immediate_smem,cpu/isa/store,test_cpu_st_immediate_smem.c))
