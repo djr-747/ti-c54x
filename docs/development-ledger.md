@@ -14435,3 +14435,30 @@ entries are not rewritten after publication.
   WRITA-inclusive build.
 - Follow-up: overlay staging plus register seeding (harness
   gap); then re-probe again.
+
+## 2026-09-19 — 0xF00 overlay re-probe: halt moves to UNIMPLEMENTED 0x1377 (LDU direct)
+
+- Correction to the previous entry: with block04 staged as
+  the program-space overlay (`re/dsp/block04.bin`, 1737
+  words at DSP `0x0926`, covering `0x926-0xFEE`), the reset
+  probe retires the same STM+B+B, then fetches `0x1377` at
+  `0xF00` and stops UNIMPLEMENTED_OPCODE (`attempted=4
+  retired=3 prog_reads=7`, still no DATA/IO traffic). The
+  PROM vector is unchanged (CALL_PMAD, unknown SP).
+- `0x1377` is LDU Smem,dst direct (TI SPRU172C p. 4-78,
+  diagram `0001001DIAAAAAAA`, D=1/dst-B, I=0 direct,
+  dma `0x77`): the S34 `LDU` row (`0x1290`/`0xFEF8`) covers
+  only the I=1 indirect form, so `0x1300-0x137F` is a
+  catalog gap sitting directly below the LDU MOD4-MOD10
+  fan-out at `0x1380+`. The natural next row is
+  `0x1200`/`0xFE80` (D variable, I=0 fixed, 256 encodings).
+- Note: retiring past `0xF00` will additionally need DP
+  seeding (direct dma with unknown DP rejects), and S56's
+  predicted `MVDM` at `0xF07` sits behind this LDU word.
+- Staging: `dsp_full.bin` now lives in-repo at
+  `probe-images/` (gitignored via `*.bin`, invisible to all
+  quality gates); the overlay recipe (block04 at `0x0926`)
+  is reproduced above. The emu was used only to locate the
+  block files, per the authorized black-box use.
+- Follow-up: LDU-direct slice, then DP seeding, then
+  re-probe again.
