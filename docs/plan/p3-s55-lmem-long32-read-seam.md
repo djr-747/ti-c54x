@@ -1,4 +1,4 @@
-### P3-S55: single-word Lmem LONG32 read seam (planned)
+### P3-S55: single-word Lmem LONG32 read seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable S55 FIT/ownership
 anchor. S55 is a sealed seam with no catalog rows: the T2-05

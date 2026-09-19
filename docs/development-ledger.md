@@ -14011,3 +14011,45 @@ entries are not rewritten after publication.
   doubles.
 - Split commit discipline: impl `55acf82`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S55 lane 2 lands as 31bc99d (DADD row + kind-21 retirement)
+
+- Commit `31bc99d` binds the DADD pilot row (`0x5000/0xFC00`,
+  shared source/destination/indirect/addr7 layout) with the pure
+  `op_dadd` leaf (one kind-21 LONG32 READ; C16=0 40-bit add with
+  OVM/C/OV, C16=1 dual independent 16-bit adds) and the full
+  kind-21 root seam through CPU retirement. Registry:
+  FORM-T2-05-01 SUBSET
+  (`DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD2`), regenerated
+  lookup (+1024, census 37897), coverage 157/205 (76.585%).
+- Root causes fixed during bring-up (all reproduced RED-first
+  against `test_cpu_dadd`): (1) `memory_effect.c` had no kind-21
+  `is_valid` case (new `memory_effect_long32_single` module,
+  keeping the parent under the 500-line gate); (2) page-0 direct
+  liveness misread the union-aliased `direct_dma7` slot (new
+  `memory_candidate_long32_single` shape+liveness module, routed
+  in `matches_live`); the aliased `complete`/`complete_long32`
+  union slot also bit once. (3) prepare never routed kind 21 to
+  the LONG32 child, so the WORD16 commit tail mis-called the
+  completion (segfault, caught under ASan).
+- Decisions: single-word directs are page-0 (S7/STM precedent,
+  DP slot reserved zero; MOD3 reads decline at resolve time);
+  dual-mode guard fill sign-extends result bit 31 (only the TI
+  positive worked example pins this — still the weakest
+  convention in the slice); C16 takes resource bit 15, fully
+  allocating the 16-bit mask, so stale invalid-mask probes in
+  eight collect tests became positive reset-state C16 checks.
+- Validation: full `make test` exit 0 (636/636 unit binaries
+  direct plus 286 quality tests, evidence PASS); generator
+  `--check` clean; `make cmake-build` plus full ctest 643/643.
+  ABI pins moved: root 456/420, input 80/76, rows 309, IDs 310.
+- Knobs: none added, changed, or retired.
+- Follow-up: T2-05 sibling doubles (DADST/DRSUB/DSADT…), then
+  READA/WRITA; first standalone dast_boot probe (same
+  `dsp_full.bin` DSP_COSIM uses, staged overlay in /tmp only)
+  retires the reset vector FF80→0F00 per the profile, then
+  halts on unbound `LD #lk, ARn` (`0x7214` at `0xF07`,
+  black-box oracle shows `0x7212` writing AR2) past a `0x0028`
+  peripheral DATA read. No firmware bytes enter the repo.
+- Split commit discipline: impl `31bc99d`, this ledger-only
+  follow-up.
