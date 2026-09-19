@@ -498,6 +498,23 @@ static const ti_c54x_operand_field_layout
 const ti_c54x_operand_layout_set ti_c54x_mmr5_absolute16_set = {
     ti_c54x_mmr5_absolute16_operands, UINT8_C(2)};
 
+/* MVMM fields: 4-bit MMR source mmrx[7:4], then the 4-bit MMR
+ * destination mmry[3:0]. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_mmr4_mmr4_source_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_mmr4_mmr4_destination_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_mmr4_mmr4_operands[2] = {
+        {&ti_c54x_mmr4_mmr4_source_piece, UINT8_C(1),
+         UINT8_C(4)},
+        {&ti_c54x_mmr4_mmr4_destination_piece, UINT8_C(1),
+         UINT8_C(4)}};
+const ti_c54x_operand_layout_set ti_c54x_mmr4_mmr4_set = {
+    ti_c54x_mmr4_mmr4_operands, UINT8_C(2)};
+
 /* MAC/MPY Smem fields: rounding flag R[9:9], accumulator select
  * S/D[8:8], indirect flag I[7:7], then 7-bit Smem address A[6:0]. */
 static const ti_c54x_operand_field_piece

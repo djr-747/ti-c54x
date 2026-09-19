@@ -621,6 +621,12 @@ TI_C54X_OPCODE_MASKED(MVDM, mvdm, 0x7200, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_MMR5
  * direction-neutral MMR5_ABSOLUTE16 layout is shared with MVDM.
  * First words with bits 7:6 set stay undecoded. */
 TI_C54X_OPCODE_MASKED(MVMD, mvmd, 0x7300, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_NONE)
+/* P3-S59 MVMM MMRx,MMRy (TI SPRU172C MVMM p. 4-116): word 0 pins
+ * 0xE700 with the 4-bit MMR source at bits 7:4 and the 4-bit MMR
+ * destination at bits 3:0. Only codes 0-8 (AR0-AR7, SP) are
+ * legal per operand; the leaf rejects codes 9-15. Table 2-28
+ * lists MVMM as nonrepeatable. */
+TI_C54X_OPCODE_MASKED(MVMM, mvmm, 0xE700, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_MMR4_MMR4, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S52a PSHD Smem (TI SPRU172C 4-131): word 0 pins 0x4B with the I
  * flag at bit 7 and the 7-bit Smem cookie at bits 6:0. Direct
  * (I=0) reads page-0 dma; indirect (I=1, class 16B) reads MOD0--MOD2

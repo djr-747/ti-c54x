@@ -113,6 +113,9 @@ typedef enum ti_c54x_operand_layout_id {
     /* Two-word MMR move with copied 5-bit MMR destination and
      * 16-bit absolute Smem address. */
     TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16,
+    /* One-word MMR-to-MMR move with copied 4-bit MMR source at
+     * bits 7:4 and 4-bit MMR destination at bits 3:0. */
+    TI_C54X_OPERAND_LAYOUT_MMR4_MMR4,
     /* One-word multiply fields: rounding flag, accumulator select,
      * indirect flag, and 7-bit Smem address. */
     TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7,

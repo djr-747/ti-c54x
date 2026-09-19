@@ -91,7 +91,7 @@ test_full_catalog_sweep_maps(void)
 {
     ti_c54x_opcode_id id;
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 312);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 313);
     for (id = (ti_c54x_opcode_id)1; id < TI_C54X_OPCODE_ID_COUNT; ++id) {
         const ti_c54x_opcode_metadata *metadata =
             ti_c54x_opcode_metadata_for_id(id);
@@ -146,6 +146,11 @@ test_documented_nonrepeatable_rows_reject(void)
                         TI_C54X_REPEATABILITY_INELIGIBLE,
                         TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
     check_row_admission(TI_C54X_OPCODE_ID_DST_LONG32_MOD13,
+                        TI_C54X_REPEATABILITY_INELIGIBLE,
+                        TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
+    /* P3-S59: MVMM is Table 2-28 nonrepeatable (TI SPRU172C
+     * p. 2-20), so it rejects rather than blocking. */
+    check_row_admission(TI_C54X_OPCODE_ID_MVMM,
                         TI_C54X_REPEATABILITY_INELIGIBLE,
                         TI_C54X_SEQUENCER_REPEAT_BODY_ADMISSION_REJECT_INELIGIBLE);
     /* DLD is absent from both negative lists and its TI entry states no
