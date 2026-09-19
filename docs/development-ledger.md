@@ -14523,3 +14523,36 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: `0x0028` device-map decision; loader1
   continuation past the MBOX spin needs MCU emulation.
+
+## 2026-09-19 — P3-S67 lands as 76beb20 (SWWSR peripheral-MMR slice)
+
+- Implementation commit `76beb20`: DATA `0x28` routes to a
+  new devices-owned SWWSR cell (TI SPRU131 Tables 8-2/10-2,
+  Figure 10-2, vendored in-repo): bits 14:0 R/W, bit 15
+  reserved with writes masked to zero, reset `0x7FFF`
+  known. The cell rides on `arch_state` beside `mmr_file`
+  and resets with the documented common subset. The MMR
+  router serves `0x28` both directions; `is_routed_address`
+  names it explicitly with the `0x1F` CPU window untouched,
+  so planner arms needed no changes. New `src/devices/`
+  directory (plan-sanctioned peripheral owner) with
+  cmake/mk manifests; new `tests/unit/devices/` mirror.
+  No opcode, catalog, inventory, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (full C suite
+  incl. new `devices_swwsr`/`cpu_swwsr`, 286/286 contract
+  quality, evidence/knob/boundary/manifest/observer checks
+  PASS), coverage steady at 166/205 family with strict
+  45/205. RED observed first (route declined `0x28`,
+  CPU round trip hit the endpoint). Hosted acceptance:
+  faithful loader1 run advances past `0xF05`
+  (`attempted=8 retired=7`) to the next explicit stop at
+  `0xF07` (`STM` to `0x58` CLKMD, `first_data_fault=0x0058`).
+- Decisions: explicit single-address routing instead of
+  window widening (neighbors `0x27`/`0x29` stay declined
+  with pins); bit-15 mask-on-write models the diagram R
+  marking; LDM (not MVMD, whose MMR field is 5-bit) is the
+  CPU read-back leg; wait-state timing function stays out
+  per the machine-cycle rule.
+- Knobs: none added, changed, or retired.
+- Follow-up: `0x58` CLKMD slice (predicted next boot stop);
+  loader1 MBOX spin still needs MCU emulation.

@@ -1,4 +1,4 @@
-### P3-S67: SWWSR peripheral-MMR slice (planned)
+### P3-S67: SWWSR peripheral-MMR slice (implemented; local verification green)
 
 `SWWSR` at data `0x28` is the software wait-state register
 (TI SPRU131 Tables 8-1/8-2 C542 map, Figure 10-2 diagram,
