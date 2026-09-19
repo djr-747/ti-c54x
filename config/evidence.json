@@ -20109,6 +20109,51 @@
       "test_ids": [
         "T-COMMON-STACK-PAIR-DIRECT-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-INDIRECT-EFFECTS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/stack/",
+      "claim": "Execute the single-indirect PSHD and POPD leaves, staging the STACK_PUSH_PAIR or STACK_POP_PAIR MEMORY effect with the cookie split into mode4 and arf and no direct address: PSHD admits MOD0 through MOD2 (MOD3 is write-only), POPD admits MOD0 through MOD3, with checked/trusted/dispatch parity.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-EFFECTS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-INDIRECT-ROOT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/sequencer/instruction/",
+      "claim": "Retire single-indirect stack pairs through the pair root with the Smem DATA leg resolved through the single-leg indirect resolver under CMPT=0/ARP=0: MOD1 and MOD2 use the old AR address with post-access update, MOD3 writes use the pre-updated address, and the DATA-leg AR update publishes beside the SP commit with sequential PC.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-ROOT"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-STACK-PAIR-INDIRECT-CPU-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire single-indirect PSHD and POPD on the CPU with Smem observation handoff through the DATA endpoint at the resolved indirect address, AR post-update publication, SP publication, and sequential PC advance.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
+        "E-TI-C54X-SPRU172C-S4-POPD-P4-127"
+      ],
+      "test_ids": [
+        "T-COMMON-STACK-PAIR-DIRECT-CPU"
+      ]
     }
   ],
   "tests": [
@@ -29351,7 +29396,8 @@
       },
       "requirement_ids": [
         "REQ-COMMON-STACK-PAIR-DIRECT-EFFECTS"
-      ]
+      ,
+        "REQ-COMMON-STACK-PAIR-INDIRECT-EFFECTS"]
     },
     {
       "id": "T-COMMON-STACK-PAIR-ROOT",
@@ -29365,7 +29411,8 @@
       },
       "requirement_ids": [
         "REQ-COMMON-STACK-PAIR-ROOT"
-      ]
+      ,
+        "REQ-COMMON-STACK-PAIR-INDIRECT-ROOT"]
     },
     {
       "id": "T-COMMON-STACK-PAIR-DIRECT-CPU",
@@ -29379,7 +29426,8 @@
       },
       "requirement_ids": [
         "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT"
-      ]
+      ,
+        "REQ-COMMON-STACK-PAIR-INDIRECT-CPU-RETIREMENT"]
     }
   ]
 }

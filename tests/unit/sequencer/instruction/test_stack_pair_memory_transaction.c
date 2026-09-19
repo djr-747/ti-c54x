@@ -173,6 +173,51 @@ pair_state(uint16_t sp_value, uint32_t pc_value)
     return state;
 }
 
+static ti_c54x_op_effect
+pair_indirect_effect(ti_c54x_op_memory_address_kind kind,
+                     ti_c54x_bus_word16_request_access access, uint8_t mode,
+                     uint8_t arf)
+{
+    ti_c54x_op_effect effect = {0};
+
+    effect.kind = TI_C54X_OP_EFFECT_MEMORY;
+    effect.payload.memory.address_spec.kind = kind;
+    effect.payload.memory.address_spec.stack_pair.indirect = UINT8_C(1);
+    effect.payload.memory.address_spec.stack_pair.smem_mode = mode;
+    effect.payload.memory.address_spec.stack_pair.smem_arf = arf;
+    effect.payload.memory.address_spec.stack_pair.smem_dma7 = UINT8_C(0);
+    effect.payload.memory.access = access;
+    effect.payload.memory.value_word = UINT16_C(0);
+    effect.payload.memory.complete = NULL;
+    return effect;
+}
+
+static ti_c54x_arch_state
+pair_indirect_state(uint16_t sp_value, uint8_t ar_index, uint16_t ar_value)
+{
+    ti_c54x_arch_state state = pair_state(sp_value, UINT32_C(0x20));
+
+    /* Indirect DATA legs plan CMPT=0/ARP=0. */
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cmpt(&state, UINT8_C(0)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&state, UINT8_C(0)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_ar(&state, ar_index,
+                                                  ar_value) ==
+                       TI_C54X_ARCH_STATE_OK);
+    return state;
+}
+
+static uint16_t
+read_ar(const ti_c54x_arch_state *state, uint8_t index)
+{
+    uint16_t value = UINT16_C(0);
+
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_ar(state, index, &value) ==
+                       TI_C54X_ARCH_STATE_OK);
+    return value;
+}
+
 static ti_c54x_decoded_instruction
 decoded_nop(void)
 {
@@ -434,6 +479,91 @@ test_popm_mmr_leg_routes_with_tos_endpoint_traffic(void)
 }
 
 static void
+test_pshd_indirect_mod1_retires_with_ar_update(void)
+{
+    ti_c54x_memory_instruction_transaction transaction = {0};
+    ti_c54x_arch_state state =
+        pair_indirect_state(UINT16_C(0x1111), UINT8_C(3), UINT16_C(0x0400));
+    ti_c54x_op_effect effect = pair_indirect_effect(
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16,
+        TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE, UINT8_C(1),
+        UINT8_C(3));
+    ti_c54x_accumulator_state accumulators = {0};
+    ti_c54x_t_register_state t_register = {0};
+    pair_script script = {0};
+    ti_c54x_memory_instruction_result result = {0};
+
+    reset_side_state(&accumulators, &t_register);
+    script.wait_begins = -1;
+    script.fault_slot = -1;
+    script.read_values[0] = UINT16_C(0xCAFE);
+    TI_C54X_TEST_CHECK(prepare_pair(&transaction, &effect, &state) ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_OK);
+    drive_to_retired(&transaction, &script, &state, &accumulators,
+                     &t_register, &result);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    /* MOD1 reads the old AR address first, then writes TOS with
+     * the observation and post-updates AR3 - 1. */
+    TI_C54X_TEST_CHECK(script.slots[0].seen && script.slots[1].seen);
+    TI_C54X_TEST_CHECK(script.slots[0].request.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(script.slots[0].request.address_word ==
+                       UINT16_C(0x0400));
+    TI_C54X_TEST_CHECK(script.slots[1].request.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
+    TI_C54X_TEST_CHECK(script.slots[1].request.address_word ==
+                       UINT16_C(0x1110));
+    TI_C54X_TEST_CHECK(script.slots[1].request.write_value_word ==
+                       UINT16_C(0xCAFE));
+    TI_C54X_TEST_CHECK(read_ar(&state, UINT8_C(3)) == UINT16_C(0x03FF));
+    TI_C54X_TEST_CHECK(read_sp(&state) == UINT16_C(0x1110));
+    TI_C54X_TEST_CHECK(state.pc_word == UINT32_C(0x21));
+}
+
+static void
+test_popd_indirect_mod3_retires_with_pre_update(void)
+{
+    ti_c54x_memory_instruction_transaction transaction = {0};
+    ti_c54x_arch_state state =
+        pair_indirect_state(UINT16_C(0x03F0), UINT8_C(2), UINT16_C(0x0500));
+    ti_c54x_op_effect effect = pair_indirect_effect(
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16,
+        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ, UINT8_C(3),
+        UINT8_C(2));
+    ti_c54x_accumulator_state accumulators = {0};
+    ti_c54x_t_register_state t_register = {0};
+    pair_script script = {0};
+    ti_c54x_memory_instruction_result result = {0};
+
+    reset_side_state(&accumulators, &t_register);
+    script.wait_begins = -1;
+    script.fault_slot = -1;
+    script.read_values[0] = UINT16_C(0x0060);
+    TI_C54X_TEST_CHECK(prepare_pair(&transaction, &effect, &state) ==
+                       TI_C54X_MEMORY_INSTRUCTION_STATUS_OK);
+    drive_to_retired(&transaction, &script, &state, &accumulators,
+                     &t_register, &result);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    /* MOD3 writes use the pre-updated address: TOS READ first,
+     * then the Smem WRITE lands at old AR2 + 1 with AR2
+     * committed beside SP. */
+    TI_C54X_TEST_CHECK(script.slots[0].seen && script.slots[1].seen);
+    TI_C54X_TEST_CHECK(script.slots[0].request.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ);
+    TI_C54X_TEST_CHECK(script.slots[0].request.address_word ==
+                       UINT16_C(0x03F0));
+    TI_C54X_TEST_CHECK(script.slots[1].request.access ==
+                       TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
+    TI_C54X_TEST_CHECK(script.slots[1].request.address_word ==
+                       UINT16_C(0x0501));
+    TI_C54X_TEST_CHECK(script.slots[1].request.write_value_word ==
+                       UINT16_C(0x0060));
+    TI_C54X_TEST_CHECK(read_ar(&state, UINT8_C(2)) == UINT16_C(0x0501));
+    TI_C54X_TEST_CHECK(read_sp(&state) == UINT16_C(0x03F1));
+    TI_C54X_TEST_CHECK(state.pc_word == UINT32_C(0x21));
+}
+
+static void
 test_malformed_prepare_rejects(void)
 {
     ti_c54x_memory_instruction_transaction transaction = {0};
@@ -560,6 +690,8 @@ main(void)
 {
     test_pshd_direct_retires();
     test_popd_direct_retires();
+    test_pshd_indirect_mod1_retires_with_ar_update();
+    test_popd_indirect_mod3_retires_with_pre_update();
     test_pshm_mmr_leg_routes_with_tos_endpoint_traffic();
     test_popm_mmr_leg_routes_with_tos_endpoint_traffic();
     test_malformed_prepare_rejects();

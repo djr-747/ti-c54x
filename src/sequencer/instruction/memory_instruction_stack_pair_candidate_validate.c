@@ -3,8 +3,9 @@
  *
  * Owns: structural and live-state validation of copied stack-pair
  * candidates; see
- * memory_instruction_stack_pair_candidate_validate.h. Direct-only:
- * indirect arms reject at synthesis.
+ * memory_instruction_stack_pair_candidate_validate.h. Direct
+ * page-0 and MOD-gated single-indirect DATA legs share the
+ * snapshot carrier.
  * Does not own: transaction lifecycle, endpoint traffic,
  * architectural mutation, effect completion, opcode dispatch,
  * timing, observers, diagnostics, allocation, or global state.
@@ -136,29 +137,66 @@ ti_c54x_memory_instruction_stack_pair_data_matches_live(
     const ti_c54x_memory_address_resolution *resolution)
 {
     const ti_c54x_address_effect *address_effect;
+    const ti_c54x_op_memory_address_spec *arm;
+    uint8_t cmpt = UINT8_C(0);
+    uint8_t arp = UINT8_C(0);
+    uint16_t selected_ar = UINT16_C(0);
 
     if (candidate == NULL || state == NULL || resolution == NULL ||
         candidate->effect.kind != TI_C54X_OP_EFFECT_MEMORY) {
         return false;
     }
-    /* Direct page-0 DATA leg: dma below 0x20 routes to the MMR
-     * file, the rest reaches DP0 endpoint RAM (DIRECT_WORD16
-     * contract). Page-0 direct observes no state, so liveness
-     * binds the resolution's dma echo against the frozen pair
-     * arm (not the generic direct-dma7 union offset, which a
-     * pair arm does not populate) plus the sequential PC. */
     address_effect = &resolution->address_result.effect;
-    if (address_effect->source.kind !=
+    arm = &candidate->effect.payload.memory.address_spec;
+    if (address_effect->source.kind ==
         TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
+        /* Direct page-0 DATA leg: dma below 0x20 routes to the
+         * MMR file, the rest reaches DP0 endpoint RAM
+         * (DIRECT_WORD16 contract). Page-0 direct observes no
+         * state, so liveness binds the resolution's dma echo
+         * against the frozen pair arm (not the generic
+         * direct-dma7 union offset, which a pair arm does not
+         * populate) plus the sequential PC. */
+        if (address_effect->state_policy !=
+                TI_C54X_ADDRESS_STATE_POLICY_NONE ||
+            address_effect->source.value.direct_page0.dma7 !=
+                arm->stack_pair.smem_dma7) {
+            return false;
+        }
+        return ti_c54x_memory_candidate_pc_matches_live(
+            &candidate->pc_effect, state);
+    }
+    if (address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_AR ||
+        arm->stack_pair.indirect != UINT8_C(1)) {
         return false;
     }
-    if (address_effect->state_policy !=
-            TI_C54X_ADDRESS_STATE_POLICY_NONE ||
-        address_effect->source.value.direct_page0.dma7 !=
-            candidate->effect.payload.memory.address_spec.stack_pair
-                .smem_dma7) {
+    /* Single-indirect DATA leg (classes 16B/17B): mirror the
+     * generic CMPT0/ARP0 indirect tail. The mode is structural
+     * (pinned once by shape against the frozen arm); liveness
+     * re-pins the CMPT/ARP plan, the sequential PC, the AR
+     * selector echo, and the frozen AR value. */
+    if (ti_c54x_arch_state_read_cmpt(state, &cmpt) !=
+            TI_C54X_ARCH_STATE_OK ||
+        cmpt != UINT8_C(0) ||
+        ti_c54x_arch_state_read_arp(state, &arp) !=
+            TI_C54X_ARCH_STATE_OK ||
+        arp != UINT8_C(0) ||
+        address_effect->state_policy !=
+            TI_C54X_ADDRESS_STATE_POLICY_CMPT0_ARP0) {
         return false;
     }
-    return ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect,
-                                                    state);
+    if (!ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect,
+                                                  state)) {
+        return false;
+    }
+    if (address_effect->source.value.ar.index !=
+        arm->stack_pair.smem_arf) {
+        return false;
+    }
+    if (ti_c54x_arch_state_read_ar(
+            state, address_effect->source.value.ar.index,
+            &selected_ar) != TI_C54X_ARCH_STATE_OK) {
+        return false;
+    }
+    return selected_ar == address_effect->source.value.ar.value_before;
 }

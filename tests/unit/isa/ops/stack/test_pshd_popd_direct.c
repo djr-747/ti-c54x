@@ -143,6 +143,35 @@ assert_pair_effect(const pair_leaf_case *leaf, uint8_t cookie,
                            .indirect == UINT8_C(0));
     TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
                            .smem_dma7 == cookie);
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .smem_mode == UINT8_C(0));
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .smem_arf == UINT8_C(0));
+    TI_C54X_TEST_CHECK(effect->payload.memory.access == leaf->access);
+    TI_C54X_TEST_CHECK(effect->payload.memory.value_word == UINT16_C(0));
+    TI_C54X_TEST_CHECK(effect->payload.memory.rmw_operation ==
+                       (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE);
+    TI_C54X_TEST_CHECK(effect->payload.memory.complete == NULL);
+}
+
+static void
+assert_pair_indirect_effect(const pair_leaf_case *leaf, uint8_t mode4,
+                            uint8_t arf,
+                            const ti_c54x_op_effect *effect)
+{
+    TI_C54X_TEST_CHECK(effect->kind == TI_C54X_OP_EFFECT_MEMORY);
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.kind ==
+                       leaf->arm_kind);
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .indirect == UINT8_C(1));
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .smem_mode == mode4);
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .smem_arf == arf);
+    /* Indirect legs carry no direct address (DATA_PROGRAM pair
+     * precedent). */
+    TI_C54X_TEST_CHECK(effect->payload.memory.address_spec.stack_pair
+                           .smem_dma7 == UINT8_C(0));
     TI_C54X_TEST_CHECK(effect->payload.memory.access == leaf->access);
     TI_C54X_TEST_CHECK(effect->payload.memory.value_word == UINT16_C(0));
     TI_C54X_TEST_CHECK(effect->payload.memory.rmw_operation ==
@@ -202,6 +231,51 @@ check_case(const pair_leaf_case *leaf, uint8_t cookie)
 }
 
 static void
+check_indirect_case(const pair_leaf_case *leaf, uint8_t cookie,
+                    uint8_t mode4, uint8_t arf)
+{
+    const uint8_t suffix = (uint8_t)(UINT8_C(0x80) | cookie);
+    const ti_c54x_decoded_instruction instruction =
+        decode_for(leaf, suffix);
+    const ti_c54x_op_input_snapshot clean =
+        input_for(UINT16_C(0x1111), true, UINT8_C(0));
+    const ti_c54x_trusted_operand_values operands =
+        trusted_operands(UINT8_C(1), cookie);
+    const ti_c54x_trusted_opcode_binding *binding =
+        ti_c54x_trusted_opcode_binding_for_id(leaf->id);
+    ti_c54x_trusted_execution_packet packet;
+    ti_c54x_op_effect checked = {0};
+    ti_c54x_op_effect trusted = {0};
+    ti_c54x_op_effect via_dispatch = {0};
+    ti_c54x_op_effect via_trusted = {0};
+
+    TI_C54X_TEST_CHECK(ti_c54x_trusted_execution_packet_prepare(
+                           binding, &instruction.bundle,
+                           &packet) ==
+                       TI_C54X_TRUSTED_EXECUTION_PACKET_OK);
+    TI_C54X_TEST_CHECK(leaf->checked(&instruction, &clean,
+                                     &checked) == TI_C54X_OP_STATUS_OK);
+    assert_pair_indirect_effect(leaf, mode4, arf, &checked);
+    TI_C54X_TEST_CHECK(leaf->trusted(&instruction, &operands, &clean,
+                                     &trusted) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(memcmp(&trusted, &checked,
+                              sizeof(checked)) == 0);
+    TI_C54X_TEST_CHECK(binding != NULL);
+    TI_C54X_TEST_CHECK(binding->handler != NULL);
+    TI_C54X_TEST_CHECK(binding->handler == leaf->trusted);
+    TI_C54X_TEST_CHECK(ti_c54x_dispatch_decoded_with_input_snapshot(
+                           &instruction, &clean,
+                           &via_dispatch) == TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(memcmp(&via_dispatch, &checked,
+                              sizeof(checked)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_dispatch_trusted(&packet, &clean,
+                                                &via_trusted) ==
+                       TI_C54X_OP_STATUS_OK);
+    TI_C54X_TEST_CHECK(memcmp(&via_trusted, &checked,
+                              sizeof(checked)) == 0);
+}
+
+static void
 test_cases(void)
 {
     /* Smem forms admit the full page-0 cookie range. */
@@ -221,6 +295,18 @@ test_cases(void)
     check_case(&LEAVES[3], UINT8_C(0x15));
     check_case(&LEAVES[3], UINT8_C(0x1A));
     check_case(&LEAVES[3], UINT8_C(0x1F));
+    /* Indirect Smem (classes 16B/17B): cookie splits into
+     * mode4 = cookie >> 3 and arf = cookie & 7. The DATA-leg
+     * direction gates the mode: PSHD reads Smem (MOD0--MOD2,
+     * MOD3 is write-only), POPD writes Smem (MOD0--MOD3). */
+    check_indirect_case(&LEAVES[0], UINT8_C(0x0D), UINT8_C(1),
+                        UINT8_C(5));
+    check_indirect_case(&LEAVES[0], UINT8_C(0x10), UINT8_C(2),
+                        UINT8_C(0));
+    check_indirect_case(&LEAVES[1], UINT8_C(0x1B), UINT8_C(3),
+                        UINT8_C(3));
+    check_indirect_case(&LEAVES[1], UINT8_C(0x00), UINT8_C(0),
+                        UINT8_C(0));
 }
 
 static void
@@ -285,13 +371,19 @@ test_rejection(void)
             effect = before;
         }
 
-        /* The I-set half rejects in the leaf (indirect defers for
-         * Smem forms; no indirect MMR form exists). */
+        /* Smem forms admit the I-set half up to the DATA-leg
+         * direction limit (PSHD reads: MOD0--MOD2; POPD writes:
+         * MOD0--MOD3). MMR forms admit no indirect form at all. */
         {
+            const bool is_smem = (li < 2U);
+            const bool is_push = (li == 0U);
+            const uint8_t bad_cookie =
+                (uint8_t)(is_push ? UINT8_C(0x18) : UINT8_C(0x20));
             const ti_c54x_decoded_instruction indirect =
-                decode_for(leaf, UINT8_C(0x90));
+                decode_for(leaf, (uint8_t)(UINT8_C(0x80) | bad_cookie));
             const ti_c54x_trusted_operand_values indirect_operands =
-                trusted_operands(UINT8_C(1), UINT8_C(0x10));
+                trusted_operands(UINT8_C(1), is_smem ? bad_cookie
+                                                     : UINT8_C(0x10));
 
             TI_C54X_TEST_CHECK(leaf->checked(&indirect, &valid,
                                              &effect) ==

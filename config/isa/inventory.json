@@ -4625,7 +4625,7 @@
       "catalog_symbol": "POPD_DIRECT",
       "form_id": "FORM-T2-17-02",
       "coverage": "SUBSET",
-      "addressing_subset": "DIRECT_PAGE0"
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     },
     {
       "catalog_symbol": "POPM_DIRECT",
@@ -4637,7 +4637,7 @@
       "catalog_symbol": "PSHD_DIRECT",
       "form_id": "FORM-T2-17-04",
       "coverage": "SUBSET",
-      "addressing_subset": "DIRECT_PAGE0"
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     },
     {
       "catalog_symbol": "PSHM_DIRECT",

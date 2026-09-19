@@ -176,8 +176,6 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "STLM_SMEM_DIRECT",
                                                        "LDM_SMEM_DIRECT",
                                                        "CMPS_SMEM_DIRECT",
-                                                       "PSHD_DIRECT",
-                                                       "POPD_DIRECT",
                                                        "PSHM_DIRECT",
                                                        "POPM_DIRECT")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
@@ -199,6 +197,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                        "SUBC_SMEM",
                                                        "LTD_SMEM",
                                                        "DELAY_SMEM",
+                                                       "PSHD_DIRECT",
+                                                       "POPD_DIRECT",
                                                        "ADD_SMEM_SHIFT",
                                                        "SUB_SMEM_SHIFT",
                                                        "MPY_SMEM_LK",

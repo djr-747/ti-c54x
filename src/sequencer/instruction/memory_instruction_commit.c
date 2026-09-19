@@ -63,6 +63,25 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_SP;
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
+        /* The stack leg above publishes SP; the Smem DATA leg
+         * publishes its own update beside it (dual-pair
+         * precedent: both stores are infallible and land
+         * together). Direct and MMR DATA legs carry no update;
+         * indirect legs publish the AR update. */
+        const ti_c54x_sequencer_address_commit *const data_commit =
+            &transaction->candidate.stack_pair_address_snapshot
+                 .data_resolution.address_commit;
+
+        if (data_commit->target == TI_C54X_ADDRESS_UPDATE_AR) {
+            state->ar[data_commit->ar_index] = data_commit->value_after;
+            state->ar_known_mask |=
+                (uint8_t)(UINT8_C(1) << data_commit->ar_index);
+        }
+    }
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||

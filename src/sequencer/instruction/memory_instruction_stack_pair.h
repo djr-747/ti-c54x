@@ -44,8 +44,9 @@ bool ti_c54x_memory_instruction_stack_pair_is_candidate(
     const ti_c54x_memory_instruction_transaction *transaction);
 
 /* Re-derive a leg spec from the frozen arm and input.
- * Deterministic field moves only, never a replan. Direct-only:
- * indirect arms reject. */
+ * Deterministic field moves only, never a replan: direct arms
+ * yield DIRECT_WORD16, indirect arms yield SINGLE_INDIRECT with
+ * the DATA-leg direction mode gate. */
 bool ti_c54x_memory_instruction_stack_pair_synthesize_data_spec(
     const ti_c54x_op_memory_address_spec *arm,
     ti_c54x_op_memory_address_spec *data_spec);

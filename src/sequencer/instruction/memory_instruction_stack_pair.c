@@ -61,16 +61,43 @@ ti_c54x_memory_instruction_stack_pair_synthesize_data_spec(
     if (arm == NULL || data_spec == NULL) {
         return false;
     }
-    /* Direct-only slice: indirect arms reject here; the leaf
-     * already rejects them, so this is defense in depth. */
-    if (arm->stack_pair.indirect != UINT8_C(0) ||
-        arm->stack_pair.smem_mode != UINT8_C(0) ||
-        arm->stack_pair.smem_arf != UINT8_C(0) ||
-        arm->stack_pair.smem_dma7 > UINT8_C(0x7F)) {
+    if (arm->stack_pair.indirect == UINT8_C(0)) {
+        if (arm->stack_pair.smem_mode != UINT8_C(0) ||
+            arm->stack_pair.smem_arf != UINT8_C(0) ||
+            arm->stack_pair.smem_dma7 > UINT8_C(0x7F)) {
+            return false;
+        }
+        staged.kind = TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16;
+        staged.direct_dma7 = arm->stack_pair.smem_dma7;
+        *data_spec = staged;
+        return true;
+    }
+    /* Single-indirect Smem leg (classes 16B/17B): the DATA-leg
+     * direction gates the mode exactly like the effect
+     * validation (MOD3 is write-only, so PSHD reads admit
+     * MOD0--MOD2 while POPD writes admit MOD0--MOD3). The leaf
+     * already gates this; the check here is defense in depth. */
+    if (arm->stack_pair.indirect != UINT8_C(1) ||
+        arm->stack_pair.smem_dma7 != UINT8_C(0) ||
+        arm->stack_pair.smem_arf > UINT8_C(7)) {
         return false;
     }
-    staged.kind = TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16;
-    staged.direct_dma7 = arm->stack_pair.smem_dma7;
+    if (arm->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16) {
+        if (arm->stack_pair.smem_mode > UINT8_C(2)) {
+            return false;
+        }
+    } else if (arm->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16) {
+        if (arm->stack_pair.smem_mode > UINT8_C(3)) {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    staged.kind = TI_C54X_OP_MEMORY_ADDRESS_SINGLE_INDIRECT_WORD16;
+    staged.mode =
+        (ti_c54x_indirect_single_mode)arm->stack_pair.smem_mode;
+    staged.arf = arm->stack_pair.smem_arf;
     *data_spec = staged;
     return true;
 }

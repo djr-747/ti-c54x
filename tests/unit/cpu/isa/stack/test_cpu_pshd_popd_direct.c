@@ -238,6 +238,92 @@ check_popm_routes_mmr(void)
 }
 
 static void
+seed_indirect_data_leg(ti_c54x_cpu *cpu, uint8_t ar_index, uint16_t ar_value)
+{
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_cmpt(&cpu->arch_state,
+                                                    UINT8_C(0)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_arp(&cpu->arch_state,
+                                                   UINT8_C(0)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_ar(&cpu->arch_state,
+                                                  ar_index,
+                                                  ar_value) ==
+                       TI_C54X_ARCH_STATE_OK);
+}
+
+static uint16_t
+read_ar_value(const ti_c54x_cpu *cpu, uint8_t index)
+{
+    uint16_t value = UINT16_C(0xBEEF);
+
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_ar(&cpu->arch_state, index,
+                                                 &value) ==
+                       TI_C54X_ARCH_STATE_OK);
+    return value;
+}
+
+static void
+check_pshd_indirect_retires(void)
+{
+    /* PSHD *AR3 (MOD1): Smem READ at old AR3, TOS WRITE, AR3 - 1. */
+    pair_fixture fixture = {.words = {UINT16_C(0x4B8B)},
+                            .word_count = 1U,
+                            .start = 0U,
+                            .program_calls = 0U,
+                            .endpoint_calls = 0U};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_cpu *cpu = init_cpu(&fixture, storage, UINT32_C(0x0100));
+    ti_c54x_run_result result;
+
+    fixture.data[UINT16_C(0x0400)] = UINT16_C(0xCAFE);
+    seed_indirect_data_leg(cpu, UINT8_C(3), UINT16_C(0x0400));
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_sp(&cpu->arch_state,
+                                                  UINT16_C(0x1111)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(fixture.endpoint_calls == 2U);
+    TI_C54X_TEST_CHECK(fixture.data[UINT16_C(0x1110)] ==
+                       UINT16_C(0xCAFE));
+    TI_C54X_TEST_CHECK(read_ar_value(cpu, UINT8_C(3)) == UINT16_C(0x03FF));
+    TI_C54X_TEST_CHECK(read_sp_value(cpu) == UINT16_C(0x1110));
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0x0101));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
+static void
+check_popd_indirect_retires(void)
+{
+    /* POPD *AR2 (MOD2): TOS READ, Smem WRITE at old AR2, AR2 + 1. */
+    pair_fixture fixture = {.words = {UINT16_C(0x8B92)},
+                            .word_count = 1U,
+                            .start = 0U,
+                            .program_calls = 0U,
+                            .endpoint_calls = 0U};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_cpu *cpu = init_cpu(&fixture, storage, UINT32_C(0x0100));
+    ti_c54x_run_result result;
+
+    fixture.data[UINT16_C(0x1110)] = UINT16_C(0x1234);
+    seed_indirect_data_leg(cpu, UINT8_C(2), UINT16_C(0x0500));
+    TI_C54X_TEST_CHECK(ti_c54x_arch_state_write_sp(&cpu->arch_state,
+                                                  UINT16_C(0x1110)) ==
+                       TI_C54X_ARCH_STATE_OK);
+    result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(1));
+    TI_C54X_TEST_CHECK(fixture.endpoint_calls == 2U);
+    TI_C54X_TEST_CHECK(fixture.data[UINT16_C(0x0500)] ==
+                       UINT16_C(0x1234));
+    TI_C54X_TEST_CHECK(read_ar_value(cpu, UINT8_C(2)) == UINT16_C(0x0501));
+    TI_C54X_TEST_CHECK(read_sp_value(cpu) == UINT16_C(0x1111));
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0x0101));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
+static void
 check_unknown_sp_rejects(void)
 {
     /* Fresh reset leaves SP unknown: nothing retires, PC frozen. */
@@ -268,6 +354,8 @@ main(void)
 {
     check_pshd_retires();
     check_popd_retires();
+    check_pshd_indirect_retires();
+    check_popd_indirect_retires();
     check_pshm_routes_mmr();
     check_popm_routes_mmr();
     check_unknown_sp_rejects();

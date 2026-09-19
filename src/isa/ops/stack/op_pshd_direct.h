@@ -4,13 +4,14 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for direct-only
- * `PSHD Smem` (page-0 dma). Both leaves validate the copied
- * bundle against the shared indirect-addr7 layout with the
- * indirect flag pinned to zero, require the copied
- * stack-pointer input, and stage one MEMORY effect with the
- * STACK_PUSH_PAIR arm (Smem DATA leg read first, TOS write
- * second). Neither path inspects live state.
+ * Owns: checked and trusted pure semantic leaves for `PSHD Smem`
+ * (direct page-0 dma plus MOD0--MOD2 single-indirect Smem).
+ * Both leaves validate the copied bundle against the shared
+ * indirect-addr7 layout, require the copied stack-pointer
+ * input, and stage one MEMORY effect with the STACK_PUSH_PAIR
+ * arm (Smem DATA leg read first, TOS write second). MOD3 stays
+ * rejected (write-only DATA-leg rule). Neither path inspects
+ * live state.
  * Borrowed instruction, operand, input, and effect objects are
  * used for one call only; no pointer is retained, and failed
  * calls leave the caller effect unchanged.

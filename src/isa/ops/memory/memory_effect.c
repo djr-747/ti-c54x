@@ -425,12 +425,13 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
          * value is zero in both directions (the second-leg value
          * is a bus observation, and the reducer replaces the WRITE
          * template before issue). No RMW and no leaf completion:
-         * the reducer owns the chaining internally. This slice
-         * admits direct (indirect == 0) only. */
-        if (effect->address_spec.stack_pair.indirect != UINT8_C(0) ||
-            effect->address_spec.stack_pair.smem_mode != UINT8_C(0) ||
-            effect->address_spec.stack_pair.smem_arf != UINT8_C(0) ||
-            effect->address_spec.stack_pair.smem_dma7 > UINT8_C(0x7F) ||
+         * the reducer owns the chaining internally. Direct legs
+         * carry the page-0 dma; indirect legs carry the MOD/ARF
+         * selector with no direct address (DATA_PROGRAM pair
+         * precedent). The DATA-leg direction gates the mode: the
+         * PSHD DATA leg reads (MOD0--MOD2, MOD3 is write-only),
+         * the POPD DATA leg writes (MOD0--MOD3). */
+        if (effect->address_spec.stack_pair.indirect > UINT8_C(1) ||
             effect->address_spec.stack_pair.reserved_half !=
                 UINT16_C(0) ||
             effect->address_spec.stack_pair.reserved_word0 !=
@@ -440,6 +441,30 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
             effect->address_spec.stack_pair.reserved_word2 !=
                 UINT32_C(0)) {
             return false;
+        }
+        if (effect->address_spec.stack_pair.indirect == UINT8_C(0)) {
+            if (effect->address_spec.stack_pair.smem_mode !=
+                    UINT8_C(0) ||
+                effect->address_spec.stack_pair.smem_arf !=
+                    UINT8_C(0) ||
+                effect->address_spec.stack_pair.smem_dma7 >
+                    UINT8_C(0x7F)) {
+                return false;
+            }
+        } else {
+            const uint8_t mode_limit =
+                (effect->address_spec.kind ==
+                         TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16)
+                    ? UINT8_C(2)
+                    : UINT8_C(3);
+            if (effect->address_spec.stack_pair.smem_dma7 !=
+                    UINT8_C(0) ||
+                effect->address_spec.stack_pair.smem_arf >
+                    UINT8_C(7) ||
+                effect->address_spec.stack_pair.smem_mode >
+                    mode_limit) {
+                return false;
+            }
         }
         if (effect->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_PAIR_WORD16) {

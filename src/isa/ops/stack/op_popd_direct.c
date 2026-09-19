@@ -1,8 +1,9 @@
 /*
  * Module contract
  *
- * Owns: checked and trusted pure semantic leaves for direct-only
- * POPD. Does not own: opcode inventory, operand-layout
+ * Owns: checked and trusted pure semantic leaves for `POPD Smem`
+ * (direct page-0 dma plus MOD0--MOD3 single-indirect Smem).
+ * Does not own: opcode inventory, operand-layout
  * definitions, SP state, buses, CPU or architectural state,
  * sequencing, timing, observers, diagnostics, allocation,
  * logging, environment, or callbacks.
@@ -26,11 +27,6 @@ static ti_c54x_op_status popd_values(
     if (input == NULL || effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
     }
-    /* Direct-only slice: the indirect form defers to the
-     * follow-on indirect slice. */
-    if (indirect != UINT8_C(0)) {
-        return TI_C54X_OP_STATUS_INVALID_OPERAND;
-    }
     if (addr > UINT8_C(0x7F)) {
         return TI_C54X_OP_STATUS_INVALID_OPERAND;
     }
@@ -43,8 +39,26 @@ static ti_c54x_op_status popd_values(
     staged.kind = TI_C54X_OP_EFFECT_MEMORY;
     staged.payload.memory.address_spec.kind =
         TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16;
-    staged.payload.memory.address_spec.stack_pair.indirect = UINT8_C(0);
-    staged.payload.memory.address_spec.stack_pair.smem_dma7 = addr;
+    if (indirect == UINT8_C(0)) {
+        staged.payload.memory.address_spec.stack_pair.indirect = UINT8_C(0);
+        staged.payload.memory.address_spec.stack_pair.smem_dma7 = addr;
+        staged.payload.memory.address_spec.stack_pair.smem_mode = UINT8_C(0);
+        staged.payload.memory.address_spec.stack_pair.smem_arf = UINT8_C(0);
+    } else {
+        /* Single-indirect Smem (class 17B): the cookie splits
+         * into mode4 = addr >> 3 with arf = addr & 7. The DATA
+         * leg writes, so MOD0--MOD3 all retire. */
+        const uint8_t mode4 = (uint8_t)(addr >> 3);
+        const uint8_t arf = (uint8_t)(addr & UINT8_C(7));
+
+        if (mode4 > UINT8_C(3)) {
+            return TI_C54X_OP_STATUS_INVALID_OPERAND;
+        }
+        staged.payload.memory.address_spec.stack_pair.indirect = UINT8_C(1);
+        staged.payload.memory.address_spec.stack_pair.smem_mode = mode4;
+        staged.payload.memory.address_spec.stack_pair.smem_arf = arf;
+        staged.payload.memory.address_spec.stack_pair.smem_dma7 = UINT8_C(0);
+    }
     staged.payload.memory.access =
         TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
     staged.payload.memory.value_word = UINT16_C(0);
