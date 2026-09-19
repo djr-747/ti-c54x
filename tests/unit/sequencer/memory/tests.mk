@@ -18,3 +18,5 @@ $(eval $(call ti_c54x_add_test,stack_pop_resolution,sequencer/memory,test_stack_
 $(eval $(call ti_c54x_add_test,mmr_resolver,sequencer/memory,test_mmr_address_resolution.c))
 # P3-S6 RED contract: PORT IO-leg planning.
 $(eval $(call ti_c54x_add_test,port_resolver,sequencer/memory,test_port_address_resolution.c))
+# P3-S55 RED contract: single-word Lmem LONG32 planning.
+$(eval $(call ti_c54x_add_test,long32_single_resolver,sequencer/memory,test_long32_single_access_plan.c))

@@ -30,3 +30,6 @@ ti_c54x_add_unit_test(mmr_resolver
 # P3-S6 RED contract: PORT IO-leg planning.
 ti_c54x_add_unit_test(port_resolver
                       test_port_address_resolution.c)
+# P3-S55 RED contract: single-word Lmem LONG32 planning.
+ti_c54x_add_unit_test(long32_single_resolver
+                      test_long32_single_access_plan.c)

@@ -142,7 +142,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * carry no AR, CMPT, CPL, or DP dependence; indirect legs
      * read AR with CMPT=0/ARP=0. No post-update; Smem and SP
      * unknownness are gated at the leaf and root. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16 = 20
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_PAIR_WORD16 = 20,
+    /* Single-word Lmem LONG32 (double-precision family): the 32-bit
+     * operand is addressed by one I + 7-bit cookie word. The direct
+     * leg reads MSW/LSW at the DP-relative `(dp_page << 7) | dma7`
+     * address; the indirect leg reads at the standard-indirect
+     * MOD0--MOD3 AR address with the landed two-word AR deltas
+     * (MOD3 stays write-only). No post-update beyond the indirect
+     * AR delta; DP/AR unknownness is gated at the leaf and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE = 21
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -278,6 +286,31 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } stack_pair;
+        struct {
+            /* Single-word Lmem LONG32 leg selector. Zero selects
+             * the direct-DP leg (`dma7` with `dp_page`); one
+             * selects the standard-indirect leg (`mode` with
+             * `arf`). Same footprint as the pair arms: the
+             * address ABI is unchanged. */
+            uint8_t indirect;
+            /* Indirect-leg mode MOD0--MOD3. Must remain zero for
+             * the direct leg. */
+            uint8_t mode;
+            /* Indirect-leg AR selector (AR0--AR7). Must remain
+             * zero for the direct leg. */
+            uint8_t arf;
+            /* Direct-leg 7-bit DATA offset. Must remain zero for
+             * the indirect leg. */
+            uint8_t dma7;
+            /* Direct-leg frozen 9-bit DP page (0..511). Must
+             * remain zero for the indirect leg. */
+            uint16_t dp_page;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation scalar comparisons. */
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } long32_single;
     };
 } ti_c54x_op_memory_address_spec;
 
