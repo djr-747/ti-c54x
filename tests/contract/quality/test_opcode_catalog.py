@@ -24,6 +24,9 @@ LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_LK = (
 LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD = (
     "TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD"
 )
+LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16 = (
+    "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16"
+)
 LAYOUT_STATUS_BIT = "TI_C54X_OPERAND_LAYOUT_STATUS_BIT"
 LAYOUT_CONDITION_ARF = "TI_C54X_OPERAND_LAYOUT_CONDITION_ARF"
 LAYOUT_ARF = "TI_C54X_OPERAND_LAYOUT_ARF"
@@ -100,6 +103,9 @@ RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM = (
 )
 RESOURCES_ACCUMULATORS_STATUS_C_TC = (
     "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC"
+)
+RESOURCES_ACCUMULATORS_STATUS_SXM_SST = (
+    "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST"
 )
 
 
@@ -183,7 +189,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 328)
+        self.assertEqual(len(catalog_rows), 329)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -283,6 +289,21 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD)
         self.assertEqual(mvpd_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(mvpd_abs.input_resources, RESOURCES_NONE)
+        # P3-S74 lands the DST_SMEM_ABSOLUTE row after DST_LONG32_MOD13;
+        # symbol lookup keeps this assertion position-independent.
+        dst_abs = next(
+            row for row in catalog_rows
+            if row.symbol == "DST_SMEM_ABSOLUTE"
+        )
+        self.assertEqual(dst_abs.handler, "dst_smem_absolute")
+        self.assertEqual(dst_abs.first_word_value, 0x4EF8)
+        self.assertEqual(dst_abs.first_word_mask, 0xFFFF)
+        self.assertEqual(dst_abs.program_word_count, 2)
+        self.assertEqual(dst_abs.operand_layout,
+                         LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
+        self.assertEqual(dst_abs.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(dst_abs.input_resources,
+                         RESOURCES_ACCUMULATORS_STATUS_SXM_SST)
         # P3-S4 lands the XC row after RCD; symbol lookup keeps this
         # assertion position-independent.
         xc = next(row for row in catalog_rows if row.symbol == "XC")

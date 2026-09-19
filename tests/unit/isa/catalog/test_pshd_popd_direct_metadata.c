@@ -34,7 +34,7 @@ static const pair_row ROWS[] = {
 static void
 test_metadata(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 329);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 330);
 
     for (size_t i = 0U; i < sizeof(ROWS) / sizeof(ROWS[0]); ++i) {
         const ti_c54x_opcode_metadata *metadata =

@@ -2221,7 +2221,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "DST_LONG32_MOD13"
+        "DST_LONG32_MOD13",
+        "DST_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -3506,6 +3507,12 @@
       "form_id": "FORM-T2-20-01",
       "coverage": "SUBSET",
       "addressing_subset": "LONG_OFFSET_MOD13_CMPT0"
+    },
+    {
+      "catalog_symbol": "DST_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-20-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "ADD_ACC_SHIFT",

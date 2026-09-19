@@ -5,7 +5,10 @@
  * address (single-indirect MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step
  * circular MOD8/MOD10, reverse-carry MOD4/MOD7, X-only dual-indirect
  * MOD0--MOD3, or mode-independent STACK_PUSH/STACK_POP/STACK_POP_RTN)
- * into the existing checked address planner and request constructor.
+ * into the existing checked address planner and request constructor,
+ * plus kind dispatch to the per-kind LONG32 and absolute-DATA
+ * resolver modules (MOD13 LONG32 lives in
+ * address_resolution_long32_mod13.c since the P3-S74 split).
  * STACK_POP_RTN additionally gates RTN knownness; its planned READ
  * is never issued by the root.
  * Does not own: opcode semantics, bus callbacks, physical memory, CPU state
@@ -15,6 +18,8 @@
 #include "address_resolution.h"
 
 #include "address_resolution_absolute_data.h"
+#include "address_resolution_long32_absolute_store.h"
+#include "address_resolution_long32_mod13.h"
 
 #include <stddef.h>
 
@@ -192,6 +197,10 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->absolute_data.reserved_word3 != UINT32_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
+    } else if (spec->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
+        /* The LONG32 store arm carries no sidecar: reserved-slot
+         * validity is proven by its own resolver below. */
     } else {
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
     }
@@ -205,52 +214,8 @@ ti_c54x_sequencer_resolve_memory_address(
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32) {
-        /* MOD13 LONG32 consumes the same CMPT=0/ARP=0 dependencies as the
-         * existing generic forms. The planner supplies the canonical MSW/LSW
-         * pair; the bus request intentionally targets only the MSW here. */
-        if (ti_c54x_arch_state_read_cmpt(state, &cmpt) !=
-                TI_C54X_ARCH_STATE_OK ||
-            cmpt != UINT8_C(0)) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_MODE;
-        }
-        if (ti_c54x_arch_state_read_arp(state, &arp) !=
-                TI_C54X_ARCH_STATE_OK ||
-            arp != UINT8_C(0)) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_MODE;
-        }
-        if (ti_c54x_arch_state_read_ar(state, spec->arf, &ar_value) !=
-            TI_C54X_ARCH_STATE_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
-        }
-        address_access = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
-                             ? TI_C54X_ADDRESS_ACCESS_READ
-                             : TI_C54X_ADDRESS_ACCESS_WRITE;
-        address_result = ti_c54x_indirect_long_offset_mod13_long32(
-            spec->arf, ar_value, spec->long_offset_word, address_access);
-        if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
-        }
-        address_status = ti_c54x_sequencer_validate_address_effect(
-            state, &address_result,
-            TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS, &address_commit);
-        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
-        }
-        request_result = access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ
-                             ? ti_c54x_bus_word16_request_read(
-                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-                                   address_result.effect.operand.first_word)
-                             : ti_c54x_bus_word16_request_write(
-                                   TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-                                   address_result.effect.operand.first_word,
-                                   write_value_word);
-        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
-        }
-        out->address_result = address_result;
-        out->address_commit = address_commit;
-        out->request = request_result.request;
-        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
+        return ti_c54x_sequencer_resolve_long32_mod13_address(
+            state, spec, access, write_value_word, out);
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
@@ -589,6 +554,12 @@ ti_c54x_sequencer_resolve_memory_address(
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
         return ti_c54x_sequencer_resolve_absolute_data_address(
+            state, spec, access, write_value_word, out);
+    }
+
+    if (spec->kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
+        return ti_c54x_sequencer_resolve_long32_absolute_store_address(
             state, spec, access, write_value_word, out);
     }
 

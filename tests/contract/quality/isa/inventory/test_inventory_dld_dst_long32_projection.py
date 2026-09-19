@@ -20,16 +20,36 @@ from tools.quality.check_isa_inventory import report_inventory
 SYMBOLS = {
     "DLD_LONG32_MOD13": "FORM-T2-19-01",
     "DST_LONG32_MOD13": "FORM-T2-20-01",
+    "DST_SMEM_ABSOLUTE": "FORM-T2-20-01",
 }
-ADDRESSING_SUBSET = "LONG_OFFSET_MOD13_CMPT0"
-LAYOUT = "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4"
+ADDRESSING_SUBSETS = {
+    "DLD_LONG32_MOD13": "LONG_OFFSET_MOD13_CMPT0",
+    "DST_LONG32_MOD13": "LONG_OFFSET_MOD13_CMPT0",
+    "DST_SMEM_ABSOLUTE": "ABSOLUTE_DATA",
+}
+LAYOUTS = {
+    "DLD_LONG32_MOD13": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4",
+    "DST_LONG32_MOD13": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4",
+    "DST_SMEM_ABSOLUTE": (
+        "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16"
+    ),
+}
+FIRST_WORD_MASKS = {
+    "DLD_LONG32_MOD13": 0xFEF8,
+    "DST_LONG32_MOD13": 0xFEF8,
+    "DST_SMEM_ABSOLUTE": 0xFFFF,
+}
 REPEATABILITY = {
     "DLD_LONG32_MOD13": "TI_C54X_REPEATABILITY_UNRESOLVED",
     "DST_LONG32_MOD13": "TI_C54X_REPEATABILITY_INELIGIBLE",
+    "DST_SMEM_ABSOLUTE": "TI_C54X_REPEATABILITY_INELIGIBLE",
 }
 RESOURCES = {
     "DLD_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_STATUS_SXM",
     "DST_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST",
+    "DST_SMEM_ABSOLUTE": (
+        "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST"
+    ),
 }
 
 
@@ -50,9 +70,9 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 328)
-        self.assertEqual(len(rows) + 1, 329)  # UNKNOWN retains identity zero.
-        self.assertEqual(len(inventory["catalog_bindings"]),334)
+        self.assertEqual(len(rows), 329)
+        self.assertEqual(len(rows) + 1, 330)  # UNKNOWN retains identity zero.
+        self.assertEqual(len(inventory["catalog_bindings"]),335)
         self.assertEqual(
             {symbol for symbol in SYMBOLS if symbol in by_symbol},
             set(SYMBOLS),
@@ -64,18 +84,28 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
                 binding = bindings[symbol]
                 self.assertEqual(binding["form_id"], form_id)
                 self.assertEqual(binding["coverage"], "SUBSET")
-                self.assertEqual(binding["addressing_subset"], ADDRESSING_SUBSET)
+                self.assertEqual(
+                    binding["addressing_subset"],
+                    ADDRESSING_SUBSETS[symbol],
+                )
                 self.assertEqual(form["scope"], "COMMON_CANDIDATE")
                 self.assertEqual(form["coverage"], "SUBSET")
-                self.assertEqual(form["catalog_symbols"], [symbol])
-                self.assertEqual(row.first_word_mask, 0xFEF8)
+                self.assertEqual(
+                    sorted(form["catalog_symbols"]),
+                    sorted(
+                        other
+                        for other, other_form in SYMBOLS.items()
+                        if other_form == form_id
+                    ),
+                )
+                self.assertEqual(row.first_word_mask, FIRST_WORD_MASKS[symbol])
                 self.assertEqual(row.program_word_count, 2)
-                self.assertEqual(row.operand_layout, LAYOUT)
+                self.assertEqual(row.operand_layout, LAYOUTS[symbol])
                 self.assertEqual(row.repeatability, REPEATABILITY[symbol])
                 self.assertEqual(row.input_resources, RESOURCES[symbol])
 
         rendered_lookup = render_lookup(rows)
-        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 40010)
+        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 40011)
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"], {"covered": 166, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"], {"covered": 45, "denominator": 205})

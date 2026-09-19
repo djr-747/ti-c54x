@@ -111,6 +111,7 @@
 #include "store/op_mvkd.h"
 #include "store/op_mvpd.h"
 #include "store/op_mvpd_smem_absolute.h"
+#include "store/op_dst_smem_absolute.h"
 #include "store/op_mvdp.h"
 #include "store/op_mvdp_smem_absolute.h"
 #include "store/op_reada.h"

@@ -46,7 +46,9 @@ bool ti_c54x_memory_instruction_long32_prepare_snapshot(
     if (memory->address_spec.kind !=
             TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 &&
         memory->address_spec.kind !=
-            TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE) {
+            TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE &&
+        memory->address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         return false;
     }
     transaction->child_kind = TI_C54X_MEMORY_INSTRUCTION_CHILD_LONG32;
@@ -69,7 +71,9 @@ static bool candidate_snapshot_matches(
     return (memory->address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 ||
             memory->address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE) &&
+                TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE ||
+            memory->address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) &&
            memory->first_value_msw == transaction->long32_first_value_msw &&
            memory->second_value_lsw ==
                transaction->long32_second_value_lsw;

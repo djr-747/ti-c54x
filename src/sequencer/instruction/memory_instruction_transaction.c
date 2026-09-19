@@ -230,7 +230,9 @@ ti_c54x_memory_instruction_transaction_prepare(
     } else if (candidate.effect.payload.memory.address_spec.kind ==
                    TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 ||
                candidate.effect.payload.memory.address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE) {
+                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE ||
+               candidate.effect.payload.memory.address_spec.kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         if (!ti_c54x_memory_instruction_long32_prepare_snapshot(target)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }

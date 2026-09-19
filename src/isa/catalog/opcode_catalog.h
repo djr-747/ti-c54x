@@ -93,6 +93,10 @@ typedef enum ti_c54x_operand_layout_id {
      * 1 bit 8, ARF, 4-bit MOD at word 0, 5-bit SHIFT at word 1
      * bits 4:0. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4_SHIFT5,
+    /* Two-word absolute-Smem DST fields: source select S at word
+     * 0 bit 8, indirect flag I[7:7], 7-bit absolute selector
+     * A[6:0], and the copied 16-bit absolute DATA address. */
+    TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16,
     /* One-word destination-accumulator plus unsigned 8-bit immediate. */
     TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_K8,
     /* Two-word destination-accumulator plus copied 16-bit extension. */

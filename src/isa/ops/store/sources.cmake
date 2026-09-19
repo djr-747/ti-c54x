@@ -41,4 +41,5 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_sth_asm_smem_reverse.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_immediate_smem_reverse.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_st_t_smem_reverse.c"
-    "${CMAKE_CURRENT_LIST_DIR}/op_dst_long32.c")
+    "${CMAKE_CURRENT_LIST_DIR}/op_dst_long32.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_dst_smem_absolute.c")

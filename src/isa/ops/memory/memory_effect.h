@@ -197,7 +197,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * issue). No RMW, no T load, no delay, and no leaf
      * completion: the pair root owns the chaining
      * internally. */
-    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16 = 26
+    TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16 = 26,
+    /* Absolute-Smem LONG32 store WORD32 (DST with an absolute
+     * Smem): the 32-bit accumulator value stores as MSW/LSW
+     * at the 16-bit absolute DATA address and the word
+     * above it. The halves ride `first_value_msw` and
+     * `second_value_lsw` (MOD13 LONG32 convention) with
+     * WRITE access and no leaf completion: the long32 root
+     * owns the chaining internally. */
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16 = 27
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -396,6 +404,17 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } smem_absolute_program;
+        struct {
+            /* Absolute-Smem LONG32 store: the 16-bit absolute
+             * DATA address (MSW lands here, LSW above). Same
+             * footprint as the pair arms: the address ABI is
+             * unchanged. */
+            uint16_t absolute;
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } long32_absolute;
         struct {
             /* Smem-to-accumulator-addressed-program pair: same
              * Smem DATA leg shape as `smem_program` but the

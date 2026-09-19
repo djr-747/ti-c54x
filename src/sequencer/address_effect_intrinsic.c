@@ -235,12 +235,16 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
         break;
     case TI_C54X_ADDRESS_SOURCE_ABSOLUTE:
         /* Absolute carries the full address: every 16-bit echo is
-         * in-domain; only the WORD16 shape and the operand echo
-         * are intrinsic here. */
-        if (effect->operand.width !=
-                TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
-            effect->operand.first_word !=
-                effect->source.value.absolute.address) {
+         * in-domain; the WORD16 shape plus canonical LONG32 (the
+         * absolute LONG32 store pairs above the base) and the
+         * operand echo are intrinsic here. */
+        if (effect->operand.first_word !=
+                effect->source.value.absolute.address ||
+            (effect->operand.width !=
+                 TI_C54X_DATA_OPERAND_WIDTH_WORD16 &&
+             (effect->operand.width !=
+                  TI_C54X_DATA_OPERAND_WIDTH_LONG32 ||
+              !ti_c54x_data_operand_is_valid(&effect->operand)))) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
         break;

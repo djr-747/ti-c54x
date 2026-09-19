@@ -40,3 +40,4 @@ ti_c54x_core_sources += src/isa/ops/store/op_sth_asm_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_immediate_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_st_t_smem_reverse.c
 ti_c54x_core_sources += src/isa/ops/store/op_dst_long32.c
+ti_c54x_core_sources += src/isa/ops/store/op_dst_smem_absolute.c
