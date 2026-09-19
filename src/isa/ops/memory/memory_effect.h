@@ -151,7 +151,12 @@ typedef enum ti_c54x_op_memory_address_kind {
      * two-word AR deltas (MOD3 stays write-only). No post-update
      * beyond the indirect AR delta; DP/AR unknownness is gated at
      * the leaf and root. */
-    TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE = 21
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE = 21,
+    /* Absolute DATA WORD16 (MMR moves): the 16-bit absolute DATA
+     * address rides `address` (the second program word). No AR,
+     * CMPT, CPL, or DP dependence and no post-update; Smem
+     * unknownness is gated at the leaf and root. */
+    TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 = 22
 } ti_c54x_op_memory_address_kind;
 
 /*
@@ -288,6 +293,19 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word2;
         } stack_pair;
         struct {
+            /* Absolute 16-bit DATA address (the second program
+             * word). Same footprint as the pair arms: the address
+             * ABI is unchanged. */
+            uint16_t address;
+            /* Reserved words keep the arm fixed-size and make the
+             * checked hot-path validation scalar comparisons. */
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+            uint32_t reserved_word3;
+        } absolute_data;
+        struct {
             /* Single-word Lmem LONG32 leg selector. Zero selects
              * the direct-DP leg (`dma7` with `dp_page`); one
              * selects the standard-indirect leg (`mode` with
@@ -355,6 +373,15 @@ typedef struct ti_c54x_op_memory_effect {
      * other carriers leave it false. Shares the existing padding:
      * the 48-byte effect ABI is unchanged. */
     bool write_smem_delay;
+    /* Read-phase MMR store (MVDM): when true on an absolute DATA
+     * READ, the root writes the read value word to the DATA MMR
+     * address `mmr_store_number` through the MMR router after the
+     * read completes and before the architecture commit. Only the
+     * absolute DATA READ may set this; all other carriers leave
+     * both fields zero. Shares the existing padding: both effect
+     * ABIs are unchanged. */
+    bool mmr_store_with_read;
+    uint8_t mmr_store_number;
     union {
         struct {
             /* Ordinary WRITE payload or RMW operand; ordinary READ requires

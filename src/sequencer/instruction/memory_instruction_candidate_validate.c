@@ -29,6 +29,7 @@
 #include "memory_instruction_port_candidate_validate.h"
 #include "memory_instruction_stack_pair_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
+#include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_long32_single.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
 
@@ -70,6 +71,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
         if (!ti_c54x_memory_instruction_data_program_candidate_shape_is_valid(
                 &candidate->dual_address_snapshot,
+                &candidate->effect.payload.memory)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
+        if (!ti_c54x_memory_candidate_absolute_data_shape_is_valid(
+                &candidate->address_resolution,
                 &candidate->effect.payload.memory)) {
             return false;
         }
@@ -303,6 +311,14 @@ ti_c54x_memory_instruction_candidate_matches_live(
         address_effect->source.kind ==
             TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0) {
         return ti_c54x_memory_candidate_long32_single_direct_matches_live(
+            candidate, state);
+    }
+    /* Absolute DATA owns its liveness: the DIRECT_DP source echo
+     * rides the frozen split, but no CPL/DP register is observed,
+     * so the shared DIRECT_DP CPL0/DP gate must not run. */
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
+        return ti_c54x_memory_candidate_absolute_data_matches_live(
             candidate, state);
     }
     if (address_effect->source.kind ==

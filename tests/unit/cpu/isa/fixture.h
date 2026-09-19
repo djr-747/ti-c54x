@@ -29,6 +29,10 @@ typedef enum ti_c54x_cpu_isa_memory_mode {
 typedef struct ti_c54x_cpu_isa_memory_fixture {
     ti_c54x_cpu_isa_memory_mode mode;
     uint16_t program_word;
+    /* Second program word for two-word forms (MVDM absolute);
+     * served only when program_has_extension is true. */
+    uint16_t program_extension_word;
+    bool program_has_extension;
     uint16_t read_value_word;
     ti_c54x_bus_status fault_status;
     unsigned program_reads;
@@ -51,11 +55,18 @@ ti_c54x_cpu_isa_read_program(void *context,
     ti_c54x_cpu_isa_memory_fixture *fixture =
         (ti_c54x_cpu_isa_memory_fixture *)context;
 
-    TI_C54X_TEST_CHECK(address_word == UINT32_C(0));
     TI_C54X_TEST_CHECK(value_word != NULL);
-    TI_C54X_TEST_CHECK(fixture->program_reads == 0U);
+    if (address_word == UINT32_C(0)) {
+        TI_C54X_TEST_CHECK(fixture->program_reads == 0U);
+        fixture->program_reads++;
+        *value_word = fixture->program_word;
+        return TI_C54X_BUS_OK;
+    }
+    TI_C54X_TEST_CHECK(address_word == UINT32_C(1));
+    TI_C54X_TEST_CHECK(fixture->program_has_extension);
+    TI_C54X_TEST_CHECK(fixture->program_reads == 1U);
     fixture->program_reads++;
-    *value_word = fixture->program_word;
+    *value_word = fixture->program_extension_word;
     return TI_C54X_BUS_OK;
 }
 

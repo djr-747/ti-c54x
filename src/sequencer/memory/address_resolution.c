@@ -14,6 +14,8 @@
 
 #include "address_resolution.h"
 
+#include "address_resolution_absolute_data.h"
+
 #include <stddef.h>
 
 #include "address/direct_dp.h"
@@ -177,6 +179,15 @@ ti_c54x_sequencer_resolve_memory_address(
                    spec->long32_single.arf > UINT8_C(7) ||
                    spec->long32_single.dma7 != UINT8_C(0) ||
                    spec->long32_single.dp_page != UINT16_C(0)) {
+            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
+        }
+    } else if (spec->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
+        if (spec->absolute_data.reserved_half != UINT16_C(0) ||
+            spec->absolute_data.reserved_word0 != UINT32_C(0) ||
+            spec->absolute_data.reserved_word1 != UINT32_C(0) ||
+            spec->absolute_data.reserved_word2 != UINT32_C(0) ||
+            spec->absolute_data.reserved_word3 != UINT32_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
     } else {
@@ -572,6 +583,11 @@ ti_c54x_sequencer_resolve_memory_address(
             out->request = request_result.request;
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
         }
+    }
+
+    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
+        return ti_c54x_sequencer_resolve_absolute_data_address(
+            state, spec, access, out);
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_REVERSE_CARRY_WORD16) {

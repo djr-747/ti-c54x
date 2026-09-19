@@ -234,6 +234,14 @@ ti_c54x_sequencer_validate_address_effect_dependencies(
         }
         break;
     }
+    case TI_C54X_ADDRESS_SOURCE_ABSOLUTE: {
+        /* Absolute DATA observes no state: the full address rides
+         * the instruction regardless of DP, CPL, CMPT, ARP, or ARs.
+         * Every 16-bit echo is in-domain; nothing is cross-checked. */
+        (void)state;
+        (void)effect;
+        break;
+    }
     default:
         return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
     }

@@ -16,6 +16,8 @@ ti_c54x_add_unit_test(sth_shift_smem_mod0_3_ops test_sth_shift_smem_mod0_3.c)
 ti_c54x_add_unit_test(st_immediate_smem_ops test_st_immediate_smem.c)
 # P3-S7 RED contract: STM direct store effects.
 ti_c54x_add_unit_test(stm_ops test_stm.c)
+# P3-S56 RED contract: MVDM absolute MMR store effects.
+ti_c54x_add_unit_test(mvdm_ops test_mvdm.c)
 ti_c54x_add_unit_test(st_t_smem_ops test_st_t_smem.c)
 ti_c54x_add_unit_test(st_t_smem_direct_ops test_st_t_smem_direct.c)
 ti_c54x_add_unit_test(stlm_smem_direct_ops test_stlm_smem_direct.c)

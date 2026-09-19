@@ -48,6 +48,7 @@ static bool valid_source_kind(ti_c54x_address_source_kind kind)
     case TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR:
     case TI_C54X_ADDRESS_SOURCE_STACK_PUSH:
     case TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0:
+    case TI_C54X_ADDRESS_SOURCE_ABSOLUTE:
         return true;
     default:
         return false;
@@ -76,6 +77,8 @@ static bool valid_state_policy_for_source(
            (source_kind == TI_C54X_ADDRESS_SOURCE_STACK_PUSH &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_NONE) ||
            (source_kind == TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 &&
+            policy == TI_C54X_ADDRESS_STATE_POLICY_NONE) ||
+           (source_kind == TI_C54X_ADDRESS_SOURCE_ABSOLUTE &&
             policy == TI_C54X_ADDRESS_STATE_POLICY_NONE);
 }
 
@@ -227,6 +230,17 @@ ti_c54x_sequencer_validate_address_effect_intrinsic(
              (effect->operand.width !=
                   TI_C54X_DATA_OPERAND_WIDTH_LONG32 ||
               !ti_c54x_data_operand_is_valid(&effect->operand)))) {
+            return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
+        }
+        break;
+    case TI_C54X_ADDRESS_SOURCE_ABSOLUTE:
+        /* Absolute carries the full address: every 16-bit echo is
+         * in-domain; only the WORD16 shape and the operand echo
+         * are intrinsic here. */
+        if (effect->operand.width !=
+                TI_C54X_DATA_OPERAND_WIDTH_WORD16 ||
+            effect->operand.first_word !=
+                effect->source.value.absolute.address) {
             return TI_C54X_ADDRESS_APPLY_INVALID_EFFECT;
         }
         break;

@@ -112,6 +112,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16] = {
             TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16, UINT8_C(2),
             &ti_c54x_direct7_extension16_set},
+        [TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16] = {
+            TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16, UINT8_C(2),
+            &ti_c54x_mmr5_absolute16_set},
         [TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7] = {
             TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7, UINT8_C(1),
             &ti_c54x_round_select_indirect_addr7_set},
@@ -337,6 +340,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_DIRECT7_EXTENSION16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_direct7_extension16_set;
+    case TI_C54X_OPERAND_LAYOUT_MMR5_ABSOLUTE16:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_mmr5_absolute16_set;
     case TI_C54X_OPERAND_LAYOUT_ROUND_SELECT_INDIRECT_ADDR7:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_round_select_indirect_addr7_set;

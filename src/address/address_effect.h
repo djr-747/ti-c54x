@@ -71,7 +71,8 @@ typedef enum ti_c54x_address_source_kind {
     TI_C54X_ADDRESS_SOURCE_AR_REVERSE_CARRY = 6,
     TI_C54X_ADDRESS_SOURCE_AR_CIRCULAR = 7,
     TI_C54X_ADDRESS_SOURCE_STACK_PUSH = 8,
-    TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 = 9
+    TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 = 9,
+    TI_C54X_ADDRESS_SOURCE_ABSOLUTE = 10
 } ti_c54x_address_source_kind;
 
 typedef struct ti_c54x_address_source_ar {
@@ -144,6 +145,14 @@ typedef struct ti_c54x_address_source_stack_push {
     uint16_t sp_before;
 } ti_c54x_address_source_stack_push;
 
+/* Snapshot for absolute DATA forms (MVDM absolute). Unlike
+ * DIRECT_DP this carries the full 16-bit address with no dp
+ * page and no CPL policy: the effective address is complete in
+ * the instruction regardless of DP, CPL, CMPT, or ARP. */
+typedef struct ti_c54x_address_source_absolute {
+    uint16_t address;
+} ti_c54x_address_source_absolute;
+
 /* The active union arm is selected by kind.  All fields are copied into the
  * effect; no source pointer or caller-owned storage is retained. */
 typedef struct ti_c54x_address_source {
@@ -158,6 +167,7 @@ typedef struct ti_c54x_address_source {
         ti_c54x_address_source_direct_sp direct_sp;
         ti_c54x_address_source_stack_push stack_push;
         ti_c54x_address_source_direct_page0 direct_page0;
+        ti_c54x_address_source_absolute absolute;
     } value;
 } ti_c54x_address_source;
 

@@ -3,22 +3,22 @@
  *
  * Owns: structural validation of the generic SINGLE_INDIRECT MOD0--MOD3,
  * INDEXED_AR0 MOD5/MOD6, CIRCULAR MOD8/MOD10, ARF-selected
- * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, dual-indirect
- * MOD0/MOD1/MOD2 WORD16, X-only dual-indirect WORD16,
- * DATA+PROGRAM pair WORD16, and
+ * REVERSE_CARRY MOD4/MOD7 WORD16, MOD13 LONG32, X-only
+ * dual-indirect WORD16, DATA+PROGRAM pair WORD16, and
  * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers,
  * plus the single-word DIRECT/SINGLE_INDIRECT delay write-back READ
  * shape (optional completion; WRITE/RMW access stays invalid).
- * The single-word Lmem LONG32 arm delegates to the
- * memory_effect_long32_single module.
- * Dual MOD3 remains deferred with the AR0/BK indexed/circular
- * dependency.
+ * The single-word Lmem LONG32, absolute DATA, and dual-indirect
+ * MOD0/MOD1/MOD2 arms delegate to their own modules. Dual MOD3
+ * remains deferred with the AR0/BK indexed/circular dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
 
 #include "memory_effect.h"
 
+#include "memory_effect_absolute_data.h"
+#include "memory_effect_dual.h"
 #include "memory_effect_long32_single.h"
 
 #include <stddef.h>
@@ -83,34 +83,6 @@ ti_c54x_op_memory_effect_access_shape_is_valid(
     return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
            effect->rmw_operation ==
                (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE;
-}
-
-static bool
-ti_c54x_op_memory_dual_address_is_valid(
-    const ti_c54x_op_memory_address_spec *address_spec)
-{
-    return address_spec->dual.x_mode <= UINT8_C(3) &&
-           address_spec->dual.y_mode <= UINT8_C(3) &&
-           address_spec->dual.x_ar >= UINT8_C(2) &&
-           address_spec->dual.x_ar <= UINT8_C(5) &&
-           address_spec->dual.y_ar >= UINT8_C(2) &&
-           address_spec->dual.y_ar <= UINT8_C(5) &&
-           address_spec->dual.reserved_word0 == UINT32_C(0) &&
-           address_spec->dual.reserved_word1 == UINT32_C(0) &&
-           address_spec->dual.reserved_word2 == UINT32_C(0) &&
-           address_spec->dual.reserved_word3 == UINT32_C(0);
-}
-
-static bool
-ti_c54x_op_memory_effect_dual_shape_is_valid(
-    const ti_c54x_op_memory_effect *effect)
-{
-    return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ &&
-           effect->value_word == UINT16_C(0) &&
-           effect->rmw_operation ==
-               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
-           effect->transfer_reserved == UINT8_C(0) &&
-           effect->complete_dual != NULL;
 }
 
 static bool
@@ -258,6 +230,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE:
         return ti_c54x_op_memory_effect_long32_single_shape_is_valid(
+            effect);
+
+    case TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16:
+        return ti_c54x_op_memory_effect_absolute_data_shape_is_valid(
             effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16:

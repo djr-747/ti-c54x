@@ -103,6 +103,7 @@
 #include "store/op_sth_asm_smem.h"
 #include "store/op_st_immediate_smem.h"
 #include "store/op_stm.h"
+#include "store/op_mvdm.h"
 #include "store/op_st_t_smem.h"
 #include "store/op_st_t_smem_direct.h"
 #include "store/op_st_trn_smem_direct.h"

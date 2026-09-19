@@ -1,5 +1,6 @@
 # Source ownership: src/address owns effective-address and operand planning.
 list(APPEND ti_c54x_core_sources
+    "${CMAKE_CURRENT_LIST_DIR}/absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/data_operand.c"
     "${CMAKE_CURRENT_LIST_DIR}/direct_dp.c"
     "${CMAKE_CURRENT_LIST_DIR}/direct_page0.c"

@@ -36,3 +36,6 @@ ti_c54x_add_unit_test(long32_single_resolver
 # P3-S55 lane 2 RED contract: LONG32_SINGLE generic resolution.
 ti_c54x_add_unit_test(long32_single_resolution
                       test_long32_single_memory_resolution.c)
+# P3-S56 RED contract: absolute-DATA generic resolution.
+ti_c54x_add_unit_test(absolute_data_resolution
+                      test_absolute_data_memory_resolution.c)

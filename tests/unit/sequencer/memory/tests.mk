@@ -22,3 +22,5 @@ $(eval $(call ti_c54x_add_test,port_resolver,sequencer/memory,test_port_address_
 $(eval $(call ti_c54x_add_test,long32_single_resolver,sequencer/memory,test_long32_single_access_plan.c))
 # P3-S55 lane 2 RED contract: LONG32_SINGLE generic resolution.
 $(eval $(call ti_c54x_add_test,long32_single_resolution,sequencer/memory,test_long32_single_memory_resolution.c))
+# P3-S56 RED contract: absolute-DATA generic resolution.
+$(eval $(call ti_c54x_add_test,absolute_data_resolution,sequencer/memory,test_absolute_data_memory_resolution.c))

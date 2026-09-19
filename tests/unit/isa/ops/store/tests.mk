@@ -17,6 +17,8 @@ $(eval $(call ti_c54x_add_test,sth_shift_smem_mod0_3_ops,isa/ops/store,test_sth_
 $(eval $(call ti_c54x_add_test,st_immediate_smem_ops,isa/ops/store,test_st_immediate_smem.c))
 # P3-S7 RED contract: STM direct store effects.
 $(eval $(call ti_c54x_add_test,stm_ops,isa/ops/store,test_stm.c))
+# P3-S56 RED contract: MVDM absolute MMR store effects.
+$(eval $(call ti_c54x_add_test,mvdm_ops,isa/ops/store,test_mvdm.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_ops,isa/ops/store,test_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_ops,isa/ops/store,test_st_t_smem_direct.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_ops,isa/ops/store,test_stlm_smem_direct.c))

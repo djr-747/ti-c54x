@@ -7,8 +7,9 @@
  * Owns: pure resolution of the generic W16 data-memory address descriptor
  * against caller-owned architectural state, including CMPT=0 single-indirect
  * MOD0--MOD3, AR0-indexed MOD5/MOD6, fixed-step circular MOD8/MOD10,
- * reverse-carry MOD4/MOD7, X-only dual-indirect MOD0--MOD3, and
- * mode-independent STACK_PUSH/STACK_POP forms, a value-owned address
+ * reverse-carry MOD4/MOD7, X-only dual-indirect MOD0--MOD3,
+ * mode-independent STACK_PUSH/STACK_POP forms, and the absolute-DATA
+ * form (resolved by its own module), a value-owned address
  * result, prevalidated AR-or-SP commit, and DATA bus request.
  * The AR0/BK shadows are populated only by the X-only MOD3 path and stay
  * zero otherwise.
