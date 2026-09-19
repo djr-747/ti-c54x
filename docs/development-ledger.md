@@ -13835,3 +13835,40 @@ entries are not rewritten after publication.
   carrier; worker worktrees under `.muse/worktrees/` await GC.
 - Split commit discipline: impl `b79746b`, this ledger-only
   follow-up.
+
+## 2026-09-19 — P3-S53 PSHD/POPD indirect Smem pair-leg slice (slice 82)
+
+- Scope: single-indirect Smem DATA legs (TI classes 16B/17B)
+  through the S52 pair carrier with no new rows: `PSHD` admits
+  MOD0--MOD2 (MOD3 is write-only), `POPD` admits MOD0--MOD3,
+  `PSHM`/`POPM` keep rejecting I=1 (no indirect MMR class).
+  Cookie splits `mode4 = cookie >> 3`, `arf = cookie & 7` (LTD
+  precedent); indirect legs zero `smem_dma7` (DATA_PROGRAM pair
+  precedent); row inputs stay `STACK_POINTER` (AR unknownness
+  rejects transactionally downstream). No status-bit effects,
+  no timing, repeatability UNRESOLVED.
+- Validation: extended the three S52 area tests RED-first (leaf
+  parity over 4 indirect vectors with direction-gated mode
+  rejection, MOD1/MOD3 root retirement with AR publication,
+  MOD1/MOD2 CPU retirement). Full `make test` exit 0; 286
+  contract tests OK; evidence gate 799/652; lookup `--check`
+  clean; slice CTest 5/5; harness selftest PASS.
+- Decisions: (1) Direction-gated modes mirror the landed
+  load/store asymmetry (loads MOD0-2, stores MOD0-3) and the
+  resolver-level MOD3-read rejection: defense runs leaf,
+  effect-validation, synthesis, and resolver deep. (2) DATA-leg
+  liveness mirrors the generic CMPT0/ARP0 indirect tail with
+  the AR selector echo bound to the frozen pair arm; the mode
+  is structural (shape-pinned). (3) The DATA-leg AR update
+  publishes beside SP in the generic commit (dual-pair
+  precedent); direct/MMR DATA legs carry no update. (4) New
+  requirements reuse the existing area test records (sharing
+  precedent); both link directions updated for the LINK gate.
+- Near-misses: the pair `is_valid` case comment still said
+  direct-only; the S52 row comments still said I-set rejected;
+  the kind comments still claimed no AR dependence.
+- Knobs: none added, changed, or retired.
+- Follow-up: table 2-17 pair legs now direct + indirect Smem
+  (MMR direct only); indirect forms stay SUBSET.
+- Split commit discipline: impl `d540229`, this ledger-only
+  follow-up.
