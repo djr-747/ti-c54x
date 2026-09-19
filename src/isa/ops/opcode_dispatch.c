@@ -116,6 +116,7 @@
 #include "store/op_dst_smem_absolute.h"
 #include "load/op_dld_smem_absolute.h"
 #include "load/op_ld_smem_absolute.h"
+#include "load/op_ld_smem_absolute_shift16.h"
 #include "memory/op_addm_lk_smem_absolute.h"
 #include "store/op_mvdp.h"
 #include "store/op_mvdp_smem_absolute.h"

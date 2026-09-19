@@ -2,6 +2,7 @@
 ti_c54x_add_unit_test(cpu_ld_smem test_cpu_ld_smem.c)
 ti_c54x_add_unit_test(cpu_ld_smem_absolute test_cpu_ld_smem_absolute.c)
 ti_c54x_add_unit_test(cpu_dld_smem_absolute test_cpu_dld_smem_absolute.c)
+ti_c54x_add_unit_test(cpu_ld_smem_absolute_shift16 test_cpu_ld_smem_absolute_shift16.c)
 ti_c54x_add_unit_test(cpu_ldu_smem test_cpu_ldu_smem.c)
 ti_c54x_add_unit_test(cpu_ldu_direct test_cpu_ldu_direct.c)
 ti_c54x_add_unit_test(cpu_ld_t_smem test_cpu_ld_t_smem.c)

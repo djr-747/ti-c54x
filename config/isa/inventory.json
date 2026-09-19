@@ -1967,7 +1967,8 @@
         "LD_SMEM_SHIFT16_MOD6",
         "LD_SMEM_SHIFT16_MOD7",
         "LD_SMEM_SHIFT16_MOD8",
-        "LD_SMEM_SHIFT16_MOD10"
+        "LD_SMEM_SHIFT16_MOD10",
+        "LD_SMEM_ABSOLUTE_SHIFT16"
       ]
     },
     {
@@ -2966,6 +2967,12 @@
     {
       "catalog_symbol": "LD_SMEM_ABSOLUTE",
       "form_id": "FORM-T2-19-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_ABSOLUTE_SHIFT16",
+      "form_id": "FORM-T2-19-04",
       "coverage": "SUBSET",
       "addressing_subset": "ABSOLUTE_DATA"
     },

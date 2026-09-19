@@ -149,6 +149,7 @@ $(eval $(call ti_c54x_add_test,addm_lk_smem_absolute_decode,isa/decode,test_addm
 $(eval $(call ti_c54x_add_test,ld_smem_absolute_decode,isa/decode,test_ld_smem_absolute_decode.c))
 $(eval $(call ti_c54x_add_test,dst_smem_absolute_decode,isa/decode,test_dst_smem_absolute_decode.c))
 $(eval $(call ti_c54x_add_test,dld_smem_absolute_decode,isa/decode,test_dld_smem_absolute_decode.c))
+$(eval $(call ti_c54x_add_test,ld_smem_absolute_shift16_decode,isa/decode,test_ld_smem_absolute_shift16_decode.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_decode,isa/decode,test_st_t_smem_direct_decode.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_decode,isa/decode,test_stlm_smem_direct_decode.c))
 $(eval $(call ti_c54x_add_test,cmps_smem_direct_decode,isa/decode,test_cmps_smem_direct_decode.c))
