@@ -212,7 +212,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * modes for ADDM). The read leg observes the cell and
      * the engine writes the transform back with no leaf
      * completion. */
-    TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16 = 28
+    TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16 = 28,
+    /* Absolute-Smem LONG32 load WORD32 (DLD with an absolute
+     * Smem): the 32-bit long word reads as MSW/LSW from
+     * the 16-bit absolute DATA address and the word above
+     * it. The staged halves stay zero (MOD13 LONG32 READ
+     * convention) with READ access and a non-null leaf
+     * long32 completion: the long32 root owns the chaining
+     * internally. */
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16 = 29
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

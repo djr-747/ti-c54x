@@ -372,6 +372,19 @@ TI_C54X_OPCODE_MASKED(DST_LONG32_MOD13, dst_long32_mod13, 0x4EE8, 0xFEF8, 2, TI_
  * operands cannot repeat (section 2 repeat rules), so the
  * row is INELIGIBLE with evidence. */
 TI_C54X_OPCODE_EXACT(DST_SMEM_ABSOLUTE, dst_smem_absolute, 0x4EF8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST)
+/* P3-S78 DLD absolute *(abs),dst (TI SPRU172C DLD: 0101
+ * 011D IAAA AAAA, load accumulator with long word, add
+ * 1 word for absolute addressing): the exact 0x56F8
+ * first word (D=0 selects A, I=1 with the 0x78 absolute
+ * selector) carries the 16-bit absolute DATA address in
+ * word 1; execution loads Lmem MSW/LSW at abs/abs+1
+ * into dst(31:0) with SXM widening and no status bits.
+ * The MOD13 mask never matches 0x56F8, so no shadow
+ * carve is needed; long-offset and direct/indirect
+ * Smem forms stay deferred. Absolute operands cannot
+ * repeat (section 2 repeat rules), so the row is
+ * INELIGIBLE with evidence. */
+TI_C54X_OPCODE_EXACT(DLD_SMEM_ABSOLUTE, dld_smem_absolute, 0x56F8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
 
 /* Syntax-6 dual WORD16 ADD/SUB, restricted to X/Y MOD0 addressing. */
 TI_C54X_OPCODE_MASKED(ADD_DUAL_MOD0, add_dual_mod0, 0xA000, 0xFECC, 1, TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_C_SXM_OVM)

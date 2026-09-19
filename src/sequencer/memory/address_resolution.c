@@ -19,6 +19,7 @@
 
 #include "address_resolution_absolute_data.h"
 #include "address_resolution_atomic_absolute.h"
+#include "address_resolution_long32_absolute_load.h"
 #include "address_resolution_long32_absolute_store.h"
 #include "address_resolution_long32_mod13.h"
 
@@ -201,6 +202,10 @@ ti_c54x_sequencer_resolve_memory_address(
     } else if (spec->kind ==
                TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         /* The LONG32 store arm carries no sidecar: reserved-slot
+         * validity is proven by its own resolver below. */
+    } else if (spec->kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16) {
+        /* The LONG32 load arm carries no sidecar: reserved-slot
          * validity is proven by its own resolver below. */
     } else if (spec->kind ==
                TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16) {
@@ -565,6 +570,12 @@ ti_c54x_sequencer_resolve_memory_address(
     if (spec->kind ==
         TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         return ti_c54x_sequencer_resolve_long32_absolute_store_address(
+            state, spec, access, write_value_word, out);
+    }
+
+    if (spec->kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16) {
+        return ti_c54x_sequencer_resolve_long32_absolute_load_address(
             state, spec, access, write_value_word, out);
     }
 

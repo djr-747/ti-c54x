@@ -189,7 +189,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 332)
+        self.assertEqual(len(catalog_rows), 333)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -318,6 +318,20 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
         self.assertEqual(ld_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(ld_abs.input_resources, RESOURCES_STATUS_SXM)
+        # P3-S78 lands the DLD_SMEM_ABSOLUTE row after DST_SMEM_ABSOLUTE;
+        # symbol lookup keeps this assertion position-independent.
+        dld_abs = next(
+            row for row in catalog_rows
+            if row.symbol == "DLD_SMEM_ABSOLUTE"
+        )
+        self.assertEqual(dld_abs.handler, "dld_smem_absolute")
+        self.assertEqual(dld_abs.first_word_value, 0x56F8)
+        self.assertEqual(dld_abs.first_word_mask, 0xFFFF)
+        self.assertEqual(dld_abs.program_word_count, 2)
+        self.assertEqual(dld_abs.operand_layout,
+                         LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
+        self.assertEqual(dld_abs.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(dld_abs.input_resources, RESOURCES_STATUS_SXM)
         # P3-S76 lands the ADDM_LK_SMEM_ABSOLUTE row after ADDM_SMEM_MOD0_3;
         # symbol lookup keeps this assertion position-independent.
         addm_abs = next(

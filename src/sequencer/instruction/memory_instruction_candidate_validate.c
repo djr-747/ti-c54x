@@ -33,6 +33,7 @@
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_atomic_absolute.h"
+#include "sequencer/instruction/memory_candidate_long32_absolute_load.h"
 #include "sequencer/instruction/memory_candidate_long32_absolute_store.h"
 #include "sequencer/instruction/memory_candidate_long32_single.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
@@ -104,6 +105,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     } else if (candidate->effect.payload.memory.address_spec.kind ==
                TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         if (!ti_c54x_memory_candidate_long32_absolute_store_shape_is_valid(
+                &candidate->address_resolution,
+                &candidate->effect.payload.memory)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16) {
+        if (!ti_c54x_memory_candidate_long32_absolute_load_shape_is_valid(
                 &candidate->address_resolution,
                 &candidate->effect.payload.memory)) {
             return false;
@@ -426,6 +434,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16) {
         return ti_c54x_memory_candidate_long32_absolute_store_matches_live(
+            candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16) {
+        return ti_c54x_memory_candidate_long32_absolute_load_matches_live(
             candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==

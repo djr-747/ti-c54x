@@ -129,6 +129,8 @@ ti_c54x_add_unit_test(ld_smem_absolute_metadata
                       test_ld_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(dst_smem_absolute_metadata
                       test_dst_smem_absolute_metadata.c)
+ti_c54x_add_unit_test(dld_smem_absolute_metadata
+                      test_dld_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(reada_direct_metadata
                       test_reada_direct_metadata.c)
 ti_c54x_add_unit_test(reada_smem_metadata

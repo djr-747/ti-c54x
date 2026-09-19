@@ -19,16 +19,21 @@ from tools.quality.check_isa_inventory import report_inventory
 
 SYMBOLS = {
     "DLD_LONG32_MOD13": "FORM-T2-19-01",
+    "DLD_SMEM_ABSOLUTE": "FORM-T2-19-01",
     "DST_LONG32_MOD13": "FORM-T2-20-01",
     "DST_SMEM_ABSOLUTE": "FORM-T2-20-01",
 }
 ADDRESSING_SUBSETS = {
     "DLD_LONG32_MOD13": "LONG_OFFSET_MOD13_CMPT0",
+    "DLD_SMEM_ABSOLUTE": "ABSOLUTE_DATA",
     "DST_LONG32_MOD13": "LONG_OFFSET_MOD13_CMPT0",
     "DST_SMEM_ABSOLUTE": "ABSOLUTE_DATA",
 }
 LAYOUTS = {
     "DLD_LONG32_MOD13": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4",
+    "DLD_SMEM_ABSOLUTE": (
+        "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16"
+    ),
     "DST_LONG32_MOD13": "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4",
     "DST_SMEM_ABSOLUTE": (
         "TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16"
@@ -36,16 +41,19 @@ LAYOUTS = {
 }
 FIRST_WORD_MASKS = {
     "DLD_LONG32_MOD13": 0xFEF8,
+    "DLD_SMEM_ABSOLUTE": 0xFFFF,
     "DST_LONG32_MOD13": 0xFEF8,
     "DST_SMEM_ABSOLUTE": 0xFFFF,
 }
 REPEATABILITY = {
     "DLD_LONG32_MOD13": "TI_C54X_REPEATABILITY_UNRESOLVED",
+    "DLD_SMEM_ABSOLUTE": "TI_C54X_REPEATABILITY_INELIGIBLE",
     "DST_LONG32_MOD13": "TI_C54X_REPEATABILITY_INELIGIBLE",
     "DST_SMEM_ABSOLUTE": "TI_C54X_REPEATABILITY_INELIGIBLE",
 }
 RESOURCES = {
     "DLD_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_STATUS_SXM",
+    "DLD_SMEM_ABSOLUTE": "TI_C54X_INPUT_RESOURCES_STATUS_SXM",
     "DST_LONG32_MOD13": "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST",
     "DST_SMEM_ABSOLUTE": (
         "TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_SST"
@@ -70,9 +78,9 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 332)
-        self.assertEqual(len(rows) + 1, 333)  # UNKNOWN retains identity zero.
-        self.assertEqual(len(inventory["catalog_bindings"]),338)
+        self.assertEqual(len(rows), 333)
+        self.assertEqual(len(rows) + 1, 334)  # UNKNOWN retains identity zero.
+        self.assertEqual(len(inventory["catalog_bindings"]),339)
         self.assertEqual(
             {symbol for symbol in SYMBOLS if symbol in by_symbol},
             set(SYMBOLS),
@@ -105,7 +113,7 @@ class InventoryDldDstLong32ProjectionTests(unittest.TestCase):
                 self.assertEqual(row.input_resources, RESOURCES[symbol])
 
         rendered_lookup = render_lookup(rows)
-        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 40269)
+        self.assertEqual(rendered_lookup.count("= (uint16_t)"), 40270)
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"], {"covered": 167, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"], {"covered": 45, "denominator": 205})

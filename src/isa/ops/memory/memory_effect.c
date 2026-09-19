@@ -8,23 +8,20 @@
  * mode-independent STACK_PUSH/STACK_POP WORD16 memory effect carriers,
  * plus the single-word DIRECT/SINGLE_INDIRECT delay write-back READ
  * shape (optional completion; WRITE/RMW access stays invalid).
- * The single-word Lmem LONG32, absolute DATA, and dual-indirect
- * MOD0/MOD1/MOD2 arms delegate to their own modules. Dual MOD3
- * remains deferred with the AR0/BK indexed/circular dependency.
+ * The single-word Lmem LONG32, absolute-addressed, and
+ * dual-indirect MOD0/MOD1/MOD2 arms delegate to their own
+ * modules (P3-S78 split: the eight absolute arms share one
+ * dispatcher to hold this file under the 500-line bound).
+ * Dual MOD3 remains deferred with the AR0/BK
+ * indexed/circular dependency.
  * Does not own: address state, bus execution, memory visibility, opcode
  * identity, timing, or diagnostics.
  */
 
 #include "memory_effect.h"
 
-#include "memory_effect_absolute_data.h"
+#include "memory_effect_absolute_dispatch.h"
 #include "memory_effect_dual.h"
-#include "memory_effect_smem_absolute_pair.h"
-#include "memory_effect_smem_program_pair.h"
-#include "memory_effect_smem_program_a_pair.h"
-#include "memory_effect_smem_absolute_program_pair.h"
-#include "memory_effect_atomic_absolute.h"
-#include "memory_effect_long32_absolute_store.h"
 #include "memory_effect_long32_single.h"
 
 #include <stddef.h>
@@ -239,7 +236,14 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
             effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16:
-        return ti_c54x_op_memory_effect_absolute_data_shape_is_valid(
+    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16:
+        return ti_c54x_op_memory_effect_absolute_shape_is_valid(
             effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16:
@@ -471,25 +475,6 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                    (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
                effect->complete == NULL &&
                effect->transfer_reserved == UINT8_C(0);
-
-    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PAIR_WORD16:
-        return ti_c54x_op_memory_effect_smem_absolute_pair_shape_is_valid(
-            effect);
-    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16:
-        return ti_c54x_op_memory_effect_smem_program_pair_shape_is_valid(
-            effect);
-    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16:
-        return ti_c54x_op_memory_effect_smem_program_a_pair_shape_is_valid(
-            effect);
-    case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16:
-        return ti_c54x_op_memory_effect_smem_absolute_program_pair_shape_is_valid(
-            effect);
-    case TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16:
-        return ti_c54x_op_memory_effect_long32_absolute_store_shape_is_valid(
-            effect);
-    case TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16:
-        return ti_c54x_op_memory_effect_atomic_absolute_shape_is_valid(
-            effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_INVALID:
     default:

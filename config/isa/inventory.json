@@ -1906,7 +1906,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "DLD_LONG32_MOD13"
+        "DLD_LONG32_MOD13",
+        "DLD_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -3533,6 +3534,12 @@
     {
       "catalog_symbol": "DST_SMEM_ABSOLUTE",
       "form_id": "FORM-T2-20-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
+    },
+    {
+      "catalog_symbol": "DLD_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-19-01",
       "coverage": "SUBSET",
       "addressing_subset": "ABSOLUTE_DATA"
     },

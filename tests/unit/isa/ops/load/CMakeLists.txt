@@ -29,3 +29,4 @@ ti_c54x_add_unit_test(circular_standard_indirect_load_effects
 ti_c54x_add_unit_test(reverse_carry_standard_indirect_load_effects
                       test_reverse_carry_standard_indirect_load_effects.c)
 ti_c54x_add_unit_test(dld_long32_mod13_ops test_dld_long32_mod13.c)
+ti_c54x_add_unit_test(dld_smem_absolute_ops test_dld_smem_absolute.c)
