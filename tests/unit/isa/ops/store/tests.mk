@@ -28,6 +28,8 @@ $(eval $(call ti_c54x_add_test,mvdk_ops,isa/ops/store,test_mvdk.c))
 $(eval $(call ti_c54x_add_test,mvkd_ops,isa/ops/store,test_mvkd.c))
 # P3-S62 RED contract: MVPD program-to-Smem copy effects.
 $(eval $(call ti_c54x_add_test,mvpd_ops,isa/ops/store,test_mvpd.c))
+# P3-S63 RED contract: MVDP Smem-to-program copy effects.
+$(eval $(call ti_c54x_add_test,mvdp_ops,isa/ops/store,test_mvdp.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_ops,isa/ops/store,test_st_t_smem.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_ops,isa/ops/store,test_st_t_smem_direct.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_ops,isa/ops/store,test_stlm_smem_direct.c))

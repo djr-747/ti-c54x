@@ -165,13 +165,15 @@ test_fixed_bit_near_misses(void)
      * variable. Setting fixed bit 9 lands on the deferred BANZD
      * word (pinned UNKNOWN above), setting fixed bit 14 lands on
      * the MAS_SMEM row (pinned below), setting fixed bit 11 lands
-     * on the MAC_SMEM_LK row (pinned below), and setting fixed
-     * bit 15 lands on the RPT_K row (pinned below); all other
-     * fixed-bit flips must miss every row. Clearing fixed bit 13
-     * lands on the P3-S40 LTD_SMEM row (pinned below). */
+     * on the MAC_SMEM_LK row (pinned below), setting fixed bit
+     * 12 lands on the P3-S63 MVDP_DIRECT row (pinned below),
+     * and setting fixed bit 15 lands on the RPT_K row (pinned
+     * below); all other fixed-bit flips must miss every row.
+     * Clearing fixed bit 13 lands on the P3-S40 LTD_SMEM row
+     * (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0100),
-        UINT16_C(0x0400), UINT16_C(0x1000)};
+        UINT16_C(0x0400)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -203,6 +205,17 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(rpt_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(rpt_sibling.id == TI_C54X_OPCODE_ID_RPT_K);
+    }
+
+    /* Setting fixed bit 12 lands on the P3-S63 MVDP_DIRECT row:
+     * 0x6C00 ^ 0x1000 = 0x7C00 classifies as MVDP_DIRECT. */
+    {
+        const ti_c54x_decode_result mvdp_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BANZ_VALUE ^ UINT16_C(0x1000)));
+
+        TI_C54X_TEST_CHECK(mvdp_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVDP_DIRECT);
     }
 
     /* Setting fixed bit 14 lands on the P3-S3e MAS Smem row:
