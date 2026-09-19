@@ -14303,3 +14303,35 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: READA/WRITA, then the `0xF00` halt re-probe with
   the full move group in the image path.
+
+## 2026-09-19 — Correction to P3-S62/S63 (MVPD/MVDP row swap, fec52da)
+
+- Correction commit `fec52da` (no history rewritten): the S62/S63
+  rows shipped swapped from recollection (MVPD at `0x7D`,
+  MVDP at `0x7C`). The vendored TI text section diagrams are
+  unambiguous once character-aligned: MVPD `pmad,Smem`
+  (p. 4-117) carries bit8=0 (`0x7C00`/`0x7C80`) and MVDP
+  `Smem,pmad` (p. 4-111) carries bit8=1 (`0x7D00`/`0x7D80`);
+  the execution prose agrees (`pmad -> PAR` then
+  `Smem -> Pmem[PAR]` for MVDP). The earlier collision
+  analysis was also inverted: `0x78`/`0x79` were never in
+  danger (MACP owns them per its own diagram at bits
+  `0111 100S`); the real neighbors are MACD (`0111 101S`,
+  `0x7A`/`0x7B`), then MVPD (`0x7C`), MVDP (`0x7D`), READA
+  (`0x7E`, one word), WRITA (`0x7F`, one word).
+- `fec52da` swaps the four catalog rows, all leaf/CPU/metadata
+  test words, the five decode sibling pins (`0x7C00` now
+  `MVPD_DIRECT`), and both slice-doc bodies; the lookup is
+  regenerated with the same population (`39241`). No carrier,
+  leaf-logic, root, inventory, or pin-count changes were
+  needed — the swap is address-value-only.
+- Validation evidence: `make test` exit 0, ctest 669/669 in
+  `build-cmake`, coverage steady at 164/205 (80.000%).
+- Lesson recorded: row bases must be read off the vendored
+  section diagrams with explicit bit-position alignment,
+  never from recollection; the first S62 draft (0x78) and
+  the swap both came from memory.
+- Follow-up: READA (`0x7E`) and WRITA (`0x7F`) are one-word
+  accumulator-A-addressed forms needing their own carrier
+  (PAR/RC repeat behavior stays out of scope); then the
+  `0xF00` halt re-probe.
