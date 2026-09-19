@@ -1917,6 +1917,7 @@
       "coverage": "SUBSET",
       "catalog_symbols": [
         "LD_SMEM",
+        "LD_SMEM_ABSOLUTE",
         "LD_SMEM_MOD4",
         "LD_SMEM_MOD5",
         "LD_SMEM_MOD6",
@@ -2955,6 +2956,12 @@
       "form_id": "FORM-T2-19-02",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "LD_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-19-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "LD_SMEM_TS",

@@ -1,6 +1,7 @@
 # Test ownership: tests/unit/isa/ops/load owns pure load semantic effects.
 ti_c54x_add_unit_test(ld_status_fields_ops test_ld_status_fields.c)
 ti_c54x_add_unit_test(ld_smem_ops test_ld_smem.c)
+ti_c54x_add_unit_test(ld_smem_absolute_ops test_ld_smem_absolute.c)
 ti_c54x_add_unit_test(ldu_smem_ops test_ldu_smem.c)
 # P3-S66 RED contract: LDU DP-relative direct loads.
 ti_c54x_add_unit_test(ldu_direct_ops test_ldu_direct.c)

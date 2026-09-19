@@ -1,6 +1,7 @@
 # Test ownership: tests/unit/isa/ops/load owns pure load semantic effects.
 $(eval $(call ti_c54x_add_test,ld_status_fields_ops,isa/ops/load,test_ld_status_fields.c))
 $(eval $(call ti_c54x_add_test,ld_smem_ops,isa/ops/load,test_ld_smem.c))
+$(eval $(call ti_c54x_add_test,ld_smem_absolute_ops,isa/ops/load,test_ld_smem_absolute.c))
 $(eval $(call ti_c54x_add_test,ldu_smem_ops,isa/ops/load,test_ldu_smem.c))
 # P3-S66 RED contract: LDU DP-relative direct loads.
 $(eval $(call ti_c54x_add_test,ldu_direct_ops,isa/ops/load,test_ldu_direct.c))

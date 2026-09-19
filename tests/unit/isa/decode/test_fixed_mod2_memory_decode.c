@@ -117,8 +117,10 @@ check_failure(const ti_c54x_decode_result *first,
 static void
 test_adjacent_patterns_are_unknown(void)
 {
+    /* 0x10F8 left the unknown list in P3-S75 (LD_SMEM_ABSOLUTE
+     * claims it); the ST/LDU/STH absolute holes stay unknown. */
     const uint16_t unknown_words[] = {
-        UINT16_C(0x10F8), UINT16_C(0x80F8), UINT16_C(0x11F8),
+        UINT16_C(0x80F8), UINT16_C(0x11F8),
         UINT16_C(0x81F8)};
 
     for (size_t index = 0U;

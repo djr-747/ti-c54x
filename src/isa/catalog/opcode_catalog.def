@@ -267,6 +267,20 @@ TI_C54X_OPCODE_MASKED(LDR_MOD6, ldr_mod6, 0x16B0, 0xFEF8, 1, TI_C54X_OPERAND_LAY
 /* CMPT=0 circular standard-indirect MOD8/MOD10 rows. */
 TI_C54X_OPCODE_MASKED(LD_SMEM_MOD8, ld_smem_mod8, 0x10C0, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
 TI_C54X_OPCODE_MASKED(LD_SMEM_MOD10, ld_smem_mod10, 0x10D0, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
+/* P3-S75 LD absolute Smem,dst (TI SPRU172C LD: 0001 000D
+ * IAAA AAAA, load accumulator with Smem, add 1 word for
+ * absolute addressing): the exact 0x10F8 first word (D=0
+ * selects A, I=1 with the 0x78 absolute selector) carries
+ * the 16-bit absolute DATA address in word 1; execution
+ * loads the word into dst(15:0) with SXM sign extension
+ * and no status-bit change. Neither the LD_SMEM nor the
+ * MOD5/MOD6 masks match 0x10F8, so no shadow carve is
+ * needed; the row sits after the LD_SMEM indirect family
+ * to keep the positionally pinned catalog head stable.
+ * Long-offset and direct/indirect Smem forms stay
+ * deferred. Absolute operands cannot repeat (section 2
+ * repeat rules), so the row is INELIGIBLE with evidence. */
+TI_C54X_OPCODE_EXACT(LD_SMEM_ABSOLUTE, ld_smem_absolute, 0x10F8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
 TI_C54X_OPCODE_MASKED(LD_SMEM_TS_MOD8, ld_smem_ts_mod8, 0x14C0, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER)
 TI_C54X_OPCODE_MASKED(LD_SMEM_TS_MOD10, ld_smem_ts_mod10, 0x14D0, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM_T_REGISTER)
 TI_C54X_OPCODE_MASKED(STL_SMEM_MOD8, stl_smem_mod8, 0x80C0, 0xFEF8, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)

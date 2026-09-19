@@ -44,8 +44,8 @@ class InventoryCircularMultiBindingTests(unittest.TestCase):
     def test_each_form_has_five_deduplicated_subset_bindings(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),335)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 329)
+        self.assertEqual(len(bindings),336)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 330)
         by_form: dict[str, list[dict]] = {}
         for binding in bindings:
             by_form.setdefault(binding["form_id"], []).append(binding)
@@ -66,6 +66,12 @@ class InventoryCircularMultiBindingTests(unittest.TestCase):
                 # LDU_DIRECT row outside the standard-indirect token.
                 expected_symbols.add("LDU_DIRECT")
                 expected_subsets.add("DIRECT_DP")
+            if form_id == "FORM-T2-19-02":
+                # P3-S75: the LD family form also binds the absolute
+                # LD_SMEM_ABSOLUTE row outside the standard-indirect
+                # token.
+                expected_symbols.add("LD_SMEM_ABSOLUTE")
+                expected_subsets.add("ABSOLUTE_DATA")
             self.assertEqual(len(rows), len(expected_symbols))
             self.assertEqual(
                 {row["catalog_symbol"] for row in rows},
