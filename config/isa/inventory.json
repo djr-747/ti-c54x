@@ -210,7 +210,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "ADDM_SMEM_MOD0_3"
+        "ADDM_SMEM_MOD0_3",
+        "ADDM_LK_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -3496,6 +3497,12 @@
       "form_id": "FORM-T2-01-12",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "ADDM_LK_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-01-12",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "DADD",

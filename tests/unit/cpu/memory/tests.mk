@@ -9,3 +9,4 @@ $(eval $(call ti_c54x_add_test,cpu_reverse_carry_standard_indirect,cpu/memory,te
 $(eval $(call ti_c54x_add_test,cpu_atomic_logical_memory,cpu/memory,test_cpu_atomic_logical_memory.c))
 $(eval $(call ti_c54x_add_test,cpu_dld_long32_mod13,cpu/memory,test_cpu_dld_long32_mod13.c))
 $(eval $(call ti_c54x_add_test,cpu_dst_long32_mod13,cpu/memory,test_cpu_dst_long32_mod13.c))
+$(eval $(call ti_c54x_add_test,cpu_addm_lk_smem_absolute,cpu/memory,test_cpu_addm_lk_smem_absolute.c))

@@ -4,6 +4,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_candidate_validate.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_direct.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_absolute_data.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_atomic_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_long32_absolute_store.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_long32_single.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_candidate_single_leg.c"

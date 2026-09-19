@@ -64,7 +64,7 @@ test_metadata(void)
             (uint16_t)((ROWS[index].value >> 3U) & UINT16_C(0x000F)) ==
             ROWS[index].mode);
     }
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 331);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 332);
 }
 
 static void

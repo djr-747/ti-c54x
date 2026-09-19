@@ -7,7 +7,9 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_effect_smem_program_pair.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_effect_smem_program_a_pair.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_effect_smem_absolute_program_pair.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_effect_atomic_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_effect_long32_absolute_store.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_effect_long32_single.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_atomic_logical_memory.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_addm_lk_smem_absolute.c"
 )

@@ -43,7 +43,7 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_each_atomic_logical_form_has_one_subset_binding(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),336)
+        self.assertEqual(len(bindings),337)
         by_symbol = {binding["catalog_symbol"]: binding for binding in bindings}
         for symbol, form_id in CASES.items():
             self.assertIn(symbol, by_symbol)
@@ -52,7 +52,15 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
             self.assertEqual(binding["coverage"], "SUBSET")
             self.assertEqual(binding["addressing_subset"], TOKEN)
             form = next(item for item in inventory["forms"] if item["id"] == form_id)
-            self.assertEqual(form["catalog_symbols"], [symbol])
+            if form_id == "FORM-T2-01-12":
+                # P3-S76: the ADDM family form also binds the absolute
+                # ADDM_LK_SMEM_ABSOLUTE row.
+                self.assertEqual(
+                    form["catalog_symbols"],
+                    [symbol, "ADDM_LK_SMEM_ABSOLUTE"],
+                )
+            else:
+                self.assertEqual(form["catalog_symbols"], [symbol])
         for symbol, form_id in SMEM_CASES.items():
             self.assertIn(symbol, by_symbol)
             binding = by_symbol[symbol]

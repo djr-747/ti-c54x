@@ -205,7 +205,14 @@ typedef enum ti_c54x_op_memory_address_kind {
      * `second_value_lsw` (MOD13 LONG32 convention) with
      * WRITE access and no leaf completion: the long32 root
      * owns the chaining internally. */
-    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16 = 27
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16 = 27,
+    /* Atomic absolute WORD16 (ADDM with an absolute Smem):
+     * the 16-bit absolute DATA address with a staged
+     * immediate and an RMW transform (ADD with OVM/SXM
+     * modes for ADDM). The read leg observes the cell and
+     * the engine writes the transform back with no leaf
+     * completion. */
+    TI_C54X_OP_MEMORY_ADDRESS_ATOMIC_ABSOLUTE_WORD16 = 28
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -415,6 +422,16 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word1;
             uint32_t reserved_word2;
         } long32_absolute;
+        struct {
+            /* Atomic absolute WORD16: the 16-bit absolute
+             * DATA address. Same footprint as the pair arms:
+             * the address ABI is unchanged. */
+            uint16_t absolute;
+            uint16_t reserved_half;
+            uint32_t reserved_word0;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+        } atomic_absolute;
         struct {
             /* Smem-to-accumulator-addressed-program pair: same
              * Smem DATA leg shape as `smem_program` but the

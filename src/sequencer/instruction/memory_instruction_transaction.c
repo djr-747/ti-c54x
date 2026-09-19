@@ -389,6 +389,11 @@ advance_rmw_write_mmr(ti_c54x_memory_instruction_transaction *transaction,
     if (operation_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED) {
         return operation_status;
     }
+    /* The locally served MMR read never issues a bus transaction, so
+     * the consumed staged value must clear: retirement leaves the bus
+     * transaction IDLE, and IDLE-canonical plus the tail reset require
+     * the staged slot empty. */
+    transaction->bus_transaction.staged_read_value_word = UINT16_C(0);
     result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
     result->bus_status = TI_C54X_BUS_OK;
     result->instructions_attempted = UINT64_C(1);

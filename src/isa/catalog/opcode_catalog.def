@@ -344,6 +344,18 @@ TI_C54X_OPCODE_MASKED(XORM_SMEM_MOD0_3, xorm_smem_mod0_3, 0x6A80, 0xFFE0, 2, TI_
  * slot (SPRU172C section ADDM: 0110 1011 I addr7, nonrepeatable); unlike the
  * logical rows it stages an ADD transform with OVM/SXM modes. */
 TI_C54X_OPCODE_MASKED(ADDM_SMEM_MOD0_3, addm_smem_mod0_3, 0x6B80, 0xFFE0, 2, TI_C54X_OPERAND_LAYOUT_ARF_EXTENSION16_MOD, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM)
+/* P3-S76 ADDM absolute #lk,Smem (TI SPRU172C ADDM: 0110
+ * 1011 I addr7, add long immediate to Smem,
+ * nonrepeatable): the exact 0x6BF8 first word (I=1 with
+ * the 0x78 absolute selector) carries the 16-bit absolute
+ * DATA address in word 1 and the 16-bit immediate in word
+ * 2; execution *(abs) += lk with OVM/SXM saturation and
+ * sticky C/OVA commit. The MOD0-3 mask never matches
+ * 0x6BF8, so no shadow carve is needed; direct/indirect
+ * Smem forms stay deferred. Absolute operands cannot
+ * repeat (section 2 repeat rules), so the row is
+ * INELIGIBLE with evidence. */
+TI_C54X_OPCODE_EXACT(ADDM_LK_SMEM_ABSOLUTE, addm_lk_smem_absolute, 0x6BF8, 3, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_LK, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM_OVM)
 
 /* CMPT=0 long32 standard-indirect MOD13 rows. */
 TI_C54X_OPCODE_MASKED(DLD_LONG32_MOD13, dld_long32_mod13, 0x56E8, 0xFEF8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_ARF_EXTENSION16_MOD4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_SXM)

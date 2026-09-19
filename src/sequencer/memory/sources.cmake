@@ -2,6 +2,7 @@
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/address_resolution.c"
     "${CMAKE_CURRENT_LIST_DIR}/address_resolution_absolute_data.c"
+    "${CMAKE_CURRENT_LIST_DIR}/address_resolution_atomic_absolute.c"
     "${CMAKE_CURRENT_LIST_DIR}/address_resolution_long32_absolute_store.c"
     "${CMAKE_CURRENT_LIST_DIR}/address_resolution_long32_mod13.c"
     "${CMAKE_CURRENT_LIST_DIR}/dual_address_resolution.c"

@@ -16,3 +16,5 @@ ti_c54x_add_unit_test(cpu_dld_long32_mod13
                       test_cpu_dld_long32_mod13.c)
 ti_c54x_add_unit_test(cpu_dst_long32_mod13
                       test_cpu_dst_long32_mod13.c)
+ti_c54x_add_unit_test(cpu_addm_lk_smem_absolute
+                      test_cpu_addm_lk_smem_absolute.c)
