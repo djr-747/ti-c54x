@@ -1,8 +1,9 @@
 /* Module contract
  * Owns: public-CPU RED proofs for RPT activation, including RC
  * load and sequential retirement for `RPT #K` and `RPT #lk`,
- * transactional body blocks for UNRESOLVED and INELIGIBLE
- * bodies (including nested RPT), latched-request persistence
+ * the eligible NOP delay-loop body, transactional body
+ * blocks for UNRESOLVED (STM) and INELIGIBLE bodies
+ * (including nested RPT), latched-request persistence
  * across activation and blocks, and reset clearing.
  * Does not own: production CPU behavior, catalog/decode or pure
  * repeat effects, the single-repeat driver, shared fixtures,
@@ -42,12 +43,16 @@ read_program(void *context, ti_c54x_program_word_address address,
              uint16_t *value)
 {
     rpt_fixture *fixture = (rpt_fixture *)context;
-    const unsigned index = fixture->program_calls;
+    uint32_t offset;
 
-    TI_C54X_TEST_CHECK(index < fixture->word_count);
-    TI_C54X_TEST_CHECK(address == fixture->start + (ti_c54x_program_word_address)index);
+    /* HOLD re-drives body fetches at a repeated address (P3-S69
+     * eligible NOP loop), so serve by address rather than
+     * asserting a monotonic call order. */
     TI_C54X_TEST_CHECK(value != NULL);
-    *value = fixture->words[index];
+    TI_C54X_TEST_CHECK(address >= fixture->start);
+    offset = address - fixture->start;
+    TI_C54X_TEST_CHECK(offset < fixture->word_count);
+    *value = fixture->words[offset];
     fixture->program_calls++;
     return TI_C54X_BUS_OK;
 }
@@ -141,8 +146,11 @@ static void check_rpt_k_retires(void)
 
 static void check_unresolved_body_blocks(void)
 {
-    rpt_fixture fixture = {.words = {UINT16_C(0xEC02), NOP_WORD},
-                           .word_count = 2U,
+    /* P3-S69: NOP is ELIGIBLE now, so the UNRESOLVED example
+     * body is STM #0x2468,T (two words, no read inputs). */
+    rpt_fixture fixture = {.words = {UINT16_C(0xEC02), UINT16_C(0x770E),
+                                     UINT16_C(0x2468)},
+                           .word_count = 3U,
                            .start = 0U,
                            .program_calls = 0U,
                            .endpoint_calls = 0U};
@@ -152,7 +160,7 @@ static void check_unresolved_body_blocks(void)
     ti_c54x_run_result result = ti_c54x_cpu_run(cpu, UINT64_C(1));
 
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
-    /* The UNRESOLVED NOP body blocks before extension fetch or
+    /* The UNRESOLVED STM body blocks before extension fetch or
      * dispatch: one program read, nothing retired, PC frozen. */
     result = ti_c54x_cpu_run(cpu, UINT64_C(1));
     TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_INVALID_STATE);
@@ -268,8 +276,11 @@ static void check_ineligible_body_blocks(void)
 
 static void check_latched_request_persists(void)
 {
-    rpt_fixture fixture = {.words = {UINT16_C(0xEC02), NOP_WORD},
-                           .word_count = 2U,
+    /* P3-S69: STM body keeps the UNRESOLVED block (see
+     * check_unresolved_body_blocks). */
+    rpt_fixture fixture = {.words = {UINT16_C(0xEC02), UINT16_C(0x770E),
+                                     UINT16_C(0x2468)},
+                           .word_count = 3U,
                            .start = 0U,
                            .program_calls = 0U,
                            .endpoint_calls = 0U};
@@ -336,10 +347,38 @@ static void check_reset_clears_repeat(void)
     TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
 }
 
+static void check_eligible_nop_body_retires(void)
+{
+    rpt_fixture fixture = {.words = {UINT16_C(0xEC02), NOP_WORD},
+                           .word_count = 2U,
+                           .start = 0U,
+                           .program_calls = 0U,
+                           .endpoint_calls = 0U};
+    _Alignas(max_align_t) unsigned char storage[1024] = {0};
+    ti_c54x_cpu *cpu =
+        init_cpu(&fixture, storage, UINT32_C(0x0100));
+    ti_c54x_run_result result = ti_c54x_cpu_run(cpu, UINT64_C(4));
+
+    /* P3-S69: NOP is absent from Table 2-28, so the RPT #2
+     * delay-loop idiom retires all four instructions. */
+    TI_C54X_TEST_CHECK(result.reason == TI_C54X_STOP_BUDGET_EXHAUSTED);
+    TI_C54X_TEST_CHECK(result.bus_status == TI_C54X_BUS_OK);
+    TI_C54X_TEST_CHECK(result.instructions_attempted == UINT64_C(4));
+    TI_C54X_TEST_CHECK(result.instructions_retired == UINT64_C(4));
+    TI_C54X_TEST_CHECK(fixture.program_calls == 4U);
+    TI_C54X_TEST_CHECK(fixture.endpoint_calls == 0U);
+    TI_C54X_TEST_CHECK(read_rc_value(cpu) == UINT16_C(0));
+    TI_C54X_TEST_CHECK(cpu->repeat_progress.phase ==
+                       TI_C54X_REPEAT_PROGRESS_PHASE_COMPLETE);
+    TI_C54X_TEST_CHECK(cpu->arch_state.pc_word == UINT32_C(0x0102));
+    TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
+}
+
 int main(void)
 {
     check_rpt_k_retires();
     check_unresolved_body_blocks();
+    check_eligible_nop_body_retires();
     check_rpt_k_zero();
     check_rpt_lk_max();
     check_nested_rpt_blocks();

@@ -52,6 +52,7 @@ LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7 = (
 )
 LAYOUT_N_CONDITION8 = "TI_C54X_OPERAND_LAYOUT_N_CONDITION8"
 REPEAT_UNRESOLVED = "TI_C54X_REPEATABILITY_UNRESOLVED"
+REPEAT_ELIGIBLE = "TI_C54X_REPEATABILITY_ELIGIBLE"
 REPEAT_INELIGIBLE = "TI_C54X_REPEATABILITY_INELIGIBLE"
 RESOURCES_NONE = "TI_C54X_INPUT_RESOURCES_NONE"
 RESOURCES_STATUS_SXM = "TI_C54X_INPUT_RESOURCES_STATUS_SXM"
@@ -206,7 +207,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(
             dataclasses.replace(rows[0], source_line=0),
             OpcodeRow("NOP", "nop", 0xF495, 0xFFFF, 1, LAYOUT_NONE,
-                      REPEAT_UNRESOLVED, "EXACT", 0, RESOURCES_NONE),
+                      REPEAT_ELIGIBLE, "EXACT", 0, RESOURCES_NONE),
         )
         self.assertGreater(rows[0].source_line, 0)
         self.assertEqual(rows[1].symbol, "LD_IMMEDIATE_DP")

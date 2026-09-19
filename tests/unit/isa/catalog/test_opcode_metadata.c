@@ -69,7 +69,7 @@ test_enum_ranges_and_metadata_values(void)
     TI_C54X_TEST_CHECK(nop != NULL);
     TI_C54X_TEST_CHECK(nop->operand_layout == TI_C54X_OPERAND_LAYOUT_NONE);
     TI_C54X_TEST_CHECK(nop->repeatability ==
-                       TI_C54X_REPEATABILITY_UNRESOLVED);
+                       TI_C54X_REPEATABILITY_ELIGIBLE);
     TI_C54X_TEST_CHECK(nop->input_resources ==
                        TI_C54X_INPUT_RESOURCES_NONE);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_metadata_for_id(
@@ -124,7 +124,7 @@ test_completion_copies_tokens_transactionally(void)
     bundle.program_words[0] = UINT16_C(0);
     TI_C54X_TEST_CHECK(decoded.operand_layout == TI_C54X_OPERAND_LAYOUT_NONE);
     TI_C54X_TEST_CHECK(decoded.repeatability ==
-                       TI_C54X_REPEATABILITY_UNRESOLVED);
+                       TI_C54X_REPEATABILITY_ELIGIBLE);
 }
 
 static void
