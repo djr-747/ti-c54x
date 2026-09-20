@@ -15779,3 +15779,45 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: next slice is P3-S94 for the doorbell take (NMI source,
   arbitration, vector fetch, `RETE` return toward loader2).
+
+## 2026-09-20 — P3-S94 lands as 85359ba (NMI take with predecode arbitration)
+
+- Scope: proves the loader2 hop's NMI half plus the take machinery
+  the HPINT half will reuse. New public `ti_c54x_cpu_request_nmi`
+  latches one edge with its caller-selected entry address (null,
+  in-run, and second-while-pending reject losslessly); the take
+  fires at the predecode boundary (after resume, before fetch) as
+  the root's second producer: `STACK_PUSH_TAKE` WORD16 of the
+  parked PC at old SP - 1, INTM set via the take completion, PC to
+  the frozen entry address, no RTN move, one retirement, edge
+  cleared only on RETIRED commit. Pending defers while single or
+  block repeat is ACTIVE or a delay countdown is armed; INTM never
+  gates NMI. New seams: `take_arbitration` (pure decision),
+  `take_complete` (INTM set), `stack_push_prepare_take`,
+  `transaction_prepare_take`, `take_issue` (loop issue), shared
+  `run_memory_retirement_tail` in run_support (resumed roots,
+  opcode MEMORY retirements, and takes), keeping run.c at 769 and
+  transaction.c at 776 under the split bound.
+- Validation evidence: `make test` exit 0 (ASan/UBSan on: full unit
+  binaries plus quality-test incl. evidence registry PASS at 804
+  requirements / 658 tests, source boundaries, knobs, manifests,
+  ISA inventory, observer-off artifact); three RED-first tests
+  green under make and ctest (`ti_c54x.take_arbitration`,
+  `ti_c54x.take_complete`, `ti_c54x.cpu_nmi_take`); fresh CMake
+  Debug `ctest` 760/760; S90 canonical park run byte-identical
+  absent a request (IDLE pc=0xF6A, attempted=394728,
+  retired=394727, io_calls=4, intm=1 ifr=0x0000).
+- Decisions: entry-address routing stays caller-owned opaque (no
+  profile constant; PMST/IMR gaps stay open); maskable take
+  deferred to a later slice (needs the IMR write seam, STM wave
+  2); block-repeat ACTIVE defers rather than aborts (abort
+  semantics stay an open question); correction: the 85359ba
+  message cites "804/659" but the registry holds 804
+  requirements / 658 tests.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is the maskable take (IMR-gated
+  arbitration reusing this take core, then the pending HPINT hop
+  to 0x3772); `make bench-compare` is broken at HEAD on a
+  pre-existing catalog `MASKED2` macro gap in bench code (touched
+  by neither this slice nor S93) — fix separately; open W16-W20A
+  label question unchanged.

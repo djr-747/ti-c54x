@@ -8627,7 +8627,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s94-nmi-take-slice.md",
-        "anchor": "P3-S94: NMI take slice (planned)"
+        "anchor": "P3-S94: NMI take slice (implemented; local verification green)"
       },
       "assertion": "S94 owns the NMI take as two project-contract seams. The pure predecode decision takes a pending edge only with no single/block repeat ACTIVE and no armed delayed-branch countdown, deferring otherwise with INTM never consulted. The INTM-setting push completion ignores the staged value and stages exactly one ST1-bit-11 set, mirroring the RETE clear. The take is the root's second producer: a STACK_PUSH_TAKE WORD16 WRITE of the parked PC with a zeroed-sentinel instruction and pc_effect, the entry address frozen into the documented LONG32-MSW slot, and take-only PC liveness on the frozen return with no RTN load. Maskable arbitration and take, RS/reset, IACK signaling, and the entry-address routing table belong to later slices."
     }

@@ -1,4 +1,4 @@
-### P3-S94: NMI take slice (planned)
+### P3-S94: NMI take slice (implemented; local verification green)
 
 The loader2 hop's first half lands here. S93 proved the
 receive layer and re-derived the consistent two-step:
