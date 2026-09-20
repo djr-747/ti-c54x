@@ -783,7 +783,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S86: PORTW port-peer seam slice (implemented; local verification green)](plan/p3-s86-portw-port-peer-seam-slice.md)
 
-- [P3-S87: PORTR slice (planned)](plan/p3-s87-portr-slice.md)
+- [P3-S87: PORTR slice (implemented; local verification green)](plan/p3-s87-portr-slice.md)
 
 - [P3-S88: 0xF4E1 slice (planned)](plan/p3-s88-f4e1-slice.md)
 

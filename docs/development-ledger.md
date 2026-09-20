@@ -15406,3 +15406,48 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S87 for `PORTR` at
   `0xF97` (library opcode slice against the live
   peer).
+
+## 2026-09-20 — P3-S87 lands as b431bc1 (PORTR absolute-Smem slice)
+
+- Scope: exact row `PORTR_SMEM_ABSOLUTE` (`0x74F8`,
+  3 words, I=1 with the `0x78` absolute selector)
+  placed before the `PORTR_SMEM` masked row (its
+  `0xFF80` mask spans the cookie, S81/S82/S85
+  pattern); new `portr_smem_absolute`
+  checked/trusted leaf stages the PORT WORD16
+  arm with the mode-15 marker, DATA address in
+  `reserved_half`, PA in `port_address`,
+  DATA-WRITE direction, zero staged value,
+  complete NULL, `INELIGIBLE` for repeat. Layout,
+  plan, synthesize, effect gate, shape, and
+  liveness reuse S85 untouched. No MMR, knob, or
+  timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_portr_smem_absolute_decode/ops/metadata`,
+  `test_cpu_portr_smem_absolute` RED-first green
+  on the first full run under the ASan/UBSan
+  build; 286 Python quality tests OK; registries
+  and checkers PASS); fresh CMake Debug `ctest`
+  751/751. Targeted `ENTRY=0xF97` peer run retires
+  the PORTR and stops `INVALID_STATE` at
+  pc=`0xF9A`, opcode `0xF130`. BUDGET=1000000
+  widened-window run with the 64-block MCU peer
+  plus `--port-peer` retires 394724 with zero data
+  faults (`io_calls=4`) to `UNIMPLEMENTED_OPCODE`
+  at pc=`0xF6A`, opcode `0xF4E1` (byte-identical
+  rerun; `prog_covered` 133 to 166).
+- Decisions: new `ID_COUNT` 341 to 342 with pins;
+  the exact word reclaims its lookup pin so
+  populated first words stay 40274.
+  `FORM-T2-26-09` binds the row `SUBSET` with
+  `ABSOLUTE_DATA`. README snapshot refreshed (341
+  rows, 40274 pins, 168/205 forms, 45/205
+  strict). Build note: the hosted runner exe
+  needs a fresh `opcode_catalog.o` after lookup
+  regeneration (the hosted object rule does not
+  track the `.inc` derivative) — stale symptom is
+  the 2-word masked decode with `prog_reads=2`.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S88 for `0xF4E1` at
+  `0xF6A` (uncovered first word — diagnosis
+  in-slice).

@@ -1,4 +1,4 @@
-### P3-S87: PORTR absolute Smem slice (planned)
+### P3-S87: PORTR absolute Smem slice (implemented; local verification green)
 
 `PORTR *(abs),PA` is TI SPRU172C §4 p. 4-129
 (PORTR with absolute Smem, 3 words): first `0x74F8`
