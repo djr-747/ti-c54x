@@ -171,6 +171,21 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     return TI_C54X_ERROR_OK;
 }
 
+ti_c54x_error ti_c54x_cpu_request_interrupt(ti_c54x_cpu *cpu,
+                                            uint16_t mask)
+{
+    if (cpu == NULL || cpu->execution_active || mask == UINT16_C(0) ||
+        (uint16_t)(mask & (uint16_t)(mask - UINT16_C(1))) !=
+            UINT16_C(0)) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    if (ti_c54x_arch_state_set_ifr_bit(&cpu->arch_state, mask) !=
+        TI_C54X_ARCH_STATE_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    return TI_C54X_ERROR_OK;
+}
+
 ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
                                   ti_c54x_state *state)
 {

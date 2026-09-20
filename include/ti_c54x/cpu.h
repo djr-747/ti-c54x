@@ -99,6 +99,18 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu);
 ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
                                   ti_c54x_state *state);
 
+/* Receive one external maskable interrupt request: latch the single IFR
+ * bit named by mask (TI SPRU131G section 6.10 phase 1: a maskable
+ * request sets its IFR bit when received). Exactly one bit must be
+ * set; a null CPU, a zero mask, or a multi-bit mask rejects with
+ * INVALID_ARGUMENT and mutates nothing. Latch only: acknowledgment,
+ * the ISR, and wake behavior belong to later slices. NMI and RS have
+ * no IFR bit and stay out. The bit mapping is device-specific; the
+ * core treats the mask as opaque (C542 assignments live in TI
+ * SPRU131G Figure 6-2(b)). */
+ti_c54x_error ti_c54x_cpu_request_interrupt(ti_c54x_cpu *cpu,
+                                            uint16_t mask);
+
 /* Execute at most one instruction retirement.  A step performs one complete
  * fetch/decode/dispatch/retire transaction or returns its first stop reason.
  * A failed bus fetch or unknown opcode is an attempt but not a retirement. */

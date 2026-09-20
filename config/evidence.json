@@ -20235,6 +20235,20 @@
       "test_ids": [
         "T-PROJECT-P3-S54-STL-SHFT-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Receive one external maskable interrupt request by latching exactly one caller-selected IFR bit on receipt, visible through the architectural state view with all other fields undisturbed. Null CPU, zero, and multi-bit masks reject with INVALID_ARGUMENT and mutate nothing. Acknowledgment, take, wake behavior, NMI/RS mapping, source and priority selection, timing, and observers belong to later slices.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE"
+      ]
     }
   ],
   "tests": [
@@ -29536,6 +29550,20 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S54-STL-SHFT-CPU-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/status/test_cpu_interrupt_arrival.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_interrupt_arrival"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE"
       ]
     }
   ]
