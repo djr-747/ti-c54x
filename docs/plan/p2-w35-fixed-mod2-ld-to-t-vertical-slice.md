@@ -1,4 +1,4 @@
-### P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)
+### P2-W35: fixed-MOD2 LD-to-T vertical slice (implemented; local verification green)
 
 This implemented evidence-fit slice is bounded by the TI `SPRU172C` §4.70 LD
 entry (printed pp. 4-70–4-71), the registered standard-indirect MOD2 rule in

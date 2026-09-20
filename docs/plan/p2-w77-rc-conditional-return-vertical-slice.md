@@ -1,4 +1,4 @@
-### P2-W77: RC conditional-return vertical slice (planned)
+### P2-W77: RC conditional-return vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W77 FIT/ownership
 anchor. W77 activates one Table 2-15 row under `FORM-T2-15-03`,

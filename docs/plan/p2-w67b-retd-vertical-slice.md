@@ -1,4 +1,4 @@
-### P2-W67B: RETD vertical slice (planned)
+### P2-W67B: RETD vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W67B FIT/ownership
 anchor. W67B activates one Table 2-15 row under `FORM-T2-15-04`, TI

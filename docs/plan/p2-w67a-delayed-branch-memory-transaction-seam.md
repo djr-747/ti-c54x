@@ -1,4 +1,4 @@
-### P2-W67A: delayed-branch MEMORY transaction seam (planned)
+### P2-W67A: delayed-branch MEMORY transaction seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W67A FIT/ownership
 anchor. W67A is a generic project-contract seam only, mirroring the

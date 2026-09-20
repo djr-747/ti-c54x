@@ -1,4 +1,4 @@
-### P2-W47A: generic LONG32 pair transaction seam (planned)
+### P2-W47A: generic LONG32 pair transaction seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W47A
 activation. W47A is a generic sequencer-only forcing function: it adds no

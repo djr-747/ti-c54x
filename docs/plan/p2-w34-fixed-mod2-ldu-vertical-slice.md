@@ -1,4 +1,4 @@
-### P2-W34: fixed-MOD2 LDU vertical slice (planned)
+### P2-W34: fixed-MOD2 LDU vertical slice (implemented; local verification green)
 
 This implemented bounded memory ISA slice has an evidence boundary of the
 registered TI `SPRU172C` LDU entry (printed p. 4-79), the registered standard

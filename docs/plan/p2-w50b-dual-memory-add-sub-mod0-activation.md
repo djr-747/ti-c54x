@@ -1,4 +1,4 @@
-### P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)
+### P2-W50B: dual-memory ADD/SUB MOD0 activation (implemented; local verification green)
 
 This immutable `(planned)` anchor records the bounded opcode activation over
 W50A. TI SPRU172C defines syntax 6 `ADD Xmem,Ymem,dst` and

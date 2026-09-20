@@ -1,4 +1,4 @@
-### P2-W67C: CALLD vertical slice (planned)
+### P2-W67C: CALLD vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W67C FIT/ownership
 anchor. W67C activates one Table 2-13 row under `FORM-T2-13-02`, TI

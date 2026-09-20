@@ -1,4 +1,4 @@
-### P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)
+### P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (implemented; local verification green)
 
 State: implemented; targeted proof and full local and remote gates are green.
 Keep the immutable `(planned)` heading as the evidence anchor. The clean

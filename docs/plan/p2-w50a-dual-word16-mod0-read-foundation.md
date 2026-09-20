@@ -1,4 +1,4 @@
-### P2-W50A: dual-WORD16 MOD0 read foundation (planned)
+### P2-W50A: dual-WORD16 MOD0 read foundation (implemented; local verification green)
 
 This immutable `(planned)` anchor records the architecture-forcing seam now
 implemented and green. Six W50A requirements and six executable tests are

@@ -1,4 +1,4 @@
-### P2-W78: RCD delayed-conditional-return vertical slice (planned)
+### P2-W78: RCD delayed-conditional-return vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W78 FIT/ownership
 anchor. W78 activates the delayed companion of W77 under the same

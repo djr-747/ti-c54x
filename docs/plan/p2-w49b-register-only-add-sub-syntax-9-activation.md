@@ -1,4 +1,4 @@
-### P2-W49B: register-only ADD/SUB syntax-9 activation (planned)
+### P2-W49B: register-only ADD/SUB syntax-9 activation (implemented; local verification green)
 
 This immutable `(planned)` anchor records the bounded arithmetic vertical slice;
 the status is now implemented. The bounded

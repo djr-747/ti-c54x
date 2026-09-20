@@ -1,4 +1,4 @@
-### P2-W64: stack-pointer input seam vertical slice (planned)
+### P2-W64: stack-pointer input seam vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W64 FIT/ownership anchor.
 W64 adds the stack-pointer input seam that the W65 `CALL` row will

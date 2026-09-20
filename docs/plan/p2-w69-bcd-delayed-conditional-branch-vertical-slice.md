@@ -1,4 +1,4 @@
-### P2-W69: BCD delayed-conditional-branch vertical slice (planned)
+### P2-W69: BCD delayed-conditional-branch vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W69 FIT/ownership
 anchor. W69 activates one Table 2-12 row under `FORM-T2-12-04`, TI

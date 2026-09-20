@@ -1,4 +1,4 @@
-### P2-W33: CMPR CC,ARx vertical slice (planned)
+### P2-W33: CMPR CC,ARx vertical slice (implemented; local verification green)
 
 This implementation-complete bounded non-memory ISA slice has green focused,
 review, sanitizer, quality, and final full-gate validation; full integration

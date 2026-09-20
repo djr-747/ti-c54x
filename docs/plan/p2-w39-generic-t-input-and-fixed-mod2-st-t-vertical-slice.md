@@ -1,4 +1,4 @@
-### P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)
+### P2-W39: generic T input and fixed-MOD2 ST T vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading remains the FIT/ownership anchor for the
 evidence freeze; the W39 implementation is now complete. TI SPRU172C Store

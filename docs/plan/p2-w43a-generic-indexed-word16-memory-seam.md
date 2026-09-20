@@ -1,4 +1,4 @@
-### P2-W43A: generic indexed WORD16 MEMORY seam (planned)
+### P2-W43A: generic indexed WORD16 MEMORY seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W43A
 activation. W43A is a generic transaction prerequisite only; it does not add

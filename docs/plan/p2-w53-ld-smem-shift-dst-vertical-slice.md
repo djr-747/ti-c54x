@@ -1,4 +1,4 @@
-### P2-W53: LD Smem[,SHIFT],dst vertical slice (planned)
+### P2-W53: LD Smem[,SHIFT],dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W53 FIT/ownership anchor.
 W53 activates Table 2-19 form `FORM-T2-19-05`, TI SPRU172C §4 LD syntax 4

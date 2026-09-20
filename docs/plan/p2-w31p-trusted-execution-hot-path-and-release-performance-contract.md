@@ -1,4 +1,4 @@
-### P2-W31P: trusted execution hot path and release-performance contract (planned)
+### P2-W31P: trusted execution hot path and release-performance contract (implemented; local verification green)
 
 State: implementation and structural proofs are green; hosted-performance
 acceptance remains pending/deferred. The optimized cohorts are below the 60 ns

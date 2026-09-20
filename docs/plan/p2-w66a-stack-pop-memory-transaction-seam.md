@@ -1,4 +1,4 @@
-### P2-W66A: stack-pop MEMORY transaction seam (planned)
+### P2-W66A: stack-pop MEMORY transaction seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W66A FIT/ownership
 anchor. W66A is a generic project-contract seam only, mirroring the

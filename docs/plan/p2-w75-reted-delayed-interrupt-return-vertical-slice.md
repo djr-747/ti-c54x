@@ -1,4 +1,4 @@
-### P2-W75: RETED delayed-interrupt-return vertical slice (planned)
+### P2-W75: RETED delayed-interrupt-return vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W75 FIT/ownership
 anchor. W75 activates one Table 2-15 row under `FORM-T2-15-05`,

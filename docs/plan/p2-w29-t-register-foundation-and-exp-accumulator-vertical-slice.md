@@ -1,4 +1,4 @@
-### P2-W29: T-register foundation and EXP accumulator vertical slice (planned)
+### P2-W29: T-register foundation and EXP accumulator vertical slice (implemented; local verification green)
 
 Implementation status: complete at `fedbd6a`. All seven RED contracts, focused
 tests, two independent reviews, the full `make test` gate, and remote CI run
@@ -47,7 +47,7 @@ OVM/SXM, memory, RPT/IRQ, parallel issue, timing, diagnostics/environment,
 allocation, public API, or emulator seam must stop and report the exact evidence,
 missing contract, owner, tests, and hot-path consequence as a GAP.
 
-#### P2-W29B: EXP accumulator vertical slice (planned)
+#### P2-W29B: EXP accumulator vertical slice (implemented; local verification green)
 
 This subheading is the immutable FIT/ownership anchor for the EXP family. It is not a
 permission to broaden the T foundation: EXP consumes the generic T write effect

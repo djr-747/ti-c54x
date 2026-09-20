@@ -1,4 +1,4 @@
-### P2-W26: SFTL shifted-accumulator vertical slice (planned)
+### P2-W26: SFTL shifted-accumulator vertical slice (implemented; local verification green)
 
 State: implemented; the immutable `(planned)` heading remains the historical
 evidence anchor. Catalog, decode, shift-operation, CPU, full local repository,

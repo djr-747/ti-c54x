@@ -1,4 +1,4 @@
-### P2-W37: fixed-MOD2 memory-to-status vertical slice (planned)
+### P2-W37: fixed-MOD2 memory-to-status vertical slice (implemented; local verification green)
 
 This activated evidence-fit slice is bounded by the TI `SPRU172C` §4.70 LD
 entry (printed pp. 4-69–4-71), the registered standard-indirect MOD2 rule in

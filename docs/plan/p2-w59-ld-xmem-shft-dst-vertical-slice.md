@@ -1,4 +1,4 @@
-### P2-W59: LD Xmem,SHFT,dst vertical slice (planned)
+### P2-W59: LD Xmem,SHFT,dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W59 FIT/ownership anchor.
 W59 activates Table 2-19 form `FORM-T2-19-06`, TI SPRU172C §4 LD syntax

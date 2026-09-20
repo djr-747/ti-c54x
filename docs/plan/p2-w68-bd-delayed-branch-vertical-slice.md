@@ -1,4 +1,4 @@
-### P2-W68: BD delayed-branch vertical slice (planned)
+### P2-W68: BD delayed-branch vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W68 FIT/ownership
 anchor. W68 activates one Table 2-12 row under `FORM-T2-12-01`, TI

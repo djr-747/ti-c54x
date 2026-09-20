@@ -1,4 +1,4 @@
-### P2-W40: authoritative ISA instruction-form inventory (planned)
+### P2-W40: authoritative ISA instruction-form inventory (implemented; local verification green)
 
 This heading is the immutable FIT/ownership anchor for the inventory audit. The
 authoritative SPRU172C summary/source-universe checkpoint is §§2.1–2.4, Tables

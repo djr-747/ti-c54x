@@ -1,4 +1,4 @@
-### P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)
+### P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (implemented; local verification green)
 
 State: W31B1 and W31B2 are implemented with focused strict and ASan/UBSan
 tests, independent review, and the full standalone local gate green. P2-W31P's

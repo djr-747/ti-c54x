@@ -1,4 +1,4 @@
-### P2-W62: B pmad unconditional-branch vertical slice (planned)
+### P2-W62: B pmad unconditional-branch vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W62 FIT/ownership anchor.
 W62 activates one Table 2-12 row under `FORM-T2-12-01`, TI SPRU172C §4

@@ -1,4 +1,4 @@
-### P2-W42B: standard-indirect MOD0–3 Smem family expansion (planned)
+### P2-W42B: standard-indirect MOD0–3 Smem family expansion (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W42B
 activation. W42B broadens the ten existing fixed-MOD2 standard-indirect Smem

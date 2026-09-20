@@ -1,4 +1,4 @@
-### P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)
+### P2-W24: generic accumulator-write effect and CMPL vertical slice (implemented; local verification green)
 
 State: implemented; this heading remains the frozen historical evidence anchor.
 

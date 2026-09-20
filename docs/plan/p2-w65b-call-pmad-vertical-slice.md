@@ -1,4 +1,4 @@
-### P2-W65B: CALL pmad vertical slice (planned)
+### P2-W65B: CALL pmad vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W65B FIT/ownership
 anchor. W65B activates one Table 2-13 row under `FORM-T2-13-02`, TI

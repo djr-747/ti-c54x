@@ -1,4 +1,4 @@
-### P2-W47B: DLD/DST LONG32 MOD13 composition (planned)
+### P2-W47B: DLD/DST LONG32 MOD13 composition (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W47B
 activation. The TI DLD and DST entries define the long-word read/write families

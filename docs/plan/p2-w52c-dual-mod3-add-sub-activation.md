@@ -1,4 +1,4 @@
-### P2-W52C: dual MOD3 ADD/SUB activation (planned)
+### P2-W52C: dual MOD3 ADD/SUB activation (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W52C FIT/ownership anchor.
 W52C activates the fourteen MOD3-involving syntax-6 dual-memory ADD/SUB

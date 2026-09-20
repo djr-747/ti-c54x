@@ -1,4 +1,4 @@
-### P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)
+### P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W61 FIT/ownership anchor.
 W61 activates two Table 2-19 rows under `FORM-T2-19-19`, TI SPRU172C §4

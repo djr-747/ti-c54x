@@ -1,4 +1,4 @@
-### P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)
+### P2-W23: MAX/MIN accumulator vertical slice (implemented; local verification green)
 
 State: implemented; this heading remains the frozen historical evidence anchor.
 

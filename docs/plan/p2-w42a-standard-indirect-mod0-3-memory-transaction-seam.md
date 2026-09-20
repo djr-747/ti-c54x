@@ -1,4 +1,4 @@
-### P2-W42A: standard-indirect MOD0–3 memory transaction seam (planned)
+### P2-W42A: standard-indirect MOD0–3 memory transaction seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W42A
 activation. W42A is a generic sequencer/memory seam only: the catalog and all

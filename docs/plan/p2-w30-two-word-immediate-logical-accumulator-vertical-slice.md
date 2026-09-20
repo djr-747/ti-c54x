@@ -1,4 +1,4 @@
-### P2-W30: two-word immediate logical accumulator vertical slice (planned)
+### P2-W30: two-word immediate logical accumulator vertical slice (implemented; local verification green)
 
 The immutable `(planned)` heading preserves the evidence-registry anchor. P2-W30
 is now implemented: the two-word immediate AND, OR, and XOR accumulator forms

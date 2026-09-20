@@ -1,4 +1,4 @@
-### P2-W58: LD #lk[,SHFT],dst vertical slice (planned)
+### P2-W58: LD #lk[,SHFT],dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W58 FIT/ownership anchor.
 W58 activates Table 2-19 form `FORM-T2-19-08`, TI SPRU172C §4 LD syntax

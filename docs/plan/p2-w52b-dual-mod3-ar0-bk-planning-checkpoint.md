@@ -1,4 +1,4 @@
-### P2-W52B: dual MOD3 AR0/BK planning checkpoint (planned)
+### P2-W52B: dual MOD3 AR0/BK planning checkpoint (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W52B FIT/ownership anchor.
 W52B admits dual-indirect MOD3 (`*ARx+0%`) through the address planner, the

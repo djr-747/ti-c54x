@@ -1,4 +1,4 @@
-### P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)
+### P2-W71: BANZD delayed auxiliary-register-branch vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W71 FIT/ownership
 anchor. W71 activates one Table 2-12 row under `FORM-T2-12-03`,

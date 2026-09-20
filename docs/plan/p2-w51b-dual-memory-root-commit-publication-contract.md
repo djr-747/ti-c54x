@@ -1,4 +1,4 @@
-### P2-W51B: dual-memory root commit/publication contract (planned)
+### P2-W51B: dual-memory root commit/publication contract (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W51B FIT/ownership anchor.
 W51B owns the generic root transaction seam only; it does not activate an opcode

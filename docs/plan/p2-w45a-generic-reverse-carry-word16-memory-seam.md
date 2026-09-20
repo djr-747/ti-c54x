@@ -1,4 +1,4 @@
-### P2-W45A: generic reverse-carry WORD16 MEMORY seam (planned)
+### P2-W45A: generic reverse-carry WORD16 MEMORY seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W45A
 activation. W45A is now implementation-complete. Existing registered TI

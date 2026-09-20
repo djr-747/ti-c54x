@@ -1,4 +1,4 @@
-### P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)
+### P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (implemented; local verification green)
 
 This immutable `(planned)` heading remains the FIT/ownership anchor for W46B.
 The primary TI SPRU172C instruction pages are ANDM printed p4-13, ORM p4-125,

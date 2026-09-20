@@ -1,4 +1,4 @@
-### P2-W55: LD #K,dst vertical slice (planned)
+### P2-W55: LD #K,dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W55 FIT/ownership anchor.
 W55 activates Table 2-19 form `FORM-T2-19-07`, TI SPRU172C §4 LD syntax

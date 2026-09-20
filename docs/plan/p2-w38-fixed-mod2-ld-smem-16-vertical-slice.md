@@ -1,4 +1,4 @@
-### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)
+### P2-W38: fixed-MOD2 LD Smem,16 vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for this
 evidence freeze. The bounded one-word `LD Smem,16,dst` form from TI SPRU172C

@@ -1,4 +1,4 @@
-### P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)
+### P2-W45B: reverse-carry MOD4/MOD7 per-family composition (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for W45B. The
 ten existing Smem families compose exactly twenty private MOD4/MOD7 rows:

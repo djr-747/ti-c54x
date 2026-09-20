@@ -1,4 +1,4 @@
-### P2-W74: RETE interrupt-return vertical slice (planned)
+### P2-W74: RETE interrupt-return vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W74 FIT/ownership
 anchor. W74 activates one Table 2-15 row under `FORM-T2-15-05`,

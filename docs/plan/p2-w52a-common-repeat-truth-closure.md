@@ -1,4 +1,4 @@
-### P2-W52A: COMMON repeat-truth closure (planned)
+### P2-W52A: COMMON repeat-truth closure (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W52A FIT/ownership anchor.
 W52A closes the five `PLANNED` COMMON repeat requirements with executable

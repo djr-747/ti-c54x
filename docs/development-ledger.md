@@ -15740,3 +15740,22 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S94 for the
   doorbell take (NMI source, arbitration,
   vector fetch, `RETE` return toward loader2).
+
+## 2026-09-20 — Implementation-plan status sync lands as 363d121 (docs-only)
+
+- Scope: the plan document claimed `(planned)` for 72 landed slices while its
+  own body table already recorded them Implemented. Flipped 73 `docs/plan/`
+  anchors (`###` plus the W29B `####` EXP anchor) and 72 slice links in
+  `docs/implementation-plan.md` to `(implemented; local verification green)`.
+  Registry commit `363d121` synced the 107 evidence/index anchors that embed
+  plan-heading text. No heading reworded; P3-WAVE7, the P3 track anchor, and
+  the W16-W20A kickoff labels are intentionally untouched.
+- Validation evidence: `make test` exit 0; evidence registry PASS (802
+  requirements, 655 tests); heading/link agreement audit clean with no
+  dangling plan links.
+- Decisions: W48A/B/C and W76 own no `docs/plan/` doc (their anchors live in
+  `p2-w20a` / ledger only), so no link rows were fabricated for them; P3-S94
+  remains future work.
+- Knobs: none added, changed, or retired.
+- Follow-up: author the four missing W48A/B/C + W76 slice docs with link rows,
+  or record them as accepted gaps; then decide the W16-W20A label question.

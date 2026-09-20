@@ -1,4 +1,4 @@
-### P2-W66B: RET vertical slice (planned)
+### P2-W66B: RET vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W66B FIT/ownership
 anchor. W66B activates one Table 2-15 row under `FORM-T2-15-04`, TI

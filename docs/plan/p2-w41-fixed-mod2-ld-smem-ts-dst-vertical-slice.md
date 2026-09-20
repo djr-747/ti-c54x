@@ -1,4 +1,4 @@
-### P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)
+### P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (implemented; local verification green)
 
 This heading is the FIT/ownership anchor for the W41 activation. TI SPRU172C
 §4.66 (printed pp. 4-65–4-69) defines the one-word `LD Smem,TS,dst` form with

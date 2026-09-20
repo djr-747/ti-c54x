@@ -1,4 +1,4 @@
-### P2-W60: LDR Smem,dst vertical slice (planned)
+### P2-W60: LDR Smem,dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W60 FIT/ownership anchor.
 W60 activates Table 2-19 form `FORM-T2-19-19`, TI SPRU172C §4 LDR

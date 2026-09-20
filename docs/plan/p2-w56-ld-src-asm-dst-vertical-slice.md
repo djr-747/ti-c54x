@@ -1,4 +1,4 @@
-### P2-W56: LD src,ASM[,dst] vertical slice (planned)
+### P2-W56: LD src,ASM[,dst] vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W56 FIT/ownership anchor.
 W56 activates Table 2-19 form `FORM-T2-19-10`, TI SPRU172C §4 LD syntax

@@ -1,4 +1,4 @@
-### P2-W51C: dual ADD/SUB MOD0–MOD2 activation (planned)
+### P2-W51C: dual ADD/SUB MOD0–MOD2 activation (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W51C FIT/ownership anchor.
 W51C activates the eight non-MOD0/MOD0 dual-indirect MOD0/MOD1/MOD2

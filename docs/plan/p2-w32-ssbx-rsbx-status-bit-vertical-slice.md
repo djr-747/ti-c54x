@@ -1,4 +1,4 @@
-### P2-W32: SSBX/RSBX status-bit vertical slice (planned)
+### P2-W32: SSBX/RSBX status-bit vertical slice (implemented; local verification green)
 
 State: implementation, focused tests, independent no-P0/P1 review, quality
 gate, focused ASan/UBSan validation, and the full standalone `make test` gate

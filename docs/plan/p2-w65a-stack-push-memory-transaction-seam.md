@@ -1,4 +1,4 @@
-### P2-W65A: stack-push MEMORY transaction seam (planned)
+### P2-W65A: stack-push MEMORY transaction seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W65A FIT/ownership
 anchor. W65A is a generic project-contract seam only, mirroring the

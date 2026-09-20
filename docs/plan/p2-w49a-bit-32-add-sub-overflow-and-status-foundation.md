@@ -1,4 +1,4 @@
-### P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)
+### P2-W49A: bit-32 ADD/SUB overflow and status foundation (implemented; local verification green)
 
 TI SPRU131G describes a 40-bit ALU and accumulator lane while defining carry
 and borrow at bit 32. Arithmetic overflow for the common C54x mode is measured

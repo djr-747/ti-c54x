@@ -1,4 +1,4 @@
-### P2-W43B: indexed MOD5/MOD6 per-family composition (planned)
+### P2-W43B: indexed MOD5/MOD6 per-family composition (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W43B
 activation. TI SPRU131G Figure 5-7 and Table 5-3 (printed pp. 5-10–5-11)

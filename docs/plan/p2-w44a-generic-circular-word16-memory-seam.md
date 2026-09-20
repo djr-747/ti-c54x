@@ -1,4 +1,4 @@
-### P2-W44A: generic circular WORD16 MEMORY seam (planned)
+### P2-W44A: generic circular WORD16 MEMORY seam (implemented; local verification green)
 
 This immutable `(planned)` heading remains the FIT/ownership anchor for the
 W44A activation. W44A is now implementation-complete. The private typed

@@ -1,4 +1,4 @@
-### P2-W36: fixed-MOD2 immediate-store vertical slice (planned)
+### P2-W36: fixed-MOD2 immediate-store vertical slice (implemented; local verification green)
 
 State: implementation-complete. Focused catalog/decode/effects/CPU contracts,
 sanitizer checks, quality, independent review, and the full standalone gate are

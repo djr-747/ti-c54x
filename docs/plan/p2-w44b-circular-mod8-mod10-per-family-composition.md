@@ -1,4 +1,4 @@
-### P2-W44B: circular MOD8/MOD10 per-family composition (planned)
+### P2-W44B: circular MOD8/MOD10 per-family composition (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for the W44B
 activation. Figure 5-7 and Table 5-3 establish the common single-indirect

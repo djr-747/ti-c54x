@@ -1,4 +1,4 @@
-### P2-W70: BANZ auxiliary-register-branch vertical slice (planned)
+### P2-W70: BANZ auxiliary-register-branch vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W70 FIT/ownership
 anchor. W70 activates one Table 2-12 row under `FORM-T2-12-03`, TI

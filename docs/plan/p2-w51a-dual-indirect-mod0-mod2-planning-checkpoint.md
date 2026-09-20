@@ -1,4 +1,4 @@
-### P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)
+### P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W51A FIT/ownership anchor.
 W51A extends the pure dual-indirect WORD16 planner and the sequencer resolution

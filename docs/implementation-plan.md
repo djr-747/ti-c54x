@@ -274,37 +274,37 @@ slice; no family-local workaround is admitted.
 
 - [P3-S3: MAC/MPY datapath seam (implemented; local verification green)](plan/p3-s3-mac-mpy-datapath-seam.md)
 
-- [P2-W38: fixed-MOD2 LD Smem,16 vertical slice (planned)](plan/p2-w38-fixed-mod2-ld-smem-16-vertical-slice.md)
+- [P2-W38: fixed-MOD2 LD Smem,16 vertical slice (implemented; local verification green)](plan/p2-w38-fixed-mod2-ld-smem-16-vertical-slice.md)
 
-- [P2-W39: generic T input and fixed-MOD2 ST T vertical slice (planned)](plan/p2-w39-generic-t-input-and-fixed-mod2-st-t-vertical-slice.md)
+- [P2-W39: generic T input and fixed-MOD2 ST T vertical slice (implemented; local verification green)](plan/p2-w39-generic-t-input-and-fixed-mod2-st-t-vertical-slice.md)
 
-- [P2-W40: authoritative ISA instruction-form inventory (planned)](plan/p2-w40-authoritative-isa-instruction-form-inventory.md)
+- [P2-W40: authoritative ISA instruction-form inventory (implemented; local verification green)](plan/p2-w40-authoritative-isa-instruction-form-inventory.md)
 
-- [P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (planned)](plan/p2-w41-fixed-mod2-ld-smem-ts-dst-vertical-slice.md)
+- [P2-W41: fixed-MOD2 LD Smem,TS,dst vertical slice (implemented; local verification green)](plan/p2-w41-fixed-mod2-ld-smem-ts-dst-vertical-slice.md)
 
-- [P2-W42A: standard-indirect MOD0–3 memory transaction seam (planned)](plan/p2-w42a-standard-indirect-mod0-3-memory-transaction-seam.md)
+- [P2-W42A: standard-indirect MOD0–3 memory transaction seam (implemented; local verification green)](plan/p2-w42a-standard-indirect-mod0-3-memory-transaction-seam.md)
 
-- [P2-W42B: standard-indirect MOD0–3 Smem family expansion (planned)](plan/p2-w42b-standard-indirect-mod0-3-smem-family-expansion.md)
+- [P2-W42B: standard-indirect MOD0–3 Smem family expansion (implemented; local verification green)](plan/p2-w42b-standard-indirect-mod0-3-smem-family-expansion.md)
 
-- [P2-W43A: generic indexed WORD16 MEMORY seam (planned)](plan/p2-w43a-generic-indexed-word16-memory-seam.md)
+- [P2-W43A: generic indexed WORD16 MEMORY seam (implemented; local verification green)](plan/p2-w43a-generic-indexed-word16-memory-seam.md)
 
-- [P2-W43B: indexed MOD5/MOD6 per-family composition (planned)](plan/p2-w43b-indexed-mod5-mod6-per-family-composition.md)
+- [P2-W43B: indexed MOD5/MOD6 per-family composition (implemented; local verification green)](plan/p2-w43b-indexed-mod5-mod6-per-family-composition.md)
 
-- [P2-W44A: generic circular WORD16 MEMORY seam (planned)](plan/p2-w44a-generic-circular-word16-memory-seam.md)
+- [P2-W44A: generic circular WORD16 MEMORY seam (implemented; local verification green)](plan/p2-w44a-generic-circular-word16-memory-seam.md)
 
-- [P2-W44B: circular MOD8/MOD10 per-family composition (planned)](plan/p2-w44b-circular-mod8-mod10-per-family-composition.md)
+- [P2-W44B: circular MOD8/MOD10 per-family composition (implemented; local verification green)](plan/p2-w44b-circular-mod8-mod10-per-family-composition.md)
 
-- [P2-W45A: generic reverse-carry WORD16 MEMORY seam (planned)](plan/p2-w45a-generic-reverse-carry-word16-memory-seam.md)
+- [P2-W45A: generic reverse-carry WORD16 MEMORY seam (implemented; local verification green)](plan/p2-w45a-generic-reverse-carry-word16-memory-seam.md)
 
-- [P2-W45B: reverse-carry MOD4/MOD7 per-family composition (planned)](plan/p2-w45b-reverse-carry-mod4-mod7-per-family-composition.md)
+- [P2-W45B: reverse-carry MOD4/MOD7 per-family composition (implemented; local verification green)](plan/p2-w45b-reverse-carry-mod4-mod7-per-family-composition.md)
 
-- [P2-W46A: generic WORD16 same-address read-modify-write seam (planned)](plan/p2-w46a-generic-word16-same-address-read-modify-write-seam.md)
+- [P2-W46A: generic WORD16 same-address read-modify-write seam (implemented; local verification green)](plan/p2-w46a-generic-word16-same-address-read-modify-write-seam.md)
 
-- [P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (planned)](plan/p2-w46b-andm-orm-xorm-neutral-mod0-3-composition.md)
+- [P2-W46B: ANDM/ORM/XORM neutral MOD0–3 composition (implemented; local verification green)](plan/p2-w46b-andm-orm-xorm-neutral-mod0-3-composition.md)
 
-- [P2-W47A: generic LONG32 pair transaction seam (planned)](plan/p2-w47a-generic-long32-pair-transaction-seam.md)
+- [P2-W47A: generic LONG32 pair transaction seam (implemented; local verification green)](plan/p2-w47a-generic-long32-pair-transaction-seam.md)
 
-- [P2-W47B: DLD/DST LONG32 MOD13 composition (planned)](plan/p2-w47b-dld-dst-long32-mod13-composition.md)
+- [P2-W47B: DLD/DST LONG32 MOD13 composition (implemented; local verification green)](plan/p2-w47b-dld-dst-long32-mod13-composition.md)
 
 ## Objective
 
@@ -469,27 +469,27 @@ seam. The expected post-slice catalog is 15 rows and 1081 populated first-word
 encodings (encodings, not distinct-instruction count); repeatability and machine
 timing remain unresolved until independently evidenced.
 
-- [P2-W29: T-register foundation and EXP accumulator vertical slice (planned)](plan/p2-w29-t-register-foundation-and-exp-accumulator-vertical-slice.md)
+- [P2-W29: T-register foundation and EXP accumulator vertical slice (implemented; local verification green)](plan/p2-w29-t-register-foundation-and-exp-accumulator-vertical-slice.md)
 
-- [P2-W30: two-word immediate logical accumulator vertical slice (planned)](plan/p2-w30-two-word-immediate-logical-accumulator-vertical-slice.md)
+- [P2-W30: two-word immediate logical accumulator vertical slice (implemented; local verification green)](plan/p2-w30-two-word-immediate-logical-accumulator-vertical-slice.md)
 
-- [P2-W31A: fixed-MOD2 memory prerequisites (planned)](plan/p2-w31a-fixed-mod2-memory-prerequisites.md)
+- [P2-W31A: fixed-MOD2 memory prerequisites (implemented; local verification green)](plan/p2-w31a-fixed-mod2-memory-prerequisites.md)
 
-- [P2-W31P: trusted execution hot path and release-performance contract (planned)](plan/p2-w31p-trusted-execution-hot-path-and-release-performance-contract.md)
+- [P2-W31P: trusted execution hot path and release-performance contract (implemented; local verification green)](plan/p2-w31p-trusted-execution-hot-path-and-release-performance-contract.md)
 
-- [P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (planned)](plan/p2-w31b-transactional-data-memory-endpoint-and-fixed-mod2-load-store-pair.md)
+- [P2-W31B: transactional data-memory endpoint and fixed-MOD2 load/store pair (implemented; local verification green)](plan/p2-w31b-transactional-data-memory-endpoint-and-fixed-mod2-load-store-pair.md)
 
-- [P2-W32: SSBX/RSBX status-bit vertical slice (planned)](plan/p2-w32-ssbx-rsbx-status-bit-vertical-slice.md)
+- [P2-W32: SSBX/RSBX status-bit vertical slice (implemented; local verification green)](plan/p2-w32-ssbx-rsbx-status-bit-vertical-slice.md)
 
-- [P2-W33: CMPR CC,ARx vertical slice (planned)](plan/p2-w33-cmpr-cc-arx-vertical-slice.md)
+- [P2-W33: CMPR CC,ARx vertical slice (implemented; local verification green)](plan/p2-w33-cmpr-cc-arx-vertical-slice.md)
 
-- [P2-W34: fixed-MOD2 LDU vertical slice (planned)](plan/p2-w34-fixed-mod2-ldu-vertical-slice.md)
+- [P2-W34: fixed-MOD2 LDU vertical slice (implemented; local verification green)](plan/p2-w34-fixed-mod2-ldu-vertical-slice.md)
 
-- [P2-W35: fixed-MOD2 LD-to-T vertical slice (planned)](plan/p2-w35-fixed-mod2-ld-to-t-vertical-slice.md)
+- [P2-W35: fixed-MOD2 LD-to-T vertical slice (implemented; local verification green)](plan/p2-w35-fixed-mod2-ld-to-t-vertical-slice.md)
 
-- [P2-W36: fixed-MOD2 immediate-store vertical slice (planned)](plan/p2-w36-fixed-mod2-immediate-store-vertical-slice.md)
+- [P2-W36: fixed-MOD2 immediate-store vertical slice (implemented; local verification green)](plan/p2-w36-fixed-mod2-immediate-store-vertical-slice.md)
 
-- [P2-W37: fixed-MOD2 memory-to-status vertical slice (planned)](plan/p2-w37-fixed-mod2-memory-to-status-vertical-slice.md)
+- [P2-W37: fixed-MOD2 memory-to-status vertical slice (implemented; local verification green)](plan/p2-w37-fixed-mod2-memory-to-status-vertical-slice.md)
 
 - [P2-W16: NOP-seeded opcode architecture](plan/p2-w16-nop-seeded-opcode-architecture.md)
 
@@ -503,83 +503,83 @@ timing remain unresolved until independently evidenced.
 
 - [P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)](plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md)
 
-- [P2-W49A: bit-32 ADD/SUB overflow and status foundation (planned)](plan/p2-w49a-bit-32-add-sub-overflow-and-status-foundation.md)
+- [P2-W49A: bit-32 ADD/SUB overflow and status foundation (implemented; local verification green)](plan/p2-w49a-bit-32-add-sub-overflow-and-status-foundation.md)
 
-- [P2-W49B: register-only ADD/SUB syntax-9 activation (planned)](plan/p2-w49b-register-only-add-sub-syntax-9-activation.md)
+- [P2-W49B: register-only ADD/SUB syntax-9 activation (implemented; local verification green)](plan/p2-w49b-register-only-add-sub-syntax-9-activation.md)
 
-- [P2-W50A: dual-WORD16 MOD0 read foundation (planned)](plan/p2-w50a-dual-word16-mod0-read-foundation.md)
+- [P2-W50A: dual-WORD16 MOD0 read foundation (implemented; local verification green)](plan/p2-w50a-dual-word16-mod0-read-foundation.md)
 
-- [P2-W50B: dual-memory ADD/SUB MOD0 activation (planned)](plan/p2-w50b-dual-memory-add-sub-mod0-activation.md)
+- [P2-W50B: dual-memory ADD/SUB MOD0 activation (implemented; local verification green)](plan/p2-w50b-dual-memory-add-sub-mod0-activation.md)
 
-- [P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (planned)](plan/p2-w51a-dual-indirect-mod0-mod2-planning-checkpoint.md)
+- [P2-W51A: dual-indirect MOD0-MOD2 planning checkpoint (implemented; local verification green)](plan/p2-w51a-dual-indirect-mod0-mod2-planning-checkpoint.md)
 
-- [P2-W51B: dual-memory root commit/publication contract (planned)](plan/p2-w51b-dual-memory-root-commit-publication-contract.md)
+- [P2-W51B: dual-memory root commit/publication contract (implemented; local verification green)](plan/p2-w51b-dual-memory-root-commit-publication-contract.md)
 
-- [P2-W51C: dual ADD/SUB MOD0–MOD2 activation (planned)](plan/p2-w51c-dual-add-sub-mod0-mod2-activation.md)
+- [P2-W51C: dual ADD/SUB MOD0–MOD2 activation (implemented; local verification green)](plan/p2-w51c-dual-add-sub-mod0-mod2-activation.md)
 
-- [P2-W52A: COMMON repeat-truth closure (planned)](plan/p2-w52a-common-repeat-truth-closure.md)
+- [P2-W52A: COMMON repeat-truth closure (implemented; local verification green)](plan/p2-w52a-common-repeat-truth-closure.md)
 
-- [P2-W52B: dual MOD3 AR0/BK planning checkpoint (planned)](plan/p2-w52b-dual-mod3-ar0-bk-planning-checkpoint.md)
+- [P2-W52B: dual MOD3 AR0/BK planning checkpoint (implemented; local verification green)](plan/p2-w52b-dual-mod3-ar0-bk-planning-checkpoint.md)
 
-- [P2-W52C: dual MOD3 ADD/SUB activation (planned)](plan/p2-w52c-dual-mod3-add-sub-activation.md)
+- [P2-W52C: dual MOD3 ADD/SUB activation (implemented; local verification green)](plan/p2-w52c-dual-mod3-add-sub-activation.md)
 
-- [P2-W53: LD Smem[,SHIFT],dst vertical slice (planned)](plan/p2-w53-ld-smem-shift-dst-vertical-slice.md)
+- [P2-W53: LD Smem[,SHIFT],dst vertical slice (implemented; local verification green)](plan/p2-w53-ld-smem-shift-dst-vertical-slice.md)
 
-- [P2-W54: LD src[,SHIFT],dst vertical slice (planned)](plan/p2-w54-ld-src-shift-dst-vertical-slice.md)
+- [P2-W54: LD src[,SHIFT],dst vertical slice (implemented; local verification green)](plan/p2-w54-ld-src-shift-dst-vertical-slice.md)
 
-- [P2-W55: LD #K,dst vertical slice (planned)](plan/p2-w55-ld-k-dst-vertical-slice.md)
+- [P2-W55: LD #K,dst vertical slice (implemented; local verification green)](plan/p2-w55-ld-k-dst-vertical-slice.md)
 
-- [P2-W56: LD src,ASM[,dst] vertical slice (planned)](plan/p2-w56-ld-src-asm-dst-vertical-slice.md)
+- [P2-W56: LD src,ASM[,dst] vertical slice (implemented; local verification green)](plan/p2-w56-ld-src-asm-dst-vertical-slice.md)
 
-- [P2-W57: LD #lk,16,dst vertical slice (planned)](plan/p2-w57-ld-lk-16-dst-vertical-slice.md)
+- [P2-W57: LD #lk,16,dst vertical slice (implemented; local verification green)](plan/p2-w57-ld-lk-16-dst-vertical-slice.md)
 
-- [P2-W58: LD #lk[,SHFT],dst vertical slice (planned)](plan/p2-w58-ld-lk-shft-dst-vertical-slice.md)
+- [P2-W58: LD #lk[,SHFT],dst vertical slice (implemented; local verification green)](plan/p2-w58-ld-lk-shft-dst-vertical-slice.md)
 
-- [P2-W59: LD Xmem,SHFT,dst vertical slice (planned)](plan/p2-w59-ld-xmem-shft-dst-vertical-slice.md)
+- [P2-W59: LD Xmem,SHFT,dst vertical slice (implemented; local verification green)](plan/p2-w59-ld-xmem-shft-dst-vertical-slice.md)
 
-- [P2-W60: LDR Smem,dst vertical slice (planned)](plan/p2-w60-ldr-smem-dst-vertical-slice.md)
+- [P2-W60: LDR Smem,dst vertical slice (implemented; local verification green)](plan/p2-w60-ldr-smem-dst-vertical-slice.md)
 
-- [P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (planned)](plan/p2-w61-ldr-smem-dst-indexed-mod5-mod6-vertical-slice.md)
+- [P2-W61: LDR Smem,dst indexed MOD5/MOD6 vertical slice (implemented; local verification green)](plan/p2-w61-ldr-smem-dst-indexed-mod5-mod6-vertical-slice.md)
 
-- [P2-W62: B pmad unconditional-branch vertical slice (planned)](plan/p2-w62-b-pmad-unconditional-branch-vertical-slice.md)
+- [P2-W62: B pmad unconditional-branch vertical slice (implemented; local verification green)](plan/p2-w62-b-pmad-unconditional-branch-vertical-slice.md)
 
-- [P2-W63: BC pmad,cond conditional-branch vertical slice (planned)](plan/p2-w63-bc-pmad-cond-conditional-branch-vertical-slice.md)
+- [P2-W63: BC pmad,cond conditional-branch vertical slice (implemented; local verification green)](plan/p2-w63-bc-pmad-cond-conditional-branch-vertical-slice.md)
 
-- [P2-W64: stack-pointer input seam vertical slice (planned)](plan/p2-w64-stack-pointer-input-seam-vertical-slice.md)
+- [P2-W64: stack-pointer input seam vertical slice (implemented; local verification green)](plan/p2-w64-stack-pointer-input-seam-vertical-slice.md)
 
-- [P2-W65A: stack-push MEMORY transaction seam (planned)](plan/p2-w65a-stack-push-memory-transaction-seam.md)
+- [P2-W65A: stack-push MEMORY transaction seam (implemented; local verification green)](plan/p2-w65a-stack-push-memory-transaction-seam.md)
 
-- [P2-W65B: CALL pmad vertical slice (planned)](plan/p2-w65b-call-pmad-vertical-slice.md)
+- [P2-W65B: CALL pmad vertical slice (implemented; local verification green)](plan/p2-w65b-call-pmad-vertical-slice.md)
 
-- [P2-W66A: stack-pop MEMORY transaction seam (planned)](plan/p2-w66a-stack-pop-memory-transaction-seam.md)
+- [P2-W66A: stack-pop MEMORY transaction seam (implemented; local verification green)](plan/p2-w66a-stack-pop-memory-transaction-seam.md)
 
-- [P2-W66B: RET vertical slice (planned)](plan/p2-w66b-ret-vertical-slice.md)
+- [P2-W66B: RET vertical slice (implemented; local verification green)](plan/p2-w66b-ret-vertical-slice.md)
 
-- [P2-W67A: delayed-branch MEMORY transaction seam (planned)](plan/p2-w67a-delayed-branch-memory-transaction-seam.md)
+- [P2-W67A: delayed-branch MEMORY transaction seam (implemented; local verification green)](plan/p2-w67a-delayed-branch-memory-transaction-seam.md)
 
-- [P2-W67B: RETD vertical slice (planned)](plan/p2-w67b-retd-vertical-slice.md)
+- [P2-W67B: RETD vertical slice (implemented; local verification green)](plan/p2-w67b-retd-vertical-slice.md)
 
-- [P2-W67C: CALLD vertical slice (planned)](plan/p2-w67c-calld-vertical-slice.md)
+- [P2-W67C: CALLD vertical slice (implemented; local verification green)](plan/p2-w67c-calld-vertical-slice.md)
 
-- [P2-W68: BD delayed-branch vertical slice (planned)](plan/p2-w68-bd-delayed-branch-vertical-slice.md)
+- [P2-W68: BD delayed-branch vertical slice (implemented; local verification green)](plan/p2-w68-bd-delayed-branch-vertical-slice.md)
 
-- [P2-W69: BCD delayed-conditional-branch vertical slice (planned)](plan/p2-w69-bcd-delayed-conditional-branch-vertical-slice.md)
+- [P2-W69: BCD delayed-conditional-branch vertical slice (implemented; local verification green)](plan/p2-w69-bcd-delayed-conditional-branch-vertical-slice.md)
 
-- [P2-W70: BANZ auxiliary-register-branch vertical slice (planned)](plan/p2-w70-banz-auxiliary-register-branch-vertical-slice.md)
+- [P2-W70: BANZ auxiliary-register-branch vertical slice (implemented; local verification green)](plan/p2-w70-banz-auxiliary-register-branch-vertical-slice.md)
 
-- [P2-W71: BANZD delayed auxiliary-register-branch vertical slice (planned)](plan/p2-w71-banzd-delayed-auxiliary-register-branch-vertical-slice.md)
+- [P2-W71: BANZD delayed auxiliary-register-branch vertical slice (implemented; local verification green)](plan/p2-w71-banzd-delayed-auxiliary-register-branch-vertical-slice.md)
 
-- [P2-W72: CCD delayed-conditional-call vertical slice (planned)](plan/p2-w72-ccd-delayed-conditional-call-vertical-slice.md)
+- [P2-W72: CCD delayed-conditional-call vertical slice (implemented; local verification green)](plan/p2-w72-ccd-delayed-conditional-call-vertical-slice.md)
 
-- [P2-W73: CC non-delayed-conditional-call vertical slice (planned)](plan/p2-w73-cc-non-delayed-conditional-call-vertical-slice.md)
+- [P2-W73: CC non-delayed-conditional-call vertical slice (implemented; local verification green)](plan/p2-w73-cc-non-delayed-conditional-call-vertical-slice.md)
 
-- [P2-W74: RETE interrupt-return vertical slice (planned)](plan/p2-w74-rete-interrupt-return-vertical-slice.md)
+- [P2-W74: RETE interrupt-return vertical slice (implemented; local verification green)](plan/p2-w74-rete-interrupt-return-vertical-slice.md)
 
-- [P2-W75: RETED delayed-interrupt-return vertical slice (planned)](plan/p2-w75-reted-delayed-interrupt-return-vertical-slice.md)
+- [P2-W75: RETED delayed-interrupt-return vertical slice (implemented; local verification green)](plan/p2-w75-reted-delayed-interrupt-return-vertical-slice.md)
 
-- [P2-W77: RC conditional-return vertical slice (planned)](plan/p2-w77-rc-conditional-return-vertical-slice.md)
+- [P2-W77: RC conditional-return vertical slice (implemented; local verification green)](plan/p2-w77-rc-conditional-return-vertical-slice.md)
 
-- [P2-W78: RCD delayed-conditional-return vertical slice (planned)](plan/p2-w78-rcd-delayed-conditional-return-vertical-slice.md)
+- [P2-W78: RCD delayed-conditional-return vertical slice (implemented; local verification green)](plan/p2-w78-rcd-delayed-conditional-return-vertical-slice.md)
 
 - [P3-S3j: MPYA-dst register-only vertical slice (implemented; local verification green)](plan/p3-s3j-mpya-dst-register-only-vertical-slice.md)
 
@@ -801,17 +801,17 @@ timing remain unresolved until independently evidenced.
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
 
-- [P2-W23: MAX/MIN accumulator vertical slice (planned; implementation not started)](plan/p2-w23-max-min-accumulator-vertical-slice.md)
+- [P2-W23: MAX/MIN accumulator vertical slice (implemented; local verification green)](plan/p2-w23-max-min-accumulator-vertical-slice.md)
 
-- [P2-W24: generic accumulator-write effect and CMPL vertical slice (planned)](plan/p2-w24-generic-accumulator-write-effect-and-cmpl-vertical-slice.md)
+- [P2-W24: generic accumulator-write effect and CMPL vertical slice (implemented; local verification green)](plan/p2-w24-generic-accumulator-write-effect-and-cmpl-vertical-slice.md)
 
-- [P2-W25: generic input collection and ROL/ROR vertical slice (planned)](plan/p2-w25-generic-input-collection-and-rol-ror-vertical-slice.md)
+- [P2-W25: generic input collection and ROL/ROR vertical slice (implemented; local verification green)](plan/p2-w25-generic-input-collection-and-rol-ror-vertical-slice.md)
 
-- [P2-W26: SFTL shifted-accumulator vertical slice (planned)](plan/p2-w26-sftl-shifted-accumulator-vertical-slice.md)
+- [P2-W26: SFTL shifted-accumulator vertical slice (implemented; local verification green)](plan/p2-w26-sftl-shifted-accumulator-vertical-slice.md)
 
-- [P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (planned)](plan/p2-w27-and-or-xor-register-only-logical-accumulator-vertical-slice.md)
+- [P2-W27: AND/OR/XOR register-only logical accumulator vertical slice (implemented; local verification green)](plan/p2-w27-and-or-xor-register-only-logical-accumulator-vertical-slice.md)
 
-- [P2-W28: TC-aware status foundation and ROLTC/SFTC vertical slice (planned)](plan/p2-w28-tc-aware-status-foundation-and-roltc-sftc-vertical-slice.md)
+- [P2-W28: TC-aware status foundation and ROLTC/SFTC vertical slice (implemented; local verification green)](plan/p2-w28-tc-aware-status-foundation-and-roltc-sftc-vertical-slice.md)
 
 ### Hosted performance history (implemented; local and remote gates green)
 

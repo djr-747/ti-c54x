@@ -1,4 +1,4 @@
-### P2-W54: LD src[,SHIFT],dst vertical slice (planned)
+### P2-W54: LD src[,SHIFT],dst vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W54 FIT/ownership anchor.
 W54 activates Table 2-19 form `FORM-T2-19-11`, TI SPRU172C §4 LD syntax

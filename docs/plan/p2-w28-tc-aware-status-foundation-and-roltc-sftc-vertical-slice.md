@@ -1,4 +1,4 @@
-### P2-W28: TC-aware status foundation and ROLTC/SFTC vertical slice (planned)
+### P2-W28: TC-aware status foundation and ROLTC/SFTC vertical slice (implemented; local verification green)
 
 State: both stages are implemented; P2-W28A is fully green locally and remotely,
 and P2-W28B targeted, independent review, and full local checks are green. The

@@ -1,4 +1,4 @@
-### P2-W46A: generic WORD16 same-address read-modify-write seam (planned)
+### P2-W46A: generic WORD16 same-address read-modify-write seam (implemented; local verification green)
 
 This immutable `(planned)` heading is the FIT/ownership anchor for W46A. The
 seam remains private and value-owned inside the existing

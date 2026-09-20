@@ -1,4 +1,4 @@
-### P2-W73: CC non-delayed-conditional-call vertical slice (planned)
+### P2-W73: CC non-delayed-conditional-call vertical slice (implemented; local verification green)
 
 This immutable `(planned)` heading is the durable W73 FIT/ownership
 anchor. W73 activates one Table 2-13 row under `FORM-T2-13-03`,

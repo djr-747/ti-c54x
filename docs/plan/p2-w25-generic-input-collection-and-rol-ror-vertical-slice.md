@@ -1,4 +1,4 @@
-### P2-W25: generic input collection and ROL/ROR vertical slice (planned)
+### P2-W25: generic input collection and ROL/ROR vertical slice (implemented; local verification green)
 
 State: implemented. P2-W25 is a two-step rotate-through-C slice. The CPU's
 resource-driven input reads now sit behind a private generic collector, and ROL

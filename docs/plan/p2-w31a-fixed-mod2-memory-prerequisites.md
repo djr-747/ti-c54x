@@ -1,4 +1,4 @@
-### P2-W31A: fixed-MOD2 memory prerequisites (planned)
+### P2-W31A: fixed-MOD2 memory prerequisites (implemented; local verification green)
 
 This immutable `(planned)` heading remains the FIT/ownership anchor for the
 memory-oriented slice. P2-W31A is implemented: focused strict and ASan/UBSan
