@@ -306,6 +306,12 @@ slice; no family-local workaround is admitted.
 
 - [P2-W47B: DLD/DST LONG32 MOD13 composition (implemented; local verification green)](plan/p2-w47b-dld-dst-long32-mod13-composition.md)
 
+- [P2-W48A: observable RC progression lifecycle (implemented; local verification green)](plan/p2-w48a-observable-rc-progression-lifecycle.md)
+
+- [P2-W48B: repeat-gated pending IFR latch (implemented; local verification green)](plan/p2-w48b-repeat-gated-pending-ifr-latch.md)
+
+- [P2-W48C: DLD repeatability correction (implemented; local verification green)](plan/p2-w48c-dld-repeatability-correction.md)
+
 ## Objective
 
 Create a small, high-quality, vendor-neutral C11 implementation of the TI C54x DSP
@@ -576,6 +582,8 @@ timing remain unresolved until independently evidenced.
 - [P2-W74: RETE interrupt-return vertical slice (implemented; local verification green)](plan/p2-w74-rete-interrupt-return-vertical-slice.md)
 
 - [P2-W75: RETED delayed-interrupt-return vertical slice (implemented; local verification green)](plan/p2-w75-reted-delayed-interrupt-return-vertical-slice.md)
+
+- [P2-W76: RETF fast-return slice (implemented; local verification green)](plan/p2-w76-retf-fast-return-slice.md)
 
 - [P2-W77: RC conditional-return vertical slice (implemented; local verification green)](plan/p2-w77-rc-conditional-return-vertical-slice.md)
 
