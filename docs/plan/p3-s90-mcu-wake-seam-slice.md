@@ -1,4 +1,4 @@
-### P3-S90: MCU wake seam slice (planned)
+### P3-S90: MCU wake seam slice (implemented; local verification green)
 
 The `0xF6A` IDLE1 park cannot be exited by doorbell.
 S89 showed the stop holds INTM=1 with IFR=0; the

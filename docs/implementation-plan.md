@@ -789,7 +789,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S89: interrupt-wake diagnosis slice (implemented; local verification green)](plan/p3-s89-interrupt-wake-seam-slice.md)
 
-- [P3-S90: MCU wake seam slice (planned)](plan/p3-s90-mcu-wake-seam-slice.md)
+- [P3-S90: MCU wake seam slice (implemented; local verification green)](plan/p3-s90-mcu-wake-seam-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

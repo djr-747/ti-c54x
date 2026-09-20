@@ -15527,3 +15527,63 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S90 for the MCU
   wake seam (doorbell/NMI/warm-reset, deferred
   stages 4-5).
+
+## 2026-09-20 — P3-S90 lands as 56426dd (warm-boot wake seam)
+
+- Scope: hosted runner only — new `--warm-boot
+  <budget>` second phase. After the first stop the
+  CPU de-inits and re-inits at the fixed silicon
+  entry `0xFF80` while the program image, DATA
+  window, both peers (the MCU does not re-upload;
+  sticky port lines hold), program overlay, and
+  coverage survive. Each phase prints the
+  established stop block behind a `warm_boot
+  phase=2` marker; cumulative bus counters
+  continue, first-fault latches reset per phase,
+  and `--dump-prog` reflects the final phase. No
+  core, MMR, knob, or timing changes: warm reset
+  differs from cold init only in host-owned memory
+  preservation. New `phase_begin`/`phase_end`
+  boundary is shared by `main` and `--selftest`
+  vector 3 (phase-1 `ST #0xA5,*(0x800)` survives
+  re-init, phase-2 `ST #0x5A,*(0x801)` proves
+  rerun — RED-first green).
+- Validation evidence: `make test` exit 0
+  (selftest PASS 3 vectors; registries and
+  checkers PASS); fresh CMake Debug `ctest`
+  756/756. No-flag park run is byte-identical to
+  pre-slice. Canonical two-phase repro (staged
+  loader1 image + zeroed `0xC000`-word DATA window
+  at base 0 + 64-block MCU peer + port peer):
+  phase 1 stops `IDLE` at `pc=0xF6A`
+  (`attempted=394728 retired=394727`,
+  `io_calls=4`, zero faults, `irq intm=1
+  ifr=0x0000`); phase 2 runs the full 1000000
+  budget and spins at `pc=0xF17` (MBOX0 poll)
+  with zero faults, overlay `writes=1` to `2`.
+  `--dump-prog 0xFFE0 8` after phase 2 shows the
+  live runtime slots (`0xFFE0: 0xF273/0x3598`,
+  `0xFFE4: 0xF273/0x3772`).
+- Decisions: the vector table decodes (repo
+  catalog) as `RETF` stubs except `0xFFE0` (INT2
+  host-command, handler `0x3598` opens
+  `CALL`+`PSHM`) and `0xFFE4` (doorbell vector
+  25, handler `0x3772` opens `PSHM`) — both
+  genuine ISRs. Takes are real code but
+  unreachable with INTM=1, and an IDLE wake
+  without take resumes the `B 0x0F6A` loop, so
+  warm reset is the only control-flow-changing
+  wake. S88's exact park invocation was never
+  recorded (narrow-window runs fault at `0xF71
+  DST *(0x60)`; the park needs the widened window
+  covering the `0xB704` CRC read) — the canonical
+  command above is now on record in the slice doc. An S88-tree bisect
+  reproduced the narrow-window fault
+  byte-identically, ruling out an S89 runner
+  regression. Staged images and RAM windows stay
+  gitignored `/tmp` scratch.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S91 for peer
+  stages-4-5 behavior (rehome upload, doorbell,
+  go-command) to unblock the phase-2 `0xF17`
+  MBOX wait.
