@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),346)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 340)
+        self.assertEqual(len(bindings),347)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 341)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 45)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 301)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 302)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -92,6 +92,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "SUB_SMEM_ABSOLUTE", "STH_SMEM_ABSOLUTE",
                "STL_SMEM_ABSOLUTE",
                "PORTW_SMEM_ABSOLUTE",
+               "PORTR_SMEM_ABSOLUTE",
                "DADD", "MVDM", "MVMD",
                "MVDK_DIRECT", "MVDK_SMEM", "MVKD_DIRECT", "MVKD_SMEM",
                "MVPD_DIRECT", "MVPD_SMEM", "MVPD_SMEM_ABSOLUTE",
@@ -279,6 +280,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     if binding["catalog_symbol"] == "STL_SMEM_ABSOLUTE"
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "PORTW_SMEM_ABSOLUTE"
+                    else "ABSOLUTE_DATA"
+                    if binding["catalog_symbol"] == "PORTR_SMEM_ABSOLUTE"
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "STH_SMEM_ABSOLUTE"
                     else "ABSOLUTE_DATA"

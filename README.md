@@ -36,11 +36,11 @@ The 5110 boot probe has first light (P3-S57): the reset-vector
 prefix retires through the hosted runner against the staged ROM
 image; both entry vectors stop on correct cold-reset
 unknown-register behavior (see the slice doc). The loader1
-absolute Smem/LD/OR/SUB/STH/STL/PORTW chain (P3-S75 through P3-S85)
+absolute Smem/LD/OR/SUB/STH/STL/PORTW/PORTR chain (P3-S75 through P3-S87)
 retires the finalize sequence into the steady RPTB poll loop
 with zero data faults inside a 100k-instruction budget.
 
-- 340 runnable catalog rows under 40,274 populated first-word lookup entries.
+- 341 runnable catalog rows under 40,274 populated first-word lookup entries.
   Inventory coverage is 168/205 forms SUBSET-or-better (81.951%) and 45/205
   strict-complete (21.951%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first

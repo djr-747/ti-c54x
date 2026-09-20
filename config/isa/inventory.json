@@ -2765,7 +2765,8 @@
       "coverage": "SUBSET",
       "catalog_symbols": [
         "PORTR_DIRECT",
-        "PORTR_SMEM"
+        "PORTR_SMEM",
+        "PORTR_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -4390,6 +4391,12 @@
       "form_id": "FORM-T2-26-09",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "PORTR_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-26-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "PORTW_DIRECT",
