@@ -15759,3 +15759,23 @@ entries are not rewritten after publication.
 - Knobs: none added, changed, or retired.
 - Follow-up: author the four missing W48A/B/C + W76 slice docs with link rows,
   or record them as accepted gaps; then decide the W16-W20A label question.
+
+## 2026-09-20 — W48A/B/C + W76 slice docs land as 25b3e8c (docs-only)
+
+- Scope: closes the follow-up of the 2026-09-20 plan sync. Authors the four
+  missing `docs/plan/` slice docs (`p2-w48a`, `p2-w48b`, `p2-w48c`, `p2-w76`)
+  and adds the four matching link rows in `docs/implementation-plan.md`. No
+  heading reworded; all four anchors carry their landed
+  `(implemented; local verification green)` status. Each doc cites its
+  landed implementation commit (`148c811`, `d06f12d`, `b0144d1`, `1f98043`,
+  all verified present) and restates its ledger-recorded validation.
+- Validation evidence: `make test` exit 0 (full unit binaries plus
+  quality-test: contract unittest discovery, knobs, source boundaries, build
+  manifests, evidence registry, ISA inventory, observer-off artifact). Doc
+  claims spot-checked against the 2026-09-09 W48A/B/C and 2026-09-16 W76
+  ledger entries.
+- Decisions: the `?? .agents/` tree is not this session's work and stays
+  untracked and uncommitted. The W16-W20A kickoff-label question stays open.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S94 for the doorbell take (NMI source,
+  arbitration, vector fetch, `RETE` return toward loader2).
