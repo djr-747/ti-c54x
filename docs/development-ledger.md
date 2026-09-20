@@ -15858,3 +15858,11 @@ entries are not rewritten after publication.
   device-owned; `make bench-compare` still broken at HEAD on
   the pre-existing catalog `MASKED2` gap; open W16-W20A label
   question unchanged.
+
+## 2026-09-20 — P3-S96 lands as f59fe56 (HPINT hop proof: NMI/RETF unmask then maskable take to 0x3772)
+
+- Scope: proves the loader2 hop end to end at the public CPU boundary with no new production API. A parked post-`CALL` program (INTM set, HPINT routed to `0x3772` pending but masked) takes an NMI to a `RETF` stub; the stub takes PC from the CALL-staged RTN with no bus traffic and clears INTM with the HPINT edge preserved; the unmasked HPINT takes to `0x3772` with exactly its IFR bit acknowledged and INTM set; the entry `RETE` pops the parked PC with INTM cleared; one parked step retires with no re-take (`CALL`, NMI take, `RETF`, HPINT take, `RETE`, parked NOP; SP/PC/INTM/IFR/RTN asserted at every boundary; exactly four data-endpoint transactions; no program fetch on either take).
+- Validation evidence: `make test` exit 0 (new RED-first test green via the make harness; evidence registry PASS at 807 requirements / 661 tests, source boundaries, knobs, manifests, observer-off artifact); fresh CMake Debug `ctest` 763/763 including `ti_c54x.cpu_hpint_hop`; hosted runner `--selftest` PASS (4 vectors). The S90 canonical park is not re-runnable here (probe `nokia-5110-v530a.fls` absent from the worktree; a substitute upload image fails peer init), but parity holds by construction: the slice touches no production file (tests, docs, and registry only; 420 insertions, 0 deletions).
+- Decisions: the NMI must arrive after the park is established (a pending NMI preempts decode at once, so requesting it up front starves the `CALL`); `result.opcode_valid` stays sticky from the last fetch across takes (run-support reports `last_fetch_valid`), so the proof asserts stable `program_calls` across takes instead of `!opcode_valid`; no new E-TI row (S93/S94/S95 pinned rows reused) and no new seams.
+- Knobs: none added, changed, or retired.
+- Follow-up: P3-WAVE7 managed leaf fan-out for the remaining forms; multi-source priority stays device-owned; `make bench-compare` still broken at HEAD on the pre-existing catalog `MASKED2` gap; open W16-W20A label question unchanged; canonical park probe `.fls` still absent from the worktree.

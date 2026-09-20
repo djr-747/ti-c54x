@@ -809,7 +809,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S95: maskable take slice (implemented; local verification green)](plan/p3-s95-maskable-take-slice.md)
 
-- [P3-S96: HPINT hop proof slice (planned)](plan/p3-s96-hpint-hop-proof.md)
+- [P3-S96: HPINT hop proof slice (implemented; local verification green)](plan/p3-s96-hpint-hop-proof.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
