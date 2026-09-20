@@ -237,7 +237,8 @@
       "scope": "COMMON_CANDIDATE",
       "coverage": "SUBSET",
       "catalog_symbols": [
-        "SUB_SMEM"
+        "SUB_SMEM",
+        "SUB_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -4392,6 +4393,12 @@
       "form_id": "FORM-T2-02-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "SUB_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-02-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "SUB_SMEM_TS",

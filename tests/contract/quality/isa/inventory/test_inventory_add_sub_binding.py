@@ -228,9 +228,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 336)
-        self.assertEqual(len(rows) + 1, 337)
-        self.assertEqual(len(inventory["catalog_bindings"]),342)
+        self.assertEqual(len(rows), 337)
+        self.assertEqual(len(rows) + 1, 338)
+        self.assertEqual(len(inventory["catalog_bindings"]),343)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]
@@ -249,7 +249,15 @@ class InventoryAddSubBindingTests(unittest.TestCase):
                 self.assertEqual(row.input_resources, expected["resources"])
                 self.assertEqual(form["scope"], "COMMON_CANDIDATE")
                 self.assertEqual(form["coverage"], expected["coverage"])
-                self.assertEqual(form["catalog_symbols"], [symbol])
+                if symbol == "SUB_SMEM":
+                    # P3-S82: the SUB family form also binds the absolute
+                    # SUB_SMEM_ABSOLUTE row.
+                    self.assertEqual(
+                        form["catalog_symbols"],
+                        [symbol, "SUB_SMEM_ABSOLUTE"],
+                    )
+                else:
+                    self.assertEqual(form["catalog_symbols"], [symbol])
                 self.assertEqual(binding["form_id"], expected["form"])
                 self.assertEqual(binding["coverage"], expected["coverage"])
                 self.assertEqual(

@@ -17,6 +17,7 @@ ti_c54x_add_unit_test(add_src_asm_ops test_add_src_asm.c)
 ti_c54x_add_unit_test(sub_lk_ops test_sub_lk.c)
 # P3-S14 RED contract: SUB Smem syntaxes 1-3.
 ti_c54x_add_unit_test(sub_smem_ops test_sub_smem.c)
+ti_c54x_add_unit_test(sub_smem_absolute_ops test_sub_smem_absolute.c)
 ti_c54x_add_unit_test(sub_smem_shift_ops test_sub_smem_shift.c)
 # W5C RED contract: SUB src,ASM.
 ti_c54x_add_unit_test(sub_src_asm_ops test_sub_src_asm.c)

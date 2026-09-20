@@ -98,7 +98,7 @@ test_metadata_rows(void)
 
     TI_C54X_TEST_CHECK(row_count == 10U);
     /* Unknown plus the ten neutral rows and all prior rows remains 36 IDs. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 337);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 338);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];

@@ -6,4 +6,6 @@ $(eval $(call ti_c54x_add_test,cpu_add_sub_dual_modes,cpu/isa/arithmetic,test_cp
 $(eval $(call ti_c54x_add_test,cpu_add_sub_dual_mod3,cpu/isa/arithmetic,test_cpu_add_sub_dual_mod3.c))
 # P3-S3z RED contract: public-CPU ADD Smem syntaxes 1-3 retirement.
 $(eval $(call ti_c54x_add_test,cpu_add_smem,cpu/isa/arithmetic,test_cpu_add_smem.c))
+# P3-S82 RED contract: public-CPU SUB absolute Smem retirement.
+$(eval $(call ti_c54x_add_test,cpu_sub_smem_absolute,cpu/isa/arithmetic,test_cpu_sub_smem_absolute.c))
 $(eval $(call ti_c54x_add_test,cpu_dadd,cpu/isa/arithmetic,test_cpu_dadd.c))

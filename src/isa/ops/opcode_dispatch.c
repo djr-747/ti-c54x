@@ -25,6 +25,7 @@
 #include "arithmetic/op_add_xmem.h"
 #include "arithmetic/op_sub_lk.h"
 #include "arithmetic/op_sub_smem.h"
+#include "arithmetic/op_sub_smem_absolute.h"
 #include "arithmetic/op_sub_smem_shift.h"
 #include "arithmetic/op_sub_src_asm.h"
 #include "arithmetic/op_sub_xmem.h"
