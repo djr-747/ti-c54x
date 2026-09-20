@@ -129,7 +129,11 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             cpu->instructions_retired += memory_result.instructions_retired;
             instructions_retired += memory_result.instructions_retired;
-            ti_c54x_cpu_take_note_resumed(cpu);
+            if (!ti_c54x_cpu_take_note_resumed(cpu)) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
             if (!ti_c54x_run_memory_retirement_tail(
                     cpu, &memory_result,
                     cpu->instruction_transaction.candidate.instruction.bundle

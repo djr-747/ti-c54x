@@ -157,6 +157,10 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     cpu->repeat_block_progress = (ti_c54x_repeat_block_progress){0};
     cpu->nmi_pending = false;
     cpu->nmi_vector_word = UINT16_C(0);
+    memset(cpu->interrupt_vectors, 0, sizeof(cpu->interrupt_vectors));
+    cpu->interrupt_vectors_known = UINT16_C(0);
+    cpu->take_source_bit = UINT8_C(0);
+    cpu->take_source_is_maskable = false;
     cpu->last_fetch_pc_word = UINT32_C(0);
     cpu->last_fetch_word_count = UINT8_C(0);
     if (ti_c54x_accumulator_reset(&cpu->accumulators) !=
@@ -181,6 +185,46 @@ ti_c54x_error ti_c54x_cpu_request_nmi(ti_c54x_cpu *cpu,
     }
     cpu->nmi_pending = true;
     cpu->nmi_vector_word = vector_word;
+    return TI_C54X_ERROR_OK;
+}
+
+/* Index of the single set bit; the caller guarantees exactly
+ * one bit is set. */
+static uint8_t
+single_bit_index(uint16_t mask)
+{
+    uint8_t bit = UINT8_C(0);
+
+    for (bit = UINT8_C(0); bit < UINT8_C(16); bit++) {
+        if ((mask & (uint16_t)((uint16_t)1U << bit)) != UINT16_C(0)) {
+            return bit;
+        }
+    }
+    return UINT8_C(0);
+}
+
+ti_c54x_error ti_c54x_cpu_request_interrupt_vector(ti_c54x_cpu *cpu,
+                                                  uint16_t mask,
+                                                  uint16_t vector_word)
+{
+    uint8_t bit;
+
+    if (cpu == NULL || cpu->execution_active || mask == UINT16_C(0) ||
+        (uint16_t)(mask & (uint16_t)(mask - UINT16_C(1))) !=
+            UINT16_C(0)) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    bit = single_bit_index(mask);
+    if (ti_c54x_arch_state_set_ifr_bit(&cpu->arch_state, mask) !=
+        TI_C54X_ARCH_STATE_OK) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    /* Re-routing a pending source overwrites its entry and
+     * preserves the edge: routing is last-wins, the bit latch
+     * is lossless. */
+    cpu->interrupt_vectors[bit] = vector_word;
+    cpu->interrupt_vectors_known =
+        (uint16_t)(cpu->interrupt_vectors_known | mask);
     return TI_C54X_ERROR_OK;
 }
 

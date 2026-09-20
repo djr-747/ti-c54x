@@ -115,6 +115,21 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
 ti_c54x_error ti_c54x_cpu_request_nmi(ti_c54x_cpu *cpu,
                                      uint16_t vector_word);
 
+/* Receive one external maskable interrupt request with its take
+ * entry address (TI SPRU131G section 6.10 phase 1 plus the
+ * section 6.10.8 acknowledge shape the take proves). Exactly
+ * one mask bit must be set; a null CPU, an in-run call, a zero
+ * mask, or a multi-bit mask rejects with INVALID_ARGUMENT and
+ * mutates nothing. The bit latches like the vectorless receive;
+ * the entry address latches per source with last-wins
+ * re-routing that preserves a pending edge. The address is
+ * caller-owned routing the core treats as opaque (table base,
+ * IPTR, and PMST/IMR gaps stay recorded open). Only a routed
+ * bit can take; NMI and RS have no IFR bit and stay out. */
+ti_c54x_error ti_c54x_cpu_request_interrupt_vector(ti_c54x_cpu *cpu,
+                                                  uint16_t mask,
+                                                  uint16_t vector_word);
+
 /* Receive one external maskable interrupt request: latch the single IFR
  * bit named by mask (TI SPRU131G section 6.10 phase 1: a maskable
  * request sets its IFR bit when received). Exactly one bit must be

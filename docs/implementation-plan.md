@@ -807,6 +807,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S94: NMI take slice (implemented; local verification green)](plan/p3-s94-nmi-take-slice.md)
 
+- [P3-S95: maskable take slice (planned)](plan/p3-s95-maskable-take-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

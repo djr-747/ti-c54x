@@ -47,10 +47,12 @@ ti_c54x_cpu_take_issue_result ti_c54x_cpu_take_issue(
     ti_c54x_cpu *cpu, uint64_t *instructions_attempted,
     uint64_t *instructions_retired);
 
-/* Clear the latched NMI edge after a resumed root retires a take
- * candidate. WAIT and FAULT preserve the edge for resume or
- * retry; opcode candidates never trigger the clear. */
-void ti_c54x_cpu_take_note_resumed(ti_c54x_cpu *cpu);
+/* Clear the latched take source after a resumed root retires a
+ * take candidate (IFR acknowledge for maskable takes, edge
+ * clear for NMI). WAIT and FAULT preserve the source for
+ * resume or retry; opcode candidates never trigger the clear.
+ * False reports an unreachable acknowledge failure. */
+bool ti_c54x_cpu_take_note_resumed(ti_c54x_cpu *cpu);
 
 #ifdef __cplusplus
 }

@@ -68,6 +68,18 @@ struct ti_c54x_cpu {
      * state: NMI has no IFR bit. */
     bool nmi_pending;
     uint16_t nmi_vector_word;
+    /* Maskable routing table: one caller-selected entry address
+     * per source plus a routed mask (S95). The S93 vectorless
+     * latch sets IFR bits; the take additionally needs the
+     * routed entry. Reset clears the table; init zeroes it. */
+    uint16_t interrupt_vectors[16];
+    uint16_t interrupt_vectors_known;
+    /* Frozen take source for the IFR acknowledge: set at take
+     * issue alongside the root prepare, consumed when the take
+     * retires (immediate or resumed path). Maskable takes clear
+     * exactly this IFR bit; NMI takes clear the pending edge. */
+    uint8_t take_source_bit;
+    bool take_source_is_maskable;
 };
 
 #endif

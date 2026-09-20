@@ -8630,6 +8630,22 @@
         "anchor": "P3-S94: NMI take slice (implemented; local verification green)"
       },
       "assertion": "S94 owns the NMI take as two project-contract seams. The pure predecode decision takes a pending edge only with no single/block repeat ACTIVE and no armed delayed-branch countdown, deferring otherwise with INTM never consulted. The INTM-setting push completion ignores the staged value and stages exactly one ST1-bit-11 set, mirroring the RETE clear. The take is the root's second producer: a STACK_PUSH_TAKE WORD16 WRITE of the parked PC with a zeroed-sentinel instruction and pc_effect, the entry address frozen into the documented LONG32-MSW slot, and take-only PC liveness on the frozen return with no RTN load. Maskable arbitration and take, RS/reset, IACK signaling, and the entry-address routing table belong to later slices."
+    },
+    {
+      "id": "E-PROJECT-P3-S95-MASKABLE-TAKE-SEAMS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s95-maskable-take-slice.md",
+        "anchor": "P3-S95: maskable take slice (planned)"
+      },
+      "assertion": "S95 owns the maskable take as project-contract seams over the S94 take core. The pure decision takes exactly one known-enabled routed source pending with INTM known-clear, naming its bit; masked, unknown, unrouted, multi-enabled, or busy inputs never take, and NMI keeps priority outside the decision. The vector request latches one IFR bit with its caller-selected entry address (last-wins re-routing preserves the edge); the vectorless receive stays take-ineligible. The CPU freezes the taken bit at issue and acknowledges exactly it with the retirement on both the immediate and resumed paths. Multi-source priority stays device-owned and deferred."
     }
   ],
   "requirements": [
@@ -20295,6 +20311,35 @@
         "T-PROJECT-P3-S94-NMI-TAKE-ARBITRATION",
         "T-PROJECT-P3-S94-NMI-TAKE-COMPLETE"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S95-MASKABLE-TAKE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire one unambiguous maskable take at the predecode boundary when INTM is known-clear with exactly one known-enabled routed source pending: the parked PC pushes to old SP - 1, exactly the taken IFR bit clears, INTM sets, PC lands on the frozen entry address with no RTN move, and the source clears only on RETIRED commit. NMI keeps priority with the maskable edge preserved across its WAIT span. Null, in-run, zero-mask, and multi-bit routing requests reject with INVALID_ARGUMENT and mutate nothing. Multiple enabled sources, masked or unknown gates, and unrouted bits never take. The entry-address routing table, multi-source priority, RS/reset, IACK signaling, and observers belong to later slices.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR",
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S95-MASKABLE-TAKE-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S95-MASKABLE-TAKE-SEAMS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/interrupt/",
+      "claim": "Provide the pure maskable take-arbitration decision and the per-source entry-address routing latch as project-contract seams. The decision takes exactly one known-enabled routed source with INTM known-clear, deferring multi-enabled, unrouted, masked, unknown, or busy inputs with edges preserved and never consulting device priority. The routing request latches one IFR bit with its entry address, re-routing last-wins with the edge preserved. CPU dispatch, PC, IFR acknowledge, NMI priority, observers, and the routing table itself remain outside the seams.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S95-MASKABLE-TAKE-SEAMS"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S95-MASKABLE-TAKE-ARBITRATION"
+      ]
     }
   ],
   "tests": [
@@ -29652,6 +29697,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S94-NMI-TAKE"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S95-MASKABLE-TAKE-ARBITRATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/interrupt/test_take_arbitration_maskable.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.take_arbitration_maskable"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S95-MASKABLE-TAKE-SEAMS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S95-MASKABLE-TAKE-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/status/test_cpu_maskable_take.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_maskable_take"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S95-MASKABLE-TAKE"
       ]
     }
   ]
