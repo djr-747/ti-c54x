@@ -815,6 +815,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S98: RPTZ dual-commit slice (implemented; local verification green)](plan/p3-s98-rptz-dual-commit-slice.md)
 
+- [P3-S99: dual-memory rounded-variant shared-row bindings (planned)](plan/p3-s99-dual-rounded-shared-row-bindings-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

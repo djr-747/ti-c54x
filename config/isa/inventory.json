@@ -630,9 +630,19 @@
       "table_ordinal": 6,
       "mnemonic": "MACR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAC_DUAL_M0_M0",
+        "MAC_DUAL_M0_M1",
+        "MAC_DUAL_M0_M2",
+        "MAC_DUAL_M1_M0",
+        "MAC_DUAL_M1_M1",
+        "MAC_DUAL_M1_M2",
+        "MAC_DUAL_M2_M0",
+        "MAC_DUAL_M2_M1",
+        "MAC_DUAL_M2_M2"
+      ]
     },
     {
       "id": "FORM-T2-04-07",
@@ -787,9 +797,19 @@
       "table_ordinal": 17,
       "mnemonic": "MASR",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "MAS_DUAL_M0_M0",
+        "MAS_DUAL_M0_M1",
+        "MAS_DUAL_M0_M2",
+        "MAS_DUAL_M1_M0",
+        "MAS_DUAL_M1_M1",
+        "MAS_DUAL_M1_M2",
+        "MAS_DUAL_M2_M0",
+        "MAS_DUAL_M2_M1",
+        "MAS_DUAL_M2_M2"
+      ]
     },
     {
       "id": "FORM-T2-04-18",
@@ -4003,8 +4023,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"
     },
     {
+      "catalog_symbol": "MAC_DUAL_M0_M0",
+      "form_id": "FORM-T2-04-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"
+    },
+    {
       "catalog_symbol": "MAC_DUAL_M0_M1",
       "form_id": "FORM-T2-04-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD1"
+    },
+    {
+      "catalog_symbol": "MAC_DUAL_M0_M1",
+      "form_id": "FORM-T2-04-06",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD1"
     },
@@ -4015,8 +4047,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD2"
     },
     {
+      "catalog_symbol": "MAC_DUAL_M0_M2",
+      "form_id": "FORM-T2-04-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD2"
+    },
+    {
       "catalog_symbol": "MAC_DUAL_M1_M0",
       "form_id": "FORM-T2-04-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD0"
+    },
+    {
+      "catalog_symbol": "MAC_DUAL_M1_M0",
+      "form_id": "FORM-T2-04-06",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD0"
     },
@@ -4027,8 +4071,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD1"
     },
     {
+      "catalog_symbol": "MAC_DUAL_M1_M1",
+      "form_id": "FORM-T2-04-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD1"
+    },
+    {
       "catalog_symbol": "MAC_DUAL_M1_M2",
       "form_id": "FORM-T2-04-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD2"
+    },
+    {
+      "catalog_symbol": "MAC_DUAL_M1_M2",
+      "form_id": "FORM-T2-04-06",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD2"
     },
@@ -4039,14 +4095,32 @@
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD0"
     },
     {
+      "catalog_symbol": "MAC_DUAL_M2_M0",
+      "form_id": "FORM-T2-04-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD0"
+    },
+    {
       "catalog_symbol": "MAC_DUAL_M2_M1",
       "form_id": "FORM-T2-04-04",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD1"
     },
     {
+      "catalog_symbol": "MAC_DUAL_M2_M1",
+      "form_id": "FORM-T2-04-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD1"
+    },
+    {
       "catalog_symbol": "MAC_DUAL_M2_M2",
       "form_id": "FORM-T2-04-04",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD2"
+    },
+    {
+      "catalog_symbol": "MAC_DUAL_M2_M2",
+      "form_id": "FORM-T2-04-06",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD2"
     },
@@ -4111,8 +4185,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"
     },
     {
+      "catalog_symbol": "MAS_DUAL_M0_M0",
+      "form_id": "FORM-T2-04-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD0"
+    },
+    {
       "catalog_symbol": "MAS_DUAL_M0_M1",
       "form_id": "FORM-T2-04-16",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD1"
+    },
+    {
+      "catalog_symbol": "MAS_DUAL_M0_M1",
+      "form_id": "FORM-T2-04-17",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD1"
     },
@@ -4123,8 +4209,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD0_MOD2"
     },
     {
+      "catalog_symbol": "MAS_DUAL_M0_M2",
+      "form_id": "FORM-T2-04-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD0_MOD2"
+    },
+    {
       "catalog_symbol": "MAS_DUAL_M1_M0",
       "form_id": "FORM-T2-04-16",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD0"
+    },
+    {
+      "catalog_symbol": "MAS_DUAL_M1_M0",
+      "form_id": "FORM-T2-04-17",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD0"
     },
@@ -4135,8 +4233,20 @@
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD1"
     },
     {
+      "catalog_symbol": "MAS_DUAL_M1_M1",
+      "form_id": "FORM-T2-04-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD1"
+    },
+    {
       "catalog_symbol": "MAS_DUAL_M1_M2",
       "form_id": "FORM-T2-04-16",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD1_MOD2"
+    },
+    {
+      "catalog_symbol": "MAS_DUAL_M1_M2",
+      "form_id": "FORM-T2-04-17",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD1_MOD2"
     },
@@ -4147,14 +4257,32 @@
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD0"
     },
     {
+      "catalog_symbol": "MAS_DUAL_M2_M0",
+      "form_id": "FORM-T2-04-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD0"
+    },
+    {
       "catalog_symbol": "MAS_DUAL_M2_M1",
       "form_id": "FORM-T2-04-16",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD1"
     },
     {
+      "catalog_symbol": "MAS_DUAL_M2_M1",
+      "form_id": "FORM-T2-04-17",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD1"
+    },
+    {
       "catalog_symbol": "MAS_DUAL_M2_M2",
       "form_id": "FORM-T2-04-16",
+      "coverage": "SUBSET",
+      "addressing_subset": "DUAL_INDIRECT_MOD2_MOD2"
+    },
+    {
+      "catalog_symbol": "MAS_DUAL_M2_M2",
+      "form_id": "FORM-T2-04-17",
       "coverage": "SUBSET",
       "addressing_subset": "DUAL_INDIRECT_MOD2_MOD2"
     },
