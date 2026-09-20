@@ -15289,3 +15289,31 @@ entries are not rewritten after publication.
   characterization rather than another opcode slice;
   full 64-block upload stays bounded per standing
   direction.
+
+## 2026-09-20 — Steady-loop characterization past P3-S84 (no code change)
+
+- Repro: BUDGET=100000 staged loader1 run with the
+  MCU peer is byte-identical across reruns
+  (100000/100000 retired, pc=`0x8031`, prog_covered
+  119, fills 9/8/17) — deterministic boot.
+- BUDGET=1000000 with the page-0 DATA window stops
+  BUS_FAULT at 394650 attempted (pc=`0x802B`,
+  `LD_SMEM_SHIFT16` reading DATA `0xB704`, outside
+  the `0x2800`-word window; fills hit the 64-block
+  peer ceiling 32/32/64, coverage 129). The faulting
+  instruction is an ordinary implemented leaf, so the
+  address is computed boot state, not garbage.
+- Widened zeroed DATA window (`/tmp/ram_big.bin`,
+  `0xC000` words, staging only) sails past `0x802B`
+  with zero faults to pc=`0xF57`, opcode `0x75F8`
+  (INVALID_STATE): `PORTW Smem,PA=0x0008`, the first
+  hardware-port access — the post-finalize DSP/MCU
+  seam. The hosted runner owns no port peer
+  (`io_calls=0` in every run to date).
+- Decisions: `0xB704` reads as genuine boot state
+  (orderly continuation on zeroed data), not upload
+  starvation; the 64-block peer ceiling stands per
+  the oracle design. Next slice is P3-S85 for
+  `PORTW Smem` at `0xF57` (diagnose: indirect-AR
+  knownness vs unmapped-port stop).
+- Knobs: none added, changed, or retired.
