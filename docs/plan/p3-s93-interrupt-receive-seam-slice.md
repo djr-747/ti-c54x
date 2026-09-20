@@ -1,4 +1,4 @@
-### P3-S93: interrupt-receive seam slice (planned)
+### P3-S93: interrupt-receive seam slice (implemented; local verification green)
 
 The loader2 hop needs a doorbell take that cannot
 land today: the park holds INTM=1, and TI

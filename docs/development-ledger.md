@@ -15683,3 +15683,60 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S93 for the
   doorbell take seam (interrupt arrival and
   take toward loader2).
+
+## 2026-09-20 — P3-S93 lands as 742cf95 (interrupt-receive seam)
+
+- Scope: first core change on the take road —
+  public `ti_c54x_cpu_request_interrupt`
+  (TI SPRU131G §6.10 phase 1): latches exactly
+  one caller-selected IFR bit on receipt,
+  visible via inspect with all other fields
+  undisturbed; null CPU, zero, and multi-bit
+  masks reject with `INVALID_ARGUMENT` and no
+  partial mutation. No arbitration, take, wake,
+  runner, or peer changes; NMI/RS stay out.
+  New `test_cpu_interrupt_arrival` (latch,
+  accumulate, rejections — RED-first green via
+  both harnesses) plus JSON requirement/test
+  records (`REQ-COMMON-P3-S93-...`,
+  `T-COMMON-P3-S93-...` against the existing
+  IFR evidence row; an initially added
+  duplicate E-TI row was reverted once the
+  existing row was found, and a `.md`/JSON
+  evidence-link drift was fixed).
+- Validation evidence: `make test` exit 0;
+  evidence registry PASS (802 requirements,
+  655 tests); fresh CMake Debug `ctest`
+  757/757. Park run untouched (no caller
+  exists yet).
+- Decisions: on the "observe it in emu" ask —
+  no emu targets were built or run (project
+  rules: builds through this repo only,
+  integration deferred); instead its recorded
+  observations were mined. The corrected
+  oracle model agrees with our boot path and
+  admits the loader2 hop is untraced there
+  (its older branch-table/0x871 account is
+  self-flagged superseded), so a live run
+  could only show its approximation. The hop
+  answer, re-derived: doorbell DSPINT bit2
+  drives HPINT — TI Table 6-28 #25 pins
+  HPINT/SINT9 at vector `0x64`, i.e. our live
+  `0xFFE4 → 0x3772` slot (NMI `0xFF84` and
+  INT0-2 confirmed stubs); loader1 scans
+  clean of `RSBX`/`TRAP`/any `0xD80` branch,
+  so the hop is exclusively interrupt-driven,
+  yet TI §6.11.1 forbids the take with INTM=1.
+  Consistent two-step: NMI (ignores INTM)
+  takes to the NMI `RETF` stub, our `RETF`
+  clears INTM (ST1 bit 11, implemented), the
+  resumed `B` loop re-idles, and pending HPINT
+  takes to `0x3772`. S94 proves it: NMI
+  source plus arbitration plus take plus
+  `RETE` wiring (this slice's arrival API
+  already covers the HPINT half, mask
+  `0x0200`).
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S94 for the
+  doorbell take (NMI source, arbitration,
+  vector fetch, `RETE` return toward loader2).
