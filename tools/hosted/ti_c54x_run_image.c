@@ -30,6 +30,16 @@
 #include "mcu_upload_peer.h"
 #include "port_peer.h"
 
+/* Journal capacity (address-plus-value entries). A pump poll fills
+ * it instantly; overflow still counts and flags. */
+enum { RUN_IMAGE_WATCH_WORDS = 32 };
+
+typedef struct run_image_watch_entry {
+    uint32_t address_word;
+    uint16_t value_word;
+    bool is_write;
+} run_image_watch_entry;
+
 typedef struct run_image_bus {
     const uint16_t *program_words;
     uint32_t program_base;
@@ -61,6 +71,17 @@ typedef struct run_image_bus {
     uint64_t io_calls;
     uint32_t first_io_address;
     bool have_io;
+    /* Windowed DATA watch (P3-S91): passive tap on served DATA
+     * accesses inside [watch_base, watch_base + watch_count).
+     * Reads journal the served value, writes the written value.
+     * Gated by want_watch; the journal resets per phase. */
+    bool want_watch;
+    uint32_t watch_base;
+    uint32_t watch_count;
+    run_image_watch_entry watch_journal[RUN_IMAGE_WATCH_WORDS];
+    uint32_t watch_total;
+    uint32_t watch_journaled;
+    bool watch_overflow;
 } run_image_bus;
 
 static ti_c54x_bus_status
@@ -241,6 +262,30 @@ run_image_advance(void *context,
         }
         observation->bus_status = TI_C54X_BUS_OK;
         observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
+        if (bus->want_watch &&
+            request->address_word >= bus->watch_base &&
+            request->address_word - bus->watch_base < bus->watch_count) {
+            uint16_t tap_value =
+                (request->access ==
+                 TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE)
+                    ? request->write_value_word
+                    : observation->read_value_word;
+
+            bus->watch_total++;
+            if (bus->watch_journaled <
+                (uint32_t)RUN_IMAGE_WATCH_WORDS) {
+                bus->watch_journal[bus->watch_journaled].address_word =
+                    request->address_word;
+                bus->watch_journal[bus->watch_journaled].value_word =
+                    tap_value;
+                bus->watch_journal[bus->watch_journaled].is_write =
+                    (request->access ==
+                     TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE);
+                bus->watch_journaled++;
+            } else {
+                bus->watch_overflow = true;
+            }
+        }
         if (bus->have_mcu_peer &&
             request->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
             ti_c54x_mcu_upload_peer_notify_data_write(
@@ -440,6 +485,7 @@ usage(const char *argv0)
                   "   [--mcu-upload <flash_image> <blocks>]\n"
                   "   [--port-peer]\n"
                   "   [--dump-prog <base> <count>]\n"
+                  "   [--watch-data <base> <count>]\n"
                   "   [--warm-boot <budget>]\n"
                   "\n"
                   "Runs one program-word image from <entry> for <budget>\n"
@@ -454,7 +500,9 @@ usage(const char *argv0)
                   "IO-space legs (writes journaled, reads sticky)\n"
                   "instead of faulting them. A --dump-prog trio\n"
                   "anywhere prints runtime program words for\n"
-                  "vector/ISR diagnosis. A --warm-boot pair anywhere\n"
+                  "vector/ISR diagnosis. A --watch-data trio anywhere\n"
+                  "journals served DATA reads/writes in its window\n"
+                  "(first 32 per phase). A --warm-boot pair anywhere\n"
                   "runs a second phase after the first stop: the CPU\n"
                   "re-inits at 0xFF80 (silicon warm-reset entry)\n"
                   "while program, data, peers, and overlay survive.\n",
@@ -677,8 +725,118 @@ selftest(void)
         phase_end(&storage, &cpu);
     }
 
+    /* Vector 4: the windowed DATA watch journals in-window
+     * accesses with served values and ignores the rest. */
+    {
+        static const uint16_t kWatch[] = {UINT16_C(0x76F8),
+                                          UINT16_C(0x0800),
+                                          UINT16_C(0x00A5),
+                                          UINT16_C(0x76F8),
+                                          UINT16_C(0x0900),
+                                          UINT16_C(0x005A)};
+        static uint16_t watch_ram[0x0200] = {0};
+        ti_c54x_run_result phase_result;
+
+        memset(&bus, 0, sizeof(bus));
+        bus.program_words = kWatch;
+        bus.program_base = UINT32_C(0x0100);
+        bus.program_count = UINT32_C(6);
+        bus.data_words = watch_ram;
+        bus.data_base = UINT32_C(0x0800);
+        bus.data_count = UINT32_C(0x0200);
+        bus.want_watch = true;
+        bus.watch_base = UINT32_C(0x0800);
+        bus.watch_count = UINT32_C(0x0100);
+        endpoint.context = &bus;
+        endpoint.advance = run_image_advance;
+        endpoint.cancel = run_image_cancel;
+        bus_desc.context = &bus;
+        bus_desc.program_read_word = run_image_program_read;
+        bus_desc.program_write_word = NULL;
+        bus_desc.data_endpoint = endpoint;
+        bus_desc.io_read_word = run_image_io_read;
+        bus_desc.io_write_word = run_image_io_write;
+        storage = NULL;
+        cpu = NULL;
+        if (phase_begin(&bus_desc, UINT32_C(0x0100), &storage, &cpu) !=
+            0) {
+            (void)fprintf(stderr, "selftest: data watch failed\n");
+            failures++;
+        } else {
+            phase_result = ti_c54x_cpu_run(cpu, UINT64_C(2));
+            if (phase_result.reason != TI_C54X_STOP_BUDGET_EXHAUSTED ||
+                phase_result.instructions_retired != UINT64_C(2) ||
+                bus.watch_total != UINT32_C(1) ||
+                bus.watch_journaled != UINT32_C(1) ||
+                bus.watch_overflow ||
+                bus.watch_journal[0].address_word != UINT32_C(0x0800) ||
+                bus.watch_journal[0].value_word != UINT16_C(0x00A5) ||
+                !bus.watch_journal[0].is_write ||
+                watch_ram[0x0100] != UINT16_C(0x005A)) {
+                (void)fprintf(stderr, "selftest: data watch failed\n");
+                failures++;
+            }
+        }
+        phase_end(&storage, &cpu);
+    }
+    /* Vector 4b: the watch caps at 32 entries with overflow. */
+    {
+        uint16_t prog[35U * 3U];
+        static uint16_t cap_ram[0x0200] = {0};
+        ti_c54x_run_result cap_result;
+        uint32_t k;
+
+        for (k = 0U; k < 35U; k++) {
+            prog[3U * k] = UINT16_C(0x76F8);
+            prog[3U * k + 1U] = (uint16_t)(UINT32_C(0x0800) + k);
+            prog[3U * k + 2U] = (uint16_t)k;
+        }
+        memset(&bus, 0, sizeof(bus));
+        bus.program_words = prog;
+        bus.program_base = UINT32_C(0x0100);
+        bus.program_count = UINT32_C(105);
+        bus.data_words = cap_ram;
+        bus.data_base = UINT32_C(0x0800);
+        bus.data_count = UINT32_C(0x0200);
+        bus.want_watch = true;
+        bus.watch_base = UINT32_C(0x0800);
+        bus.watch_count = UINT32_C(0x0100);
+        endpoint.context = &bus;
+        endpoint.advance = run_image_advance;
+        endpoint.cancel = run_image_cancel;
+        bus_desc.context = &bus;
+        bus_desc.program_read_word = run_image_program_read;
+        bus_desc.program_write_word = NULL;
+        bus_desc.data_endpoint = endpoint;
+        bus_desc.io_read_word = run_image_io_read;
+        bus_desc.io_write_word = run_image_io_write;
+        storage = NULL;
+        cpu = NULL;
+        if (phase_begin(&bus_desc, UINT32_C(0x0100), &storage, &cpu) !=
+            0) {
+            (void)fprintf(stderr, "selftest: data watch cap failed\n");
+            failures++;
+        } else {
+            cap_result = ti_c54x_cpu_run(cpu, UINT64_C(35));
+            if (cap_result.reason != TI_C54X_STOP_BUDGET_EXHAUSTED ||
+                cap_result.instructions_retired != UINT64_C(35) ||
+                bus.watch_total != UINT32_C(35) ||
+                bus.watch_journaled != UINT32_C(32) ||
+                !bus.watch_overflow ||
+                bus.watch_journal[0].value_word != UINT16_C(0) ||
+                bus.watch_journal[31].address_word !=
+                    UINT32_C(0x081F) ||
+                bus.watch_journal[31].value_word != UINT16_C(31)) {
+                (void)fprintf(stderr,
+                              "selftest: data watch cap failed\n");
+                failures++;
+            }
+        }
+        phase_end(&storage, &cpu);
+    }
+
     if (failures == 0) {
-        (void)printf("selftest: PASS (3 vectors)\n");
+        (void)printf("selftest: PASS (4 vectors)\n");
     }
     return failures == 0 ? 0 : 1;
 }
@@ -714,6 +872,9 @@ main(int argc, char **argv)
     bool want_dump = false;
     bool want_warm_boot = false;
     uint64_t warm_budget = UINT64_C(0);
+    bool want_watch = false;
+    uint32_t watch_base = 0U;
+    uint32_t watch_count = 0U;
     uint32_t dump_base = 0U;
     uint32_t dump_count = 0U;
     unsigned char *visited = NULL;
@@ -806,6 +967,47 @@ main(int argc, char **argv)
                 }
                 argv[i] = NULL;
                 argc -= 2;
+            }
+            break;
+        }
+    }
+    /* An optional --watch-data <base> <count> trio strips out
+     * anywhere, so the positional dispatch below keeps its fixed
+     * indices. The window names DATA word addresses. */
+    for (i = 1; i < (uint32_t)argc; i++) {
+        if (strcmp(argv[i], "--watch-data") == 0) {
+            unsigned long parsed;
+            char *end = NULL;
+
+            if (want_watch || i + 2 >= (uint32_t)argc) {
+                usage(argv[0]);
+                return 2;
+            }
+            parsed = strtoul(argv[i + 1], &end, 0);
+            if (end == NULL || *end != '\0' ||
+                parsed > UINT32_C(0xFFFF)) {
+                usage(argv[0]);
+                return 2;
+            }
+            watch_base = (uint32_t)parsed;
+            end = NULL;
+            parsed = strtoul(argv[i + 2], &end, 0);
+            if (end == NULL || *end != '\0' || parsed == 0U ||
+                parsed > UINT32_C(0x10000) ||
+                watch_base + (uint32_t)parsed > UINT32_C(0x10000)) {
+                usage(argv[0]);
+                return 2;
+            }
+            watch_count = (uint32_t)parsed;
+            want_watch = true;
+            {
+                uint32_t src = i + 3U;
+
+                for (; src < (uint32_t)argc; i++, src++) {
+                    argv[i] = argv[src];
+                }
+                argv[i] = NULL;
+                argc -= 3;
             }
             break;
         }
@@ -906,6 +1108,9 @@ main(int argc, char **argv)
     bus.data_base = data_base;
     bus.data_count = have_data ? data_count : UINT32_C(0);
     bus.visited = visited;
+    bus.want_watch = want_watch;
+    bus.watch_base = watch_base;
+    bus.watch_count = watch_count;
     bus.program_overlay =
         (uint16_t *)calloc((size_t)UINT32_C(0x10000), sizeof(uint16_t));
     bus.program_overlay_written =
@@ -954,6 +1159,11 @@ main(int argc, char **argv)
      * vector-table base. Only the CPU re-inits there; the whole
      * bus (program, data, peers, overlay, coverage) survives. */
     for (phase = 1U;; phase++) {
+        /* The watch journal reflects the current phase, like the
+         * first-fault latches. */
+        bus.watch_total = 0U;
+        bus.watch_journaled = 0U;
+        bus.watch_overflow = false;
         if (phase == 2U) {
             (void)printf("warm_boot phase=2 entry=0x%04" PRIX32
                          " budget=%" PRIu64 "\n",
@@ -1051,6 +1261,21 @@ main(int argc, char **argv)
                 (void)snprintf(ifr_text, sizeof(ifr_text), "error");
             }
             (void)printf("irq intm=%s ifr=%s\n", intm_text, ifr_text);
+        }
+        if (want_watch) {
+            (void)printf("data_watch base=0x%04" PRIX32 " count=%" PRIu32
+                         " watched=%" PRIu32 " journaled=%" PRIu32
+                         " overflow=%u\n",
+                         watch_base, watch_count, bus.watch_total,
+                         bus.watch_journaled,
+                         bus.watch_overflow ? 1U : 0U);
+            for (i = 0U; i < bus.watch_journaled; i++) {
+                (void)printf("data_watch addr=0x%04" PRIX32 " %s"
+                             " value=0x%04" PRIX16 "\n",
+                             bus.watch_journal[i].address_word,
+                             bus.watch_journal[i].is_write ? "W" : "R",
+                             bus.watch_journal[i].value_word);
+            }
         }
         phase_end(&storage, &cpu);
         if (phase == 1U && want_warm_boot) {
