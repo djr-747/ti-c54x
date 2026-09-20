@@ -10,6 +10,11 @@ $(eval $(call ti_c54x_add_test,add_lk_ops,isa/ops/arithmetic,test_add_lk.c))
 # P3-S3z RED contract: ADD Smem syntaxes 1-3.
 $(eval $(call ti_c54x_add_test,add_smem_ops,isa/ops/arithmetic,test_add_smem_ops.c))
 $(eval $(call ti_c54x_add_test,dadd_ops,isa/ops/arithmetic,test_dadd.c))
+$(eval $(call ti_c54x_add_test,dadst_ops,isa/ops/arithmetic,test_dadst.c))
+$(eval $(call ti_c54x_add_test,drsub_ops,isa/ops/arithmetic,test_drsub.c))
+$(eval $(call ti_c54x_add_test,dsadt_ops,isa/ops/arithmetic,test_dsadt.c))
+$(eval $(call ti_c54x_add_test,dsub_ops,isa/ops/arithmetic,test_dsub.c))
+$(eval $(call ti_c54x_add_test,dsubt_ops,isa/ops/arithmetic,test_dsubt.c))
 $(eval $(call ti_c54x_add_test,add_smem_shift_ops,isa/ops/arithmetic,test_add_smem_shift.c))
 # W5C RED contract: ADD src,ASM.
 $(eval $(call ti_c54x_add_test,add_src_asm_ops,isa/ops/arithmetic,test_add_src_asm.c))

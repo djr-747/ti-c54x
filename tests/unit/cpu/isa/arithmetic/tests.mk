@@ -9,3 +9,8 @@ $(eval $(call ti_c54x_add_test,cpu_add_smem,cpu/isa/arithmetic,test_cpu_add_smem
 # P3-S82 RED contract: public-CPU SUB absolute Smem retirement.
 $(eval $(call ti_c54x_add_test,cpu_sub_smem_absolute,cpu/isa/arithmetic,test_cpu_sub_smem_absolute.c))
 $(eval $(call ti_c54x_add_test,cpu_dadd,cpu/isa/arithmetic,test_cpu_dadd.c))
+$(eval $(call ti_c54x_add_test,cpu_dadst,cpu/isa/arithmetic,test_cpu_dadst.c))
+$(eval $(call ti_c54x_add_test,cpu_drsub,cpu/isa/arithmetic,test_cpu_drsub.c))
+$(eval $(call ti_c54x_add_test,cpu_dsadt,cpu/isa/arithmetic,test_cpu_dsadt.c))
+$(eval $(call ti_c54x_add_test,cpu_dsub,cpu/isa/arithmetic,test_cpu_dsub.c))
+$(eval $(call ti_c54x_add_test,cpu_dsubt,cpu/isa/arithmetic,test_cpu_dsubt.c))

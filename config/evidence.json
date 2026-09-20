@@ -8489,7 +8489,6 @@
         "printed_page_end": "4-60"
       },
       "assertion": "SPRU172C FRAME defines FRAME K with opcode diagram 1110_1110_KKKKKKKK (K is the signed 8-bit short-immediate offset in bits 7:0, -128 to 127): the offset is added to SP with no address-generation or stack-manipulation latency for the following instruction. Status Bits None; one word; Class 1."
-
     },
     {
       "id": "E-TI-C54X-SPRU172C-S4-PSHD-P4-131",
@@ -8647,7 +8646,6 @@
       },
       "assertion": "S95 owns the maskable take as project-contract seams over the S94 take core. The pure decision takes exactly one known-enabled routed source pending with INTM known-clear, naming its bit; masked, unknown, unrouted, multi-enabled, or busy inputs never take, and NMI keeps priority outside the decision. The vector request latches one IFR bit with its caller-selected entry address (last-wins re-routing preserves the edge); the vectorless receive stays take-ineligible. The CPU freezes the taken bit at issue and acknowledges exactly it with the retirement on both the immediate and resumed paths. Multi-source priority stays device-owned and deferred."
     },
-
     {
       "id": "E-TI-C54X-SPRU172C-S4-RPT-SMEM-P4-146",
       "immutable": true,
@@ -8666,7 +8664,6 @@
       },
       "assertion": "SPRU172C RPT syntax 1 encodes RPT Smem as 0100_0111_IAAAAAAA (I selects direct Class 5A versus indirect Class 5B Smem addressing, A the 7-bit address; one word plus long-offset-indirect or absolute extension words): RC takes the Smem word, the following instruction repeats Smem+1 times, RC cannot be accessed while it decrements, and the instruction is itself nonrepeatable. Example 1 establishes DAT127 (data 0x0FFF) holding 0x000C as RC 0x000C with DP 0x031."
     },
-
     {
       "id": "E-TI-C54X-SPRU172C-S4-RPTZ-P4-150",
       "immutable": true,
@@ -8684,6 +8681,96 @@
         "printed_page_end": "4-150"
       },
       "assertion": "SPRU172C RPTZ encodes RPTZ dst,#lk as 1111_000D_0111_0001 plus one 16-bit lk word (D selects accumulator A or B; 0 <= lk <= 65535; two words): the instruction clears dst and repeats the next instruction lk+1 times with RC taking lk. Status Bits None. Example RPTZ A,1023 repeats the next instruction 1024 times."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DADST-P4-39",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DADST",
+        "printed_page_start": "4-39",
+        "printed_page_end": "4-39"
+      },
+      "assertion": "SPRU172C DADST encodes DADST Lmem,dst as 0101_101D_IAAAAAAA (D selects accumulator A or B; one word): at C16=0 Lmem adds to T concatenated with T left-shifted 16 bits with the result in dst; at C16=1 the 16 MSBs of Lmem add to T into dst bits 39-16 while T subtracts from the 16 LSBs of Lmem into dst bits 15-0 with no saturation regardless of OVM. The section notes the instruction is meaningful only with C16 set."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DRSUB-P4-43",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DRSUB",
+        "printed_page_start": "4-43",
+        "printed_page_end": "4-43"
+      },
+      "assertion": "SPRU172C DRSUB encodes DRSUB Lmem,src as 0101_100S_IAAAAAAA (S selects accumulator A or B as src; one word): at C16=0 src is subtracted from Lmem with the result in src (reversed subtract); at C16=1 the high part of src subtracts from the 16 MSBs of Lmem and the low part of src subtracts from the 16 LSBs of Lmem with results in src bits 39-16 and 15-0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DSADT-P4-45",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DSADT",
+        "printed_page_start": "4-45",
+        "printed_page_end": "4-45"
+      },
+      "assertion": "SPRU172C DSADT encodes DSADT Lmem,dst as 0101_111D_IAAAAAAA (D selects accumulator A or B; one word): at C16=0 T concatenated with T left-shifted 16 bits subtracts from Lmem with the result in dst; at C16=1 T subtracts from the 16 MSBs of Lmem into dst bits 39-16 while T adds to the 16 LSBs of Lmem into dst bits 15-0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DSUB-P4-48",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DSUB",
+        "printed_page_start": "4-48",
+        "printed_page_end": "4-48"
+      },
+      "assertion": "SPRU172C DSUB encodes DSUB Lmem,src as 0101_010S_IAAAAAAA (S selects accumulator A or B as src; one word): at C16=0 Lmem subtracts from src with the result in src; at C16=1 the 16 MSBs of Lmem subtract from the high part of src and the 16 LSBs of Lmem subtract from the low part of src with results in src bits 39-16 and 15-0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-DSUBT-P4-50",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "DSUBT",
+        "printed_page_start": "4-50",
+        "printed_page_end": "4-50"
+      },
+      "assertion": "SPRU172C DSUBT encodes DSUBT Lmem,dst as 0101_110D_IAAAAAAA (D selects accumulator A or B; one word): at C16=0 T concatenated with T left-shifted 16 bits subtracts from Lmem with the result in dst; at C16=1 T subtracts from both 16-bit halves of Lmem with results in dst bits 39-16 and 15-0."
     }
   ],
   "requirements": [
@@ -20378,9 +20465,7 @@
       "test_ids": [
         "T-PROJECT-P3-S95-MASKABLE-TAKE-ARBITRATION"
       ]
-    }
-,
-
+    },
     {
       "id": "REQ-COMMON-P3-S96-HPINT-HOP",
       "state": "IMPLEMENTED",
@@ -20396,7 +20481,6 @@
         "T-COMMON-P3-S96-HPINT-HOP-CPU"
       ]
     },
-
     {
       "id": "REQ-COMMON-P3-S97-RPT-SMEM-SEMANTICS",
       "state": "IMPLEMENTED",
@@ -20411,7 +20495,6 @@
         "T-COMMON-P3-S97-RPT-SMEM-OPS"
       ]
     },
-
     {
       "id": "REQ-COMMON-P3-S97-RPT-SMEM-RETIREMENT",
       "state": "IMPLEMENTED",
@@ -20426,7 +20509,6 @@
         "T-COMMON-P3-S97-RPT-SMEM-CPU"
       ]
     },
-
     {
       "id": "REQ-COMMON-P3-S98-RPTZ-SEMANTICS",
       "state": "IMPLEMENTED",
@@ -20441,7 +20523,6 @@
         "T-COMMON-P3-S98-RPTZ-OPS"
       ]
     },
-
     {
       "id": "REQ-COMMON-P3-S98-RPTZ-RETIREMENT",
       "state": "IMPLEMENTED",
@@ -20454,6 +20535,146 @@
       ],
       "test_ids": [
         "T-COMMON-P3-S98-RPTZ-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DADST-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute DADST Lmem,dst as a catalog MASKED row at 0x5A00 under mask 0xFE00 with the shared source/destination/indirect/addr7 layout and UNRESOLVED repeatability: the D bit selects the destination accumulator, T arrives through the T-register input, and the staged kind-21 LONG32 READ completes C16-gated (40-bit add with OVM/C/OV at C16=0; dual halves Lmemhi+T and Lmemlo-T with no status effects at C16=1). Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DADST-P4-39"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DADST-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DADST-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire DADST Lmem,dst at the public CPU boundary: T-seeded dual retirement completes Lmemhi+T and Lmemlo-T into dst with AR post-update, the C16=0 add retires with C cleared (no carry out), MOD3 reads reject with no endpoint traffic, and unknown C16 rejects transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DADST-P4-39"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DADST-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DRSUB-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute DRSUB Lmem,src as a catalog MASKED row at 0x5800 under mask 0xFE00 with the shared source/destination/indirect/addr7 layout and UNRESOLVED repeatability: the S bit selects the source accumulator that is also the destination, and the staged kind-21 LONG32 READ completes C16-gated (40-bit Lmem-src with OVM/C/OV at C16=0; dual reversed halves with no status effects at C16=1). Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DRSUB-P4-43"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DRSUB-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DRSUB-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire DRSUB Lmem,src at the public CPU boundary: the C16=0 reversed subtract retires Lmem-src with C set on no borrow, the dual halves borrow into the guard with C cleared, AR post-updates by two on indirect legs, MOD3 reads reject with no endpoint traffic, and unknown C16 rejects transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DRSUB-P4-43"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DRSUB-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSADT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute DSADT Lmem,dst as a catalog MASKED row at 0x5E00 under mask 0xFE00 with the shared source/destination/indirect/addr7 layout and UNRESOLVED repeatability: the D bit selects the destination accumulator, T arrives through the T-register input, and the staged kind-21 LONG32 READ completes C16-gated (40-bit Lmem-(T+T<<16) with OVM/C/OV at C16=0; dual halves Lmemhi-T and Lmemlo+T with no status effects at C16=1). Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSADT-P4-45"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSADT-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSADT-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire DSADT Lmem,dst at the public CPU boundary: T-seeded dual retirement completes Lmemhi-T and Lmemlo+T into dst with AR post-update, the C16=0 subtract retires with C set on no borrow, MOD3 reads reject with no endpoint traffic, and unknown C16 rejects transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSADT-P4-45"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSADT-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSUB-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute DSUB Lmem,src as a catalog MASKED row at 0x5400 under mask 0xFE00 with the shared source/destination/indirect/addr7 layout and UNRESOLVED repeatability: the S bit selects the source accumulator that is also the destination, and the staged kind-21 LONG32 READ completes C16-gated (40-bit src-Lmem with OVM/C/OV at C16=0; dual halves with no status effects at C16=1). Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSUB-P4-48"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSUB-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSUB-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire DSUB Lmem,src at the public CPU boundary: the C16=0 subtract retires src-Lmem with C set on no borrow, the dual halves retire with C set, AR post-updates by two on indirect legs, MOD3 reads reject with no endpoint traffic, and unknown C16 rejects transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSUB-P4-48"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSUB-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSUBT-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute DSUBT Lmem,dst as a catalog MASKED row at 0x5C00 under mask 0xFE00 with the shared source/destination/indirect/addr7 layout and UNRESOLVED repeatability: the D bit selects the destination accumulator, T arrives through the T-register input, and the staged kind-21 LONG32 READ completes C16-gated (40-bit Lmem-(T+T<<16) with OVM/C/OV at C16=0; dual Lmem-T halves with no status effects at C16=1). Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSUBT-P4-50"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSUBT-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S100-DSUBT-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire DSUBT Lmem,dst at the public CPU boundary: T-seeded dual retirement completes both Lmem-T halves into dst with AR post-update, the C16=0 subtract retires with C set on no borrow, MOD3 reads reject with no endpoint traffic, and unknown C16 rejects transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-DSUBT-P4-50"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S100-DSUBT-CPU"
       ]
     }
   ],
@@ -29696,9 +29917,9 @@
         "ctest_name": "ti_c54x.pshd_popd_direct_ops"
       },
       "requirement_ids": [
-        "REQ-COMMON-STACK-PAIR-DIRECT-EFFECTS"
-      ,
-        "REQ-COMMON-STACK-PAIR-INDIRECT-EFFECTS"]
+        "REQ-COMMON-STACK-PAIR-DIRECT-EFFECTS",
+        "REQ-COMMON-STACK-PAIR-INDIRECT-EFFECTS"
+      ]
     },
     {
       "id": "T-COMMON-STACK-PAIR-ROOT",
@@ -29711,9 +29932,9 @@
         "ctest_name": "ti_c54x.stack_pair_transaction"
       },
       "requirement_ids": [
-        "REQ-COMMON-STACK-PAIR-ROOT"
-      ,
-        "REQ-COMMON-STACK-PAIR-INDIRECT-ROOT"]
+        "REQ-COMMON-STACK-PAIR-ROOT",
+        "REQ-COMMON-STACK-PAIR-INDIRECT-ROOT"
+      ]
     },
     {
       "id": "T-COMMON-STACK-PAIR-DIRECT-CPU",
@@ -29726,9 +29947,9 @@
         "ctest_name": "ti_c54x.cpu_pshd_popd_direct"
       },
       "requirement_ids": [
-        "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT"
-      ,
-        "REQ-COMMON-STACK-PAIR-INDIRECT-CPU-RETIREMENT"]
+        "REQ-COMMON-STACK-PAIR-DIRECT-CPU-RETIREMENT",
+        "REQ-COMMON-STACK-PAIR-INDIRECT-CPU-RETIREMENT"
+      ]
     },
     {
       "id": "T-COMMON-P3-S54-STL-SHFT-SEMANTICS",
@@ -29842,7 +30063,6 @@
         "REQ-COMMON-P3-S95-MASKABLE-TAKE"
       ]
     },
-
     {
       "id": "T-COMMON-P3-S96-HPINT-HOP-CPU",
       "state": "PASSING",
@@ -29857,7 +30077,6 @@
         "REQ-COMMON-P3-S96-HPINT-HOP"
       ]
     },
-
     {
       "id": "T-COMMON-P3-S97-RPT-SMEM-OPS",
       "state": "PASSING",
@@ -29872,7 +30091,6 @@
         "REQ-COMMON-P3-S97-RPT-SMEM-SEMANTICS"
       ]
     },
-
     {
       "id": "T-COMMON-P3-S97-RPT-SMEM-CPU",
       "state": "PASSING",
@@ -29887,7 +30105,6 @@
         "REQ-COMMON-P3-S97-RPT-SMEM-RETIREMENT"
       ]
     },
-
     {
       "id": "T-COMMON-P3-S98-RPTZ-OPS",
       "state": "PASSING",
@@ -29902,7 +30119,6 @@
         "REQ-COMMON-P3-S98-RPTZ-SEMANTICS"
       ]
     },
-
     {
       "id": "T-COMMON-P3-S98-RPTZ-CPU",
       "state": "PASSING",
@@ -29915,6 +30131,146 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S98-RPTZ-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DADST-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_dadst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.dadst_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DADST-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DADST-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_dadst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_dadst"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DADST-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DRSUB-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_drsub.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.drsub_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DRSUB-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DRSUB-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_drsub.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_drsub"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DRSUB-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSADT-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_dsadt.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.dsadt_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSADT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSADT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_dsadt.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_dsadt"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSADT-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSUB-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_dsub.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.dsub_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSUB-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSUB-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_dsub.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_dsub"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSUB-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSUBT-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_dsubt.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.dsubt_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSUBT-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S100-DSUBT-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_dsubt.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_dsubt"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S100-DSUBT-RETIREMENT"
       ]
     }
   ]

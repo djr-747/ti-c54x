@@ -96,8 +96,9 @@ int main(void)
                            TI_C54X_OPCODE_ID_CMPM_SMEM_LK);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x6200)).id ==
                            TI_C54X_OPCODE_ID_MPY_SMEM_LK);
-        TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x5FFF)).status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
+        /* Below-neighbor 0x5FFF is the P3-S100 DSADT row. */
+        TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x5FFF)).id ==
+                           TI_C54X_OPCODE_ID_DSADT);
     }
     return 0;
 }

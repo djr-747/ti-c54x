@@ -224,6 +224,16 @@ ti_c54x_add_unit_test(stl_shft_xmem_metadata
                       test_stl_shft_xmem_metadata.c)
 ti_c54x_add_unit_test(dadd_metadata
                       test_dadd_metadata.c)
+ti_c54x_add_unit_test(dadst_metadata
+                      test_dadst_metadata.c)
+ti_c54x_add_unit_test(drsub_metadata
+                      test_drsub_metadata.c)
+ti_c54x_add_unit_test(dsadt_metadata
+                      test_dsadt_metadata.c)
+ti_c54x_add_unit_test(dsub_metadata
+                      test_dsub_metadata.c)
+ti_c54x_add_unit_test(dsubt_metadata
+                      test_dsubt_metadata.c)
 ti_c54x_add_unit_test(stlm_smem_direct_metadata
                       test_stlm_smem_direct_metadata.c)
 ti_c54x_add_unit_test(cmps_smem_direct_metadata

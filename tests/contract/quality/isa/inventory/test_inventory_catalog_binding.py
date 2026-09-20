@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),368)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 344)
+        self.assertEqual(len(bindings),373)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 349)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 45)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 323)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 328)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -94,7 +94,8 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "PORTW_SMEM_ABSOLUTE",
                "PORTR_SMEM_ABSOLUTE",
                "IDLE",
-               "DADD", "MVDM", "MVMD",
+               "DADD", "DADST", "DRSUB", "DSADT", "DSUB", "DSUBT",
+               "MVDM", "MVMD",
                "MVDK_DIRECT", "MVDK_SMEM", "MVKD_DIRECT", "MVKD_SMEM",
                "MVPD_DIRECT", "MVPD_SMEM", "MVPD_SMEM_ABSOLUTE",
                "MVDP_DIRECT", "MVDP_SMEM",
@@ -263,7 +264,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                                                      "READA_SMEM",
                                                      "WRITA_SMEM")
                     else "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD2"
-                    if binding["catalog_symbol"] == "DADD"
+                    if binding["catalog_symbol"] in ("DADD", "DADST",
+                                                     "DRSUB", "DSADT",
+                                                     "DSUB", "DSUBT")
                     else "ABSOLUTE_DATA"
                     if binding["catalog_symbol"] == "MVDM"
                     else "ABSOLUTE_DATA"

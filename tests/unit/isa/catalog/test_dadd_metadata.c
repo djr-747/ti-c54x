@@ -6,7 +6,7 @@
  * shared source/destination/indirect/addr7 layout, accumulator
  * plus SXM/OVM/C16 inputs, and unresolved repeatability,
  * covering exactly the 1024 Lmem first-word encodings with the
- * 0x4FFF UNKNOWN lower sibling and the 0x5400 UNKNOWN upper
+ * 0x4FFF UNKNOWN lower sibling and the 0x5400 DSUB upper
  * sibling pinned.
  * Does not own: catalog generation, decode, memory addressing or
  * buses, accumulator/status state, CPU sequencing, timing, or
@@ -29,7 +29,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_DADD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 345);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 350);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_DADD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == DADD_VALUE);
@@ -69,8 +69,9 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0x5000 and 0x53FF are the Lmem slice ends; both neighbors
-     * decode UNKNOWN. */
+    /* 0x5000 and 0x53FF are the Lmem slice ends; the lower
+     * neighbor decodes UNKNOWN while the upper neighbor now
+     * decodes the P3-S100 DSUB row. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x5000)) == TI_C54X_OPCODE_ID_DADD);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
@@ -78,7 +79,7 @@ test_row_boundaries(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4FFF)) == TI_C54X_OPCODE_ID_UNKNOWN);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0x5400)) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0x5400)) == TI_C54X_OPCODE_ID_DSUB);
 }
 
 int

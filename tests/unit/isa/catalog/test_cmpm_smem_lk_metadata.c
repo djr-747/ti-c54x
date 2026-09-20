@@ -27,7 +27,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_CMPM_SMEM_LK);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 345);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 350);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_CMPM_SMEM_LK);
     TI_C54X_TEST_CHECK(metadata->first_word_value == CMPM_SMEM_LK_VALUE);
@@ -68,9 +68,10 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0x5FFF is undecoded; 0x6100 belongs to BITF_SMEM_LK. */
+    /* 0x5FFF is the P3-S100 DSADT row; 0x6100 belongs to
+     * BITF_SMEM_LK. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0x5FFF)) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0x5FFF)) == TI_C54X_OPCODE_ID_DSADT);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x6100)) ==
                        TI_C54X_OPCODE_ID_BITF_SMEM_LK);

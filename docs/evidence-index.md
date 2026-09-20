@@ -543,6 +543,11 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-STL-SHFT-OPCODE-P4-171` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §STL, `4-171`–`4-171` |
 | `E-TI-C54X-SPRU172C-S4-STL-SHFT-SEMANTICS-P4-171-4-172` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §STL, `4-171`–`4-172` |
 | `E-PROJECT-P3-S54-STL-SHFT-ACTIVATION` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s54-stl-shft-xmem-store-slice.md` anchor `P3-S54: STL SHFT Xmem store slice (implemented; local verification green)` |
+| `E-TI-C54X-SPRU172C-S4-DADST-P4-39` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DADST, `4-39` |
+| `E-TI-C54X-SPRU172C-S4-DRSUB-P4-43` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DRSUB, `4-43` |
+| `E-TI-C54X-SPRU172C-S4-DSADT-P4-45` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DSADT, `4-45` |
+| `E-TI-C54X-SPRU172C-S4-DSUB-P4-48` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DSUB, `4-48` |
+| `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DSUBT, `4-50` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1457,7 +1462,16 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ADD-SUB-SYN10-SRCASM-P4-4-4-187` | `T-COMMON-P3-WAVE5-SUB-SRC-ASM-SEMANTICS` |
 | `REQ-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MPY-SYN4-LK-P4-100-101` | `T-COMMON-P3-WAVE6-MPY-LK-SEMANTICS` |
 | `REQ-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-MAC-SYN3-LK-P4-81-82` | `T-COMMON-P3-WAVE6-MAC-LK-SEMANTICS` |
-
+| `REQ-COMMON-P3-S100-DADST-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DADST-P4-39` | `T-COMMON-P3-S100-DADST-OPS` |
+| `REQ-COMMON-P3-S100-DADST-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DADST-P4-39` | `T-COMMON-P3-S100-DADST-CPU` |
+| `REQ-COMMON-P3-S100-DRSUB-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DRSUB-P4-43` | `T-COMMON-P3-S100-DRSUB-OPS` |
+| `REQ-COMMON-P3-S100-DRSUB-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DRSUB-P4-43` | `T-COMMON-P3-S100-DRSUB-CPU` |
+| `REQ-COMMON-P3-S100-DSADT-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DSADT-P4-45` | `T-COMMON-P3-S100-DSADT-OPS` |
+| `REQ-COMMON-P3-S100-DSADT-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DSADT-P4-45` | `T-COMMON-P3-S100-DSADT-CPU` |
+| `REQ-COMMON-P3-S100-DSUB-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DSUB-P4-48` | `T-COMMON-P3-S100-DSUB-OPS` |
+| `REQ-COMMON-P3-S100-DSUB-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DSUB-P4-48` | `T-COMMON-P3-S100-DSUB-CPU` |
+| `REQ-COMMON-P3-S100-DSUBT-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | `T-COMMON-P3-S100-DSUBT-OPS` |
+| `REQ-COMMON-P3-S100-DSUBT-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | `T-COMMON-P3-S100-DSUBT-CPU` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2131,7 +2145,16 @@ exist in the repository.
 | `T-COMMON-P3-S6-PORTR-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/port/test_portr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.portr_ops"}` | `REQ-COMMON-P3-S6-PORTR-SEMANTICS` |
 | `T-COMMON-P3-S6-PORTW-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/port/test_portw.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.portw_ops"}` | `REQ-COMMON-P3-S6-PORTW-SEMANTICS` |
 | `T-PROJECT-P3-S3D-T-LOAD-COMMIT` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/sequencer/instruction/test_memory_instruction_commit.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.memory_instruction_commit"}` | `REQ-PROJECT-P3-S3D-MPYA-T-LOAD` |
-
+| `T-COMMON-P3-S100-DADST-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_dadst.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dadst_ops"}` | `REQ-COMMON-P3-S100-DADST-SEMANTICS` |
+| `T-COMMON-P3-S100-DADST-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dadst.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dadst"}` | `REQ-COMMON-P3-S100-DADST-RETIREMENT` |
+| `T-COMMON-P3-S100-DRSUB-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_drsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.drsub_ops"}` | `REQ-COMMON-P3-S100-DRSUB-SEMANTICS` |
+| `T-COMMON-P3-S100-DRSUB-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_drsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_drsub"}` | `REQ-COMMON-P3-S100-DRSUB-RETIREMENT` |
+| `T-COMMON-P3-S100-DSADT-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_dsadt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dsadt_ops"}` | `REQ-COMMON-P3-S100-DSADT-SEMANTICS` |
+| `T-COMMON-P3-S100-DSADT-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dsadt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dsadt"}` | `REQ-COMMON-P3-S100-DSADT-RETIREMENT` |
+| `T-COMMON-P3-S100-DSUB-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_dsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dsub_ops"}` | `REQ-COMMON-P3-S100-DSUB-SEMANTICS` |
+| `T-COMMON-P3-S100-DSUB-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dsub"}` | `REQ-COMMON-P3-S100-DSUB-RETIREMENT` |
+| `T-COMMON-P3-S100-DSUBT-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_dsubt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dsubt_ops"}` | `REQ-COMMON-P3-S100-DSUBT-SEMANTICS` |
+| `T-COMMON-P3-S100-DSUBT-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dsubt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dsubt"}` | `REQ-COMMON-P3-S100-DSUBT-RETIREMENT` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

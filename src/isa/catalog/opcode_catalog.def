@@ -88,9 +88,35 @@ TI_C54X_OPCODE_MASKED(SUB_SMEM_TS, sub_smem_ts, 0x0C00, 0xFE00, 1, TI_C54X_OPERA
 TI_C54X_OPCODE_MASKED(SUB_SMEM_SH16, sub_smem_sh16, 0x4000, 0xFC00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM)
 /* DADD Lmem: dst = Lmem + src (C16=0, 40-bit) or dual 16-bit adds
  * (C16=1) with S/D riding bits 9/8 through the shared
- * source/destination/indirect/addr7 layout. Zero neighbor moves:
- * 0x5000-0x53FF decode UNKNOWN today. */
+ * source/destination/indirect/addr7 layout. */
 TI_C54X_OPCODE_MASKED(DADD, dadd, 0x5000, 0xFC00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_C16)
+/* DADST Lmem,dst: dual 16-bit T add/subtract (C16=1 only) with D
+ * riding bit 8 (bit 9 fixed 1) through the shared
+ * source/destination/indirect/addr7 layout. TI SPRU172C section
+ * DADST p. 4-39. */
+TI_C54X_OPCODE_MASKED(DADST, dadst, 0x5A00, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM_C16)
+/* DRSUB Lmem,src: src = Lmem - src, the reversed subtract
+ * (C16-gated dual 16-bit halves likewise reversed), with S riding
+ * bit 8 (bit 9 fixed 0) through the shared
+ * source/destination/indirect/addr7 layout. TI SPRU172C section
+ * DRSUB p. 4-43. */
+TI_C54X_OPCODE_MASKED(DRSUB, drsub, 0x5800, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_C16)
+/* DSADT Lmem,dst: dst = Lmem - (T + T<<16) at C16=0, dual
+ * halves Lmemhi-T / Lmemlo+T at C16=1, with D riding bit 8
+ * (bit 9 fixed 1) through the shared
+ * source/destination/indirect/addr7 layout. TI SPRU172C section
+ * DSADT p. 4-45. */
+TI_C54X_OPCODE_MASKED(DSADT, dsadt, 0x5E00, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM_C16)
+/* DSUB Lmem,src: src = src - Lmem (C16-gated) with S riding
+ * bit 8 (bit 9 fixed 0) through the shared
+ * source/destination/indirect/addr7 layout. TI SPRU172C section
+ * DSUB p. 4-48. */
+TI_C54X_OPCODE_MASKED(DSUB, dsub, 0x5400, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_SXM_OVM_C16)
+/* DSUBT Lmem,dst: dst = Lmem - T-shifted subtract (C16-gated)
+ * with D riding bit 8 (bit 9 fixed 1) through the shared
+ * source/destination/indirect/addr7 layout. TI SPRU172C section
+ * DSUBT p. 4-50. */
+TI_C54X_OPCODE_MASKED(DSUBT, dsubt, 0x5C00, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_OVM_C16)
 /* Syntax-1 AND Smem: dst &= Smem with S riding bit 8 through the
  * shared select/indirect/addr7 layout. */
 TI_C54X_OPCODE_MASKED(AND_SMEM, and_smem, 0x1800, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_SELECT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)

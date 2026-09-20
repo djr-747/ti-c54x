@@ -153,6 +153,11 @@ $(eval $(call ti_c54x_add_test,st_t_smem_direct_metadata,isa/catalog,test_st_t_s
 $(eval $(call ti_c54x_add_test,stl_shft_xmem_metadata,isa/catalog,test_stl_shft_xmem_metadata.c))
 # P3-S55 lane 2 RED contract: DADD Lmem row.
 $(eval $(call ti_c54x_add_test,dadd_metadata,isa/catalog,test_dadd_metadata.c))
+$(eval $(call ti_c54x_add_test,dadst_metadata,isa/catalog,test_dadst_metadata.c))
+$(eval $(call ti_c54x_add_test,drsub_metadata,isa/catalog,test_drsub_metadata.c))
+$(eval $(call ti_c54x_add_test,dsadt_metadata,isa/catalog,test_dsadt_metadata.c))
+$(eval $(call ti_c54x_add_test,dsub_metadata,isa/catalog,test_dsub_metadata.c))
+$(eval $(call ti_c54x_add_test,dsubt_metadata,isa/catalog,test_dsubt_metadata.c))
 $(eval $(call ti_c54x_add_test,stlm_smem_direct_metadata,isa/catalog,test_stlm_smem_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,cmps_smem_direct_metadata,isa/catalog,test_cmps_smem_direct_metadata.c))
 # P3-S51 RED contract: FRAME metadata.
