@@ -4,3 +4,4 @@ $(eval $(call ti_c54x_add_test,cpu_interrupt_snapshot,cpu/isa/status,test_cpu_in
 $(eval $(call ti_c54x_add_test,cpu_interrupt_arrival,cpu/isa/status,test_cpu_interrupt_arrival.c))
 $(eval $(call ti_c54x_add_test,cpu_nmi_take,cpu/isa/status,test_cpu_nmi_take.c))
 $(eval $(call ti_c54x_add_test,cpu_maskable_take,cpu/isa/status,test_cpu_maskable_take.c))
+$(eval $(call ti_c54x_add_test,cpu_hpint_hop,cpu/isa/status,test_cpu_hpint_hop.c))

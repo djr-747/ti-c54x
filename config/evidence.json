@@ -20341,6 +20341,23 @@
         "T-PROJECT-P3-S95-MASKABLE-TAKE-ARBITRATION"
       ]
     }
+,
+
+    {
+      "id": "REQ-COMMON-P3-S96-HPINT-HOP",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Prove the composed HPINT hop at the public CPU boundary reusing the S94/S95 take paths with no new production API: a parked post-CALL program with INTM set and HPINT routed to 0x3772 pending but masked takes an NMI to a RETF stub, the stub takes PC from the CALL-staged RTN with no bus traffic and clears INTM with the HPINT edge preserved, the unmasked HPINT takes to 0x3772 with exactly its IFR bit acknowledged and INTM set, the entry RETE pops the parked PC with INTM cleared, and one parked step retires with no re-take. Vector-table fetch, multi-source priority, RS/reset, IACK signaling, and observers belong to later slices.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR",
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S96-HPINT-HOP-CPU"
+      ]
+    }
   ],
   "tests": [
     {
@@ -29725,6 +29742,21 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S95-MASKABLE-TAKE"
+      ]
+    },
+
+    {
+      "id": "T-COMMON-P3-S96-HPINT-HOP-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/status/test_cpu_hpint_hop.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_hpint_hop"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S96-HPINT-HOP"
       ]
     }
   ]
