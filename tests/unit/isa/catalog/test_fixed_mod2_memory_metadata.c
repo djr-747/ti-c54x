@@ -57,7 +57,7 @@ test_metadata_rows(void)
 
     TI_C54X_TEST_CHECK(row_count == 5U);
     /* Unknown plus the 35 catalog rows is the complete generated identity. */
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 336);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 337);
 
     for (size_t index = 0U; index < row_count; ++index) {
         const standard_indirect_row *row = &rows[index];

@@ -7,4 +7,5 @@ ti_c54x_add_unit_test(and_smem_ops test_and_smem.c)
 ti_c54x_add_unit_test(or_smem_ops test_or_smem.c)
 # P3-S17 RED contract: XOR Smem.
 ti_c54x_add_unit_test(xor_smem_ops test_xor_smem.c)
+ti_c54x_add_unit_test(or_smem_absolute_ops test_or_smem_absolute.c)
 add_subdirectory(immediate)
