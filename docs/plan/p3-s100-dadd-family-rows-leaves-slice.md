@@ -1,4 +1,4 @@
-### P3-S100: DADD-family long-word rows and leaves (planned)
+### P3-S100: DADD-family long-word rows and leaves (implemented; local verification green)
 
 This immutable anchor heads the P3-S100 evidence freeze. Five
 double-precision/dual-16-bit long-word rows land on the

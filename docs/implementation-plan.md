@@ -817,7 +817,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S99: dual-memory rounded-variant shared-row bindings (implemented; local verification green)](plan/p3-s99-dual-rounded-shared-row-bindings-slice.md)
 
-- [P3-S100: DADD-family long-word rows and leaves (planned)](plan/p3-s100-dadd-family-rows-leaves-slice.md)
+- [P3-S100: DADD-family long-word rows and leaves (implemented; local verification green)](plan/p3-s100-dadd-family-rows-leaves-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
