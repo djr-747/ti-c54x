@@ -245,9 +245,9 @@ $(HOSTED_LIB): $(HOSTED_OBJECTS)
 	@mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(RUN_IMAGE_EXE): tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c $(HOSTED_LIB)
+$(RUN_IMAGE_EXE): tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c tools/hosted/port_peer.c $(HOSTED_LIB)
 	@mkdir -p $(@D)
-	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c $(HOSTED_LIB) -o $@
+	$(CC) $(BENCH_CPPFLAGS) $(BENCH_CFLAGS) tools/hosted/ti_c54x_run_image.c tools/hosted/mcu_upload_peer.c tools/hosted/port_peer.c $(HOSTED_LIB) -o $@
 
 $(HOSTED_BUILD_DIR)/obj/%.o: src/%.c
 	@mkdir -p $(@D)

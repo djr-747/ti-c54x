@@ -27,6 +27,7 @@
 #include <ti_c54x/cpu.h>
 
 #include "mcu_upload_peer.h"
+#include "port_peer.h"
 
 typedef struct run_image_bus {
     const uint16_t *program_words;
@@ -37,6 +38,8 @@ typedef struct run_image_bus {
     uint32_t data_count;
     ti_c54x_mcu_upload_peer_state mcu_peer;
     bool have_mcu_peer;
+    ti_c54x_port_peer_state port_peer;
+    bool have_port_peer;
     /* Writable program overlay: MVDP/WRITA-style PROGRAM writes
      * land here and are visible to the fetch callback, so the
      * boot can copy code into program space. Reads fall back
@@ -150,6 +153,53 @@ run_image_advance(void *context,
             bus->have_data_fault = true;
             bus->first_data_fault = request->address_word;
         }
+        return;
+    }
+    if (request->space == TI_C54X_BUS_WORD16_REQUEST_SPACE_IO) {
+        /* Hardware-port leg: only the attached port peer serves
+         * it. Detached runs keep the historical explicit fault
+         * with untouched IO counters. */
+        if (!bus->have_port_peer) {
+            bus->data_faults++;
+            if (!bus->have_data_fault) {
+                bus->have_data_fault = true;
+                bus->first_data_fault = request->address_word;
+            }
+            return;
+        }
+        bus->io_calls++;
+        if (!bus->have_io) {
+            bus->have_io = true;
+            bus->first_io_address = request->address_word;
+        }
+        if (request->access ==
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
+            if (ti_c54x_port_peer_notify_write(
+                    &bus->port_peer,
+                    (uint16_t)(request->address_word & UINT32_C(0xFFFF)),
+                    request->write_value_word) !=
+                TI_C54X_PORT_PEER_OK) {
+                bus->data_faults++;
+                return;
+            }
+        } else if (request->access ==
+                   TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ) {
+            uint16_t read_value = UINT16_C(0);
+
+            if (ti_c54x_port_peer_notify_read(
+                    &bus->port_peer,
+                    (uint16_t)(request->address_word & UINT32_C(0xFFFF)),
+                    &read_value) != TI_C54X_PORT_PEER_OK) {
+                bus->data_faults++;
+                return;
+            }
+            observation->read_value_word = read_value;
+        } else {
+            bus->data_faults++;
+            return;
+        }
+        observation->bus_status = TI_C54X_BUS_OK;
+        observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
         return;
     }
     if (request->space != TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
@@ -383,6 +433,7 @@ usage(const char *argv0)
                   "   or: %s <prog_image> <prog_base> <entry> <budget> "
                   "<be|le> [data_image data_base]\n"
                   "   [--mcu-upload <flash_image> <blocks>]\n"
+                  "   [--port-peer]\n"
                   "\n"
                   "Runs one program-word image from <entry> for <budget>\n"
                   "retirements and prints a stop report. Bases, entry,\n"
@@ -391,7 +442,10 @@ usage(const char *argv0)
                   "explicitly; nothing is invented. The trailing\n"
                   "--mcu-upload form attaches the MCU upload peer\n"
                   "(1-64 flash blocks); without a data image the peer\n"
-                  "owns a zeroed 0x800-0x2800 DATA window.\n",
+                  "owns a zeroed 0x800-0x2800 DATA window. A trailing\n"
+                  "--port-peer attaches the port peer, which serves\n"
+                  "IO-space legs (writes journaled, reads sticky)\n"
+                  "instead of faulting them.\n",
                   argv0, argv0);
 }
 
@@ -526,6 +580,7 @@ main(int argc, char **argv)
     bool big_endian = false;
     bool have_data = false;
     bool want_mcu_peer = false;
+    bool want_port_peer = false;
     unsigned char *visited = NULL;
     uint16_t *ram = NULL;
     unsigned char *storage = NULL;
@@ -539,6 +594,13 @@ main(int argc, char **argv)
 
     if (argc == 2 && strcmp(argv[1], "--selftest") == 0) {
         return selftest();
+    }
+    /* An optional trailing --port-peer strips before the
+     * established form dispatch, so the 6/8/9/11 forms are
+     * untouched with or without the peer. */
+    if (argc > 6 && strcmp(argv[argc - 1], "--port-peer") == 0) {
+        want_port_peer = true;
+        argc--;
     }
     if (argc != 6 && argc != 8 && argc != 9 && argc != 11) {
         usage(argv[0]);
@@ -663,6 +725,14 @@ main(int argc, char **argv)
         }
         bus.have_mcu_peer = true;
     }
+    if (want_port_peer) {
+        if (ti_c54x_port_peer_init(&bus.port_peer) !=
+            TI_C54X_PORT_PEER_OK) {
+            (void)fprintf(stderr, "error: port peer init failed\n");
+            goto done;
+        }
+        bus.have_port_peer = true;
+    }
     endpoint.context = &bus;
     endpoint.advance = run_image_advance;
     endpoint.cancel = run_image_cancel;
@@ -722,6 +792,19 @@ main(int argc, char **argv)
                      " fills_done=%" PRIu32 "\n",
                      bus.mcu_peer.fills_a, bus.mcu_peer.fills_b,
                      bus.mcu_peer.fills_done);
+    }
+    if (bus.have_port_peer) {
+        (void)printf("port_peer writes=%" PRIu32 " reads=%" PRIu32
+                     " journaled=%" PRIu32 " overflow=%u\n",
+                     bus.port_peer.writes, bus.port_peer.reads,
+                     bus.port_peer.journaled,
+                     bus.port_peer.overflow ? 1U : 0U);
+        for (i = 0U; i < bus.port_peer.journaled; i++) {
+            (void)printf("port_write port=0x%04" PRIX16 " value=0x%04" PRIX16
+                         "\n",
+                         bus.port_peer.journal[i].port,
+                         bus.port_peer.journal[i].value);
+        }
     }
     rc = 0;
 
