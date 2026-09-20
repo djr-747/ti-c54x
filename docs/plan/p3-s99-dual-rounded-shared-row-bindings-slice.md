@@ -1,4 +1,4 @@
-### P3-S99: dual-memory rounded-variant shared-row bindings (planned)
+### P3-S99: dual-memory rounded-variant shared-row bindings (implemented; local verification green)
 
 This immutable anchor heads the P3-S99 evidence freeze. It
 binds the two dual-memory R-suffixed forms whose encodings

@@ -15882,3 +15882,11 @@ entries are not rewritten after publication.
 - Decisions: the dst zero is absolute (not read-modify-write) and lands in the same retirement as the RC load, so no extra transaction or timing knob; the new addressing subset gets its own catalog-binding arm rather than reusing `IMMEDIATE_LK`, since the destination is a register, not just an immediate.
 - Knobs: none added, changed, or retired.
 - Follow-up: P3-WAVE7 managed leaf fan-out for the remaining forms; multi-source priority stays device-owned; `make bench-compare` still broken at HEAD on the pre-existing catalog `MASKED2` gap; open W16-W20A label question unchanged; canonical park probe `.fls` still absent from the worktree.
+
+## 2026-09-21 — P3-S99 lands as 315e7866 (dual-memory rounded-variant shared-row bindings)
+
+- Scope: binds the two dual-memory R-suffixed forms whose encodings already ride established rows through the R mode bit, with no catalog, decode, or leaf change: `FORM-T2-04-06` (MACR Xmem,Ymem) to the nine `MAC_DUAL_*` rows and `FORM-T2-04-17` (MASR Xmem,Ymem) to the nine `MAS_DUAL_*` rows, each at `SUBSET` under its row's `DUAL_INDIRECT_MODx_MODy` token, flipping `UNRESOLVED`/`UNIMPLEMENTED` to `COMMON_CANDIDATE`/`SUBSET`. Completes the P3-S35 Class-7 deferral now the dual seam has landed. No new evidence, requirement, or test records (S35 precedent): the S3t/S3u CATALOG/DECODE/EFFECTS records plus the R=1 rounding suites (`0xB532` MAC Example 6, `0xBD32` MAS Example 3, CPU retirements) already cover the behavior.
+- Validation evidence: contract quality suite OK (286 tests); `make test` exit 0 (105 binaries ok); fresh CMake `ctest` 767/767; hosted runner `--selftest` PASS (4 vectors). Frozen pins advanced as slice consequences: 368 bindings, 344 distinct symbols, 323 SUBSET, 173/205 forms (84.390%).
+- Decisions: new bindings sit adjacent to each symbol's base binding (S35 grouping); the slice-doc R citation stays word-level (`0xB0xx/0xF8CC` + trusted R=1 vectors) rather than naming the RSD bit position.
+- Knobs: none added, changed, or retired.
+- Follow-up: Wave-7 remainder is 32 UNIMPLEMENTED forms (DADD-family T2-05, filter T2-06, BIT T2-11-01, XPC far T2-12/13/15, control T2-14/18, dual-memory LD/ST T2-23/24/25, MVDD T2-26-01); `make bench-compare` still broken at HEAD on the pre-existing catalog `MASKED2` gap; open W16-W20A label question unchanged.
