@@ -15494,3 +15494,36 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S89 for the
   interrupt-wake seam (doorbell stages 4-5) — boot
   parks honest at `0xF6A` until arrival is modeled.
+
+## 2026-09-20 — P3-S89 lands as c953e26 (interrupt-wait diagnosis)
+
+- Scope: no semantic change — observability for the
+  `0xF6A` IDLE1 park before modeling arrival.
+  `ti_c54x_state` grows `ifr_value/ifr_known` plus
+  `intm_value/intm_known`, populated in
+  `ti_c54x_cpu_inspect` from the existing IFR/INTM
+  accessors. The runner prints `irq=` at every
+  stop, offers overlay-aware `--dump-prog <base>
+  <count>`, and journals the last program-overlay
+  write; `--port-peer` strips position-
+  independently. No MMR, knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_cpu_interrupt_snapshot` RED-first green:
+  reset reports IFR known-zero with INTM
+  known-set, `SSBX INTM` holds set, `RSBX INTM`
+  clears; selftest PASS; 286 Python quality tests
+  OK; registries and checkers PASS); fresh CMake
+  Debug `ctest` 756/756.
+- Decisions: the stop reports `irq intm=1
+  ifr=0x0000` (globally masked, nothing latched);
+  runtime vectors `0x80-0x9F` are zero; the single
+  overlay write is the `0xF67` MVDP copying boot
+  state to `0xFF87` (invisible: the image already
+  holds it); the fall-through decodes as `B_PMAD
+  0x0F6A`, so the wait is an infinite IDLE/B poll
+  loop. A take would fetch zeros, so arrival
+  modeling waits on MCU-side evidence.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S90 for the MCU
+  wake seam (doorbell/NMI/warm-reset, deferred
+  stages 4-5).

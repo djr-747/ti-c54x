@@ -787,7 +787,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S88: IDLE slice (implemented; local verification green)](plan/p3-s88-f4e1-slice.md)
 
-- [P3-S89: interrupt-wake seam slice (planned)](plan/p3-s89-interrupt-wake-seam-slice.md)
+- [P3-S89: interrupt-wake diagnosis slice (implemented; local verification green)](plan/p3-s89-interrupt-wake-seam-slice.md)
 
 - [P3-S90: MCU wake seam slice (planned)](plan/p3-s90-mcu-wake-seam-slice.md)
 

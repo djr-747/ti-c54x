@@ -1,4 +1,4 @@
-### P3-S89: interrupt-wake diagnosis slice (planned)
+### P3-S89: interrupt-wake diagnosis slice (implemented; local verification green)
 
 The `0xF6A` IDLE1 parks boot honest with
 `STOP_IDLE`: the library owns no interrupt source,
