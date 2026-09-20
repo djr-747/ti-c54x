@@ -1,4 +1,4 @@
-### P3-S92: peer rehome presentation slice (planned)
+### P3-S92: peer rehome presentation slice (implemented; local verification green)
 
 S91 left the unblock crisp: phase 2 polls
 `MBOX0=1` forever, and the peer must present

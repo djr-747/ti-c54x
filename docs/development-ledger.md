@@ -15631,3 +15631,55 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S92 for the peer
   post-pump move (rehome presentation, doorbell,
   go-command).
+
+## 2026-09-20 — P3-S92 lands as 9a422d8 (peer rehome presentation)
+
+- Scope: hosted peer plus runner flag. The peer
+  gains `present_rehome` (armed and holding
+  only; `MBOX0=0` with `remaining=512` over the
+  already-filled buffer A — byte-identical to a
+  genuine one-block re-upload; the following ACK
+  falls into the existing hold branch, so no new
+  peer state; mid-pump/disarmed calls no-op).
+  The runner gains bare `--mcu-rehome`
+  (strippable anywhere, single use, requires
+  `--mcu-upload` and `--warm-boot`; presents
+  once at phase-2 start with a `mcu_rehome
+  presented=1` line — phase 1 untouched with or
+  without the flag). New peer unit tests
+  (present-after-hold with buffer/header/ACK
+  assertions, mid-pump no-op, disarmed safety —
+  RED-first green). No core, MMR, knob, timing,
+  or flash changes.
+- Validation evidence: `make test` exit 0
+  (selftest 4 vectors PASS; registries and
+  checkers PASS); fresh CMake Debug `ctest`
+  756/756. A bounded 1-block pump run parks
+  `IDLE` at `0xF6A` in 6628 retirements (taken
+  as the falsifiable prediction); the rehome
+  phase 2 parks the same `IDLE` in 6612 with
+  zero faults, 4 matching port calls, overlay
+  `writes=1` to `2`, and 9 header accesses
+  shaped exactly like the bounded run's 9 —
+  with byte-identical DATA traffic counts (561
+  txns). A misplaced `--mcu-rehome`
+  validation (firing before the upload parse)
+  was caught by flag probing and moved after
+  it; --mcu-rehome without upload/warm-boot
+  correctly errors.
+- Decisions: oracle boot-sequence §4/§6 ground
+  the move (two-phase reset cycle; MBOX
+  ready/ACK polarities; loader2 `0xD80` via
+  interrupt out of the idle). The 2nd-pass gate
+  is answered (MBOX-presented, remaining-driven
+  finalize), so the loader2 hop needs the
+  doorbell take: arrival API plus arbitration
+  plus take plus `RETE` wiring (RETE/RETED rows
+  already exist unconnected) — S93 candidate.
+  Also noted for that road: the runner has no
+  OVLY program-fetch mapping, so DARAM code
+  cannot execute yet.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S93 for the
+  doorbell take seam (interrupt arrival and
+  take toward loader2).
