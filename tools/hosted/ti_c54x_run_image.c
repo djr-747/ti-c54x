@@ -440,6 +440,7 @@ usage(const char *argv0)
                   "   [--mcu-upload <flash_image> <blocks>]\n"
                   "   [--port-peer]\n"
                   "   [--dump-prog <base> <count>]\n"
+                  "   [--warm-boot <budget>]\n"
                   "\n"
                   "Runs one program-word image from <entry> for <budget>\n"
                   "retirements and prints a stop report. Bases, entry,\n"
@@ -453,11 +454,58 @@ usage(const char *argv0)
                   "IO-space legs (writes journaled, reads sticky)\n"
                   "instead of faulting them. A --dump-prog trio\n"
                   "anywhere prints runtime program words for\n"
-                  "vector/ISR diagnosis.\n",
+                  "vector/ISR diagnosis. A --warm-boot pair anywhere\n"
+                  "runs a second phase after the first stop: the CPU\n"
+                  "re-inits at 0xFF80 (silicon warm-reset entry)\n"
+                  "while program, data, peers, and overlay survive.\n",
                   argv0, argv0);
 }
 
-/* In-memory selftest: no files, two fixed vectors. */
+/* One budgeted execution phase on a fresh CPU against a caller-wired
+ * bus. The bus (program image, DATA window, peers, program overlay,
+ * coverage) is caller-owned and survives across phases: only CPU
+ * state resets, which is the warm-reset contract (silicon re-applies
+ * register reset while host-owned memory preserves). Storage and CPU
+ * must enter NULL and leave owned by the caller until phase_end. */
+static int
+phase_begin(const ti_c54x_bus *bus_desc, uint32_t entry,
+            unsigned char **storage, ti_c54x_cpu **cpu)
+{
+    ti_c54x_config config;
+
+    if (bus_desc == NULL || storage == NULL || cpu == NULL ||
+        *storage != NULL || *cpu != NULL) {
+        return -1;
+    }
+    config.reset_pc_word = (ti_c54x_program_word_address)entry;
+    memset(&config.trace, 0, sizeof(config.trace));
+    *storage = (unsigned char *)malloc(ti_c54x_cpu_size());
+    if (*storage == NULL) {
+        return -1;
+    }
+    if (ti_c54x_cpu_init(*storage, ti_c54x_cpu_size(), &config, bus_desc,
+                         cpu) != TI_C54X_ERROR_OK) {
+        free(*storage);
+        *storage = NULL;
+        return -1;
+    }
+    return 0;
+}
+
+static void
+phase_end(unsigned char **storage, ti_c54x_cpu **cpu)
+{
+    if (cpu != NULL && *cpu != NULL) {
+        (void)ti_c54x_cpu_deinit(*cpu);
+        *cpu = NULL;
+    }
+    if (storage != NULL) {
+        free(*storage);
+        *storage = NULL;
+    }
+}
+
+/* In-memory selftest: no files, three fixed vectors. */
 static int
 selftest(void)
 {
@@ -558,11 +606,86 @@ selftest(void)
     }
     free(storage);
 
+    /* Vector 3: a warm-boot phase boundary preserves host-owned
+     * memory while re-running from a fresh CPU. Phase 1 stores
+     * through the absolute ST form (P3-S70, no register inputs);
+     * after the boundary phase 2 stores again. Both cells must
+     * hold: preservation plus rerun. */
+    {
+        static const uint16_t kPhase1[] = {UINT16_C(0x76F8),
+                                           UINT16_C(0x0800),
+                                           UINT16_C(0x00A5)};
+        static const uint16_t kPhase2[] = {UINT16_C(0x76F8),
+                                           UINT16_C(0x0801),
+                                           UINT16_C(0x005A)};
+        static uint16_t ram[4] = {0};
+        ti_c54x_run_result phase_result;
+
+        memset(&bus, 0, sizeof(bus));
+        bus.program_words = kPhase1;
+        bus.program_base = UINT32_C(0x0100);
+        bus.program_count = UINT32_C(3);
+        bus.data_words = ram;
+        bus.data_base = UINT32_C(0x0800);
+        bus.data_count = UINT32_C(4);
+        endpoint.context = &bus;
+        endpoint.advance = run_image_advance;
+        endpoint.cancel = run_image_cancel;
+        bus_desc.context = &bus;
+        bus_desc.program_read_word = run_image_program_read;
+        bus_desc.program_write_word = NULL;
+        bus_desc.data_endpoint = endpoint;
+        bus_desc.io_read_word = run_image_io_read;
+        bus_desc.io_write_word = run_image_io_write;
+        storage = NULL;
+        cpu = NULL;
+        if (phase_begin(&bus_desc, UINT32_C(0x0100), &storage, &cpu) !=
+            0) {
+            (void)fprintf(stderr,
+                          "selftest: warm-boot phase 1 failed\n");
+            failures++;
+        } else {
+            phase_result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+            if (phase_result.reason != TI_C54X_STOP_BUDGET_EXHAUSTED ||
+                phase_result.instructions_retired != UINT64_C(1) ||
+                ram[0] != UINT16_C(0x00A5)) {
+                (void)fprintf(stderr,
+                              "selftest: warm-boot phase 1 failed\n");
+                failures++;
+            }
+        }
+        phase_end(&storage, &cpu);
+        bus.program_words = kPhase2;
+        bus.program_base = UINT32_C(0x0200);
+        bus.program_count = UINT32_C(3);
+        if (phase_begin(&bus_desc, UINT32_C(0x0200), &storage, &cpu) !=
+            0) {
+            (void)fprintf(stderr,
+                          "selftest: warm-boot phase 2 failed\n");
+            failures++;
+        } else {
+            phase_result = ti_c54x_cpu_run(cpu, UINT64_C(1));
+            if (phase_result.reason != TI_C54X_STOP_BUDGET_EXHAUSTED ||
+                phase_result.instructions_retired != UINT64_C(1) ||
+                ram[0] != UINT16_C(0x00A5) ||
+                ram[1] != UINT16_C(0x005A)) {
+                (void)fprintf(stderr,
+                              "selftest: warm-boot phase 2 failed\n");
+                failures++;
+            }
+        }
+        phase_end(&storage, &cpu);
+    }
+
     if (failures == 0) {
-        (void)printf("selftest: PASS (2 vectors)\n");
+        (void)printf("selftest: PASS (3 vectors)\n");
     }
     return failures == 0 ? 0 : 1;
 }
+
+/* Silicon warm-reset entry: reset forces PC to the vector-table base.
+ * Only the CPU re-inits there; host-owned memory preserves. */
+enum { WARM_BOOT_ENTRY_WORD = 0xFF80 };
 
 int
 main(int argc, char **argv)
@@ -570,7 +693,6 @@ main(int argc, char **argv)
     run_image_bus bus;
     ti_c54x_bus_word16_endpoint endpoint;
     ti_c54x_bus bus_desc;
-    ti_c54x_config config;
     uint16_t *program = NULL;
     /* done: frees the overlay scalars on every exit path. */
     memset(&bus, 0, sizeof(bus));
@@ -590,6 +712,8 @@ main(int argc, char **argv)
     bool want_mcu_peer = false;
     bool want_port_peer = false;
     bool want_dump = false;
+    bool want_warm_boot = false;
+    uint64_t warm_budget = UINT64_C(0);
     uint32_t dump_base = 0U;
     uint32_t dump_count = 0U;
     unsigned char *visited = NULL;
@@ -599,6 +723,7 @@ main(int argc, char **argv)
     ti_c54x_run_result result;
     uint64_t visited_count = 0U;
     uint32_t i = 0U;
+    uint32_t phase = 0U;
     char data_fault_text[16] = {0};
     char io_text[16] = {0};
     int rc = 1;
@@ -658,6 +783,29 @@ main(int argc, char **argv)
                 }
                 argv[i] = NULL;
                 argc -= 3;
+            }
+            break;
+        }
+    }
+    /* An optional --warm-boot <budget> pair strips out anywhere, so
+     * the positional dispatch below keeps its fixed indices. */
+    for (i = 1; i < (uint32_t)argc; i++) {
+        if (strcmp(argv[i], "--warm-boot") == 0) {
+            if (want_warm_boot || i + 1 >= (uint32_t)argc ||
+                parse_u64(argv[i + 1], &warm_budget) != 0 ||
+                warm_budget == UINT64_C(0)) {
+                usage(argv[0]);
+                return 2;
+            }
+            want_warm_boot = true;
+            {
+                uint32_t src = i + 2U;
+
+                for (; src < (uint32_t)argc; i++, src++) {
+                    argv[i] = argv[src];
+                }
+                argv[i] = NULL;
+                argc -= 2;
             }
             break;
         }
@@ -802,130 +950,143 @@ main(int argc, char **argv)
     bus_desc.data_endpoint = endpoint;
     bus_desc.io_read_word = run_image_io_read;
     bus_desc.io_write_word = run_image_io_write;
-    config.reset_pc_word = (ti_c54x_program_word_address)entry;
-    memset(&config.trace, 0, sizeof(config.trace));
-    storage = (unsigned char *)malloc(ti_c54x_cpu_size());
-    if (storage == NULL) {
-        (void)fprintf(stderr, "error: cpu storage alloc failed\n");
-        goto done;
-    }
-    if (ti_c54x_cpu_init(storage, ti_c54x_cpu_size(), &config,
-                         &bus_desc, &cpu) != TI_C54X_ERROR_OK) {
-        (void)fprintf(stderr, "error: cpu init failed\n");
-        goto done;
-    }
-    result = ti_c54x_cpu_run(cpu, budget);
-    for (i = 0U; i < program_count; i++) {
-        visited_count += (uint64_t)visited[i];
-    }
-    if (bus.have_data_fault) {
-        (void)snprintf(data_fault_text, sizeof(data_fault_text),
-                       "0x%04" PRIX32, bus.first_data_fault);
-    } else {
-        (void)snprintf(data_fault_text, sizeof(data_fault_text), "none");
-    }
-    if (bus.have_io) {
-        (void)snprintf(io_text, sizeof(io_text), "0x%04" PRIX32,
-                       bus.first_io_address);
-    } else {
-        (void)snprintf(io_text, sizeof(io_text), "none");
-    }
-    (void)printf("stop=%s bus=%s attempted=%" PRIu64 " retired=%" PRIu64
-                 " pc=0x%" PRIX32 " opcode=%s0x%04" PRIX16
-                 " prog_reads=%" PRIu64 " prog_unmapped=%" PRIu64
-                 " data_txn=%" PRIu64 " data_faults=%" PRIu64
-                 " io_calls=%" PRIu64 " prog_covered=%" PRIu64
-                 "/%" PRIu32 " prog_writes=%u first_data_fault=%s"
-                 " first_io=%s\n",
-                 stop_reason_name(result.reason),
-                 bus_status_name(result.bus_status),
-                 result.instructions_attempted,
-                 result.instructions_retired, (uint32_t)result.pc_word,
-                 result.opcode_valid ? "" : "invalid ",
-                 result.opcode_valid ? result.opcode_word : UINT16_C(0),
-                 bus.program_reads, bus.program_unmapped,
-                 bus.data_transactions, bus.data_faults, bus.io_calls,
-                 visited_count, program_count, bus.program_writes,
-                 data_fault_text, io_text);
-    if (bus.have_mcu_peer) {
-        (void)printf("mcu_upload fills_a=%" PRIu32 " fills_b=%" PRIu32
-                     " fills_done=%" PRIu32 "\n",
-                     bus.mcu_peer.fills_a, bus.mcu_peer.fills_b,
-                     bus.mcu_peer.fills_done);
-    }
-    if (bus.program_writes > 0U) {
-        (void)printf("prog_overlay writes=%u last=0x%04" PRIX32 ":0x%04" PRIX16
-                     "\n",
-                     bus.program_writes, bus.last_program_write_address,
-                     bus.last_program_write_value);
-    }
-    if (bus.have_port_peer) {
-        (void)printf("port_peer writes=%" PRIu32 " reads=%" PRIu32
-                     " journaled=%" PRIu32 " overflow=%u\n",
-                     bus.port_peer.writes, bus.port_peer.reads,
-                     bus.port_peer.journaled,
-                     bus.port_peer.overflow ? 1U : 0U);
-        for (i = 0U; i < bus.port_peer.journaled; i++) {
-            (void)printf("port_write port=0x%04" PRIX16 " value=0x%04" PRIX16
-                         "\n",
-                         bus.port_peer.journal[i].port,
-                         bus.port_peer.journal[i].value);
+    /* Warm-reset entry (P3-S90): silicon forces PC to the
+     * vector-table base. Only the CPU re-inits there; the whole
+     * bus (program, data, peers, overlay, coverage) survives. */
+    for (phase = 1U;; phase++) {
+        if (phase == 2U) {
+            (void)printf("warm_boot phase=2 entry=0x%04" PRIX32
+                         " budget=%" PRIu64 "\n",
+                         (uint32_t)WARM_BOOT_ENTRY_WORD, warm_budget);
+            entry = (uint32_t)WARM_BOOT_ENTRY_WORD;
+            budget = warm_budget;
+            bus.have_data_fault = false;
+            bus.have_io = false;
         }
-    }
-    {
-        /* Interrupt-wait diagnosis (P3-S89): the mask/flag state
-         * the stop parks in. */
-        ti_c54x_state view = {0};
-        char intm_text[8] = {0};
-        char ifr_text[8] = {0};
-
-        if (ti_c54x_cpu_inspect(cpu, &view) == TI_C54X_ERROR_OK) {
-            if (view.intm_known) {
-                (void)snprintf(intm_text, sizeof(intm_text), "%u",
-                               view.intm_value);
-            } else {
-                (void)snprintf(intm_text, sizeof(intm_text), "unknown");
-            }
-            if (view.ifr_known) {
-                (void)snprintf(ifr_text, sizeof(ifr_text), "0x%04" PRIX16,
-                               view.ifr_value);
-            } else {
-                (void)snprintf(ifr_text, sizeof(ifr_text), "unknown");
-            }
-        } else {
-            (void)snprintf(intm_text, sizeof(intm_text), "error");
-            (void)snprintf(ifr_text, sizeof(ifr_text), "error");
-        }
-        (void)printf("irq intm=%s ifr=%s\n", intm_text, ifr_text);
-    }
-    if (want_dump) {
-        /* Runtime program dump (P3-S89): overlay-aware words
-         * for vector/ISR diagnosis. */
-        if (dump_base < prog_base ||
-            dump_count > program_count ||
-            dump_base - prog_base > program_count - dump_count ||
-            dump_base > UINT32_C(0xFFFF) - dump_count) {
-            (void)fprintf(stderr, "error: dump range outside image\n");
+        if (phase_begin(&bus_desc, entry, &storage, &cpu) != 0) {
+            (void)fprintf(stderr, "error: cpu init failed\n");
             goto done;
         }
-        (void)printf("prog_dump base=0x%04" PRIX32 " count=%" PRIu32 "\n",
-                     dump_base, dump_count);
-        for (i = 0U; i < dump_count; i++) {
-            uint32_t address = dump_base + i;
-            uint16_t word =
-                bus.program_words[address - prog_base];
-
-            /* Runtime fetch prefers overlay-written words. */
-            if (bus.program_overlay_written != NULL &&
-                bus.program_overlay_written[address] !=
-                    (unsigned char)0) {
-                word = bus.program_overlay[address];
-            }
-            (void)printf("0x%04" PRIX32 ": 0x%04" PRIX16 "\n", address,
-                         word);
+        result = ti_c54x_cpu_run(cpu, budget);
+        visited_count = 0U;
+        for (i = 0U; i < program_count; i++) {
+            visited_count += (uint64_t)visited[i];
         }
+        if (bus.have_data_fault) {
+            (void)snprintf(data_fault_text, sizeof(data_fault_text),
+                           "0x%04" PRIX32, bus.first_data_fault);
+        } else {
+            (void)snprintf(data_fault_text, sizeof(data_fault_text), "none");
+        }
+        if (bus.have_io) {
+            (void)snprintf(io_text, sizeof(io_text), "0x%04" PRIX32,
+                           bus.first_io_address);
+        } else {
+            (void)snprintf(io_text, sizeof(io_text), "none");
+        }
+        (void)printf("stop=%s bus=%s attempted=%" PRIu64 " retired=%" PRIu64
+                     " pc=0x%" PRIX32 " opcode=%s0x%04" PRIX16
+                     " prog_reads=%" PRIu64 " prog_unmapped=%" PRIu64
+                     " data_txn=%" PRIu64 " data_faults=%" PRIu64
+                     " io_calls=%" PRIu64 " prog_covered=%" PRIu64
+                     "/%" PRIu32 " prog_writes=%u first_data_fault=%s"
+                     " first_io=%s\n",
+                     stop_reason_name(result.reason),
+                     bus_status_name(result.bus_status),
+                     result.instructions_attempted,
+                     result.instructions_retired, (uint32_t)result.pc_word,
+                     result.opcode_valid ? "" : "invalid ",
+                     result.opcode_valid ? result.opcode_word : UINT16_C(0),
+                     bus.program_reads, bus.program_unmapped,
+                     bus.data_transactions, bus.data_faults, bus.io_calls,
+                     visited_count, program_count, bus.program_writes,
+                     data_fault_text, io_text);
+        if (bus.have_mcu_peer) {
+            (void)printf("mcu_upload fills_a=%" PRIu32 " fills_b=%" PRIu32
+                         " fills_done=%" PRIu32 "\n",
+                         bus.mcu_peer.fills_a, bus.mcu_peer.fills_b,
+                         bus.mcu_peer.fills_done);
+        }
+        if (bus.program_writes > 0U) {
+            (void)printf("prog_overlay writes=%u last=0x%04" PRIX32 ":0x%04" PRIX16
+                         "\n",
+                         bus.program_writes, bus.last_program_write_address,
+                         bus.last_program_write_value);
+        }
+        if (bus.have_port_peer) {
+            (void)printf("port_peer writes=%" PRIu32 " reads=%" PRIu32
+                         " journaled=%" PRIu32 " overflow=%u\n",
+                         bus.port_peer.writes, bus.port_peer.reads,
+                         bus.port_peer.journaled,
+                         bus.port_peer.overflow ? 1U : 0U);
+            for (i = 0U; i < bus.port_peer.journaled; i++) {
+                (void)printf("port_write port=0x%04" PRIX16 " value=0x%04" PRIX16
+                             "\n",
+                             bus.port_peer.journal[i].port,
+                             bus.port_peer.journal[i].value);
+            }
+        }
+        {
+            /* Interrupt-wait diagnosis (P3-S89): the mask/flag state
+             * the stop parks in. */
+            ti_c54x_state view = {0};
+            char intm_text[8] = {0};
+            char ifr_text[8] = {0};
+
+            if (ti_c54x_cpu_inspect(cpu, &view) == TI_C54X_ERROR_OK) {
+                if (view.intm_known) {
+                    (void)snprintf(intm_text, sizeof(intm_text), "%u",
+                                   view.intm_value);
+                } else {
+                    (void)snprintf(intm_text, sizeof(intm_text), "unknown");
+                }
+                if (view.ifr_known) {
+                    (void)snprintf(ifr_text, sizeof(ifr_text), "0x%04" PRIX16,
+                                   view.ifr_value);
+                } else {
+                    (void)snprintf(ifr_text, sizeof(ifr_text), "unknown");
+                }
+            } else {
+                (void)snprintf(intm_text, sizeof(intm_text), "error");
+                (void)snprintf(ifr_text, sizeof(ifr_text), "error");
+            }
+            (void)printf("irq intm=%s ifr=%s\n", intm_text, ifr_text);
+        }
+        phase_end(&storage, &cpu);
+        if (phase == 1U && want_warm_boot) {
+            continue;
+        }
+        /* A dump reflects the final phase only. */
+        if (want_dump) {
+            /* Runtime program dump (P3-S89): overlay-aware words
+             * for vector/ISR diagnosis. */
+            if (dump_base < prog_base ||
+                dump_count > program_count ||
+                dump_base - prog_base > program_count - dump_count ||
+                dump_base > UINT32_C(0xFFFF) - dump_count) {
+                (void)fprintf(stderr, "error: dump range outside image\n");
+                goto done;
+            }
+            (void)printf("prog_dump base=0x%04" PRIX32 " count=%" PRIu32 "\n",
+                         dump_base, dump_count);
+            for (i = 0U; i < dump_count; i++) {
+                uint32_t address = dump_base + i;
+                uint16_t word =
+                    bus.program_words[address - prog_base];
+
+                /* Runtime fetch prefers overlay-written words. */
+                if (bus.program_overlay_written != NULL &&
+                    bus.program_overlay_written[address] !=
+                        (unsigned char)0) {
+                    word = bus.program_overlay[address];
+                }
+                (void)printf("0x%04" PRIX32 ": 0x%04" PRIX16 "\n", address,
+                             word);
+            }
+        }
+        rc = 0;
+        break;
     }
-    rc = 0;
 
 done:
     if (cpu != NULL) {
