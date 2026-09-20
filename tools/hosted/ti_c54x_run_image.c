@@ -25,6 +25,7 @@
 
 #include <ti_c54x/bus.h>
 #include <ti_c54x/cpu.h>
+#include <ti_c54x/state.h>
 
 #include "mcu_upload_peer.h"
 #include "port_peer.h"
@@ -48,6 +49,8 @@ typedef struct run_image_bus {
     uint16_t *program_overlay;
     unsigned char *program_overlay_written;
     unsigned program_writes;
+    uint32_t last_program_write_address;
+    uint16_t last_program_write_value;
     unsigned char *visited;
     uint64_t program_reads;
     uint64_t program_unmapped;
@@ -135,6 +138,8 @@ run_image_advance(void *context,
             bus->program_overlay_written[request->address_word] =
                 (unsigned char)1;
             bus->program_writes++;
+            bus->last_program_write_address = request->address_word;
+            bus->last_program_write_value = request->write_value_word;
             observation->bus_status = TI_C54X_BUS_OK;
             observation->kind = TI_C54X_BUS_WORD16_OBSERVATION_READY;
             return;
@@ -434,6 +439,7 @@ usage(const char *argv0)
                   "<be|le> [data_image data_base]\n"
                   "   [--mcu-upload <flash_image> <blocks>]\n"
                   "   [--port-peer]\n"
+                  "   [--dump-prog <base> <count>]\n"
                   "\n"
                   "Runs one program-word image from <entry> for <budget>\n"
                   "retirements and prints a stop report. Bases, entry,\n"
@@ -445,7 +451,9 @@ usage(const char *argv0)
                   "owns a zeroed 0x800-0x2800 DATA window. A trailing\n"
                   "--port-peer attaches the port peer, which serves\n"
                   "IO-space legs (writes journaled, reads sticky)\n"
-                  "instead of faulting them.\n",
+                  "instead of faulting them. A --dump-prog trio\n"
+                  "anywhere prints runtime program words for\n"
+                  "vector/ISR diagnosis.\n",
                   argv0, argv0);
 }
 
@@ -581,6 +589,9 @@ main(int argc, char **argv)
     bool have_data = false;
     bool want_mcu_peer = false;
     bool want_port_peer = false;
+    bool want_dump = false;
+    uint32_t dump_base = 0U;
+    uint32_t dump_count = 0U;
     unsigned char *visited = NULL;
     uint16_t *ram = NULL;
     unsigned char *storage = NULL;
@@ -595,12 +606,61 @@ main(int argc, char **argv)
     if (argc == 2 && strcmp(argv[1], "--selftest") == 0) {
         return selftest();
     }
-    /* An optional trailing --port-peer strips before the
-     * established form dispatch, so the 6/8/9/11 forms are
-     * untouched with or without the peer. */
-    if (argc > 6 && strcmp(argv[argc - 1], "--port-peer") == 0) {
-        want_port_peer = true;
-        argc--;
+    /* An optional --port-peer strips out anywhere, so the
+     * 6/8/9/11 forms are untouched with or without the peer
+     * and flag order against --dump-prog does not matter. */
+    for (i = 1; i < (uint32_t)argc; i++) {
+        if (strcmp(argv[i], "--port-peer") == 0) {
+            uint32_t src = i + 1U;
+
+            want_port_peer = true;
+            for (; src < (uint32_t)argc; i++, src++) {
+                argv[i] = argv[src];
+            }
+            argv[i] = NULL;
+            argc--;
+            break;
+        }
+    }
+    /* An optional --dump-prog <base> <count> trio strips out
+     * anywhere after the program, so the positional dispatch
+     * below keeps its fixed indices. */
+    for (i = 1; i < (uint32_t)argc; i++) {
+        if (strcmp(argv[i], "--dump-prog") == 0) {
+            unsigned long parsed;
+            char *end = NULL;
+
+            if (want_dump || i + 2 >= (uint32_t)argc) {
+                usage(argv[0]);
+                return 2;
+            }
+            parsed = strtoul(argv[i + 1], &end, 0);
+            if (end == NULL || *end != '\0' ||
+                parsed > UINT32_C(0xFFFF)) {
+                usage(argv[0]);
+                return 2;
+            }
+            dump_base = (uint32_t)parsed;
+            end = NULL;
+            parsed = strtoul(argv[i + 2], &end, 0);
+            if (end == NULL || *end != '\0' || parsed == 0U ||
+                parsed > UINT32_C(0x1000)) {
+                usage(argv[0]);
+                return 2;
+            }
+            dump_count = (uint32_t)parsed;
+            want_dump = true;
+            {
+                uint32_t src = i + 3U;
+
+                for (; src < (uint32_t)argc; i++, src++) {
+                    argv[i] = argv[src];
+                }
+                argv[i] = NULL;
+                argc -= 3;
+            }
+            break;
+        }
     }
     if (argc != 6 && argc != 8 && argc != 9 && argc != 11) {
         usage(argv[0]);
@@ -793,6 +853,12 @@ main(int argc, char **argv)
                      bus.mcu_peer.fills_a, bus.mcu_peer.fills_b,
                      bus.mcu_peer.fills_done);
     }
+    if (bus.program_writes > 0U) {
+        (void)printf("prog_overlay writes=%u last=0x%04" PRIX32 ":0x%04" PRIX16
+                     "\n",
+                     bus.program_writes, bus.last_program_write_address,
+                     bus.last_program_write_value);
+    }
     if (bus.have_port_peer) {
         (void)printf("port_peer writes=%" PRIu32 " reads=%" PRIu32
                      " journaled=%" PRIu32 " overflow=%u\n",
@@ -804,6 +870,59 @@ main(int argc, char **argv)
                          "\n",
                          bus.port_peer.journal[i].port,
                          bus.port_peer.journal[i].value);
+        }
+    }
+    {
+        /* Interrupt-wait diagnosis (P3-S89): the mask/flag state
+         * the stop parks in. */
+        ti_c54x_state view = {0};
+        char intm_text[8] = {0};
+        char ifr_text[8] = {0};
+
+        if (ti_c54x_cpu_inspect(cpu, &view) == TI_C54X_ERROR_OK) {
+            if (view.intm_known) {
+                (void)snprintf(intm_text, sizeof(intm_text), "%u",
+                               view.intm_value);
+            } else {
+                (void)snprintf(intm_text, sizeof(intm_text), "unknown");
+            }
+            if (view.ifr_known) {
+                (void)snprintf(ifr_text, sizeof(ifr_text), "0x%04" PRIX16,
+                               view.ifr_value);
+            } else {
+                (void)snprintf(ifr_text, sizeof(ifr_text), "unknown");
+            }
+        } else {
+            (void)snprintf(intm_text, sizeof(intm_text), "error");
+            (void)snprintf(ifr_text, sizeof(ifr_text), "error");
+        }
+        (void)printf("irq intm=%s ifr=%s\n", intm_text, ifr_text);
+    }
+    if (want_dump) {
+        /* Runtime program dump (P3-S89): overlay-aware words
+         * for vector/ISR diagnosis. */
+        if (dump_base < prog_base ||
+            dump_count > program_count ||
+            dump_base - prog_base > program_count - dump_count ||
+            dump_base > UINT32_C(0xFFFF) - dump_count) {
+            (void)fprintf(stderr, "error: dump range outside image\n");
+            goto done;
+        }
+        (void)printf("prog_dump base=0x%04" PRIX32 " count=%" PRIu32 "\n",
+                     dump_base, dump_count);
+        for (i = 0U; i < dump_count; i++) {
+            uint32_t address = dump_base + i;
+            uint16_t word =
+                bus.program_words[address - prog_base];
+
+            /* Runtime fetch prefers overlay-written words. */
+            if (bus.program_overlay_written != NULL &&
+                bus.program_overlay_written[address] !=
+                    (unsigned char)0) {
+                word = bus.program_overlay[address];
+            }
+            (void)printf("0x%04" PRIX32 ": 0x%04" PRIX16 "\n", address,
+                         word);
         }
     }
     rc = 0;

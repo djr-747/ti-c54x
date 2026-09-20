@@ -17,6 +17,8 @@
 #include "memory/pending_work.h"
 #include "trace/emit.h"
 
+#include "../state/interrupt_flag_register.h"
+
 static ti_c54x_error
 memory_status_to_error(ti_c54x_memory_instruction_status status)
 {
@@ -193,6 +195,11 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
             ti_c54x_status_register_read_arp(&cpu->arch_state.status);
         const ti_c54x_status_register_field_result c_status =
             ti_c54x_status_register_read_c(&cpu->arch_state.status);
+        const ti_c54x_status_register_field_result intm =
+            ti_c54x_status_register_read_intm(&cpu->arch_state.status);
+        uint16_t ifr_value = UINT16_C(0);
+        const ti_c54x_arch_state_status ifr_status =
+            ti_c54x_arch_state_read_ifr(&cpu->arch_state, &ifr_value);
         ti_c54x_accumulator_snapshot accumulators;
         const ti_c54x_accumulator_status accumulator_status =
             ti_c54x_accumulator_read_snapshot(&cpu->accumulators,
@@ -209,6 +216,10 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
         state->arp_known = arp.status == TI_C54X_STATUS_REGISTER_OK;
         state->c = (uint8_t)c_status.raw_value;
         state->c_known = c_status.status == TI_C54X_STATUS_REGISTER_OK;
+        state->ifr_value = ifr_value;
+        state->ifr_known = ifr_status == TI_C54X_ARCH_STATE_OK;
+        state->intm_value = (uint8_t)intm.raw_value;
+        state->intm_known = intm.status == TI_C54X_STATUS_REGISTER_OK;
         state->accumulator_a_raw40 = accumulators.a_raw40;
         state->accumulator_b_raw40 = accumulators.b_raw40;
         state->accumulator_a_known = accumulators.a_known;
