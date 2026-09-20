@@ -1,4 +1,4 @@
-### P3-S81: OR absolute Smem slice (planned)
+### P3-S81: OR absolute Smem slice (implemented; local verification green)
 
 `OR *(abs),dst` is TI SPRU172C section OR (logical OR
 with absolute addressing): first `0x1AF8` with S

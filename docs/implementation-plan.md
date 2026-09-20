@@ -771,7 +771,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S80: LD absolute-shift16 Smem slice (implemented; local verification green)](plan/p3-s80-ld-absolute-shift16-smem-slice.md)
 
-- [P3-S81: OR absolute Smem slice (planned)](plan/p3-s81-or-absolute-smem-slice.md)
+- [P3-S81: OR absolute Smem slice (implemented; local verification green)](plan/p3-s81-or-absolute-smem-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

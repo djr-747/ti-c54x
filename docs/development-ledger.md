@@ -15124,3 +15124,45 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x1AF8` at `0xF29`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S81 lands as f22af41 (OR absolute-Smem slice)
+
+- Scope: exact row `OR_SMEM_ABSOLUTE` (`0x1AF8`,
+  2 words, S selects A/B) placed before the covering
+  `OR_SMEM` masked row (its `0xFE00` mask spans the
+  absolute cookie, unlike the LD `0xFEE0` family mask,
+  so the schema mandates exact-first or the generator
+  reports overlap); new `op_or_smem_absolute`
+  checked/trusted leaf stages the `ABSOLUTE_DATA`
+  WORD16 READ arm with a zero-extending OR completion
+  (OR_SMEM precedent: destination-known gating, C/TC
+  preserved, `INELIGIBLE` for repeat). No MMR, knob,
+  or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_or_smem_absolute_decode/ops/metadata`,
+  `test_cpu_or_smem_absolute` RED-first green; all
+  723 C binaries pass; 286 Python quality tests OK;
+  fresh CMake Debug `ctest` 730/730; focused
+  ASan/UBSan on the four new tests green; registries
+  and checkers PASS). Boot repro past `0xF29`:
+  BUDGET=400 staged loader1 run with the MCU peer
+  (page-0 DATA window) retires 400/400 with zero data
+  faults mid-block at pc=`0x8032`; BUDGET=10000
+  escapes with 6539 retired to pc=`0xF2B`, proving
+  the `0xF29` OR retired; `0x08F8` (SUB_SMEM-shaped)
+  is the next explicit stop (INVALID_STATE).
+- Decisions: new `ID_COUNT` 336 to 337 with pins;
+  `FORM-T2-08-01` binds the row `SUBSET` with
+  `ABSOLUTE_DATA` (S76 mirror in the atomic-logical
+  contract); positional catalog pins renumber from
+  the insertion point with a position-independent
+  symbol block for the new row. The exact word
+  reclaims its lookup pin, so populated first words
+  stay 40272 (differs from S80, whose cookie was
+  uncovered). New CPU proof leaf lives under
+  `cpu/isa/logical/smem/or/`, mirroring the
+  immediate-OR ownership.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x08F8` at `0xF2B`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
