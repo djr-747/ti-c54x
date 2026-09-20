@@ -15451,3 +15451,46 @@ entries are not rewritten after publication.
 - Follow-up: next slice is P3-S88 for `0xF4E1` at
   `0xF6A` (uncovered first word — diagnosis
   in-slice).
+
+## 2026-09-20 — P3-S88 lands as cd45915 (IDLE slice)
+
+- Scope: masked row `IDLE` (`0xF4E1/0xFCFF`, 1
+  word) with the new 1-operand `IDLE_K` layout (K
+  at bits 9-8, K = NN+1), `INELIGIBLE`, resources
+  NONE. The `op_idle` checked/trusted leaf gates
+  K=1..3 (reserved NN=3 rejects; K=1,2,3 all
+  evidenced in-image, NN=3 never) and stages the
+  new `IDLE` wait effect; a new run-loop arm takes
+  it to the reserved `STOP_IDLE` (attempted,
+  unretired, pc held).
+- Validation evidence: `make test` exit 0 (new
+  `test_idle_decode/ops/metadata`, `test_cpu_idle`
+  RED-first green under the ASan/UBSan build; 286
+  Python quality tests OK; registries and checkers
+  PASS); fresh CMake Debug `ctest` 755/755.
+  Targeted `ENTRY=0xF6A` peer run stops `IDLE`
+  (`attempted=1 retired=0`, one program read, zero
+  bus traffic). BUDGET=1000000 widened-window run
+  with the 64-block MCU peer plus `--port-peer`
+  stops `IDLE` at `attempted=394725
+  retired=394724` (byte-identical rerun).
+- Decisions: TI SPRU307A functional overview
+  §1.2.17 confirms IDLE1/2/3 dormant-until-
+  interrupt; with no interrupt source in the
+  library, retiring through the wait would invent
+  control flow, so the reserved stop carries it.
+  All effect-kind switches carry defaults, so the
+  new enumerator compiles clean. New `ID_COUNT`
+  342 to 343 with pins; `FORM-T2-18-01` binds the
+  row `SUBSET` with `IMMEDIATE_K` (RPT_K
+  precedent); four new NN pins move populated
+  first words 40274 to 40278. README snapshot
+  refreshed (342 rows, 40278 pins, 169/205 forms,
+  45/205 strict). The schema
+  `test_bound_form_requires_exactly_one_binding`
+  now copies a COMPLETE binding (index 0 became
+  the SUBSET IDLE row).
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S89 for the
+  interrupt-wake seam (doorbell stages 4-5) — boot
+  parks honest at `0xF6A` until arrival is modeled.

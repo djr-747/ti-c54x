@@ -1,4 +1,4 @@
-### P3-S88: IDLE slice (planned)
+### P3-S88: IDLE slice (implemented; local verification green)
 
 `IDLE K` is TI SPRU172C power-down (functional
 overview §1.2.17: IDLE1 shuts the CPU, IDLE2 adds
