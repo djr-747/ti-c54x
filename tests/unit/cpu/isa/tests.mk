@@ -10,3 +10,4 @@ include tests/unit/cpu/isa/multiply/tests.mk
 include tests/unit/cpu/isa/repeat/tests.mk
 include tests/unit/cpu/isa/stack/tests.mk
 include tests/unit/cpu/isa/auxiliary/tests.mk
+include tests/unit/cpu/isa/peripheral/tests.mk

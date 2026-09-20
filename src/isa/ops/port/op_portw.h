@@ -5,7 +5,9 @@
  * Owns: pure PORTW I/O-pair memory-read effects over one indirect
  * flag, one 7-bit Smem cookie, and one 16-bit absolute port address:
  * direct (DP-relative dma) and indirect (ARF plus 4-bit MOD) row
- * entries with trusted twins.
+ * entries with trusted twins, plus the absolute entry (absolute DATA
+ * address plus absolute port address over three words) with its
+ * trusted twin.
  * Does not own: opcode inventory, operand-layout definitions, address
  * resolution, buses, CPU or architectural state, sequencing, timing,
  * observers, diagnostics, allocation, or callbacks.
@@ -33,6 +35,16 @@ ti_c54x_op_status ti_c54x_trusted_op_portw_direct(
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
 
 ti_c54x_op_status ti_c54x_trusted_op_portw_smem(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_op_portw_smem_absolute(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect);
+
+ti_c54x_op_status ti_c54x_trusted_op_portw_smem_absolute(
     const ti_c54x_decoded_instruction *instruction,
     const ti_c54x_trusted_operand_values *operands,
     const ti_c54x_op_input_snapshot *input, ti_c54x_op_effect *effect);

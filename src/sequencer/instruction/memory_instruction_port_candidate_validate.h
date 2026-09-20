@@ -30,4 +30,12 @@ bool ti_c54x_memory_instruction_port_direct_data_matches_live(
     const struct ti_c54x_arch_state *state,
     const struct ti_c54x_memory_address_resolution *resolution);
 
+/* PORT absolute-Smem DATA-leg liveness (P3-S85). The absolute leg
+ * observes no state: re-prove the frozen absolute echo against the
+ * marker's DATA address and pin the sequential PC. */
+bool ti_c54x_memory_instruction_port_absolute_data_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const struct ti_c54x_arch_state *state,
+    const struct ti_c54x_memory_address_resolution *resolution);
+
 #endif /* TI_C54X_SEQUENCER_INSTRUCTION_MEMORY_INSTRUCTION_PORT_CANDIDATE_VALIDATE_H */

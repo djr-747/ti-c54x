@@ -446,6 +446,18 @@ ti_c54x_memory_instruction_candidate_matches_live(
         return ti_c54x_memory_candidate_atomic_absolute_matches_live(
             candidate, state);
     }
+    /* PORT absolute Smem (P3-S85): the DATA leg resolves ABSOLUTE,
+     * which owns its liveness (no CPL/DP observed), so it must not
+     * reach the DIRECT tails or the generic CMPT0/ARP0 gate. */
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16 &&
+        candidate->effect.payload.memory.address_spec.port.indirect ==
+            UINT8_C(1) &&
+        candidate->effect.payload.memory.address_spec.port.smem_mode ==
+            UINT8_C(15)) {
+        return ti_c54x_memory_instruction_port_absolute_data_matches_live(
+            candidate, state, resolution);
+    }
     if (address_effect->source.kind ==
             TI_C54X_ADDRESS_SOURCE_DIRECT_PAGE0 ||
         address_effect->source.kind == TI_C54X_ADDRESS_SOURCE_DIRECT_DP) {

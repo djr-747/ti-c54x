@@ -92,6 +92,20 @@ ti_c54x_memory_instruction_port_synthesize_data_spec(
         staged.circular_mode = arm->port.smem_mode;
         staged.arf = arm->port.smem_arf;
         break;
+    case UINT8_C(15):
+        /* Absolute Smem (P3-S85, TI SPRU172C §4 pp. 4-129–4-130):
+         * the absolute marker (arf=0, dma7=0) carries the 16-bit
+         * absolute DATA address in the arm reserved_half. */
+        if (arm->port.smem_arf != UINT8_C(0) ||
+            arm->port.smem_dma7 != UINT8_C(0)) {
+            return false;
+        }
+        staged.kind = TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16;
+        staged.absolute_data.address = arm->port.reserved_half;
+        staged.absolute_data.mmr_sidecar_kind =
+            (uint8_t)TI_C54X_OP_MEMORY_MMR_SIDECAR_NONE;
+        staged.absolute_data.mmr_sidecar_number = UINT8_C(0);
+        break;
     default:
         return false;
     }

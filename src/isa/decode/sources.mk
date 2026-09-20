@@ -5,6 +5,7 @@ ti_c54x_core_sources += \
     src/isa/decode/operand_field.c \
     src/isa/decode/operand_layout.c \
     src/isa/decode/operand_layout_sets.c \
+    src/isa/decode/operand_layout_sets_port.c \
     src/isa/decode/operand_layout_sets_smem_lk.c \
     src/isa/decode/operand_layout_sets_branch.c \
     src/isa/decode/trusted_execution_packet.c

@@ -763,6 +763,19 @@ TI_C54X_OPCODE_MASKED(PORTR_SMEM, portr_smem, 0x7480, 0xFF80, 2, TI_C54X_OPERAND
  * when I=1); word 1 carries the absolute 16-bit I/O port address.
  * Long-offset and absolute Smem extension words stay undecoded. */
 TI_C54X_OPCODE_MASKED(PORTW_DIRECT, portw_direct, 0x7500, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_PA16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_STATUS_DP)
+/* P3-S85 PORTW absolute *(abs),PA (TI SPRU172C §4 pp. 4-129–4-130
+ * PORTW with absolute Smem, 3 words): the exact 0x75F8 first word
+ * (I=1 with the 0x78 absolute selector) carries the 16-bit absolute
+ * DATA address in word 1 and the 16-bit absolute I/O port address
+ * in word 2; execution writes the word at abs to the port with no
+ * status bits. The row sits before the covering PORTW_SMEM masked
+ * row (whose 0xFF80 mask spans the absolute cookie, S81/S82
+ * precedent), so the exact word wins by generation with no shadow
+ * carve; long-offset Smem stays deferred (the P3-S6 comment above
+ * is superseded for absolute only). Absolute operands cannot
+ * repeat (section 2 repeat rules), so the row is INELIGIBLE with
+ * evidence. */
+TI_C54X_OPCODE_EXACT(PORTW_SMEM_ABSOLUTE, portw_smem_absolute, 0x75F8, 3, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 TI_C54X_OPCODE_MASKED(PORTW_SMEM, portw_smem, 0x7580, 0xFF80, 2, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_PA16, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS)
 /* P3-S56 MVDM Smem,MMRx (TI SPRU172C MVDM): word 0 pins 0x7200
  * with the 5-bit MMR destination at bits 4:0 (0x00-0x1F CPU

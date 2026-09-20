@@ -222,3 +222,149 @@ ti_c54x_op_status ti_c54x_trusted_op_portw_smem(
     (void)instruction;
     return portw_trusted_checked(operands, input, UINT8_C(1), effect);
 }
+
+/* Absolute Smem (P3-S85, TI SPRU172C §4 pp. 4-129–4-130, 3 words):
+ * I=1 with the 0x78 absolute selector carries the 16-bit absolute
+ * DATA address in word 1 and the 16-bit absolute I/O port address
+ * in word 2. The arm rides the existing PORT_WORD16 kind with the
+ * absolute marker (indirect=1, mode=15, arf=0, dma7=0) and the DATA
+ * address in reserved_half; the sequencer synthesizes the absolute
+ * DATA READ leg from the marker. */
+#define PORTW_ABSOLUTE_SELECTOR UINT8_C(0x78)
+#define PORTW_ABSOLUTE_MODE UINT8_C(15)
+
+static ti_c54x_op_status
+portw_absolute_values(uint16_t absolute, uint16_t port_address,
+                      ti_c54x_op_effect *effect)
+{
+    ti_c54x_op_effect staged = {0};
+
+    if (effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+
+    staged.kind = TI_C54X_OP_EFFECT_MEMORY;
+    staged.payload.memory.address_spec.kind =
+        TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16;
+    staged.payload.memory.address_spec.port.indirect = UINT8_C(1);
+    staged.payload.memory.address_spec.port.smem_mode =
+        PORTW_ABSOLUTE_MODE;
+    staged.payload.memory.address_spec.port.smem_arf = UINT8_C(0);
+    staged.payload.memory.address_spec.port.smem_dma7 = UINT8_C(0);
+    staged.payload.memory.address_spec.port.port_address = port_address;
+    staged.payload.memory.address_spec.port.reserved_half = absolute;
+    staged.payload.memory.address_spec.port.reserved_word0 = UINT32_C(0);
+    staged.payload.memory.address_spec.port.reserved_word1 = UINT32_C(0);
+    staged.payload.memory.address_spec.port.reserved_word2 = UINT32_C(0);
+    staged.payload.memory.access = TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ;
+    staged.payload.memory.value_word = UINT16_C(0);
+    staged.payload.memory.complete = NULL;
+    *effect = staged;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+static ti_c54x_op_status
+portw_absolute_extract(const ti_c54x_decoded_instruction *instruction,
+                       uint16_t *absolute, uint16_t *port_address)
+{
+    ti_c54x_operand_layout_set_view layout_view;
+    ti_c54x_operand_field_value indirect_field = {0U, 0U};
+    ti_c54x_operand_field_value selector_field = {0U, 0U};
+    ti_c54x_operand_field_value absolute_field = {0U, 0U};
+    ti_c54x_operand_field_value pa_field = {0U, 0U};
+
+    if (instruction == NULL || absolute == NULL || port_address == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (instruction->id != TI_C54X_OPCODE_ID_PORTW_SMEM_ABSOLUTE ||
+        instruction->operand_layout !=
+            TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16 ||
+        instruction->bundle.program_word_count != UINT8_C(3) ||
+        instruction->bundle.program_words[0] != UINT16_C(0x75F8)) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    if (ti_c54x_operand_layout_set_resolve(
+            TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16,
+            UINT8_C(3), &layout_view) !=
+        TI_C54X_OPERAND_LAYOUT_STATUS_OK) {
+        return TI_C54X_OP_STATUS_INVALID_DECODE;
+    }
+
+    {
+        const ti_c54x_program_words_view words = {
+            instruction->bundle.program_words,
+            instruction->bundle.program_word_count};
+
+        if (ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(0), &indirect_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            indirect_field.width_bits != UINT8_C(1) ||
+            indirect_field.raw_value != UINT64_C(1) ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(1), &selector_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            selector_field.width_bits != UINT8_C(7) ||
+            selector_field.raw_value != PORTW_ABSOLUTE_SELECTOR ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(2), &absolute_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            absolute_field.width_bits != UINT8_C(16) ||
+            ti_c54x_operand_layout_set_extract_operand(
+                &layout_view, &words, UINT8_C(3), &pa_field) !=
+                TI_C54X_OPERAND_LAYOUT_STATUS_OK ||
+            pa_field.width_bits != UINT8_C(16)) {
+            return TI_C54X_OP_STATUS_INVALID_DECODE;
+        }
+    }
+
+    *absolute = (uint16_t)absolute_field.raw_value;
+    *port_address = (uint16_t)pa_field.raw_value;
+    return TI_C54X_OP_STATUS_OK;
+}
+
+ti_c54x_op_status ti_c54x_op_portw_smem_absolute(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    uint16_t absolute;
+    uint16_t port_address;
+    ti_c54x_op_status status;
+
+    if (instruction == NULL || input == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    (void)input;
+    status = portw_absolute_extract(instruction, &absolute, &port_address);
+    if (status != TI_C54X_OP_STATUS_OK) {
+        return status;
+    }
+    return portw_absolute_values(absolute, port_address, effect);
+}
+
+ti_c54x_op_status ti_c54x_trusted_op_portw_smem_absolute(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_trusted_operand_values *operands,
+    const ti_c54x_op_input_snapshot *input,
+    ti_c54x_op_effect *effect)
+{
+    (void)instruction;
+    (void)input;
+
+    if (operands == NULL || effect == NULL) {
+        return TI_C54X_OP_STATUS_INVALID_ARGUMENT;
+    }
+    if (operands->count != UINT8_C(4) ||
+        operands->values[0].width_bits != UINT8_C(1) ||
+        operands->values[0].raw_value != UINT64_C(1) ||
+        operands->values[1].width_bits != UINT8_C(7) ||
+        operands->values[1].raw_value != UINT64_C(0x78) ||
+        operands->values[2].width_bits != UINT8_C(16) ||
+        operands->values[3].width_bits != UINT8_C(16)) {
+        return TI_C54X_OP_STATUS_INVALID_OPERAND;
+    }
+    return portw_absolute_values((uint16_t)operands->values[2].raw_value,
+                                 (uint16_t)operands->values[3].raw_value,
+                                 effect);
+}

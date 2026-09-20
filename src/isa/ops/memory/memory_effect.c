@@ -389,6 +389,15 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                 effect->address_spec.port.smem_dma7 > UINT8_C(0x7F)) {
                 return false;
             }
+        } else if (effect->address_spec.port.smem_mode ==
+                   UINT8_C(15)) {
+            /* Absolute Smem (P3-S85): the absolute marker (arf=0,
+             * dma7=0) carries the 16-bit absolute DATA address in
+             * reserved_half. */
+            if (effect->address_spec.port.smem_arf != UINT8_C(0) ||
+                effect->address_spec.port.smem_dma7 != UINT8_C(0)) {
+                return false;
+            }
         } else {
             if (effect->address_spec.port.smem_dma7 != UINT8_C(0) ||
                 effect->address_spec.port.smem_arf > UINT8_C(7) ||
@@ -396,10 +405,14 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
                 return false;
             }
         }
-        if (effect->address_spec.port.reserved_half != UINT16_C(0) ||
-            effect->address_spec.port.reserved_word0 != UINT32_C(0) ||
+        if (effect->address_spec.port.reserved_word0 != UINT32_C(0) ||
             effect->address_spec.port.reserved_word1 != UINT32_C(0) ||
             effect->address_spec.port.reserved_word2 != UINT32_C(0)) {
+            return false;
+        }
+        if (effect->address_spec.port.reserved_half != UINT16_C(0) &&
+            !(effect->address_spec.port.indirect == UINT8_C(1) &&
+              effect->address_spec.port.smem_mode == UINT8_C(15))) {
             return false;
         }
         return (effect->access ==

@@ -228,9 +228,9 @@ class InventoryAddSubBindingTests(unittest.TestCase):
             for binding in inventory["catalog_bindings"]
         }
 
-        self.assertEqual(len(rows), 339)
-        self.assertEqual(len(rows) + 1, 340)
-        self.assertEqual(len(inventory["catalog_bindings"]),345)
+        self.assertEqual(len(rows), 340)
+        self.assertEqual(len(rows) + 1, 341)
+        self.assertEqual(len(inventory["catalog_bindings"]),346)
         for symbol, expected in ROWS.items():
             with self.subTest(symbol=symbol):
                 row = by_symbol[symbol]

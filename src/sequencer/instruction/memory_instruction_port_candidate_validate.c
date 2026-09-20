@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #include "isa/ops/memory/memory_effect.h"
+#include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_single_leg.h"
 #include "sequencer/instruction/memory_instruction_port.h"
@@ -44,14 +45,58 @@ ti_c54x_memory_instruction_port_candidate_shape_is_valid(
             &candidate->input, &data_effect.address_spec)) {
         return false;
     }
-    if (!ti_c54x_memory_candidate_single_leg_shape_is_valid(
-            &candidate->port_address_snapshot.data_resolution,
-            &data_effect)) {
+    /* The absolute-Smem marker (P3-S85) synthesizes an ABSOLUTE_DATA
+     * leg, which validates through the absolute-data shape (MVDM/MVMD
+     * and Smem-absolute precedent), not the single-leg checker. */
+    if (data_effect.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16) {
+        if (!ti_c54x_memory_candidate_absolute_data_shape_is_valid(
+                &candidate->port_address_snapshot.data_resolution,
+                &data_effect)) {
+            return false;
+        }
+    } else if (!ti_c54x_memory_candidate_single_leg_shape_is_valid(
+                   &candidate->port_address_snapshot.data_resolution,
+                   &data_effect)) {
         return false;
     }
     return ti_c54x_memory_instruction_port_io_request_matches_arm(
         &candidate->port_address_snapshot.io_request,
         &candidate->effect.payload.memory);
+}
+
+/* PORT absolute-Smem DATA-leg liveness (P3-S85). The absolute leg
+ * observes no state (absolute-data precedent): re-prove the frozen
+ * absolute echo against the marker's DATA address and pin the
+ * sequential PC. */
+bool
+ti_c54x_memory_instruction_port_absolute_data_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const struct ti_c54x_arch_state *state,
+    const struct ti_c54x_memory_address_resolution *resolution)
+{
+    const ti_c54x_address_effect *address_effect;
+    uint16_t address;
+
+    if (candidate == NULL || state == NULL || resolution == NULL ||
+        candidate->effect.payload.memory.address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_PORT_WORD16) {
+        return false;
+    }
+    address = candidate->effect.payload.memory.address_spec.port
+                  .reserved_half;
+    address_effect = &resolution->address_result.effect;
+    if (address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_ABSOLUTE ||
+        address_effect->state_policy !=
+            TI_C54X_ADDRESS_STATE_POLICY_NONE ||
+        address_effect->source.value.absolute.address != address ||
+        resolution->request.space !=
+            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA ||
+        resolution->request.address_word != (uint32_t)address) {
+        return false;
+    }
+    return ti_c54x_memory_candidate_pc_matches_live(&candidate->pc_effect,
+                                                  state);
 }
 
 /* PORT direct-DP DATA-leg liveness. The PORT arm carries no DP page

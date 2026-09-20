@@ -158,6 +158,10 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PMAD,
             UINT8_C(3),
             &ti_c54x_indirect_addr7_absolute16_pmad_set},
+        [TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16] = {
+            TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16,
+            UINT8_C(3),
+            &ti_c54x_indirect_addr7_absolute16_pa16_set},
         [TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16] = {
             TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16,
             UINT8_C(2),
@@ -415,6 +419,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_PA16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_indirect_addr7_pa16_set;
+    case TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16:
+        *expected_word_count = UINT8_C(3);
+        return &ti_c54x_indirect_addr7_absolute16_pa16_set;
     case TI_C54X_OPERAND_LAYOUT_MAX_MIN_ACC:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_max_min_destination_set;

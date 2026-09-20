@@ -196,6 +196,11 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word MAR fields: 8-bit Smem byte S[7:0] from word 0;
      * no other operand. */
     TI_C54X_OPERAND_LAYOUT_MAR_SMEM8,
+    /* Three-word PORT absolute Smem fields: indirect flag I[7:7]
+     * and 7-bit absolute selector A[6:0] from word 0 with the
+     * copied 16-bit absolute DATA address from word 1 and the
+     * copied 16-bit absolute I/O port address from word 2. */
+    TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

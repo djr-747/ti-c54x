@@ -44,8 +44,8 @@ class InventoryCircularMultiBindingTests(unittest.TestCase):
     def test_each_form_has_five_deduplicated_subset_bindings(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),345)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 339)
+        self.assertEqual(len(bindings),346)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 340)
         by_form: dict[str, list[dict]] = {}
         for binding in bindings:
             by_form.setdefault(binding["form_id"], []).append(binding)
