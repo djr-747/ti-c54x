@@ -15206,3 +15206,40 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x82F8` at `0xF2D`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S83 lands as 82993a1 (STH absolute-Smem slice)
+
+- Scope: exact row `STH_SMEM_ABSOLUTE` (`0x82F8`,
+  2 words, S selects A/B) placed with the absolute
+  group (the STH `0xFEE0` family mask never matches
+  the cookie, S75/S80 pattern — no exact-first
+  constraint, no positional renumber); new
+  `op_sth_smem_absolute` checked/trusted leaf stages
+  the `ABSOLUTE_DATA` WORD16 WRITE arm fire-and-forget
+  (STH_SMEM precedent: source-known gating, staged
+  src high word rides verbatim, sidecar NONE,
+  complete NULL, `INELIGIBLE` for repeat). No MMR,
+  knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_sth_smem_absolute_decode/ops/metadata`,
+  `test_cpu_sth_smem_absolute` RED-first green; all
+  731 C binaries pass; 286 Python quality tests OK;
+  fresh CMake Debug `ctest` 738/738; focused
+  ASan/UBSan on the four new tests green; registries
+  and checkers PASS). Boot repro past `0xF2D`:
+  BUDGET=10000 staged loader1 run with the MCU peer
+  escapes with 6541 retired to pc=`0xF2F`, proving
+  the `0xF2D` STH retired; `0x80F8` (STL-shaped) is
+  the next explicit stop (UNIMPLEMENTED_OPCODE).
+- Decisions: new `ID_COUNT` 338 to 339 with pins;
+  `FORM-T2-20-05` binds the row `SUBSET` with
+  `ABSOLUTE_DATA` as its 8th symbol (no dedicated
+  per-form contract needed — the LD/STL-family
+  multi-binding tests do not enumerate STH forms).
+  The cookie was uncovered, so populated first words
+  move 40272 to 40273 (S75/S80 pattern, unlike
+  S81/S82).
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x80F8` at `0xF2F`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.

@@ -1,4 +1,4 @@
-### P3-S83: STH absolute Smem slice (planned)
+### P3-S83: STH absolute Smem slice (implemented; local verification green)
 
 `STH *(abs),src` is TI SPRU172C section STH (store
 with absolute addressing): first `0x82F8` with S
