@@ -4,7 +4,10 @@
  * Owns: the hosted MCU upload peer's hosted-side pump: canonical
  * header publication, first-fill of buffer A from flash block 0,
  * and ACK-driven ping-pong refills from successive flash blocks
- * with a configured block-count bound. All DSP data addresses,
+ * with a configured block-count bound, plus the post-hold
+ * one-block rehome re-presentation (MBOX0 ready with
+ * remaining = one length over the already-filled buffer).
+ * All DSP data addresses,
  * polarity, and geometry come from the public peer header;
  * observed behavior matches the boot-sequence oracle (header
  * destA/destB/remaining/MBOX/len, 512-word buffers, 1 = MCU
@@ -128,6 +131,21 @@ ti_c54x_mcu_upload_peer_init(
     peer->fills_a = UINT32_C(1);
     peer->armed = true;
     return TI_C54X_MCU_UPLOAD_PEER_OK;
+}
+
+void
+ti_c54x_mcu_upload_peer_present_rehome(
+    ti_c54x_mcu_upload_peer_state *peer)
+{
+    if (peer == NULL || !peer->armed ||
+        peer->fills_done < peer->blocks) {
+        return;
+    }
+    peer_store(peer, (uint32_t)TI_C54X_MCU_UPLOAD_HEADER_BASE + UINT32_C(2),
+               UINT16_C(0));
+    peer_store(peer, (uint32_t)TI_C54X_MCU_UPLOAD_HEADER_BASE + UINT32_C(3),
+               UINT16_C(0x0200));
+    peer_store(peer, (uint32_t)TI_C54X_MCU_UPLOAD_MBOX0, UINT16_C(0));
 }
 
 void

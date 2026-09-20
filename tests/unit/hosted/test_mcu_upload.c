@@ -5,8 +5,9 @@
  * 0x900-0xAFF and B 0xB00-0xCFF, polarity 1 = MCU owns / 0 =
  * buffer ready, DSP ACKs with 1, 64 blocks ping-pong 32+32).
  * Covers header init, first fill, ACK advance, flash slicing,
- * the 64-iteration 32+32 split, bounded hold, neighbor
- * preservation, and init rejection. The peer implementation is
+ * the 64-iteration 32+32 split, bounded hold, post-hold rehome
+ * presentation, neighbor preservation, and init rejection. The peer
+ * implementation is
  * compiled in through its hosted source file; no core state,
  * buses, files, or environment are touched.
  * Does not own: core implementation, ISA semantics, the runner
@@ -269,6 +270,83 @@ test_sixty_four_iterations_split_32_32(void)
     TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87F)) == UINT16_C(0x0001));
 }
 
+static void
+test_rehome_present_after_hold(void)
+{
+    ti_c54x_mcu_upload_peer_state peer;
+    uint16_t held_a0;
+
+    reset_ram();
+    fill_flash_pattern();
+    TI_C54X_TEST_CHECK(ti_c54x_mcu_upload_peer_init(
+                           &peer, ram_window, HOST_DATA_BASE,
+                           HOST_WINDOW_WORDS, flash_blocks,
+                           UINT32_C(2048), UINT32_C(10), UINT32_C(600),
+                           UINT32_C(2)) == TI_C54X_MCU_UPLOAD_PEER_OK);
+    dsp_write(&peer, UINT32_C(0x87F), UINT16_C(0x0001));
+    dsp_write(&peer, UINT32_C(0x880), UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(peer.fills_done == UINT32_C(2));
+    held_a0 = ram_at(UINT32_C(0x0900));
+    /* Post-hold rehome presents one ready buffer with a coherent
+     * one-block header; buffer content and all other cells stay. */
+    ti_c54x_mcu_upload_peer_present_rehome(&peer);
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87F)) == UINT16_C(0x0000));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87D)) == UINT16_C(0x0000));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87E)) == UINT16_C(0x0200));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87B)) == UINT16_C(0x0100));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87C)) == UINT16_C(0x0300));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x880)) == UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x881)) == UINT16_C(0x0200));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x0900)) == held_a0);
+    TI_C54X_TEST_CHECK(peer.fills_done == UINT32_C(2));
+    TI_C54X_TEST_CHECK(peer.fills_a == UINT32_C(1));
+    TI_C54X_TEST_CHECK(peer.fills_b == UINT32_C(1));
+    /* The following ACK falls into the existing hold: no refill. */
+    dsp_write(&peer, UINT32_C(0x87F), UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87F)) == UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(peer.fills_done == UINT32_C(2));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x880)) == UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x0900)) == held_a0);
+}
+
+static void
+test_rehome_present_mid_pump_noop(void)
+{
+    ti_c54x_mcu_upload_peer_state peer;
+
+    reset_ram();
+    fill_flash_pattern();
+    TI_C54X_TEST_CHECK(ti_c54x_mcu_upload_peer_init(
+                           &peer, ram_window, HOST_DATA_BASE,
+                           HOST_WINDOW_WORDS, flash_blocks,
+                           UINT32_C(2048), UINT32_C(10), UINT32_C(600),
+                           UINT32_C(3)) == TI_C54X_MCU_UPLOAD_PEER_OK);
+    dsp_write(&peer, UINT32_C(0x87F), UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(peer.fills_done == UINT32_C(2));
+    /* Still pumping: the presentation must not fire. */
+    ti_c54x_mcu_upload_peer_present_rehome(&peer);
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87F)) == UINT16_C(0x0001));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x880)) == UINT16_C(0x0000));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87D)) == UINT16_C(0x0000));
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87E)) == UINT16_C(0x0600));
+    TI_C54X_TEST_CHECK(peer.fills_done == UINT32_C(2));
+}
+
+static void
+test_rehome_present_disarmed_noop(void)
+{
+    ti_c54x_mcu_upload_peer_state peer;
+
+    reset_ram();
+    fill_flash_pattern();
+    memset(&peer, 0, sizeof(peer));
+    ram_window[(size_t)(UINT32_C(0x87F) - HOST_DATA_BASE)] =
+        UINT16_C(0x5A5A);
+    ti_c54x_mcu_upload_peer_present_rehome(&peer);
+    ti_c54x_mcu_upload_peer_present_rehome(NULL);
+    TI_C54X_TEST_CHECK(ram_at(UINT32_C(0x87F)) == UINT16_C(0x5A5A));
+}
+
 int
 main(void)
 {
@@ -278,5 +356,8 @@ main(void)
     test_neighbors_and_non_mbox_untouched();
     test_init_rejects();
     test_sixty_four_iterations_split_32_32();
+    test_rehome_present_after_hold();
+    test_rehome_present_mid_pump_noop();
+    test_rehome_present_disarmed_noop();
     return 0;
 }

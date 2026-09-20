@@ -5,7 +5,8 @@
  * DSP data addresses (UPLOADHEADER 0x87B-0x881, MBOX0 0x87F, MBOX1
  * 0x880, 512-word buffers A 0x900-0xAFF and B 0xB00-0xCFF),
  * the 1 = MCU owns / 0 = buffer ready polarity, the 64-block
- * ceiling, and the peer state and status vocabulary. Borrowed
+ * ceiling, the post-hold one-block rehome presentation, and the
+ * peer state and status vocabulary. Borrowed
  * DATA RAM and flash words are used for one call only under
  * caller-owned lifetimes; the peer allocates nothing and
  * performs no I/O.
@@ -96,6 +97,19 @@ void
 ti_c54x_mcu_upload_peer_notify_data_write(
     ti_c54x_mcu_upload_peer_state *peer, uint32_t address_word,
     uint16_t value_word);
+
+/* Present one post-hold rehome round (P3-S92, oracle boot-sequence
+ * section 4: the MCU moves again after the pump and the warm
+ * reset). Only when armed and holding (fills done at the block
+ * bound): buffer A is already filled with that block, so the
+ * presentation rewrites MBOX0 to 0 (ready) with remaining = one
+ * buffer length and touches nothing else — byte-identical to a
+ * genuine one-block re-upload. The DSP's ACK then falls into the
+ * existing hold (no refill, no new fills). Otherwise (null or
+ * disarmed peer, still pumping) a no-op. Idempotent. */
+void
+ti_c54x_mcu_upload_peer_present_rehome(
+    ti_c54x_mcu_upload_peer_state *peer);
 
 #ifdef __cplusplus
 }

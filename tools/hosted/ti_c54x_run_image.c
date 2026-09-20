@@ -483,6 +483,7 @@ usage(const char *argv0)
                   "   or: %s <prog_image> <prog_base> <entry> <budget> "
                   "<be|le> [data_image data_base]\n"
                   "   [--mcu-upload <flash_image> <blocks>]\n"
+                  "   [--mcu-rehome]\n"
                   "   [--port-peer]\n"
                   "   [--dump-prog <base> <count>]\n"
                   "   [--watch-data <base> <count>]\n"
@@ -495,7 +496,9 @@ usage(const char *argv0)
                   "explicitly; nothing is invented. The trailing\n"
                   "--mcu-upload form attaches the MCU upload peer\n"
                   "(1-64 flash blocks); without a data image the peer\n"
-                  "owns a zeroed 0x800-0x2800 DATA window. A trailing\n"
+                  "owns a zeroed 0x800-0x2800 DATA window. A --mcu-rehome\n"
+                  "flag (with --mcu-upload and --warm-boot) presents one\n"
+                  "post-hold ready buffer at phase-2 start. A trailing\n"
                   "--port-peer attaches the port peer, which serves\n"
                   "IO-space legs (writes journaled, reads sticky)\n"
                   "instead of faulting them. A --dump-prog trio\n"
@@ -868,6 +871,7 @@ main(int argc, char **argv)
     bool big_endian = false;
     bool have_data = false;
     bool want_mcu_peer = false;
+    bool want_rehome = false;
     bool want_port_peer = false;
     bool want_dump = false;
     bool want_warm_boot = false;
@@ -971,6 +975,25 @@ main(int argc, char **argv)
             break;
         }
     }
+    /* An optional bare --mcu-rehome strips out anywhere, so the
+     * positional dispatch below keeps its fixed indices. */
+    for (i = 1; i < (uint32_t)argc; i++) {
+        if (strcmp(argv[i], "--mcu-rehome") == 0) {
+            uint32_t src = i + 1U;
+
+            if (want_rehome) {
+                usage(argv[0]);
+                return 2;
+            }
+            want_rehome = true;
+            for (; src < (uint32_t)argc; i++, src++) {
+                argv[i] = argv[src];
+            }
+            argv[i] = NULL;
+            argc--;
+            break;
+        }
+    }
     /* An optional --watch-data <base> <count> trio strips out
      * anywhere, so the positional dispatch below keeps its fixed
      * indices. The window names DATA word addresses. */
@@ -1070,6 +1093,12 @@ main(int argc, char **argv)
                           flash_path);
             goto done;
         }
+    }
+    /* The rehome presentation models the MCU moving again after
+     * the pump and the warm reset, so it needs both peers' phases. */
+    if (want_rehome && (!want_mcu_peer || !want_warm_boot)) {
+        usage(argv[0]);
+        goto done;
     }
 
     visited =
@@ -1172,6 +1201,10 @@ main(int argc, char **argv)
             budget = warm_budget;
             bus.have_data_fault = false;
             bus.have_io = false;
+            if (want_rehome) {
+                ti_c54x_mcu_upload_peer_present_rehome(&bus.mcu_peer);
+                (void)printf("mcu_rehome presented=1\n");
+            }
         }
         if (phase_begin(&bus_desc, entry, &storage, &cpu) != 0) {
             (void)fprintf(stderr, "error: cpu init failed\n");
