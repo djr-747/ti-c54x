@@ -15371,3 +15371,38 @@ entries are not rewritten after publication.
   port-peer seam — the runner still owns no port
   peer, so `0xF57` retires only in the CPU test;
   boot past the port access waits on the seam.
+
+## 2026-09-20 — P3-S86 lands as cc4090c (PORTW port-peer seam)
+
+- Scope: hosted-only seam (no library change) — the
+  core never calls the bus `io_read/io_write`
+  callbacks, so all IO rides the data endpoint. New
+  `tools/hosted/port_peer` (MCU-peer precedent):
+  32-entry write journal with counts and overflow
+  flag, sticky reads, no allocation or I/O.
+  `run-image` strips one optional trailing
+  `--port-peer` before the 6/8/9/11 dispatch;
+  detached runs are byte-identical. No MMR, knob,
+  or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_port_peer` RED-first green; selftest PASS;
+  286 Python quality tests OK; registries and
+  checkers PASS); fresh CMake Debug `ctest`
+  747/747. Targeted `ENTRY=0xF57` peer run retires
+  5/5 to pc=`0xF5B`. BUDGET=1000000
+  widened-window run with the 64-block MCU peer
+  plus `--port-peer` retires 394718 with zero data
+  faults past three served PORTWs (ports `0`,
+  `0xC`, `0x2C`) to `INVALID_STATE` at pc=`0xF97`,
+  opcode `0x74F8` (PORTR family).
+- Decisions: sticky reads (last DSP-written value,
+  else zero) mirror the zeroed-window philosophy
+  as documented staging, never hardware truth; a
+  faithful port model stays out per the unresolved
+  oracle seam. Endpoint IO counts into
+  `io_calls`/`first_io` only when the peer is
+  attached, preserving every historical baseline.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S87 for `PORTR` at
+  `0xF97` (library opcode slice against the live
+  peer).

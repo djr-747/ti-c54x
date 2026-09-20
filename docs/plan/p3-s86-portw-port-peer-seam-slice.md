@@ -1,4 +1,4 @@
-### P3-S86: PORTW port-peer seam slice (planned)
+### P3-S86: PORTW port-peer seam slice (implemented; local verification green)
 
 P3-S85 stages `PORTW *(0x0008),0` at `0xF57` but the
 hosted runner owns no port peer: IO-space legs

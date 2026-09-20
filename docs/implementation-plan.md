@@ -781,7 +781,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S85: PORTW absolute Smem slice (implemented; local verification green)](plan/p3-s85-portw-absolute-smem-slice.md)
 
-- [P3-S86: PORTW port-peer seam slice (planned)](plan/p3-s86-portw-port-peer-seam-slice.md)
+- [P3-S86: PORTW port-peer seam slice (implemented; local verification green)](plan/p3-s86-portw-port-peer-seam-slice.md)
 
 - [P3-S87: PORTR slice (planned)](plan/p3-s87-portr-slice.md)
 
