@@ -1,4 +1,4 @@
-### P3-S82: SUB absolute Smem slice (planned)
+### P3-S82: SUB absolute Smem slice (implemented; local verification green)
 
 `SUB *(abs),src` is TI SPRU172C section SUB syntax 1
 (subtract with absolute addressing): first `0x08F8`

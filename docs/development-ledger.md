@@ -15166,3 +15166,43 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x08F8` at `0xF2B`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S82 lands as a81f2b8 (SUB absolute-Smem slice)
+
+- Scope: exact row `SUB_SMEM_ABSOLUTE` (`0x08F8`,
+  2 words, S selects A/B) placed before the covering
+  `SUB_SMEM` masked row (S81 precedent: the `0xFE00`
+  mask spans the absolute cookie, so the schema
+  mandates exact-first); new `op_sub_smem_absolute`
+  checked/trusted leaf stages the `ABSOLUTE_DATA`
+  WORD16 READ arm with the SUB syntax-1 completion
+  (SUB_SMEM precedent: source/SXM/OVM knownness
+  gating, SXM-widened subtrahend, OVM saturation,
+  C from no-borrow, TC preserved, OV on overflow,
+  `INELIGIBLE` for repeat). No MMR, knob, or timing
+  changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_sub_smem_absolute_decode/ops/metadata`,
+  `test_cpu_sub_smem_absolute` RED-first green; all
+  727 C binaries pass; 286 Python quality tests OK;
+  fresh CMake Debug `ctest` 734/734; focused
+  ASan/UBSan on the four new tests green; registries
+  and checkers PASS). Boot repro past `0xF2B`:
+  BUDGET=10000 staged loader1 run with the MCU peer
+  escapes with 6540 retired to pc=`0xF2D`, proving
+  the `0xF2B` SUB retired; `0x82F8` is the next
+  explicit stop (UNIMPLEMENTED_OPCODE — currently
+  UNKNOWN decode).
+- Decisions: new `ID_COUNT` 337 to 338 with pins;
+  `FORM-T2-02-01` binds the row `SUBSET` with
+  `ABSOLUTE_DATA` (S76-style branch in the ADD/SUB
+  ROWS contract, since the SUB family form was
+  already enumerated there); positional catalog pins
+  renumber from the insertion point with a
+  position-independent symbol block for the new row.
+  The exact word reclaims its lookup pin, so
+  populated first words stay 40272.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice for `0x82F8` at `0xF2D`,
+  then the DSP CRC/finalize chain; full 64-block
+  upload stays bounded per standing direction.
