@@ -96,6 +96,7 @@ $(eval $(call ti_c54x_add_test,ld_smem_absolute_shift16_metadata,isa/catalog,tes
 $(eval $(call ti_c54x_add_test,or_smem_absolute_metadata,isa/catalog,test_or_smem_absolute_metadata.c))
 $(eval $(call ti_c54x_add_test,sub_smem_absolute_metadata,isa/catalog,test_sub_smem_absolute_metadata.c))
 $(eval $(call ti_c54x_add_test,sth_smem_absolute_metadata,isa/catalog,test_sth_smem_absolute_metadata.c))
+$(eval $(call ti_c54x_add_test,stl_smem_absolute_metadata,isa/catalog,test_stl_smem_absolute_metadata.c))
 $(eval $(call ti_c54x_add_test,reada_direct_metadata,isa/catalog,test_reada_direct_metadata.c))
 $(eval $(call ti_c54x_add_test,reada_smem_metadata,isa/catalog,test_reada_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,writa_direct_metadata,isa/catalog,test_writa_direct_metadata.c))

@@ -1,5 +1,6 @@
 # Test ownership: tests/unit/isa/ops/store owns pure STL memory effects.
 ti_c54x_add_unit_test(stl_smem_ops test_stl_smem.c)
+ti_c54x_add_unit_test(stl_smem_absolute_ops test_stl_smem_absolute.c)
 # P3 slice 10 RED contract: STH Smem effects.
 ti_c54x_add_unit_test(sth_smem_ops test_sth_smem.c)
 ti_c54x_add_unit_test(sth_smem_absolute_ops test_sth_smem_absolute.c)

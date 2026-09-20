@@ -102,6 +102,7 @@
 #include "store/op_stl_smem.h"
 #include "store/op_sth_smem.h"
 #include "store/op_sth_smem_absolute.h"
+#include "store/op_stl_smem_absolute.h"
 #include "store/op_sth_shft_xmem.h"
 #include "store/op_stl_shft_xmem.h"
 #include "store/op_sth_shift_smem.h"

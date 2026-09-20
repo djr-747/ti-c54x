@@ -118,10 +118,11 @@ static void
 test_adjacent_patterns_are_unknown(void)
 {
     /* 0x10F8 left the unknown list in P3-S75 (LD_SMEM_ABSOLUTE
-     * claims it); the ST/LDU/STH absolute holes stay unknown. */
+     * claims it) and 0x80F8 leaves in P3-S84 (STL_SMEM_ABSOLUTE
+     * claims it); the LD/STL S=1 sibling cookies and the LDU/STH
+     * absolute holes stay unknown. */
     const uint16_t unknown_words[] = {
-        UINT16_C(0x80F8), UINT16_C(0x11F8),
-        UINT16_C(0x81F8)};
+        UINT16_C(0x11F8), UINT16_C(0x81F8)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_words) / sizeof(unknown_words[0]); ++index) {

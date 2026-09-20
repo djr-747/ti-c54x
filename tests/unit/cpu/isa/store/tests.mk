@@ -1,5 +1,7 @@
 # Test ownership: this leaf owns only public-CPU fixed-MOD2 STL proofs.
 $(eval $(call ti_c54x_add_test,cpu_stl_smem,cpu/isa/store,test_cpu_stl_smem.c))
+# P3-S84 RED contract: STL absolute CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_stl_smem_absolute,cpu/isa/store,test_cpu_stl_smem_absolute.c))
 # P3 slice 10 RED contract: STH CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_sth_smem,cpu/isa/store,test_cpu_sth_smem.c))
 # P3-S83 RED contract: STH absolute CPU retirement.

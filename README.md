@@ -35,11 +35,14 @@ the `MVDM` absolute MMR store are all retired through CPU tests.
 The 5110 boot probe has first light (P3-S57): the reset-vector
 prefix retires through the hosted runner against the staged ROM
 image; both entry vectors stop on correct cold-reset
-unknown-register behavior (see the slice doc).
+unknown-register behavior (see the slice doc). The loader1
+absolute Smem/LD/OR/SUB/STH/STL chain (P3-S75 through P3-S84)
+retires the finalize sequence into the steady RPTB poll loop
+with zero data faults inside a 100k-instruction budget.
 
-- 310 runnable catalog rows under 37,929 populated first-word lookup entries.
-  Inventory coverage is 158/205 forms SUBSET-or-better (77.073%) and 44/205
-  strict-complete (21.463%); lookup encodings are not instruction counts.
+- 339 runnable catalog rows under 40,274 populated first-word lookup entries.
+  Inventory coverage is 168/205 forms SUBSET-or-better (81.951%) and 45/205
+  strict-complete (21.951%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
   constraint: one-pass trusted packets, allocation-free opcode leaves, and

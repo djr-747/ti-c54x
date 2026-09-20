@@ -11,18 +11,20 @@ class ReverseCarryInventoryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls): cls.root=Path(__file__).resolve().parents[5]; cls.path=cls.root/"config/isa/inventory.json"
  def test_projection_and_bindings(self):
-  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),344)
+  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),345)
   by={f["id"]:f for f in d["forms"]}
   for fam,fid in FAMILIES.items():
    # P3-S66: FORM-T2-19-20 also binds the direct-DP LDU_DIRECT row.
    # P3-S75: FORM-T2-19-02 also binds the absolute LD_SMEM_ABSOLUTE row.
    # P3-S80: FORM-T2-19-04 also binds the absolute LD_SMEM_ABSOLUTE_SHIFT16 row.
-   want=8 if fid in ("FORM-T2-19-20","FORM-T2-19-02","FORM-T2-19-04") else 7
-   subs={TOKEN} if fid not in ("FORM-T2-19-20","FORM-T2-19-02","FORM-T2-19-04") else ({TOKEN,"DIRECT_DP"} if fid=="FORM-T2-19-20" else {TOKEN,"ABSOLUTE_DATA"})
+   want=8 if fid in ("FORM-T2-19-20","FORM-T2-19-02","FORM-T2-19-04","FORM-T2-20-09") else 7
+   subs={TOKEN} if fid not in ("FORM-T2-19-20","FORM-T2-19-02","FORM-T2-19-04","FORM-T2-20-09") else ({TOKEN,"DIRECT_DP"} if fid=="FORM-T2-19-20" else {TOKEN,"ABSOLUTE_DATA"})
    want_symbols={fam,fam+"_MOD4",fam+"_MOD5",fam+"_MOD6",fam+"_MOD7",fam+"_MOD8",fam+"_MOD10"}
    if fid=="FORM-T2-19-20": want_symbols.add("LDU_DIRECT")
    if fid=="FORM-T2-19-02": want_symbols.add("LD_SMEM_ABSOLUTE")
    if fid=="FORM-T2-19-04": want_symbols.add("LD_SMEM_ABSOLUTE_SHIFT16")
+   # P3-S84: FORM-T2-20-09 also binds the absolute STL_SMEM_ABSOLUTE row.
+   if fid=="FORM-T2-20-09": want_symbols.add("STL_SMEM_ABSOLUTE")
    self.assertEqual(len([b for b in d["catalog_bindings"] if b["form_id"]==fid]),want)
    self.assertEqual({b["addressing_subset"] for b in d["catalog_bindings"] if b["form_id"]==fid},subs)
    self.assertTrue(want_symbols <= set(by[fid]["catalog_symbols"]))

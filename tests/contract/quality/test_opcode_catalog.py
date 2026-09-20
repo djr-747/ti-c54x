@@ -189,7 +189,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 338)
+        self.assertEqual(len(catalog_rows), 339)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -376,6 +376,21 @@ class OpcodeCatalogContractTests(unittest.TestCase):
                          LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
         self.assertEqual(sth_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(sth_abs.input_resources, RESOURCES_ACCUMULATORS)
+        # P3-S84 lands the STL_SMEM_ABSOLUTE row after
+        # STH_SMEM_ABSOLUTE; symbol lookup keeps this
+        # assertion position-independent.
+        stl_abs = next(
+            row for row in catalog_rows
+            if row.symbol == "STL_SMEM_ABSOLUTE"
+        )
+        self.assertEqual(stl_abs.handler, "stl_smem_absolute")
+        self.assertEqual(stl_abs.first_word_value, 0x80F8)
+        self.assertEqual(stl_abs.first_word_mask, 0xFFFF)
+        self.assertEqual(stl_abs.program_word_count, 2)
+        self.assertEqual(stl_abs.operand_layout,
+                         LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
+        self.assertEqual(stl_abs.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(stl_abs.input_resources, RESOURCES_ACCUMULATORS)
         # P3-S79 lands the RPTB row after RPT_LK;
         # symbol lookup keeps this assertion position-independent.
         rptb = next(

@@ -2378,7 +2378,8 @@
         "STL_SMEM_MOD6",
         "STL_SMEM_MOD7",
         "STL_SMEM_MOD8",
-        "STL_SMEM_MOD10"
+        "STL_SMEM_MOD10",
+        "STL_SMEM_ABSOLUTE"
       ]
     },
     {
@@ -2990,6 +2991,12 @@
       "form_id": "FORM-T2-20-09",
       "coverage": "SUBSET",
       "addressing_subset": "STANDARD_INDIRECT_MOD0_MOD3_MOD4_MOD5_MOD6_MOD7_MOD8_MOD10"
+    },
+    {
+      "catalog_symbol": "STL_SMEM_ABSOLUTE",
+      "form_id": "FORM-T2-20-09",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_DATA"
     },
     {
       "catalog_symbol": "LDU_SMEM",
