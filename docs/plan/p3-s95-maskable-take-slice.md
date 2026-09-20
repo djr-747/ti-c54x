@@ -1,4 +1,4 @@
-### P3-S95: maskable take slice (planned)
+### P3-S95: maskable take slice (implemented; local verification green)
 
 The loader2 hop's second half. S93 latched the HPINT edge
 (mask `0x0200`) and S94 proved the NMI take plus the take

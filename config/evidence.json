@@ -8643,7 +8643,7 @@
       ],
       "locator": {
         "path": "docs/plan/p3-s95-maskable-take-slice.md",
-        "anchor": "P3-S95: maskable take slice (planned)"
+        "anchor": "P3-S95: maskable take slice (implemented; local verification green)"
       },
       "assertion": "S95 owns the maskable take as project-contract seams over the S94 take core. The pure decision takes exactly one known-enabled routed source pending with INTM known-clear, naming its bit; masked, unknown, unrouted, multi-enabled, or busy inputs never take, and NMI keeps priority outside the decision. The vector request latches one IFR bit with its caller-selected entry address (last-wins re-routing preserves the edge); the vectorless receive stays take-ineligible. The CPU freezes the taken bit at issue and acknowledges exactly it with the retirement on both the immediate and resumed paths. Multi-source priority stays device-owned and deferred."
     }

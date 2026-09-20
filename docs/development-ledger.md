@@ -15821,3 +15821,40 @@ entries are not rewritten after publication.
   pre-existing catalog `MASKED2` macro gap in bench code (touched
   by neither this slice nor S93) — fix separately; open W16-W20A
   label question unchanged.
+
+## 2026-09-20 — P3-S95 lands as 261ce93 (maskable take with IMR-gated arbitration)
+
+- Scope: proves the loader2 hop's second half at CPU level. New
+  public `ti_c54x_cpu_request_interrupt_vector` latches one IFR
+  bit with its caller-selected entry address (S93 validation;
+  last-wins re-routing preserves the edge; vectorless bits stay
+  take-ineligible). Predecode arbitration retires exactly one
+  known-enabled routed source with INTM known-clear (parked PC
+  pushed, exactly its IFR bit acknowledged, INTM set, PC to the
+  routed entry, no RTN move); multiple enabled sources defer
+  (hardware-interrupt priority is device-owned per TI
+  section 6.10.10), as do masked, unknown, unrouted, and busy
+  inputs. The S94 take core is reused with the taken bit frozen
+  at issue and acknowledged with the retirement on both
+  immediate and resumed paths; NMI keeps architectural priority
+  with the maskable edge surviving its WAIT span. IMR has no
+  production writer yet (STM wave 2): tests seed it through the
+  internal MMR cell API as white-box setup.
+- Validation evidence: `make test` exit 0 (ASan/UBSan on; evidence
+  registry PASS with the new REQ pair plus two T rows); two
+  RED-first tests green under make and ctest
+  (`ti_c54x.take_arbitration_maskable`,
+  `ti_c54x.cpu_maskable_take`); fresh CMake Debug `ctest`
+  762/762; S90 canonical park run byte-identical absent
+  requests (IDLE pc=0xF6A, attempted=394728, retired=394727).
+- Decisions: entry-address routing stays caller-owned opaque
+  (table base, IPTR, PMST/IMR gaps stay open); priority gap
+  defers with edges preserved (no wrong take); IFR acknowledge
+  publishes post-commit via the frozen bit (never recomputed,
+  so a mid-WAIT NMI edge survives).
+- Knobs: none added, changed, or retired.
+- Follow-up: the pending HPINT hop to 0x3772 (loader2 proof
+  riding this take core); multi-source priority stays
+  device-owned; `make bench-compare` still broken at HEAD on
+  the pre-existing catalog `MASKED2` gap; open W16-W20A label
+  question unchanged.
