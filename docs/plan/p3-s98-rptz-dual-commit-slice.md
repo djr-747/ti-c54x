@@ -1,4 +1,4 @@
-### P3-S98: RPTZ dual-commit slice (planned)
+### P3-S98: RPTZ dual-commit slice (implemented; local verification green)
 
 `FORM-T2-16-05` (`RPTZ dst,#lk`: 0 ← dst, lk ← RC).
 Split from P3-S97: zeroing an accumulator in the same
