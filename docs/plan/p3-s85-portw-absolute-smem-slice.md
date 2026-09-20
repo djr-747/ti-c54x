@@ -1,4 +1,4 @@
-### P3-S85: PORTW absolute Smem slice (planned)
+### P3-S85: PORTW absolute Smem slice (implemented; local verification green)
 
 `PORTW *(abs),PA` is TI SPRU172C §4 pp. 4-129–4-130
 (PORTW with absolute Smem, 3 words): first `0x75F8`

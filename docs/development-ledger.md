@@ -15317,3 +15317,57 @@ entries are not rewritten after publication.
   `PORTW Smem` at `0xF57` (diagnose: indirect-AR
   knownness vs unmapped-port stop).
 - Knobs: none added, changed, or retired.
+
+## 2026-09-20 — P3-S85 lands as 4801fdb (PORTW absolute-Smem slice)
+
+- Scope: exact row `PORTW_SMEM_ABSOLUTE` (`0x75F8`,
+  3 words, I=1 with the `0x78` absolute selector)
+  placed before the `PORTW_SMEM` masked row (its
+  `0xFF80` mask spans the cookie, S81/S82 pattern);
+  new 4-operand layout
+  `INDIRECT_ADDR7_ABSOLUTE16_PA16` with the PORT
+  WORD16 arm carrying the DATA address in
+  `reserved_half` under the mode-15 marker plus the
+  PA in `port_address` (PORTW_SMEM precedent:
+  DATA-READ direction, zero staged value, complete
+  NULL, `INELIGIBLE` for repeat). No MMR, knob, or
+  timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_portw_smem_absolute_decode/ops/metadata`,
+  `test_cpu_portw_smem_absolute` RED-first green
+  under the ASan/UBSan build; 286 Python quality
+  tests OK; fresh CMake Debug `ctest` 746/746;
+  registries and checkers PASS). Targeted
+  `ENTRY=0xF57` run stops BUS_FAULT on the first
+  IO request (`attempted=1 retired=0 pc=0xF57
+  opcode=0x75F8`, full 3-word fetch, DATA leg
+  served, IO to port 0 faulted, `io_calls=0`);
+  BUDGET=1000000 widened-window run with the
+  64-block MCU peer retires 394676 with zero data
+  faults to the same stop
+  (`first_data_fault=0x0000`, fills 32/32/64).
+  The `0xF5A` follower (`0xEC0E`) already retires.
+- Decisions: the pre-slice `INVALID_STATE` was the
+  mode-15 cookie rejected three times over — leaf,
+  IO-leg planner mirror in `memory_effect.c`, and
+  PORT shape/liveness (absolute-data shape plus a
+  frozen-echo live helper, Smem-absolute
+  precedent). Probed stage by stage: leaf, plan,
+  and synthesize passed in isolation while
+  transaction prepare returned INVALID_CANDIDATE,
+  which pointed at the effect validator running
+  before pair routing. The CPU-test endpoint
+  demultiplexes both pair legs (MVDP precedent).
+  The two PORT layout sets split to
+  `operand_layout_sets_port.c` (829 to 781 lines).
+  New `ID_COUNT` 340 to 341 with pins; the exact
+  word reclaims its lookup pin so populated first
+  words stay 40274. `FORM-T2-26-10` binds the row
+  `SUBSET` with `ABSOLUTE_DATA`. README snapshot
+  refreshed (340 rows, 40274 pins, 168/205 forms,
+  45/205 strict).
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S86 for the PORTW
+  port-peer seam — the runner still owns no port
+  peer, so `0xF57` retires only in the CPU test;
+  boot past the port access waits on the seam.
