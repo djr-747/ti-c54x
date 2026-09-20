@@ -1,4 +1,4 @@
-### P3-S91: MBOX-unblock seam slice (planned)
+### P3-S91: MBOX-unblock seam slice (implemented; local verification green)
 
 Phase 2 of the S90 warm boot spins at `0xF17`
 (the MBOX0 poll) with the MCU peer holding at

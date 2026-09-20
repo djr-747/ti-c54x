@@ -15587,3 +15587,47 @@ entries are not rewritten after publication.
   stages-4-5 behavior (rehome upload, doorbell,
   go-command) to unblock the phase-2 `0xF17`
   MBOX wait.
+
+## 2026-09-20 — P3-S91 lands as 7442086 (MBOX-unblock diagnosis)
+
+- Scope: hosted runner only — new `--watch-data
+  <base> <count>` windowed DATA journal. The DATA
+  leg taps served accesses inside the window
+  (reads journal the served value, writes the
+  written value); first 32 entries keep
+  address/access/value with total and overflow,
+  mirroring the port peer. The journal resets at
+  each phase start and prints per phase after the
+  `irq` line, only when requested. New coverage
+  in `--selftest` vectors 4/4b (window
+  filtering via in/out `ST`, 32-cap overflow via
+  35 `ST`s — RED-first green). No core, MMR,
+  knob, timing, or peer changes.
+- Validation evidence: `make test` exit 0
+  (selftest PASS 4 vectors; registries and
+  checkers PASS); fresh CMake Debug `ctest`
+  756/756. Watching `0x878 count 16` through the
+  canonical two-phase repro shows phase 1 opening
+  `R MBOX0=0, R destA, R len, W MBOX0=1, R/W
+  remaining-=512, R MBOX1=0, R destB, W MBOX1=1`
+  and phase 2 as pure `R 0x87F=1` (99831 of
+  99840 phase-2 DATA txns, zero faults). A second
+  watch (`0x100 count 512`, whole phase 1) is
+  empty: loader1 verifies in place, never stages
+  dest.
+- Decisions: the spin is a remaining-driven pump
+  (`BC ANEQ` waits for `MBOX==0`, `BC ALEQ`
+  exits to finalize at `remaining<=0` — repo
+  `COND_` codes), and the peer can only hold past
+  64 blocks, so the unblock is crisp: present
+  `MBOX0=0` with a filled buffer and a coherent
+  header. Rehome content sources and the
+  go-command encoding are unknown from repo
+  evidence (ports 1-2 unread pre-park; the runner
+  has no OVLY program-fetch mapping for DARAM
+  code), so S92 models the peer move against the
+  black-box oracle, not from invention.
+- Knobs: none added, changed, or retired.
+- Follow-up: next slice is P3-S92 for the peer
+  post-pump move (rehome presentation, doorbell,
+  go-command).
