@@ -220,7 +220,16 @@ typedef enum ti_c54x_op_memory_address_kind {
      * convention) with READ access and a non-null leaf
      * long32 completion: the long32 root owns the chaining
      * internally. */
-    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16 = 29
+    TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16 = 29,
+    /* Interrupt-take stack push (NMI): identical TOS planning to
+     * the immediate push (old SP - 1 with a PRE_ACCESS SP update,
+     * WRITE-only with the staged return address), but the staged
+     * address is the parked live PC (not a sequential successor),
+     * the PC target is the frozen device-owned vector (not a
+     * bundle word), no RTN load occurs (takes are not calls), and
+     * a non-null completion stages the INTM set. Only the take
+     * root producer freezes this kind; no catalog row uses it. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 = 30
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

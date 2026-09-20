@@ -134,6 +134,60 @@ ti_c54x_memory_instruction_stack_push_prepare(
 }
 
 ti_c54x_memory_instruction_status
+ti_c54x_memory_instruction_stack_push_prepare_take(
+    const ti_c54x_op_effect *effect,
+    const ti_c54x_arch_state *state,
+    uint16_t vector_word,
+    ti_c54x_memory_address_resolution *resolution,
+    uint16_t *push_return_value)
+{
+    ti_c54x_program_pc_target_effect take_target = {0};
+    uint32_t return_address_word;
+
+    if (effect == NULL || state == NULL || resolution == NULL ||
+        push_return_value == NULL) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
+    }
+    /* Only take effects: the take root producer is the sole
+     * freezer of this kind. */
+    if (effect->kind != TI_C54X_OP_EFFECT_MEMORY ||
+        effect->payload.memory.address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
+        effect->payload.memory.access !=
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
+        effect->payload.memory.rmw_operation !=
+            (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE ||
+        effect->payload.memory.complete == NULL) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    /* The parked live PC is the pushed return address: the take
+     * preempts fetch, so the live PC is the next unexecuted
+     * program word. A return address outside 16-bit program space
+     * is malformed. */
+    return_address_word = state->pc_word;
+    if (return_address_word > UINT32_C(0xFFFF)) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    /* Prove the commit-time vector target plan before any bus
+     * issue. Commit re-plans deterministically from the same
+     * frozen vector and the stable live PC, so the discarded
+     * effect is validation only. */
+    if (ti_c54x_program_pc_target_plan(state->pc_word, vector_word,
+                                       &take_target) !=
+        TI_C54X_PROGRAM_PC_TARGET_OK) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    if (ti_c54x_sequencer_resolve_memory_address(
+            state, &effect->payload.memory.address_spec,
+            effect->payload.memory.access, (uint16_t)return_address_word,
+            resolution) != TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+    }
+    *push_return_value = (uint16_t)return_address_word;
+    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+}
+
+ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_stack_push_deferred_report(
     const ti_c54x_memory_instruction_candidate *candidate,
     ti_c54x_memory_instruction_result *result)

@@ -154,7 +154,10 @@ typedef struct ti_c54x_memory_instruction_transaction {
          * carrier forbids RMW together with delay, so the two
          * stages never overlap. */
         uint16_t single_delay_read_value_word;
-        /* LONG32 uses the otherwise RMW-only slot for the frozen MSW. */
+        /* LONG32 uses the otherwise RMW-only slot for the frozen MSW.
+         * Interrupt takes reuse it for the frozen device-owned
+         * vector (TAKE-kind WORD16 only; LONG32 arms key off the
+         * address kind and never read it for takes). */
         uint16_t long32_first_value_msw;
         /* Dual MOD0 uses it as an immutable X-address shadow. */
         uint16_t dual_x_address_word;

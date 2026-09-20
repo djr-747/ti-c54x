@@ -9,6 +9,9 @@
 
 #include "run_support.h"
 
+#include "../memory/pending_work.h"
+#include "repeat_activate.h"
+
 ti_c54x_run_result ti_c54x_run_result_from_cpu(
     const ti_c54x_cpu *cpu, ti_c54x_stop_reason reason,
     ti_c54x_bus_status bus_status, uint64_t instructions_attempted,
@@ -130,6 +133,7 @@ bool ti_c54x_run_memory_effect_redirects_pc(const ti_c54x_op_effect *effect)
     }
     kind = effect->payload.memory.address_spec.kind;
     return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
@@ -162,4 +166,37 @@ void ti_c54x_run_apply_deferred_branch(ti_c54x_cpu *cpu)
 {
     cpu->arch_state.pc_word =
         (ti_c54x_program_word_address)cpu->delayed_branch.deferred_pc_word;
+}
+
+bool ti_c54x_run_memory_retirement_tail(
+    ti_c54x_cpu *cpu,
+    const ti_c54x_memory_instruction_result *result,
+    uint8_t retired_word_count,
+    bool retired_redirects_pc)
+{
+    bool took_effect = false;
+
+    if (cpu == NULL || result == NULL) {
+        return false;
+    }
+    ti_c54x_run_adopt_deferred_branch(cpu, result);
+    if (!result->deferred_branch_armed) {
+        if (ti_c54x_run_advance_delayed_branch(cpu, retired_word_count,
+                                               retired_redirects_pc,
+                                               &took_effect) !=
+            TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
+            return false;
+        }
+        if (took_effect) {
+            ti_c54x_run_apply_deferred_branch(cpu);
+        }
+    }
+    if (!ti_c54x_run_memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
+            &cpu->instruction_transaction,
+            &cpu->bus.data_endpoint))) {
+        return false;
+    }
+    /* Retirement-tail HOLD re-drive for repeated bodies. */
+    return ti_c54x_cpu_repeat_body_retired(cpu) !=
+           TI_C54X_CPU_REPEAT_RETIRE_INVALID;
 }

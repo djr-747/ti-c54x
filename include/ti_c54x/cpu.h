@@ -99,6 +99,22 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu);
 ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
                                   ti_c54x_state *state);
 
+/* Latch one external nonmaskable interrupt request with its take
+ * vector (TI SPRU131G section 6.10.8: a requested NMI is
+ * acknowledged immediately with INTM set, the PC pushed, and a
+ * branch to the ISR). NMI has no IFR bit, so the edge latches as
+ * CPU pipeline state, cleared only when the take retires. The
+ * vector address is device-owned routing the core treats as
+ * opaque (table base, IPTR, and PMST/IMR gaps stay recorded
+ * open); the slot conventionally holds a branch to the ISR. A
+ * null CPU, an in-run call, or a second request while one is
+ * pending rejects with INVALID_ARGUMENT and mutates nothing. The
+ * take itself fires at the predecode boundary on a later step or
+ * run call; INTM never gates NMI. RS/reset, IACK signaling, and
+ * maskable arbitration belong to other slices. */
+ti_c54x_error ti_c54x_cpu_request_nmi(ti_c54x_cpu *cpu,
+                                     uint16_t vector_word);
+
 /* Receive one external maskable interrupt request: latch the single IFR
  * bit named by mask (TI SPRU131G section 6.10 phase 1: a maskable
  * request sets its IFR bit when received). Exactly one bit must be

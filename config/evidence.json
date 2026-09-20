@@ -8614,6 +8614,22 @@
         "anchor": "P3-S54: STL SHFT Xmem store slice (implemented; local verification green)"
       },
       "assertion": "S54 is implemented and green: one new STL syntax-3 catalog row STL_SHFT_XMEM (0x9800) under the FE00 mask reusing the STH Xmem dual-indirect layout; checked and trusted leaves staging MEMORY dual-indirect X-only WRITE effects carrying bits 15-0 of the SHFT-shifted selected accumulator with no status, accumulator, or T-register effect. FORM-T2-20-12 lands COMPLETE under ALL."
+    },
+    {
+      "id": "E-PROJECT-P3-S94-NMI-TAKE-SEAMS",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s94-nmi-take-slice.md",
+        "anchor": "P3-S94: NMI take slice (planned)"
+      },
+      "assertion": "S94 owns the NMI take as two project-contract seams. The pure predecode decision takes a pending edge only with no single/block repeat ACTIVE and no armed delayed-branch countdown, deferring otherwise with INTM never consulted. The INTM-setting push completion ignores the staged value and stages exactly one ST1-bit-11 set, mirroring the RETE clear. The take is the root's second producer: a STACK_PUSH_TAKE WORD16 WRITE of the parked PC with a zeroed-sentinel instruction and pc_effect, the entry address frozen into the documented LONG32-MSW slot, and take-only PC liveness on the frozen return with no RTN load. Maskable arbitration and take, RS/reset, IACK signaling, and the entry-address routing table belong to later slices."
     }
   ],
   "requirements": [
@@ -20249,6 +20265,36 @@
       "test_ids": [
         "T-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S94-NMI-TAKE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Latch one external NMI request naming its caller-selected entry address and retire the take at the predecode boundary: the parked PC pushes to old SP - 1, INTM sets, PC lands on the frozen entry address with no RTN move, and the edge clears only on RETIRED commit. Pending defers while single/block repeat is ACTIVE or a delayed-branch countdown is armed; INTM never gates NMI. Null CPU, in-run, and second-while-pending requests reject with INVALID_ARGUMENT and mutate nothing. The entry-address routing table, maskable arbitration and take, RS/reset, IACK signaling, and observers belong to later slices.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU131G-S6-10-3-S6-10-8-P6-31-6-36-IFR",
+        "E-TI-C54X-SPRU131G-S6-7-P6-20-6-22-RPT-IRQ"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S94-NMI-TAKE-CPU"
+      ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S94-NMI-TAKE-SEAMS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/sequencer/interrupt/",
+      "claim": "Provide the pure NMI take-arbitration decision and the INTM-setting push completion as project-contract seams. The decision takes a pending edge only with no repeat ACTIVE and no armed delayed-branch countdown, deferring otherwise, never consulting INTM. The completion ignores the staged push value and stages exactly one ST1-bit-11 set. Null completion input rejects without staging. Maskable arbitration, source and priority selection, CPU dispatch, PC, entry-address routing, and observers remain outside the seams.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S94-NMI-TAKE-SEAMS"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S94-NMI-TAKE-ARBITRATION",
+        "T-PROJECT-P3-S94-NMI-TAKE-COMPLETE"
+      ]
     }
   ],
   "tests": [
@@ -29564,6 +29610,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S93-EXTERNAL-INTERRUPT-RECEIVE"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S94-NMI-TAKE-ARBITRATION",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/interrupt/test_take_arbitration.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.take_arbitration"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S94-NMI-TAKE-SEAMS"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S94-NMI-TAKE-COMPLETE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/sequencer/interrupt/test_take_complete.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.take_complete"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S94-NMI-TAKE-SEAMS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S94-NMI-TAKE-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/status/test_cpu_nmi_take.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_nmi_take"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S94-NMI-TAKE"
       ]
     }
   ]

@@ -2,10 +2,13 @@
 #define TI_C54X_CPU_EXECUTION_RUN_SUPPORT_H
 
 /* Module contract
- * Owns: run-loop result construction, stop/wait mapping, and the
- * deferred-branch adopt/advance/apply plumbing shared by the
- * step/run execution loop. Pure helpers over explicit arguments;
- * only the stop/wait constructors clear the execution-active flag.
+ * Owns: run-loop result construction, stop/wait mapping, the
+ * deferred-branch adopt/advance/apply plumbing, and the shared
+ * memory-root retirement tail (adopt, countdown advance, root
+ * reset, repeat re-drive) used by resumed roots, opcode MEMORY
+ * retirements, and interrupt takes. Pure helpers over explicit
+ * arguments; only the stop/wait constructors clear the
+ * execution-active flag.
  * Does not own: CPU lifetime/storage, fetch/decode orchestration,
  * the execution loop itself, bus descriptor validation, lifecycle
  * cancellation, trace assembly, or opcode semantics.
@@ -62,6 +65,19 @@ ti_c54x_sequencer_delayed_branch_status ti_c54x_run_advance_delayed_branch(
     bool *took_effect);
 
 void ti_c54x_run_apply_deferred_branch(ti_c54x_cpu *cpu);
+
+/* Shared retirement tail for one RETIRED memory-root work unit:
+ * adopt any deferred-branch report, advance the countdown unless
+ * the retirement armed one (a retired redirect applies on
+ * take-effect), reset the root, and re-drive the repeat HOLD
+ * tail. Every failure maps to INVALID_STATE, matching each
+ * caller's previous inline mapping; true means the caller
+ * continues its loop. */
+bool ti_c54x_run_memory_retirement_tail(
+    ti_c54x_cpu *cpu,
+    const ti_c54x_memory_instruction_result *result,
+    uint8_t retired_word_count,
+    bool retired_redirects_pc);
 
 #ifdef __cplusplus
 }

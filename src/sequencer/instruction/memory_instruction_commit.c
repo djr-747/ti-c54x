@@ -3,7 +3,8 @@
  *
  * Owns: the READY-path WORD16 commit for one root memory instruction:
  * address-commit publication (AR/SP), stack-push pmad-target commit
- * with atomic RTN staging of the frozen return address, stack-pop
+ * with atomic RTN staging of the frozen return address,
+ * interrupt-take vector-target commit with no RTN load, stack-pop
  * TOS-target commit from the READ observation or the frozen RTN value,
  * and static opcode completion plus ordinary effects ahead of the
  * architecture commit. Single-word delay shapes without a completion
@@ -121,6 +122,28 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         }
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16) {
+        /* Interrupt takes redirect PC to the frozen device-owned
+         * vector instead of a bundle pmad. Re-plan
+         * deterministically from the frozen vector and the stable
+         * live PC; prepare already proved this plan, so a failure
+         * here is unreachable but still transactional. Takes are
+         * not calls: no RTN load occurs. */
+        ti_c54x_program_pc_target_effect take_target = {0};
+        uint32_t live_pc = state->pc_word;
+        uint16_t vector_word = transaction->long32_first_value_msw;
+
+        if (ti_c54x_program_pc_target_plan(live_pc, vector_word,
+                                           &take_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        if (ti_c54x_program_pc_target_apply(&live_pc, &take_target) !=
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        state->pc_word = live_pc;
+    } else if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||

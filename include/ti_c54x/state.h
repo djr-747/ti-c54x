@@ -43,6 +43,12 @@ typedef struct ti_c54x_state {
     bool ifr_known;
     uint8_t intm_value;
     bool intm_known;
+    /* Pending NMI take latched by the public NMI request with its
+     * device-owned vector address. NMI has no IFR bit, so this
+     * pipeline flag (not architectural state) is the only
+     * visibility until the take retires. */
+    bool nmi_pending;
+    uint16_t nmi_vector_word;
 } ti_c54x_state;
 
 #ifdef __cplusplus

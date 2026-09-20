@@ -409,7 +409,9 @@ ti_c54x_memory_candidate_single_leg_shape_is_valid(
         effect->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
         effect->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+        effect->address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16) {
         const ti_c54x_address_source_stack_push *const source =
             &address_effect->source.value.stack_push;
         /* Wrapping TOS arithmetic mirrors the planner exactly, so a forged

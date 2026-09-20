@@ -128,6 +128,24 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                    &candidate->effect.payload.memory)) {
         return false;
     }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16) {
+        /* Takes redirect absolutely to the frozen vector: no
+         * sequential bridge plan exists, so the bridge coherence
+         * check below is skipped. The zeroed pc_effect and
+         * sentinel instruction pin the take producer contract;
+         * prepare proved the live vector target plan and commit
+         * re-proves it before publication. */
+        return candidate->pc_effect.public_pc_word_before == UINT32_C(0) &&
+               candidate->pc_effect.common_pc_word_before == UINT16_C(0) &&
+               candidate->pc_effect.common_pc_word_after == UINT16_C(0) &&
+               candidate->pc_effect.public_pc_word_after == UINT32_C(0) &&
+               candidate->pc_effect.program_word_count == UINT8_C(0) &&
+               candidate->instruction.bundle.program_word_count ==
+                   UINT8_C(0) &&
+               candidate->address_resolution.request.write_value_word ==
+                   candidate->effect.payload.memory.value_word;
+    }
     if (ti_c54x_program_pc_bridge_plan(
             candidate->pc_effect.public_pc_word_before,
             candidate->pc_effect.program_word_count, &planned) !=
@@ -293,6 +311,35 @@ x_only_candidate_matches_live(
     return selected == candidate->address_resolution.bk_shadow;
 }
 
+/* Interrupt takes carry no sequential bridge plan: the live PC
+ * anchor is the frozen staged return address (the parked PC),
+ * which must still be live at issue and on every resume. SP
+ * liveness mirrors the push contract. The frozen vector needs
+ * no liveness: it is caller-owned routing, re-planned at
+ * commit. */
+static bool
+take_candidate_matches_live(
+    const struct ti_c54x_memory_instruction_candidate *candidate,
+    const ti_c54x_arch_state *state)
+{
+    const ti_c54x_address_effect *address_effect;
+    uint16_t live_sp = UINT16_C(0);
+
+    address_effect = &candidate->address_resolution.address_result.effect;
+    if (address_effect->source.kind != TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
+        return false;
+    }
+    if (state->pc_word !=
+        (uint32_t)candidate->effect.payload.memory.value_word) {
+        return false;
+    }
+    if (ti_c54x_arch_state_read_sp(state, &live_sp) !=
+        TI_C54X_ARCH_STATE_OK) {
+        return false;
+    }
+    return live_sp == address_effect->source.value.stack_push.sp_before;
+}
+
 static bool
 stack_candidate_matches_live(
     const struct ti_c54x_memory_instruction_candidate *candidate,
@@ -384,6 +431,10 @@ ti_c54x_memory_instruction_candidate_matches_live(
             TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16) {
         return ti_c54x_memory_instruction_smem_program_pair_matches_live(
             candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16) {
+        return take_candidate_matches_live(candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||

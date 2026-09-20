@@ -61,6 +61,13 @@ struct ti_c54x_cpu {
     ti_c54x_program_word_address last_fetch_pc_word;
     uint8_t last_fetch_word_count;
     bool execution_active;
+    /* Pending NMI take: latched by the public NMI request with its
+     * device-owned vector address (S94 wires the predecode
+     * arbitration and take issue), cleared only by a RETIRED take
+     * commit, init, and reset. Pipeline state, not architectural
+     * state: NMI has no IFR bit. */
+    bool nmi_pending;
+    uint16_t nmi_vector_word;
 };
 
 #endif

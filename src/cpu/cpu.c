@@ -155,6 +155,8 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     cpu->repeat_pending = (ti_c54x_repeat_pending_request){0};
     cpu->repeat_body_pc_word = UINT32_C(0);
     cpu->repeat_block_progress = (ti_c54x_repeat_block_progress){0};
+    cpu->nmi_pending = false;
+    cpu->nmi_vector_word = UINT16_C(0);
     cpu->last_fetch_pc_word = UINT32_C(0);
     cpu->last_fetch_word_count = UINT8_C(0);
     if (ti_c54x_accumulator_reset(&cpu->accumulators) !=
@@ -168,6 +170,17 @@ ti_c54x_error ti_c54x_cpu_reset(ti_c54x_cpu *cpu)
     cpu->execution_active = true;
     TI_C54X_CPU_EMIT_TRACE(cpu, TI_C54X_TRACE_RESET);
     cpu->execution_active = false;
+    return TI_C54X_ERROR_OK;
+}
+
+ti_c54x_error ti_c54x_cpu_request_nmi(ti_c54x_cpu *cpu,
+                                     uint16_t vector_word)
+{
+    if (cpu == NULL || cpu->execution_active || cpu->nmi_pending) {
+        return TI_C54X_ERROR_INVALID_ARGUMENT;
+    }
+    cpu->nmi_pending = true;
+    cpu->nmi_vector_word = vector_word;
     return TI_C54X_ERROR_OK;
 }
 
@@ -235,6 +248,8 @@ ti_c54x_error ti_c54x_cpu_inspect(const ti_c54x_cpu *cpu,
         state->ifr_known = ifr_status == TI_C54X_ARCH_STATE_OK;
         state->intm_value = (uint8_t)intm.raw_value;
         state->intm_known = intm.status == TI_C54X_STATUS_REGISTER_OK;
+        state->nmi_pending = cpu->nmi_pending;
+        state->nmi_vector_word = cpu->nmi_vector_word;
         state->accumulator_a_raw40 = accumulators.a_raw40;
         state->accumulator_b_raw40 = accumulators.b_raw40;
         state->accumulator_a_known = accumulators.a_known;

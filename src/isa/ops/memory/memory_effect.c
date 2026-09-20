@@ -256,10 +256,11 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16:
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16:
-        /* All-zero spec with no AR selector; WRITE-only with no RMW and no
-         * completion. The staged value rides the TOS WRITE verbatim.
-         * The delayed kind shares this shape exactly: only the root PC
-         * commit timing differs. */
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16:
+        /* All-zero spec with no AR selector; WRITE-only with no
+         * RMW. The staged value rides the TOS WRITE verbatim.
+         * Delayed and take kinds share this shape exactly (take
+         * completion is required but enforced at preparation). */
         if (effect->address_spec.mode != 0 ||
             effect->address_spec.indexed_mode != 0 ||
             effect->address_spec.circular_mode != 0 ||

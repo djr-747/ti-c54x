@@ -27,6 +27,7 @@
 #include "sequencer/program_pc_target.h"
 #include "repeat_activate.h"
 #include "run_support.h"
+#include "take_issue.h"
 
 ti_c54x_run_result ti_c54x_cpu_step(ti_c54x_cpu *cpu)
 {
@@ -128,37 +129,13 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             cpu->instructions_retired += memory_result.instructions_retired;
             instructions_retired += memory_result.instructions_retired;
-            ti_c54x_run_adopt_deferred_branch(cpu, &memory_result);
-            if (!memory_result.deferred_branch_armed) {
-                const uint8_t retired_words =
+            ti_c54x_cpu_take_note_resumed(cpu);
+            if (!ti_c54x_run_memory_retirement_tail(
+                    cpu, &memory_result,
                     cpu->instruction_transaction.candidate.instruction.bundle
-                        .program_word_count;
-                const bool retired_redirects = ti_c54x_run_memory_effect_redirects_pc(
-                    &cpu->instruction_transaction.candidate.effect);
-                bool took_effect = false;
-
-                if (ti_c54x_run_advance_delayed_branch(cpu, retired_words,
-                                           retired_redirects,
-                                           &took_effect) !=
-                    TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
-                    return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                       TI_C54X_BUS_OK, instructions_attempted,
-                                       instructions_retired);
-                }
-                if (took_effect) {
-                    ti_c54x_run_apply_deferred_branch(cpu);
-                }
-            }
-            if (!ti_c54x_run_memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
-                    &cpu->instruction_transaction,
-                    &cpu->bus.data_endpoint))) {
-                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            /* Retirement-tail HOLD re-drive for repeated bodies. */
-            if (ti_c54x_cpu_repeat_body_retired(cpu) ==
-                TI_C54X_CPU_REPEAT_RETIRE_INVALID) {
+                        .program_word_count,
+                    ti_c54x_run_memory_effect_redirects_pc(
+                        &cpu->instruction_transaction.candidate.effect))) {
                 return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);
@@ -187,6 +164,29 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_COUNTER_OVERFLOW,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
+        }
+
+        /* NMI takes preempt fetch at the instruction
+         * boundary; deferred edges fall through to the fetch
+         * below. See take_issue for the arbitration and the
+         * root producer. */
+        {
+            ti_c54x_cpu_take_issue_result take_issue =
+                ti_c54x_cpu_take_issue(cpu, &instructions_attempted,
+                                       &instructions_retired);
+            if (take_issue.outcome == TI_C54X_CPU_TAKE_ISSUE_WAIT) {
+                return ti_c54x_run_wait_result(cpu, instructions_attempted,
+                                              instructions_retired);
+            }
+            if (take_issue.outcome == TI_C54X_CPU_TAKE_ISSUE_STOP) {
+                return ti_c54x_run_stop_result(cpu, take_issue.stop_reason,
+                                              take_issue.bus_status,
+                                              instructions_attempted,
+                                              instructions_retired);
+            }
+            if (take_issue.outcome == TI_C54X_CPU_TAKE_ISSUE_CONTINUE) {
+                continue;
+            }
         }
 
         /* Account an attempt immediately before the first bus read. */
@@ -398,34 +398,10 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             }
             cpu->instructions_retired++;
             instructions_retired++;
-            ti_c54x_run_adopt_deferred_branch(cpu, &memory_result);
-            if (!memory_result.deferred_branch_armed) {
-                const bool retired_redirects =
-                    ti_c54x_run_memory_effect_redirects_pc(&effect);
-                bool took_effect = false;
-
-                if (ti_c54x_run_advance_delayed_branch(
-                        cpu, packet.instruction.bundle.program_word_count,
-                        retired_redirects, &took_effect) !=
-                    TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
-                    return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                       TI_C54X_BUS_OK, instructions_attempted,
-                                       instructions_retired);
-                }
-                if (took_effect) {
-                    ti_c54x_run_apply_deferred_branch(cpu);
-                }
-            }
-            if (!ti_c54x_run_memory_status_ok(ti_c54x_cpu_memory_reset_transaction(
-                    &cpu->instruction_transaction,
-                    &cpu->bus.data_endpoint))) {
-                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            /* Retirement-tail HOLD re-drive for repeated bodies. */
-            if (ti_c54x_cpu_repeat_body_retired(cpu) ==
-                TI_C54X_CPU_REPEAT_RETIRE_INVALID) {
+            if (!ti_c54x_run_memory_retirement_tail(
+                    cpu, &memory_result,
+                    packet.instruction.bundle.program_word_count,
+                    ti_c54x_run_memory_effect_redirects_pc(&effect))) {
                 return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);
