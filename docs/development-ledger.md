@@ -15243,3 +15243,49 @@ entries are not rewritten after publication.
 - Follow-up: next slice for `0x80F8` at `0xF2F`,
   then the DSP CRC/finalize chain; full 64-block
   upload stays bounded per standing direction.
+
+## 2026-09-20 — P3-S84 lands as 6ec4ebc (STL absolute-Smem slice)
+
+- Scope: exact row `STL_SMEM_ABSOLUTE` (`0x80F8`,
+  2 words, S selects A/B) placed with the absolute
+  group (the STL `0xFEE0` family mask never matches
+  the cookie, S75/S80/S83 pattern — no exact-first
+  constraint, no positional renumber); new
+  `op_stl_smem_absolute` checked/trusted leaf stages
+  the `ABSOLUTE_DATA` WORD16 WRITE arm fire-and-forget
+  (STL_SMEM precedent: source-known gating, staged
+  src low word rides verbatim, sidecar NONE,
+  complete NULL, `INELIGIBLE` for repeat). No MMR,
+  knob, or timing changes.
+- Validation evidence: `make test` exit 0 (new
+  `test_stl_smem_absolute_decode/ops/metadata`,
+  `test_cpu_stl_smem_absolute` RED-first green; all
+  735 C binaries pass; 286 Python quality tests OK;
+  fresh CMake Debug `ctest` 742/742; focused
+  ASan/UBSan on the four new tests green; registries
+  and checkers PASS). Boot repro past `0xF2F`:
+  BUDGET=10000 staged loader1 run with the MCU peer
+  retires 10000/10000 with zero data faults at
+  pc=`0x8038`; BUDGET=100000 retires 100000/100000
+  with zero data faults at pc=`0x8031` (RPTB) —
+  the STL unlocked the BD at `0xF31` and the whole
+  finalize chain, and boot now loops steadily in the
+  RPTB poll region (prog_covered 119, 17 MBOX fills).
+  No further explicit stop exists.
+- Decisions: new `ID_COUNT` 339 to 340 with pins;
+  `FORM-T2-20-09` binds the row `SUBSET` with
+  `ABSOLUTE_DATA` as its 8th symbol (S75-style
+  branches in the circular/multi/reverse-carry
+  contracts, which enumerate the STL family form).
+  The cookie was uncovered, so populated first words
+  move 40273 to 40274. The `0x80F8` fixed-MOD2
+  unknown probe now pins the claimed word. README
+  snapshot refreshed (339 rows, 40274 pins,
+  168/205 forms, 45/205 strict) with the finalize
+  cascade recorded.
+- Knobs: none added, changed, or retired.
+- Follow-up: boot runs free — next work is the DSP
+  CRC/finalize verification and steady-loop
+  characterization rather than another opcode slice;
+  full 64-block upload stays bounded per standing
+  direction.

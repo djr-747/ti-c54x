@@ -1,4 +1,4 @@
-### P3-S84: STL absolute Smem slice (planned)
+### P3-S84: STL absolute Smem slice (implemented; local verification green)
 
 `STL *(abs),src` is TI SPRU172C section STL (store
 with absolute addressing): first `0x80F8` with S
