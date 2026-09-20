@@ -2,6 +2,8 @@
 $(eval $(call ti_c54x_add_test,stl_smem_ops,isa/ops/store,test_stl_smem.c))
 # P3 slice 10 RED contract: STH Smem effects.
 $(eval $(call ti_c54x_add_test,sth_smem_ops,isa/ops/store,test_sth_smem.c))
+# P3-S83 RED contract: STH absolute Smem.
+$(eval $(call ti_c54x_add_test,sth_smem_absolute_ops,isa/ops/store,test_sth_smem_absolute.c))
 # P3 slice 11 RED contract: STH-by-ASM Smem effects.
 $(eval $(call ti_c54x_add_test,sth_asm_smem_ops,isa/ops/store,test_sth_asm_smem.c))
 # P3 slice 12 RED contract: STH-by-SHFT Xmem effects.

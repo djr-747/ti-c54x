@@ -429,6 +429,19 @@ TI_C54X_OPCODE_EXACT(DST_SMEM_ABSOLUTE, dst_smem_absolute, 0x4EF8, 2, TI_C54X_OP
  * repeat (section 2 repeat rules), so the row is
  * INELIGIBLE with evidence. */
 TI_C54X_OPCODE_EXACT(DLD_SMEM_ABSOLUTE, dld_smem_absolute, 0x56F8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_STATUS_SXM)
+/* P3-S83 STH absolute *(abs),src (TI SPRU172C
+ * section STH with absolute addressing): the exact
+ * 0x82F8 first word (S selects the source, I=1 with
+ * the 0x78 absolute selector) carries the 16-bit
+ * absolute DATA address in word 1; execution stores
+ * src(31:16) to the word at abs with no status bits.
+ * The STH 0xFEE0 family mask never matches 0x82F8,
+ * so the row sits with the absolute group and no
+ * shadow carve is needed; direct/indirect Smem forms
+ * stay deferred. Absolute operands cannot repeat
+ * (section 2 repeat rules), so the row is INELIGIBLE
+ * with evidence. */
+TI_C54X_OPCODE_EXACT(STH_SMEM_ABSOLUTE, sth_smem_absolute, 0x82F8, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS)
 
 /* Syntax-6 dual WORD16 ADD/SUB, restricted to X/Y MOD0 addressing. */
 TI_C54X_OPCODE_MASKED(ADD_DUAL_MOD0, add_dual_mod0, 0xA000, 0xFECC, 1, TI_C54X_OPERAND_LAYOUT_DUAL_DESTINATION_XAR_YAR, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_C_SXM_OVM)

@@ -189,7 +189,7 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         catalog_rows = parse_catalog(
             (root / "src/isa/catalog/opcode_catalog.def").read_text()
         )
-        self.assertEqual(len(catalog_rows), 337)
+        self.assertEqual(len(catalog_rows), 338)
         for row, symbol, handler, value in (
             (catalog_rows[1], "SSBX_STATUS", "ssbx_status", 0xF5B0),
             (catalog_rows[2], "RSBX_STATUS", "rsbx_status", 0xF4B0),
@@ -361,6 +361,21 @@ class OpcodeCatalogContractTests(unittest.TestCase):
         self.assertEqual(sub_abs.repeatability, REPEAT_INELIGIBLE)
         self.assertEqual(sub_abs.input_resources,
                          RESOURCES_ACCUMULATORS_STATUS_SXM_OVM)
+        # P3-S83 lands the STH_SMEM_ABSOLUTE row after
+        # DLD_SMEM_ABSOLUTE; symbol lookup keeps this
+        # assertion position-independent.
+        sth_abs = next(
+            row for row in catalog_rows
+            if row.symbol == "STH_SMEM_ABSOLUTE"
+        )
+        self.assertEqual(sth_abs.handler, "sth_smem_absolute")
+        self.assertEqual(sth_abs.first_word_value, 0x82F8)
+        self.assertEqual(sth_abs.first_word_mask, 0xFFFF)
+        self.assertEqual(sth_abs.program_word_count, 2)
+        self.assertEqual(sth_abs.operand_layout,
+                         LAYOUT_ACCUMULATOR_INDIRECT_ADDR7_ABSOLUTE16)
+        self.assertEqual(sth_abs.repeatability, REPEAT_INELIGIBLE)
+        self.assertEqual(sth_abs.input_resources, RESOURCES_ACCUMULATORS)
         # P3-S79 lands the RPTB row after RPT_LK;
         # symbol lookup keeps this assertion position-independent.
         rptb = next(

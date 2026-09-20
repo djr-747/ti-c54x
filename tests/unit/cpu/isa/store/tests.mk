@@ -2,6 +2,8 @@
 $(eval $(call ti_c54x_add_test,cpu_stl_smem,cpu/isa/store,test_cpu_stl_smem.c))
 # P3 slice 10 RED contract: STH CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_sth_smem,cpu/isa/store,test_cpu_sth_smem.c))
+# P3-S83 RED contract: STH absolute CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_sth_smem_absolute,cpu/isa/store,test_cpu_sth_smem_absolute.c))
 # P3 slice 11 RED contract: STH-by-ASM CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_sth_asm_smem,cpu/isa/store,test_cpu_sth_asm_smem.c))
 # P3 slice 12 RED contract: STH-by-SHFT CPU retirement.

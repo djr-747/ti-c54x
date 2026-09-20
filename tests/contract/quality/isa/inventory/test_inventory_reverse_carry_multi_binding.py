@@ -11,7 +11,7 @@ class ReverseCarryInventoryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls): cls.root=Path(__file__).resolve().parents[5]; cls.path=cls.root/"config/isa/inventory.json"
  def test_projection_and_bindings(self):
-  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),343)
+  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),344)
   by={f["id"]:f for f in d["forms"]}
   for fam,fid in FAMILIES.items():
    # P3-S66: FORM-T2-19-20 also binds the direct-DP LDU_DIRECT row.

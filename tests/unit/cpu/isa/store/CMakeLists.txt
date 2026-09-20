@@ -2,6 +2,7 @@
 ti_c54x_add_unit_test(cpu_stl_smem test_cpu_stl_smem.c)
 # P3 slice 10 RED contract: STH CPU retirement.
 ti_c54x_add_unit_test(cpu_sth_smem test_cpu_sth_smem.c)
+ti_c54x_add_unit_test(cpu_sth_smem_absolute test_cpu_sth_smem_absolute.c)
 # P3 slice 11 RED contract: STH-by-ASM CPU retirement.
 ti_c54x_add_unit_test(cpu_sth_asm_smem test_cpu_sth_asm_smem.c)
 # P3 slice 12 RED contract: STH-by-SHFT CPU retirement.
