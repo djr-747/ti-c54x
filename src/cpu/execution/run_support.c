@@ -200,3 +200,22 @@ bool ti_c54x_run_memory_retirement_tail(
     return ti_c54x_cpu_repeat_body_retired(cpu) !=
            TI_C54X_CPU_REPEAT_RETIRE_INVALID;
 }
+
+bool ti_c54x_run_route_pending_repeat_start(
+    ti_c54x_cpu *cpu,
+    const ti_c54x_memory_instruction_result *memory_result)
+{
+    ti_c54x_op_effect repeat_effect = {0};
+    ti_c54x_cpu_repeat_route_status repeat_status;
+
+    if (!memory_result->repeat_start_pending) {
+        return true;
+    }
+    repeat_effect.kind = TI_C54X_OP_EFFECT_REPEAT_START;
+    repeat_effect.payload.repeat_start.operand =
+        memory_result->repeat_start_operand;
+    repeat_status = ti_c54x_cpu_repeat_route(
+        cpu, &repeat_effect, TI_C54X_PROGRAM_PC_BRIDGE_OK,
+        cpu->arch_state.pc_word);
+    return repeat_status == TI_C54X_CPU_REPEAT_ROUTE_RETIRED;
+}

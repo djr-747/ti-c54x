@@ -86,6 +86,7 @@
 #include "op_idle.h"
 #include "repeat/op_rpt_k.h"
 #include "repeat/op_rpt_lk.h"
+#include "repeat/op_rpt_smem.h"
 #include "repeat/op_rptb.h"
 #include "rotate/op_rotate.h"
 #include "rotate/op_roltc.h"

@@ -398,13 +398,23 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
-        if (ti_c54x_effect_transaction_stage(
-                &next_effect, &state->status, accumulators, t_register,
-                &state->mmr_file, &ordinary) !=
-                TI_C54X_EFFECT_TRANSACTION_OK ||
-            ti_c54x_effect_transaction_commit(
-                &ordinary, &state->status, accumulators, t_register,
-                &state->mmr_file) != TI_C54X_EFFECT_TRANSACTION_OK) {
+        if (next_effect.kind == TI_C54X_OP_EFFECT_REPEAT_START) {
+            /* A read-value completion staging REPEAT_START (RPT
+             * Smem) is not an ordinary follow-on: record the
+             * pending RC operand for the tail report and let the
+             * CPU loop route it through the single-repeat start
+             * wiring. Failures stay transactional exactly like the
+             * ordinary path below. */
+            transaction->repeat_start_pending = true;
+            transaction->repeat_start_operand =
+                next_effect.payload.repeat_start.operand;
+        } else if (ti_c54x_effect_transaction_stage(
+                       &next_effect, &state->status, accumulators,
+                       t_register, &state->mmr_file, &ordinary) !=
+                       TI_C54X_EFFECT_TRANSACTION_OK ||
+                   ti_c54x_effect_transaction_commit(
+                       &ordinary, &state->status, accumulators, t_register,
+                       &state->mmr_file) != TI_C54X_EFFECT_TRANSACTION_OK) {
             transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
@@ -512,6 +522,11 @@ ti_c54x_memory_instruction_commit_ready_tail(
             return report_status;
         }
     }
+    /* Single-repeat report (RPT Smem): publish the pending RC
+     * operand staged by the read-value completion. The CPU loop
+     * routes it through the single-repeat start wiring. */
+    result->repeat_start_pending = transaction->repeat_start_pending;
+    result->repeat_start_operand = transaction->repeat_start_operand;
     result->status = TI_C54X_MEMORY_INSTRUCTION_STATUS_RETIRED;
     result->bus_status = TI_C54X_BUS_OK;
     result->instructions_attempted = first_issue ? UINT64_C(1) : UINT64_C(0);

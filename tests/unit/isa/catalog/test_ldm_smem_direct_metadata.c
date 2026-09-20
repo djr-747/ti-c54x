@@ -28,7 +28,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_LDM_SMEM_DIRECT);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 343);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 344);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_LDM_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(metadata->first_word_value == LDM_SMEM_DIRECT_VALUE);
@@ -71,8 +71,9 @@ static void
 test_row_boundaries(void)
 {
     /* 0x4800 and 0x497F are the direct slice ends (D=0/addr=0 and
-     * D=1/addr=0x7F); 0x47FF is unbound; the I-set half (0x4880,
-     * 0x4980) holds no LDM MOD rows yet and stays unbound. */
+     * D=1/addr=0x7F); 0x47FF is the P3-S97 RPT_SMEM direct DAT127
+     * shape; the I-set half (0x4880, 0x4980) holds no LDM MOD rows
+     * yet and stays unbound. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4800)) ==
                        TI_C54X_OPCODE_ID_LDM_SMEM_DIRECT);
@@ -84,7 +85,7 @@ test_row_boundaries(void)
                        TI_C54X_OPCODE_ID_LDM_SMEM_DIRECT);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x47FF)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_RPT_SMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0x4880)) ==
                        TI_C54X_OPCODE_ID_UNKNOWN);

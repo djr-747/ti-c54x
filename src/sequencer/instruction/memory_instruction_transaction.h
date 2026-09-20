@@ -132,6 +132,13 @@ typedef struct ti_c54x_memory_instruction_result {
      * its two-word countdown from this report. */
     bool deferred_branch_armed;
     uint16_t deferred_branch_pc_word;
+    /* Single-repeat report: armed only by a retiring read whose
+     * read-value completion stages REPEAT_START (RPT Smem),
+     * carrying the RC operand. The CPU loop routes it through
+     * the single-repeat start wiring; the ordinary follow-on
+     * stage is skipped for it. */
+    bool repeat_start_pending;
+    uint16_t repeat_start_operand;
 } ti_c54x_memory_instruction_result;
 
 typedef struct ti_c54x_memory_instruction_transaction {
@@ -179,6 +186,11 @@ typedef struct ti_c54x_memory_instruction_transaction {
      * scalar padding, so the root size is unchanged on LP64/ILP32. */
     bool rmw_add_carry;
     bool rmw_add_overflow;
+    /* Single-repeat report staging: a read-value completion staging
+     * REPEAT_START records the pending RC operand here for the tail
+     * report; cleared at prepare. */
+    bool repeat_start_pending;
+    uint16_t repeat_start_operand;
     union {
         uint16_t candidate_rmw_value_word;
         /* LONG32's second payload is frozen in the same scalar slot. */

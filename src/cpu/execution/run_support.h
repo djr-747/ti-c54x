@@ -79,6 +79,17 @@ bool ti_c54x_run_memory_retirement_tail(
     uint8_t retired_word_count,
     bool retired_redirects_pc);
 
+/* Route a retiring read's pending single-repeat report (RPT Smem)
+ * through the single-repeat start wiring. The memory commit
+ * already advanced the PC to the body with its pc_effect
+ * applied, so the bridge reports OK with the live PC as the
+ * body candidate. A delayed-branch-armed RPT is TI-forbidden
+ * and rejects through the route. True means the caller
+ * continues its loop. */
+bool ti_c54x_run_route_pending_repeat_start(
+    ti_c54x_cpu *cpu,
+    const ti_c54x_memory_instruction_result *memory_result);
+
 #ifdef __cplusplus
 }
 #endif

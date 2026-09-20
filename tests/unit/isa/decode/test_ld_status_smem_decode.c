@@ -128,6 +128,14 @@ test_fixed_bit_near_misses(void)
                                        TI_C54X_DECODE_STATUS_OK);
                     TI_C54X_TEST_CHECK(result.id ==
                                        TI_C54X_OPCODE_ID_MASA_SMEM);
+                } else if (test_case->id == TI_C54X_OPCODE_ID_LD_DP_SMEM) {
+                    /* Flipping fixed bit 8 lands on the P3-S97
+                     * RPT_SMEM row (0x4690 ^ 0x0100 = 0x4790,
+                     * indirect MOD2 AR0 cookie). */
+                    TI_C54X_TEST_CHECK(result.status ==
+                                       TI_C54X_DECODE_STATUS_OK);
+                    TI_C54X_TEST_CHECK(result.id ==
+                                       TI_C54X_OPCODE_ID_RPT_SMEM);
                 } else {
                     TI_C54X_TEST_CHECK(result.status ==
                                        TI_C54X_DECODE_STATUS_UNKNOWN_WORD);

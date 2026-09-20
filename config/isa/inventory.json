@@ -1694,9 +1694,11 @@
       "table_ordinal": 1,
       "mnemonic": "RPT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RPT_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-16-02",
@@ -3949,6 +3951,12 @@
       "form_id": "FORM-T2-16-03",
       "coverage": "SUBSET",
       "addressing_subset": "IMMEDIATE_LK"
+    },
+    {
+      "catalog_symbol": "RPT_SMEM",
+      "form_id": "FORM-T2-16-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
     },
     {
       "catalog_symbol": "RPTB",

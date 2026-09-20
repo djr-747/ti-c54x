@@ -144,6 +144,11 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);
             }
+            if (!ti_c54x_run_route_pending_repeat_start(cpu, &memory_result)) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
             continue;
         }
 
@@ -406,6 +411,11 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                     cpu, &memory_result,
                     packet.instruction.bundle.program_word_count,
                     ti_c54x_run_memory_effect_redirects_pc(&effect))) {
+                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
+                                   TI_C54X_BUS_OK, instructions_attempted,
+                                   instructions_retired);
+            }
+            if (!ti_c54x_run_route_pending_repeat_start(cpu, &memory_result)) {
                 return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
                                    TI_C54X_BUS_OK, instructions_attempted,
                                    instructions_retired);

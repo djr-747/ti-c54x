@@ -217,6 +217,8 @@ ti_c54x_memory_instruction_transaction_prepare(
     candidate.instructions_retired_after = instructions_retired_before +
                                            UINT64_C(1);
     target->candidate = candidate;
+    target->repeat_start_pending = false;
+    target->repeat_start_operand = UINT16_C(0);
     /* Paired forms pay their cold helper call; keep the established WORD16
      * preparation path direct. */
     if (dual_read) {

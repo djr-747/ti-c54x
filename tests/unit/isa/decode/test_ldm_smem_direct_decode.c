@@ -96,10 +96,11 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_direct == 256U);
 
     {
-        /* Below-neighbor is unbound; the I-set half holds no LDM MOD
-         * rows yet and stays unbound. */
+        /* Below-neighbor 0x47FF is the P3-S97 RPT_SMEM direct
+         * DAT127 shape; the I-set half holds no LDM MOD rows yet
+         * and stays unbound. */
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x47FF)).id ==
-                           TI_C54X_OPCODE_ID_UNKNOWN);
+                           TI_C54X_OPCODE_ID_RPT_SMEM);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x4880)).id ==
                            TI_C54X_OPCODE_ID_UNKNOWN);
         TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(UINT16_C(0x4980)).id ==

@@ -42,7 +42,7 @@ matches(const ld_status_row *row, uint16_t word)
 static void
 test_metadata_rows(void)
 {
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 343);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 344);
 
     for (size_t index = 0U; index < sizeof(rows) / sizeof(rows[0]); ++index) {
         const ld_status_row *row = &rows[index];
@@ -138,6 +138,11 @@ test_fixed_bit_near_misses_and_no_arp_alias(void)
                      * MASA_SMEM row. */
                     TI_C54X_TEST_CHECK(id ==
                                        TI_C54X_OPCODE_ID_MASA_SMEM);
+                } else if (row->id == TI_C54X_OPCODE_ID_LD_DP_SMEM) {
+                    /* 0x4680 ^ 0x0100 = 0x4780 lands on the P3-S97
+                     * RPT_SMEM row (indirect MOD0 AR0 cookie). */
+                    TI_C54X_TEST_CHECK(id ==
+                                       TI_C54X_OPCODE_ID_RPT_SMEM);
                 } else {
                     /* A lax FE mask would overaccept this fixed-bit
                      * near miss. */

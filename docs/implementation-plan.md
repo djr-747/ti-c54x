@@ -811,6 +811,10 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S96: HPINT hop proof slice (implemented; local verification green)](plan/p3-s96-hpint-hop-proof.md)
 
+- [P3-S97: RPT Smem row slice (planned)](plan/p3-s97-rpt-smem-row-slice.md)
+
+- [P3-S98: RPTZ dual-commit slice (planned)](plan/p3-s98-rptz-dual-commit-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
