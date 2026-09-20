@@ -1,4 +1,4 @@
-### P3-S97: RPT Smem row slice (planned)
+### P3-S97: RPT Smem row slice (implemented; local verification green)
 
 One of the 36 inventory-UNIMPLEMENTED forms, on the
 existing single-repeat machinery with no new seam:
