@@ -83,6 +83,7 @@
 #include "branch/op_reted.h"
 #include "branch/op_retf.h"
 #include "op_nop.h"
+#include "op_idle.h"
 #include "repeat/op_rpt_k.h"
 #include "repeat/op_rpt_lk.h"
 #include "repeat/op_rptb.h"

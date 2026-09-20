@@ -779,3 +779,12 @@ static const ti_c54x_operand_field_layout ti_c54x_frame_k_operand = {
     &ti_c54x_frame_k_piece, UINT8_C(1), UINT8_C(8)};
 const ti_c54x_operand_layout_set ti_c54x_frame_k_set = {
     &ti_c54x_frame_k_operand, UINT8_C(1)};
+
+/* IDLE fields: 2-bit power-down selector K[9:8] from word 0;
+ * fixed bits carry no operand. */
+static const ti_c54x_operand_field_piece ti_c54x_idle_k_piece = {
+    UINT8_C(0), UINT8_C(8), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_idle_k_operand = {
+    &ti_c54x_idle_k_piece, UINT8_C(1), UINT8_C(2)};
+const ti_c54x_operand_layout_set ti_c54x_idle_k_set = {
+    &ti_c54x_idle_k_operand, UINT8_C(1)};

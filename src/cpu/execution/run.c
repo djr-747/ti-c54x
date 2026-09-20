@@ -284,6 +284,17 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
                                instructions_retired);
         }
 
+        /* IDLE effects wait dormant until interrupt. The library
+         * owns no interrupt source, so retiring through the wait
+         * would invent control flow the hardware never takes:
+         * the wait surfaces as the reserved IDLE stop with the
+         * attempt counted, nothing retired, and the pc held. */
+        if (effect.kind == TI_C54X_OP_EFFECT_IDLE) {
+            return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_IDLE,
+                               TI_C54X_BUS_OK, instructions_attempted,
+                               instructions_retired);
+        }
+
         /* The sequential successor is prepared once per retirement for
          * every effect kind; the ordinary and delayed-PC routes commit
          * it while the MEMORY and immediate-PC routes ignore it. The

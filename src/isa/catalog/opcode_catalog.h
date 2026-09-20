@@ -201,6 +201,9 @@ typedef enum ti_c54x_operand_layout_id {
      * copied 16-bit absolute DATA address from word 1 and the
      * copied 16-bit absolute I/O port address from word 2. */
     TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7_ABSOLUTE16_PA16,
+    /* One-word IDLE fields: 2-bit power-down selector K[9:8]
+     * from word 0; no other operand. */
+    TI_C54X_OPERAND_LAYOUT_IDLE_K,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

@@ -156,7 +156,7 @@ class InventorySchemaTests(unittest.TestCase):
 
     def test_bound_form_requires_exactly_one_binding(self) -> None:
         altered = copy.deepcopy(self.inventory())
-        binding = copy.deepcopy(altered["catalog_bindings"][0])
+        binding = copy.deepcopy(next(item for item in altered["catalog_bindings"] if item["coverage"] == "COMPLETE"))
         binding["catalog_symbol"] = "CMPL_ACC_ALIAS"
         altered["catalog_bindings"].append(binding)
         errors = validate_inventory(altered)

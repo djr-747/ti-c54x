@@ -1821,8 +1821,10 @@
       "mnemonic": "IDLE",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "IDLE"
+      ]
     },
     {
       "id": "FORM-T2-18-02",
@@ -2814,6 +2816,12 @@
     }
   ],
   "catalog_bindings": [
+    {
+      "catalog_symbol": "IDLE",
+      "form_id": "FORM-T2-18-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "IMMEDIATE_K"
+    },
     {
       "catalog_symbol": "NOP",
       "form_id": "FORM-T2-18-03",

@@ -215,7 +215,10 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
             &ti_c54x_frame_k_set},
         [TI_C54X_OPERAND_LAYOUT_MAR_SMEM8] = {
             TI_C54X_OPERAND_LAYOUT_MAR_SMEM8, UINT8_C(1),
-            &ti_c54x_frame_k_set}
+            &ti_c54x_frame_k_set},
+        [TI_C54X_OPERAND_LAYOUT_IDLE_K] = {
+            TI_C54X_OPERAND_LAYOUT_IDLE_K, UINT8_C(1),
+            &ti_c54x_idle_k_set}
 };
 
 const ti_c54x_operand_layout_plan *
@@ -469,6 +472,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_MAR_SMEM8:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_frame_k_set;
+    case TI_C54X_OPERAND_LAYOUT_IDLE_K:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_idle_k_set;
     default:
         return NULL;
     }

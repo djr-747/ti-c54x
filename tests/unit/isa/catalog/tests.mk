@@ -1,6 +1,7 @@
 # Test ownership: tests/unit/isa/catalog owns immutable catalog metadata
 # identity/range and copied decode propagation proofs.
 $(eval $(call ti_c54x_add_test,opcode_metadata,isa/catalog,test_opcode_metadata.c))
+$(eval $(call ti_c54x_add_test,idle_metadata,isa/catalog,test_idle_metadata.c))
 # P3-S18 lane 2b: qualified-slot match/mismatch vectors.
 $(eval $(call ti_c54x_add_test,qualified_slots,isa/catalog,test_qualified_slots.c))
 # P3-S18 lane 2b RED contract: STH MOD0-MOD3 qualified rows.

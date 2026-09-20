@@ -1,5 +1,6 @@
 # Test ownership: tests/unit/isa/ops owns NOP semantic and dispatch seams.
 $(eval $(call ti_c54x_add_test,nop,isa/ops,test_nop.c))
+$(eval $(call ti_c54x_add_test,idle,isa/ops,test_idle.c))
 include tests/unit/isa/ops/dispatch/tests.mk
 include tests/unit/isa/ops/compare/tests.mk
 include tests/unit/isa/ops/accumulator/tests.mk
