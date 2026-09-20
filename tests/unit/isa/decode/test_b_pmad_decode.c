@@ -160,10 +160,11 @@ test_fixed_bit_near_misses(void)
      * flipping fixed bit 5 lands on XOR_IMMEDIATE_SHIFT, and flipping
      * fixed bit 4 lands on AND_IMMEDIATE_SHIFT16, flipping fixed
      * bit 10 lands on the P3-S39 SFTA_ACC sibling, and flipping
-     * fixed bit 14 lands on the P3-S3g MAC_DUAL_M1_M0 sibling; all other
-     * fixed-bit flips must miss every row. */
+     * fixed bit 14 lands on the P3-S3g MAC_DUAL_M1_M0 sibling, and
+     * flipping fixed bit 1 lands on the P3-S98 RPTZ_DST_LK sibling;
+     * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0002), UINT16_C(0x0004),
+        UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100),
         UINT16_C(0x1000), UINT16_C(0x2000)};
     /* This former near-miss is the P3-S79 RPTB sibling:
@@ -176,6 +177,18 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(rptb_sibling.status ==
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(rptb_sibling.id == TI_C54X_OPCODE_ID_RPTB);
+    }
+    /* This former near-miss is the P3-S98 RPTZ sibling:
+     * 0xF073 ^ 0x0002 = 0xF071 classifies into the RPTZ_DST_LK
+     * row. */
+    {
+        const ti_c54x_decode_result rptz_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(B_PMAD_VALUE ^ UINT16_C(0x0002)));
+        TI_C54X_TEST_CHECK(rptz_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(rptz_sibling.id ==
+                           TI_C54X_OPCODE_ID_RPTZ_DST_LK);
     }
     const ti_c54x_decode_result bd_sibling =
         ti_c54x_decode_first_word(

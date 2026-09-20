@@ -1746,9 +1746,11 @@
       "table_ordinal": 5,
       "mnemonic": "RPTZ",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "RPTZ_DST_LK"
+      ]
     },
     {
       "id": "FORM-T2-17-01",
@@ -3957,6 +3959,12 @@
       "form_id": "FORM-T2-16-01",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_PAGE0_STANDARD_INDIRECT_MOD0_MOD3"
+    },
+    {
+      "catalog_symbol": "RPTZ_DST_LK",
+      "form_id": "FORM-T2-16-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "REGISTER_DST_IMMEDIATE_LK"
     },
     {
       "catalog_symbol": "RPTB",

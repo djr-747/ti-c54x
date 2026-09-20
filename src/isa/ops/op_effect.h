@@ -80,6 +80,12 @@ typedef enum ti_c54x_op_status_field_target {
 
 typedef struct ti_c54x_op_repeat_start_effect {
     uint16_t operand;
+    /* RPTZ zeroes an accumulator in the same retirement that loads
+     * RC: when true, the CPU repeat route writes zero to the
+     * indexed destination before starting. All other producers
+     * clear both fields. */
+    bool zero_destination;
+    uint8_t zero_destination_index;
 } ti_c54x_op_repeat_start_effect;
 
 typedef struct ti_c54x_op_repeat_block_start_effect {

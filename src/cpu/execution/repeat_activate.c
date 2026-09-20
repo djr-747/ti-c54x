@@ -1,10 +1,11 @@
 /*
  * Module contract
  *
- * Owns: CPU-side single/block-repeat run-loop wiring. Does not own:
- * repeat policy, PC bridge planning, stop construction,
- * retirement accounting, buses, vectors, take paths, timing,
- * observers, diagnostics, allocation, or logging.
+ * Owns: CPU-side single/block-repeat run-loop wiring, including the
+ * RPTZ same-retirement accumulator zero applied before the single
+ * start. Does not own: repeat policy, PC bridge planning, stop
+ * construction, retirement accounting, buses, vectors, take paths,
+ * timing, observers, diagnostics, allocation, or logging.
  */
 
 #include "repeat_activate.h"
@@ -14,6 +15,7 @@
 #include <stdint.h>
 
 #include "../cpu_internal.h"
+#include "sequencer/accumulator/effect_apply.h"
 #include "sequencer/delayed_branch/delayed_branch.h"
 #include "sequencer/repeat/repeat_block.h"
 #include "sequencer/repeat/repeat_single.h"
@@ -116,6 +118,34 @@ ti_c54x_cpu_repeat_route_status ti_c54x_cpu_repeat_route(
     }
     if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
         return TI_C54X_CPU_REPEAT_ROUTE_REJECTED;
+    }
+    if (effect->payload.repeat_start.zero_destination) {
+        /* RPTZ clears the destination in the same retirement that
+         * loads RC: an absolute zero write with every status
+         * disposition preserved (TI pledges no status bits). The
+         * leaf bounds the index, but the route re-checks. */
+        ti_c54x_op_effect zero_effect = {0};
+
+        if (effect->payload.repeat_start.zero_destination_index >
+            (uint8_t)TI_C54X_ACCUMULATOR_B) {
+            return TI_C54X_CPU_REPEAT_ROUTE_REJECTED;
+        }
+        zero_effect.kind = TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE;
+        zero_effect.payload.accumulator_write.destination =
+            effect->payload.repeat_start.zero_destination_index;
+        zero_effect.payload.accumulator_write.value_raw40 = UINT64_C(0);
+        zero_effect.payload.accumulator_write.status_delta.c_action =
+            TI_C54X_OP_STATUS_BIT_PRESERVE;
+        zero_effect.payload.accumulator_write.status_delta.tc_action =
+            TI_C54X_OP_STATUS_BIT_PRESERVE;
+        zero_effect.payload.accumulator_write.status_delta
+            .destination_overflow_action =
+            TI_C54X_OP_DESTINATION_OVERFLOW_PRESERVE;
+        if (ti_c54x_accumulator_effect_apply(
+                &zero_effect, &cpu->accumulators,
+                &cpu->arch_state.status) != TI_C54X_ACCUMULATOR_EFFECT_OK) {
+            return TI_C54X_CPU_REPEAT_ROUTE_REJECTED;
+        }
     }
     if (ti_c54x_repeat_single_start(
             &cpu->repeat_progress, effect, &cpu->arch_state,

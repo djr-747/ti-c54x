@@ -8665,6 +8665,25 @@
         "printed_page_end": "4-146"
       },
       "assertion": "SPRU172C RPT syntax 1 encodes RPT Smem as 0100_0111_IAAAAAAA (I selects direct Class 5A versus indirect Class 5B Smem addressing, A the 7-bit address; one word plus long-offset-indirect or absolute extension words): RC takes the Smem word, the following instruction repeats Smem+1 times, RC cannot be accessed while it decrements, and the instruction is itself nonrepeatable. Example 1 establishes DAT127 (data 0x0FFF) holding 0x000C as RC 0x000C with DP 0x031."
+    },
+
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RPTZ-P4-150",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RPTZ",
+        "printed_page_start": "4-150",
+        "printed_page_end": "4-150"
+      },
+      "assertion": "SPRU172C RPTZ encodes RPTZ dst,#lk as 1111_000D_0111_0001 plus one 16-bit lk word (D selects accumulator A or B; 0 <= lk <= 65535; two words): the instruction clears dst and repeats the next instruction lk+1 times with RC taking lk. Status Bits None. Example RPTZ A,1023 repeats the next instruction 1024 times."
     }
   ],
   "requirements": [
@@ -20406,6 +20425,36 @@
       "test_ids": [
         "T-COMMON-P3-S97-RPT-SMEM-CPU"
       ]
+    },
+
+    {
+      "id": "REQ-COMMON-P3-S98-RPTZ-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/repeat/",
+      "claim": "Execute RPTZ dst,#lk as a catalog MASKED row at 0xF071 under mask 0xFEFF with the shared accumulator-plus-lk layout and INELIGIBLE repeatability: the D bit selects accumulator A or B, the raw 16-bit lk validates with no sign extension, and the staged REPEAT_START carries RC = lk with the dst-zero set. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPTZ-P4-150"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S98-RPTZ-OPS"
+      ]
+    },
+
+    {
+      "id": "REQ-COMMON-P3-S98-RPTZ-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire RPTZ dst,#lk at the public CPU boundary: the CPU repeat route applies the staged dst-zero as an absolute zero write with every status disposition preserved (TI pledges no status bits) before the single start, so the destination zeroes in the same retirement that loads RC, the eligible body executes lk+1 times, the other accumulator is untouched, and an out-of-range destination index rejects.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RPTZ-P4-150"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S98-RPTZ-CPU"
+      ]
     }
   ],
   "tests": [
@@ -29836,6 +29885,36 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S97-RPT-SMEM-RETIREMENT"
+      ]
+    },
+
+    {
+      "id": "T-COMMON-P3-S98-RPTZ-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/repeat/test_rptz.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.rptz_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S98-RPTZ-SEMANTICS"
+      ]
+    },
+
+    {
+      "id": "T-COMMON-P3-S98-RPTZ-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/repeat/test_cpu_rptz.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_rptz"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S98-RPTZ-RETIREMENT"
       ]
     }
   ]

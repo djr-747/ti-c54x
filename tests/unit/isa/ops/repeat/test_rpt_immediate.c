@@ -56,8 +56,9 @@ check_operand_reaches_rc(ti_c54x_operand_layout_id id,
         extract_operand(id, program_word_count, program_words);
     const uint64_t original_raw = field.raw_value;
     const uint8_t original_width = field.width_bits;
-    const ti_c54x_op_effect expected = {
-        TI_C54X_OP_EFFECT_REPEAT_START, {{expected_operand}}};
+    ti_c54x_op_effect expected = {0};
+    expected.kind = TI_C54X_OP_EFFECT_REPEAT_START;
+    expected.payload.repeat_start.operand = expected_operand;
     ti_c54x_op_effect effect;
     ti_c54x_arch_state state;
     ti_c54x_repeat_progress progress = {0};

@@ -571,6 +571,13 @@ TI_C54X_OPCODE_EXACT(RPT_LK, rpt_lk, 0xF070, 2, TI_C54X_OPERAND_LAYOUT_RPT_IMMED
  * address planning owns DP/AR downstream. "Not repeatable"
  * marks the row INELIGIBLE. */
 TI_C54X_OPCODE_MASKED(RPT_SMEM, rpt_smem, 0x4700, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+/* P3-S98 RPTZ dst,#lk (TI SPRU172C section RPTZ, vendored p. 4-150:
+ * 1111 000D 0111 0001 plus the 16-bit lk with 0 <- dst and lk <-
+ * RC, status bits none). The masked 0xF071 row reuses the LD_LK_16
+ * destination-plus-lk shape with no inputs: the count is raw (no
+ * sign extension) and the dst-zero applies at the CPU repeat
+ * route. "Not repeatable" marks the row INELIGIBLE. */
+TI_C54X_OPCODE_MASKED(RPTZ_DST_LK, rptz, 0xF071, 0xFEFF, 2, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_IMMEDIATE_LK16, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S79 RPTB pmad (TI SPRU172C section RPTB[D],
  * vendored pp. 4-147--4-148: 1111 000Z 0111 0010
  * plus the 16-bit pmad word; Z=0 selects the plain
