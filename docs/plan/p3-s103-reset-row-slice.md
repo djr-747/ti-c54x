@@ -1,4 +1,4 @@
-### P3-S103: RESET software-reset row and leaf (planned)
+### P3-S103: RESET software-reset row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S103 evidence freeze. One
 single-word control row lands on the misc-control seam: `RESET`
