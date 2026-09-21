@@ -43,7 +43,7 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_each_atomic_logical_form_has_one_subset_binding(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),382)
+        self.assertEqual(len(bindings),383)
         by_symbol = {binding["catalog_symbol"]: binding for binding in bindings}
         for symbol, form_id in CASES.items():
             self.assertIn(symbol, by_symbol)
@@ -81,12 +81,12 @@ class InventoryAtomicLogicalMultiBindingTests(unittest.TestCase):
     def test_report_counts_atomic_families_once(self) -> None:
         report = report_inventory(self.root)
         self.assertEqual(report["catalog_family_progress"],
-                         {"covered": 187, "denominator": 205})
+                         {"covered": 188, "denominator": 205})
         self.assertEqual(report["strict_complete_lower_bound"],
-                         {"covered": 54, "denominator": 205})
-        self.assertAlmostEqual(report["catalog_family_percent"], 91.22,
+                         {"covered": 55, "denominator": 205})
+        self.assertAlmostEqual(report["catalog_family_percent"], 91.707,
                                places=3)
-        self.assertAlmostEqual(report["strict_complete_percent"], 26.341,
+        self.assertAlmostEqual(report["strict_complete_percent"], 26.829,
                                places=3)
 
     def test_duplicate_symbol_or_pair_remains_invalid(self) -> None:

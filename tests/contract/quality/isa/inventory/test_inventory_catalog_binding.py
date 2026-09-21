@@ -73,9 +73,9 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),382)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 358)
-        self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 54)
+        self.assertEqual(len(bindings),383)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 359)
+        self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 55)
         self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 328)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},

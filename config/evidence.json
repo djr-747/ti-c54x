@@ -8945,6 +8945,24 @@
         "printed_page_end": "4-65"
       },
       "assertion": "SPRU172C INTR defines the single-word software interrupt INTR K with opcode diagram 1111_0111_110K_KKKK: SP decrements by one, PC+1 pushes to TOS, the K vector loads into PC, 1 loads into INTM, and the corresponding interrupt flag register bit clears (IMR has no effect; INTR executes regardless of INTM). The instruction is not repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-POLY-P4-126",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "POLY",
+        "printed_page_start": "4-126",
+        "printed_page_end": "4-126"
+      },
+      "assertion": "SPRU172C POLY defines the single-word polynomial step POLY Smem with opcode diagram 0011_0110_IAAA_AAAA: the SXM-widened Smem word shifted left 16 loads into B while A-high times T plus B-old rounds into A (FRCT-doubled product, OVM saturation, OVA on destination overflow). The instruction is absent from Table 2-28 and is repeatable."
     }
   ],
   "requirements": [
@@ -21172,6 +21190,48 @@
       "test_ids": [
         "T-COMMON-P3-S110-INTR-K-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Execute POLY Smem as an exact catalog row at 0x3600 under mask 0xFF00 with the INDIRECT_ADDR7 layout, ACCUMULATORS_T_REGISTER_STATUS_SXM_FRCT_OVM input resources, and ELIGIBLE repeatability: the checked and trusted op_poly_smem entries extract the indirect/addr7 fields and stage one single-memory DATA READ with no T load (exotic modes above MOD3 defer). The read-value completion rounds live-T times A-high plus B-old into A through the multiply core with unconditional rounding and stages the SXM-widened Smem word shifted left 16 into B, publishing one ACCUMULATOR_WRITE_PAIR with OVA on A-destination overflow. Null arguments reject, crossed rows reject, unknown A/B/T/SXM/FRCT/OVM rejects, and failed calls leave the caller-owned effect unchanged.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-POLY-P4-126"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S111-POLY-SMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire POLY Smem through the generic single-memory MEMORY route with one-word PC advance: the Smem DATA word reads through one endpoint READ with AR post-update, the pair completion publishes A and B with all other status preserved, and one instruction retires with T untouched.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-POLY-P4-126"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S111-POLY-SMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S111-POLY-SMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register POLY_SMEM at 0x3600 under mask 0xFF00 as a one-word form with the INDIRECT_ADDR7 layout, ACCUMULATORS_T_REGISTER_STATUS_SXM_FRCT_OVM inputs, and ELIGIBLE repeatability, covering all 256 first-word encodings with the MACA row on both edges.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-POLY-P4-126"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S111-POLY-SMEM-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31089,6 +31149,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S110-INTR-K-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S111-POLY-SMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_poly_smem_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.poly_smem_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S111-POLY-SMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_poly_smem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_poly_smem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S111-POLY-SMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_poly_smem_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.poly_smem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S111-POLY-SMEM-CATALOG"
       ]
     }
   ]

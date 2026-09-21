@@ -557,6 +557,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LMS, `4-80` |
 | `E-TI-C54X-SPRU172C-S4-FIRS-P4-59` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §FIRS, `4-59` |
 | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §INTR, `4-65` |
+| `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §POLY, `4-126` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1504,6 +1505,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S110-INTR-K-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/stack/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-OPS` |
 | `REQ-COMMON-P3-S110-INTR-K-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-CPU` |
 | `REQ-COMMON-P3-S110-INTR-K-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-METADATA` |
+| `REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-OPS` |
+| `REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-CPU` |
+| `REQ-COMMON-P3-S111-POLY-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-METADATA` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2210,6 +2214,9 @@ exist in the repository.
 | `T-COMMON-P3-S110-INTR-K-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/stack/test_intr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.intr_ops"}` | `REQ-COMMON-P3-S110-INTR-K-SEMANTICS` |
 | `T-COMMON-P3-S110-INTR-K-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_intr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_intr"}` | `REQ-COMMON-P3-S110-INTR-K-RETIREMENT` |
 | `T-COMMON-P3-S110-INTR-K-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_intr_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.intr_metadata"}` | `REQ-COMMON-P3-S110-INTR-K-CATALOG` |
+| `T-COMMON-P3-S111-POLY-SMEM-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_poly_smem_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.poly_smem_ops"}` | `REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS` |
+| `T-COMMON-P3-S111-POLY-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_poly_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_poly_smem"}` | `REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT` |
+| `T-COMMON-P3-S111-POLY-SMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_poly_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.poly_smem_metadata"}` | `REQ-COMMON-P3-S111-POLY-SMEM-CATALOG` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

@@ -1104,9 +1104,11 @@
       "table_ordinal": 12,
       "mnemonic": "POLY",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "POLY_SMEM"
+      ]
     },
     {
       "id": "FORM-T2-06-13",
@@ -5157,6 +5159,12 @@
     {
       "catalog_symbol": "INTR_K",
       "form_id": "FORM-T2-14-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "POLY_SMEM",
+      "form_id": "FORM-T2-06-12",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

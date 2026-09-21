@@ -148,10 +148,11 @@ test_fixed_bit_near_misses(void)
     /* Mask 0xFEE0 leaves D(8) and Smem(4:0) variable. Flipping fixed
      * bit 10 lands on LDU_SMEM, flipping bit 9 lands on LD_SMEM_TS,
      * flipping fixed bit 15 lands on the P3-S101 BIT_XMEM row
-     * (pinned below); every other fixed-bit flip misses every
+     * (pinned below); flipping fixed bit 13 lands on the P3-S111
+     * POLY row (0x3680 with I set). The pinned flips miss every
      * catalog row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x2000),
+        UINT16_C(0x0080),
         UINT16_C(0x4000)};
 
     for (size_t index = 0U;

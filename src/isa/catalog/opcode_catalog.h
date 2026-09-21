@@ -394,6 +394,15 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_T_REGISTER | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* POLY bodies read accumulators plus T plus SXM/FRCT/OVM: the A
+ * channel rounds A-high times T plus B-old, and the B channel
+ * loads the SXM-widened Smem shifted left 16. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_FRCT_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \

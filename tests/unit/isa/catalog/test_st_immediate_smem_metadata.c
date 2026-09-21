@@ -89,12 +89,13 @@ test_fixed_bit_near_misses_are_unknown(void)
      * row (0x7780), bit 9, which lands in the P3-S6 PORTR
      * indirect row (0x74A0, TI SPRU172C 4-129 pins PORTR at 0x74xx),
      * bit 11, which lands in the P3-S64 READA Smem row (0x7E80,
-     * handled below), and bit 12, which lands in the P3-S33
-     * MAC_SMEM_LK row (0x6690, handled below); the low three ARF
-     * bits remain. */
+     * handled below), bit 12, which lands in the P3-S33
+     * MAC_SMEM_LK row (0x6690, handled below), and bit 14, which
+     * lands in the P3-S111 POLY row (0x3690 with I set); the low
+     * three ARF bits remain. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0400),
-        UINT16_C(0x4000)};
+        UINT16_C(0x2000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);

@@ -724,6 +724,14 @@ TI_C54X_OPCODE_MASKED(MPYU_SMEM, mpyu_smem, 0x2400, 0xFE00, 1, TI_C54X_OPERAND_L
  * read-phase T load. R/I/addr7 ride the word through the round/
  * indirect/addr7 layout; the R bit carries the MACAR variant. */
 TI_C54X_OPCODE_MASKED(MACA_SMEM, maca_smem, 0x3500, 0xFD00, 1, TI_C54X_OPERAND_LAYOUT_ROUND_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_FRCT_OVM)
+/* P3-S111 POLY Smem (TI SPRU172C section POLY, p. 4-126,
+ * 1 word, Table 2-6): the 0x3600 single data-memory
+ * polynomial step over the shared indirect/addr7 layout
+ * into the op_poly_smem core. A rounds A(32-16) times T
+ * plus B-old (FRCT-doubled); B loads the SXM-widened Smem
+ * shifted left 16. Absent from Table 2-28, so the row is
+ * ELIGIBLE with evidence. */
+TI_C54X_OPCODE_MASKED(POLY_SMEM, poly_smem, 0x3600, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_T_REGISTER_STATUS_SXM_FRCT_OVM)
 /* Syntax-1 one-word square of Smem into the D-selected accumulator with
  * read-phase T load. D/I/addr7 ride the word through the dedicated
  * destination/indirect/addr7 layout. */

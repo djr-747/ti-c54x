@@ -16,6 +16,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_squr_acc.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_mpyu_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_maca_smem.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_poly_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_maca_t.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_masa_smem.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_masa_t.c"

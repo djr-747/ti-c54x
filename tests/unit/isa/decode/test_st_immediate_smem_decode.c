@@ -153,11 +153,12 @@ test_fixed_bit_near_misses_are_unknown(void)
 {
     /* Flipping fixed bit 12 lands in the MAC_SMEM_LK row
      * (0x6690, pinned below); flipping fixed bit 11 lands in the
-     * P3-S64 READA Smem row (0x7E90, pinned below); all other
-     * fixed-bit flips must miss every row. */
+     * P3-S64 READA Smem row (0x7E90, pinned below); flipping fixed
+     * bit 14 lands in the P3-S111 POLY row (0x3690 with I set).
+     * The pinned flips miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0400),
-        UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x2000), UINT16_C(0x8000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
