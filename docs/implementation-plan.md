@@ -835,7 +835,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S108: FIRS dual-memory filter row and leaf (implemented; local verification green)](plan/p3-s108-firs-dual-filter-row-slice.md)
 
-- [P3-S109: RESET first-word correction 0xF7C0 to 0xF7E0 (planned)](plan/p3-s109-reset-first-word-correction-slice.md)
+- [P3-S109: RESET first-word correction 0xF7C0 to 0xF7E0 (implemented; local verification green)](plan/p3-s109-reset-first-word-correction-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

@@ -1,4 +1,4 @@
-### P3-S109: RESET first-word correction 0xF7C0 to 0xF7E0 (planned)
+### P3-S109: RESET first-word correction 0xF7C0 to 0xF7E0 (implemented; local verification green)
 
 This immutable anchor heads the P3-S109 evidence freeze. One
 exact one-word row moves on established TI evidence: `RESET`
