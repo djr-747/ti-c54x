@@ -1,4 +1,4 @@
-### P3-S105: TRAP software-interrupt row and leaf (planned)
+### P3-S105: TRAP software-interrupt row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S105 evidence freeze. One
 single-word control row lands on the trap seam: `TRAP K`
