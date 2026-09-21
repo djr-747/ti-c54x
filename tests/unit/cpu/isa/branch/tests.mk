@@ -2,6 +2,8 @@
 $(eval $(call ti_c54x_add_test,cpu_b_pmad,cpu/isa/branch,test_cpu_b_pmad.c))
 # W68 RED contract: BD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_bd,cpu/isa/branch,test_cpu_bd.c))
+# P3-S103: RESET CPU retirement.
+$(eval $(call ti_c54x_add_test,cpu_reset,cpu/isa/branch,test_cpu_reset.c))
 $(eval $(call ti_c54x_add_test,cpu_bc_pmad,cpu/isa/branch,test_cpu_bc_pmad.c))
 # W69 RED contract: BCD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_bcd,cpu/isa/branch,test_cpu_bcd.c))

@@ -91,6 +91,7 @@
 #include "branch/op_retf.h"
 #include "op_nop.h"
 #include "op_idle.h"
+#include "op_reset.h"
 #include "repeat/op_rpt_k.h"
 #include "repeat/op_rpt_lk.h"
 #include "repeat/op_rpt_smem.h"

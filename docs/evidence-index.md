@@ -551,6 +551,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §DSUBT, `4-50` |
 | `E-TI-C54X-SPRU172C-S4-SQDST-P4-160` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SQDST, `4-160` |
 | `E-TI-C54X-SPRU172C-S4-ABDST-P4-2` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ABDST, `4-2` |
+| `E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RESET, `4-137`–`4-138` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1481,6 +1482,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-SQDST-P4-160` | `T-COMMON-P3-S102-SQDST-XMEM-YMEM-CPU` |
 | `REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ABDST-P4-2` | `T-COMMON-P3-S102-ABDST-XMEM-YMEM-OPS` |
 | `REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-ABDST-P4-2` | `T-COMMON-P3-S102-ABDST-XMEM-YMEM-CPU` |
+| `REQ-COMMON-P3-S103-RESET-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/` | `E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138` | `T-COMMON-P3-S103-RESET-OPS` |
+| `REQ-COMMON-P3-S103-RESET-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138` | `T-COMMON-P3-S103-RESET-CPU` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2170,6 +2173,8 @@ exist in the repository.
 | `T-COMMON-P3-S102-SQDST-XMEM-YMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_sqdst.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_sqdst"}` | `REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-RETIREMENT` |
 | `T-COMMON-P3-S102-ABDST-XMEM-YMEM-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_abdst_xmem_ymem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.abdst_xmem_ymem"}` | `REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-SEMANTICS` |
 | `T-COMMON-P3-S102-ABDST-XMEM-YMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_abdst.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_abdst"}` | `REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-RETIREMENT` |
+| `T-COMMON-P3-S103-RESET-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/test_reset_op.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.reset_op"}` | `REQ-COMMON-P3-S103-RESET-SEMANTICS` |
+| `T-COMMON-P3-S103-RESET-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_reset.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_reset"}` | `REQ-COMMON-P3-S103-RESET-RETIREMENT` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

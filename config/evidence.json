@@ -8825,6 +8825,24 @@
         "printed_page_end": "4-2"
       },
       "assertion": "SPRU172C ABDST defines the single-word dual-16-bit operation ABDST Xmem,Ymem with opcode diagram 1110_0011_XXXX_YYYY: the absolute A(32-16) accumulates into B (doubled under FRCT) while A stages (Xmem minus Ymem) shifted left 16."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "RESET",
+        "printed_page_start": "4-137",
+        "printed_page_end": "4-138"
+      },
+      "assertion": "SPRU172C RESET defines the exact single-word software reset 0xF7C0 with no operands: PC takes (IPTR) shifted left 7; OVA, OVB, ARP, DP, ASM, BRAF, HM, C16, FRCT, CMPT, CPL, and OVM clear to 0 while C, TC, SXM, XF, and INTM set to 1; IFR clears to 0. MP/MC is not sampled and IPTR/peripheral initialization differs from RS. The instruction is not repeatable."
     }
   ],
   "requirements": [
@@ -20814,6 +20832,34 @@
       "test_ids": [
         "T-COMMON-P3-S102-ABDST-XMEM-YMEM-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S103-RESET-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/",
+      "claim": "Execute RESET as an exact catalog row at 0xF7C0 with the NONE layout, NONE input resources, and INELIGIBLE repeatability: the checked and trusted op_reset entries stage one RESET effect with no payload. Null arguments reject, forged ids and nonzero trusted operand counts reject, and failed calls leave the caller-owned effect unchanged.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S103-RESET-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S103-RESET-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire RESET through the generic CPU path with one-word PC advance replaced by the reset commit: IPTR is snapshotted before mutation (unknown IPTR stops INVALID_STATE with nothing retired), exactly the manual ST0/ST1 field list is written, IFR clears, PC takes IPTR shifted left 7, one instruction retires, any pending delayed-branch countdown cancels, and the CPU-owned repeat and take latches and the routed-entry table clear. Accumulators, T, ARs, SP, RC, and unlisted PMST fields are preserved, and no endpoint traffic occurs.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S103-RESET-CPU"
+      ]
     }
   ],
   "tests": [
@@ -30493,6 +30539,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S103-RESET-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/test_reset_op.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.reset_op"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S103-RESET-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S103-RESET-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_reset.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_reset"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S103-RESET-RETIREMENT"
       ]
     }
   ]

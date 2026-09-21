@@ -12,6 +12,7 @@ list(APPEND ti_c54x_core_sources
 include(${CMAKE_CURRENT_LIST_DIR}/delayed_branch/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/repeat/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/interrupt/sources.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/reset/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/status/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/accumulator/sources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/temporary/sources.cmake)

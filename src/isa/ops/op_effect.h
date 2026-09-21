@@ -26,7 +26,10 @@
  * DELAYED_PC_WRITE carries one copied 16-bit program-memory target
  * address for a delayed branch; sequential-PC commit plus countdown
  * arming belongs to the CPU retirement route, which replaces any
- * pending countdown under the last-wins rule.
+ * pending countdown under the last-wins rule. RESET carries no
+ * payload; the software-reset field list, IFR clear, and IPTR-derived
+ * program-counter commit belong to the reset applier and the CPU
+ * retirement route.
  * BRANCH_AUXILIARY carries one auxiliary-register index with its
  * staged post-decrement value-after, an update flag, the taken
  * outcome, the delayed-branch discriminator (always false: BANZ is
@@ -72,7 +75,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_AR_WRITE = 13,
     TI_C54X_OP_EFFECT_REPEAT_BLOCK_START = 14,
     TI_C54X_OP_EFFECT_IDLE = 15,
-    TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE_PAIR = 16
+    TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE_PAIR = 16,
+    TI_C54X_OP_EFFECT_RESET = 17
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {

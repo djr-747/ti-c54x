@@ -90,6 +90,17 @@ bool ti_c54x_run_route_pending_repeat_start(
     ti_c54x_cpu *cpu,
     const ti_c54x_memory_instruction_result *memory_result);
 
+/* Retire a software RESET: apply the TI reset field list through
+ * the reset applier (IPTR snapshotted before mutation; unknown
+ * IPTR fails), commit the IPTR-derived program counter, clear
+ * the CPU-owned repeat, take, and vector-table latches as on
+ * init, and cancel any pending delayed-branch countdown under
+ * the redirect rule. Accumulators, T, ARs, SP, RC, and unlisted
+ * PMST fields are preserved. Every failure maps to false, which
+ * the caller reports as INVALID_STATE; true means the caller
+ * counts the retirement and continues its loop. */
+bool ti_c54x_run_retire_reset(ti_c54x_cpu *cpu, uint8_t retired_word_count);
+
 #ifdef __cplusplus
 }
 #endif

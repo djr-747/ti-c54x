@@ -1899,9 +1899,11 @@
       "table_ordinal": 4,
       "mnemonic": "RESET",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "RESET"
+      ]
     },
     {
       "id": "FORM-T2-18-05",
@@ -5109,6 +5111,12 @@
     {
       "catalog_symbol": "ABDST_XMEM_YMEM",
       "form_id": "FORM-T2-06-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "RESET",
+      "form_id": "FORM-T2-18-04",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

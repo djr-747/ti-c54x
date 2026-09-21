@@ -11,6 +11,7 @@
 
 #include "../memory/pending_work.h"
 #include "repeat_activate.h"
+#include "sequencer/reset/reset_apply.h"
 
 ti_c54x_run_result ti_c54x_run_result_from_cpu(
     const ti_c54x_cpu *cpu, ti_c54x_stop_reason reason,
@@ -218,4 +219,36 @@ bool ti_c54x_run_route_pending_repeat_start(
         cpu, &repeat_effect, TI_C54X_PROGRAM_PC_BRIDGE_OK,
         cpu->arch_state.pc_word);
     return repeat_status == TI_C54X_CPU_REPEAT_ROUTE_RETIRED;
+}
+
+bool ti_c54x_run_retire_reset(ti_c54x_cpu *cpu, uint8_t retired_word_count)
+{
+    ti_c54x_reset_apply_status reset_status;
+    uint16_t reset_pc;
+    uint8_t vector;
+    bool took_effect = false;
+
+    if (cpu == NULL) {
+        return false;
+    }
+    reset_status = ti_c54x_reset_apply(&cpu->arch_state, &reset_pc);
+    if (reset_status != TI_C54X_RESET_APPLY_OK) {
+        return false;
+    }
+    cpu->arch_state.pc_word = reset_pc;
+    cpu->repeat_progress = (ti_c54x_repeat_progress){0};
+    cpu->repeat_pending = (ti_c54x_repeat_pending_request){0};
+    cpu->repeat_body_pc_word = UINT32_C(0);
+    cpu->repeat_block_progress = (ti_c54x_repeat_block_progress){0};
+    cpu->nmi_pending = false;
+    cpu->nmi_vector_word = UINT16_C(0);
+    for (vector = UINT8_C(0); vector < UINT8_C(16); ++vector) {
+        cpu->interrupt_vectors[vector] = UINT16_C(0);
+    }
+    cpu->interrupt_vectors_known = UINT16_C(0);
+    cpu->take_source_bit = UINT8_C(0);
+    cpu->take_source_is_maskable = false;
+    return ti_c54x_run_advance_delayed_branch(cpu, retired_word_count,
+                                              true, &took_effect) ==
+           TI_C54X_SEQUENCER_DELAYED_BRANCH_OK;
 }

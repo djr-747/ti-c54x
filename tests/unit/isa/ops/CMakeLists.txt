@@ -1,6 +1,7 @@
 # Test ownership: tests/unit/isa/ops owns NOP semantic and dispatch seams.
 ti_c54x_add_unit_test(nop test_nop.c)
 ti_c54x_add_unit_test(idle test_idle.c)
+ti_c54x_add_unit_test(reset_op test_reset_op.c)
 add_subdirectory(dispatch)
 add_subdirectory(compare)
 add_subdirectory(accumulator)

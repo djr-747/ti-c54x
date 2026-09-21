@@ -25,6 +25,7 @@
 #include "sequencer/auxiliary/ar_write_apply.h"
 #include "sequencer/program_pc_bridge.h"
 #include "sequencer/program_pc_target.h"
+#include "sequencer/reset/reset_apply.h"
 #include "repeat_activate.h"
 #include "run_support.h"
 #include "take_issue.h"
@@ -302,6 +303,22 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_IDLE,
                                TI_C54X_BUS_OK, instructions_attempted,
                                instructions_retired);
+        }
+
+        /* RESET effects retire through the reset tail: unknown
+         * IPTR stops with nothing retired, otherwise one
+         * instruction retires. */
+        if (effect.kind == TI_C54X_OP_EFFECT_RESET) {
+            if (!ti_c54x_run_retire_reset(
+                    cpu,
+                    packet.instruction.bundle.program_word_count)) {
+                return ti_c54x_run_stop_result(
+                    cpu, TI_C54X_STOP_INVALID_STATE, TI_C54X_BUS_OK,
+                    instructions_attempted, instructions_retired);
+            }
+            cpu->instructions_retired++;
+            instructions_retired++;
+            continue;
         }
 
         /* The sequential successor is prepared once per retirement for

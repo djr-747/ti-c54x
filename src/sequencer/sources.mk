@@ -11,6 +11,7 @@ ti_c54x_core_sources += \
 include src/sequencer/delayed_branch/sources.mk
 include src/sequencer/repeat/sources.mk
 include src/sequencer/interrupt/sources.mk
+include src/sequencer/reset/sources.mk
 include src/sequencer/status/sources.mk
 include src/sequencer/accumulator/sources.mk
 include src/sequencer/temporary/sources.mk
