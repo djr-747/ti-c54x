@@ -2586,9 +2586,11 @@
       "table_ordinal": 1,
       "mnemonic": "LD",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_PARALLEL_MAC"
+      ]
     },
     {
       "id": "FORM-T2-23-02",
@@ -2597,9 +2599,11 @@
       "table_ordinal": 2,
       "mnemonic": "LD",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_PARALLEL_MAC"
+      ]
     },
     {
       "id": "FORM-T2-23-03",
@@ -2608,9 +2612,11 @@
       "table_ordinal": 3,
       "mnemonic": "LD",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_PARALLEL_MAS"
+      ]
     },
     {
       "id": "FORM-T2-23-04",
@@ -2619,9 +2625,11 @@
       "table_ordinal": 4,
       "mnemonic": "LD",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "LD_PARALLEL_MAS"
+      ]
     },
     {
       "id": "FORM-T2-24-01",
@@ -5165,6 +5173,30 @@
     {
       "catalog_symbol": "POLY_SMEM",
       "form_id": "FORM-T2-06-12",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_PARALLEL_MAC",
+      "form_id": "FORM-T2-23-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_PARALLEL_MAC",
+      "form_id": "FORM-T2-23-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_PARALLEL_MAS",
+      "form_id": "FORM-T2-23-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "LD_PARALLEL_MAS",
+      "form_id": "FORM-T2-23-04",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

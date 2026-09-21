@@ -171,16 +171,18 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(firs_sibling.id ==
                        TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
     {
-        /* Flipping fixed bit 14 freed the S3s MACSU dual row under
-         * the P3-S112 correction (0xA800 is UNKNOWN now); the
-         * MACSU M0_M0 row lives at 0xA600 per TI SPRU172C 4-91. */
+        /* Flipping fixed bit 14 lands on 0xA800, the P3-S114
+         * LD parallel-MAC row (TI SPRU172C Table 2-23,
+         * 1010_10RD_XXXX_YYYY); the MACSU M0_M0 row lives at
+         * 0xA600 per TI SPRU172C 4-91. */
         const ti_c54x_decode_result freed_sibling =
             ti_c54x_decode_first_word(
                 (uint16_t)(LD_K_VALUE ^ UINT16_C(0x4000)));
 
         TI_C54X_TEST_CHECK(freed_sibling.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(freed_sibling.id == TI_C54X_OPCODE_ID_UNKNOWN);
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(freed_sibling.id ==
+                           TI_C54X_OPCODE_ID_LD_PARALLEL_MAC);
     }
     {
         /* The MACSU M0_M0 row lives at 0xA600 per TI SPRU172C

@@ -8985,6 +8985,24 @@
         "anchor": "P3-S113: XPC program-counter extension state (implemented; local verification green)"
       },
       "assertion": "S113 is implemented and green: XPC is modeled as a private 16-bit project register with a dedicated scalar knownness bit (bit 6), checked read/write accessors mirroring the BK seam, and reset_common initialization to 0 known, per TI SPRU131G Memory section 3.2.5 p. 3-20 (XPC initializes to 0 at hardware reset) and section 3.3.4.11 p. 3-28 (XPC carries the upper 7 bits of the extended program address, is memory-mapped at data 001Eh, and is modified by exactly six control instructions). XPC stays outside the MMR file; no ISA, sequencer, or CPU behavior changes in this slice. XPC and extended-page semantics remain excluded from the common target pending the far-control profile work."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LD-PARALLEL-P4-74",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "LD parallel MAC/MAS",
+        "printed_page_start": "4-74",
+        "printed_page_end": "4-76"
+      },
+      "assertion": "SPRU172C Table 2-23 lists the four parallel load-and-multiply forms LD||MAC, LD||MACR, LD||MAS, LD||MASR. The LD||MAC[R] opcode diagram (0010_10RD_XXXX_YYYY, p. 4-74) and the LD||MAS[R] diagram (0010_11RD_XXXX_YYYY, p. 4-76) pin shared rows at 0xA800/0xAC00 under mask 0xFC00 with R at bit 9, D at bit 8, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0: the LD half loads the SXM-shifted X word into dst bits 31:16 while the MAC/MAS half accumulates live-T times Y into the other accumulator with FRCT/OVM handling and optional R rounding. The worked examples pin A=00 1234 0000 with B=00 010C 9511 (MAC), 00 010D 0000 (MACR), FF FEF3 8D11 (MAS), FF FEF4 0000 (MASR) from X=0x1234, Y=0x4321, T=0x0400, FRCT=0 with both ARs post-incremented and T untouched. The parallel rows are absent from Table 2-28 and are repeatable."
     }
   ],
   "requirements": [
@@ -21268,6 +21286,48 @@
       "test_ids": [
         "T-PROJECT-P3-S113-XPC-STATE"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S114-LD-PARALLEL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/multiply/",
+      "claim": "Execute LD Xmem,dst || MAC[R]/MAS[R] Ymem,dst_ as catalog MASKED rows LD_PARALLEL_MAC at 0xA800 and LD_PARALLEL_MAS at 0xAC00 under mask 0xFC00 with the ROUND_DESTINATION_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_T_REGISTER_STATUS_SXM_FRCT_OVM input resources, and ELIGIBLE repeatability: the checked and trusted leaves extract R/D/dualxy and stage one dual WORD16 READ with no T load (T is a live validated input). The pair completion runs live-T times Y plus the non-D accumulator through the multiply core with FRCT/OVM handling and R rounding (ADD for MAC, SUBTRACT for MAS) and publishes one ACCUMULATOR_WRITE_PAIR with the SXM-widened X word shifted left 16 into the D-selected accumulator and the accumulation into the other, C/TC preserved and OV written only on the accumulation channel. Null arguments, crossed rows, and unknown A/B/T/SXM/FRCT/OVM/AR reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-PARALLEL-P4-74"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S114-LD-PARALLEL-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S114-LD-PARALLEL-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LD Xmem,dst || MAC[R]/MAS[R] Ymem,dst_ through the generic dual-memory CPU path with ordered X-then-Y DATA reads, one-word PC advance, atomic AR post-access commits, deferred accumulator-pair publication, and T preservation across the instruction.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-PARALLEL-P4-74"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S114-LD-PARALLEL-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S114-LD-PARALLEL-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register LD_PARALLEL_MAC at 0xA800 under mask 0xFC00 and LD_PARALLEL_MAS at 0xAC00 under mask 0xFC00 as one-word forms with the ROUND_DESTINATION_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_T_REGISTER_STATUS_SXM_FRCT_OVM inputs, and ELIGIBLE repeatability, covering all 1024 first-word encodings per row with UNKNOWN below-neighbor 0xA7FF and the MAC-dual row above at 0xB000.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LD-PARALLEL-P4-74"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S114-LD-PARALLEL-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31241,6 +31301,48 @@
       },
       "requirement_ids": [
         "REQ-PROJECT-P3-S113-XPC-STATE"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S114-LD-PARALLEL-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/multiply/test_ld_parallel_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.ld_parallel_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S114-LD-PARALLEL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S114-LD-PARALLEL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/multiply/test_cpu_ld_parallel.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_ld_parallel"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S114-LD-PARALLEL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S114-LD-PARALLEL-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_ld_parallel_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.ld_parallel_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S114-LD-PARALLEL-CATALOG"
       ]
     }
   ]

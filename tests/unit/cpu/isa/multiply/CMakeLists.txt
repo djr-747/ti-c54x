@@ -22,6 +22,8 @@ ti_c54x_add_unit_test(cpu_mpyu_smem test_cpu_mpyu_smem.c)
 ti_c54x_add_unit_test(cpu_maca_smem test_cpu_maca_smem.c)
 # P3-S111 RED contract: POLY Smem retirement.
 ti_c54x_add_unit_test(cpu_poly_smem test_cpu_poly_smem.c)
+# P3-S114 RED contract: LD parallel-MAC/MAS retirement.
+ti_c54x_add_unit_test(cpu_ld_parallel test_cpu_ld_parallel.c)
 # P3-S3 RED contract: MACA T,src register-only row.
 ti_c54x_add_unit_test(cpu_maca_t test_cpu_maca_t.c)
 # P3-S3 RED contract: MASA Smem subtract-A row.

@@ -218,6 +218,13 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word software-interrupt fields: 5-bit vector select
      * K[4:0] from word 0. TRAP owns it; INTR will share it. */
     TI_C54X_OPERAND_LAYOUT_TRAP_IMMEDIATE_K,
+    /* One-word parallel LD fields: rounding select R[9:9],
+     * LD-destination select D[8:8], and the 8-bit dual-memory
+     * XY specifier DUALXY[7:0] (XMOD/XAR over YMOD/YAR, as in
+     * the FIRS dual row) from word 0. The handler splits
+     * DUALXY; trusted packets stay within the four-operand
+     * capacity. */
+    TI_C54X_OPERAND_LAYOUT_ROUND_DESTINATION_DUALXY,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -413,6 +420,15 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* SQDST/ABDST distance bodies read accumulators, ARs, SXM, FRCT, OVM. */
+/* LD parallel-MAC/MAS bodies read accumulators, ARs, live T,
+ * and SXM/FRCT/OVM. T is a validated input, never written. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_T_REGISTER_STATUS_SXM_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
+                                   TI_C54X_INPUT_RESOURCES_T_REGISTER | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \

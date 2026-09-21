@@ -195,6 +195,9 @@ ti_c54x_add_unit_test(maca_smem_metadata
 # P3-S111 RED contract: POLY Smem metadata.
 ti_c54x_add_unit_test(poly_smem_metadata
                       test_poly_smem_metadata.c)
+# P3-S114 RED contract: LD parallel-MAC/MAS metadata.
+ti_c54x_add_unit_test(ld_parallel_metadata
+                      test_ld_parallel_metadata.c)
 # P3-S3 RED contract: MACP Smem,Pmad row.
 ti_c54x_add_unit_test(macp_smem_metadata
                       test_macp_smem_metadata.c)

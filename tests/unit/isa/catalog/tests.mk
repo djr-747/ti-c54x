@@ -133,6 +133,8 @@ $(eval $(call ti_c54x_add_test,maca_t_metadata,isa/catalog,test_maca_t_metadata.
 # P3-S3 RED contract: MACA Smem accumulate-A row.
 $(eval $(call ti_c54x_add_test,maca_smem_metadata,isa/catalog,test_maca_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,poly_smem_metadata,isa/catalog,test_poly_smem_metadata.c))
+# P3-S114 RED contract: LD parallel-MAC/MAS metadata.
+$(eval $(call ti_c54x_add_test,ld_parallel_metadata,isa/catalog,test_ld_parallel_metadata.c))
 # P3-S3 RED contract: MACP Smem,Pmad row.
 $(eval $(call ti_c54x_add_test,macp_smem_metadata,isa/catalog,test_macp_smem_metadata.c))
 # P3-S3 RED contract: MACD Smem,Pmad row.

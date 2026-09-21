@@ -26,6 +26,8 @@ $(eval $(call ti_c54x_add_test,mpyu_smem_ops,isa/ops/multiply,test_mpyu_smem_ops
 $(eval $(call ti_c54x_add_test,maca_smem_ops,isa/ops/multiply,test_maca_smem_ops.c))
 # P3-S111 RED contract: POLY Smem effects.
 $(eval $(call ti_c54x_add_test,poly_smem_ops,isa/ops/multiply,test_poly_smem_ops.c))
+# P3-S114 RED contract: LD parallel-MAC/MAS effects.
+$(eval $(call ti_c54x_add_test,ld_parallel_ops,isa/ops/multiply,test_ld_parallel_ops.c))
 # P3-S3 RED contract: MACA T,src register-only row.
 $(eval $(call ti_c54x_add_test,maca_t_ops,isa/ops/multiply,test_maca_t_ops.c))
 # P3-S3 RED contract: MASA Smem subtract-A row.

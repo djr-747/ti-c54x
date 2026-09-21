@@ -29,6 +29,8 @@ ti_c54x_add_unit_test(mpyu_smem_ops test_mpyu_smem_ops.c)
 ti_c54x_add_unit_test(maca_smem_ops test_maca_smem_ops.c)
 # P3-S111 RED contract: POLY Smem effects.
 ti_c54x_add_unit_test(poly_smem_ops test_poly_smem_ops.c)
+# P3-S114 RED contract: LD parallel-MAC/MAS effects.
+ti_c54x_add_unit_test(ld_parallel_ops test_ld_parallel_ops.c)
 # P3-S3 RED contract: MACA T,src register-only row.
 ti_c54x_add_unit_test(maca_t_ops test_maca_t_ops.c)
 # P3-S3 RED contract: MASA Smem subtract-A row.
