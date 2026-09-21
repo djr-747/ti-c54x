@@ -237,7 +237,17 @@ typedef enum ti_c54x_op_memory_address_kind {
      * `access` is WRITE (the completing-leg direction) with a
      * null leaf completion. The move root owns the chaining
      * internally. */
-    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16 = 31
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16 = 31,
+    /* Trap software-interrupt stack push: identical TOS planning
+     * to the immediate push (old SP - 1 with a PRE_ACCESS SP
+     * update, WRITE-only with the staged return address), but the
+     * staged address is the sequential successor PC + 1 (not the
+     * parked live PC of a take), the PC target is the frozen
+     * K vector (IPTR-derived, not a bundle word), no RTN load
+     * occurs (traps are not calls), and the leaf completion is
+     * null (no INTM/IFR mutation). Only the op_trap leaf stages
+     * this kind; the root freezes the successor and vector. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 = 32
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

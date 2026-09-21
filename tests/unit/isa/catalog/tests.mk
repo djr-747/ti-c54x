@@ -152,6 +152,8 @@ $(eval $(call ti_c54x_add_test,bit_xmem_metadata,isa/catalog,test_bit_xmem_metad
 $(eval $(call ti_c54x_add_test,sqdst_xmem_ymem_metadata,isa/catalog,test_sqdst_xmem_ymem.c))
 $(eval $(call ti_c54x_add_test,abdst_xmem_ymem_metadata,isa/catalog,test_abdst_xmem_ymem.c))
 $(eval $(call ti_c54x_add_test,reset_metadata,isa/catalog,test_reset_metadata.c))
+# P3-S105 RED contract: TRAP K row.
+$(eval $(call ti_c54x_add_test,trap_metadata,isa/catalog,test_trap_metadata.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_metadata,isa/catalog,test_st_lk_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_absolute_metadata,isa/catalog,test_st_lk_smem_absolute_metadata.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_metadata,isa/catalog,test_st_t_smem_direct_metadata.c))

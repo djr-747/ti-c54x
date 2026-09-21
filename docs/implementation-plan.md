@@ -827,6 +827,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S104: MVDD dual-move pair row and leaf (implemented; local verification green)](plan/p3-s104-mvdd-dual-move-pair-slice.md)
 
+- [P3-S105: TRAP software-interrupt row and leaf (planned)](plan/p3-s105-trap-row-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

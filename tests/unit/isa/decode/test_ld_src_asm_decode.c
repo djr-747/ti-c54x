@@ -174,9 +174,14 @@ test_fixed_bit_near_misses(void)
         /* 0xF483 (fixed bit 0 set) is the S34 SAT_ACC row with
          * S=0 (src A). */
         {UINT16_C(0x0001), TI_C54X_OPCODE_ID_SAT_ACC},
+        /* 0xF4C2 (fixed bit 6 clear) is the P3-S105 TRAP_K row
+         * with K=2. */
+        {UINT16_C(0x0040), TI_C54X_OPCODE_ID_TRAP_K},
     };
+    /* 0xF4C2 (fixed bit 6 clear) left this list in P3-S105:
+     * it now decodes as TRAP K=2 (pinned with the siblings). */
     static const uint16_t misses[] = {
-        UINT16_C(0x0040), UINT16_C(0x1000),
+        UINT16_C(0x1000),
         UINT16_C(0x2000)};
     size_t index;
 

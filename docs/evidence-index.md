@@ -553,6 +553,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-ABDST-P4-2` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ABDST, `4-2` |
 | `E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RESET, `4-137`–`4-138` |
 | `E-TI-C54X-SPRU172C-S4-MVDD-P4-107` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MVDD, `4-107` |
+| `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §TRAP, `4-195` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1488,6 +1489,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/store/` | `E-TI-C54X-SPRU172C-S4-MVDD-P4-107` | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-OPS` |
 | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-MVDD-P4-107` | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-CPU` |
 | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-MVDD-P4-107` | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-METADATA` |
+| `REQ-COMMON-P3-S105-TRAP-K-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/stack/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-OPS` |
+| `REQ-COMMON-P3-S105-TRAP-K-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-CPU` |
+| `REQ-COMMON-P3-S105-TRAP-K-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-METADATA` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2182,6 +2186,9 @@ exist in the repository.
 | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/store/test_mvdd.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mvdd_ops"}` | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-SEMANTICS` |
 | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/store/test_cpu_mvdd.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_mvdd"}` | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-RETIREMENT` |
 | `T-COMMON-P3-S104-MVDD-XMEM-YMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_mvdd_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.mvdd_metadata"}` | `REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-CATALOG` |
+| `T-COMMON-P3-S105-TRAP-K-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/stack/test_trap.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trap_ops"}` | `REQ-COMMON-P3-S105-TRAP-K-SEMANTICS` |
+| `T-COMMON-P3-S105-TRAP-K-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_trap.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_trap"}` | `REQ-COMMON-P3-S105-TRAP-K-RETIREMENT` |
+| `T-COMMON-P3-S105-TRAP-K-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_trap_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.trap_metadata"}` | `REQ-COMMON-P3-S105-TRAP-K-CATALOG` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

@@ -80,8 +80,10 @@ int main(void)
     TI_C54X_TEST_CHECK(valid_max_min == 4U);
 
     {
-        const uint16_t invalid[] = {UINT16_C(0xF496), UINT16_C(0xF4C6),
-                                    UINT16_C(0xF4C8), UINT16_C(0xF487) ^
+        /* 0xF4C6 and 0xF4C8 left this list in P3-S105: they now
+         * decode as TRAP K=6 and K=8. */
+        const uint16_t invalid[] = {UINT16_C(0xF496),
+                                    UINT16_C(0xF487) ^
                                         UINT16_C(0x0200)};
         for (size_t i = 0U; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
             TI_C54X_TEST_CHECK(ti_c54x_decode_first_word(invalid[i]).status ==

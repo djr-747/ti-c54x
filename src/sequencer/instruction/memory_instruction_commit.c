@@ -133,13 +133,16 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         }
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16) {
         /* Interrupt takes redirect PC to the frozen device-owned
-         * vector instead of a bundle pmad. Re-plan
-         * deterministically from the frozen vector and the stable
-         * live PC; prepare already proved this plan, so a failure
-         * here is unreachable but still transactional. Takes are
-         * not calls: no RTN load occurs. */
+         * vector instead of a bundle pmad, and traps redirect to
+         * the frozen K vector. Re-plan deterministically from the
+         * frozen vector and the stable live PC; prepare already
+         * proved this plan, so a failure here is unreachable but
+         * still transactional. Takes and traps are not calls: no
+         * RTN load occurs. */
         ti_c54x_program_pc_target_effect take_target = {0};
         uint32_t live_pc = state->pc_word;
         uint16_t vector_word = transaction->long32_first_value_msw;

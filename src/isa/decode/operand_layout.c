@@ -136,6 +136,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR] = {
             TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, UINT8_C(1),
             &ti_c54x_dual_xmod_xar_ymod_yar_set},
+        [TI_C54X_OPERAND_LAYOUT_TRAP_IMMEDIATE_K] = {
+            TI_C54X_OPERAND_LAYOUT_TRAP_IMMEDIATE_K, UINT8_C(1),
+            &ti_c54x_trap_k_set},
         [TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7] = {
             TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7,
             UINT8_C(1),
@@ -395,6 +398,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_dual_xmod_xar_ymod_yar_set;
+    case TI_C54X_OPERAND_LAYOUT_TRAP_IMMEDIATE_K:
+        *expected_word_count = UINT8_C(1);
+        return &ti_c54x_trap_k_set;
     case TI_C54X_OPERAND_LAYOUT_SOURCE_DESTINATION_INDIRECT_ADDR7:
         *expected_word_count = UINT8_C(1);
         return &ti_c54x_source_destination_indirect_addr7_set;

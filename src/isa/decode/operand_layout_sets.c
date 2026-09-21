@@ -738,3 +738,12 @@ static const ti_c54x_operand_field_layout ti_c54x_idle_k_operand = {
     &ti_c54x_idle_k_piece, UINT8_C(1), UINT8_C(2)};
 const ti_c54x_operand_layout_set ti_c54x_idle_k_set = {
     &ti_c54x_idle_k_operand, UINT8_C(1)};
+
+/* TRAP fields: 5-bit vector select K[4:0] from word 0; fixed
+ * bits 15:5 carry no operand. */
+static const ti_c54x_operand_field_piece ti_c54x_trap_k_piece = {
+    UINT8_C(0), UINT8_C(0), UINT8_C(5), UINT8_C(0)};
+static const ti_c54x_operand_field_layout ti_c54x_trap_k_operand = {
+    &ti_c54x_trap_k_piece, UINT8_C(1), UINT8_C(5)};
+const ti_c54x_operand_layout_set ti_c54x_trap_k_set = {
+    &ti_c54x_trap_k_operand, UINT8_C(1)};

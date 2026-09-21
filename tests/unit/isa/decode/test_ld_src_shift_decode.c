@@ -152,9 +152,10 @@ test_fixed_bit_near_misses_are_unknown(void)
      * (pinned below), so it leaves this list as well. Bit 15 lands in
      * the PORTR direct row (TI SPRU172C 4-129 pins PORTR at 0x74xx),
      * pinned below as well. Bit 5 lands in the P3-S39 SFTA_ACC row
-     * (pinned below), so it leaves this list as well. */
+     * (pinned below), so it leaves this list as well. Bit 7 lands
+     * in the P3-S105 TRAP_K row (pinned below), so it leaves this
+     * list as well. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
         UINT16_C(0x1000), UINT16_C(0x2000)};
 
     for (size_t index = 0U;
@@ -177,6 +178,17 @@ test_fixed_bit_near_misses_are_unknown(void)
 
         TI_C54X_TEST_CHECK(rc_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(rc_sibling.id == TI_C54X_OPCODE_ID_RC);
+    }
+
+    /* Flipping fixed bit 7 lands on 0xF4C0, the TRAP_K base word. */
+    {
+        const ti_c54x_decode_result trap_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SRC_SHIFT_VALUE ^ UINT16_C(0x0080)));
+
+        TI_C54X_TEST_CHECK(trap_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(trap_sibling.id == TI_C54X_OPCODE_ID_TRAP_K);
     }
 
     /* Flipping fixed bit 15 lands on the PORTR direct sibling. */

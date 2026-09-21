@@ -458,6 +458,8 @@ ti_c54x_memory_instruction_candidate_matches_live(
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+        candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||

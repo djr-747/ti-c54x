@@ -9,8 +9,10 @@
  * (target from the frozen input snapshot gated on accumulator
  * knownness), return-address staging through the shared bridge
  * successor, TOS resolution, deferred-branch reporting for the
- * delayed push kinds, and interrupt-take preparation (parked-PC
- * return staging with a caller-owned vector target). Does not own:
+ * delayed push kinds, interrupt-take preparation (parked-PC
+ * return staging with a caller-owned vector target), and trap
+ * vector freezing (K select from the frozen bundle with a live
+ * IPTR-derived vector). Does not own:
  * CPU publication, endpoint callbacks, opcode dispatch, timing,
  * observers, or diagnostics. Transaction storage is borrowed for
  * each call.
@@ -45,6 +47,18 @@ ti_c54x_memory_instruction_stack_push_prepare_take(
     uint16_t vector_word,
     ti_c54x_memory_address_resolution *resolution,
     uint16_t *push_return_value);
+
+/* Trap vector freeze: derive the 5-bit K select from the frozen
+ * one-word bundle, prove the live IPTR is known (unknown IPTR
+ * rejects transactionally per the RESET precedent), and publish
+ * the K vector (IPTR << 7) + (K << 2) for the commit redirect.
+ * Only TRAP-kind WRITE effects with null completions are
+ * admitted: a trap mutates no status state. */
+bool ti_c54x_memory_instruction_trap_freeze_vector(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_effect *effect,
+    const ti_c54x_arch_state *state,
+    uint16_t *vector_word_out);
 
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_stack_push_deferred_report(

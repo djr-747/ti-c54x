@@ -8861,6 +8861,24 @@
         "printed_page_end": "4-107"
       },
       "assertion": "SPRU172C MVDD defines the single-word dual-memory move MVDD Xmem,Ymem with opcode diagram 1110_0101_XXXX_YYYY: the Xmem word copies to Ymem with no status effect, both AR selectors post-update per their MOD field, and the form is absent from the repeatability table (repeatable)."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-TRAP-P4-195",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "TRAP",
+        "printed_page_start": "4-195",
+        "printed_page_end": "4-195"
+      },
+      "assertion": "SPRU172C TRAP defines the single-word software interrupt TRAP K with opcode diagram 1111_0100_110K_KKKK: SP decrements by one, PC+1 pushes to TOS, the K vector loads into PC as (IPTR << 7) + (K << 2), and no status bit changes (not affected by INTM, does not affect INTM, no IFR effect). The instruction is not repeatable."
     }
   ],
   "requirements": [
@@ -20920,6 +20938,48 @@
       "test_ids": [
         "T-COMMON-P3-S104-MVDD-XMEM-YMEM-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S105-TRAP-K-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/stack/",
+      "claim": "Execute TRAP K as an exact catalog row at 0xF4C0 under mask 0xFFE0 with the TRAP_IMMEDIATE_K layout, STACK_POINTER input resources, and INELIGIBLE repeatability: the checked and trusted op_trap entries extract the 5-bit K field and stage one STACK_PUSH_TRAP WRITE effect with a zero staged value and null completion. Null arguments reject, forged ids and out-of-range trusted operands reject, unknown SP rejects, and failed calls leave the caller-owned effect unchanged.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-TRAP-P4-195"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S105-TRAP-K-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S105-TRAP-K-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire TRAP K through the shared stack-push WORD16 root: the sequential successor PC+1 freezes into the TOS WRITE, the K entry address (IPTR << 7) + (K << 2) freezes into the LONG32-MSW carrier (unknown IPTR rejects with nothing retired), the push issues through one endpoint WRITE, and commit redirects PC to the frozen entry address with no RTN load and no INTM/IFR mutation. One instruction retires.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-TRAP-P4-195"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S105-TRAP-K-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S105-TRAP-K-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register TRAP_K at 0xF4C0 under mask 0xFFE0 as a one-word form with the TRAP_IMMEDIATE_K layout, STACK_POINTER inputs, and INELIGIBLE repeatability, covering all 32 first-word encodings with UNKNOWN neighbors.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-TRAP-P4-195"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S105-TRAP-K-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -30669,6 +30729,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S105-TRAP-K-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/stack/test_trap.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.trap_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S105-TRAP-K-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S105-TRAP-K-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_trap.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_trap"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S105-TRAP-K-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S105-TRAP-K-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_trap_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.trap_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S105-TRAP-K-CATALOG"
       ]
     }
   ]

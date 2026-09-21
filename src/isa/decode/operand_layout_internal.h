@@ -80,6 +80,7 @@ extern const ti_c54x_operand_layout_set
     ti_c54x_accumulator_dual_xmod_xar_shift4_set;
 extern const ti_c54x_operand_layout_set ti_c54x_indirect_addr7_set;
 extern const ti_c54x_operand_layout_set ti_c54x_idle_k_set;
+extern const ti_c54x_operand_layout_set ti_c54x_trap_k_set;
 extern const ti_c54x_operand_layout_set ti_c54x_indirect_addr7_pa16_set;
 extern const ti_c54x_operand_layout_set
     ti_c54x_indirect_addr7_absolute16_pa16_set;

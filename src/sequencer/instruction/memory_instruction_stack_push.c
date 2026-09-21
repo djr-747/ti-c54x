@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include "sequencer/program_pc_target.h"
+#include "state/status/registers.h"
 
 /* Derive the frozen call target for accumulator pushes from the frozen
  * input snapshot: the low 16 bits of the selected accumulator gated on
@@ -62,6 +63,9 @@ ti_c54x_memory_instruction_stack_push_prepare(
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
         effect->payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16;
+    const bool push_trap =
+        effect->payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16;
     uint16_t pmad;
     uint32_t return_address_word;
 
@@ -81,6 +85,16 @@ ti_c54x_memory_instruction_stack_push_prepare(
                 input, effect->payload.memory.address_spec.arf, &pmad)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+    } else if (push_trap) {
+        /* Traps carry no bundle target: the one-word bundle holds
+         * only the K vector select, and the K vector freezes
+         * separately in the root. The row catalog pins the count;
+         * this defense keeps a forged candidate from reading a
+         * missing extension word. */
+        if (instruction->bundle.program_word_count != UINT8_C(1)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        pmad = UINT16_C(0);
     } else {
         /* Two-word push forms carry pmad in the second bundle word.
          * The row catalog pins the count; this defense keeps a
@@ -92,10 +106,13 @@ ti_c54x_memory_instruction_stack_push_prepare(
     }
     /* Prove the commit-time pmad target plan before any bus issue.
      * Commit re-plans deterministically from the same frozen pmad and
-     * the stable live PC, so the discarded effect is validation only. */
-    if (ti_c54x_program_pc_target_plan(state->pc_word, pmad,
+     * the stable live PC, so the discarded effect is validation only.
+     * Traps skip this plan: commit re-plans from the frozen K
+     * vector instead. */
+    if (!push_trap &&
+        ti_c54x_program_pc_target_plan(state->pc_word, pmad,
                                        &call_target) !=
-        TI_C54X_PROGRAM_PC_TARGET_OK) {
+            TI_C54X_PROGRAM_PC_TARGET_OK) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
     }
     /* The bridge successor doubles as the pushed return address. Plan
@@ -219,4 +236,52 @@ ti_c54x_memory_instruction_stack_push_deferred_report(
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
     }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+}
+
+bool
+ti_c54x_memory_instruction_trap_freeze_vector(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_effect *effect,
+    const ti_c54x_arch_state *state,
+    uint16_t *vector_word_out)
+{
+    ti_c54x_status_register_field_result iptr;
+    uint32_t vector;
+    uint16_t first_word;
+    uint8_t k;
+
+    if (instruction == NULL || effect == NULL || state == NULL ||
+        vector_word_out == NULL) {
+        return false;
+    }
+    if (effect->kind != TI_C54X_OP_EFFECT_MEMORY ||
+        effect->payload.memory.address_spec.kind !=
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+        effect->payload.memory.access !=
+            TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
+        effect->payload.memory.complete != NULL ||
+        effect->payload.memory.complete_dual != NULL) {
+        return false;
+    }
+    /* K rides the frozen bundle word (the leaf stages no K
+     * payload); the row catalog pins the one-word bundle. */
+    if (instruction->bundle.program_word_count != UINT8_C(1)) {
+        return false;
+    }
+    first_word = instruction->bundle.program_words[0];
+    if ((uint16_t)(first_word & UINT16_C(0xFFE0)) != UINT16_C(0xF4C0)) {
+        return false;
+    }
+    k = (uint8_t)(first_word & UINT16_C(0x001F));
+    iptr = ti_c54x_status_register_read_iptr(&state->status);
+    if (iptr.status != TI_C54X_STATUS_REGISTER_OK || !iptr.known) {
+        return false;
+    }
+    /* IPTR is 9 bits; the K vector always fits 16 bits. */
+    vector = ((uint32_t)iptr.raw_value << 7U) + ((uint32_t)k << 2U);
+    if (vector > UINT32_C(0xFFFF)) {
+        return false;
+    }
+    *vector_word_out = (uint16_t)vector;
+    return true;
 }

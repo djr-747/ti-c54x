@@ -1642,9 +1642,11 @@
       "table_ordinal": 2,
       "mnemonic": "TRAP",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "TRAP_K"
+      ]
     },
     {
       "id": "FORM-T2-15-01",
@@ -5125,6 +5127,12 @@
     {
       "catalog_symbol": "MVDD_XMEM_YMEM",
       "form_id": "FORM-T2-26-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "TRAP_K",
+      "form_id": "FORM-T2-14-02",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }
