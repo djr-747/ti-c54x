@@ -234,6 +234,10 @@ typedef enum ti_c54x_operand_layout_id {
      * store-source select S[9:9], compute-destination select D[8:8],
      * and DUALXY[7:0] from word 0. */
     TI_C54X_OPERAND_LAYOUT_ROUND_SRC_DEST_DUALXY,
+    /* Two-word far-branch fields: 7-bit page PAGE[6:0] from word 0
+     * (XPC page pmad(22-16)) and the 16-bit extension pmad(15-0)
+     * from word 1. */
+    TI_C54X_OPERAND_LAYOUT_BRANCH_FAR_PMAD,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 

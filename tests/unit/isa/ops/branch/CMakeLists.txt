@@ -30,6 +30,11 @@ ti_c54x_add_unit_test(xc test_xc.c)
 # P3 slice 4 RED contracts: BACC/BACCD effects.
 ti_c54x_add_unit_test(bacc test_bacc.c)
 ti_c54x_add_unit_test(baccd test_baccd.c)
+# P3-S117 RED contracts: FB/FBD/FBACC/FBACCD effects.
+ti_c54x_add_unit_test(fb_pmad test_fb_pmad.c)
+ti_c54x_add_unit_test(fbd test_fbd.c)
+ti_c54x_add_unit_test(fbacc test_fbacc.c)
+ti_c54x_add_unit_test(fbaccd test_fbaccd.c)
 # P3 slice 9 RED contracts: CALA/CALAD effects.
 ti_c54x_add_unit_test(cala test_cala.c)
 ti_c54x_add_unit_test(calad test_calad.c)

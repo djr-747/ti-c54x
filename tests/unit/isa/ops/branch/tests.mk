@@ -29,6 +29,11 @@ $(eval $(call ti_c54x_add_test,xc,isa/ops/branch,test_xc.c))
 # P3 slice 4 RED contracts: BACC/BACCD effects.
 $(eval $(call ti_c54x_add_test,bacc,isa/ops/branch,test_bacc.c))
 $(eval $(call ti_c54x_add_test,baccd,isa/ops/branch,test_baccd.c))
+# P3-S117 RED contracts: FB/FBD/FBACC/FBACCD effects.
+$(eval $(call ti_c54x_add_test,fb_pmad,isa/ops/branch,test_fb_pmad.c))
+$(eval $(call ti_c54x_add_test,fbd,isa/ops/branch,test_fbd.c))
+$(eval $(call ti_c54x_add_test,fbacc,isa/ops/branch,test_fbacc.c))
+$(eval $(call ti_c54x_add_test,fbaccd,isa/ops/branch,test_fbaccd.c))
 # P3 slice 9 RED contracts: CALA/CALAD effects.
 $(eval $(call ti_c54x_add_test,cala,isa/ops/branch,test_cala.c))
 $(eval $(call ti_c54x_add_test,calad,isa/ops/branch,test_calad.c))

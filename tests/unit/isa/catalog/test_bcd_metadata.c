@@ -3,8 +3,8 @@
  *
  * Owns: executable proof of the BCD catalog row (Table 2-12
  * syntax 1, Z=1), including its exact masked identity,
- * 256-encoding population over the condition-code byte,
- * dedicated branch-condition layout, accumulator/C/TC input
+ * 128-encoding population over the tightened 7-bit condition
+ * field, dedicated branch-condition layout, accumulator/C/TC input
  * resources and INELIGIBLE repeatability metadata, and fixed-bit
  * separation from the BC_PMAD row.
  * Does not own: opcode decoding, condition evaluation, operand
@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 static const uint16_t BCD_VALUE = UINT16_C(0xFA00);
-static const uint16_t BCD_MASK = UINT16_C(0xFF00);
+static const uint16_t BCD_MASK = UINT16_C(0xFF80);
 /* Bit 9 clear selects the non-delayed BC_PMAD sibling. */
 static const uint16_t BC_PMAD_WORD = UINT16_C(0xF800);
 
@@ -37,7 +37,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_BCD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 367);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 371);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_BCD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == BCD_VALUE);
@@ -52,9 +52,10 @@ test_metadata(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            BCD_VALUE) == TI_C54X_OPCODE_ID_BCD);
 
-    /* Only the 8-bit condition code varies; Z stays fixed for BCD. */
+    /* Only the 7-bit condition field varies; the bit-7 halves
+     * belong to the P3-S117 FBD far row. */
     TI_C54X_TEST_CHECK((uint16_t)~metadata->first_word_mask ==
-                       UINT16_C(0x00FF));
+                       UINT16_C(0x007F));
 }
 
 static void
@@ -74,7 +75,9 @@ test_exact_population_and_disjointness(void)
         }
     }
 
-    TI_C54X_TEST_CHECK(encoded_count == 256U);
+    TI_C54X_TEST_CHECK(encoded_count == 128U);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0xFA80)) == TI_C54X_OPCODE_ID_FBD);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            BC_PMAD_WORD) != TI_C54X_OPCODE_ID_BCD);
 }

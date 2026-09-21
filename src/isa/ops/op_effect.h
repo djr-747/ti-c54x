@@ -26,7 +26,11 @@
  * DELAYED_PC_WRITE carries one copied 16-bit program-memory target
  * address for a delayed branch; sequential-PC commit plus countdown
  * arming belongs to the CPU retirement route, which replaces any
- * pending countdown under the last-wins rule. RESET carries no
+ * pending countdown under the last-wins rule. FAR_PC_WRITE carries
+ * one copied 16-bit pmad plus the 7-bit XPC page for a far branch;
+ * DELAYED_FAR_PC_WRITE is its delayed counterpart; PC-plus-XPC
+ * commit (plus countdown arming for the delayed half) belongs to
+ * the CPU retirement route. RESET carries no
  * payload; the software-reset field list, IFR clear, and IPTR-derived
  * program-counter commit belong to the reset applier and the CPU
  * retirement route.
@@ -76,7 +80,9 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_REPEAT_BLOCK_START = 14,
     TI_C54X_OP_EFFECT_IDLE = 15,
     TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE_PAIR = 16,
-    TI_C54X_OP_EFFECT_RESET = 17
+    TI_C54X_OP_EFFECT_RESET = 17,
+    TI_C54X_OP_EFFECT_FAR_PC_WRITE = 18,
+    TI_C54X_OP_EFFECT_DELAYED_FAR_PC_WRITE = 19
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -174,6 +180,16 @@ typedef struct ti_c54x_op_delayed_pc_write_effect {
     uint16_t pmad;
 } ti_c54x_op_delayed_pc_write_effect;
 
+typedef struct ti_c54x_op_far_pc_write_effect {
+    uint16_t pmad;
+    uint8_t page;
+} ti_c54x_op_far_pc_write_effect;
+
+typedef struct ti_c54x_op_delayed_far_pc_write_effect {
+    uint16_t pmad;
+    uint8_t page;
+} ti_c54x_op_delayed_far_pc_write_effect;
+
 typedef struct ti_c54x_op_branch_auxiliary_effect {
     uint8_t ar_index;
     uint16_t value_after;
@@ -202,6 +218,8 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_memory_effect memory;
     ti_c54x_op_pc_write_effect pc_write;
     ti_c54x_op_delayed_pc_write_effect delayed_pc_write;
+    ti_c54x_op_far_pc_write_effect far_pc_write;
+    ti_c54x_op_delayed_far_pc_write_effect delayed_far_pc_write;
     ti_c54x_op_branch_auxiliary_effect branch_auxiliary;
     ti_c54x_op_conditional_skip_effect conditional_skip;
     ti_c54x_op_idle_effect idle;

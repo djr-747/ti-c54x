@@ -97,6 +97,9 @@ const ti_c54x_operand_layout_plan ti_c54x_operand_layout_plans[
         [TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16] = {
             TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16, UINT8_C(2),
             &ti_c54x_branch_pmad16_set},
+        [TI_C54X_OPERAND_LAYOUT_BRANCH_FAR_PMAD] = {
+            TI_C54X_OPERAND_LAYOUT_BRANCH_FAR_PMAD, UINT8_C(2),
+            &ti_c54x_branch_far_pmad_set},
         [TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16] = {
             TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16, UINT8_C(2),
             &ti_c54x_branch_cond_pmad16_set},
@@ -372,6 +375,9 @@ ti_c54x_operand_layout_descriptor_for_id(ti_c54x_operand_layout_id id,
     case TI_C54X_OPERAND_LAYOUT_BRANCH_PMAD16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_branch_pmad16_set;
+    case TI_C54X_OPERAND_LAYOUT_BRANCH_FAR_PMAD:
+        *expected_word_count = UINT8_C(2);
+        return &ti_c54x_branch_far_pmad_set;
     case TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16:
         *expected_word_count = UINT8_C(2);
         return &ti_c54x_branch_cond_pmad16_set;

@@ -10,6 +10,10 @@ ti_c54x_core_sources += src/isa/ops/branch/op_b_pmad.c \
     src/isa/ops/branch/op_banzd.c \
     src/isa/ops/branch/op_branch_sind_common.c \
     src/isa/ops/branch/op_bd.c \
+    src/isa/ops/branch/op_fb_pmad.c \
+    src/isa/ops/branch/op_fbd.c \
+    src/isa/ops/branch/op_fbacc.c \
+    src/isa/ops/branch/op_fbaccd.c \
     src/isa/ops/branch/op_branch_cond_common.c \
     src/isa/ops/branch/op_call_pmad.c \
     src/isa/ops/branch/op_ccd.c \

@@ -200,7 +200,7 @@ check_metadata(void)
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_BCD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == BCD_WORD0_BASE);
-    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFF00));
+    TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFF80));
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(2));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
                        TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16);
@@ -300,9 +300,11 @@ check_effects_and_parity(void)
 static void
 check_all_codes_classified(void)
 {
-    /* Every condition byte is either implemented (OK with oracle
-     * outcome) or deferred (transactional INVALID_OPERAND). */
-    for (uint32_t raw = 0U; raw <= UINT32_C(0xFF); ++raw) {
+    /* Every condition code in the tightened 7-bit field is either
+     * implemented (OK with oracle outcome) or deferred
+     * (transactional INVALID_OPERAND). Words with bit 7 set
+     * belong to the P3-S117 far rows, not to this leaf. */
+    for (uint32_t raw = 0U; raw <= UINT32_C(0x7F); ++raw) {
         const uint8_t cond = (uint8_t)raw;
         const ti_c54x_decoded_instruction instruction =
             decode(cond, UINT16_C(0x2000));

@@ -4,7 +4,7 @@
 The 205-form denominator counts TI summary-table families, never delay
 slots. Every DELAYED-subset catalog binding must share its form with a
 non-delayed sibling under the same form ID. Future delayed rows
-(RPTBD, FBD, RETFD, RC-family RCD) extend
+(RPTBD, RETFD, FCALLD) extend
 EXPECTED_DELAYED and compose the same way; a delayed-only form ID is a
 denominator change and must fail here first.
 """
@@ -23,6 +23,8 @@ EXPECTED_DELAYED = {
     "RETD": "FORM-T2-15-04",
     "RETED": "FORM-T2-15-05",
     "RCD": "FORM-T2-15-03",
+    "FBD": "FORM-T2-12-05",
+    "FBACCD": "FORM-T2-12-06",
 }
 
 

@@ -1552,8 +1552,11 @@
       "mnemonic": "FB",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "FB_PMAD",
+        "FBD"
+      ]
     },
     {
       "id": "FORM-T2-12-06",
@@ -1563,8 +1566,11 @@
       "mnemonic": "FBACC",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "FBACC",
+        "FBACCD"
+      ]
     },
     {
       "id": "FORM-T2-13-01",
@@ -3925,6 +3931,18 @@
       "addressing_subset": "ABSOLUTE_PMAD_DELAYED"
     },
     {
+      "catalog_symbol": "FB_PMAD",
+      "form_id": "FORM-T2-12-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_PMAD_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "FBD",
+      "form_id": "FORM-T2-12-05",
+      "coverage": "SUBSET",
+      "addressing_subset": "ABSOLUTE_PMAD_DELAYED"
+    },
+    {
       "catalog_symbol": "BC_PMAD",
       "form_id": "FORM-T2-12-04",
       "coverage": "SUBSET",
@@ -4023,6 +4041,18 @@
     {
       "catalog_symbol": "BACCD",
       "form_id": "FORM-T2-12-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_DELAYED"
+    },
+    {
+      "catalog_symbol": "FBACC",
+      "form_id": "FORM-T2-12-06",
+      "coverage": "SUBSET",
+      "addressing_subset": "ACCUMULATOR_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "FBACCD",
+      "form_id": "FORM-T2-12-06",
       "coverage": "SUBSET",
       "addressing_subset": "ACCUMULATOR_DELAYED"
     },

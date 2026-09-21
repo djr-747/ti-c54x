@@ -45,3 +45,11 @@ $(eval $(call ti_c54x_add_test,cpu_rete,cpu/isa/branch,test_cpu_rete.c))
 $(eval $(call ti_c54x_add_test,cpu_retd,cpu/isa/branch,test_cpu_retd.c))
 # W67C RED contract: CALLD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_calld,cpu/isa/branch,test_cpu_calld.c))
+# P3-S117 RED contract: FB CPU retirement with XPC commit.
+$(eval $(call ti_c54x_add_test,cpu_fb,cpu/isa/branch,test_cpu_fb.c))
+# P3-S117 RED contract: FBD CPU retirement with XPC commit.
+$(eval $(call ti_c54x_add_test,cpu_fbd,cpu/isa/branch,test_cpu_fbd.c))
+# P3-S117 RED contract: FBACC CPU retirement with XPC commit.
+$(eval $(call ti_c54x_add_test,cpu_fbacc,cpu/isa/branch,test_cpu_fbacc.c))
+# P3-S117 RED contract: FBACCD CPU retirement with XPC commit.
+$(eval $(call ti_c54x_add_test,cpu_fbaccd,cpu/isa/branch,test_cpu_fbaccd.c))

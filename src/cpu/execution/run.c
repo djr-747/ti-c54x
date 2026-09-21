@@ -27,6 +27,7 @@
 #include "sequencer/program_pc_target.h"
 #include "sequencer/reset/reset_apply.h"
 #include "repeat_activate.h"
+#include "retire_pc_write.h"
 #include "run_support.h"
 #include "take_issue.h"
 
@@ -440,82 +441,51 @@ ti_c54x_run_result ti_c54x_cpu_run(ti_c54x_cpu *cpu,
             continue;
         }
 
-        /* PC_WRITE effects carry no status, accumulator, or T-register
-         * payload, so they bypass the effect transaction and the
-         * sequential bridge plan. The target planner validates the
-         * absolute successor and the apply step commits it only when
-         * the live carrier still matches the frozen source, which is
-         * the whole atomic commit for this effect kind. A PC_WRITE
-         * inside delay slots is TI-forbidden; the inner redirect
-         * deterministically cancels any pending countdown. */
-        if (effect.kind == TI_C54X_OP_EFFECT_PC_WRITE) {
-            ti_c54x_program_pc_target_effect target_effect;
-            ti_c54x_program_pc_target_status target_status;
-            bool took_effect = false;
+        /* Plain and far immediate PC writes retire through the
+         * shared PC-target helper; the far form additionally
+         * commits its copied page to XPC once the PC commit is
+         * staged. */
+        if (effect.kind == TI_C54X_OP_EFFECT_PC_WRITE ||
+            effect.kind == TI_C54X_OP_EFFECT_FAR_PC_WRITE) {
+            const bool far =
+                effect.kind == TI_C54X_OP_EFFECT_FAR_PC_WRITE;
+            ti_c54x_run_result stop = ti_c54x_run_invalid_result();
 
-            target_status = ti_c54x_program_pc_target_plan(
-                cpu->arch_state.pc_word, effect.payload.pc_write.pmad,
-                &target_effect);
-            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
-                return ti_c54x_run_stop_result(cpu, ti_c54x_run_target_status_to_stop(target_status),
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            candidate_pc = cpu->arch_state.pc_word;
-            target_status = ti_c54x_program_pc_target_apply(
-                &candidate_pc, &target_effect);
-            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
-                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            cpu->arch_state.pc_word = candidate_pc;
-            cpu->instructions_retired++;
-            instructions_retired++;
-            if (ti_c54x_run_advance_delayed_branch(
-                    cpu, packet.instruction.bundle.program_word_count,
-                    true, &took_effect) !=
-                TI_C54X_SEQUENCER_DELAYED_BRANCH_OK) {
-                return ti_c54x_run_stop_result(cpu, TI_C54X_STOP_INVALID_STATE,
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
+            if (!ti_c54x_run_retire_pc_write(
+                    cpu,
+                    far ? effect.payload.far_pc_write.pmad
+                        : effect.payload.pc_write.pmad,
+                    far,
+                    far ? effect.payload.far_pc_write.page : UINT8_C(0),
+                    candidate_pc,
+                    packet.instruction.bundle.program_word_count,
+                    instructions_attempted, &instructions_retired,
+                    &stop)) {
+                return stop;
             }
             continue;
         }
 
-        /* Delayed PC writes retire with sequential advance and arm the
-         * CPU-owned countdown with the copied pmad, replacing any
-         * pending countdown under the last-wins rule; the arming
-         * instruction consumes no delay-slot words itself. The target
-         * planner validates the absolute successor before any commit;
-         * a full 16-bit pmad is always encodable, so planning fails
-         * only on caller-argument defects. A delayed branch inside
-         * delay slots is TI-forbidden; the inner arming wins
-         * deterministically here. No MEMORY endpoint, no WAIT/FAULT,
-         * and no status/accumulator/T effect is admitted. */
-        if (effect.kind == TI_C54X_OP_EFFECT_DELAYED_PC_WRITE) {
-            ti_c54x_program_pc_target_effect target_effect;
-            ti_c54x_program_pc_target_status target_status;
+        /* Plain and far delayed PC writes retire through the shared
+         * delayed helper, which arms the countdown and commits the
+         * far page to XPC with the arming retirement. */
+        if (effect.kind == TI_C54X_OP_EFFECT_DELAYED_PC_WRITE ||
+            effect.kind == TI_C54X_OP_EFFECT_DELAYED_FAR_PC_WRITE) {
+            const bool far =
+                effect.kind == TI_C54X_OP_EFFECT_DELAYED_FAR_PC_WRITE;
+            ti_c54x_run_result stop = ti_c54x_run_invalid_result();
 
-            target_status = ti_c54x_program_pc_target_plan(
-                cpu->arch_state.pc_word,
-                effect.payload.delayed_pc_write.pmad, &target_effect);
-            if (target_status != TI_C54X_PROGRAM_PC_TARGET_OK) {
-                return ti_c54x_run_stop_result(cpu, ti_c54x_run_target_status_to_stop(target_status),
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
+            if (!ti_c54x_run_retire_delayed_pc_write(
+                    cpu,
+                    far ? effect.payload.delayed_far_pc_write.pmad
+                        : effect.payload.delayed_pc_write.pmad,
+                    far,
+                    far ? effect.payload.delayed_far_pc_write.page
+                        : UINT8_C(0),
+                    candidate_pc, bridge_status, instructions_attempted,
+                    &instructions_retired, &stop)) {
+                return stop;
             }
-            if (bridge_status != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-                return ti_c54x_run_stop_result(cpu, ti_c54x_run_bridge_status_to_stop(bridge_status),
-                                   TI_C54X_BUS_OK, instructions_attempted,
-                                   instructions_retired);
-            }
-            cpu->arch_state.pc_word = candidate_pc;
-            cpu->instructions_retired++;
-            instructions_retired++;
-            (void)ti_c54x_sequencer_delayed_branch_arm(
-                &cpu->delayed_branch,
-                effect.payload.delayed_pc_write.pmad);
             continue;
         }
 

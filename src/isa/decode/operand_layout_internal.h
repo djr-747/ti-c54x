@@ -65,6 +65,7 @@ extern const ti_c54x_operand_layout_set ti_c54x_arf_mod_set;
 extern const ti_c54x_operand_layout_set ti_c54x_arf_set;
 extern const ti_c54x_operand_layout_set ti_c54x_branch_cond8_set;
 extern const ti_c54x_operand_layout_set ti_c54x_branch_cond_pmad16_set;
+extern const ti_c54x_operand_layout_set ti_c54x_branch_far_pmad_set;
 extern const ti_c54x_operand_layout_set ti_c54x_branch_sind_pmad16_set;
 extern const ti_c54x_operand_layout_set ti_c54x_branch_pmad16_set;
 extern const ti_c54x_operand_layout_set ti_c54x_condition_arf_set;

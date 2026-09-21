@@ -1,11 +1,13 @@
 /*
  * Module contract
  *
- * Owns: executable proof that all 256 two-word BCD first
- * words classify through the generic decoder, copy their complete
+ * Owns: executable proof that all 128 two-word BCD first
+ * words (condition byte 0x00-0x7F under the tightened 0xFF80 mask)
+ * classify through the generic decoder, copy their complete
  * bundles and scalar metadata, extract the condition code then the
  * raw 16-bit pmad extension, pin the non-delayed BC_PMAD sibling
- * word, audit fixed-bit near-miss siblings, and reject malformed
+ * word, pin the bit-7 halves (0x80-0xFF) as FBD far siblings,
+ * audit fixed-bit near-miss siblings, and reject malformed
  * inputs transactionally.
  * Does not own: catalog generation, condition evaluation, PC writes,
  * CPU/state mutation, fetch or bus behavior, sequencing, timing, or
@@ -158,11 +160,13 @@ test_non_delayed_sibling(void)
 static void
 test_fixed_bit_near_misses(void)
 {
-    /* Mask 0xFF00 leaves only the condition byte variable. Clearing
-     * fixed bit 9 lands on the BC_PMAD sibling, setting fixed bit 8
-     * lands on the W72 CCD row, flipping fixed bit 12 lands on
-     * LD_IMMEDIATE_DP, flipping fixed bit 10 lands on RETD, and
-     * flipping fixed bit 15 lands on the S3r MACD_SMEM row;
+    /* Mask 0xFF80 leaves the 7-bit condition field variable.
+     * Clearing fixed bit 9 lands on the BC_PMAD sibling, setting
+     * fixed bit 8 lands on the W72 CCD row, setting fixed bit 7
+     * lands on the P3-S117 FBD far sibling (pinned below),
+     * flipping fixed bit 12 lands on LD_IMMEDIATE_DP, flipping
+     * fixed bit 10 lands on RETD, and flipping fixed bit 15 lands
+     * on the S3r MACD_SMEM row;
      * clearing fixed bit 11 lands on the P3-S27 ADD_LK_SHIFT
      * sibling (pinned below); flipping fixed bit 13 lands on the
      * P3-S116 ST_PARALLEL_MAS row (pinned below);
@@ -189,6 +193,17 @@ test_fixed_bit_near_misses(void)
                        TI_C54X_OPCODE_ID_LD_IMMEDIATE_DP);
     TI_C54X_TEST_CHECK(retd_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(retd_sibling.id == TI_C54X_OPCODE_ID_RETD);
+
+    /* Setting fixed bit 7 lands on 0xFA80, the P3-S117 FBD far
+     * row carrying page 0x00. */
+    {
+        const ti_c54x_decode_result fbd_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(BCD_VALUE ^ UINT16_C(0x0080)));
+
+        TI_C54X_TEST_CHECK(fbd_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(fbd_sibling.id == TI_C54X_OPCODE_ID_FBD);
+    }
 
     /* Flipping fixed bit 13 lands on 0xDA00, the P3-S116
      * ST_PARALLEL_MAS row. */
@@ -242,12 +257,24 @@ main(void)
         UINT16_C(0x0000), UINT16_C(0x0002), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0xFFFF)};
 
-    /* Exhaustive over the condition byte for representative targets. */
-    for (uint32_t cond = 0U; cond <= UINT32_C(0xFF); ++cond) {
+    /* Exhaustive over the tightened condition byte (bit 7 clear)
+     * for representative targets. */
+    for (uint32_t cond = 0U; cond <= UINT32_C(0x7F); ++cond) {
         for (size_t index = 0U;
              index < sizeof(pmads) / sizeof(pmads[0]); ++index) {
             check_case((uint8_t)cond, pmads[index]);
         }
+    }
+    /* The bit-7 halves decode as FBD far siblings carrying the
+     * 7-bit page. */
+    for (uint32_t page = 0U; page <= UINT32_C(0x7F); ++page) {
+        const uint16_t word = (uint16_t)(UINT16_C(0xFA80) | page);
+        const ti_c54x_decode_result first = ti_c54x_decode_first_word(word);
+
+        TI_C54X_TEST_CHECK(first.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(first.id == TI_C54X_OPCODE_ID_FBD);
+        TI_C54X_TEST_CHECK(first.first_word == word);
+        TI_C54X_TEST_CHECK(first.program_word_count == UINT8_C(2));
     }
     test_malformed_inputs_reject_transactionally();
     test_non_delayed_sibling();

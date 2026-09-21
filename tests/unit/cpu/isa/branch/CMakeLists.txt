@@ -45,3 +45,11 @@ ti_c54x_add_unit_test(cpu_calad test_cpu_calad.c)
 ti_c54x_add_unit_test(cpu_retd test_cpu_retd.c)
 # W67C RED contract: CALLD CPU retirement.
 ti_c54x_add_unit_test(cpu_calld test_cpu_calld.c)
+# P3-S117 RED contract: FB CPU retirement with XPC commit.
+ti_c54x_add_unit_test(cpu_fb test_cpu_fb.c)
+# P3-S117 RED contract: FBD CPU retirement with XPC commit.
+ti_c54x_add_unit_test(cpu_fbd test_cpu_fbd.c)
+# P3-S117 RED contract: FBACC CPU retirement with XPC commit.
+ti_c54x_add_unit_test(cpu_fbacc test_cpu_fbacc.c)
+# P3-S117 RED contract: FBACCD CPU retirement with XPC commit.
+ti_c54x_add_unit_test(cpu_fbaccd test_cpu_fbaccd.c)

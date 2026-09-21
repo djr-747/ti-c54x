@@ -63,7 +63,7 @@ static ti_c54x_op_status bc_pmad_extract(
     metadata = ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_BC_PMAD);
     if (metadata == NULL || metadata->id != TI_C54X_OPCODE_ID_BC_PMAD ||
         metadata->first_word_value != UINT16_C(0xF800) ||
-        metadata->first_word_mask != UINT16_C(0xFF00) ||
+        metadata->first_word_mask != UINT16_C(0xFF80) ||
         metadata->program_word_count != UINT8_C(2) ||
         metadata->operand_layout !=
             TI_C54X_OPERAND_LAYOUT_BRANCH_COND_PMAD16 ||
@@ -76,7 +76,7 @@ static ti_c54x_op_status bc_pmad_extract(
         instruction->input_resources != metadata->input_resources ||
         instruction->bundle.program_word_count != UINT8_C(2) ||
         (uint16_t)(instruction->bundle.program_words[0] &
-                   UINT16_C(0xFF00)) != UINT16_C(0xF800)) {
+                   UINT16_C(0xFF80)) != UINT16_C(0xF800)) {
         return TI_C54X_OP_STATUS_INVALID_DECODE;
     }
 
