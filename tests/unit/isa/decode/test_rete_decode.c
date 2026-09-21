@@ -140,12 +140,13 @@ test_fixed_bit_near_misses(void)
      * row. Clearing fixed bit 15 lands in the P3-S6 PORTR indirect
      * row (pinned below). Clearing fixed bit 7 lands in the P3-S39
      * SFTA_ACC row (pinned below). Clearing fixed bit 5 lands in
-     * the P3-S105 TRAP_K row (pinned below). */
+     * the P3-S105 TRAP_K row (pinned below); flipping fixed bit 13
+     * lands on the P3-S116 ST_PARALLEL_MAC sibling (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0010),
         UINT16_C(0x0100),
-        UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000),
         UINT16_C(0x4000)};
     const ti_c54x_decode_result reted_sibling =
         ti_c54x_decode_first_word(
@@ -212,6 +213,18 @@ test_fixed_bit_near_misses(void)
 
         TI_C54X_TEST_CHECK(cala_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(cala_sibling.id == TI_C54X_OPCODE_ID_CALA);
+    }
+
+    /* Flipping fixed bit 13 lands on 0xD4EB, the P3-S116
+     * ST_PARALLEL_MAC row. */
+    {
+        const ti_c54x_decode_result mac_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETE_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_sibling.id ==
+                           TI_C54X_OPCODE_ID_ST_PARALLEL_MAC);
     }
 
     for (size_t index = 0U;

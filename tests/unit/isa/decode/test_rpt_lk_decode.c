@@ -138,11 +138,25 @@ test_fixed_bit_near_misses(void)
      * lands on the P3-S39 SFTA_ACC sibling (pinned below); all
      * other single-bit flips must miss every row; flipping bit 4
      * lands on the P3-S27 ADD_LK_16 sibling (pinned below); bit 0
-     * lands on the P3-S98 RPTZ_DST_LK sibling (pinned below). */
+     * lands on the P3-S98 RPTZ_DST_LK sibling (pinned below);
+     * flipping fixed bit 13 lands on the P3-S116 ST_PARALLEL_MAC
+     * sibling (pinned below). */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0008),
-        UINT16_C(0x0100), UINT16_C(0x0200),
-        UINT16_C(0x2000)};
+        UINT16_C(0x0100), UINT16_C(0x0200)};
+
+    /* This former near-miss is the P3-S116 ST_PARALLEL_MAC sibling:
+     * 0xF070 ^ 0x2000 = 0xD070 classifies into the
+     * ST_PARALLEL_MAC row. */
+    {
+        const ti_c54x_decode_result mac_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RPT_LK_VALUE ^ UINT16_C(0x2000)));
+        TI_C54X_TEST_CHECK(mac_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_sibling.id ==
+                           TI_C54X_OPCODE_ID_ST_PARALLEL_MAC);
+    }
 
     /* This former near-miss is the P3-S108 FIRS sibling:
      * 0xF070 ^ 0x1000 = 0xE070 classifies into the

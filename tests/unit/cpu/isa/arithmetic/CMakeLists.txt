@@ -21,3 +21,4 @@ ti_c54x_add_unit_test(cpu_lms test_cpu_lms.c)
 ti_c54x_add_unit_test(cpu_firs test_cpu_firs.c)
 # P3-S115 RED contract: ST parallel-ADD/SUB retirement.
 ti_c54x_add_unit_test(cpu_st_parallel test_cpu_st_parallel.c)
+ti_c54x_add_unit_test(cpu_st_parallel_mac test_cpu_st_parallel_mac.c)

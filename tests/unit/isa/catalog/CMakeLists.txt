@@ -293,3 +293,5 @@ ti_c54x_add_unit_test(subc_smem_metadata
 # P3-S115 RED contract: ST parallel-ADD/SUB metadata.
 ti_c54x_add_unit_test(st_parallel_metadata
                       test_st_parallel_metadata.c)
+ti_c54x_add_unit_test(st_parallel_mac_metadata
+                      test_st_parallel_mac_metadata.c)

@@ -9039,6 +9039,60 @@
         "printed_page_end": "4-185"
       },
       "assertion": "SPRU172C Table 2-24 lists the parallel store-and-subtract form ST||SUB. The opcode diagram (1100_01SD_XXXX_YYYY, p. 4-185) pins one row at 0xC400 under mask 0xFC00 with S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0. The ST half stores the ASM-shifted src accumulator to Ymem while the SUB half subtracts the sibling accumulator from the SXM-widened X word shifted left 16 into dst; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, and ASM and affects C and the destination overflow flag. The worked example (ST A,*AR3- || SUB *AR5+0%,B) pins B=FF FBE0 0000 from A=FF 8421 0000 with src preserved, X=0x8001, SXM=1, ASM=1, Y word 0x0842, AR5 0300 to 0302, and AR3 01FF to 01FE. The parallel row is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST parallel MAC",
+        "printed_page_start": "4-180",
+        "printed_page_end": "4-180"
+      },
+      "assertion": "SPRU172C Table 2-25 lists the parallel store-and-multiply forms ST||MAC and ST||MACR with the shared expression dst = dst + T * Xmem (rounded under R). The opcode diagram (1101_0RSD_XXXX_YYYY, p. 4-180) pins one shared row at 0xD000 under mask 0xF800 with R at bit 10, S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0. The ST half stores the ASM-shifted src accumulator to Ymem (the section Description's (ASM - 16) shift, confirmed by the worked vectors; the Expression line prints ASM * 16, the same typo family recorded for Table 2-24) while the MAC half accumulates live-T times the Xmem word into dst, rounding (add 2^15, clear bits 15:0) under R; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, ASM, and FRCT and affects C and OVdst. The worked Example 1 (ST A,*AR4- || MAC *AR5,B) pins A=00 0011 1111 kept with B=00 010C 9511 from B=00 0000 1111, T=0x0400 kept, ASM=5, FRCT=0, Y word 0x0222, AR4 0100 to 00FF, and AR5 held at 0200; Example 2 (ST A,*AR4+ || MACR *AR5+,B) pins B=00 010D 0000 with Y word 0x0001, ASM=0x1C, and both ARs post-incremented. The parallel row is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST parallel MAS",
+        "printed_page_start": "4-182",
+        "printed_page_end": "4-182"
+      },
+      "assertion": "SPRU172C Table 2-25 lists the parallel store-and-multiply forms ST||MAS and ST||MASR with the shared expression dst = dst - T * Xmem (rounded under R). The opcode diagram (1101_1RSD_XXXX_YYYY, p. 4-182) pins one shared row at 0xD800 under mask 0xF800 with R at bit 10, S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0. The ST half stores the ASM-shifted src accumulator to Ymem (the section Description's (ASM - 16) shift, confirmed by the worked vectors) while the MAS half subtracts live-T times the Xmem word from dst, rounding (add 2^15, clear bits 15:0) under R; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, ASM, and FRCT and affects C and OVdst. The worked Example 1 (ST A,*AR4+ || MAS *AR5,B) pins A=00 0011 1111 kept with B=FF FEF3 8D11 from B=00 0000 1111, T=0x0400 kept, ASM=5, FRCT=0, Y word 0x0222, AR4 0100 to 0101, and AR5 held at 0200; Example 2 (ST A,*AR4+ || MASR *AR5+,B) pins B=FF FEF4 0000 with Y word 0x0022, ASM=1, and both ARs post-incremented. The parallel row is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST parallel MPY",
+        "printed_page_start": "4-184",
+        "printed_page_end": "4-184"
+      },
+      "assertion": "SPRU172C Table 2-25 lists the parallel store-and-multiply form ST||MPY with the expression dst = T * Xmem. The opcode diagram (1100_11SD_XXXX_YYYY, p. 4-184) pins one row at 0xCC00 under mask 0xFC00 with S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0; there is no rounding bit. The ST half stores the ASM-shifted src accumulator to Ymem (the section Description's (ASM - 16) shift, confirmed by the worked vector) while the MPY half replaces dst with live-T times the Xmem word; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, ASM, and FRCT and affects C and OVdst. The worked example (ST A,*AR3+ || MPY *AR5+,B) pins A=FF 8421 1234 kept with B=00 2000 0000, T=0x4000 kept, ASM=0, FRCT=1, Y word 0x8421, AR3 0200 to 0201, and AR5 0300 to 0301. The parallel row is absent from Table 2-28 and is repeatable."
     }
   ],
   "requirements": [
@@ -21409,6 +21463,54 @@
       "test_ids": [
         "T-COMMON-P3-S115-ST-PARALLEL-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ST src,Ymem || MAC[R]/MAS[R]/MPY Xmem,dst as catalog MASKED rows ST_PARALLEL_MAC at 0xD000 and ST_PARALLEL_MAS at 0xD800 under mask 0xF800 with the ROUND_SRC_DEST_DUALXY layout plus ST_PARALLEL_MPY at 0xCC00 under mask 0xFC00 with the SRC_DEST_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_ASM_T_REGISTER_STATUS_FRCT_OVM input resources, and ELIGIBLE repeatability: the checked and trusted leaves extract R/S/D/dualxy and stage one dual WORD16 WRITE carrying the leaf-frozen STH-by-ASM value of src with the single-read completion set and no T load. The completion runs the multiply core over live-T times the X-side word with the D-selected accumulator as addend base (MAC adds, MAS subtracts, MPY replaces dst; R rounds per the LD-parallel shape) and publishes one accumulator write with C and TC preserved and OV written on 32-bit overflow with OVM saturation. Null arguments, crossed rows, and unknown accumulators/ASM/T/FRCT/OVM/ARs reject transactionally; src is preserved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180",
+        "E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182",
+        "E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S116-ST-PARALLEL-MAC-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire ST src,Ymem || MAC[R]/MAS[R]/MPY Xmem,dst through the store-compute child root with the X READ issued before the Y WRITE carrying the leaf-frozen ST value, the single-read completion on the X word with the accumulator effect, shared AR post-access commits and one-word PC advance, live-T preservation with no T load, and FRCT/OVM carried from the input snapshot.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180",
+        "E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182",
+        "E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S116-ST-PARALLEL-MAC-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register ST_PARALLEL_MAC at 0xD000 under mask 0xF800 and ST_PARALLEL_MAS at 0xD800 under mask 0xF800 as one-word forms with the ROUND_SRC_DEST_DUALXY layout plus ST_PARALLEL_MPY at 0xCC00 under mask 0xFC00 with the SRC_DEST_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_ASM_T_REGISTER_STATUS_FRCT_OVM inputs, and ELIGIBLE repeatability, covering all 2048 first-word encodings per MAC/MAS row and 1024 for the MPY row with UNKNOWN below-neighbor 0xCBFF and the FIRS row above at 0xE000.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180",
+        "E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182",
+        "E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S116-ST-PARALLEL-MAC-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31466,6 +31568,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S115-ST-PARALLEL-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S116-ST-PARALLEL-MAC-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_st_parallel_mac_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_parallel_mac_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S116-ST-PARALLEL-MAC-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_st_parallel_mac.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_st_parallel_mac"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S116-ST-PARALLEL-MAC-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_parallel_mac_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_parallel_mac_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-CATALOG"
       ]
     }
   ]

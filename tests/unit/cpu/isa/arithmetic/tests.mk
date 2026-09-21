@@ -22,3 +22,4 @@ $(eval $(call ti_c54x_add_test,cpu_lms,cpu/isa/arithmetic,test_cpu_lms.c))
 $(eval $(call ti_c54x_add_test,cpu_firs,cpu/isa/arithmetic,test_cpu_firs.c))
 # P3-S115 RED contract: ST parallel-ADD/SUB retirement.
 $(eval $(call ti_c54x_add_test,cpu_st_parallel,cpu/isa/arithmetic,test_cpu_st_parallel.c))
+$(eval $(call ti_c54x_add_test,cpu_st_parallel_mac,cpu/isa/arithmetic,test_cpu_st_parallel_mac.c))

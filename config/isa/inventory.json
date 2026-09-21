@@ -2664,9 +2664,11 @@
       "table_ordinal": 1,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_MAC"
+      ]
     },
     {
       "id": "FORM-T2-25-02",
@@ -2675,9 +2677,11 @@
       "table_ordinal": 2,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_MAC"
+      ]
     },
     {
       "id": "FORM-T2-25-03",
@@ -2686,9 +2690,11 @@
       "table_ordinal": 3,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_MAS"
+      ]
     },
     {
       "id": "FORM-T2-25-04",
@@ -2697,9 +2703,11 @@
       "table_ordinal": 4,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_MAS"
+      ]
     },
     {
       "id": "FORM-T2-25-05",
@@ -2708,9 +2716,11 @@
       "table_ordinal": 5,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_MPY"
+      ]
     },
     {
       "id": "FORM-T2-26-01",
@@ -5213,6 +5223,36 @@
     {
       "catalog_symbol": "ST_PARALLEL_SUB",
       "form_id": "FORM-T2-24-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_MAC",
+      "form_id": "FORM-T2-25-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_MAC",
+      "form_id": "FORM-T2-25-02",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_MAS",
+      "form_id": "FORM-T2-25-03",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_MAS",
+      "form_id": "FORM-T2-25-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_MPY",
+      "form_id": "FORM-T2-25-05",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

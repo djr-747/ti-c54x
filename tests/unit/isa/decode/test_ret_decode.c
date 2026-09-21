@@ -138,14 +138,13 @@ test_fixed_bit_near_misses(void)
      * ADD_ACC_SHIFT, and flipping fixed bit 12 lands on the RPT_K
      * row. Flipping any low-byte bit lands in the RC row
      * (pinned below); flipping fixed bit 8 lands on the P3-S4 XC
-     * row (pinned below); all other fixed-bit flips must miss
-     * every row; clearing fixed bit 14 lands on MAS_DUAL_M0_M0
-     * (S3i claims the 0xB8xx neighborhood; the UNKNOWN loop drops
-     * that mask under the cross-slice hazard rule); clearing
-     * fixed bit 15 lands on the MVPD_DIRECT row
-     * (pinned below). */
-    static const uint16_t unknown_masks[] = {
-        UINT16_C(0x2000)};
+     * row (pinned below); flipping fixed bit 13 lands on the
+     * P3-S116 ST_PARALLEL_MAS sibling (pinned below); all other
+     * fixed-bit flips must miss every row; clearing fixed bit 14
+     * lands on MAS_DUAL_M0_M0 (S3i claims the 0xB8xx neighborhood;
+     * the UNKNOWN loop drops that mask under the cross-slice
+     * hazard rule); clearing fixed bit 15 lands on the
+     * MVPD_DIRECT row (pinned below). */
     static const uint16_t rc_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0010), UINT16_C(0x0020),
@@ -182,16 +181,16 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(mvdp_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(mvdp_sibling.id == TI_C54X_OPCODE_ID_MVPD_DIRECT);
 
-    for (size_t index = 0U;
-         index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
-         ++index) {
-        const ti_c54x_decode_result result =
+    /* This former near-miss is the P3-S116 ST_PARALLEL_MAS sibling:
+     * 0xFC00 ^ 0x2000 = 0xDC00 classifies into the
+     * ST_PARALLEL_MAS row. */
+    {
+        const ti_c54x_decode_result mas_sibling =
             ti_c54x_decode_first_word(
-                (uint16_t)(RET_VALUE ^ unknown_masks[index]));
+                (uint16_t)(RET_VALUE ^ UINT16_C(0x2000)));
 
-        TI_C54X_TEST_CHECK(result.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+        TI_C54X_TEST_CHECK(mas_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mas_sibling.id == TI_C54X_OPCODE_ID_ST_PARALLEL_MAS);
     }
 
     /* Flipping any low-byte bit lands in the RC row. */

@@ -138,13 +138,14 @@ test_fixed_bit_near_misses(void)
      * pinned below); setting fixed bit 11 lands in the RCD row
      * (pinned below); clearing fixed bit 3 lands in the CALAD row
      * (pinned below); clearing fixed bit 7 lands in the P3-S39
-     * SFTA_ACC row (pinned below); all other fixed-bit flips must
-     * miss every row. */
+     * SFTA_ACC row (pinned below); flipping fixed bit 13 lands on
+     * the P3-S116 ST_PARALLEL_MAC sibling (pinned below); all
+     * other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0010), UINT16_C(0x0020),
         UINT16_C(0x0100),
-        UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x1000),
         UINT16_C(0x4000), UINT16_C(0x8000)};
     const ti_c54x_decode_result cmpr_sibling =
         ti_c54x_decode_first_word(
@@ -162,6 +163,18 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(sftl_sibling.id == TI_C54X_OPCODE_ID_SFTL_ACC);
     TI_C54X_TEST_CHECK(sfta_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
+
+    /* This former near-miss is the P3-S116 ST_PARALLEL_MAC sibling:
+     * 0xF6EB ^ 0x2000 = 0xD6EB classifies into the
+     * ST_PARALLEL_MAC row. */
+    {
+        const ti_c54x_decode_result mac_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RETED_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_sibling.id == TI_C54X_OPCODE_ID_ST_PARALLEL_MAC);
+    }
 
     /* Setting fixed bit 11 lands in the RCD row. */
     {

@@ -139,10 +139,12 @@ test_fixed_bit_near_misses(void)
      * LD_IMMEDIATE_ASM row, bit 9 on the P3-S51 FRAME row, bit 10
      * on LD_K, bit 12 on RET (which shadows the RC row at exactly
      * 0xFC00), bit 14 on the P3-S114 LD parallel-MAS row (pinned
-     * below), and bit 15 on BANZ (each pinned below); all other
-     * fixed-bit flips must miss every row. */
+     * below), and bit 15 on BANZ (each pinned below); flipping
+     * fixed bit 13 lands on the P3-S116 ST_PARALLEL_MPY sibling
+     * (pinned below); all other fixed-bit flips must miss every
+     * row. */
     static const uint16_t unknown_masks[] = {
-        UINT16_C(0x0800), UINT16_C(0x2000)};
+        UINT16_C(0x0800)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -154,6 +156,18 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    /* This former near-miss is the P3-S116 ST_PARALLEL_MPY sibling:
+     * 0xEC00 ^ 0x2000 = 0xCC00 classifies into the
+     * ST_PARALLEL_MPY row. */
+    {
+        const ti_c54x_decode_result mpy_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(RPT_K_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(mpy_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mpy_sibling.id == TI_C54X_OPCODE_ID_ST_PARALLEL_MPY);
     }
 
     /* Flipping fixed bit 14 lands on 0xAC00, the P3-S114 LD

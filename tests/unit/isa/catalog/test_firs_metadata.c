@@ -24,7 +24,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 364);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 367);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
     TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xE000));
@@ -66,9 +66,10 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0xDFFF is UNKNOWN; 0xE100 is LMS, the upper TI neighbor. */
+    /* 0xCBFF is UNKNOWN (P3-S116 claims 0xCC00 up through 0xDFFF);
+     * 0xE100 is LMS, the upper TI neighbor. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xDFFF)) ==
+                           UINT16_C(0xCBFF)) ==
                        TI_C54X_OPCODE_ID_UNKNOWN);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0xE000)) ==

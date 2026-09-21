@@ -33,7 +33,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_ST_T_SMEM);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 364);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 367);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_ST_T_SMEM);
     TI_C54X_TEST_CHECK(metadata->first_word_value == ST_T_VALUE);
@@ -86,11 +86,11 @@ test_fixed_bit_near_misses_are_unknown(void)
      * SUB_SMEM_TS word asserted below; setting bit 12 lands the
      * P3-S49 STRCD_XMEM_COND sibling (asserted below); setting
      * bit 13 lands the P3-S114 LD parallel-MAS row (asserted
-     * below). */
+     * below); setting bit 14 lands the P3-S116 ST parallel-MPY
+     * row (asserted below). */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0100), UINT16_C(0x0200), UINT16_C(0x0400),
-        UINT16_C(0x0800),
-        UINT16_C(0x4000)};
+        UINT16_C(0x0800)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -133,6 +133,15 @@ test_fixed_bit_near_misses_are_unknown(void)
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            (uint16_t)(ST_T_VALUE ^ UINT16_C(0x1000))) ==
                        TI_C54X_OPCODE_ID_STRCD_XMEM_COND);
+
+    /* Setting bit 14 lands on 0xCC90, claimed by the P3-S116
+     * ST_PARALLEL_MPY row: a valid cross-row near miss, not an
+     * overaccept. */
+    TI_C54X_TEST_CHECK(!matches_st_t(
+        (uint16_t)(ST_T_VALUE ^ UINT16_C(0x4000))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(ST_T_VALUE ^ UINT16_C(0x4000))) ==
+                       TI_C54X_OPCODE_ID_ST_PARALLEL_MPY);
 
     /* Flipping bit 15 lands on 0x0C90, claimed by the P3-S19
      * SUB_SMEM_TS row: a valid cross-row near miss, not an

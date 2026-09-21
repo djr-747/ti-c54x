@@ -50,3 +50,4 @@ ti_c54x_add_unit_test(neg_acc_ops test_neg_acc.c)
 ti_c54x_add_unit_test(norm_acc_ops test_norm_acc.c)
 # P3-S115 RED contract: ST parallel-ADD/SUB effects.
 ti_c54x_add_unit_test(st_parallel_ops test_st_parallel_ops.c)
+ti_c54x_add_unit_test(st_parallel_mac_ops test_st_parallel_mac_ops.c)

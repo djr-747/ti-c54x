@@ -164,6 +164,9 @@ test_fixed_bit_near_misses(void)
         /* 0xF48A (fixed bit 3 set) is the S3w MASA_T encoding
          * with S=0 (src A), D=0 (dst A), R=0. */
         {UINT16_C(0x0008), TI_C54X_OPCODE_ID_MASA_T},
+        /* 0xD482 (fixed bit 13 set) is the P3-S116 ST_PARALLEL_MAC
+         * encoding (former near-miss, pinned here). */
+        {UINT16_C(0x2000), TI_C54X_OPCODE_ID_ST_PARALLEL_MAC},
         /* 0x7482 (fixed bit 15 clear) is the P3-S6 PORTR indirect
          * row with I=1, MOD0, ARF=2 (TI SPRU172C 4-129 pins PORTR
          * at 0x74xx). */
@@ -179,10 +182,11 @@ test_fixed_bit_near_misses(void)
         {UINT16_C(0x0040), TI_C54X_OPCODE_ID_TRAP_K},
     };
     /* 0xF4C2 (fixed bit 6 clear) left this list in P3-S105:
-     * it now decodes as TRAP K=2 (pinned with the siblings). */
+     * it now decodes as TRAP K=2 (pinned with the siblings);
+     * 0xD482 (fixed bit 13 set) left in P3-S116: it now decodes
+     * as ST_PARALLEL_MAC (pinned with the siblings). */
     static const uint16_t misses[] = {
-        UINT16_C(0x1000),
-        UINT16_C(0x2000)};
+        UINT16_C(0x1000)};
     size_t index;
 
     for (index = 0U; index < sizeof(siblings) / sizeof(siblings[0]);

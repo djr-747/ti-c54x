@@ -169,27 +169,25 @@ test_fixed_bit_near_misses(void)
      * fixed bit 9 lands on RET (pinned above), clearing fixed
      * bit 10 lands on the BCD sibling, and clearing fixed bit 11
      * lands on ADD_ACC_SHIFT; setting fixed bit 8 lands on the
-     * P3-S4 XC row (pinned below); all other fixed-bit flips must
-     * miss every row, except clearing fixed bit 14 lands on
-     * MAS_DUAL_M0_M0 (S3i claims the 0xB8xx neighborhood; the
-     * UNKNOWN loop drops that mask under the cross-slice hazard
-     * rule) and clearing fixed bit 12 lands on the P3-S51 FRAME
-     * row (0xFE00 ^ 0x1000 = 0xEE00; pinned below); clearing
-     * fixed bit 15 lands on the P3-S64 READA direct row
+     * P3-S4 XC row (pinned below); flipping fixed bit 13 lands on
+     * the P3-S116 ST_PARALLEL_MAS sibling (pinned below); all
+     * other fixed-bit flips must miss every row, except clearing
+     * fixed bit 14 lands on MAS_DUAL_M0_M0 (S3i claims the 0xB8xx
+     * neighborhood; the UNKNOWN loop drops that mask under the
+     * cross-slice hazard rule) and clearing fixed bit 12 lands on
+     * the P3-S51 FRAME row (0xFE00 ^ 0x1000 = 0xEE00; pinned below);
+     * clearing fixed bit 15 lands on the P3-S64 READA direct row
      * (0xFE00 ^ 0x8000 = 0x7E00; pinned below). */
-    static const uint16_t unknown_masks[] = {
-        UINT16_C(0x2000)};
-
-    for (size_t index = 0U;
-         index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
-         ++index) {
-        const ti_c54x_decode_result result =
+    /* This former near-miss is the P3-S116 ST_PARALLEL_MAS sibling:
+     * 0xFE00 ^ 0x2000 = 0xDE00 classifies into the
+     * ST_PARALLEL_MAS row. */
+    {
+        const ti_c54x_decode_result mas_sibling =
             ti_c54x_decode_first_word(
-                (uint16_t)(RCD_VALUE ^ unknown_masks[index]));
+                (uint16_t)(RCD_VALUE ^ UINT16_C(0x2000)));
 
-        TI_C54X_TEST_CHECK(result.status ==
-                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
-        TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+        TI_C54X_TEST_CHECK(mas_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mas_sibling.id == TI_C54X_OPCODE_ID_ST_PARALLEL_MAS);
     }
 
     /* Clearing fixed bit 12 lands on the P3-S51 FRAME row. */

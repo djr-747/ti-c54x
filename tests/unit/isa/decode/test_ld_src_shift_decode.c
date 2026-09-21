@@ -154,9 +154,9 @@ test_fixed_bit_near_misses_are_unknown(void)
      * pinned below as well. Bit 5 lands in the P3-S39 SFTA_ACC row
      * (pinned below), so it leaves this list as well. Bit 7 lands
      * in the P3-S105 TRAP_K row (pinned below), so it leaves this
-     * list as well. */
-    static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x1000), UINT16_C(0x2000)};
+     * list as well. Bit 13 lands in the P3-S116 ST_PARALLEL_MAC row
+     * (pinned below), so it leaves this list as well. */
+    static const uint16_t fixed_bit_masks[] = {UINT16_C(0x1000)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -212,6 +212,18 @@ test_fixed_bit_near_misses_are_unknown(void)
         TI_C54X_TEST_CHECK(sfta_sibling.status ==
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(sfta_sibling.id == TI_C54X_OPCODE_ID_SFTA_ACC);
+    }
+
+    /* Flipping fixed bit 13 lands on 0xD440, the P3-S116
+     * ST_PARALLEL_MAC row. */
+    {
+        const ti_c54x_decode_result mac_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_SRC_SHIFT_VALUE ^ UINT16_C(0x2000)));
+
+        TI_C54X_TEST_CHECK(mac_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(mac_sibling.id ==
+                           TI_C54X_OPCODE_ID_ST_PARALLEL_MAC);
     }
 }
 
