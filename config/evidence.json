@@ -8879,6 +8879,24 @@
         "printed_page_end": "4-195"
       },
       "assertion": "SPRU172C TRAP defines the single-word software interrupt TRAP K with opcode diagram 1111_0100_110K_KKKK: SP decrements by one, PC+1 pushes to TOS, the K vector loads into PC as (IPTR << 7) + (K << 2), and no status bit changes (not affected by INTM, does not affect INTM, no IFR effect). The instruction is not repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-LMS-P4-80",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "LMS",
+        "printed_page_start": "4-80",
+        "printed_page_end": "4-80"
+      },
+      "assertion": "SPRU172C LMS defines the single-word dual-16-bit operation LMS Xmem,Ymem with opcode diagram 1100_0001_XXXX_YYYY: A accumulates (Xmem shifted left 16) plus 2^15 as one 40-bit add while B accumulates the signed Xmem*Ymem product (doubled under FRCT). T is never written; SXM widens Xmem, and C, OVA, OVB report the two channels."
     }
   ],
   "requirements": [
@@ -20980,6 +20998,48 @@
       "test_ids": [
         "T-COMMON-P3-S105-TRAP-K-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute LMS Xmem,Ymem as a catalog MASKED row at 0xC100 under mask 0xFF00 with the dual-XMOD/XAR/YMOD/YAR layout and ELIGIBLE repeatability: the leaf stages one dual-indirect WORD16 DATA READ pair over all four XMOD/YMOD codes including MOD3 indexed and circular commits, and the read-value completion stages one accumulator-write pair with A adding the SXM-widened X shifted left 16 plus 2^15 as one 40-bit add (A-channel carry to C, 32-bit signed overflow to OVA, OVM saturation) and B adding the signed X*Y product, FRCT-doubled, to 40-bit B (B-channel carry to C, 32-bit signed overflow to OVB, OVM saturation). TC is preserved and T is never written. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LMS-P4-80"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S106-LMS-XMEM-YMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire LMS Xmem,Ymem through the generic CPU path with one-word PC advance, accumulator and auxiliary-register input collection, ordered X/Y D-bus DATA reads, dual AR commits, the accumulator pair publication with all other status preserved, fault atomicity, and no other endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LMS-P4-80"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S106-LMS-XMEM-YMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register LMS_XMEM_YMEM at 0xC100 under mask 0xFF00 as a one-word form with the dual-XMOD/XAR/YMOD/YAR layout, ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM inputs, and ELIGIBLE repeatability, covering all 256 first-word encodings with UNKNOWN neighbors.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-LMS-P4-80"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S106-LMS-XMEM-YMEM-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -30771,6 +30831,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S105-TRAP-K-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S106-LMS-XMEM-YMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_lms_xmem_ymem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.lms_xmem_ymem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S106-LMS-XMEM-YMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_lms.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_lms"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S106-LMS-XMEM-YMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_lms_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.lms_xmem_ymem_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-CATALOG"
       ]
     }
   ]

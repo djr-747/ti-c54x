@@ -18,6 +18,7 @@
 #include "arithmetic/op_arithmetic.h"
 #include "arithmetic/op_dual_arithmetic.h"
 #include "arithmetic/op_distance_dual.h"
+#include "arithmetic/op_lms_dual.h"
 #include "arithmetic/op_add_lk.h"
 #include "arithmetic/op_dadd.h"
 #include "arithmetic/op_dadst.h"

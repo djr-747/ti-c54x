@@ -15,3 +15,5 @@ ti_c54x_add_unit_test(cpu_dsub test_cpu_dsub.c)
 ti_c54x_add_unit_test(cpu_dsubt test_cpu_dsubt.c)
 ti_c54x_add_unit_test(cpu_sqdst test_cpu_sqdst.c)
 ti_c54x_add_unit_test(cpu_abdst test_cpu_abdst.c)
+# P3-S106: LMS dual-memory retirement.
+ti_c54x_add_unit_test(cpu_lms test_cpu_lms.c)
