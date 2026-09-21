@@ -554,7 +554,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §RESET, `4-137`–`4-138` |
 | `E-TI-C54X-SPRU172C-S4-MVDD-P4-107` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §MVDD, `4-107` |
 | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §TRAP, `4-195` |
-| `E-TI-C54X-SPRU172C-S4-LMS-P4-80` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LMS, `4-80` |
+| `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LMS, `4-80` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1493,9 +1493,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S105-TRAP-K-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/stack/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-OPS` |
 | `REQ-COMMON-P3-S105-TRAP-K-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-CPU` |
 | `REQ-COMMON-P3-S105-TRAP-K-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | `T-COMMON-P3-S105-TRAP-K-METADATA` |
-| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-OPS` |
-| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-CPU` |
-| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-METADATA` |
+| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-OPS` |
+| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-CPU` |
+| `REQ-COMMON-P3-S106-LMS-XMEM-YMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | `T-COMMON-P3-S106-LMS-XMEM-YMEM-METADATA` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2210,5 +2210,6 @@ silently reused.
 | targets | — | — | No tombstones currently recorded | — |
 | sources | — | — | No tombstones currently recorded | — |
 | evidence | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9` | 0 | The original assertion overclaimed AR effects; the corrected record narrows the source to its printed field and address-construction statements. | `E-TI-C54X-SPRU131G-S5.4-P5-7-5-9-R1` |
+| evidence | `E-TI-C54X-SPRU172C-S4-LMS-P4-80` | 0 | The original assertion transcribed the first-word diagram as 1100_0001; the TI instruction-set summary table (FIRS at 1110_0000, LMS at 1110_0001, cross-checked against the landed EXP row) shows the LMS first word is 0xE100. The corrected record carries diagram 1110_0001_XXXX_YYYY. | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` |
 | requirements | — | — | No tombstones currently recorded | — |
 | tests | — | — | No tombstones currently recorded | — |

@@ -199,16 +199,18 @@ test_fixed_bit_near_misses(void)
     /* Mask 0xFF00 leaves XMOD(7:6), XAR(5:4), YMOD(3:2),
      * YAR(1:0) variable. Flipping fixed bit 8 crosses the two
      * distance rows (pinned below); flipping fixed bit 9 lands on
-     * the unclaimed FIRS/LMS slots until those rows land;
-     * flipping fixed bit 10 lands on the unclaimed 0xE6 slot for
-     * SQDST and on MVMM for ABDST; all other fixed-bit 15:8 flips
-     * land on the pinned siblings or miss every row. */
+     * the unclaimed FIRS slot (until that row lands) and on the
+     * landed LMS row; flipping fixed bit 10 lands on the
+     * unclaimed 0xE6 slot for SQDST and on MVMM for ABDST; all
+     * other fixed-bit 15:8 flips land on the pinned siblings or
+     * miss every row. */
     check_sibling((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x0100)),
                   TI_C54X_OPCODE_ID_ABDST_XMEM_YMEM);
     check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x0100)),
                   TI_C54X_OPCODE_ID_SQDST_XMEM_YMEM);
     check_miss((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x0200)));
-    check_miss((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x0200)));
+    check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x0200)),
+                  TI_C54X_OPCODE_ID_LMS_XMEM_YMEM);
     check_miss((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x0400)));
     check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x0400)),
                   TI_C54X_OPCODE_ID_MVMM);

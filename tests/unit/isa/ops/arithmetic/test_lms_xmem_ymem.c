@@ -32,7 +32,7 @@
 static uint16_t
 lms_word(uint8_t xmod, uint8_t xar_raw, uint8_t ymod, uint8_t yar_raw)
 {
-    return (uint16_t)(UINT16_C(0xC100) |
+    return (uint16_t)(UINT16_C(0xE100) |
                       (uint16_t)(((uint16_t)(xmod & UINT8_C(3))) << 6U) |
                       (uint16_t)(((uint16_t)(xar_raw & UINT8_C(3)))
                                  << 4U) |
@@ -108,7 +108,7 @@ static void check_pair_writes(
 
 /* TI worked example: LMS *AR3+,*AR4+ with X=0x0055 Y=0x00AA,
  * A=00 7777 8888 B=00 0000 0100 FRCT=0 SXM=1 OVM=0 assembles
- * to 0xC19A and completes A=00 77CD 0888 B=00 0000 3972. */
+ * to 0xE19A and completes A=00 77CD 0888 B=00 0000 3972. */
 static void test_ti_worked_example(void)
 {
     ti_c54x_op_input_snapshot input = blank_input();
@@ -119,7 +119,7 @@ static void test_ti_worked_example(void)
     ti_c54x_op_effect next = {0};
 
     TI_C54X_TEST_CHECK(instruction.bundle.program_words[0] ==
-                       UINT16_C(0xC19A));
+                       UINT16_C(0xE19A));
     input.accumulator_a_raw40 = UINT64_C(0x0077778888);
     input.accumulator_b_raw40 = UINT64_C(0x100);
     input.status_sxm = UINT8_C(1);

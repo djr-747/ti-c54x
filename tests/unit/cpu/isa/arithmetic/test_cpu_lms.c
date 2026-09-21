@@ -151,10 +151,10 @@ seed_state(ti_c54x_cpu *cpu, uint64_t a_value, uint64_t b_value,
 static void
 test_ti_worked_example_retires(void)
 {
-    /* 0xC19A: XMOD2 XAR=AR3, YMOD2 YAR=AR4, X=0x0055 Y=0x00AA,
+    /* 0xE19A: XMOD2 XAR=AR3, YMOD2 YAR=AR4, X=0x0055 Y=0x00AA,
      * A=00 7777 8888 B=00 0000 0100 SXM=1 FRCT=0 OVM=0:
      * A=00 77CD 0888, B=00 0000 3972, both ARs post-increment. */
-    lms_fixture fixture = {.program_word = UINT16_C(0xC19A),
+    lms_fixture fixture = {.program_word = UINT16_C(0xE19A),
                            .x_address = UINT16_C(0x0100),
                            .y_address = UINT16_C(0x0200),
                            .x_value = UINT16_C(0x0055),

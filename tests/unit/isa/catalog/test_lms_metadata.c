@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: executable proof that the LMS Xmem,Ymem catalog row
- * carries the 0xC100 value under the 0xFF00 mask with one
+ * carries the 0xE100 value under the 0xFF00 mask with one
  * program word, the DUAL_XMOD_XAR_YMOD_YAR layout,
  * accumulator plus auxiliary-register plus SXM/FRCT/OVM
  * inputs, and eligible repeatability, covering all 256
@@ -27,7 +27,7 @@ test_metadata(void)
     TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 357);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_LMS_XMEM_YMEM);
-    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xC100));
+    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xE100));
     TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFF00));
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
@@ -49,7 +49,7 @@ test_exact_population(void)
     for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
         const uint16_t word = (uint16_t)raw;
         const bool matches_row =
-            (uint16_t)(word & UINT16_C(0xFF00)) == UINT16_C(0xC100);
+            (uint16_t)(word & UINT16_C(0xFF00)) == UINT16_C(0xE100);
         ti_c54x_opcode_id id =
             ti_c54x_opcode_catalog_lookup_first_word(word);
 
@@ -66,16 +66,20 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* Both neighbors of the row are unclaimed. */
+    /* 0xE0FF is unclaimed (FIRS not yet landed); 0xE200 is
+     * SQDST, the upper TI neighbor. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xC0FF)) ==
+                           UINT16_C(0xE0FF)) ==
                        TI_C54X_OPCODE_ID_UNKNOWN);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xC100)) ==
+                           UINT16_C(0xE100)) ==
                        TI_C54X_OPCODE_ID_LMS_XMEM_YMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xC200)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0xE1FF)) ==
+                       TI_C54X_OPCODE_ID_LMS_XMEM_YMEM);
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           UINT16_C(0xE200)) ==
+                       TI_C54X_OPCODE_ID_SQDST_XMEM_YMEM);
 }
 
 int

@@ -2,7 +2,7 @@
  * Owns: checked and trusted dual-memory LMS semantic leaves
  * (TI SPRU172C Sec4 LMS: A accumulates (X<<16)+2^15 as one
  * 40-bit add while B accumulates the signed X*Y product,
- * FRCT-doubled) over the one-word 0xC100 dual-XMOD/XAR/YMOD/YAR
+ * FRCT-doubled) over the one-word 0xE100 dual-XMOD/XAR/YMOD/YAR
  * form. The WORD16 DATA read pair stages gated on known
  * accumulators, ARs, SXM, FRCT, and OVM. The dual completion
  * stages one accumulator-write pair: A adds the SXM-widened X
@@ -33,7 +33,7 @@
 #include "../dispatch/trusted_semantics.h"
 
 #define LMS_FIRST_WORD_MASK UINT16_C(0xFF00)
-#define LMS_XMEM_YMEM_VALUE UINT16_C(0xC100)
+#define LMS_XMEM_YMEM_VALUE UINT16_C(0xE100)
 #define LMS_ROUND_TERM UINT64_C(0x8000)
 
 typedef struct ti_c54x_lms_dual_operands {

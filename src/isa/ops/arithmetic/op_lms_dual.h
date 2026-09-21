@@ -3,7 +3,7 @@
 
 /* Module contract
  * Owns: checked and trusted dual-memory LMS semantic leaves
- * over the one-word 0xC100 dual-XMOD/XAR/YMOD/YAR form. The
+ * over the one-word 0xE100 dual-XMOD/XAR/YMOD/YAR form. The
  * leaves stage one dual WORD16 read effect carrying both sides'
  * modes and, on pair completion, one accumulator-write pair
  * (A accumulates (X<<16)+2^15 as one 40-bit add; B accumulates

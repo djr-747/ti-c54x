@@ -67,10 +67,10 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0xE1FF is unclaimed until LMS lands; 0xE300 is ABDST. */
+    /* 0xE1FF is LMS (P3-S107 correction); 0xE300 is ABDST. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0xE1FF)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_LMS_XMEM_YMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0xE300)) == TI_C54X_OPCODE_ID_ABDST_XMEM_YMEM);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
