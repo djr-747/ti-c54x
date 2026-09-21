@@ -843,6 +843,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S112: MACSU dual first-word correction 0xA8xx to 0xA6xx (implemented; local verification green)](plan/p3-s112-macsu-first-word-correction-slice.md)
 
+- [P3-S113: XPC program-counter extension state (implemented; local verification green)](plan/p3-s113-xpc-state-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
