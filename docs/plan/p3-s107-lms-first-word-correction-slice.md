@@ -1,4 +1,4 @@
-### P3-S107: LMS first-word correction 0xC100 to 0xE100 (planned)
+### P3-S107: LMS first-word correction 0xC100 to 0xE100 (implemented; local verification green)
 
 This immutable anchor heads the P3-S107 evidence correction.
 P3-S106 landed `LMS Xmem,Ymem` at first word `0xC100`; three

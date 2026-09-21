@@ -831,7 +831,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S106: LMS dual-memory row and leaf (implemented; local verification green)](plan/p3-s106-lms-dual-row-slice.md)
 
-- [P3-S107: LMS first-word correction 0xC100 to 0xE100 (planned)](plan/p3-s107-lms-first-word-correction-slice.md)
+- [P3-S107: LMS first-word correction 0xC100 to 0xE100 (implemented; local verification green)](plan/p3-s107-lms-first-word-correction-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
