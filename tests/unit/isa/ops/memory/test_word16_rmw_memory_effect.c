@@ -17,12 +17,12 @@
 #if UINTPTR_MAX == UINT64_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 48,
                "WORD16 memory effect size changed on a 64-bit ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 56,
+_Static_assert(sizeof(ti_c54x_op_effect) == 72,
                "generic operation effect size changed on a 64-bit ABI");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
                "WORD16 memory effect size changed on a 32-bit ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 44,
+_Static_assert(sizeof(ti_c54x_op_effect) == 52,
                "generic operation effect size changed on a 32-bit ABI");
 #endif
 

@@ -2,6 +2,7 @@
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/op_arithmetic.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_dual_arithmetic.c"
+    "${CMAKE_CURRENT_LIST_DIR}/op_distance_dual.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_add_lk.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_dadd.c"
     "${CMAKE_CURRENT_LIST_DIR}/op_dadst.c"

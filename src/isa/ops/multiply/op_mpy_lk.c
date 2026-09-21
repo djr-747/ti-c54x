@@ -103,7 +103,7 @@ static ti_c54x_op_status mpy_lk_values(
     ti_c54x_multiply_operands operands;
     ti_c54x_multiply_result result;
     ti_c54x_multiply_status multiply_status;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_op_status status;
 
     if (fields == NULL || input == NULL || effect == NULL) {

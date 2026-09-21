@@ -158,7 +158,7 @@ static ti_c54x_op_status sub_smem_complete_for(
     ti_c54x_u40_t subtrahend;
     ti_c54x_u40_t base;
     ti_c54x_u40_sub_result sub_result;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_u40_t value;
     bool no_borrow;
     ti_c54x_signed32_overflow_direction overflow;

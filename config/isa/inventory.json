@@ -961,9 +961,11 @@
       "table_ordinal": 1,
       "mnemonic": "ABDST",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ABDST_XMEM_YMEM"
+      ]
     },
     {
       "id": "FORM-T2-06-02",
@@ -1135,9 +1137,11 @@
       "table_ordinal": 15,
       "mnemonic": "SQDST",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "SQDST_XMEM_YMEM"
+      ]
     },
     {
       "id": "FORM-T2-07-01",
@@ -5093,6 +5097,18 @@
     {
       "catalog_symbol": "BIT_XMEM",
       "form_id": "FORM-T2-11-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "SQDST_XMEM_YMEM",
+      "form_id": "FORM-T2-06-15",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ABDST_XMEM_YMEM",
+      "form_id": "FORM-T2-06-01",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

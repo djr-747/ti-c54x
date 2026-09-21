@@ -8789,6 +8789,42 @@
         "printed_page_end": "4-21"
       },
       "assertion": "SPRU172C BIT defines the single-word dual-16-bit operation BIT Xmem,BITC with opcode diagram 1001_0110_XMODXAR_BITC: TC is loaded with the Xmem bit at position (15 minus BITC) while no other state is affected."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-SQDST-P4-160",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "SQDST",
+        "printed_page_start": "4-160",
+        "printed_page_end": "4-160"
+      },
+      "assertion": "SPRU172C SQDST defines the single-word dual-16-bit operation SQDST Xmem,Ymem with opcode diagram 1110_0010_XXXX_YYYY: B accumulates the squared A(32-16) while A stages (Xmem minus Ymem) shifted left 16. Used in repeat single mode."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ABDST-P4-2",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ABDST",
+        "printed_page_start": "4-2",
+        "printed_page_end": "4-2"
+      },
+      "assertion": "SPRU172C ABDST defines the single-word dual-16-bit operation ABDST Xmem,Ymem with opcode diagram 1110_0011_XXXX_YYYY: the absolute A(32-16) accumulates into B (doubled under FRCT) while A stages (Xmem minus Ymem) shifted left 16."
     }
   ],
   "requirements": [
@@ -20722,6 +20758,62 @@
       "test_ids": [
         "T-COMMON-P3-S101-BIT-XMEM-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute SQDST Xmem,Ymem as a catalog MASKED row at 0xE200 under mask 0xFF00 with the dual-XMOD/XAR/YMOD/YAR layout and ELIGIBLE repeatability: the leaf stages one dual-indirect WORD16 DATA READ pair over all four XMOD/YMOD codes including MOD3 indexed and circular commits, and the read-value completion stages one accumulator-write pair with A holding the SXM-widened (X-Y) shifted left 16 (OVA on guard mismatch, OVM saturation) and B adding the squared A(32-16), FRCT-doubled, to 40-bit B (B-channel carry to C, 32-bit signed overflow to OVB, OVM saturation). TC is preserved. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQDST-P4-160"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S102-SQDST-XMEM-YMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire SQDST Xmem,Ymem through the generic CPU path with one-word PC advance, accumulator and auxiliary-register input collection, ordered X/Y D-bus DATA reads, dual AR commits, the accumulator pair publication with all other status preserved, fault atomicity, and no other endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-SQDST-P4-160"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S102-SQDST-XMEM-YMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ABDST Xmem,Ymem as a catalog MASKED row at 0xE300 under mask 0xFF00 with the dual-XMOD/XAR/YMOD/YAR layout and ELIGIBLE repeatability: the leaf stages one dual-indirect WORD16 DATA READ pair over all four XMOD/YMOD codes including MOD3 indexed and circular commits, and the read-value completion stages one accumulator-write pair with A holding the SXM-widened (X-Y) shifted left 16 (OVA on guard mismatch, OVM saturation) and B adding |A(32-16)|, FRCT-doubled with the ABS -32768 edge rule, to 40-bit B (B-channel carry to C, 32-bit signed overflow to OVB, OVM saturation). TC is preserved. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ABDST-P4-2"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S102-ABDST-XMEM-YMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire ABDST Xmem,Ymem through the generic CPU path with one-word PC advance, accumulator and auxiliary-register input collection, ordered X/Y D-bus DATA reads, dual AR commits, the accumulator pair publication with all other status preserved, fault atomicity, and no other endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ABDST-P4-2"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S102-ABDST-XMEM-YMEM-CPU"
+      ]
     }
   ],
   "tests": [
@@ -30345,6 +30437,62 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S101-BIT-XMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S102-SQDST-XMEM-YMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_sqdst_xmem_ymem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.sqdst_xmem_ymem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S102-SQDST-XMEM-YMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_sqdst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_sqdst"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S102-SQDST-XMEM-YMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S102-ABDST-XMEM-YMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_abdst_xmem_ymem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.abdst_xmem_ymem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S102-ABDST-XMEM-YMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_abdst.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_abdst"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S102-ABDST-XMEM-YMEM-RETIREMENT"
       ]
     }
   ]

@@ -217,7 +217,7 @@ int main(void) {
         self.assertEqual(pointer, ctypes.sizeof(ctypes.c_void_p))
         self.assertEqual(uint64, ctypes.sizeof(ctypes.c_uint64))
         if pointer == 8 and uint64 == 8:
-            self.assertEqual((effect, root), (48, 464))
+            self.assertEqual((effect, root), (48, 480))
         elif pointer == 4 and uint64 == 8:
             self.assertEqual((effect, root), (40, 424))
         else:
@@ -239,7 +239,7 @@ int main(void) {
         if supported.returncode != 0:
             self.skipTest("compiler does not support a complete -m32 probe")
         pointer, uint64, effect, root = self._abi_probe(("-m32",))
-        self.assertEqual((pointer, uint64, effect, root), (4, 8, 40, 428))
+        self.assertEqual((pointer, uint64, effect, root), (4, 8, 40, 436))
 
 
 if __name__ == "__main__":

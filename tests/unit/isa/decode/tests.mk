@@ -143,6 +143,7 @@ $(eval $(call ti_c54x_add_test,bitf_smem_lk_decode,isa/decode,test_bitf_smem_lk_
 $(eval $(call ti_c54x_add_test,cmpm_smem_lk_decode,isa/decode,test_cmpm_smem_lk_decode.c))
 $(eval $(call ti_c54x_add_test,bitt_smem_decode,isa/decode,test_bitt_smem_decode.c))
 $(eval $(call ti_c54x_add_test,bit_xmem_decode,isa/decode,test_bit_xmem_decode.c))
+$(eval $(call ti_c54x_add_test,distance_dual_decode,isa/decode,test_distance_dual_decode.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_decode,isa/decode,test_st_lk_smem_decode.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_absolute_decode,isa/decode,test_st_lk_smem_absolute_decode.c))
 $(eval $(call ti_c54x_add_test,mvdp_smem_absolute_decode,isa/decode,test_mvdp_smem_absolute_decode.c))

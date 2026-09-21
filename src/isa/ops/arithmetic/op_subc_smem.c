@@ -117,7 +117,7 @@ static ti_c54x_op_status subc_smem_complete_for(
     ti_c54x_u40_t shifted;
     ti_c54x_u40_t base;
     ti_c54x_u40_t value;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_op_status status;
     int64_t src_signed;
     int64_t smem_shifted;

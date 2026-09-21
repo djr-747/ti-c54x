@@ -4,7 +4,9 @@
 /* Module contract
  * Owns: validation and atomic commit of a value-owned accumulator write
  * effect, including its explicit C/TC and destination-overflow status
- * disposition (sticky WRITE_1, recompute-to-clear WRITE_0).
+ * disposition (sticky WRITE_1, recompute-to-clear WRITE_0), plus the
+ * two-write pair variant that validates both writes before either
+ * commits.
  * Does not own: compare semantics, decode, CPU lifecycle, or timing.
  */
 
@@ -20,6 +22,11 @@ typedef enum ti_c54x_accumulator_effect_status {
 } ti_c54x_accumulator_effect_status;
 
 ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply(
+    const ti_c54x_op_effect *effect,
+    ti_c54x_accumulator_state *accumulators,
+    ti_c54x_status_register_state *status);
+
+ti_c54x_accumulator_effect_status ti_c54x_accumulator_effect_apply_pair(
     const ti_c54x_op_effect *effect,
     ti_c54x_accumulator_state *accumulators,
     ti_c54x_status_register_state *status);

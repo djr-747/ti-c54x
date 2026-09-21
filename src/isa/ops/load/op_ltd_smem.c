@@ -128,7 +128,7 @@ static ti_c54x_op_status ltd_smem_complete(
 {
     ltd_smem_fields fields;
     ti_c54x_op_status status;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
 
     if (instruction == NULL || input == NULL || next_effect == NULL) {
         return TI_C54X_OP_STATUS_INVALID_ARGUMENT;

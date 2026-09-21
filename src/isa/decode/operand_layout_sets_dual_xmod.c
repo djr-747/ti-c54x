@@ -4,7 +4,8 @@
  * Owns: the static immutable piece/field/operand tables behind the
  * dual-XMOD single-operand generic layouts
  * (ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4, SELECT_DUAL_XMOD_XAR_COND4,
- * and DUAL_XMOD_XAR_BITC). Each set object has external linkage
+ * DUAL_XMOD_XAR_BITC, and DUAL_XMOD_XAR_YMOD_YAR). Each set object
+ * has external linkage
  * so the plan table and resolver in operand_layout.c can
  * borrow it; pieces and per-operand arrays stay
  * translation-unit private.
@@ -97,3 +98,32 @@ static const ti_c54x_operand_field_layout
          UINT8_C(4)}};
 const ti_c54x_operand_layout_set ti_c54x_dual_xmod_xar_bitc_set = {
     ti_c54x_dual_xmod_xar_bitc_operands, UINT8_C(3)};
+
+/* Dual-memory fields: dual-X modifier XMOD[7:6] and register
+ * XAR[5:4] over dual-Y modifier YMOD[3:2] and register
+ * YAR[1:0]. Both raw register fields map to AR2..AR5 at the
+ * handler, as in the MAC-dual precedent. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_xmod_piece = {
+        UINT8_C(0), UINT8_C(6), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_xar_piece = {
+        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_ymod_piece = {
+        UINT8_C(0), UINT8_C(2), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_yar_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(2), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_dual_xmod_xar_ymod_yar_operands[4] = {
+        {&ti_c54x_dual_xmod_xar_ymod_yar_xmod_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_dual_xmod_xar_ymod_yar_xar_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_dual_xmod_xar_ymod_yar_ymod_piece, UINT8_C(1),
+         UINT8_C(2)},
+        {&ti_c54x_dual_xmod_xar_ymod_yar_yar_piece, UINT8_C(1),
+         UINT8_C(2)}};
+const ti_c54x_operand_layout_set ti_c54x_dual_xmod_xar_ymod_yar_set = {
+    ti_c54x_dual_xmod_xar_ymod_yar_operands, UINT8_C(4)};

@@ -238,12 +238,12 @@ class DualWord16HotPathTests(unittest.TestCase):
 #if UINTPTR_MAX == UINT64_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24U, "address spec ABI");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 48U, "memory effect ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 56U, "op effect ABI");
+_Static_assert(sizeof(ti_c54x_op_effect) == 72U, "op effect ABI");
 _Static_assert(sizeof(ti_c54x_dual_word16_read_transaction) == 80U, "dual reducer ABI");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24U, "address spec ABI");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 40U, "memory effect ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 44U, "op effect ABI");
+_Static_assert(sizeof(ti_c54x_op_effect) == 52U, "op effect ABI");
 _Static_assert(sizeof(ti_c54x_dual_word16_read_transaction) == 72U, "dual reducer ABI");
 #else
 #error "unsupported pointer ABI"
@@ -310,7 +310,7 @@ int main(void)
         self.assertEqual(pointer, ctypes.sizeof(ctypes.c_void_p), output)
         self.assertEqual(uint64, ctypes.sizeof(ctypes.c_uint64), output)
         self.assertEqual(
-            (address, effect, op_effect, dual, root), (24, 48, 56, 80, 464), output
+            (address, effect, op_effect, dual, root), (24, 48, 72, 80, 480), output
         )
 
     def test_supported_m32_abi_probe_freezes_carriers(self) -> None:
@@ -345,7 +345,7 @@ int main(void)
         )
         self.assertEqual((pointer, uint64), (4, 8), output)
         self.assertEqual(
-            (address, effect, op_effect, dual, root), (24, 40, 44, 72, 428), output
+            (address, effect, op_effect, dual, root), (24, 40, 52, 72, 436), output
         )
 
 

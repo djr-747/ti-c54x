@@ -16,6 +16,9 @@
  * binary value; mutation belongs to the status sequencer. ACCUMULATOR_WRITE
  * carries only a canonical destination value and explicit C/TC/destination-
  * overflow status disposition; mutation belongs to its sequencer.
+ * ACCUMULATOR_WRITE_PAIR carries two such writes (first then second)
+ * for dual-destination instructions; both validate before either
+ * commits, and mutation belongs to the same sequencer.
  * T_REGISTER_WRITE carries one copied 16-bit T value; mutation belongs to
  * the temporary-register sequencer. PC_WRITE carries one copied 16-bit
  * program-memory target address; program-counter commit belongs to the
@@ -68,7 +71,8 @@ typedef enum ti_c54x_op_effect_kind {
     TI_C54X_OP_EFFECT_SP_WRITE = 12,
     TI_C54X_OP_EFFECT_AR_WRITE = 13,
     TI_C54X_OP_EFFECT_REPEAT_BLOCK_START = 14,
-    TI_C54X_OP_EFFECT_IDLE = 15
+    TI_C54X_OP_EFFECT_IDLE = 15,
+    TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE_PAIR = 16
 } ti_c54x_op_effect_kind;
 
 typedef enum ti_c54x_op_status_field_target {
@@ -135,6 +139,11 @@ typedef struct ti_c54x_op_accumulator_write_effect {
     ti_c54x_op_status_delta status_delta;
 } ti_c54x_op_accumulator_write_effect;
 
+typedef struct ti_c54x_op_accumulator_write_pair_effect {
+    ti_c54x_op_accumulator_write_effect first;
+    ti_c54x_op_accumulator_write_effect second;
+} ti_c54x_op_accumulator_write_pair_effect;
+
 typedef struct ti_c54x_op_t_register_write_effect {
     uint16_t raw_value;
 } ti_c54x_op_t_register_write_effect;
@@ -184,6 +193,7 @@ typedef union ti_c54x_op_effect_payload {
     ti_c54x_op_status_field_write_effect status_field_write;
     ti_c54x_op_status_bit_write_effect status_bit_write;
     ti_c54x_op_accumulator_write_effect accumulator_write;
+    ti_c54x_op_accumulator_write_pair_effect accumulator_write_pair;
     ti_c54x_op_t_register_write_effect t_register_write;
     ti_c54x_op_memory_effect memory;
     ti_c54x_op_pc_write_effect pc_write;

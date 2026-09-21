@@ -176,6 +176,26 @@ ti_c54x_effect_transaction_status ti_c54x_effect_transaction_stage(
         return TI_C54X_EFFECT_TRANSACTION_OK;
     }
 
+    case TI_C54X_OP_EFFECT_ACCUMULATOR_WRITE_PAIR:
+    {
+        ti_c54x_effect_transaction_accumulator_candidate candidate;
+
+        if (status == NULL || accumulators == NULL) {
+            return TI_C54X_EFFECT_TRANSACTION_INVALID_ARGUMENT;
+        }
+        candidate.accumulators = *accumulators;
+        candidate.status = *status;
+        result = map_accumulator_effect(
+            ti_c54x_accumulator_effect_apply_pair(
+                effect, &candidate.accumulators, &candidate.status));
+        if (result != TI_C54X_EFFECT_TRANSACTION_OK) {
+            return result;
+        }
+        out->candidate.accumulator = candidate;
+        out->target = TI_C54X_EFFECT_TRANSACTION_ACCUMULATOR;
+        return TI_C54X_EFFECT_TRANSACTION_OK;
+    }
+
     case TI_C54X_OP_EFFECT_T_REGISTER_WRITE:
     {
         ti_c54x_t_register_state candidate;

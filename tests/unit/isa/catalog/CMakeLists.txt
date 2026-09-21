@@ -216,6 +216,10 @@ ti_c54x_add_unit_test(bitt_smem_metadata
                       test_bitt_smem_metadata.c)
 ti_c54x_add_unit_test(bit_xmem_metadata
                       test_bit_xmem_metadata.c)
+ti_c54x_add_unit_test(sqdst_xmem_ymem_metadata
+                      test_sqdst_xmem_ymem.c)
+ti_c54x_add_unit_test(abdst_xmem_ymem_metadata
+                      test_abdst_xmem_ymem.c)
 ti_c54x_add_unit_test(st_lk_smem_metadata
                       test_st_lk_smem_metadata.c)
 ti_c54x_add_unit_test(st_lk_smem_absolute_metadata

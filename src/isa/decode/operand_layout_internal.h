@@ -90,6 +90,8 @@ extern const ti_c54x_operand_layout_set
     ti_c54x_select_dual_xmod_xar_cond4_set;
 extern const ti_c54x_operand_layout_set ti_c54x_dual_xmod_xar_bitc_set;
 extern const ti_c54x_operand_layout_set
+    ti_c54x_dual_xmod_xar_ymod_yar_set;
+extern const ti_c54x_operand_layout_set
     ti_c54x_source_destination_indirect_addr7_set;
 extern const ti_c54x_operand_layout_set
     ti_c54x_indirect_addr7_source_destination_shift5_set;

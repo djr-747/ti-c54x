@@ -38,7 +38,7 @@ static ti_c54x_op_status maca_t_complete(const maca_t_fields *fields,
     ti_c54x_multiply_operands operands;
     ti_c54x_multiply_result result;
     ti_c54x_multiply_status multiply_status;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     uint64_t src_raw40;
     bool src_known;
 

@@ -114,7 +114,7 @@ static ti_c54x_op_status addc_smem_complete_for(
     ti_c54x_u40_t addend;
     ti_c54x_u40_t base;
     ti_c54x_u40_add_result add_result;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_u40_t value;
     bool carry;
     ti_c54x_signed32_overflow_direction overflow;

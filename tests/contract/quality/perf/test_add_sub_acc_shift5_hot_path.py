@@ -160,10 +160,10 @@ _Static_assert(sizeof(ti_c54x_decoded_instruction) == 24U, "decoded");
 _Static_assert(sizeof(ti_c54x_op_input_snapshot) == 80U, "input");
 #if UINTPTR_MAX == UINT64_MAX
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 104U, "packet");
-_Static_assert(sizeof(ti_c54x_op_effect) == 56U, "effect");
+_Static_assert(sizeof(ti_c54x_op_effect) == 72U, "effect");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_trusted_execution_packet) == 80U, "packet");
-_Static_assert(sizeof(ti_c54x_op_effect) == 44U, "effect");
+_Static_assert(sizeof(ti_c54x_op_effect) == 52U, "effect");
 #else
 #error "unsupported pointer width"
 #endif

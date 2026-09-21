@@ -207,6 +207,10 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word BIT Xmem fields: dual-X modifier XMOD[7:6], raw
      * XAR[5:4], and 4-bit bit code BITC[3:0] from word 0. */
     TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_BITC,
+    /* One-word dual-memory fields: dual-X modifier XMOD[7:6] and
+     * raw XAR[5:4] over dual-Y modifier YMOD[3:2] and raw
+     * YAR[1:0] from word 0. */
+    TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -390,6 +394,13 @@ typedef uint16_t ti_c54x_input_resource_mask;
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_FRCT_OVM \
     ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
                                    TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
+/* SQDST/ABDST distance bodies read accumulators, ARs, SXM, FRCT, OVM. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 #define TI_C54X_INPUT_RESOURCES_KNOWN_MASK \

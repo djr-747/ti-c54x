@@ -127,7 +127,7 @@ static ti_c54x_op_status add_src_asm_compute(
     ti_c54x_u40_t value;
     bool carry;
     ti_c54x_signed32_overflow_direction overflow;
-    ti_c54x_op_effect staged;
+    ti_c54x_op_effect staged = {0};
     ti_c54x_op_status status;
 
     if (fields == NULL || input == NULL || effect == NULL) {

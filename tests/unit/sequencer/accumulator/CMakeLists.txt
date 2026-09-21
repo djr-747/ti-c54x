@@ -1,3 +1,4 @@
 ti_c54x_add_unit_test(accumulator_write_effect test_accumulator_write_effect.c)
+ti_c54x_add_unit_test(accumulator_write_pair_effect test_accumulator_write_pair_effect.c)
 ti_c54x_add_unit_test(accumulator_status_delta test_accumulator_status_delta.c)
 ti_c54x_add_unit_test(accumulator_overflow_effect test_accumulator_overflow_effect.c)

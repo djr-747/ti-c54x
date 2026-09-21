@@ -22,14 +22,14 @@ _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
                "dual address arm changed the LP64 address ABI");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 48,
                "dual callback changed the LP64 memory-effect ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 56,
+_Static_assert(sizeof(ti_c54x_op_effect) == 72,
                "dual callback changed the LP64 effect ABI");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24,
                "dual address arm changed the ILP32 address ABI");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 40,
                "dual callback changed the ILP32 memory-effect ABI");
-_Static_assert(sizeof(ti_c54x_op_effect) == 44,
+_Static_assert(sizeof(ti_c54x_op_effect) == 52,
                "dual callback changed the ILP32 effect ABI");
 #endif
 

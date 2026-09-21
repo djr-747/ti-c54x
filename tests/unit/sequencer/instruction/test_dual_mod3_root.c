@@ -36,11 +36,11 @@
  * lane 2 grows the embedded input snapshot with the C16 fields, so
  * the root holds at 456. P3-S97 stages the single-repeat report
  * (pending flag plus RC operand) beside the RMW-ADD flags, so the
- * root holds at 464. */
+ * root holds at 480. */
 _Static_assert(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U,
                "W52B snapshot carries requests, commits, AR0/BK shadows");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 464U,
-               "P3-S97 LP64 root stages the single-repeat report");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 480U,
+               "P3-S97 LP64 root stages the single-repeat report plus the write-pair growth");
 
 static ti_c54x_op_memory_address_spec
 dual_spec_modes(uint8_t x_ar,

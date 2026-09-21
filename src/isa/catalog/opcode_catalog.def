@@ -183,6 +183,19 @@ TI_C54X_OPCODE_MASKED(ADD_XMEM, add_xmem, 0x9000, 0xFE00, 1, TI_C54X_OPERAND_LAY
  * accumulator/dual-XMOD/XAR/shift-4 layout into the landed op_sub_xmem
  * core. */
 TI_C54X_OPCODE_MASKED(SUB_XMEM, sub_xmem, 0x9200, 0xFE00, 1, TI_C54X_OPERAND_LAYOUT_ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4, TI_C54X_REPEATABILITY_UNRESOLVED, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS_STATUS_SXM_OVM)
+/* SQDST Xmem,Ymem: square distance over the 0xE200 first word
+ * through the dual-XMOD/XAR/YMOD/YAR layout into the
+ * op_sqdst_xmem_ymem core. B accumulates the squared A(32-16)
+ * (FRCT-doubled); A stages the SXM-widened (X-Y) shifted left
+ * 16. Class 7 repeat-used pair, so the row is ELIGIBLE. */
+TI_C54X_OPCODE_MASKED(SQDST_XMEM_YMEM, sqdst_xmem_ymem, 0xE200, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM)
+/* ABDST Xmem,Ymem: absolute distance over the 0xE300 first word
+ * through the dual-XMOD/XAR/YMOD/YAR layout into the
+ * op_abdst_xmem_ymem core. B accumulates |A(32-16)|
+ * (FRCT-doubled, ABS -32768 edge rule); A stages the
+ * SXM-widened (X-Y) shifted left 16. Class 7 repeat-used pair,
+ * so the row is ELIGIBLE. */
+TI_C54X_OPCODE_MASKED(ABDST_XMEM_YMEM, abdst_xmem_ymem, 0xE300, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM)
 /* ADD src,ASM (syntax 10): dst accumulates src shifted by ASM over
  * the shared accumulator source/destination layout into the landed
  * op_add_src_asm core. */

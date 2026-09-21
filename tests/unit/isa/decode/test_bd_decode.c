@@ -160,12 +160,13 @@ test_fixed_bit_near_misses(void)
      * XOR_IMMEDIATE_SHIFT, and flipping fixed bit 4 lands on
      * AND_IMMEDIATE_SHIFT16, flipping fixed bit 10 lands on the
      * P3-S39 SFTA_ACC sibling, and flipping fixed bit 14 lands on the
-     * P3-S3g MAC_DUAL_M1_M0 sibling; all other fixed-bit flips must
-     * miss every row. */
+     * P3-S3g MAC_DUAL_M1_M0 sibling, and flipping fixed bit 12 lands on
+     * the P3-S102 SQDST_XMEM_YMEM sibling (0xE273 under mask 0xFF00);
+     * all other fixed-bit flips must miss every row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x0001), UINT16_C(0x0002), UINT16_C(0x0004),
         UINT16_C(0x0008), UINT16_C(0x0100),
-        UINT16_C(0x1000), UINT16_C(0x2000),
+        UINT16_C(0x2000),
         UINT16_C(0x8000)};
     const ti_c54x_decode_result b_sibling =
         ti_c54x_decode_first_word(
@@ -217,6 +218,13 @@ test_fixed_bit_near_misses(void)
             (uint16_t)(BD_VALUE ^ UINT16_C(0x4000)));
     TI_C54X_TEST_CHECK(mac_dual_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(mac_dual_sibling.id == TI_C54X_OPCODE_ID_MAC_DUAL_M1_M0);
+    /* 0xE273 (fixed bit 12 cleared) is the SQDST_XMEM_YMEM encoding with
+     * XMOD1 XAR=AR5, YMOD0 YAR=AR5. */
+    const ti_c54x_decode_result sqdst_sibling =
+        ti_c54x_decode_first_word(
+            (uint16_t)(BD_VALUE ^ UINT16_C(0x1000)));
+    TI_C54X_TEST_CHECK(sqdst_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(sqdst_sibling.id == TI_C54X_OPCODE_ID_SQDST_XMEM_YMEM);
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);

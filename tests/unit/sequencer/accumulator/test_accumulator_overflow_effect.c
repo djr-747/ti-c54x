@@ -15,11 +15,11 @@
 #include <string.h>
 
 #if UINTPTR_MAX == UINT64_MAX
-_Static_assert(sizeof(ti_c54x_op_effect) == 56U,
-               "outer op effect layout must remain 56 bytes on LP64");
+_Static_assert(sizeof(ti_c54x_op_effect) == 72U,
+               "outer op effect layout must remain 72 bytes on LP64");
 #elif UINTPTR_MAX == UINT32_MAX
-_Static_assert(sizeof(ti_c54x_op_effect) == 44U,
-               "outer op effect layout must remain 44 bytes on ILP32");
+_Static_assert(sizeof(ti_c54x_op_effect) == 52U,
+               "outer op effect layout must remain 52 bytes on ILP32");
 #endif
 
 static void seed(ti_c54x_accumulator_state *accumulators,
