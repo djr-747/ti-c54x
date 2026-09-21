@@ -171,14 +171,26 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(firs_sibling.id ==
                        TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
     {
-        /* Flipping fixed bit 14 lands on the S3s MACSU dual row. */
-        const ti_c54x_decode_result macsu_sibling =
+        /* Flipping fixed bit 14 freed the S3s MACSU dual row under
+         * the P3-S112 correction (0xA800 is UNKNOWN now); the
+         * MACSU M0_M0 row lives at 0xA600 per TI SPRU172C 4-91. */
+        const ti_c54x_decode_result freed_sibling =
             ti_c54x_decode_first_word(
                 (uint16_t)(LD_K_VALUE ^ UINT16_C(0x4000)));
 
-        TI_C54X_TEST_CHECK(macsu_sibling.status ==
+        TI_C54X_TEST_CHECK(freed_sibling.status ==
+                           TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
+        TI_C54X_TEST_CHECK(freed_sibling.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+    {
+        /* The MACSU M0_M0 row lives at 0xA600 per TI SPRU172C
+         * section MACSU, p. 4-91 (diagram 1010_011S_XXXX_YYYY). */
+        const ti_c54x_decode_result macsu_home =
+            ti_c54x_decode_first_word(UINT16_C(0xA600));
+
+        TI_C54X_TEST_CHECK(macsu_home.status ==
                            TI_C54X_DECODE_STATUS_OK);
-        TI_C54X_TEST_CHECK(macsu_sibling.id ==
+        TI_C54X_TEST_CHECK(macsu_home.id ==
                            TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     }
 

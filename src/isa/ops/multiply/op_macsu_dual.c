@@ -333,23 +333,23 @@ static ti_c54x_op_status macsu_dual_trusted(
     }
 
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m0_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0,
-                         UINT16_C(0xA800))
+                         UINT16_C(0xA600))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m0_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M1,
-                         UINT16_C(0xA804))
+                         UINT16_C(0xA604))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m0_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M2,
-                         UINT16_C(0xA808))
+                         UINT16_C(0xA608))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m1_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M0,
-                         UINT16_C(0xA840))
+                         UINT16_C(0xA640))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m1_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M1,
-                         UINT16_C(0xA844))
+                         UINT16_C(0xA644))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m1_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M2,
-                         UINT16_C(0xA848))
+                         UINT16_C(0xA648))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m2_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M0,
-                         UINT16_C(0xA880))
+                         UINT16_C(0xA680))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m2_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M1,
-                         UINT16_C(0xA884))
+                         UINT16_C(0xA684))
 DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m2_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M2,
-                         UINT16_C(0xA888))
+                         UINT16_C(0xA688))
 
 #undef DEFINE_MACSU_DUAL_COMPLETE
 
@@ -373,22 +373,22 @@ DEFINE_MACSU_DUAL_COMPLETE(macsu_dual_m2_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M2,
     }
 
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m0_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0,
-                         UINT16_C(0xA800), UINT8_C(0), UINT8_C(0))
+                         UINT16_C(0xA600), UINT8_C(0), UINT8_C(0))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m0_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M1,
-                         UINT16_C(0xA804), UINT8_C(0), UINT8_C(1))
+                         UINT16_C(0xA604), UINT8_C(0), UINT8_C(1))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m0_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M2,
-                         UINT16_C(0xA808), UINT8_C(0), UINT8_C(2))
+                         UINT16_C(0xA608), UINT8_C(0), UINT8_C(2))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m1_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M0,
-                         UINT16_C(0xA840), UINT8_C(1), UINT8_C(0))
+                         UINT16_C(0xA640), UINT8_C(1), UINT8_C(0))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m1_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M1,
-                         UINT16_C(0xA844), UINT8_C(1), UINT8_C(1))
+                         UINT16_C(0xA644), UINT8_C(1), UINT8_C(1))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m1_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M2,
-                         UINT16_C(0xA848), UINT8_C(1), UINT8_C(2))
+                         UINT16_C(0xA648), UINT8_C(1), UINT8_C(2))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m2_m0, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M0,
-                         UINT16_C(0xA880), UINT8_C(2), UINT8_C(0))
+                         UINT16_C(0xA680), UINT8_C(2), UINT8_C(0))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m2_m1, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M1,
-                         UINT16_C(0xA884), UINT8_C(2), UINT8_C(1))
+                         UINT16_C(0xA684), UINT8_C(2), UINT8_C(1))
 DEFINE_MACSU_DUAL_WRAPPERS(macsu_dual_m2_m2, TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M2,
-                         UINT16_C(0xA888), UINT8_C(2), UINT8_C(2))
+                         UINT16_C(0xA688), UINT8_C(2), UINT8_C(2))
 
 #undef DEFINE_MACSU_DUAL_WRAPPERS

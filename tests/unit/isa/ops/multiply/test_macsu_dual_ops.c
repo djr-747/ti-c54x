@@ -46,9 +46,9 @@ static const ti_c54x_opcode_id expected_ids[3][3] = {
      TI_C54X_OPCODE_ID_MACSU_DUAL_M2_M2}};
 
 static const uint16_t row_values[3][3] = {
-    {UINT16_C(0xA800), UINT16_C(0xA804), UINT16_C(0xA808)},
-    {UINT16_C(0xA840), UINT16_C(0xA844), UINT16_C(0xA848)},
-    {UINT16_C(0xA880), UINT16_C(0xA884), UINT16_C(0xA888)}};
+    {UINT16_C(0xA600), UINT16_C(0xA604), UINT16_C(0xA608)},
+    {UINT16_C(0xA640), UINT16_C(0xA644), UINT16_C(0xA648)},
+    {UINT16_C(0xA680), UINT16_C(0xA684), UINT16_C(0xA688)}};
 
 static uint16_t
 encode_word(uint8_t x_mode, uint8_t y_mode, uint8_t select, uint8_t xar,
@@ -163,9 +163,9 @@ test_mod3_stays_unknown(void)
 static void
 test_checked_stages_dual_t_load(void)
 {
-    /* 0xA832: S=0 (src/dst A), XMOD0 XAR=3 (AR5), YMOD0 YAR=2 (AR4). */
+    /* 0xA632: S=0 (src/dst A), XMOD0 XAR=3 (AR5), YMOD0 YAR=2 (AR4). */
     ti_c54x_decoded_instruction instruction = decode_expect(
-        UINT16_C(0xA832), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
+        UINT16_C(0xA632), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     ti_c54x_op_input_snapshot input = known_input();
     ti_c54x_op_effect effect = {0};
 
@@ -231,7 +231,7 @@ static void
 test_completion_oracle(void)
 {
     /* uns(0x4000) x 0x4000 + 0 = 0x10000000 into A. */
-    check_completion(UINT16_C(0xA832),
+    check_completion(UINT16_C(0xA632),
                      TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0, ORACLE_X_WORD,
                      ORACLE_Y_WORD, false, ORACLE_AFTER, UINT8_C(0));
 }
@@ -240,7 +240,7 @@ static void
 test_completion_frct_doubles(void)
 {
     /* FRCT=1 doubles the mixed product: 0x20000000 into A. */
-    check_completion(UINT16_C(0xA832),
+    check_completion(UINT16_C(0xA632),
                      TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0, ORACLE_X_WORD,
                      ORACLE_Y_WORD, true, ORACLE_FRCT_AFTER, UINT8_C(0));
 }
@@ -250,7 +250,7 @@ test_completion_mixed_sign(void)
 {
     /* uns(0x8765) x -16384 lands the mixed product into A; either
      * uniform-signedness core reading gives a different value. */
-    check_completion(UINT16_C(0xA832),
+    check_completion(UINT16_C(0xA632),
                      TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0, MIXED_X_WORD,
                      MIXED_Y_WORD, false, MIXED_AFTER, UINT8_C(0));
 }
@@ -258,8 +258,8 @@ test_completion_mixed_sign(void)
 static void
 test_completion_selects_b(void)
 {
-    /* 0xA932: S=1 selects B as the shared src/dst. */
-    check_completion(UINT16_C(0xA932),
+    /* 0xA732: S=1 selects B as the shared src/dst. */
+    check_completion(UINT16_C(0xA732),
                      TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0, ORACLE_X_WORD,
                      ORACLE_Y_WORD, false, ORACLE_AFTER, UINT8_C(1));
 }
@@ -267,9 +267,9 @@ test_completion_selects_b(void)
 static void
 test_completion_m1_m2_row(void)
 {
-    /* Row identity proves through the same completion: word 0xA87A
+    /* Row identity proves through the same completion: word 0xA67A
      * (XMOD1 XAR=3, YMOD2 YAR=2, S=0). */
-    check_completion(UINT16_C(0xA87A),
+    check_completion(UINT16_C(0xA67A),
                      TI_C54X_OPCODE_ID_MACSU_DUAL_M1_M2, ORACLE_X_WORD,
                      ORACLE_Y_WORD, false, ORACLE_AFTER, UINT8_C(0));
 }
@@ -278,7 +278,7 @@ static void
 test_trusted_equivalence(void)
 {
     ti_c54x_decoded_instruction instruction = decode_expect(
-        UINT16_C(0xA832), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
+        UINT16_C(0xA632), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     ti_c54x_op_input_snapshot input = known_input();
     ti_c54x_trusted_operand_values trusted =
         trusted_for(UINT8_C(0), UINT8_C(3), UINT8_C(2));
@@ -350,7 +350,7 @@ static void
 test_unknown_src_rejects(void)
 {
     ti_c54x_decoded_instruction instruction = decode_expect(
-        UINT16_C(0xA832), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
+        UINT16_C(0xA632), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     ti_c54x_op_input_snapshot input = known_input();
     ti_c54x_op_effect effect = {0};
 
@@ -362,7 +362,7 @@ test_unknown_src_rejects(void)
     input = known_input();
 
     /* S=1 word selects B: unknown B stops, unknown A is tolerated. */
-    instruction = decode_expect(UINT16_C(0xA932),
+    instruction = decode_expect(UINT16_C(0xA732),
                                 TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     input.accumulator_b_known = false;
     input.accumulator_a_known = false;
@@ -375,7 +375,7 @@ static void
 test_unknown_ar_rejects(void)
 {
     ti_c54x_decoded_instruction instruction = decode_expect(
-        UINT16_C(0xA832), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
+        UINT16_C(0xA632), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     ti_c54x_op_input_snapshot input = known_input();
     ti_c54x_op_effect effect = {0};
 
@@ -390,7 +390,7 @@ static void
 test_null_rejects(void)
 {
     ti_c54x_decoded_instruction instruction = decode_expect(
-        UINT16_C(0xA832), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
+        UINT16_C(0xA632), TI_C54X_OPCODE_ID_MACSU_DUAL_M0_M0);
     ti_c54x_op_input_snapshot input = known_input();
     ti_c54x_op_effect effect = {0};
 

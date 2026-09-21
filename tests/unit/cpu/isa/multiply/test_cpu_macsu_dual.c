@@ -176,9 +176,9 @@ run_case(uint16_t opcode, uint16_t x_value, uint16_t y_value, bool frct,
 static void
 test_oracle_retires(void)
 {
-    /* 0xA8AB: M2_M2, S=0 (src/dst A), X=*AR4+ over 0x0100,
+    /* 0xA6AB: M2_M2, S=0 (src/dst A), X=*AR4+ over 0x0100,
      * Y=*AR5+ over 0x0200: uns(0x4000) x 0x4000 = 0x10000000. */
-    run_case(UINT16_C(0xA8AB), UINT16_C(0x4000), UINT16_C(0x4000), false,
+    run_case(UINT16_C(0xA6AB), UINT16_C(0x4000), UINT16_C(0x4000), false,
              UINT8_C(0), UINT64_C(0x10000000), UINT16_C(0x4000));
 }
 
@@ -186,15 +186,15 @@ static void
 test_frct_doubles(void)
 {
     /* Same encoding with FRCT=1: 0x20000000 into A. */
-    run_case(UINT16_C(0xA8AB), UINT16_C(0x4000), UINT16_C(0x4000), true,
+    run_case(UINT16_C(0xA6AB), UINT16_C(0x4000), UINT16_C(0x4000), true,
              UINT8_C(0), UINT64_C(0x20000000), UINT16_C(0x4000));
 }
 
 static void
 test_selects_b(void)
 {
-    /* 0xA9AB: S=1 selects B as the shared src/dst. */
-    run_case(UINT16_C(0xA9AB), UINT16_C(0x4000), UINT16_C(0x4000), false,
+    /* 0xA7AB: S=1 selects B as the shared src/dst. */
+    run_case(UINT16_C(0xA7AB), UINT16_C(0x4000), UINT16_C(0x4000), false,
              UINT8_C(1), UINT64_C(0x10000000), UINT16_C(0x4000));
 }
 
@@ -202,7 +202,7 @@ static void
 test_mixed_sign_retires(void)
 {
     /* uns(0x8765) x -16384 lands the mixed product into A. */
-    run_case(UINT16_C(0xA8AB), UINT16_C(0x8765), UINT16_C(0xC000), false,
+    run_case(UINT16_C(0xA6AB), UINT16_C(0x8765), UINT16_C(0xC000), false,
              UINT8_C(0), UINT64_C(0xFFDE26C000), UINT16_C(0x8765));
 }
 

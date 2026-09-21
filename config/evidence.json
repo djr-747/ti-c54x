@@ -78,6 +78,12 @@
         "retired_abi_major": 0,
         "reason": "The original assertion transcribed the exact single-word reset as 0xF7C0; the TI instruction-set summary tables (SPRU307A Table 13 and SPRS039C Table 13, both listing INTR K at 1111_0111_110K_KKKK beside RESET at 1111_0111_1110_0000) show the RESET first word is 0xF7E0. The corrected record carries 0xF7E0.",
         "replacement_id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138-R1"
+      },
+      {
+        "id": "E-PROJECT-P3-S3S-MACSU-ACTIVATION",
+        "retired_abi_major": 0,
+        "reason": "The original assertion placed the nine MACSU_DUAL_Mx_My rows at 0xA800; the TI SPRU172C section MACSU diagram (p. 4-91, 1010_011S_XXXX_YYYY, cross-confirmed by the landed LD parallel-MAC section diagram at 1010_10RD_XXXX_YYYY owning 0xA800) shows the MACSU first word is 0xA600. The corrected record carries 0xA600.",
+        "replacement_id": "E-PROJECT-P3-S112-MACSU-ROW-CORRECTION"
       }
     ],
     "requirements": [],
@@ -6781,22 +6787,6 @@
       "assertion": "MACSU syntax 2 is MACSU Xmem, Ymem, src with word 0 bits 15:9 1010011, S bit 8, X field 7:4, Y field 3:0, one program word, and execution src + unsigned(Xmem) x signed(Ymem) into src with the Xmem word into T in the read phase. The operation is affected by FRCT and OVM and affects OVsrc. Oracle shape (MACSU *AR4+, *AR5+, A 00 0000 0000, FRCT 0, AR4 0100, AR5 0200, mem[0100] 4000, mem[0200] 4000) yields A 00 1000 0000 with T 4000, AR4 0101, AR5 0201; the FRCT lane doubles the product. Dual one-word forms carry UNRESOLVED repeatability by the dual precedent."
     },
     {
-      "id": "E-PROJECT-P3-S3S-MACSU-ACTIVATION",
-      "immutable": true,
-      "state": "PINNED",
-      "scope": "PROJECT_CONTRACT_ONLY",
-      "classification": "PROJECT_CONTRACT_ONLY",
-      "source_id": "SRC-PROJECT-CONTRACT",
-      "applicable_target_ids": [
-        "C54X_CORE_COMMON_V1"
-      ],
-      "locator": {
-        "path": "docs/plan/p3-s3s-macsu-xmem-ymem-dual-slice.md",
-        "anchor": "P3-S3s: MACSU Xmem,Ymem dual slice (implemented; local verification green)"
-      },
-      "assertion": "S3s is implemented and green: nine MACSU_DUAL_Mx_My catalog rows at 0xA800 plus X/Y mode bits under mask 0xFECC carrying 32 S/Xar/Yar encodings each through the shared DUAL_DESTINATION_XAR_YAR layout with UNRESOLVED repeatability; checked and trusted leaves stage dual-indirect MOD0-MOD2 reads with read-phase X-side T load, and pair completion runs (src) plus unsigned-(Xmem) times signed-(Ymem) into the S-selected accumulator through the multiply core with ADD select, FRCT/OVM handling, and no rounding; CPU retirement proves the recomputed oracle vector (A 00 1000 0000 with T 4000, AR4 0101, AR5 0201), the FRCT lane (A 00 2000 0000), S selection, and the mixed-sign lane. The mixed-sign product rides the new unsigned_t_only multiply-core select (T unsigned, multiplicand signed; both-unsigned keeps precedence; all-signed leaves set it false explicitly). FORM-T2-04-13 lands SUBSET."
-    },
-    {
       "id": "E-PROJECT-P3-S3T-MACR-DUAL-ACTIVATION",
       "immutable": true,
       "state": "PINNED",
@@ -8963,6 +8953,22 @@
         "printed_page_end": "4-126"
       },
       "assertion": "SPRU172C POLY defines the single-word polynomial step POLY Smem with opcode diagram 0011_0110_IAAA_AAAA: the SXM-widened Smem word shifted left 16 loads into B while A-high times T plus B-old rounds into A (FRCT-doubled product, OVM saturation, OVA on destination overflow). The instruction is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-PROJECT-P3-S112-MACSU-ROW-CORRECTION",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s112-macsu-first-word-correction-slice.md",
+        "anchor": "P3-S112: MACSU dual first-word correction 0xA8xx to 0xA6xx (implemented; local verification green)"
+      },
+      "assertion": "S112 is implemented and green: the nine MACSU_DUAL_Mx_My catalog rows move from 0xA800 to 0xA600 plus X/Y mode bits under unchanged mask 0xFECC (288 relocated lookup words, counts hold), the shared leaf hardcodes and the op/CPU/decode tests move their word constructors to 0xA6xx/0xA7xx, and the freed 0xA800 decodes UNKNOWN. Semantics, repeatability, form binding (FORM-T2-04-13 SUBSET), and the oracle vectors are untouched; the LD||MAC[R] range at 0xA800 is unblocked."
     }
   ],
   "requirements": [
@@ -18112,7 +18118,7 @@
       "claim": "Bind the nine MACSU_DUAL_Mx_My catalog rows to FORM-T2-04-13 at SUBSET coverage over dual-indirect X/Y MOD0-MOD2 addressing.",
       "evidence_ids": [
         "E-PROJECT-P3-S3-PLAN-ANCHOR",
-        "E-PROJECT-P3-S3S-MACSU-ACTIVATION"
+        "E-PROJECT-P3-S112-MACSU-ROW-CORRECTION"
       ],
       "test_ids": [
         "T-PROJECT-ISA-INVENTORY-CATALOG-BINDING"
