@@ -2,6 +2,7 @@
 list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/arch_state.c"
     "${CMAKE_CURRENT_LIST_DIR}/block_size_register.c"
+    "${CMAKE_CURRENT_LIST_DIR}/program_counter_extension.c"
     "${CMAKE_CURRENT_LIST_DIR}/repeat_counter_register.c"
     "${CMAKE_CURRENT_LIST_DIR}/interrupt_flag_register.c"
     "${CMAKE_CURRENT_LIST_DIR}/mmr_file.c"

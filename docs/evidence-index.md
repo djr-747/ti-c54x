@@ -51,6 +51,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU131G-S6.1-P6-3` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.1, `6-3` |
 | `E-TI-C54X-SPRU131G-S6.2-P6-4` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.2, `6-4` |
 | `E-TI-C54X-SPRU131G-S6.9-P6-25` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §6.9, `6-25` |
+| `E-PROJECT-P3-S113-XPC-STATE` | PINNED | PROJECT_CONTRACT_ONLY | PROJECT_CONTRACT_ONLY | `SRC-PROJECT-CONTRACT` | `C54X_CORE_COMMON_V1` | `docs/plan/p3-s113-xpc-state-slice.md` anchor `P3-S113: XPC program-counter extension state (implemented; local verification green)` |
 | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-2`–`4-5` |
 | `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1, `4-2`–`4-5` |
 | `E-TI-C54X-SPRU131G-S4.2-P4-10-4-12-ALU-OVERFLOW-SATURATION` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.2 through 4.2.3, `4-10`–`4-12` |
@@ -1508,6 +1509,7 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/multiply/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-OPS` |
 | `REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-CPU` |
 | `REQ-COMMON-P3-S111-POLY-SMEM-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-POLY-P4-126` | `T-COMMON-P3-S111-POLY-SMEM-METADATA` |
+| `REQ-PROJECT-P3-S113-XPC-STATE` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | PROJECT_CONTRACT | `src/state/` | `E-PROJECT-P3-S113-XPC-STATE` | `T-PROJECT-P3-S113-XPC-STATE` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2217,6 +2219,7 @@ exist in the repository.
 | `T-COMMON-P3-S111-POLY-SMEM-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/multiply/test_poly_smem_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.poly_smem_ops"}` | `REQ-COMMON-P3-S111-POLY-SMEM-SEMANTICS` |
 | `T-COMMON-P3-S111-POLY-SMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/multiply/test_cpu_poly_smem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_poly_smem"}` | `REQ-COMMON-P3-S111-POLY-SMEM-RETIREMENT` |
 | `T-COMMON-P3-S111-POLY-SMEM-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_poly_smem_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.poly_smem_metadata"}` | `REQ-COMMON-P3-S111-POLY-SMEM-CATALOG` |
+| `T-PROJECT-P3-S113-XPC-STATE` | PASSING | PROJECT_CONTRACT_ONLY | `tests/unit/state/test_program_counter_extension_contract.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.program_counter_extension_contract"}` | `REQ-PROJECT-P3-S113-XPC-STATE` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

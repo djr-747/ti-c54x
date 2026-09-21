@@ -45,6 +45,7 @@ typedef struct ti_c54x_arch_state {
     uint16_t bk;
     uint16_t sp;
     uint16_t rtn;
+    uint16_t xpc;
     uint16_t ar[8];
     ti_c54x_status_register_state status;
     ti_c54x_mmr_file_state mmr_file;

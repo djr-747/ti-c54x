@@ -5,6 +5,8 @@ $(eval $(call ti_c54x_add_test,arch_state_address_fields,state,test_arch_state_a
 $(eval $(call ti_c54x_add_test,arch_state_address_field_contract,state,test_arch_state_address_field_contract.c))
 $(eval $(call ti_c54x_add_test,block_size_register,state,test_block_size_register.c))
 $(eval $(call ti_c54x_add_test,block_size_register_contract,state,test_block_size_register_contract.c))
+# P3-S113 RED contract: XPC accessors.
+$(eval $(call ti_c54x_add_test,program_counter_extension_contract,state,test_program_counter_extension_contract.c))
 $(eval $(call ti_c54x_add_test,repeat_counter_register_contract,state,test_repeat_counter_register_contract.c))
 $(eval $(call ti_c54x_add_test,interrupt_flag_register_contract,state,test_interrupt_flag_register_contract.c))
 $(eval $(call ti_c54x_add_test,mmr_owner_access,state,test_mmr_owner_access.c))

@@ -8969,6 +8969,22 @@
         "anchor": "P3-S112: MACSU dual first-word correction 0xA8xx to 0xA6xx (implemented; local verification green)"
       },
       "assertion": "S112 is implemented and green: the nine MACSU_DUAL_Mx_My catalog rows move from 0xA800 to 0xA600 plus X/Y mode bits under unchanged mask 0xFECC (288 relocated lookup words, counts hold), the shared leaf hardcodes and the op/CPU/decode tests move their word constructors to 0xA6xx/0xA7xx, and the freed 0xA800 decodes UNKNOWN. Semantics, repeatability, form binding (FORM-T2-04-13 SUBSET), and the oracle vectors are untouched; the LD||MAC[R] range at 0xA800 is unblocked."
+    },
+    {
+      "id": "E-PROJECT-P3-S113-XPC-STATE",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "classification": "PROJECT_CONTRACT_ONLY",
+      "source_id": "SRC-PROJECT-CONTRACT",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "path": "docs/plan/p3-s113-xpc-state-slice.md",
+        "anchor": "P3-S113: XPC program-counter extension state (implemented; local verification green)"
+      },
+      "assertion": "S113 is implemented and green: XPC is modeled as a private 16-bit project register with a dedicated scalar knownness bit (bit 6), checked read/write accessors mirroring the BK seam, and reset_common initialization to 0 known, per TI SPRU131G Memory section 3.2.5 p. 3-20 (XPC initializes to 0 at hardware reset) and section 3.3.4.11 p. 3-28 (XPC carries the upper 7 bits of the extended program address, is memory-mapped at data 001Eh, and is modified by exactly six control instructions). XPC stays outside the MMR file; no ISA, sequencer, or CPU behavior changes in this slice. XPC and extended-page semantics remain excluded from the common target pending the far-control profile work."
     }
   ],
   "requirements": [
@@ -21238,6 +21254,20 @@
       "test_ids": [
         "T-COMMON-P3-S111-POLY-SMEM-METADATA"
       ]
+    },
+    {
+      "id": "REQ-PROJECT-P3-S113-XPC-STATE",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "PROJECT_CONTRACT",
+      "owner_path": "src/state/",
+      "claim": "Provide project-owned XPC storage with checked accessors and reset init for future far-control work: the read returns UNKNOWN on unknown or null arguments with outputs preserved, the write publishes XPC plus knownness, and reset_common initializes XPC to 0 known while the MMR file keeps excluding XPC 0x1E.",
+      "evidence_ids": [
+        "E-PROJECT-P3-S113-XPC-STATE"
+      ],
+      "test_ids": [
+        "T-PROJECT-P3-S113-XPC-STATE"
+      ]
     }
   ],
   "tests": [
@@ -31197,6 +31227,20 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S111-POLY-SMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-PROJECT-P3-S113-XPC-STATE",
+      "state": "PASSING",
+      "scope": "PROJECT_CONTRACT_ONLY",
+      "path": "tests/unit/state/test_program_counter_extension_contract.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.program_counter_extension_contract"
+      },
+      "requirement_ids": [
+        "REQ-PROJECT-P3-S113-XPC-STATE"
       ]
     }
   ]

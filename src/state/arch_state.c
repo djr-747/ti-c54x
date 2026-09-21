@@ -31,6 +31,8 @@ ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state)
     state->pc_word = UINT16_C(0xFF80);
     state->ifr = UINT16_C(0);
     state->rc = UINT16_C(0);
+    /* XPC initializes to 0 at hardware reset (SPRU131G Memory). */
+    state->xpc = UINT16_C(0);
     if (ti_c54x_status_register_reset_common(&state->status) !=
         TI_C54X_STATUS_REGISTER_OK) {
         return TI_C54X_ARCH_STATE_INVALID_ARGUMENT;
@@ -45,7 +47,8 @@ ti_c54x_arch_state_reset_common(ti_c54x_arch_state *state)
     }
     state->scalar_known_mask = (uint8_t)(TI_C54X_ARCH_STATE_KNOWN_PC |
                                          TI_C54X_ARCH_STATE_KNOWN_IFR |
-                                         TI_C54X_ARCH_STATE_KNOWN_RC);
+                                         TI_C54X_ARCH_STATE_KNOWN_RC |
+                                         TI_C54X_ARCH_STATE_KNOWN_XPC);
     state->ar_known_mask = UINT8_C(0);
     return TI_C54X_ARCH_STATE_OK;
 }
