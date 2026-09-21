@@ -1,4 +1,4 @@
-### P3-S102: SQDST/ABDST dual-read distance pair (planned)
+### P3-S102: SQDST/ABDST dual-read distance pair (implemented; local verification green)
 
 This immutable anchor heads the P3-S102 evidence freeze. Two
 dual-data-memory single-word rows land on a new dual-XY seam:

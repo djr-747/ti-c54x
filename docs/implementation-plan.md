@@ -821,7 +821,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S101: BIT Xmem dual row and leaf (implemented; local verification green)](plan/p3-s101-bit-xmem-row-slice.md)
 
-- [P3-S102: SQDST/ABDST dual-read distance pair (planned)](plan/p3-s102-sqdst-abdst-distance-pair-slice.md)
+- [P3-S102: SQDST/ABDST dual-read distance pair (implemented; local verification green)](plan/p3-s102-sqdst-abdst-distance-pair-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
