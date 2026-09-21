@@ -276,8 +276,12 @@ static void test_sizes_and_distinct_ar_atomic_commit(void)
     ti_c54x_memory_instruction_result result;
     uint64_t value = 0;
 
+    /* P3-S108: the triple WORD16 union member grows the root from
+     * 480 to 576 on LP64 (union 88 to 184) and from 436 to 516 on
+     * ILP32 (union 80 to 160 at 4-alignment, unverifiable on a
+     * 64-bit host). */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 480U : 436U));
+                       (sizeof(void *) == 8U ? 576U : 516U));
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_dual_memory_address_snapshot) == 52U);
     init_runtime(&accumulators, &t_register);
     TI_C54X_TEST_CHECK(prepare_dual(&transaction, &effect, &state) ==

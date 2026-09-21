@@ -8903,6 +8903,24 @@
         "printed_page_end": "4-80"
       },
       "assertion": "SPRU172C LMS defines the single-word dual-16-bit operation LMS Xmem,Ymem with opcode diagram 1110_0001_XXXX_YYYY (first word 0xE100 under mask 0xFF00, confirmed by the TI instruction-set summary table listing FIRS at 1110_0000 and LMS at 1110_0001): A accumulates (Xmem shifted left 16) plus 2^15 as one 40-bit add while B accumulates the signed Xmem*Ymem product (doubled under FRCT). T is never written; SXM widens Xmem, and C, OVA, OVB report the two channels."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FIRS-P4-59",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "FIRS",
+        "printed_page_start": "4-59",
+        "printed_page_end": "4-59"
+      },
+      "assertion": "SPRU172C FIRS defines the dual-16-bit filter operation FIRS Xmem,Ymem,pmad with opcode diagram 1110_0000_XXXX_YYYY (first word 0xE000 under mask 0xFF00, confirmed by the TI instruction-set summary table listing FIRS at 1110_0000): the Xmem and Ymem DATA words read in order over the shared dual XMOD/XAR/YMOD/YAR modes with both ARs post-updated, the second program word carries the absolute PROGRAM coefficient address with no post-update, A stages the SXM-widened (Xmem+Ymem) shifted left 16, and B accumulates the signed old-A(32-16) times the signed coefficient (doubled under FRCT) as one 40-bit add with OVM saturation. T is never written; SXM, FRCT, and OVM affect the result."
     }
   ],
   "requirements": [
@@ -21046,6 +21064,48 @@
       "test_ids": [
         "T-COMMON-P3-S106-LMS-XMEM-YMEM-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute FIRS Xmem,Ymem,pmad as a catalog MASKED row at 0xE000 under mask 0xFF00 with the dual-XMOD/XAR/YMOD/YAR layout, the absolute PROGRAM pmad second word, and ELIGIBLE repeatability: the leaf stages one dual-data-plus-program WORD16 READ triple over all four XMOD/YMOD codes including MOD3 indexed and circular commits, and the read-value completion stages one accumulator-write pair with A staging the SXM-widened (X+Y) shifted left 16 and B adding the signed old-A(32-16) times the signed coefficient, FRCT-doubled, to 40-bit B with OVM saturation. TC is preserved and T is never written. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FIRS-P4-59"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire FIRS Xmem,Ymem,pmad through the generic CPU path with two-word PC advance, accumulator and auxiliary-register input collection, ordered X/Y D-bus DATA reads plus the PROGRAM coefficient read, dual AR commits, the accumulator pair publication with all other status preserved, fault atomicity, and no other endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FIRS-P4-59"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register FIRS_XMEM_YMEM_PMAD at 0xE000 under mask 0xFF00 as a two-word form with the dual-XMOD/XAR/YMOD/YAR layout, ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM inputs, and ELIGIBLE repeatability, covering all 256 first-word encodings with UNKNOWN neighbors.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FIRS-P4-59"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -30879,6 +30939,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S106-LMS-XMEM-YMEM-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_firs_xmem_ymem_pmad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.firs_xmem_ymem_pmad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_firs.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_firs"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_firs_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.firs_xmem_ymem_pmad_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CATALOG"
       ]
     }
   ]

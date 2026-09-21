@@ -3,7 +3,8 @@
  *
  * Owns: cold dispatch from a prepared root memory transaction to one of the
  * pair reducers (LONG32, dual-WORD16 read, dual-WORD16 move,
- * DATA+PROGRAM-WORD16, PORT-WORD16, or stack-pair-WORD16),
+ * DATA+PROGRAM-WORD16, PORT-WORD16, stack-pair-WORD16, or
+ * dual-data-plus-coefficient triple-WORD16),
  * including
  * the status returned for an unknown child discriminator.
  * Does not own: WORD16 execution, transaction preparation, reducer state,
@@ -22,6 +23,7 @@
 #include "memory_instruction_stack_pair.h"
 #include "memory_instruction_smem_absolute_pair.h"
 #include "memory_instruction_smem_program_pair.h"
+#include "memory_instruction_triple.h"
 
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_pair_dispatch_advance(
@@ -72,6 +74,11 @@ ti_c54x_memory_instruction_pair_dispatch_advance(
         return ti_c54x_memory_instruction_smem_program_pair_advance(
             transaction, endpoint, state, accumulators, t_register, result);
     }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16) {
+        return ti_c54x_memory_instruction_triple_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
+    }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
 }
 
@@ -117,6 +124,11 @@ ti_c54x_memory_instruction_pair_dispatch_cancel(
         return ti_c54x_memory_instruction_smem_program_pair_cancel(
             transaction, endpoint);
     }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16) {
+        return ti_c54x_memory_instruction_triple_cancel(transaction,
+                                                        endpoint);
+    }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
 }
 
@@ -157,6 +169,10 @@ ti_c54x_memory_instruction_pair_dispatch_reset(
         TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16) {
         return ti_c54x_memory_instruction_smem_program_pair_reset(
             transaction);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16) {
+        return ti_c54x_memory_instruction_triple_reset(transaction);
     }
     return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
 }

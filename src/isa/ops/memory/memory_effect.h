@@ -247,7 +247,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * occurs (traps are not calls), and the leaf completion is
      * null (no INTM/IFR mutation). Only the op_trap leaf stages
      * this kind; the root freezes the successor and vector. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 = 32
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 = 32,
+    /* Dual-data-plus-program READ triple WORD16 (FIRS): the
+     * dual DATA legs carry the X/Y MOD0--MOD3 modes and
+     * AR2..AR5 selectors exactly as the dual arm, and the
+     * PROGRAM leg is an absolute 16-bit program-word
+     * coefficient read with no post-update. All three values
+     * publish through the `complete_triple` shape with the X
+     * word, the Y word, and the coefficient. No T load. */
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16 = 33
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
@@ -325,6 +333,23 @@ typedef struct ti_c54x_op_memory_address_spec {
             uint32_t reserved_word2;
             uint32_t reserved_word3;
         } dual;
+        struct {
+            /* Dual-data-plus-program triple: the dual DATA legs
+             * carry the X/Y modes and AR selectors exactly as
+             * the dual arm; the PROGRAM leg carries the absolute
+             * 16-bit program-word coefficient address (the second
+             * program word) with no post-update. Same footprint
+             * as the dual arm: the address ABI is unchanged. */
+            uint8_t x_mode;
+            uint8_t x_ar;
+            uint8_t y_mode;
+            uint8_t y_ar;
+            uint16_t program_pmad;
+            uint16_t reserved_half;
+            uint32_t reserved_word1;
+            uint32_t reserved_word2;
+            uint32_t reserved_word3;
+        } dual_program;
         struct {
             /* DATA+PROGRAM pair: the Smem DATA leg selector. Zero
              * selects the direct page-0 leg (`smem_dma7`); one
@@ -548,6 +573,14 @@ typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_dual_fn)(
     uint16_t y_word,
     ti_c54x_op_effect *next_effect);
 
+typedef ti_c54x_op_status (*ti_c54x_op_memory_complete_triple_fn)(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_input_snapshot *input,
+    uint16_t x_word,
+    uint16_t y_word,
+    uint16_t third_word,
+    ti_c54x_op_effect *next_effect);
+
 typedef struct ti_c54x_op_memory_effect {
     ti_c54x_op_memory_address_spec address_spec;
     ti_c54x_bus_word16_request_access access;
@@ -585,6 +618,7 @@ typedef struct ti_c54x_op_memory_effect {
         ti_c54x_op_memory_complete_fn complete;
         ti_c54x_op_memory_complete_long32_fn complete_long32;
         ti_c54x_op_memory_complete_dual_fn complete_dual;
+        ti_c54x_op_memory_complete_triple_fn complete_triple;
     };
 } ti_c54x_op_memory_effect;
 

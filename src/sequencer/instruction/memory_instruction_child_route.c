@@ -3,7 +3,9 @@
  *
  * Owns: classification of a memory address kind into its pair
  * route plus snapshot-preparation dispatch for the routed pair
- * owners; see memory_instruction_child_route.h.
+ * owners (including the dual-data-plus-coefficient triple, whose
+ * DATA legs resolve through the shared dual planner); see
+ * memory_instruction_child_route.h.
  * Does not own: transaction orchestration, address resolution,
  * endpoint traffic, architectural mutation, opcode semantics,
  * timing, observers, diagnostics, allocation, I/O, or global
@@ -16,6 +18,7 @@
 #include "memory_instruction_smem_absolute_pair.h"
 #include "memory_instruction_smem_program_pair.h"
 #include "memory_instruction_stack_pair.h"
+#include "memory_instruction_triple.h"
 
 ti_c54x_memory_instruction_pair_route
 ti_c54x_memory_instruction_pair_route_for_kind(
@@ -33,6 +36,8 @@ ti_c54x_memory_instruction_pair_route_for_kind(
     case TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_A_PAIR_WORD16:
     case TI_C54X_OP_MEMORY_ADDRESS_SMEM_ABSOLUTE_PROGRAM_PAIR_WORD16:
         return TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_SMEM_PROGRAM_PAIR_WORD16;
+    case TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16:
+        return TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_TRIPLE_WORD16;
     default:
         return TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_NONE;
     }
@@ -56,6 +61,9 @@ ti_c54x_memory_instruction_pair_route_prepare_snapshot(
             transaction, state);
     case TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_SMEM_PROGRAM_PAIR_WORD16:
         return ti_c54x_memory_instruction_smem_program_pair_prepare_snapshot(
+            transaction, state);
+    case TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_TRIPLE_WORD16:
+        return ti_c54x_memory_instruction_triple_prepare_snapshot(
             transaction, state);
     default:
         return false;

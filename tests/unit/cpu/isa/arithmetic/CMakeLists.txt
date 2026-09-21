@@ -17,3 +17,5 @@ ti_c54x_add_unit_test(cpu_sqdst test_cpu_sqdst.c)
 ti_c54x_add_unit_test(cpu_abdst test_cpu_abdst.c)
 # P3-S106: LMS dual-memory retirement.
 ti_c54x_add_unit_test(cpu_lms test_cpu_lms.c)
+# P3-S108 RED contract: FIRS dual-filter retirement (triple route pending).
+ti_c54x_add_unit_test(cpu_firs test_cpu_firs.c)

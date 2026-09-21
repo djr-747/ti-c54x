@@ -5,9 +5,9 @@
  * Module contract
  *
  * Owns: classification of a memory address kind into its pair
- * route (PORT, stack push/pop pair, Smem-absolute pair, or
- * Smem-program pair) plus snapshot-preparation dispatch for the
- * routed pair owners.
+ * route (PORT, stack push/pop pair, Smem-absolute pair,
+ * Smem-program pair, or dual-data-plus-coefficient triple) plus
+ * snapshot-preparation dispatch for the routed pair owners.
  * Does not own: transaction orchestration, address resolution,
  * endpoint traffic, architectural mutation, opcode semantics,
  * timing, observers, diagnostics, allocation, I/O, or global
@@ -25,7 +25,8 @@ typedef enum ti_c54x_memory_instruction_pair_route {
     TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_PORT_WORD16,
     TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_STACK_PAIR_WORD16,
     TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_SMEM_ABSOLUTE_PAIR_WORD16,
-    TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_SMEM_PROGRAM_PAIR_WORD16
+    TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_SMEM_PROGRAM_PAIR_WORD16,
+    TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_TRIPLE_WORD16
 } ti_c54x_memory_instruction_pair_route;
 
 /* Map one address kind to its pair route; all other kinds map

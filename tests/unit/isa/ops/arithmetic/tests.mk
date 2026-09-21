@@ -5,6 +5,8 @@ $(eval $(call ti_c54x_add_test,sqdst_xmem_ymem,isa/ops/arithmetic,test_sqdst_xme
 $(eval $(call ti_c54x_add_test,abdst_xmem_ymem,isa/ops/arithmetic,test_abdst_xmem_ymem.c))
 # P3-S106 RED contract: LMS dual-memory effects.
 $(eval $(call ti_c54x_add_test,lms_xmem_ymem,isa/ops/arithmetic,test_lms_xmem_ymem.c))
+# P3-S108 RED contract: FIRS dual-filter effects.
+$(eval $(call ti_c54x_add_test,firs_xmem_ymem_pmad,isa/ops/arithmetic,test_firs_xmem_ymem_pmad.c))
 # W51C RED contract: non-MOD0/MOD0 dual ADD/SUB checked/trusted semantics.
 $(eval $(call ti_c54x_add_test,add_sub_dual_modes,isa/ops/arithmetic,test_add_sub_dual_modes.c))
 # W52C RED contract: MOD3-involving dual ADD/SUB checked/trusted semantics.

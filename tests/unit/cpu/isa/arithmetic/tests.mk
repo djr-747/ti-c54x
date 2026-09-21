@@ -18,3 +18,5 @@ $(eval $(call ti_c54x_add_test,cpu_sqdst,cpu/isa/arithmetic,test_cpu_sqdst.c))
 $(eval $(call ti_c54x_add_test,cpu_abdst,cpu/isa/arithmetic,test_cpu_abdst.c))
 # P3-S106: LMS dual-memory retirement.
 $(eval $(call ti_c54x_add_test,cpu_lms,cpu/isa/arithmetic,test_cpu_lms.c))
+# P3-S108 RED contract: FIRS dual-filter retirement (triple route pending).
+$(eval $(call ti_c54x_add_test,cpu_firs,cpu/isa/arithmetic,test_cpu_firs.c))

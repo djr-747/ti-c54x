@@ -153,6 +153,8 @@ $(eval $(call ti_c54x_add_test,sqdst_xmem_ymem_metadata,isa/catalog,test_sqdst_x
 $(eval $(call ti_c54x_add_test,abdst_xmem_ymem_metadata,isa/catalog,test_abdst_xmem_ymem.c))
 # P3-S106 RED contract: LMS dual-memory row.
 $(eval $(call ti_c54x_add_test,lms_xmem_ymem_metadata,isa/catalog,test_lms_metadata.c))
+# P3-S108 RED contract: FIRS dual-filter row.
+$(eval $(call ti_c54x_add_test,firs_xmem_ymem_pmad_metadata,isa/catalog,test_firs_metadata.c))
 $(eval $(call ti_c54x_add_test,reset_metadata,isa/catalog,test_reset_metadata.c))
 # P3-S105 RED contract: TRAP K row.
 $(eval $(call ti_c54x_add_test,trap_metadata,isa/catalog,test_trap_metadata.c))

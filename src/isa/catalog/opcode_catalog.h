@@ -211,6 +211,10 @@ typedef enum ti_c54x_operand_layout_id {
      * raw XAR[5:4] over dual-Y modifier YMOD[3:2] and raw
      * YAR[1:0] from word 0. */
     TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR,
+    /* Two-word dual-memory filter fields: the word-0 dual-memory
+     * fields above with the copied 16-bit absolute PROGRAM
+     * coefficient address from word 1. */
+    TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR_PMAD16,
     /* One-word software-interrupt fields: 5-bit vector select
      * K[4:0] from word 0. TRAP owns it; INTR will share it. */
     TI_C54X_OPERAND_LAYOUT_TRAP_IMMEDIATE_K,

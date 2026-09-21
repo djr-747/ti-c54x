@@ -116,8 +116,12 @@ static void check_carrier_shape_and_size(void)
      * fields: LP64 moves 448 to 456 (executed here); native-32
      * moves 416 to 420 by construction (same +8 snapshot delta at
      * 4-alignment, unverifiable on a 64-bit host). */
+    /* P3-S108: the triple WORD16 union member grows the root from
+     * 480 to 576 on LP64 (union 88 to 184) and from 436 to 516 on
+     * ILP32 (union 80 to 160 at 4-alignment, unverifiable on a
+     * 64-bit host). */
     TI_C54X_TEST_CHECK(sizeof(ti_c54x_memory_instruction_transaction) ==
-                       (sizeof(void *) == 8U ? 480U : 436U));
+                       (sizeof(void *) == 8U ? 576U : 516U));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&read));
     TI_C54X_TEST_CHECK(ti_c54x_op_memory_effect_is_valid(&write));
     TI_C54X_TEST_CHECK(read.first_value_msw == UINT16_C(0));

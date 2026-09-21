@@ -240,12 +240,12 @@ _Static_assert(sizeof(ti_c54x_op_memory_address_spec) == 24U, "address");
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 48U, "memory");
 _Static_assert(sizeof(ti_c54x_op_effect) == 72U, "effect");
 _Static_assert(sizeof(ti_c54x_dual_word16_read_transaction) == 80U, "dual");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 480U, "root");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 576U, "root");
 #elif UINTPTR_MAX == UINT32_MAX
 _Static_assert(sizeof(ti_c54x_op_memory_effect) == 40U, "memory");
 _Static_assert(sizeof(ti_c54x_op_effect) == 52U, "effect");
 _Static_assert(sizeof(ti_c54x_dual_word16_read_transaction) == 72U, "dual");
-_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 436U, "root");
+_Static_assert(sizeof(ti_c54x_memory_instruction_transaction) == 516U, "root");
 #else
 #error "unsupported pointer width"
 #endif

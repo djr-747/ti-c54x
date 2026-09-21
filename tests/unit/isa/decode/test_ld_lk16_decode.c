@@ -159,8 +159,19 @@ test_fixed_bit_near_misses(void)
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0008),
         UINT16_C(0x0200),
-        UINT16_C(0x1000),
         UINT16_C(0x2000)};
+    /* This former near-miss is the P3-S108 FIRS sibling:
+     * 0xF062 ^ 0x1000 = 0xE062 classifies into the
+     * FIRS_XMEM_YMEM_PMAD row. */
+    {
+        const ti_c54x_decode_result firs_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_LK16_VALUE ^ UINT16_C(0x1000)));
+        TI_C54X_TEST_CHECK(firs_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(firs_sibling.id ==
+                           TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
+    }
     /* This former near-miss is the P3-S79 RPTB sibling:
      * 0xF062 ^ 0x0010 = 0xF072 classifies into the RPTB
      * row. */

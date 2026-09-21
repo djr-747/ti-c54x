@@ -2,7 +2,8 @@
  * Module contract
  *
  * Owns: structural and live-state validation of copied root memory
- * instruction candidates: dispatch across dual, DATA+PROGRAM, PORT,
+ * instruction candidates: dispatch across dual, DATA+PROGRAM,
+ * dual-data-plus-coefficient triple, PORT,
  * LONG32, X-only, mode-independent STACK_PUSH/STACK_POP arms
  * with their delayed-branch twins, and STACK_PUSH_PAIR/STACK_POP_PAIR
  * arms, plus the shared single-leg tail
@@ -31,6 +32,7 @@
 #include "memory_instruction_stack_pair_candidate_validate.h"
 #include "memory_instruction_smem_absolute_pair_candidate_validate.h"
 #include "memory_instruction_smem_program_pair_candidate_validate.h"
+#include "memory_instruction_triple_candidate_validate.h"
 #include "sequencer/instruction/memory_candidate_direct.h"
 #include "sequencer/instruction/memory_candidate_absolute_data.h"
 #include "sequencer/instruction/memory_candidate_atomic_absolute.h"
@@ -62,6 +64,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     } else if (candidate->effect.payload.memory.address_spec.kind ==
                TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
         if (!ti_c54x_memory_instruction_dual_move_candidate_shape_is_valid(
+                &candidate->dual_address_snapshot,
+                &candidate->effect.payload.memory)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16) {
+        if (!ti_c54x_memory_instruction_triple_candidate_shape_is_valid(
                 &candidate->dual_address_snapshot,
                 &candidate->effect.payload.memory)) {
             return false;
@@ -178,7 +187,9 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
         if (candidate->effect.payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
             candidate->effect.payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
+                TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16 ||
+            candidate->effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16) {
             return candidate->dual_address_snapshot.x_request
                            .write_value_word == UINT16_C(0) &&
                    candidate->dual_address_snapshot.y_request

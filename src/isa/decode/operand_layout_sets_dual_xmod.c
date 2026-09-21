@@ -4,7 +4,8 @@
  * Owns: the static immutable piece/field/operand tables behind the
  * dual-XMOD single-operand generic layouts
  * (ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4, SELECT_DUAL_XMOD_XAR_COND4,
- * DUAL_XMOD_XAR_BITC, and DUAL_XMOD_XAR_YMOD_YAR). Each set object
+ * DUAL_XMOD_XAR_BITC, DUAL_XMOD_XAR_YMOD_YAR, and
+ * DUAL_XMOD_XAR_YMOD_YAR_PMAD16). Each set object
  * has external linkage
  * so the plan table and resolver in operand_layout.c can
  * borrow it; pieces and per-operand arrays stay
@@ -127,3 +128,26 @@ static const ti_c54x_operand_field_layout
          UINT8_C(2)}};
 const ti_c54x_operand_layout_set ti_c54x_dual_xmod_xar_ymod_yar_set = {
     ti_c54x_dual_xmod_xar_ymod_yar_operands, UINT8_C(4)};
+
+/* Dual-memory filter fields: the word-0 dual XMOD/XAR/YMOD/YAR
+ * byte packed as one 8-bit operand with the copied 16-bit
+ * absolute PROGRAM coefficient address from word 1. Packing
+ * keeps the layout within the frozen trusted-operand
+ * capacity, as in the MAC-dual RSD precedent; the leaf
+ * unpacks the four 2-bit selectors. */
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_pmad16_dualxy_piece = {
+        UINT8_C(0), UINT8_C(0), UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_dual_xmod_xar_ymod_yar_pmad16_pmad_piece = {
+        UINT8_C(1), UINT8_C(0), UINT8_C(16), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_dual_xmod_xar_ymod_yar_pmad16_operands[2] = {
+        {&ti_c54x_dual_xmod_xar_ymod_yar_pmad16_dualxy_piece,
+         UINT8_C(1), UINT8_C(8)},
+        {&ti_c54x_dual_xmod_xar_ymod_yar_pmad16_pmad_piece,
+         UINT8_C(1), UINT8_C(16)}};
+const ti_c54x_operand_layout_set
+    ti_c54x_dual_xmod_xar_ymod_yar_pmad16_set = {
+        ti_c54x_dual_xmod_xar_ymod_yar_pmad16_operands,
+        UINT8_C(2)};

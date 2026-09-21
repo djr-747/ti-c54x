@@ -1026,9 +1026,11 @@
       "table_ordinal": 6,
       "mnemonic": "FIRS",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "FIRS_XMEM_YMEM_PMAD"
+      ]
     },
     {
       "id": "FORM-T2-06-07",
@@ -5123,6 +5125,12 @@
     {
       "catalog_symbol": "LMS_XMEM_YMEM",
       "form_id": "FORM-T2-06-07",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "FIRS_XMEM_YMEM_PMAD",
+      "form_id": "FORM-T2-06-06",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     },

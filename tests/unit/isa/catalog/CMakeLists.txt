@@ -224,6 +224,8 @@ ti_c54x_add_unit_test(abdst_xmem_ymem_metadata
                       test_abdst_xmem_ymem.c)
 # P3-S106 RED contract: LMS dual-memory row.
 ti_c54x_add_unit_test(lms_xmem_ymem_metadata test_lms_metadata.c)
+# P3-S108 RED contract: FIRS dual-filter row.
+ti_c54x_add_unit_test(firs_xmem_ymem_pmad_metadata test_firs_metadata.c)
 ti_c54x_add_unit_test(reset_metadata
                       test_reset_metadata.c)
 # P3-S105 RED contract: TRAP K row.

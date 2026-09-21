@@ -833,6 +833,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S107: LMS first-word correction 0xC100 to 0xE100 (implemented; local verification green)](plan/p3-s107-lms-first-word-correction-slice.md)
 
+- [P3-S108: FIRS dual-memory filter row and leaf (planned)](plan/p3-s108-firs-dual-filter-row-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

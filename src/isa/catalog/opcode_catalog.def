@@ -205,6 +205,14 @@ TI_C54X_OPCODE_MASKED(ABDST_XMEM_YMEM, abdst_xmem_ymem, 0xE300, 0xFF00, 1, TI_C5
  * (FRCT-doubled). Class 7 repeat-used pair, so the row is
  * ELIGIBLE with evidence. */
 TI_C54X_OPCODE_MASKED(LMS_XMEM_YMEM, lms_xmem_ymem, 0xE100, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM)
+/* P3-S108 FIRS Xmem,Ymem,pmad (TI SPRU172C section FIRS,
+ * 2 words): the 0xE000 dual data-memory symmetric-FIR step
+ * over the new DUAL_XMOD_XAR_YMOD_YAR_PMAD16 layout into the
+ * op_firs core. A stages (X + Y) << 16; B accumulates the
+ * signed A(32-16) times the Pmem(pmad) coefficient
+ * (FRCT-doubled). Class 7 repeat-used filter, so the row is
+ * ELIGIBLE with evidence. */
+TI_C54X_OPCODE_MASKED(FIRS_XMEM_YMEM_PMAD, firs_xmem_ymem_pmad, 0xE000, 0xFF00, 2, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR_PMAD16, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM)
 /* P3-S104 MVDD Xmem,Ymem (TI SPRU172C section MVDD, p. 4-107,
  * 1 word): the 0xE500 dual data-memory move over the shared
  * DUAL_XMOD_XAR_YMOD_YAR layout. The op_mvdd leaf stages one

@@ -11,7 +11,7 @@ class ReverseCarryInventoryTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls): cls.root=Path(__file__).resolve().parents[5]; cls.path=cls.root/"config/isa/inventory.json"
  def test_projection_and_bindings(self):
-  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),380)
+  d=load_inventory(self.path); self.assertEqual(len(d["catalog_bindings"]),381)
   by={f["id"]:f for f in d["forms"]}
   for fam,fid in FAMILIES.items():
    # P3-S66: FORM-T2-19-20 also binds the direct-DP LDU_DIRECT row.
@@ -29,5 +29,5 @@ class ReverseCarryInventoryTests(unittest.TestCase):
    self.assertEqual({b["addressing_subset"] for b in d["catalog_bindings"] if b["form_id"]==fid},subs)
    self.assertTrue(want_symbols <= set(by[fid]["catalog_symbols"]))
  def test_coverage_unchanged(self):
-  r=report_inventory(self.root); self.assertEqual(r["catalog_family_progress"],{"covered":185,"denominator":205}); self.assertEqual(r["strict_complete_lower_bound"],{"covered":52,"denominator":205})
+  r=report_inventory(self.root); self.assertEqual(r["catalog_family_progress"],{"covered":186,"denominator":205}); self.assertEqual(r["strict_complete_lower_bound"],{"covered":53,"denominator":205})
 if __name__=="__main__": unittest.main()

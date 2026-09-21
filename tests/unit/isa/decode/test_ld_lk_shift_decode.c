@@ -155,11 +155,15 @@ test_fixed_bit_near_misses(void)
      * SUB_ACC_SHIFT, and flipping fixed bit 14 lands on the P3-S3g
      * MAC_DUAL_M0_M0 sibling; flipping fixed bit 5 lands on the
      * P3-S27 ADD_LK_SHIFT sibling and flipping fixed bit 6 lands on
-     * the P3-S27 ADD_LK_16 sibling; all other fixed-bit flips must
+     * the P3-S27 ADD_LK_16 sibling; flipping fixed bit 12 lands on
+     * the P3-S108 FIRS row; all other fixed-bit flips must
      * miss every row. */
     static const uint16_t fixed_bit_masks[] = {
         UINT16_C(0x0200),
-        UINT16_C(0x1000), UINT16_C(0x2000)};
+        UINT16_C(0x2000)};
+    const ti_c54x_decode_result firs_sibling =
+        ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
+                                            UINT16_C(0x1000)));
     const ti_c54x_decode_result and_sibling =
         ti_c54x_decode_first_word((uint16_t)(LD_LK_SHIFT_VALUE ^
                                             UINT16_C(0x0010)));
@@ -194,6 +198,9 @@ test_fixed_bit_near_misses(void)
     TI_C54X_TEST_CHECK(or_sibling.id == TI_C54X_OPCODE_ID_OR_ACC_SHIFT);
     TI_C54X_TEST_CHECK(sub_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(sub_sibling.id == TI_C54X_OPCODE_ID_SUB_ACC_SHIFT);
+    TI_C54X_TEST_CHECK(firs_sibling.status == TI_C54X_DECODE_STATUS_OK);
+    TI_C54X_TEST_CHECK(firs_sibling.id ==
+                       TI_C54X_OPCODE_ID_FIRS_XMEM_YMEM_PMAD);
     TI_C54X_TEST_CHECK(bc_sibling.status == TI_C54X_DECODE_STATUS_OK);
     TI_C54X_TEST_CHECK(bc_sibling.id == TI_C54X_OPCODE_ID_BC_PMAD);
     /* 0xB020 (fixed bit 14 set) is the MAC_DUAL_M0_M0 encoding with

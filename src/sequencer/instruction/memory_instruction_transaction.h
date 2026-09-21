@@ -22,6 +22,7 @@
 #include "bus/transaction/word16_transaction.h"
 #include "sequencer/instruction/data_program_word16_read_transaction.h"
 #include "sequencer/instruction/dual_word16_read_transaction.h"
+#include "sequencer/instruction/triple_word16_read_transaction.h"
 #include "sequencer/instruction/long32_pair_transaction.h"
 #include "isa/decode/opcode_decode.h"
 #include "isa/ops/op_effect.h"
@@ -72,7 +73,8 @@ typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_STACK_PAIR_WORD16 = 6,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_ABSOLUTE_PAIR_WORD16 = 7,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16 = 8,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE = 9
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE = 9,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16 = 10
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
@@ -150,6 +152,7 @@ typedef struct ti_c54x_memory_instruction_transaction {
         ti_c54x_dual_word16_read_transaction dual_bus_transaction;
         ti_c54x_data_program_word16_read_transaction
             data_program_bus_transaction;
+        ti_c54x_triple_word16_read_transaction triple_bus_transaction;
     };
     uint64_t last_transaction_id;
     /* The transformed WORD16 is staged between the READ and paired WRITE;
@@ -196,7 +199,9 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t candidate_rmw_value_word;
         /* LONG32's second payload is frozen in the same scalar slot. */
         uint16_t long32_second_value_lsw;
-        /* Dual MOD0 uses it as an immutable Y-address shadow. */
+        /* Dual MOD0 uses it as an immutable Y-address shadow; the
+         * FIRS triple reuses it for the Y DATA address while the
+         * pmad is witnessed by the triple reducer's frozen copy. */
         uint16_t dual_y_address_word;
         /* The DATA+PROGRAM pair uses it as an immutable PROGRAM
          * address (pmad) shadow. */
