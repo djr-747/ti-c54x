@@ -1,4 +1,4 @@
-### P3-S101: BIT Xmem dual row and leaf (planned)
+### P3-S101: BIT Xmem dual row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S101 evidence freeze. One
 single-X dual-16-bit row lands on the established dual-XMOD seam:
