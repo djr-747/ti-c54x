@@ -2,7 +2,7 @@
  * Module contract
  *
  * Owns: executable proof that the RESET catalog row carries the
- * exact 0xF7C0 word with one program word, the NONE layout, no
+ * exact 0xF7E0 word with one program word, the NONE layout, no
  * input resources, and ineligible repeatability, covering the
  * single first-word encoding with SSBX/UNKNOWN neighbors.
  * Does not own: catalog generation, decode, memory addressing or
@@ -25,7 +25,7 @@ test_metadata(void)
     TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 358);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_RESET);
-    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xF7C0));
+    TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xF7E0));
     TI_C54X_TEST_CHECK(metadata->first_word_mask == UINT16_C(0xFFFF));
     TI_C54X_TEST_CHECK(metadata->program_word_count == UINT8_C(1));
     TI_C54X_TEST_CHECK(metadata->operand_layout ==
@@ -44,7 +44,7 @@ test_exact_population(void)
 
     for (raw = 0U; raw <= UINT32_C(0xFFFF); ++raw) {
         const uint16_t word = (uint16_t)raw;
-        const bool matches_row = word == UINT16_C(0xF7C0);
+        const bool matches_row = word == UINT16_C(0xF7E0);
         ti_c54x_opcode_id id =
             ti_c54x_opcode_catalog_lookup_first_word(word);
 
@@ -60,14 +60,14 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0xF7BF is SSBX_STATUS; 0xF7C1 is unclaimed. */
+    /* 0xF7DF is unclaimed (INTR lands next); 0xF7E1 is IDLE. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xF7BF)) ==
-                       TI_C54X_OPCODE_ID_SSBX_STATUS);
+                           UINT16_C(0xF7DF)) ==
+                       TI_C54X_OPCODE_ID_UNKNOWN);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xF7C0)) == TI_C54X_OPCODE_ID_RESET);
+                           UINT16_C(0xF7E0)) == TI_C54X_OPCODE_ID_RESET);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
-                           UINT16_C(0xF7C1)) == TI_C54X_OPCODE_ID_UNKNOWN);
+                           UINT16_C(0xF7E1)) == TI_C54X_OPCODE_ID_IDLE);
 }
 
 int

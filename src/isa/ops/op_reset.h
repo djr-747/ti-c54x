@@ -2,7 +2,7 @@
 #define TI_C54X_ISA_OP_RESET_H
 
 /* Module contract
- * Owns: pure RESET software-reset effects over the exact 0xF7C0
+ * Owns: pure RESET software-reset effects over the exact 0xF7E0
  * single word with no operands: the checked row entry with its
  * trusted twin. Both stage one RESET effect; the reset field
  * list, IFR clear, and IPTR-derived program-counter commit

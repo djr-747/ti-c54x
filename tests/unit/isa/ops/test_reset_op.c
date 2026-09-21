@@ -56,7 +56,7 @@ test_effect_and_parity(void)
 {
     /* RESET takes no operands: the trusted path carries none. */
     const ti_c54x_decoded_instruction instruction =
-        decode_reset(UINT16_C(0xF7C0));
+        decode_reset(UINT16_C(0xF7E0));
     const ti_c54x_op_input_snapshot input = {0};
     const ti_c54x_trusted_operand_values operands = {0};
     const ti_c54x_op_effect before = {
@@ -82,7 +82,7 @@ static void
 test_rejection_is_transactional(void)
 {
     const ti_c54x_decoded_instruction instruction =
-        decode_reset(UINT16_C(0xF7C0));
+        decode_reset(UINT16_C(0xF7E0));
     const ti_c54x_op_input_snapshot input = {0};
     const ti_c54x_op_effect before = {
         .kind = TI_C54X_OP_EFFECT_REPEAT_START,

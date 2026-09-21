@@ -620,12 +620,12 @@ TI_C54X_OPCODE_EXACT(RETF, retf, 0xF49B, 1, TI_C54X_OPERAND_LAYOUT_NONE, TI_C54X
  * is INELIGIBLE with evidence. */
 TI_C54X_OPCODE_MASKED(IDLE, idle, 0xF4E1, 0xFCFF, 1, TI_C54X_OPERAND_LAYOUT_IDLE_K, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S103 RESET (TI SPRU172C software RESET, pp. 4-137-4-138,
- * 1 word): the exact 0xF7C0 single-word reset with no operands.
+ * 1 word): the exact 0xF7E0 single-word reset with no operands.
  * The op_reset leaf stages one RESET effect; the CPU retires it
  * through the reset applier (IPTR-derived PC, manual field list,
  * IFR clear). Software reset cannot repeat, so the row is
  * INELIGIBLE with evidence. */
-TI_C54X_OPCODE_EXACT(RESET, reset, 0xF7C0, 1, TI_C54X_OPERAND_LAYOUT_NONE, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
+TI_C54X_OPCODE_EXACT(RESET, reset, 0xF7E0, 1, TI_C54X_OPERAND_LAYOUT_NONE, TI_C54X_REPEATABILITY_INELIGIBLE, TI_C54X_INPUT_RESOURCES_NONE)
 /* P3-S105 TRAP (TI SPRU172C section TRAP, p. 4-195, 1 word):
  * the 0xF4C0 word under mask 0xFFE0 with the 5-bit vector
  * select K at bits 4:0 (K = 0..31). The op_trap leaf stages

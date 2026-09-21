@@ -72,6 +72,12 @@
         "retired_abi_major": 0,
         "reason": "The original assertion transcribed the first-word diagram as 1100_0001; the TI instruction-set summary table (FIRS at 1110_0000, LMS at 1110_0001, cross-checked against the landed EXP row) shows the LMS first word is 0xE100. The corrected record carries diagram 1110_0001_XXXX_YYYY.",
         "replacement_id": "E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1"
+      },
+      {
+        "id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138",
+        "retired_abi_major": 0,
+        "reason": "The original assertion transcribed the exact single-word reset as 0xF7C0; the TI instruction-set summary tables (SPRU307A Table 13 and SPRS039C Table 13, both listing INTR K at 1111_0111_110K_KKKK beside RESET at 1111_0111_1110_0000) show the RESET first word is 0xF7E0. The corrected record carries 0xF7E0.",
+        "replacement_id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138-R1"
       }
     ],
     "requirements": [],
@@ -8833,7 +8839,7 @@
       "assertion": "SPRU172C ABDST defines the single-word dual-16-bit operation ABDST Xmem,Ymem with opcode diagram 1110_0011_XXXX_YYYY: the absolute A(32-16) accumulates into B (doubled under FRCT) while A stages (Xmem minus Ymem) shifted left 16."
     },
     {
-      "id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138",
+      "id": "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138-R1",
       "immutable": true,
       "state": "PINNED",
       "scope": "COMMON_TI",
@@ -8848,7 +8854,7 @@
         "printed_page_start": "4-137",
         "printed_page_end": "4-138"
       },
-      "assertion": "SPRU172C RESET defines the exact single-word software reset 0xF7C0 with no operands: PC takes (IPTR) shifted left 7; OVA, OVB, ARP, DP, ASM, BRAF, HM, C16, FRCT, CMPT, CPL, and OVM clear to 0 while C, TC, SXM, XF, and INTM set to 1; IFR clears to 0. MP/MC is not sampled and IPTR/peripheral initialization differs from RS. The instruction is not repeatable."
+      "assertion": "SPRU172C RESET defines the exact single-word software reset 0xF7E0 with no operands: PC takes (IPTR) shifted left 7; OVA, OVB, ARP, DP, ASM, BRAF, HM, C16, FRCT, CMPT, CPL, and OVM clear to 0 while C, TC, SXM, XF, and INTM set to 1; IFR clears to 0. MP/MC is not sampled and IPTR/peripheral initialization differs from RS. The instruction is not repeatable. First word 0xF7E0 is confirmed by the TI instruction-set summary tables (SPRU307A and SPRS039C) listing RESET at 1111_0111_1110_0000."
     },
     {
       "id": "E-TI-C54X-SPRU172C-S4-MVDD-P4-107",
@@ -20919,7 +20925,7 @@
       "owner_path": "src/isa/ops/",
       "claim": "Execute RESET as an exact catalog row at 0xF7C0 with the NONE layout, NONE input resources, and INELIGIBLE repeatability: the checked and trusted op_reset entries stage one RESET effect with no payload. Null arguments reject, forged ids and nonzero trusted operand counts reject, and failed calls leave the caller-owned effect unchanged.",
       "evidence_ids": [
-        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138"
+        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138-R1"
       ],
       "test_ids": [
         "T-COMMON-P3-S103-RESET-OPS"
@@ -20933,7 +20939,7 @@
       "owner_path": "src/cpu/",
       "claim": "Retire RESET through the generic CPU path with one-word PC advance replaced by the reset commit: IPTR is snapshotted before mutation (unknown IPTR stops INVALID_STATE with nothing retired), exactly the manual ST0/ST1 field list is written, IFR clears, PC takes IPTR shifted left 7, one instruction retires, any pending delayed-branch countdown cancels, and the CPU-owned repeat and take latches and the routed-entry table clear. Accumulators, T, ARs, SP, RC, and unlisted PMST fields are preserved, and no endpoint traffic occurs.",
       "evidence_ids": [
-        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138"
+        "E-TI-C54X-SPRU172C-S4-RESET-P4-137-4-138-R1"
       ],
       "test_ids": [
         "T-COMMON-P3-S103-RESET-CPU"

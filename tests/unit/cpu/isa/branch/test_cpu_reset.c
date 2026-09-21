@@ -66,7 +66,7 @@ test_reset_retires_with_manual_field_list(void)
 {
     ti_c54x_cpu_isa_memory_fixture fixture = {
         .mode = TI_C54X_CPU_ISA_MEMORY_READY,
-        .program_word = UINT16_C(0xF7C0),
+        .program_word = UINT16_C(0xF7E0),
         .fault_status = TI_C54X_BUS_FAULT};
     _Alignas(max_align_t) unsigned char storage[1024] = {0};
     ti_c54x_error status;
@@ -127,7 +127,7 @@ test_unknown_iptr_stops_without_retirement(void)
 {
     ti_c54x_cpu_isa_memory_fixture fixture = {
         .mode = TI_C54X_CPU_ISA_MEMORY_READY,
-        .program_word = UINT16_C(0xF7C0),
+        .program_word = UINT16_C(0xF7E0),
         .fault_status = TI_C54X_BUS_FAULT};
     _Alignas(max_align_t) unsigned char storage[1024] = {0};
     ti_c54x_error status;

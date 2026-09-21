@@ -3,7 +3,7 @@
  *
  * Owns: checked semantic execution of the exact RESET descriptor
  * (TI SPRU172C software RESET, pp. 4-137-4-138, 1 word). The leaf
- * gates the 0xF7C0 first word with no operands and stages one
+ * gates the 0xF7E0 first word with no operands and stages one
  * RESET effect; the reset field list, IFR clear, and IPTR-derived
  * program-counter commit belong to the reset applier. Software
  * reset cannot repeat (catalog INELIGIBLE).
@@ -45,7 +45,7 @@ reset_extract(const ti_c54x_decoded_instruction *instruction)
         instruction->operand_layout != TI_C54X_OPERAND_LAYOUT_NONE ||
         instruction->input_resources != TI_C54X_INPUT_RESOURCES_NONE ||
         instruction->bundle.program_word_count != UINT8_C(1) ||
-        instruction->bundle.program_words[0] != UINT16_C(0xF7C0)) {
+        instruction->bundle.program_words[0] != UINT16_C(0xF7E0)) {
         return TI_C54X_OP_STATUS_INVALID_DECODE;
     }
     return TI_C54X_OP_STATUS_OK;
@@ -75,7 +75,7 @@ ti_c54x_op_reset(const ti_c54x_decoded_instruction *instruction,
         instruction->bundle.program_word_count != UINT8_C(1) ||
         instruction->bundle.program_word_count !=
             metadata->program_word_count ||
-        instruction->bundle.program_words[0] != UINT16_C(0xF7C0)) {
+        instruction->bundle.program_words[0] != UINT16_C(0xF7E0)) {
         return TI_C54X_OP_STATUS_INVALID_DECODE;
     }
 
