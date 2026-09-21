@@ -1,4 +1,4 @@
-### P3-S104: MVDD dual-move pair row and leaf (planned)
+### P3-S104: MVDD dual-move pair row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S104 evidence freeze. One
 class-14 dual-memory row lands on the shared dual seam: `MVDD
