@@ -403,34 +403,11 @@ const ti_c54x_operand_layout_set
         ti_c54x_dual_round_source_destination_xar_yar_operands,
         UINT8_C(3)};
 
-/* Syntax-5 LD Xmem fields: D[8], Xmod[7:6], raw Xar[5:4], SHFT[3:0].
- * The handler maps the raw Xar field to AR2..AR5; decode exposes raw
- * bits exactly like the dual syntax-6 family. */
-static const ti_c54x_operand_field_piece
-    ti_c54x_accumulator_dual_xmod_xar_shift4_destination_piece = {
-        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_accumulator_dual_xmod_xar_shift4_xmod_piece = {
-        UINT8_C(0), UINT8_C(6), UINT8_C(2), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_accumulator_dual_xmod_xar_shift4_xar_piece = {
-        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_accumulator_dual_xmod_xar_shift4_shift_piece = {
-        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_accumulator_dual_xmod_xar_shift4_operands[4] = {
-        {&ti_c54x_accumulator_dual_xmod_xar_shift4_destination_piece,
-         UINT8_C(1), UINT8_C(1)},
-        {&ti_c54x_accumulator_dual_xmod_xar_shift4_xmod_piece, UINT8_C(1),
-         UINT8_C(2)},
-        {&ti_c54x_accumulator_dual_xmod_xar_shift4_xar_piece, UINT8_C(1),
-         UINT8_C(2)},
-        {&ti_c54x_accumulator_dual_xmod_xar_shift4_shift_piece, UINT8_C(1),
-         UINT8_C(4)}};
-const ti_c54x_operand_layout_set
-    ti_c54x_accumulator_dual_xmod_xar_shift4_set = {
-        ti_c54x_accumulator_dual_xmod_xar_shift4_operands, UINT8_C(4)};
+/* Dual-XMOD single-operand sets (SHIFT4, COND4, BITC) live in
+ * operand_layout_sets_dual_xmod.c (S101 split decision: this file
+ * crossed the 800-line review ceiling, so the dual-XMOD family
+ * moved to its own translation unit with pieces still private
+ * there). */
 
 /* Syntax-7 long-immediate fields: D[8], unsigned SHFT[3:0], lk[+1]. */
 static const ti_c54x_operand_field_piece
@@ -584,33 +561,6 @@ static const ti_c54x_operand_field_layout
          UINT8_C(7)}};
 const ti_c54x_operand_layout_set ti_c54x_select_indirect_addr7_set = {
     ti_c54x_select_indirect_addr7_operands, UINT8_C(3)};
-
-/* Conditional-store fields: source select S[8:8], dual-X modifier
- * XMOD[7:6] and register XAR[5:4], and 4-bit condition COND[3:0]. */
-static const ti_c54x_operand_field_piece
-    ti_c54x_select_dual_xmod_xar_cond4_select_piece = {
-        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_select_dual_xmod_xar_cond4_xmod_piece = {
-        UINT8_C(0), UINT8_C(6), UINT8_C(2), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_select_dual_xmod_xar_cond4_xar_piece = {
-        UINT8_C(0), UINT8_C(4), UINT8_C(2), UINT8_C(0)};
-static const ti_c54x_operand_field_piece
-    ti_c54x_select_dual_xmod_xar_cond4_cond_piece = {
-        UINT8_C(0), UINT8_C(0), UINT8_C(4), UINT8_C(0)};
-static const ti_c54x_operand_field_layout
-    ti_c54x_select_dual_xmod_xar_cond4_operands[4] = {
-        {&ti_c54x_select_dual_xmod_xar_cond4_select_piece, UINT8_C(1),
-         UINT8_C(1)},
-        {&ti_c54x_select_dual_xmod_xar_cond4_xmod_piece, UINT8_C(1),
-         UINT8_C(2)},
-        {&ti_c54x_select_dual_xmod_xar_cond4_xar_piece, UINT8_C(1),
-         UINT8_C(2)},
-        {&ti_c54x_select_dual_xmod_xar_cond4_cond_piece, UINT8_C(1),
-         UINT8_C(4)}};
-const ti_c54x_operand_layout_set ti_c54x_select_dual_xmod_xar_cond4_set = {
-    ti_c54x_select_dual_xmod_xar_cond4_operands, UINT8_C(4)};
 
 /* ADD Smem<<16 fields: source select S[9:9], destination select
  * D[8:8], indirect flag I[7:7], then 7-bit Smem address A[6:0]. */

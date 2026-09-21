@@ -819,6 +819,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S100: DADD-family long-word rows and leaves (implemented; local verification green)](plan/p3-s100-dadd-family-rows-leaves-slice.md)
 
+- [P3-S101: BIT Xmem dual row and leaf (planned)](plan/p3-s101-bit-xmem-row-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)

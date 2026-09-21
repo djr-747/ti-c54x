@@ -1420,9 +1420,11 @@
       "table_ordinal": 1,
       "mnemonic": "BIT",
       "parallel": false,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "BIT_XMEM"
+      ]
     },
     {
       "id": "FORM-T2-11-02",
@@ -5087,6 +5089,12 @@
       "form_id": "FORM-T2-19-20",
       "coverage": "SUBSET",
       "addressing_subset": "DIRECT_DP"
+    },
+    {
+      "catalog_symbol": "BIT_XMEM",
+      "form_id": "FORM-T2-11-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
     }
   ]
 }

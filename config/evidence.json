@@ -8771,6 +8771,24 @@
         "printed_page_end": "4-50"
       },
       "assertion": "SPRU172C DSUBT encodes DSUBT Lmem,dst as 0101_110D_IAAAAAAA (D selects accumulator A or B; one word): at C16=0 T concatenated with T left-shifted 16 bits subtracts from Lmem with the result in dst; at C16=1 T subtracts from both 16-bit halves of Lmem with results in dst bits 39-16 and 15-0."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-BIT-P4-21",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "BIT",
+        "printed_page_start": "4-21",
+        "printed_page_end": "4-21"
+      },
+      "assertion": "SPRU172C BIT defines the single-word dual-16-bit operation BIT Xmem,BITC with opcode diagram 1001_0110_XMODXAR_BITC: TC is loaded with the Xmem bit at position (15 minus BITC) while no other state is affected."
     }
   ],
   "requirements": [
@@ -20676,6 +20694,34 @@
       "test_ids": [
         "T-COMMON-P3-S100-DSUBT-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S101-BIT-XMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/compare/",
+      "claim": "Execute BIT Xmem,BITC as a catalog MASKED row at 0x9600 under mask 0xFF00 with the dual-XMOD/XAR/BITC layout and ELIGIBLE repeatability: the leaf stages one X-only dual-indirect WORD16 DATA READ (Y self-aliases X) over all four XMOD codes including MOD3 indexed and circular commits, and the read-value completion stages TC = Xmem(15 - BITC) as one STATUS_BIT_WRITE to ST0 bit 12 with no other status mutation. Null and mismatched decodes reject transactionally.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BIT-P4-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S101-BIT-XMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S101-BIT-XMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire BIT Xmem,BITC through the generic CPU path with one-word PC advance, auxiliary-register input collection, one X-only D-bus DATA read, X commit-only AR updates for MOD0/MOD1/MOD2, indexed and circular commits for MOD3, TC publication with all other ST0 bits preserved, accumulator preservation, fault atomicity, and no other endpoint traffic.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-BIT-P4-21"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S101-BIT-XMEM-CPU"
+      ]
     }
   ],
   "tests": [
@@ -30271,6 +30317,34 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S100-DSUBT-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S101-BIT-XMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/compare/test_bit_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.bit_xmem_compare"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S101-BIT-XMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S101-BIT-XMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/compare/test_cpu_bit_xmem.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_bit_xmem"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S101-BIT-XMEM-RETIREMENT"
       ]
     }
   ]

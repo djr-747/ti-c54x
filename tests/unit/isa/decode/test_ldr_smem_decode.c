@@ -146,11 +146,13 @@ static void
 test_fixed_bit_near_misses(void)
 {
     /* Mask 0xFEE0 leaves D(8) and Smem(4:0) variable. Flipping fixed
-     * bit 10 lands on LDU_SMEM, flipping bit 9 lands on LD_SMEM_TS;
-     * every other fixed-bit flip misses every catalog row. */
+     * bit 10 lands on LDU_SMEM, flipping bit 9 lands on LD_SMEM_TS,
+     * flipping fixed bit 15 lands on the P3-S101 BIT_XMEM row
+     * (pinned below); every other fixed-bit flip misses every
+     * catalog row. */
     static const uint16_t unknown_masks[] = {
         UINT16_C(0x2000),
-        UINT16_C(0x4000), UINT16_C(0x8000)};
+        UINT16_C(0x4000)};
 
     for (size_t index = 0U;
          index < sizeof(unknown_masks) / sizeof(unknown_masks[0]);
@@ -162,6 +164,19 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(result.status ==
                            TI_C54X_DECODE_STATUS_UNKNOWN_WORD);
         TI_C54X_TEST_CHECK(result.id == TI_C54X_OPCODE_ID_UNKNOWN);
+    }
+
+    {
+        /* 0x9680 (fixed bit 15 set) is the BIT_XMEM encoding with
+         * XMOD2, XAR=AR2, BITC=0. */
+        const ti_c54x_decode_result bit_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LDR_SMEM_VALUE ^ UINT16_C(0x8000)));
+
+        TI_C54X_TEST_CHECK(bit_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(bit_sibling.id ==
+                           TI_C54X_OPCODE_ID_BIT_XMEM);
     }
 
     {

@@ -275,6 +275,10 @@ TI_C54X_OPCODE_MASKED(CMPM_SMEM_LK, cmpm_smem_lk, 0x6000, 0xFF00, 2, TI_C54X_OPE
  * op_bitt_smem core. Table 6-18 omits BITT, so the row is
  * repeatable. */
 TI_C54X_OPCODE_MASKED(BITT_SMEM, bitt_smem, 0x3400, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_INDIRECT_ADDR7, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_T_REGISTER)
+/* BIT Xmem: TC stages Xmem(15 - BITC) over the 0x9600 first word
+ * through the dual-XMOD/XAR/BITC layout into the op_bit_xmem
+ * core. Table 6-18 omits BIT, so the row is repeatable. */
+TI_C54X_OPCODE_MASKED(BIT_XMEM, bit_xmem, 0x9600, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_BITC, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS)
 /* ST #lk,Smem (syntax 3, direct only): lk stages into page-0
  * Smem over the 0x7600 first word with the copied lk extension
  * through the shared Smem,#lk layout into the landed

@@ -48,6 +48,7 @@
 #include "compare/op_cmpr.h"
 #include "compare/op_bitf_smem_lk.h"
 #include "compare/op_cmpm_smem_lk.h"
+#include "compare/op_bit_xmem.h"
 #include "compare/op_bitt_smem.h"
 #include "load/op_ld_smem.h"
 #include "load/op_ld_src_shift.h"

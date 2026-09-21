@@ -281,6 +281,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-SAT-P4-154` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §SAT, `4-154` |
 | `E-TI-C54X-SPRU172C-S4-BITF-P4-22` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BITF, `4-22` |
 | `E-TI-C54X-SPRU172C-S4-BITT-P4-23` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BITT, `4-23` |
+| `E-TI-C54X-SPRU172C-S4-BIT-P4-21` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §BIT, `4-21` |
 | `E-TI-C54X-SPRU172C-S4-CMPM-P4-33` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §CMPM, `4-33` |
 | `E-TI-C54X-SPRU172C-S4-ST-LK-P4-166` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST, `4-166` |
 | `E-TI-C54X-SPRU172C-S4-ABS-P4-3` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ABS, `4-3` |
@@ -1472,6 +1473,8 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S100-DSUB-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DSUB-P4-48` | `T-COMMON-P3-S100-DSUB-CPU` |
 | `REQ-COMMON-P3-S100-DSUBT-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | `T-COMMON-P3-S100-DSUBT-OPS` |
 | `REQ-COMMON-P3-S100-DSUBT-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-DSUBT-P4-50` | `T-COMMON-P3-S100-DSUBT-CPU` |
+| `REQ-COMMON-P3-S101-BIT-XMEM-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/compare/` | `E-TI-C54X-SPRU172C-S4-BIT-P4-21` | `T-COMMON-P3-S101-BIT-XMEM-OPS` |
+| `REQ-COMMON-P3-S101-BIT-XMEM-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-BIT-P4-21` | `T-COMMON-P3-S101-BIT-XMEM-CPU` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2155,6 +2158,8 @@ exist in the repository.
 | `T-COMMON-P3-S100-DSUB-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dsub.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dsub"}` | `REQ-COMMON-P3-S100-DSUB-RETIREMENT` |
 | `T-COMMON-P3-S100-DSUBT-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_dsubt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.dsubt_ops"}` | `REQ-COMMON-P3-S100-DSUBT-SEMANTICS` |
 | `T-COMMON-P3-S100-DSUBT-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_dsubt.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_dsubt"}` | `REQ-COMMON-P3-S100-DSUBT-RETIREMENT` |
+| `T-COMMON-P3-S101-BIT-XMEM-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/compare/test_bit_xmem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.bit_xmem_compare"}` | `REQ-COMMON-P3-S101-BIT-XMEM-SEMANTICS` |
+| `T-COMMON-P3-S101-BIT-XMEM-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/compare/test_cpu_bit_xmem.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_bit_xmem"}` | `REQ-COMMON-P3-S101-BIT-XMEM-RETIREMENT` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

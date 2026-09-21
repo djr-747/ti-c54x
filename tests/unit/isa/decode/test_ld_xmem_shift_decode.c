@@ -159,10 +159,10 @@ test_fixed_bit_near_misses(void)
      * ADD_XMEM sibling, flipping fixed bit 11 lands on the P3-S49
      * STRCD_XMEM_COND sibling (pinned below), and flipping fixed
      * bit 12 lands on the P3-S46 STL_ASM_SMEM_DIRECT sibling
-     * (pinned below); all other fixed-bit 15:9 flips miss every
-     * catalog row. */
+     * (pinned below), and flipping fixed bit 9 lands on the P3-S101
+     * BIT_XMEM row (pinned below); all other fixed-bit 15:9 flips
+     * miss every catalog row. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0200),
         UINT16_C(0x4000),
         UINT16_C(0x8000)};
 
@@ -216,6 +216,18 @@ test_fixed_bit_near_misses(void)
                            TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(stl_asm_sibling.id ==
                            TI_C54X_OPCODE_ID_STL_ASM_SMEM_DIRECT);
+    }
+
+    /* 0x9600 (fixed bit 9 set) is the BIT_XMEM encoding with
+     * XMOD0, XAR=AR2, BITC=0. */
+    {
+        const ti_c54x_decode_result bit_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(LD_XMEM_SHIFT_VALUE ^ UINT16_C(0x0200)));
+
+        TI_C54X_TEST_CHECK(bit_sibling.status ==
+                           TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(bit_sibling.id == TI_C54X_OPCODE_ID_BIT_XMEM);
     }
 
     for (size_t index = 0U;

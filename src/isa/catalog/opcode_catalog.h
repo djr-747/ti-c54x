@@ -204,6 +204,9 @@ typedef enum ti_c54x_operand_layout_id {
     /* One-word IDLE fields: 2-bit power-down selector K[9:8]
      * from word 0; no other operand. */
     TI_C54X_OPERAND_LAYOUT_IDLE_K,
+    /* One-word BIT Xmem fields: dual-X modifier XMOD[7:6], raw
+     * XAR[5:4], and 4-bit bit code BITC[3:0] from word 0. */
+    TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_BITC,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
