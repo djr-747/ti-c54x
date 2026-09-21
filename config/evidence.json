@@ -9003,6 +9003,42 @@
         "printed_page_end": "4-76"
       },
       "assertion": "SPRU172C Table 2-23 lists the four parallel load-and-multiply forms LD||MAC, LD||MACR, LD||MAS, LD||MASR. The LD||MAC[R] opcode diagram (0010_10RD_XXXX_YYYY, p. 4-74) and the LD||MAS[R] diagram (0010_11RD_XXXX_YYYY, p. 4-76) pin shared rows at 0xA800/0xAC00 under mask 0xFC00 with R at bit 9, D at bit 8, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0: the LD half loads the SXM-shifted X word into dst bits 31:16 while the MAC/MAS half accumulates live-T times Y into the other accumulator with FRCT/OVM handling and optional R rounding. The worked examples pin A=00 1234 0000 with B=00 010C 9511 (MAC), 00 010D 0000 (MACR), FF FEF3 8D11 (MAS), FF FEF4 0000 (MASR) from X=0x1234, Y=0x4321, T=0x0400, FRCT=0 with both ARs post-incremented and T untouched. The parallel rows are absent from Table 2-28 and are repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-ADD-P4-177",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST parallel ADD",
+        "printed_page_start": "4-177",
+        "printed_page_end": "4-177"
+      },
+      "assertion": "SPRU172C Table 2-24 lists the parallel store-and-add form ST||ADD. The opcode diagram (1100_00SD_XXXX_YYYY, p. 4-177) pins one row at 0xC000 under mask 0xFC00 with S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0. The ST half stores the ASM-shifted src accumulator to Ymem while the ADD half accumulates the sibling accumulator plus the SXM-widened X word shifted left 16 into dst; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, and ASM and affects C and the destination overflow flag. The worked example (ST A,*AR3 || ADD *AR5+0%,B) pins B=FF 0422 1000 from A=FF 8421 1000, X=0x8001, SXM=1, OVM=0, ASM=1 with Y word 0x0842, AR5 0300 to 0302, AR3 held at 0200, and src preserved. The parallel row is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "ST parallel SUB",
+        "printed_page_start": "4-185",
+        "printed_page_end": "4-185"
+      },
+      "assertion": "SPRU172C Table 2-24 lists the parallel store-and-subtract form ST||SUB. The opcode diagram (1100_01SD_XXXX_YYYY, p. 4-185) pins one row at 0xC400 under mask 0xFC00 with S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0. The ST half stores the ASM-shifted src accumulator to Ymem while the SUB half subtracts the sibling accumulator from the SXM-widened X word shifted left 16 into dst; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, and ASM and affects C and the destination overflow flag. The worked example (ST A,*AR3- || SUB *AR5+0%,B) pins B=FF FBE0 0000 from A=FF 8421 0000 with src preserved, X=0x8001, SXM=1, ASM=1, Y word 0x0842, AR5 0300 to 0302, and AR3 01FF to 01FE. The parallel row is absent from Table 2-28 and is repeatable."
     }
   ],
   "requirements": [
@@ -21328,6 +21364,51 @@
       "test_ids": [
         "T-COMMON-P3-S114-LD-PARALLEL-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S115-ST-PARALLEL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/arithmetic/",
+      "claim": "Execute ST src,Ymem || ADD/SUB Xmem,dst as catalog MASKED rows ST_PARALLEL_ADD at 0xC000 and ST_PARALLEL_SUB at 0xC400 under mask 0xFC00 with the SRC_DEST_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_ASM_STATUS_SXM_OVM input resources, and ELIGIBLE repeatability: the checked and trusted leaves extract S/D/dualxy and stage one dual WORD16 WRITE carrying the leaf-frozen STH-by-ASM value of src with the single-read completion set and no T involvement. The completion runs the sibling accumulator plus (ADD) or minus-from-X (SUB) the SXM-widened X word shifted left 16 and publishes one accumulator write into the D-selected accumulator with carry/borrow-driven C, TC preserved, and OVM saturation on 32-bit overflow. Null arguments, crossed rows, and unknown accumulators/ASM/SXM/OVM/ARs reject transactionally; src is preserved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-ADD-P4-177",
+        "E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S115-ST-PARALLEL-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S115-ST-PARALLEL-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire ST src,Ymem || ADD/SUB Xmem,dst through the store-compute child root with the X READ issued before the Y WRITE carrying the leaf-frozen ST value, the single-read completion on the X word with the accumulator effect, shared AR post-access commits and one-word PC advance, and no T involvement.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-ADD-P4-177",
+        "E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S115-ST-PARALLEL-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S115-ST-PARALLEL-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register ST_PARALLEL_ADD at 0xC000 under mask 0xFC00 and ST_PARALLEL_SUB at 0xC400 under mask 0xFC00 as one-word forms with the SRC_DEST_DUALXY layout, ACCUMULATORS_AUXILIARY_REGISTERS_ASM_STATUS_SXM_OVM inputs, and ELIGIBLE repeatability, covering all 1024 first-word encodings per row with UNKNOWN below-neighbor 0xBFFF and the gap above at 0xC800.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-ST-ADD-P4-177",
+        "E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S115-ST-PARALLEL-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31343,6 +31424,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S114-LD-PARALLEL-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S115-ST-PARALLEL-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/arithmetic/test_st_parallel_ops.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_parallel_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S115-ST-PARALLEL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S115-ST-PARALLEL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/arithmetic/test_cpu_st_parallel.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_st_parallel"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S115-ST-PARALLEL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S115-ST-PARALLEL-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_st_parallel_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.st_parallel_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S115-ST-PARALLEL-CATALOG"
       ]
     }
   ]

@@ -57,12 +57,23 @@ ti_c54x_op_memory_effect_dual_move_shape_is_valid(
     if (effect == NULL) {
         return false;
     }
-    return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
-           effect->value_word == UINT16_C(0) &&
-           effect->rmw_operation ==
-               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
-           effect->transfer_reserved == UINT8_C(0) &&
-           effect->complete == NULL && effect->complete_dual == NULL;
+    if (effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
+        effect->rmw_operation !=
+            (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE ||
+        effect->transfer_reserved != UINT8_C(0)) {
+        return false;
+    }
+    if (effect->complete == NULL && effect->complete_dual == NULL) {
+        /* Plain move: the Y WRITE template stays zero until the
+         * X observation replaces it at second-leg issue. */
+        return effect->value_word == UINT16_C(0);
+    }
+    /* Store-compute: the leaf-frozen ST value stages in the
+     * WRITE template with the single-read completion set (the
+     * completion union shares storage, so complete_dual reads
+     * the same pointer). Any frozen value is admissible: the
+     * frozen candidate itself is the tamper witness. */
+    return effect->complete != NULL;
 }
 
 bool

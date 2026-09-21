@@ -52,11 +52,15 @@ ti_c54x_memory_instruction_dual_move_candidate_shape_is_valid(
 {
     const ti_c54x_op_memory_address_spec *spec;
 
+    /* The completion union shares storage across callback kinds,
+     * so this address-shape check stays completion-agnostic: the
+     * move root admits only null completions and the
+     * store-compute root only the single-read completion, each
+     * gated at its own preparation. */
     if (snapshot == NULL || effect == NULL ||
         effect->address_spec.kind !=
             TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16 ||
-        effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE ||
-        effect->complete != NULL || effect->complete_dual != NULL) {
+        effect->access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
         return false;
     }
     spec = &effect->address_spec;

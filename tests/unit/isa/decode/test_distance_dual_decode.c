@@ -201,9 +201,10 @@ test_fixed_bit_near_misses(void)
      * distance rows (pinned below); flipping fixed bit 9 lands on
      * the landed FIRS row and on the landed LMS row; flipping
      * fixed bit 10 lands on the
-     * unclaimed 0xE6 slot for SQDST and on MVMM for ABDST; all
-     * other fixed-bit 15:8 flips land on the pinned siblings or
-     * miss every row. */
+     * unclaimed 0xE6 slot for SQDST and on MVMM for ABDST;
+     * flipping fixed bit 13 lands on the landed ST_PARALLEL_ADD
+     * row for both bases; all other fixed-bit 15:8 flips land on
+     * the pinned siblings or miss every row. */
     check_sibling((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x0100)),
                   TI_C54X_OPCODE_ID_ABDST_XMEM_YMEM);
     check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x0100)),
@@ -223,8 +224,10 @@ test_fixed_bit_near_misses(void)
                   TI_C54X_OPCODE_ID_OR_ACC_SHIFT);
     check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x1000)),
                   TI_C54X_OPCODE_ID_OR_ACC_SHIFT);
-    check_miss((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x2000)));
-    check_miss((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x2000)));
+    check_sibling((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x2000)),
+                  TI_C54X_OPCODE_ID_ST_PARALLEL_ADD);
+    check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x2000)),
+                  TI_C54X_OPCODE_ID_ST_PARALLEL_ADD);
     check_sibling((uint16_t)(UINT16_C(0xE2A6) ^ UINT16_C(0x4000)),
                   TI_C54X_OPCODE_ID_SUB_DUAL_M2_M1);
     check_sibling((uint16_t)(UINT16_C(0xE3A6) ^ UINT16_C(0x4000)),

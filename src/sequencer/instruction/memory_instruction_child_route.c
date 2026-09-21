@@ -4,7 +4,8 @@
  * Owns: classification of a memory address kind into its pair
  * route plus snapshot-preparation dispatch for the routed pair
  * owners (including the dual-data-plus-coefficient triple, whose
- * DATA legs resolve through the shared dual planner); see
+ * DATA legs resolve through the shared dual planner) and for
+ * the dual move-pair shared-kind entry; see
  * memory_instruction_child_route.h.
  * Does not own: transaction orchestration, address resolution,
  * endpoint traffic, architectural mutation, opcode semantics,
@@ -14,6 +15,8 @@
 
 #include "memory_instruction_child_route.h"
 
+#include "memory_instruction_dual_move.h"
+#include "memory_instruction_dual_store_compute.h"
 #include "memory_instruction_port.h"
 #include "memory_instruction_smem_absolute_pair.h"
 #include "memory_instruction_smem_program_pair.h"
@@ -68,4 +71,15 @@ ti_c54x_memory_instruction_pair_route_prepare_snapshot(
     default:
         return false;
     }
+}
+
+bool
+ti_c54x_memory_instruction_dual_move_pair_prepare_snapshot(
+    ti_c54x_memory_instruction_transaction *transaction,
+    const ti_c54x_arch_state *state)
+{
+    return ti_c54x_memory_instruction_dual_store_compute_prepare_snapshot(
+               transaction, state) ||
+           ti_c54x_memory_instruction_dual_move_prepare_snapshot(transaction,
+                                                                 state);
 }

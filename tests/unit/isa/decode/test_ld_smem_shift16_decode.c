@@ -96,7 +96,9 @@ check_transactional_failure(
 static void
 test_fixed_bits_and_nearby_unknown_words(void)
 {
-    /* Bit 14 (0x4000) left this list in P3-S3z: 0x4480 ^ 0x4000 is
+    /* Bit 15 (0x8000) left this list in P3-S115: 0x4490 ^ 0x8000
+     * is 0xC490, a valid ST_PARALLEL_SUB word asserted below.
+     * Bit 14 (0x4000) left this list in P3-S3z: 0x4480 ^ 0x4000 is
      * 0x0480, a valid ADD_SMEM_TS word asserted below. Bit 13 (0x2000)
      * left this list in P3-S33: 0x4490 ^ 0x2000 is 0x6490, a valid
      * MAC_SMEM_LK word asserted below. Bit 10 (0x0400)
@@ -107,8 +109,7 @@ test_fixed_bits_and_nearby_unknown_words(void)
      * leaves in P3-S100: 0x4490 ^ 0x1000 is 0x5490, a valid
      * DSUB word asserted below. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0080)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -129,6 +130,16 @@ test_fixed_bits_and_nearby_unknown_words(void)
         TI_C54X_TEST_CHECK(circular_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(circular_sibling.id ==
                            TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16_MOD10);
+    }
+
+    /* Flipping fixed bit 15 lands on 0xC490, claimed by the
+     * P3-S115 ST_PARALLEL_SUB row: a valid cross-row near miss,
+     * not an overaccept. */
+    {
+        const ti_c54x_decode_result st_sibling = ti_c54x_decode_first_word(
+            (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x8000)));
+        TI_C54X_TEST_CHECK(st_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(st_sibling.id == TI_C54X_OPCODE_ID_ST_PARALLEL_SUB);
     }
 
     /* Flipping fixed bit 14 lands on 0x0480, claimed by the P3-S3z

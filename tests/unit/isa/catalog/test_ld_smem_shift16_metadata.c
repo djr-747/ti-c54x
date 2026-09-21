@@ -34,7 +34,7 @@ test_metadata(void)
         ti_c54x_opcode_metadata_for_id(
             TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 362);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 364);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id ==
                        TI_C54X_OPCODE_ID_LD_SMEM_SHIFT16);
@@ -91,6 +91,8 @@ static void
 test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
 {
     /* Every bit other than D and ARF is fixed by the exact FE F8 mask. */
+    /* Bit 15 (0x8000) left this list in P3-S115: 0x4480 ^ 0x8000
+     * is 0xC480, a valid ST_PARALLEL_SUB word handled below. */
     /* Bit 14 (0x4000) left this list in P3-S3z: 0x4480 ^ 0x4000 is
      * 0x0480, a valid ADD_SMEM_TS word handled below. Bit 10 (0x0400)
      * leaves in P3-S19: 0x4480 ^ 0x0400 is 0x4080, a valid
@@ -101,8 +103,7 @@ test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
      * Bit 12 (0x1000) leaves in P3-S100: 0x4480 ^ 0x1000 is
      * 0x5480, a valid DSUB word handled below. */
     static const uint16_t fixed_bit_masks[] = {
-        UINT16_C(0x0080),
-        UINT16_C(0x8000)};
+        UINT16_C(0x0080)};
 
     for (size_t index = 0U;
          index < sizeof(fixed_bit_masks) / sizeof(fixed_bit_masks[0]);
@@ -114,6 +115,16 @@ test_fixed_bits_and_lax_mask_overaccept_are_rejected(void)
             ti_c54x_opcode_catalog_lookup_first_word(word) ==
             TI_C54X_OPCODE_ID_UNKNOWN);
     }
+
+    /* Flipping fixed bit 15 lands on 0xC480, claimed by the
+     * P3-S115 ST_PARALLEL_SUB row: a valid cross-row near miss,
+     * not an overaccept. */
+    TI_C54X_TEST_CHECK(!matches_ld_smem_shift16(
+        (uint16_t)(LD_SMEM_SHIFT16_VALUE ^ UINT16_C(0x8000))));
+    TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
+                           (uint16_t)(LD_SMEM_SHIFT16_VALUE ^
+                                      UINT16_C(0x8000))) ==
+                       TI_C54X_OPCODE_ID_ST_PARALLEL_SUB);
 
     /* Flipping fixed bit 14 lands on 0x0480, claimed by the P3-S3z
      * ADD_SMEM_TS row (direct Smem 0x00, B destination): the lane is a

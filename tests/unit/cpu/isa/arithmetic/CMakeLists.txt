@@ -19,3 +19,5 @@ ti_c54x_add_unit_test(cpu_abdst test_cpu_abdst.c)
 ti_c54x_add_unit_test(cpu_lms test_cpu_lms.c)
 # P3-S108 RED contract: FIRS dual-filter retirement (triple route pending).
 ti_c54x_add_unit_test(cpu_firs test_cpu_firs.c)
+# P3-S115 RED contract: ST parallel-ADD/SUB retirement.
+ti_c54x_add_unit_test(cpu_st_parallel test_cpu_st_parallel.c)

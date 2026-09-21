@@ -275,6 +275,17 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
                candidate->effect.payload.memory.value_word;
     }
     if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
+        /* The plain-move root leaves the resolver's zero-staged Y
+         * template in place with a zero effect value; the
+         * store-compute root stamps the leaf-frozen ST value over
+         * the template. Either way the stamp echoes the frozen
+         * effect value, pinning both against post-freeze
+         * mutation. */
+        return candidate->dual_address_snapshot.y_request.write_value_word ==
+               candidate->effect.payload.memory.value_word;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_ABSOLUTE_DATA_WORD16 &&
         candidate->effect.payload.memory.address_spec.absolute_data
                 .mmr_sidecar_kind ==

@@ -18,6 +18,7 @@
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
 #include "memory_instruction_dual_move.h"
+#include "memory_instruction_dual_store_compute.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_port.h"
 #include "memory_instruction_stack_pair.h"
@@ -47,6 +48,11 @@ ti_c54x_memory_instruction_pair_dispatch_advance(
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE) {
         return ti_c54x_memory_instruction_dual_move_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_STORE_COMPUTE) {
+        return ti_c54x_memory_instruction_dual_store_compute_advance(
             transaction, endpoint, state, accumulators, t_register, result);
     }
     if (transaction->child_kind ==
@@ -101,6 +107,11 @@ ti_c54x_memory_instruction_pair_dispatch_cancel(
                                                            endpoint);
     }
     if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_STORE_COMPUTE) {
+        return ti_c54x_memory_instruction_dual_store_compute_cancel(
+            transaction, endpoint);
+    }
+    if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ) {
         return ti_c54x_memory_instruction_data_program_cancel(transaction,
                                                                 endpoint);
@@ -147,6 +158,11 @@ ti_c54x_memory_instruction_pair_dispatch_reset(
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE) {
         return ti_c54x_memory_instruction_dual_move_reset(transaction);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_STORE_COMPUTE) {
+        return ti_c54x_memory_instruction_dual_store_compute_reset(
+            transaction);
     }
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ) {

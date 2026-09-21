@@ -20,3 +20,5 @@ $(eval $(call ti_c54x_add_test,cpu_abdst,cpu/isa/arithmetic,test_cpu_abdst.c))
 $(eval $(call ti_c54x_add_test,cpu_lms,cpu/isa/arithmetic,test_cpu_lms.c))
 # P3-S108 RED contract: FIRS dual-filter retirement (triple route pending).
 $(eval $(call ti_c54x_add_test,cpu_firs,cpu/isa/arithmetic,test_cpu_firs.c))
+# P3-S115 RED contract: ST parallel-ADD/SUB retirement.
+$(eval $(call ti_c54x_add_test,cpu_st_parallel,cpu/isa/arithmetic,test_cpu_st_parallel.c))

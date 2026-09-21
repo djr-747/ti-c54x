@@ -180,6 +180,7 @@
 #include "multiply/op_poly_smem.h"
 #include "multiply/op_maca_t.h"
 #include "multiply/op_ld_parallel.h"
+#include "arithmetic/op_st_parallel.h"
 #include "multiply/op_masa_smem.h"
 #include "multiply/op_masa_t.h"
 #include "multiply/op_macd_smem.h"

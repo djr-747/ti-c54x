@@ -32,7 +32,6 @@
 #include "memory_instruction_commit.h"
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
-#include "memory_instruction_dual_move.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_mmr_load.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -236,8 +235,8 @@ ti_c54x_memory_instruction_transaction_prepare(
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
     } else if (dual_move) {
-        if (!ti_c54x_memory_instruction_dual_move_prepare_snapshot(target,
-                                                                  state)) {
+        if (!ti_c54x_memory_instruction_dual_move_pair_prepare_snapshot(
+                target, state)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
     } else if (candidate.effect.payload.memory.address_spec.kind ==

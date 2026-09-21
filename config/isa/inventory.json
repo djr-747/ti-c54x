@@ -2638,9 +2638,11 @@
       "table_ordinal": 1,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_ADD"
+      ]
     },
     {
       "id": "FORM-T2-24-02",
@@ -2649,9 +2651,11 @@
       "table_ordinal": 2,
       "mnemonic": "ST",
       "parallel": true,
-      "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "scope": "COMMON_CANDIDATE",
+      "coverage": "COMPLETE",
+      "catalog_symbols": [
+        "ST_PARALLEL_SUB"
+      ]
     },
     {
       "id": "FORM-T2-25-01",
@@ -5197,6 +5201,18 @@
     {
       "catalog_symbol": "LD_PARALLEL_MAS",
       "form_id": "FORM-T2-23-04",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_ADD",
+      "form_id": "FORM-T2-24-01",
+      "coverage": "COMPLETE",
+      "addressing_subset": "ALL"
+    },
+    {
+      "catalog_symbol": "ST_PARALLEL_SUB",
+      "form_id": "FORM-T2-24-02",
       "coverage": "COMPLETE",
       "addressing_subset": "ALL"
     }

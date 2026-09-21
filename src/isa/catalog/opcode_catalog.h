@@ -225,6 +225,11 @@ typedef enum ti_c54x_operand_layout_id {
      * DUALXY; trusted packets stay within the four-operand
      * capacity. */
     TI_C54X_OPERAND_LAYOUT_ROUND_DESTINATION_DUALXY,
+    /* One-word parallel ST fields: store-source select S[9:9],
+     * compute-destination select D[8:8], and the 8-bit
+     * dual-memory XY specifier DUALXY[7:0] (XMOD/XAR over
+     * YMOD/YAR, as in the FIRS dual row) from word 0. */
+    TI_C54X_OPERAND_LAYOUT_SRC_DEST_DUALXY,
     TI_C54X_OPERAND_LAYOUT_COUNT
 } ti_c54x_operand_layout_id;
 
@@ -420,6 +425,14 @@ typedef uint16_t ti_c54x_input_resource_mask;
                                    TI_C54X_INPUT_RESOURCES_STATUS_FRCT | \
                                    TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* SQDST/ABDST distance bodies read accumulators, ARs, SXM, FRCT, OVM. */
+/* ST parallel-ADD/SUB bodies read accumulators, ARs, and
+ * ASM/SXM/OVM. No T or FRCT is consumed. */
+#define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_ASM_STATUS_SXM_OVM \
+    ((ti_c54x_input_resource_mask)(TI_C54X_INPUT_RESOURCES_ACCUMULATORS | \
+                                   TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_ASM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_SXM | \
+                                   TI_C54X_INPUT_RESOURCES_STATUS_OVM))
 /* LD parallel-MAC/MAS bodies read accumulators, ARs, live T,
  * and SXM/FRCT/OVM. T is a validated input, never written. */
 #define TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_T_REGISTER_STATUS_SXM_FRCT_OVM \

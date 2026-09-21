@@ -49,3 +49,5 @@ $(eval $(call ti_c54x_add_test,sat_acc_ops,isa/ops/arithmetic,test_sat_acc_ops.c
 $(eval $(call ti_c54x_add_test,abs_acc_ops,isa/ops/arithmetic,test_abs_acc.c))
 $(eval $(call ti_c54x_add_test,neg_acc_ops,isa/ops/arithmetic,test_neg_acc.c))
 $(eval $(call ti_c54x_add_test,norm_acc_ops,isa/ops/arithmetic,test_norm_acc.c))
+# P3-S115 RED contract: ST parallel-ADD/SUB effects.
+$(eval $(call ti_c54x_add_test,st_parallel_ops,isa/ops/arithmetic,test_st_parallel_ops.c))

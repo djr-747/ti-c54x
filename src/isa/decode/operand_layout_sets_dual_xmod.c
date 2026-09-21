@@ -5,8 +5,8 @@
  * dual-XMOD single-operand generic layouts
  * (ACCUMULATOR_DUAL_XMOD_XAR_SHIFT4, SELECT_DUAL_XMOD_XAR_COND4,
  * DUAL_XMOD_XAR_BITC, DUAL_XMOD_XAR_YMOD_YAR,
- * DUAL_XMOD_XAR_YMOD_YAR_PMAD16, and
- * ROUND_DESTINATION_DUALXY). Each set object
+ * DUAL_XMOD_XAR_YMOD_YAR_PMAD16,
+ * ROUND_DESTINATION_DUALXY, and SRC_DEST_DUALXY). Each set object
  * has external linkage
  * so the plan table and resolver in operand_layout.c can
  * borrow it; pieces and per-operand arrays stay
@@ -179,3 +179,25 @@ static const ti_c54x_operand_field_layout
          UINT8_C(8)}};
 const ti_c54x_operand_layout_set ti_c54x_round_destination_dualxy_set = {
     ti_c54x_round_destination_dualxy_operands, UINT8_C(3)};
+
+/* Parallel ST fields: store-source select S[9:9],
+ * compute-destination select D[8:8], and the 8-bit dual-memory
+ * XY specifier DUALXY[7:0] (XMOD/XAR over YMOD/YAR). */
+static const ti_c54x_operand_field_piece
+    ti_c54x_src_dest_dualxy_src_piece = {UINT8_C(0), UINT8_C(9),
+                                         UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_src_dest_dualxy_destination_piece = {
+        UINT8_C(0), UINT8_C(8), UINT8_C(1), UINT8_C(0)};
+static const ti_c54x_operand_field_piece
+    ti_c54x_src_dest_dualxy_dualxy_piece = {UINT8_C(0), UINT8_C(0),
+                                            UINT8_C(8), UINT8_C(0)};
+static const ti_c54x_operand_field_layout
+    ti_c54x_src_dest_dualxy_operands[3] = {
+        {&ti_c54x_src_dest_dualxy_src_piece, UINT8_C(1), UINT8_C(1)},
+        {&ti_c54x_src_dest_dualxy_destination_piece, UINT8_C(1),
+         UINT8_C(1)},
+        {&ti_c54x_src_dest_dualxy_dualxy_piece, UINT8_C(1),
+         UINT8_C(8)}};
+const ti_c54x_operand_layout_set ti_c54x_src_dest_dualxy_set = {
+    ti_c54x_src_dest_dualxy_operands, UINT8_C(3)};

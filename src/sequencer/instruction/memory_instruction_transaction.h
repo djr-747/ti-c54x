@@ -74,7 +74,8 @@ typedef enum ti_c54x_memory_instruction_child_kind {
     TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_ABSOLUTE_PAIR_WORD16 = 7,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_SMEM_PROGRAM_PAIR_WORD16 = 8,
     TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE = 9,
-    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16 = 10
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_PROGRAM_TRIPLE_WORD16 = 10,
+    TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_STORE_COMPUTE = 11
 } ti_c54x_memory_instruction_child_kind;
 
 typedef struct ti_c54x_memory_instruction_candidate {
@@ -172,6 +173,12 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t long32_first_value_msw;
         /* Dual MOD0 uses it as an immutable X-address shadow. */
         uint16_t dual_x_address_word;
+        /* Dual store-compute stages the X-side READ observation
+         * here between first-leg READY and the Y WRITE plus
+         * completion commit. The dual READ/MOVE roots never
+         * occupy it while a store-compute child is live, and it
+         * is cleared at prepare. */
+        uint16_t store_compute_x_observed_word;
         /* The DATA+PROGRAM pair uses it as an immutable Smem DATA
          * address shadow. */
         uint16_t data_program_smem_address_word;
