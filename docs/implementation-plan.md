@@ -849,6 +849,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S115: dual store-compute seam with ST parallel-ADD/SUB rows (implemented; local verification green)](plan/p3-s115-st-parallel-add-sub-slice.md)
 
+- [P3-S116: ST parallel-MAC/MAS/MPY rows over the store-compute seam (implemented; local verification green)](plan/p3-s116-st-parallel-mac-mas-mpy-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
