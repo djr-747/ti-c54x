@@ -31,6 +31,16 @@ ti_c54x_memory_instruction_status ti_c54x_memory_instruction_dual_commit_ready(
     ti_c54x_arch_state *state, ti_c54x_accumulator_state *accumulators,
     ti_c54x_t_register_state *t_register, uint16_t x_word, uint16_t y_word);
 
+/* Publish both validated post-access AR updates from a dual
+ * snapshot: distinct selectors publish two updates, a
+ * same-selector alias publishes the one X-owned update, and
+ * MOD0 sides change nothing. The snapshot must already be
+ * rechecked against the mode/selector/address shadows and live
+ * state at the commit boundary. */
+void ti_c54x_memory_instruction_dual_publish_address_commits(
+    const ti_c54x_dual_memory_address_snapshot *snapshot,
+    ti_c54x_arch_state *state);
+
 #ifdef __cplusplus
 }
 #endif

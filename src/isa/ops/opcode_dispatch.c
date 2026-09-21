@@ -124,6 +124,7 @@
 #include "store/op_mvmd.h"
 #include "store/op_mvmm.h"
 #include "store/op_mvdk.h"
+#include "store/op_mvdd_xmem_ymem.h"
 #include "store/op_mvkd.h"
 #include "store/op_mvpd.h"
 #include "store/op_mvpd_smem_absolute.h"

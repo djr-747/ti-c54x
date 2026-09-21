@@ -20,6 +20,8 @@ $(eval $(call ti_c54x_add_test,cpu_mvdk,cpu/isa/store,test_cpu_mvdk.c))
 $(eval $(call ti_c54x_add_test,cpu_mvkd,cpu/isa/store,test_cpu_mvkd.c))
 $(eval $(call ti_c54x_add_test,cpu_mvpd,cpu/isa/store,test_cpu_mvpd.c))
 $(eval $(call ti_c54x_add_test,cpu_mvdp,cpu/isa/store,test_cpu_mvdp.c))
+# P3-S104: MVDD dual-move pair retirement.
+$(eval $(call ti_c54x_add_test,cpu_mvdd,cpu/isa/store,test_cpu_mvdd.c))
 $(eval $(call ti_c54x_add_test,cpu_mvdp_smem_absolute,cpu/isa/store,test_cpu_mvdp_smem_absolute.c))
 $(eval $(call ti_c54x_add_test,cpu_mvpd_smem_absolute,cpu/isa/store,test_cpu_mvpd_smem_absolute.c))
 $(eval $(call ti_c54x_add_test,cpu_dst_smem_absolute,cpu/isa/store,test_cpu_dst_smem_absolute.c))

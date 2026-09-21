@@ -2,8 +2,8 @@
  * Module contract
  *
  * Owns: cold dispatch from a prepared root memory transaction to one of the
- * pair reducers (LONG32, dual-WORD16, DATA+PROGRAM-WORD16, PORT-WORD16,
- * or stack-pair-WORD16),
+ * pair reducers (LONG32, dual-WORD16 read, dual-WORD16 move,
+ * DATA+PROGRAM-WORD16, PORT-WORD16, or stack-pair-WORD16),
  * including
  * the status returned for an unknown child discriminator.
  * Does not own: WORD16 execution, transaction preparation, reducer state,
@@ -16,6 +16,7 @@
 
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
+#include "memory_instruction_dual_move.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_port.h"
 #include "memory_instruction_stack_pair.h"
@@ -39,6 +40,11 @@ ti_c54x_memory_instruction_pair_dispatch_advance(
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ) {
         return ti_c54x_memory_instruction_dual_advance(
+            transaction, endpoint, state, accumulators, t_register, result);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE) {
+        return ti_c54x_memory_instruction_dual_move_advance(
             transaction, endpoint, state, accumulators, t_register, result);
     }
     if (transaction->child_kind ==
@@ -83,6 +89,11 @@ ti_c54x_memory_instruction_pair_dispatch_cancel(
         return ti_c54x_memory_instruction_dual_cancel(transaction, endpoint);
     }
     if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE) {
+        return ti_c54x_memory_instruction_dual_move_cancel(transaction,
+                                                           endpoint);
+    }
+    if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ) {
         return ti_c54x_memory_instruction_data_program_cancel(transaction,
                                                                 endpoint);
@@ -120,6 +131,10 @@ ti_c54x_memory_instruction_pair_dispatch_reset(
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ) {
         return ti_c54x_memory_instruction_dual_reset(transaction);
+    }
+    if (transaction->child_kind ==
+        TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_MOVE) {
+        return ti_c54x_memory_instruction_dual_move_reset(transaction);
     }
     if (transaction->child_kind ==
         TI_C54X_MEMORY_INSTRUCTION_CHILD_DATA_PROGRAM_WORD16_READ) {

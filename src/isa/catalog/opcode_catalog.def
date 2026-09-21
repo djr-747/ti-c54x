@@ -196,6 +196,14 @@ TI_C54X_OPCODE_MASKED(SQDST_XMEM_YMEM, sqdst_xmem_ymem, 0xE200, 0xFF00, 1, TI_C5
  * SXM-widened (X-Y) shifted left 16. Class 7 repeat-used pair,
  * so the row is ELIGIBLE. */
 TI_C54X_OPCODE_MASKED(ABDST_XMEM_YMEM, abdst_xmem_ymem, 0xE300, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_ACCUMULATORS_AUXILIARY_REGISTERS_STATUS_SXM_FRCT_OVM)
+/* P3-S104 MVDD Xmem,Ymem (TI SPRU172C section MVDD, p. 4-107,
+ * 1 word): the 0xE500 dual data-memory move over the shared
+ * DUAL_XMOD_XAR_YMOD_YAR layout. The op_mvdd leaf stages one
+ * dual-indirect move-pair MEMORY effect; the move root issues
+ * the X READ and the Y WRITE and commits both AR updates.
+ * Absent from Table 2-28, so the row is ELIGIBLE with
+ * evidence. */
+TI_C54X_OPCODE_MASKED(MVDD_XMEM_YMEM, mvdd_xmem_ymem, 0xE500, 0xFF00, 1, TI_C54X_OPERAND_LAYOUT_DUAL_XMOD_XAR_YMOD_YAR, TI_C54X_REPEATABILITY_ELIGIBLE, TI_C54X_INPUT_RESOURCES_AUXILIARY_REGISTERS)
 /* ADD src,ASM (syntax 10): dst accumulates src shifted by ASM over
  * the shared accumulator source/destination layout into the landed
  * op_add_src_asm core. */

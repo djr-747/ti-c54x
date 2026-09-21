@@ -49,3 +49,38 @@ ti_c54x_op_memory_effect_dual_shape_is_valid(
            effect->transfer_reserved == UINT8_C(0) &&
            effect->complete_dual != NULL;
 }
+
+bool
+ti_c54x_op_memory_effect_dual_move_shape_is_valid(
+    const struct ti_c54x_op_memory_effect *effect)
+{
+    if (effect == NULL) {
+        return false;
+    }
+    return effect->access == TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE &&
+           effect->value_word == UINT16_C(0) &&
+           effect->rmw_operation ==
+               (uint8_t)TI_C54X_OP_MEMORY_RMW_OPERATION_NONE &&
+           effect->transfer_reserved == UINT8_C(0) &&
+           effect->complete == NULL && effect->complete_dual == NULL;
+}
+
+bool
+ti_c54x_op_memory_effect_dual_kind_is_valid(
+    const struct ti_c54x_op_memory_effect *effect)
+{
+    if (effect == NULL ||
+        !ti_c54x_op_memory_dual_address_is_valid(
+            &effect->address_spec)) {
+        return false;
+    }
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
+        return ti_c54x_op_memory_effect_dual_move_shape_is_valid(effect);
+    }
+    if (effect->address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
+        return ti_c54x_op_memory_effect_dual_shape_is_valid(effect);
+    }
+    return false;
+}

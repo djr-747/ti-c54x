@@ -117,8 +117,12 @@ ti_c54x_memory_instruction_dual_snapshot_commits_match_spec(
     const ti_c54x_dual_memory_address_snapshot *snapshot,
     const struct ti_c54x_op_memory_address_spec *spec)
 {
+    /* The move pair shares the dual arm and commit rules verbatim;
+     * only the address kind differs. */
     if (snapshot == NULL || spec == NULL ||
-        spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 ||
+        (spec->kind != TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16 &&
+         spec->kind !=
+             TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) ||
         !dual_mode_is_valid(spec->dual.x_mode) ||
         !dual_mode_is_valid(spec->dual.y_mode)) {
         return false;

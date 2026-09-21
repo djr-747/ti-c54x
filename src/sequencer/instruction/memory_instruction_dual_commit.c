@@ -34,8 +34,10 @@ static ti_c54x_memory_instruction_status commit_architecture(
  * rechecked against the copied shadows and live state at the commit
  * boundary, so these stores are infallible and land together: distinct
  * selectors publish two updates, a same-selector alias publishes the one
- * X-owned update, and MOD0 sides change nothing. */
-static void publish_dual_address_commits(
+ * X-owned update, and MOD0 sides change nothing. Shared with the
+ * dual-move root, whose Y WRITE leg carries the same post-access
+ * commit shape. */
+void ti_c54x_memory_instruction_dual_publish_address_commits(
     const ti_c54x_dual_memory_address_snapshot *snapshot,
     ti_c54x_arch_state *state)
 {
@@ -100,7 +102,7 @@ ti_c54x_memory_instruction_status ti_c54x_memory_instruction_dual_commit_ready(
     }
     /* Ordinary-effect staging succeeded after both reads: publish the address
      * updates and PC together with no further fallible step between them. */
-    publish_dual_address_commits(&transaction->candidate.dual_address_snapshot,
-                                 state);
+    ti_c54x_memory_instruction_dual_publish_address_commits(
+        &transaction->candidate.dual_address_snapshot, state);
     return commit_architecture(transaction, state);
 }

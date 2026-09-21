@@ -229,7 +229,15 @@ typedef enum ti_c54x_op_memory_address_kind {
      * bundle word), no RTN load occurs (takes are not calls), and
      * a non-null completion stages the INTM set. Only the take
      * root producer freezes this kind; no catalog row uses it. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 = 30
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 = 30,
+    /* Dual-indirect move pair WORD16 (MVDD): the shared `dual`
+     * arm carries the X/Y MOD0--MOD3 modes and AR2..AR5
+     * selectors. The X leg reads, the Y leg writes the observed
+     * X word, and both post-access AR updates commit; the effect
+     * `access` is WRITE (the completing-leg direction) with a
+     * null leaf completion. The move root owns the chaining
+     * internally. */
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16 = 31
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

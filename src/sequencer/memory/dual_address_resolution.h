@@ -77,6 +77,22 @@ ti_c54x_sequencer_resolve_dual_memory_address(
     uint16_t write_value_word,
     ti_c54x_dual_memory_address_resolution *out);
 
+/*
+ * Resolve one frozen dual-indirect WORD16 move pair (MVDD): the X
+ * leg reads and the Y leg writes the observed X word. Planning
+ * reuses the dual READ planner (effective addresses are
+ * access-independent) over the shared dual arm; the Y request
+ * is a WRITE template with a zero staged value the move root
+ * replaces with the X observation before issue. Modes, AR2..AR5
+ * selectors, MOD3 AR0/BK snapshots, alias cross-checks, and
+ * post-access commits follow the READ-pair rules verbatim.
+ */
+ti_c54x_memory_address_resolution_status
+ti_c54x_sequencer_resolve_dual_move_pair(
+    const ti_c54x_arch_state *state,
+    const ti_c54x_op_memory_address_spec *spec,
+    ti_c54x_dual_memory_address_resolution *out);
+
 #ifdef __cplusplus
 }
 #endif

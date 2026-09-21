@@ -26,6 +26,7 @@
 #include "state/block_size_register.h"
 #include "memory_instruction_data_program_candidate_validate.h"
 #include "memory_instruction_dual_candidate_validate.h"
+#include "memory_instruction_dual_move_candidate_validate.h"
 #include "memory_instruction_port_candidate_validate.h"
 #include "memory_instruction_stack_pair_candidate_validate.h"
 #include "memory_instruction_smem_absolute_pair_candidate_validate.h"
@@ -54,6 +55,13 @@ ti_c54x_memory_instruction_candidate_shape_is_valid(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
         if (!ti_c54x_memory_instruction_dual_candidate_shape_is_valid(
+                &candidate->dual_address_snapshot,
+                &candidate->effect.payload.memory)) {
+            return false;
+        }
+    } else if (candidate->effect.payload.memory.address_spec.kind ==
+               TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
+        if (!ti_c54x_memory_instruction_dual_move_candidate_shape_is_valid(
                 &candidate->dual_address_snapshot,
                 &candidate->effect.payload.memory)) {
             return false;
@@ -400,6 +408,11 @@ ti_c54x_memory_instruction_candidate_matches_live(
     if (candidate->effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16) {
         return ti_c54x_memory_instruction_dual_candidate_matches_live(
+            candidate, state);
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+        TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
+        return ti_c54x_memory_instruction_dual_move_candidate_matches_live(
             candidate, state);
     }
     if (candidate->effect.payload.memory.address_spec.kind ==

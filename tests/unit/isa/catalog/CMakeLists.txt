@@ -122,6 +122,8 @@ ti_c54x_add_unit_test(mvdp_smem_absolute_metadata
                       test_mvdp_smem_absolute_metadata.c)
 ti_c54x_add_unit_test(mvpd_smem_absolute_metadata
                       test_mvpd_smem_absolute_metadata.c)
+# P3-S104 RED contract: MVDD dual-move pair row.
+ti_c54x_add_unit_test(mvdd_metadata test_mvdd_metadata.c)
 ti_c54x_add_unit_test(addm_lk_smem_absolute_metadata
                       test_addm_lk_smem_absolute_metadata.c)
 # P3-S77 RED contract: MAR Smem metadata.

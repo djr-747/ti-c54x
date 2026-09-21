@@ -20,6 +20,8 @@ ti_c54x_add_unit_test(cpu_mvdk test_cpu_mvdk.c)
 ti_c54x_add_unit_test(cpu_mvkd test_cpu_mvkd.c)
 ti_c54x_add_unit_test(cpu_mvpd test_cpu_mvpd.c)
 ti_c54x_add_unit_test(cpu_mvdp test_cpu_mvdp.c)
+# P3-S104: MVDD dual-move pair retirement.
+ti_c54x_add_unit_test(cpu_mvdd test_cpu_mvdd.c)
 ti_c54x_add_unit_test(cpu_mvdp_smem_absolute test_cpu_mvdp_smem_absolute.c)
 ti_c54x_add_unit_test(cpu_mvpd_smem_absolute test_cpu_mvpd_smem_absolute.c)
 ti_c54x_add_unit_test(cpu_dst_smem_absolute test_cpu_dst_smem_absolute.c)

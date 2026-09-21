@@ -32,6 +32,7 @@
 #include "memory_instruction_commit.h"
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
+#include "memory_instruction_dual_move.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_mmr_load.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -64,6 +65,7 @@ ti_c54x_memory_instruction_transaction_prepare(
     ti_c54x_memory_instruction_transaction *target = transaction;
     ti_c54x_memory_instruction_pair_route pair_route;
     bool dual_read;
+    bool dual_move;
     bool stack_push;
     bool stack_pop;
     bool stack_pop_rtn;
@@ -87,6 +89,8 @@ ti_c54x_memory_instruction_transaction_prepare(
     }
     dual_read = effect->payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
+    dual_move = effect->payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16;
     pair_route = ti_c54x_memory_instruction_pair_route_for_kind(
         effect->payload.memory.address_spec.kind);
     stack_push = effect->payload.memory.address_spec.kind ==
@@ -156,6 +160,10 @@ ti_c54x_memory_instruction_transaction_prepare(
             TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+    } else if (dual_move) {
+        /* Move-pair resolution lives in the move root owner:
+         * the X READ and Y WRITE template resolve together
+         * from the frozen dual arm. Nothing is resolved here. */
     } else if (pair_route !=
                TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_NONE) {
         /* Pair resolution lives in the routed child (PORT IO/DATA
@@ -223,6 +231,11 @@ ti_c54x_memory_instruction_transaction_prepare(
      * preparation path direct. */
     if (dual_read) {
         if (!ti_c54x_memory_instruction_dual_prepare_snapshot(target)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+    } else if (dual_move) {
+        if (!ti_c54x_memory_instruction_dual_move_prepare_snapshot(target,
+                                                                  state)) {
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
     } else if (candidate.effect.payload.memory.address_spec.kind ==

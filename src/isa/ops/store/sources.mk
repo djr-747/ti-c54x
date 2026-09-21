@@ -28,6 +28,7 @@ ti_c54x_core_sources += src/isa/ops/store/op_mvdm.c \
 	src/isa/ops/store/op_mvmd.c \
 	src/isa/ops/store/op_mvmm.c \
 	src/isa/ops/store/op_mvdk.c \
+	src/isa/ops/store/op_mvdd_xmem_ymem.c \
 	src/isa/ops/store/op_mvkd.c \
 	src/isa/ops/store/op_mvpd.c \
 	src/isa/ops/store/op_mvpd_smem_absolute.c \

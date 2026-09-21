@@ -24,6 +24,7 @@
 
 #include <stddef.h>
 
+#include "memory_instruction_dual_commit.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_stack_push.h"
 #include "bus/mmr/mmr_route.h"
@@ -100,6 +101,16 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
             state->ar_known_mask |=
                 (uint8_t)(UINT8_C(1) << data_commit->ar_index);
         }
+    }
+    if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16) {
+        /* The dual-move Y WRITE leg carries the same
+         * post-access commit shape as the dual READ pair:
+         * distinct selectors publish two AR updates, a
+         * same-selector alias publishes the one X-owned
+         * update, and MOD0 sides change nothing. */
+        ti_c54x_memory_instruction_dual_publish_address_commits(
+            &transaction->candidate.dual_address_snapshot, state);
     }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_SMEM_PROGRAM_PAIR_WORD16 ||

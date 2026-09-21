@@ -247,9 +247,10 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
             effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16:
-        return ti_c54x_op_memory_dual_address_is_valid(
-                   &effect->address_spec) &&
-               ti_c54x_op_memory_effect_dual_shape_is_valid(effect);
+    case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16:
+        /* Both dual arms share one validator in the dual module;
+         * the file stays under the 500-line module bound. */
+        return ti_c54x_op_memory_effect_dual_kind_is_valid(effect);
 
     case TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16_X_ONLY:
         return ti_c54x_op_memory_effect_x_only_shape_is_valid(effect);

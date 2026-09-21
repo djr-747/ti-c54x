@@ -8843,6 +8843,24 @@
         "printed_page_end": "4-138"
       },
       "assertion": "SPRU172C RESET defines the exact single-word software reset 0xF7C0 with no operands: PC takes (IPTR) shifted left 7; OVA, OVB, ARP, DP, ASM, BRAF, HM, C16, FRCT, CMPT, CPL, and OVM clear to 0 while C, TC, SXM, XF, and INTM set to 1; IFR clears to 0. MP/MC is not sampled and IPTR/peripheral initialization differs from RS. The instruction is not repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-MVDD-P4-107",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "MVDD",
+        "printed_page_start": "4-107",
+        "printed_page_end": "4-107"
+      },
+      "assertion": "SPRU172C MVDD defines the single-word dual-memory move MVDD Xmem,Ymem with opcode diagram 1110_0101_XXXX_YYYY: the Xmem word copies to Ymem with no status effect, both AR selectors post-update per their MOD field, and the form is absent from the repeatability table (repeatable)."
     }
   ],
   "requirements": [
@@ -20860,6 +20878,48 @@
       "test_ids": [
         "T-COMMON-P3-S103-RESET-CPU"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/store/",
+      "claim": "Execute MVDD Xmem,Ymem as an exact catalog row at 0xE500 under mask 0xFF00 with the DUAL_XMOD_XAR_YMOD_YAR layout, AUXILIARY_REGISTERS input resources, and ELIGIBLE repeatability: the checked and trusted op_mvdd entries stage one DUAL_INDIRECT_MOVE_PAIR WRITE effect with null completion carrying the frozen dual X/Y fields. Null arguments reject, forged ids and out-of-range trusted operands reject, and failed calls leave the caller-owned effect unchanged.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MVDD-P4-107"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S104-MVDD-XMEM-YMEM-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire MVDD Xmem,Ymem through the dedicated dual-move pair root: the X READ issues first, the Y WRITE issues with the observed X word, both post-access AR updates commit under the shared dual rules (MOD0 sides unchanged, same-selector alias publishes the one X-owned update), one instruction retires with a one-word PC advance, and no status state changes.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MVDD-P4-107"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S104-MVDD-XMEM-YMEM-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register MVDD_XMEM_YMEM at 0xE500 under mask 0xFF00 as a one-word form with the DUAL_XMOD_XAR_YMOD_YAR layout, AUXILIARY_REGISTERS inputs, and ELIGIBLE repeatability, covering all 256 first-word encodings with UNKNOWN neighbors.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-MVDD-P4-107"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S104-MVDD-XMEM-YMEM-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -30567,6 +30627,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S103-RESET-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S104-MVDD-XMEM-YMEM-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/store/test_mvdd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mvdd_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S104-MVDD-XMEM-YMEM-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/store/test_cpu_mvdd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_mvdd"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S104-MVDD-XMEM-YMEM-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_mvdd_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.mvdd_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S104-MVDD-XMEM-YMEM-CATALOG"
       ]
     }
   ]

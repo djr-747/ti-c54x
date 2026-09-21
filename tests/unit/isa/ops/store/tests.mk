@@ -34,6 +34,8 @@ $(eval $(call ti_c54x_add_test,mvkd_ops,isa/ops/store,test_mvkd.c))
 $(eval $(call ti_c54x_add_test,mvpd_ops,isa/ops/store,test_mvpd.c))
 # P3-S63 RED contract: MVDP Smem-to-program copy effects.
 $(eval $(call ti_c54x_add_test,mvdp_ops,isa/ops/store,test_mvdp.c))
+# P3-S104: MVDD dual-move pair effects.
+$(eval $(call ti_c54x_add_test,mvdd_ops,isa/ops/store,test_mvdd.c))
 # P3-S64 RED contract: READA accumulator-addressed program-to-Smem effects.
 $(eval $(call ti_c54x_add_test,reada_ops,isa/ops/store,test_reada.c))
 # P3-S65 RED contract: WRITA accumulator-addressed Smem-to-program effects.

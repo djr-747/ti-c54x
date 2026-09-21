@@ -7,7 +7,12 @@
  * Owns: structural validation of the dual-indirect WORD16 READ
  * effect arm (TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16):
  * the X/Y mode and AR2..AR5 selectors with reserved-zero slots,
- * the staged-zero value, and the non-null dual completion.
+ * the staged-zero value, and the non-null dual completion; plus
+ * the dual-indirect move-pair arm
+ * (TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16),
+ * which shares the arm and additionally requires WRITE access
+ * with null completions. The move root owns the X READ / Y
+ * WRITE chaining internally.
  * Does not own: other address kinds, address resolution, request
  * issue, endpoint traffic, opcode semantics, CPU lifecycle, timing,
  * observers, or diagnostics. The effect arguments are borrowed
@@ -23,6 +28,15 @@ bool ti_c54x_op_memory_dual_address_is_valid(
     const struct ti_c54x_op_memory_address_spec *address_spec);
 
 bool ti_c54x_op_memory_effect_dual_shape_is_valid(
+    const struct ti_c54x_op_memory_effect *effect);
+
+bool ti_c54x_op_memory_effect_dual_move_shape_is_valid(
+    const struct ti_c54x_op_memory_effect *effect);
+
+/* Dispatch one dual-indirect arm by address kind: the READ kind
+ * takes the dual shape, the move-pair kind takes the move shape,
+ * and both share the arm check. Any other kind rejects. */
+bool ti_c54x_op_memory_effect_dual_kind_is_valid(
     const struct ti_c54x_op_memory_effect *effect);
 
 #endif /* TI_C54X_ISA_OPS_MEMORY_EFFECT_DUAL_H */
