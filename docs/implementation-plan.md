@@ -829,7 +829,7 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S105: TRAP software-interrupt row and leaf (implemented; local verification green)](plan/p3-s105-trap-row-slice.md)
 
-- [P3-S106: LMS dual-memory row and leaf (planned)](plan/p3-s106-lms-dual-row-slice.md)
+- [P3-S106: LMS dual-memory row and leaf (implemented; local verification green)](plan/p3-s106-lms-dual-row-slice.md)
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 

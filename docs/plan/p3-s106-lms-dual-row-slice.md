@@ -1,4 +1,4 @@
-### P3-S106: LMS dual-memory row and leaf (planned)
+### P3-S106: LMS dual-memory row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S106 evidence freeze. One
 class-7 dual-memory row lands on the shared dual seam: `LMS
