@@ -60,6 +60,25 @@ bool ti_c54x_memory_instruction_trap_freeze_vector(
     const ti_c54x_arch_state *state,
     uint16_t *vector_word_out);
 
+/* Intr vector freeze: as the trap freeze, plus a non-null
+ * completion (the INTM-setting take completion the op_intr
+ * leaf stages) and proven IFR knownness whenever K names a
+ * 16-bit IFR position. */
+bool ti_c54x_memory_instruction_intr_freeze_vector(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_effect *effect,
+    const ti_c54x_arch_state *state,
+    uint16_t *vector_word_out);
+
+/* Dispatch one software-interrupt vector freeze by address
+ * kind (TRAP or INTR); any other kind succeeds without
+ * touching the output. */
+bool ti_c54x_memory_instruction_software_interrupt_freeze_vector(
+    const ti_c54x_decoded_instruction *instruction,
+    const ti_c54x_op_effect *effect,
+    const ti_c54x_arch_state *state,
+    uint16_t *vector_word_out);
+
 ti_c54x_memory_instruction_status
 ti_c54x_memory_instruction_stack_push_deferred_report(
     const ti_c54x_memory_instruction_candidate *candidate,

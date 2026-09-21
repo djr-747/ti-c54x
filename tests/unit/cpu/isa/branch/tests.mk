@@ -6,6 +6,8 @@ $(eval $(call ti_c54x_add_test,cpu_bd,cpu/isa/branch,test_cpu_bd.c))
 $(eval $(call ti_c54x_add_test,cpu_reset,cpu/isa/branch,test_cpu_reset.c))
 # P3-S105: TRAP K retirement.
 $(eval $(call ti_c54x_add_test,cpu_trap,cpu/isa/branch,test_cpu_trap.c))
+# P3-S110: INTR K retirement.
+$(eval $(call ti_c54x_add_test,cpu_intr,cpu/isa/branch,test_cpu_intr.c))
 $(eval $(call ti_c54x_add_test,cpu_bc_pmad,cpu/isa/branch,test_cpu_bc_pmad.c))
 # W69 RED contract: BCD CPU retirement.
 $(eval $(call ti_c54x_add_test,cpu_bcd,cpu/isa/branch,test_cpu_bcd.c))

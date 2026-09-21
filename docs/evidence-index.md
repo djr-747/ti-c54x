@@ -556,6 +556,7 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-TRAP-P4-195` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §TRAP, `4-195` |
 | `E-TI-C54X-SPRU172C-S4-LMS-P4-80-R1` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §LMS, `4-80` |
 | `E-TI-C54X-SPRU172C-S4-FIRS-P4-59` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §FIRS, `4-59` |
+| `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §INTR, `4-65` |
 
 The reset assertion enumerates PC, IPTR, IFR, RC, ARP, ASM, AVIS, BRAF, C16, C,
 CLKOFF, CMPT, CPL, DP, DROM, FRCT, HM, INTM, OVA, OVB, OVM, OVLY, SXM, TC, and
@@ -1500,6 +1501,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-FIRS-P4-59` | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-OPS` |
 | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-FIRS-P4-59` | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CPU` |
 | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-FIRS-P4-59` | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-METADATA` |
+| `REQ-COMMON-P3-S110-INTR-K-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/stack/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-OPS` |
+| `REQ-COMMON-P3-S110-INTR-K-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-CPU` |
+| `REQ-COMMON-P3-S110-INTR-K-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-INTR-P4-65` | `T-COMMON-P3-S110-INTR-K-METADATA` |
 ## Tests
 
 Tests use exactly `PLANNED` or `PASSING`. Every test declares a scope and reverse
@@ -2203,6 +2207,9 @@ exist in the repository.
 | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_firs_xmem_ymem_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.firs_xmem_ymem_pmad"}` | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-SEMANTICS` |
 | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_firs.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_firs"}` | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-RETIREMENT` |
 | `T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_firs_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.firs_xmem_ymem_pmad_metadata"}` | `REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CATALOG` |
+| `T-COMMON-P3-S110-INTR-K-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/stack/test_intr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.intr_ops"}` | `REQ-COMMON-P3-S110-INTR-K-SEMANTICS` |
+| `T-COMMON-P3-S110-INTR-K-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_intr.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_intr"}` | `REQ-COMMON-P3-S110-INTR-K-RETIREMENT` |
+| `T-COMMON-P3-S110-INTR-K-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_intr_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.intr_metadata"}` | `REQ-COMMON-P3-S110-INTR-K-CATALOG` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

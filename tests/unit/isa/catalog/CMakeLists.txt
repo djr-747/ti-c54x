@@ -230,6 +230,8 @@ ti_c54x_add_unit_test(reset_metadata
                       test_reset_metadata.c)
 # P3-S105 RED contract: TRAP K row.
 ti_c54x_add_unit_test(trap_metadata test_trap_metadata.c)
+# P3-S110 RED contract: INTR K row.
+ti_c54x_add_unit_test(intr_metadata test_intr_metadata.c)
 ti_c54x_add_unit_test(st_lk_smem_metadata
                       test_st_lk_smem_metadata.c)
 ti_c54x_add_unit_test(st_lk_smem_absolute_metadata

@@ -113,7 +113,9 @@ ti_c54x_sequencer_resolve_memory_address(
                spec->kind ==
                    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
                spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16) {
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+               spec->kind ==
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
@@ -357,7 +359,8 @@ ti_c54x_sequencer_resolve_memory_address(
         spec->kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
         spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16) {
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
         uint16_t sp_value = UINT16_C(0);
 
         /* Pushes observe only SP: no CMPT/ARP/CPL read, so unknown mode

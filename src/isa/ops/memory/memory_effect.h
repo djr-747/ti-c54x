@@ -255,7 +255,14 @@ typedef enum ti_c54x_op_memory_address_kind {
      * coefficient read with no post-update. All three values
      * publish through the `complete_triple` shape with the X
      * word, the Y word, and the coefficient. No T load. */
-    TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16 = 33
+    TI_C54X_OP_MEMORY_ADDRESS_DUAL_PROGRAM_TRIPLE_WORD16 = 33,
+    /* Intr software-interrupt stack push: identical TOS planning
+     * and K-vector freeze to the trap push, but the leaf
+     * completion is the INTM-setting take completion (software
+     * interrupts globally disable maskable interrupts) and the
+     * CPU retirement tail additionally clears the K-indexed IFR
+     * bit. Only the op_intr leaf stages this kind. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 = 34
 } ti_c54x_op_memory_address_kind;
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

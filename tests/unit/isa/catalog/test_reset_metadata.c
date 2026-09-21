@@ -22,7 +22,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_RESET);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 358);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 359);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_RESET);
     TI_C54X_TEST_CHECK(metadata->first_word_value == UINT16_C(0xF7E0));
@@ -60,10 +60,10 @@ test_exact_population(void)
 static void
 test_row_boundaries(void)
 {
-    /* 0xF7DF is unclaimed (INTR lands next); 0xF7E1 is IDLE. */
+    /* 0xF7DF is the INTR row top edge; 0xF7E1 is IDLE. */
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0xF7DF)) ==
-                       TI_C54X_OPCODE_ID_UNKNOWN);
+                       TI_C54X_OPCODE_ID_INTR_K);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(
                            UINT16_C(0xF7E0)) == TI_C54X_OPCODE_ID_RESET);
     TI_C54X_TEST_CHECK(ti_c54x_opcode_catalog_lookup_first_word(

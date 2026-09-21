@@ -101,8 +101,8 @@ ti_c54x_memory_instruction_transaction_prepare(
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
                  effect->payload.memory.address_spec.kind ==
                      TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
-                 effect->payload.memory.address_spec.kind ==
-                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16;
+                 effect->payload.memory.address_spec.kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+                 effect->payload.memory.address_spec.kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16;
     stack_pop = effect->payload.memory.address_spec.kind ==
                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
                 effect->payload.memory.address_spec.kind ==
@@ -269,9 +269,7 @@ ti_c54x_memory_instruction_transaction_prepare(
             candidate.effect.payload.memory.value_word;
         target->long32_first_value_msw = UINT16_C(0);
     }
-    if (effect->payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 &&
-        !ti_c54x_memory_instruction_trap_freeze_vector(
+    if (!ti_c54x_memory_instruction_software_interrupt_freeze_vector(
             instruction, effect, state,
             &target->long32_first_value_msw)) {
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;

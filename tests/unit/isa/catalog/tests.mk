@@ -158,6 +158,8 @@ $(eval $(call ti_c54x_add_test,firs_xmem_ymem_pmad_metadata,isa/catalog,test_fir
 $(eval $(call ti_c54x_add_test,reset_metadata,isa/catalog,test_reset_metadata.c))
 # P3-S105 RED contract: TRAP K row.
 $(eval $(call ti_c54x_add_test,trap_metadata,isa/catalog,test_trap_metadata.c))
+# P3-S110 RED contract: INTR K row.
+$(eval $(call ti_c54x_add_test,intr_metadata,isa/catalog,test_intr_metadata.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_metadata,isa/catalog,test_st_lk_smem_metadata.c))
 $(eval $(call ti_c54x_add_test,st_lk_smem_absolute_metadata,isa/catalog,test_st_lk_smem_absolute_metadata.c))
 $(eval $(call ti_c54x_add_test,st_t_smem_direct_metadata,isa/catalog,test_st_t_smem_direct_metadata.c))

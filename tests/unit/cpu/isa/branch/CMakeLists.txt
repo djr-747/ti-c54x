@@ -6,6 +6,8 @@ ti_c54x_add_unit_test(cpu_bd test_cpu_bd.c)
 ti_c54x_add_unit_test(cpu_reset test_cpu_reset.c)
 # P3-S105: TRAP K retirement.
 ti_c54x_add_unit_test(cpu_trap test_cpu_trap.c)
+# P3-S110: INTR K retirement.
+ti_c54x_add_unit_test(cpu_intr test_cpu_intr.c)
 ti_c54x_add_unit_test(cpu_bc_pmad test_cpu_bc_pmad.c)
 # W69 RED contract: BCD CPU retirement.
 ti_c54x_add_unit_test(cpu_bcd test_cpu_bcd.c)

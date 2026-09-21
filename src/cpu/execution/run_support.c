@@ -12,6 +12,7 @@
 #include "../memory/pending_work.h"
 #include "repeat_activate.h"
 #include "sequencer/reset/reset_apply.h"
+#include "state/interrupt_flag_register.h"
 
 ti_c54x_run_result ti_c54x_run_result_from_cpu(
     const ti_c54x_cpu *cpu, ti_c54x_stop_reason reason,
@@ -136,6 +137,7 @@ bool ti_c54x_run_memory_effect_redirects_pc(const ti_c54x_op_effect *effect)
     return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
@@ -191,6 +193,34 @@ bool ti_c54x_run_memory_retirement_tail(
         }
         if (took_effect) {
             ti_c54x_run_apply_deferred_branch(cpu);
+        }
+    }
+    /* INTR software interrupts clear the K-indexed IFR bit at
+     * retire for K below 16: prepare already proved IFR known
+     * and nothing un-knows IFR while the single-instruction
+     * transaction is outstanding, so a failure here is
+     * unreachable but still transactional. K at 16 or above
+     * names no 16-bit IFR position and skips the clear. The
+     * frozen candidate still holds the first word: this tail
+     * runs before the transaction reset below. */
+    if (cpu->instruction_transaction.candidate.effect.kind ==
+            TI_C54X_OP_EFFECT_MEMORY &&
+        cpu->instruction_transaction.candidate.effect.payload.memory
+                .address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
+        uint16_t first_word =
+            cpu->instruction_transaction.candidate.instruction.bundle
+                .program_words[0];
+        uint8_t k = (uint8_t)(first_word & UINT16_C(0x001F));
+
+        if ((uint16_t)(first_word & UINT16_C(0xFFE0)) !=
+                UINT16_C(0xF7C0) ||
+            (k < UINT8_C(16) &&
+             ti_c54x_arch_state_clear_ifr_bit(
+                 &cpu->arch_state,
+                 (uint16_t)((uint16_t)1U << k)) !=
+                 TI_C54X_ARCH_STATE_OK)) {
+            return false;
         }
     }
     if (!ti_c54x_run_memory_status_ok(ti_c54x_cpu_memory_reset_transaction(

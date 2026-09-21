@@ -107,6 +107,7 @@
 #include "port/op_portr.h"
 #include "port/op_portw.h"
 #include "stack/op_frame_k.h"
+#include "stack/op_intr.h"
 #include "stack/op_trap.h"
 #include "stack/op_pshd_direct.h"
 #include "stack/op_popd_direct.h"

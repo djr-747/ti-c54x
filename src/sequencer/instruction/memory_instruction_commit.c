@@ -135,7 +135,9 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
         /* Interrupt takes redirect PC to the frozen device-owned
          * vector instead of a bundle pmad, and traps redirect to
          * the frozen K vector. Re-plan deterministically from the

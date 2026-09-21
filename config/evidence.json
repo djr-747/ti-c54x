@@ -8927,6 +8927,24 @@
         "printed_page_end": "4-59"
       },
       "assertion": "SPRU172C FIRS defines the dual-16-bit filter operation FIRS Xmem,Ymem,pmad with opcode diagram 1110_0000_XXXX_YYYY (first word 0xE000 under mask 0xFF00, confirmed by the TI instruction-set summary table listing FIRS at 1110_0000): the Xmem and Ymem DATA words read in order over the shared dual XMOD/XAR/YMOD/YAR modes with both ARs post-updated, the second program word carries the absolute PROGRAM coefficient address with no post-update, A stages the SXM-widened (Xmem+Ymem) shifted left 16, and B accumulates the signed old-A(32-16) times the signed coefficient (doubled under FRCT) as one 40-bit add with OVM saturation. T is never written; SXM, FRCT, and OVM affect the result."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-INTR-P4-65",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "INTR",
+        "printed_page_start": "4-65",
+        "printed_page_end": "4-65"
+      },
+      "assertion": "SPRU172C INTR defines the single-word software interrupt INTR K with opcode diagram 1111_0111_110K_KKKK: SP decrements by one, PC+1 pushes to TOS, the K vector loads into PC, 1 loads into INTM, and the corresponding interrupt flag register bit clears (IMR has no effect; INTR executes regardless of INTM). The instruction is not repeatable."
     }
   ],
   "requirements": [
@@ -21112,6 +21130,48 @@
       "test_ids": [
         "T-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S110-INTR-K-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/stack/",
+      "claim": "Execute INTR K as an exact catalog row at 0xF7C0 under mask 0xFFE0 with the TRAP_IMMEDIATE_K layout, STACK_POINTER input resources, and INELIGIBLE repeatability: the checked and trusted op_intr entries extract the 5-bit K field and stage one STACK_PUSH_INTR WRITE effect with a zero staged value and the INTM-setting take completion. Null arguments reject, forged ids and out-of-range trusted operands reject, unknown SP rejects, and failed calls leave the caller-owned effect unchanged.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-INTR-P4-65"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S110-INTR-K-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S110-INTR-K-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire INTR K through the shared stack-push WORD16 root: the sequential successor PC+1 freezes into the TOS WRITE, the K entry address (IPTR << 7) + (K << 2) freezes into the LONG32-MSW carrier (unknown IPTR rejects with nothing retired), the K-indexed IFR knownness is proved at prepare whenever K names a 16-bit IFR position, the push issues through one endpoint WRITE, commit redirects PC to the frozen entry address with no RTN load, the completion sets INTM, and the retirement tail clears the K-indexed IFR bit (K at 16 or above names no 16-bit IFR position and skips the clear). One instruction retires.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-INTR-P4-65"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S110-INTR-K-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S110-INTR-K-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register INTR_K at 0xF7C0 under mask 0xFFE0 as a one-word form with the TRAP_IMMEDIATE_K layout, STACK_POINTER inputs, and INELIGIBLE repeatability, covering all 32 first-word encodings with the SSBX row below and the RESET row above.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-INTR-P4-65"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S110-INTR-K-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -30987,6 +31047,48 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S108-FIRS-XMEM-YMEM-PMAD-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S110-INTR-K-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/stack/test_intr.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.intr_ops"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S110-INTR-K-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S110-INTR-K-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_intr.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_intr"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S110-INTR-K-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S110-INTR-K-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_intr_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.intr_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S110-INTR-K-CATALOG"
       ]
     }
   ]
