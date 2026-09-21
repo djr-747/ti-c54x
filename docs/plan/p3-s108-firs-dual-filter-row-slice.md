@@ -1,4 +1,4 @@
-### P3-S108: FIRS dual-memory filter row and leaf (planned)
+### P3-S108: FIRS dual-memory filter row and leaf (implemented; local verification green)
 
 This immutable anchor heads the P3-S108 evidence freeze. One
 class-7 dual-memory filter row lands on the triple seam: `FIRS
