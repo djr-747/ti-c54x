@@ -9093,6 +9093,42 @@
         "printed_page_end": "4-184"
       },
       "assertion": "SPRU172C Table 2-25 lists the parallel store-and-multiply form ST||MPY with the expression dst = T * Xmem. The opcode diagram (1100_11SD_XXXX_YYYY, p. 4-184) pins one row at 0xCC00 under mask 0xFC00 with S at bit 9 selecting the store source accumulator, D at bit 8 selecting the compute destination, and the dual XMOD/XAR/YMOD/YAR byte at bits 7:0; there is no rounding bit. The ST half stores the ASM-shifted src accumulator to Ymem (the section Description's (ASM - 16) shift, confirmed by the worked vector) while the MPY half replaces dst with live-T times the Xmem word; when src equals dst the Ymem value is the pre-execution src. The row is affected by OVM, SXM, ASM, and FRCT and affects C and OVdst. The worked example (ST A,*AR3+ || MPY *AR5+,B) pins A=FF 8421 1234 kept with B=00 2000 0000, T=0x4000 kept, ASM=0, FRCT=1, Y word 0x8421, AR3 0200 to 0201, and AR5 0300 to 0301. The parallel row is absent from Table 2-28 and is repeatable."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FCALA-P4-55",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "FCALA far call accumulator",
+        "printed_page_start": "4-55",
+        "printed_page_end": "4-55"
+      },
+      "assertion": "SPRU172C Table 2-13 lists the far-accumulator-call forms FCALA and FCALAD. The opcode diagram (1111_01ZS_1110_0111, p. 4-55) pins one-word rows at 0xF4E7 under mask 0xFEFF with Z at bit 9 selecting the delayed form and S at bit 8 selecting source accumulator A (S=0) or B (S=1); the delayed row sits at 0xF6E7. Execution pushes PC+1 (nondelayed) or PC+3 (delayed one-word form) then pushes XPC; PC takes src bits 15-0 and XPC takes src bits 22-16. No status bits are affected. The form is not repeatable and cannot join RPTB. Example 1 (FCALA A with A=00 007F 3000) pins PC 0025 to 3000, XPC 00 to 7F, SP 1111 to 110F, data 1110h 0026 then 110Fh 0000. Example 2 (FCALAD B with the ANDM delay slot, B=00 0020 2000) pins PC 0025 to 2000, XPC 7F to 20, data 1110h 0028 then 110Fh 007F."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FCALL-P4-57",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "FCALL far call",
+        "printed_page_start": "4-57",
+        "printed_page_end": "4-57"
+      },
+      "assertion": "SPRU172C Table 2-13 lists the far-call forms FCALL and FCALLD with operand range 0 to 7F FFFF. The opcode diagram (1111_10Z1_1PPP_PPPP plus 16-bit pmad, p. 4-57) pins two-word rows at 0xF980 under mask 0xFF80 with Z at bit 9 selecting the delayed form and the 7-bit page pmad(22-16) at bits 6:0; the delayed row sits at 0xFB80. Execution pushes PC+2 (nondelayed) or PC+4 (delayed) then pushes XPC; PC takes pmad bits 15-0 and XPC takes pmad bits 22-16. No status bits are affected. The form is not repeatable and cannot join RPTB. Example 1 (FCALL 013333h) pins PC 0025 to 3333, XPC 00 to 01, SP 1111 to 110F, data 1110h 0027 then 110Fh 0000. Example 2 (FCALLD 301000h with the ANDM delay slot) pins PC 3001 to 1000, XPC 7F to 30, data 1110h 3005 then 110Fh 007F."
     }
   ],
   "requirements": [
@@ -21511,6 +21547,57 @@
       "test_ids": [
         "T-COMMON-P3-S116-ST-PARALLEL-MAC-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S118-FCALL-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute FCALL_PMAD at 0xF980 and FCALLD at 0xFB80 under mask 0xFF80 with the FAR_PMAD layout plus FCALA at 0xF4E7 and FCALAD at 0xF6E7 under mask 0xFEFF with ACCUMULATOR_SOURCE, STACK_POINTER input resources (plus selected-accumulator knownness for FCALA), and INELIGIBLE repeatability: the checked and trusted leaves validate the first word against catalog metadata and stage MEMORY far-push effects carrying the staged page, gated on known SP (and known selected accumulator); null arguments, crossed rows, and unknown SP/accumulators reject transactionally; src is preserved.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FCALA-P4-55",
+        "E-TI-C54X-SPRU172C-S4-FCALL-P4-57"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S118-FCALL-PMAD-OPS",
+        "T-COMMON-P3-S118-FCALLD-OPS",
+        "T-COMMON-P3-S118-FCALA-OPS",
+        "T-COMMON-P3-S118-FCALAD-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S118-FCALL-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire FCALL[D]/FCALA[D] through the memory root with DATA endpoint traffic pushing the return address (PC+2 FCALL, PC+4 FCALLD, PC+1 FCALA, PC+3 FCALAD) then the frozen live extension page, committing the far PC-plus-page target for immediate forms and advancing sequentially plus arming the countdown for delayed forms, with SP published across the two pushes.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FCALA-P4-55",
+        "E-TI-C54X-SPRU172C-S4-FCALL-P4-57"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S118-FCALL-CPU",
+        "T-COMMON-P3-S118-FCALLD-CPU",
+        "T-COMMON-P3-S118-FCALA-CPU",
+        "T-COMMON-P3-S118-FCALAD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S118-FCALL-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register FCALL_PMAD at 0xF980 and FCALLD at 0xFB80 under mask 0xFF80 as two-word forms with the FAR_PMAD layout plus FCALA at 0xF4E7 and FCALAD at 0xF6E7 under mask 0xFEFF with ACCUMULATOR_SOURCE, STACK_POINTER inputs, and INELIGIBLE repeatability, covering all 128 first-word encodings per FCALL row and 2 per FCALA row, disjoint from the tightened CC/CCD rows.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FCALA-P4-55",
+        "E-TI-C54X-SPRU172C-S4-FCALL-P4-57"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S118-FCALL-FCALA-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31610,6 +31697,132 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S116-ST-PARALLEL-MAC-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALL-PMAD-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_fcall_pmad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fcall_pmad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALLD-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_fcalld.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fcalld"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALA-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_fcala.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fcala"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALAD-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_fcalad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fcalad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALL-FCALA-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_fcall_fcala_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fcall_fcala_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALL-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_fcall.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_fcall"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALLD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_fcalld.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_fcalld"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALA-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_fcala.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_fcala"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S118-FCALAD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_fcalad.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_fcalad"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S118-FCALL-RETIREMENT"
       ]
     }
   ]

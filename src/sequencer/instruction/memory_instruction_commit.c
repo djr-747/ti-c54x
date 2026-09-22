@@ -32,6 +32,7 @@
 #include "sequencer/effect_transaction.h"
 #include "sequencer/memory/mmr_access_plan.h"
 #include "sequencer/program_pc_target.h"
+#include "state/program_counter_extension.h"
 #include "state/status/registers.h"
 #include "state/temporary/t_register.h"
 
@@ -166,7 +167,15 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         transaction->candidate.effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
         transaction->candidate.effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16) {
         /* Pushes redirect PC to the frozen target instead of the
          * sequential successor. Re-plan deterministically from the
          * frozen target and the stable live PC; prepare already proved
@@ -194,7 +203,11 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         if (transaction->candidate.effect.payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
             transaction->candidate.effect.payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16) {
             if (bundle_words->program_word_count != UINT8_C(1)) {
                 return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             }
@@ -226,7 +239,11 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
         if (transaction->candidate.effect.payload.memory.address_spec.kind ==
                 TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
             transaction->candidate.effect.payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16) {
             state->pc_word =
                 transaction->candidate.pc_effect.public_pc_word_after;
         } else {
@@ -235,6 +252,62 @@ ti_c54x_memory_instruction_commit_architecture(ti_c54x_memory_instruction_transa
                 return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             }
             state->pc_word = live_pc;
+        }
+        if (transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+            transaction->candidate.effect.payload.memory.address_spec.kind ==
+                TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16) {
+            /* Far calls commit the staged page to XPC with the same
+             * retirement that commits PC (immediate) or arms the
+             * countdown (delayed). Two-word forms read the page
+             * from the frozen bundle first word; one-word
+             * accumulator forms read accumulator bits 22-16 from
+             * the frozen input snapshot. Both derivations are
+             * deterministic re-derivations of leaf-validated
+             * operands; a failure here is unreachable but still
+             * transactional. */
+            uint16_t staged_page;
+            const bool far_accumulator =
+                transaction->candidate.effect.payload.memory.address_spec.kind ==
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+                transaction->candidate.effect.payload.memory.address_spec.kind ==
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+
+            if (far_accumulator) {
+                uint8_t far_select =
+                    transaction->candidate.effect.payload.memory.address_spec.arf;
+                uint64_t far_raw;
+
+                if (far_select == UINT8_C(0)) {
+                    if (!frozen_input->accumulator_a_known) {
+                        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                    }
+                    far_raw = frozen_input->accumulator_a_raw40;
+                } else if (far_select == UINT8_C(1)) {
+                    if (!frozen_input->accumulator_b_known) {
+                        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                    }
+                    far_raw = frozen_input->accumulator_b_raw40;
+                } else {
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+                staged_page =
+                    (uint16_t)((far_raw >> 16U) & UINT64_C(0x7F));
+            } else {
+                if (bundle_words->program_word_count != UINT8_C(2)) {
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+                staged_page = (uint16_t)(
+                    bundle_words->program_words[0] & UINT16_C(0x007F));
+            }
+            if (ti_c54x_arch_state_write_xpc(state, staged_page) !=
+                TI_C54X_ARCH_STATE_OK) {
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
         }
         state->rtn = transaction->candidate.effect.payload.memory.value_word;
         state->scalar_known_mask |= (uint8_t)TI_C54X_ARCH_STATE_KNOWN_RTN;
@@ -521,16 +594,13 @@ ti_c54x_memory_instruction_commit_ready_tail(
         TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
         result->deferred_branch_armed = true;
         result->deferred_branch_pc_word = read_value_word;
-    } else if (transaction->candidate.effect.payload.memory.address_spec
-                       .kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-               transaction->candidate.effect.payload.memory.address_spec
-                       .kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+    } else if (ti_c54x_op_memory_address_kind_is_delayed_push(
+                   transaction->candidate.effect.payload.memory
+                       .address_spec.kind)) {
         ti_c54x_memory_instruction_status report_status;
 
-        /* Delayed push reporting (bundle or accumulator
-         * target) lives in the push owner. */
+        /* Delayed push reporting (bundle, accumulator, or far
+         * double-push target) lives in the push owner. */
         report_status =
             ti_c54x_memory_instruction_stack_push_deferred_report(
                 &transaction->candidate, result);

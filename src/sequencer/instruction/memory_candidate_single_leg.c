@@ -402,6 +402,37 @@ ti_c54x_memory_candidate_single_leg_shape_is_valid(
                    address_effect->update.value_after;
     }
 
+    if (ti_c54x_op_memory_address_kind_is_far_push(
+            effect->address_spec.kind)) {
+        const ti_c54x_address_source_stack_push *const source =
+            &address_effect->source.value.stack_push;
+        /* Far double-pushes issue the first TOS WRITE at old SP - 1
+         * but publish old SP - 2: the operand pins the first TOS
+         * while the update and commit pin the double-push SP.
+         * Wrapping arithmetic mirrors the planner exactly, so a
+         * forged boundary-crossing commit cannot validate here. */
+        const uint16_t expected_first_tos =
+            (uint16_t)(source->sp_before - UINT16_C(1));
+        const uint16_t expected_sp_after =
+            (uint16_t)(source->sp_before - UINT16_C(2));
+
+        if (address_effect->source.kind !=
+            TI_C54X_ADDRESS_SOURCE_STACK_PUSH) {
+            return false;
+        }
+        return address_effect->operand.first_word == expected_first_tos &&
+               address_effect->update.target ==
+                   TI_C54X_ADDRESS_UPDATE_SP &&
+               address_effect->update.phase ==
+                   TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS &&
+               address_effect->update.ar_index == UINT8_C(0) &&
+               address_effect->update.value_before == source->sp_before &&
+               address_effect->update.value_after == expected_sp_after &&
+               address_commit->target == TI_C54X_ADDRESS_UPDATE_SP &&
+               address_commit->ar_index == UINT8_C(0) &&
+               address_commit->value_after == expected_sp_after;
+    }
+
     if (effect->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
         effect->address_spec.kind ==

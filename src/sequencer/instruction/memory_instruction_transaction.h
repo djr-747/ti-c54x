@@ -173,6 +173,14 @@ typedef struct ti_c54x_memory_instruction_transaction {
         uint16_t long32_first_value_msw;
         /* Dual MOD0 uses it as an immutable X-address shadow. */
         uint16_t dual_x_address_word;
+        /* Far double-push stages the frozen live XPC here between
+         * prepare and the second TOS WRITE issue/commit. Shares
+         * storage with the RMW slot; far pushes never arm RMW, so
+         * the stages never overlap. No liveness guard reads it:
+         * only far control instructions modify XPC and none can
+         * retire while this transaction is pending, so the frozen
+         * word cannot diverge. */
+        uint16_t far_push_xpc_word;
         /* Dual store-compute stages the X-side READ observation
          * here between first-leg READY and the Y WRITE plus
          * completion commit. The dual READ/MOVE roots never

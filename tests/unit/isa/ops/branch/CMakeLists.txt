@@ -42,3 +42,7 @@ ti_c54x_add_unit_test(calad test_calad.c)
 ti_c54x_add_unit_test(retd test_retd.c)
 # W67C RED contract: CALLD effects.
 ti_c54x_add_unit_test(calld test_calld.c)
+ti_c54x_add_unit_test(fcall_pmad test_fcall_pmad.c)
+ti_c54x_add_unit_test(fcalld test_fcalld.c)
+ti_c54x_add_unit_test(fcala test_fcala.c)
+ti_c54x_add_unit_test(fcalad test_fcalad.c)

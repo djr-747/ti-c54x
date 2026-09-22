@@ -197,3 +197,5 @@ $(eval $(call ti_c54x_add_test,mar_smem_metadata,isa/catalog,test_mar_smem_metad
 # P3-S115 RED contract: ST parallel-ADD/SUB metadata.
 $(eval $(call ti_c54x_add_test,st_parallel_metadata,isa/catalog,test_st_parallel_metadata.c))
 $(eval $(call ti_c54x_add_test,st_parallel_mac_metadata,isa/catalog,test_st_parallel_mac_metadata.c))
+# P3-S118 RED contract: FCALL/FCALA far-call metadata.
+$(eval $(call ti_c54x_add_test,fcall_fcala_metadata,isa/catalog,test_fcall_fcala_metadata.c))

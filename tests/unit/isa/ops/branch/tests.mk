@@ -42,3 +42,7 @@ $(eval $(call ti_c54x_add_test,rete,isa/ops/branch,test_rete.c))
 $(eval $(call ti_c54x_add_test,retd,isa/ops/branch,test_retd.c))
 # W67C RED contract: CALLD effects.
 $(eval $(call ti_c54x_add_test,calld,isa/ops/branch,test_calld.c))
+$(eval $(call ti_c54x_add_test,fcall_pmad,isa/ops/branch,test_fcall_pmad.c))
+$(eval $(call ti_c54x_add_test,fcalld,isa/ops/branch,test_fcalld.c))
+$(eval $(call ti_c54x_add_test,fcala,isa/ops/branch,test_fcala.c))
+$(eval $(call ti_c54x_add_test,fcalad,isa/ops/branch,test_fcalad.c))

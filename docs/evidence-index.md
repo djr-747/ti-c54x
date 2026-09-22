@@ -57,6 +57,8 @@ locator, scope, classification, and a short independently phrased assertion.
 | `E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST parallel SUB, `4-185`–`4-185` |
 | `E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST parallel MAC, `4-180`–`4-180` |
 | `E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST parallel MAS, `4-182`–`4-182` |
+| `E-TI-C54X-SPRU172C-S4-FCALA-P4-55` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §FCALA far call accumulator, `4-55`–`4-55` |
+| `E-TI-C54X-SPRU172C-S4-FCALL-P4-57` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §FCALL far call, `4-57`–`4-57` |
 | `E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU172C` | `C54X_CORE_COMMON_V1` | §ST parallel MPY, `4-184`–`4-184` |
 | `E-TI-C54X-SPRU131G-S4.1.1-P4-2-4-5` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1.1, `4-2`–`4-5` |
 | `E-TI-C54X-SPRU131G-S4.1-T4-1-P4-2-4-5-CARRY-OVERFLOW` | PINNED | COMMON_TI | TI_PRIMARY | `SRC-TI-SPRU131G` | `C54X_CORE_COMMON_V1` | §4.1, `4-2`–`4-5` |
@@ -1524,6 +1526,9 @@ but are explicitly `PROJECT_CONTRACT`, not TI conformance.
 | `REQ-COMMON-P3-S115-ST-PARALLEL-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-ADD-P4-177`, `E-TI-C54X-SPRU172C-S4-ST-SUB-P4-185` | `T-COMMON-P3-S115-ST-PARALLEL-METADATA` |
 | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/arithmetic/` | `E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180`, `E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182`, `E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184` | `T-COMMON-P3-S116-ST-PARALLEL-MAC-OPS` |
 | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180`, `E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182`, `E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184` | `T-COMMON-P3-S116-ST-PARALLEL-MAC-CPU` |
+| `REQ-COMMON-P3-S118-FCALL-SEMANTICS` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/ops/branch/` | `E-TI-C54X-SPRU172C-S4-FCALA-P4-55`, `E-TI-C54X-SPRU172C-S4-FCALL-P4-57` | `T-COMMON-P3-S118-FCALL-PMAD-OPS`, `T-COMMON-P3-S118-FCALLD-OPS`, `T-COMMON-P3-S118-FCALA-OPS`, `T-COMMON-P3-S118-FCALAD-OPS` |
+| `REQ-COMMON-P3-S118-FCALL-RETIREMENT` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/cpu/` | `E-TI-C54X-SPRU172C-S4-FCALA-P4-55`, `E-TI-C54X-SPRU172C-S4-FCALL-P4-57` | `T-COMMON-P3-S118-FCALL-CPU`, `T-COMMON-P3-S118-FCALLD-CPU`, `T-COMMON-P3-S118-FCALA-CPU`, `T-COMMON-P3-S118-FCALAD-CPU` |
+| `REQ-COMMON-P3-S118-FCALL-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-FCALA-P4-55`, `E-TI-C54X-SPRU172C-S4-FCALL-P4-57` | `T-COMMON-P3-S118-FCALL-FCALA-METADATA` |
 | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-CATALOG` | IMPLEMENTED | `C54X_CORE_COMMON_V1` | ARCHITECTURAL | `src/isa/catalog/` | `E-TI-C54X-SPRU172C-S4-ST-MAC-P4-180`, `E-TI-C54X-SPRU172C-S4-ST-MAS-P4-182`, `E-TI-C54X-SPRU172C-S4-ST-MPY-P4-184` | `T-COMMON-P3-S116-ST-PARALLEL-MAC-METADATA` |
 ## Tests
 
@@ -2243,7 +2248,16 @@ exist in the repository.
 | `T-COMMON-P3-S115-ST-PARALLEL-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_st_parallel_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_parallel_metadata"}` | `REQ-COMMON-P3-S115-ST-PARALLEL-CATALOG` |
 | `T-COMMON-P3-S116-ST-PARALLEL-MAC-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/arithmetic/test_st_parallel_mac_ops.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_parallel_mac_ops"}` | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-SEMANTICS` |
 | `T-COMMON-P3-S116-ST-PARALLEL-MAC-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/arithmetic/test_cpu_st_parallel_mac.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_st_parallel_mac"}` | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-RETIREMENT` |
+| `T-COMMON-P3-S118-FCALL-PMAD-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_fcall_pmad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.fcall_pmad"}` | `REQ-COMMON-P3-S118-FCALL-SEMANTICS` |
+| `T-COMMON-P3-S118-FCALLD-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_fcalld.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.fcalld"}` | `REQ-COMMON-P3-S118-FCALL-SEMANTICS` |
+| `T-COMMON-P3-S118-FCALA-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_fcala.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.fcala"}` | `REQ-COMMON-P3-S118-FCALL-SEMANTICS` |
+| `T-COMMON-P3-S118-FCALAD-OPS` | PASSING | COMMON_TI | `tests/unit/isa/ops/branch/test_fcalad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.fcalad"}` | `REQ-COMMON-P3-S118-FCALL-SEMANTICS` |
+| `T-COMMON-P3-S118-FCALL-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_fcall.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_fcall"}` | `REQ-COMMON-P3-S118-FCALL-RETIREMENT` |
+| `T-COMMON-P3-S118-FCALLD-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_fcalld.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_fcalld"}` | `REQ-COMMON-P3-S118-FCALL-RETIREMENT` |
+| `T-COMMON-P3-S118-FCALA-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_fcala.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_fcala"}` | `REQ-COMMON-P3-S118-FCALL-RETIREMENT` |
+| `T-COMMON-P3-S118-FCALAD-CPU` | PASSING | COMMON_TI | `tests/unit/cpu/isa/branch/test_cpu_fcalad.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.cpu_fcalad"}` | `REQ-COMMON-P3-S118-FCALL-RETIREMENT` |
 | `T-COMMON-P3-S116-ST-PARALLEL-MAC-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_st_parallel_mac_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.st_parallel_mac_metadata"}` | `REQ-COMMON-P3-S116-ST-PARALLEL-MAC-CATALOG` |
+| `T-COMMON-P3-S118-FCALL-FCALA-METADATA` | PASSING | COMMON_TI | `tests/unit/isa/catalog/test_fcall_fcala_metadata.c` | `{"kind":"C_EXECUTABLE","make_goal":"test","ctest_name":"ti_c54x.fcall_fcala_metadata"}` | `REQ-COMMON-P3-S118-FCALL-CATALOG` |
 ## Correction and tombstone policy
 
 Source and evidence corrections receive new IDs; Git review enforces history, but

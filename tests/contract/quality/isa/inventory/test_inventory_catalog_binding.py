@@ -73,10 +73,10 @@ class InventoryCatalogBindingTests(unittest.TestCase):
     def test_current_catalog_snapshot_binds_uniquely_with_frozen_coverage(self) -> None:
         inventory = self.inventory()
         bindings = inventory["catalog_bindings"]
-        self.assertEqual(len(bindings),398)
-        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 370)
+        self.assertEqual(len(bindings),402)
+        self.assertEqual(len({binding["catalog_symbol"] for binding in bindings}), 374)
         self.assertEqual(sum(binding["coverage"] == "COMPLETE" for binding in bindings), 66)
-        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 332)
+        self.assertEqual(sum(binding["coverage"] == "SUBSET" for binding in bindings), 336)
         self.assertEqual(
             {binding["catalog_symbol"] for binding in bindings if binding["coverage"] == "SUBSET"},
             STANDARD_INDIRECT_SUBSET
@@ -103,7 +103,7 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                "READA_DIRECT", "READA_SMEM", "WRITA_DIRECT", "WRITA_SMEM",
                "LDU_DIRECT"}
             | DUAL_ARITHMETIC_SUBSET
-            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "XC", "BACC", "BACCD", "FB_PMAD", "FBD", "FBACC", "FBACCD", "CALA", "CALAD", "STM", "RPT_K", "RPT_LK", "RPT_SMEM", "RPTZ_DST_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM", "MASA_SMEM", "MASA_T", "ADD_SMEM", "ADD_SMEM_TS", "ADD_SMEM_SH16", "STH_SMEM", "STH_SMEM_MOD4", "STH_SMEM_MOD5", "STH_SMEM_MOD6", "STH_SMEM_MOD7", "STH_SMEM_MOD8", "STH_SMEM_MOD10", "STH_ASM_SMEM", "STH_ASM_SMEM_MOD4", "STH_ASM_SMEM_MOD5", "STH_ASM_SMEM_MOD6", "STH_ASM_SMEM_MOD7", "STH_ASM_SMEM_MOD8", "STH_ASM_SMEM_MOD10", "STH_SHIFT_DIRECT", "STH_SHIFT_SMEM_MOD4", "STH_SHIFT_SMEM_MOD5", "STH_SHIFT_SMEM_MOD6", "STH_SHIFT_SMEM_MOD7", "STH_SHIFT_SMEM_MOD8", "STH_SHIFT_SMEM_MOD10",
+            | {"LD_SMEM_SHIFT", "LDR", "LDR_MOD5", "LDR_MOD6", "B_PMAD", "BD", "BC_PMAD", "BCD", "BANZ", "BANZD", "CALL_PMAD", "CALLD", "CCD", "CC", "RET", "RETD", "RETE", "RETED", "RETF", "RC", "RCD", "XC", "BACC", "BACCD", "FB_PMAD", "FBD", "FBACC", "FBACCD", "FCALL_PMAD", "FCALLD", "FCALA", "FCALAD", "CALA", "CALAD", "STM", "RPT_K", "RPT_LK", "RPT_SMEM", "RPTZ_DST_LK", "MAC_SMEM", "MPY_SMEM", "MPYA_SMEM", "MAS_SMEM", "MPYU_SMEM", "MACA_SMEM", "MPYA_DST", "SQUR_SMEM", "SQUR_ADST", "MACA_T", "SQURA_SMEM", "SQURS_SMEM", "MACP_SMEM", "MACD_SMEM", "MASA_SMEM", "MASA_T", "ADD_SMEM", "ADD_SMEM_TS", "ADD_SMEM_SH16", "STH_SMEM", "STH_SMEM_MOD4", "STH_SMEM_MOD5", "STH_SMEM_MOD6", "STH_SMEM_MOD7", "STH_SMEM_MOD8", "STH_SMEM_MOD10", "STH_ASM_SMEM", "STH_ASM_SMEM_MOD4", "STH_ASM_SMEM_MOD5", "STH_ASM_SMEM_MOD6", "STH_ASM_SMEM_MOD7", "STH_ASM_SMEM_MOD8", "STH_ASM_SMEM_MOD10", "STH_SHIFT_DIRECT", "STH_SHIFT_SMEM_MOD4", "STH_SHIFT_SMEM_MOD5", "STH_SHIFT_SMEM_MOD6", "STH_SHIFT_SMEM_MOD7", "STH_SHIFT_SMEM_MOD8", "STH_SHIFT_SMEM_MOD10",
                "STH_SHIFT_SMEM_MOD0", "STH_SHIFT_SMEM_MOD1",
                "STH_SHIFT_SMEM_MOD2", "STH_SHIFT_SMEM_MOD3",
                "MACSU_DUAL_M0_M0", "MACSU_DUAL_M0_M1",
@@ -158,9 +158,11 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                 expected = (
                     "ABSOLUTE_PMAD_NONDELAYED"
                     if binding["catalog_symbol"] in {"B_PMAD", "CALL_PMAD",
-                                                     "FB_PMAD", "RPTB"}
+                                                     "FB_PMAD", "FCALL_PMAD",
+                                                     "RPTB"}
                     else "ABSOLUTE_PMAD_DELAYED"
-                    if binding["catalog_symbol"] in {"BD", "CALLD", "FBD"}
+                    if binding["catalog_symbol"] in {"BD", "CALLD", "FBD",
+                                                     "FCALLD"}
                     else "ABSOLUTE_PMAD_COND"
                     if binding["catalog_symbol"] in ("BC_PMAD", "CC")
                     else "ABSOLUTE_PMAD_COND_DELAYED"
@@ -176,9 +178,11 @@ class InventoryCatalogBindingTests(unittest.TestCase):
                     else "RTN_POP_NONDELAYED"
                     if binding["catalog_symbol"] == "RETF"
                     else "ACCUMULATOR_NONDELAYED"
-                    if binding["catalog_symbol"] in ("BACC", "CALA", "FBACC")
+                    if binding["catalog_symbol"] in ("BACC", "CALA", "FBACC",
+                                                      "FCALA")
                     else "ACCUMULATOR_DELAYED"
-                    if binding["catalog_symbol"] in ("BACCD", "CALAD", "FBACCD")
+                    if binding["catalog_symbol"] in ("BACCD", "CALAD", "FBACCD",
+                                                      "FCALAD")
                     else "REGISTER_DST"
                     if binding["catalog_symbol"] in ("MPYA_DST", "SQUR_ADST",
                                                        "MACA_T", "MASA_T",

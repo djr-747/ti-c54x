@@ -44,6 +44,7 @@ PAIR_DISPATCH_HEADER = DUAL_READ_DIR / "memory_instruction_pair_dispatch.h"
 PAIR_DISPATCH_SOURCE = DUAL_READ_DIR / "memory_instruction_pair_dispatch.c"
 ROOT_HEADER = DUAL_READ_DIR / "memory_instruction_transaction.h"
 ROOT_SOURCE = DUAL_READ_DIR / "memory_instruction_transaction.c"
+ROOT_PREPARE_SOURCE = DUAL_READ_DIR / "memory_instruction_prepare.c"
 CPU_RUN_SOURCE = ROOT / "src/cpu/execution/run.c"
 
 FORBIDDEN_CALL = re.compile(
@@ -116,7 +117,18 @@ class DualWord16HotPathTests(unittest.TestCase):
             # that ABI locality; the reviewed P3-S64 no-split decision
             # tracks the repository <800 rule for it instead of the
             # 500 module bound.
-            bound = 800 if path == ADDRESS_SPEC_HEADER else 500
+            # MEMORY_EFFECT_SOURCE carries the central effect-validity
+            # switch (one arm per address kind, exhaustiveness reviewed
+            # in one place). It grows ~2 case lines per new address
+            # kind by design and cannot split without breaking that
+            # dispatch locality; the reviewed P3-S118 no-split decision
+            # tracks the repository <800 rule for it instead of the
+            # 500 module bound.
+            bound = (
+                800
+                if path == ADDRESS_SPEC_HEADER or path == MEMORY_EFFECT_SOURCE
+                else 500
+            )
             self.assertLess(len(text.splitlines()), bound, path)
 
     def test_dual_reducer_is_one_value_owned_child_without_host_side_effects(self) -> None:
@@ -196,7 +208,12 @@ class DualWord16HotPathTests(unittest.TestCase):
         dual_root_source = _code_without_comments_or_literals(self._read(DUAL_ROOT_SOURCE))
 
         self.assertIn("TI_C54X_MEMORY_INSTRUCTION_CHILD_DUAL_WORD16_READ", root_header)
-        self.assertIn("TI_C54X_OP_EFFECT_MEMORY", root_source)
+        # The P3-S118 prepare split owns the effect-kind gate; the
+        # advance root below dispatches on the frozen candidate.
+        prepare_source = _code_without_comments_or_literals(
+            self._read(ROOT_PREPARE_SOURCE)
+        )
+        self.assertIn("TI_C54X_OP_EFFECT_MEMORY", prepare_source)
         self.assertIn("child_kind", root_source)
         self.assertIn("memory_instruction_pair_dispatch", root_source)
         self.assertIn("memory_instruction_dual", dual_root_source)

@@ -2,10 +2,10 @@
  * Module contract
  *
  * Owns: executable proof that the CC catalog row carries the
- * 0xF900 value under the 0xFF00 mask with two program words, the
+ * 0xF900 value under the 0xFF80 mask with two program words, the
  * shared condition-plus-pmad layout, combined accumulator and
  * status plus stack-pointer inputs, and ineligible
- * repeatability, covering all 256 condition encodings with exact
+ * repeatability, covering all 128 condition encodings with exact
  * population and disjointness against every other row.
  * Does not own: catalog generation, decode, condition
  * evaluation, stack writes, CPU/state mutation, fetch or bus
@@ -20,7 +20,7 @@
 #include <stdint.h>
 
 static const uint16_t CC_VALUE = UINT16_C(0xF900);
-static const uint16_t CC_MASK = UINT16_C(0xFF00);
+static const uint16_t CC_MASK = UINT16_C(0xFF80);
 /* Bit 9 set selects the delayed CCD sibling. */
 static const uint16_t CCD_VALUE = UINT16_C(0xFB00);
 
@@ -30,7 +30,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *metadata =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_CC);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 371);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 375);
     TI_C54X_TEST_CHECK(metadata != NULL);
     TI_C54X_TEST_CHECK(metadata->id == TI_C54X_OPCODE_ID_CC);
     TI_C54X_TEST_CHECK(metadata->first_word_value == CC_VALUE);
@@ -43,7 +43,7 @@ test_metadata(void)
     TI_C54X_TEST_CHECK(metadata->input_resources ==
                        TI_C54X_INPUT_RESOURCES_ACCUMULATORS_STATUS_C_TC_STACK_POINTER);
     TI_C54X_TEST_CHECK((uint16_t)~metadata->first_word_mask ==
-                       UINT16_C(0x00FF));
+                       UINT16_C(0x007F));
 }
 
 static void
@@ -64,7 +64,7 @@ test_exact_population_and_disjointness(void)
         TI_C54X_TEST_CHECK((id == TI_C54X_OPCODE_ID_CC) ==
                            matches_row);
     }
-    TI_C54X_TEST_CHECK(matches == 256U);
+    TI_C54X_TEST_CHECK(matches == 128U);
 }
 
 static void

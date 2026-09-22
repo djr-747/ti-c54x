@@ -1,15 +1,15 @@
 /*
  * Module contract
  *
- * Owns: the allocation-free root transaction that composes memory address
- * resolution, the WORD16 issue/resume reducer, dual-WORD16 and LONG32
- * reducers, sequential PC/counter candidates, stack-push return-address
- * staging, no-traffic RTN-pop retirement from the frozen RTN value, and
- * the delayed-branch twins that report the deferred target in the
- * retirement result. READY-path architecture commit lives in
+ * Owns: the allocation-free root transaction advance stage: the WORD16
+ * issue/resume reducer with its far-call second-push, single-delay,
+ * and RMW arms, dual-WORD16, LONG32, and pair dispatch, no-traffic
+ * RTN-pop retirement from the frozen RTN value, and the MMR-routed
+ * deferred-branch twins that report the deferred target in the
+ * retirement result. Preparation (candidate validation, resolution,
+ * and per-family freeze) lives in memory_instruction_prepare.c;
+ * READY-path architecture commit lives in
  * memory_instruction_commit.c.
- * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
- * dispatch, timing, observers, diagnostics, or global state.
  * Does not own: CPU lifecycle, physical memory, endpoint context, opcode
  * dispatch, timing, observers, diagnostics, or global state.
  */
@@ -24,6 +24,8 @@
 #include "sequencer/effect_transaction.h"
 #include "sequencer/memory/mmr_access_plan.h"
 #include "sequencer/program_pc_target.h"
+#include "state/program_counter_extension.h"
+#include "memory_instruction_far_push.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_single_delay.h"
 #include "memory_instruction_stack_push.h"
@@ -43,238 +45,6 @@ clear_preserving_sequence(ti_c54x_memory_instruction_transaction *transaction)
 
     *transaction = (ti_c54x_memory_instruction_transaction){0};
     transaction->last_transaction_id = last_id;
-}
-
-ti_c54x_memory_instruction_status
-ti_c54x_memory_instruction_transaction_prepare(
-    ti_c54x_memory_instruction_transaction *transaction,
-    const ti_c54x_decoded_instruction *instruction,
-    const ti_c54x_op_input_snapshot *input,
-    const ti_c54x_op_effect *effect,
-    const ti_c54x_arch_state *state,
-    uint64_t instructions_attempted_before,
-    uint64_t instructions_retired_before)
-{
-    ti_c54x_memory_instruction_candidate candidate = {0};
-    ti_c54x_memory_address_resolution resolution = {0};
-    ti_c54x_dual_memory_address_resolution dual_resolution = {0};
-    ti_c54x_program_pc_bridge_effect pc_effect = {0};
-    uint16_t push_return_value = UINT16_C(0);
-    uint16_t rtn_return_value = UINT16_C(0);
-    ti_c54x_memory_instruction_transaction *target = transaction;
-    ti_c54x_memory_instruction_pair_route pair_route;
-    bool dual_read;
-    bool dual_move;
-    bool stack_push;
-    bool stack_pop;
-    bool stack_pop_rtn;
-
-    if (target == NULL || instruction == NULL || input == NULL ||
-        effect == NULL || state == NULL) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
-    }
-    if (target->phase != TI_C54X_MEMORY_INSTRUCTION_PHASE_IDLE ||
-        target->bus_transaction.state !=
-            TI_C54X_BUS_WORD16_TRANSACTION_STATE_IDLE) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_ARGUMENT;
-    }
-    if (effect->kind != TI_C54X_OP_EFFECT_MEMORY ||
-        !ti_c54x_op_memory_effect_is_valid(&effect->payload.memory)) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    if (instructions_attempted_before == UINT64_MAX ||
-        instructions_retired_before == UINT64_MAX) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_COUNTER_OVERFLOW;
-    }
-    dual_read = effect->payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_WORD16;
-    dual_move = effect->payload.memory.address_spec.kind ==
-                TI_C54X_OP_MEMORY_ADDRESS_DUAL_INDIRECT_MOVE_PAIR_WORD16;
-    pair_route = ti_c54x_memory_instruction_pair_route_for_kind(
-        effect->payload.memory.address_spec.kind);
-    stack_push = effect->payload.memory.address_spec.kind ==
-                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-                 effect->payload.memory.address_spec.kind ==
-                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-                 effect->payload.memory.address_spec.kind ==
-                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
-                 effect->payload.memory.address_spec.kind ==
-                     TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
-                 effect->payload.memory.address_spec.kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
-                 effect->payload.memory.address_spec.kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16;
-    stack_pop = effect->payload.memory.address_spec.kind ==
-                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
-                effect->payload.memory.address_spec.kind ==
-                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16;
-    stack_pop_rtn = effect->payload.memory.address_spec.kind ==
-                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
-    if (stack_pop) {
-        ti_c54x_program_pc_target_effect pop_target = {0};
-
-        /* Prove any 16-bit TOS value is plannable against the live PC
-         * carrier before any bus issue. Commit re-plans deterministically
-         * from the transaction's own READ observation, so the discarded
-         * effect is validation only. */
-        if (ti_c54x_program_pc_target_plan(state->pc_word, UINT16_C(0),
-                                           &pop_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    }
-    if (stack_pop_rtn) {
-        ti_c54x_program_pc_target_effect rtn_target = {0};
-        uint16_t rtn_value = UINT16_C(0);
-
-        /* Fast returns take the PC target from the live RTN register
-         * instead of a stack READ observation. Unknown RTN rejects
-         * before any bus issue; the value freezes into the candidate
-         * below, so the discarded effect is validation only. */
-        if (ti_c54x_arch_state_read_rtn(state, &rtn_value) !=
-            TI_C54X_ARCH_STATE_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        if (ti_c54x_program_pc_target_plan(state->pc_word, rtn_value,
-                                           &rtn_target) !=
-            TI_C54X_PROGRAM_PC_TARGET_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        rtn_return_value = rtn_value;
-    }
-    if (stack_push) {
-        ti_c54x_memory_instruction_status push_status;
-
-        /* Stack-push target planning, return staging, and TOS
-         * resolution live in the push owner; the root only freezes
-         * the outputs. */
-        push_status = ti_c54x_memory_instruction_stack_push_prepare(
-            instruction, input, effect, state, &resolution, &pc_effect,
-            &push_return_value);
-        if (push_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_OK) {
-            return push_status;
-        }
-        candidate.address_resolution = resolution;
-    } else if (dual_read) {
-        if (ti_c54x_sequencer_resolve_dual_memory_address(
-                state, &effect->payload.memory.address_spec,
-                effect->payload.memory.access, UINT16_C(0),
-                &dual_resolution) !=
-            TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    } else if (dual_move) {
-        /* Move-pair resolution lives in the move root owner:
-         * the X READ and Y WRITE template resolve together
-         * from the frozen dual arm. Nothing is resolved here. */
-    } else if (pair_route !=
-               TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_NONE) {
-        /* Pair resolution lives in the routed child (PORT IO/DATA
-         * legs, stack TOS/Smem legs, Smem-absolute legs, or
-         * Smem-program legs). Nothing is resolved here: the
-         * generic resolver knows no pair kinds. */
-    } else if (effect->payload.memory.address_spec.kind !=
-               TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
-        if (ti_c54x_sequencer_resolve_memory_address(
-                state, &effect->payload.memory.address_spec,
-                effect->payload.memory.access,
-                ti_c54x_memory_instruction_memory_is_rmw(
-                    &effect->payload.memory)
-                    ? UINT16_C(0)
-                    : effect->payload.memory.value_word,
-                &resolution) != TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-        candidate.address_resolution = resolution;
-    }
-    if (!stack_push) {
-        if (ti_c54x_program_pc_bridge_plan(
-                state->pc_word, instruction->bundle.program_word_count,
-                &pc_effect) != TI_C54X_PROGRAM_PC_BRIDGE_OK) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    }
-    candidate.instruction = *instruction;
-    candidate.input = *input;
-    candidate.effect = *effect;
-    if (stack_push) {
-        /* Stage the live return address into the frozen copy. The pure
-         * handler cannot know PC, and the shape check requires the frozen
-         * effect value to equal the issued TOS WRITE value. Delayed
-         * pushes stage PC+4 (bounds-proved in the push arm above);
-         * immediate pushes stage the sequential successor. */
-        candidate.effect.payload.memory.value_word = push_return_value;
-    }
-    if (stack_pop_rtn) {
-        /* Freeze the live RTN value proved above into the candidate.
-         * Commit consumes this frozen value with no bus observation,
-         * and the liveness guard pins it against the live register
-         * on every resume. */
-        candidate.effect.payload.memory.value_word = rtn_return_value;
-    }
-    if (dual_read) {
-        candidate.dual_address_snapshot.x_request = dual_resolution.x_request;
-        candidate.dual_address_snapshot.y_request = dual_resolution.y_request;
-        candidate.dual_address_snapshot.x_commit =
-            dual_resolution.x_address_commit;
-        candidate.dual_address_snapshot.y_commit =
-            dual_resolution.y_address_commit;
-        candidate.dual_address_snapshot.ar0_shadow = dual_resolution.ar0_value;
-        candidate.dual_address_snapshot.bk_shadow = dual_resolution.bk_value;
-    }
-    candidate.pc_effect = pc_effect;
-    candidate.instructions_attempted_after =
-        instructions_attempted_before + UINT64_C(1);
-    candidate.instructions_retired_after = instructions_retired_before +
-                                           UINT64_C(1);
-    target->candidate = candidate;
-    target->repeat_start_pending = false;
-    target->repeat_start_operand = UINT16_C(0);
-    /* Paired forms pay their cold helper call; keep the established WORD16
-     * preparation path direct. */
-    if (dual_read) {
-        if (!ti_c54x_memory_instruction_dual_prepare_snapshot(target)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    } else if (dual_move) {
-        if (!ti_c54x_memory_instruction_dual_move_pair_prepare_snapshot(
-                target, state)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    } else if (candidate.effect.payload.memory.address_spec.kind ==
-               TI_C54X_OP_MEMORY_ADDRESS_DATA_PROGRAM_PAIR_WORD16) {
-        return ti_c54x_memory_instruction_data_program_prepare_candidate(
-            target, state);
-    } else if (candidate.effect.payload.memory.address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG_OFFSET_MOD13_LONG32 ||
-               candidate.effect.payload.memory.address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_SINGLE ||
-               candidate.effect.payload.memory.address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_STORE_WORD16 ||
-               candidate.effect.payload.memory.address_spec.kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_LONG32_ABSOLUTE_LOAD_WORD16) {
-        if (!ti_c54x_memory_instruction_long32_prepare_snapshot(target)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    } else if (pair_route !=
-               TI_C54X_MEMORY_INSTRUCTION_PAIR_ROUTE_NONE) {
-        if (!ti_c54x_memory_instruction_pair_route_prepare_snapshot(
-                pair_route, target, state)) {
-            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-        }
-    } else {
-        target->child_kind = TI_C54X_MEMORY_INSTRUCTION_CHILD_WORD16;
-        target->candidate_rmw_operation =
-            candidate.effect.payload.memory.rmw_operation;
-        target->candidate_rmw_value_word =
-            candidate.effect.payload.memory.value_word;
-        target->long32_first_value_msw = UINT16_C(0);
-    }
-    if (!ti_c54x_memory_instruction_software_interrupt_freeze_vector(
-            instruction, effect, state,
-            &target->long32_first_value_msw)) {
-        return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
-    }
-    target->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_PREPARED;
-    return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
 }
 
 static ti_c54x_memory_instruction_status
@@ -503,6 +273,15 @@ ti_c54x_memory_instruction_transaction_advance(
             transaction, endpoint, state, accumulators, t_register,
             result);
     }
+    if (ti_c54x_memory_instruction_far_push_write_in_flight(
+            transaction)) {
+        /* Far second-push resume: the reused child carries the
+         * issued XPC WRITE. The far-push owner resumes it and
+         * retires through the shared READY tail. */
+        return ti_c54x_memory_instruction_far_push_resume(
+            transaction, endpoint, state, accumulators, t_register,
+            result);
+    }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         /* Fast interrupt returns retire with no bus traffic: the PC
@@ -556,6 +335,37 @@ ti_c54x_memory_instruction_transaction_advance(
                 TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
         }
+        if (ti_c54x_memory_instruction_far_push_is_armed(transaction)) {
+            /* The far second push issues DATA endpoint traffic to
+             * old SP - 2 after the first WRITE. An MMR-routed
+             * first TOS has no endpoint first WRITE; an
+             * endpoint first TOS with an MMR-routed second TOS
+             * would serve the register instead of the endpoint:
+             * MMR-1 write semantics are unevidenced either way,
+             * so far pushes touching MMR reject transactionally
+             * before any routing. */
+            if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
+                result->status =
+                    TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            {
+                const ti_c54x_sequencer_mmr_access second_plan =
+                    ti_c54x_sequencer_plan_mmr_access(
+                        state, accumulators, t_register,
+                        TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                        ti_c54x_memory_instruction_far_push_target_address(
+                            transaction),
+                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
+                        transaction->far_push_xpc_word);
+                if (second_plan !=
+                    TI_C54X_SEQUENCER_MMR_ACCESS_ENDPOINT) {
+                    result->status =
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+            }
+        }
         if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
             ti_c54x_bus_mmr_route_result mmr_result =
                 ti_c54x_bus_mmr_route(planned, state, accumulators,
@@ -593,12 +403,9 @@ ti_c54x_memory_instruction_transaction_advance(
                 TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
                 result->deferred_branch_armed = true;
                 result->deferred_branch_pc_word = mmr_read_word;
-            } else if (transaction->candidate.effect.payload.memory.address_spec
-                           .kind ==
-                           TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-                       transaction->candidate.effect.payload.memory.address_spec
-                               .kind ==
-                           TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+            } else if (ti_c54x_op_memory_address_kind_is_delayed_push(
+                           transaction->candidate.effect.payload.memory
+                               .address_spec.kind)) {
                 ti_c54x_memory_instruction_status report_status;
 
                 /* Delayed push reporting (bundle or accumulator
@@ -696,6 +503,18 @@ ti_c54x_memory_instruction_transaction_advance(
         return ti_c54x_memory_instruction_single_delay_issue(
             transaction, endpoint, state, accumulators, t_register,
             result, adapter_result.read_value_word, first_issue);
+    }
+    /* Far-call second push: the first TOS WRITE just completed, so
+     * the XPC WRITE issues before any publication. The first and
+     * second legs are disjoint by TOS address, so a completed
+     * second WRITE falls through to the shared READY tail below.
+     * The far-push owner issues it and retires through the same
+     * tail. */
+    if (ti_c54x_memory_instruction_far_push_first_write_complete(
+            transaction)) {
+        return ti_c54x_memory_instruction_far_push_issue(
+            transaction, endpoint, state, accumulators, t_register,
+            result, first_issue);
     }
     return ti_c54x_memory_instruction_commit_ready_tail(
         transaction, state, accumulators, t_register, result,

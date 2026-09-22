@@ -17,11 +17,14 @@
 
 #include "address_resolution.h"
 
+#include <stdbool.h>
+
 #include "address_resolution_absolute_data.h"
 #include "address_resolution_atomic_absolute.h"
 #include "address_resolution_long32_absolute_load.h"
 #include "address_resolution_long32_absolute_store.h"
 #include "address_resolution_long32_mod13.h"
+#include "address_resolution_stack_push.h"
 
 #include <stddef.h>
 
@@ -107,24 +110,19 @@ ti_c54x_sequencer_resolve_memory_address(
             spec->arf == UINT8_C(0) || spec->arf > UINT8_C(7)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
-    } else if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-               spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-               spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
-               spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
-               spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
+    } else if (ti_c54x_op_memory_address_kind_is_bundle_push(spec->kind)) {
+        /* Far double-pushes share the first-TOS contract with the
+         * immediate pushes (old SP - 1, WRITE-only with the staged
+         * return address); the second TOS (old SP - 2, frozen XPC)
+         * is planned by the far-push owner from the frozen
+         * resolution, and the SP commit below carries old SP - 2. */
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_SPEC;
         }
-    } else if (spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
-               spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16) {
+    } else if (ti_c54x_op_memory_address_kind_is_accumulator_push(
+                   spec->kind)) {
         /* Accumulator-targeted pushes share the TOS contract with the
          * immediate pushes; only the accumulator select rides `arf`
          * (0 for A, 1 for B) while every other first-arm field stays
@@ -352,46 +350,12 @@ ti_c54x_sequencer_resolve_memory_address(
         return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
     }
 
-    if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-        spec->kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
-        spec->kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16) {
-        uint16_t sp_value = UINT16_C(0);
-
-        /* Pushes observe only SP: no CMPT/ARP/CPL read, so unknown mode
-         * state never rejects a push. */
-        if (access != TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_INVALID_ACCESS;
-        }
-        if (ti_c54x_arch_state_read_sp(state, &sp_value) !=
-            TI_C54X_ARCH_STATE_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_UNKNOWN_SOURCE;
-        }
-        address_result = ti_c54x_stack_push_word16(sp_value);
-        if (address_result.status != TI_C54X_ADDRESS_STATUS_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
-        }
-        address_status = ti_c54x_sequencer_validate_address_effect(
-            state, &address_result,
-            TI_C54X_ADDRESS_UPDATE_PHASE_PRE_ACCESS, &address_commit);
-        if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
-        }
-        request_result = ti_c54x_bus_word16_request_write(
-            TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
-            address_result.effect.operand.first_word, write_value_word);
-        if (request_result.status != TI_C54X_BUS_WORD16_REQUEST_STATUS_OK) {
-            return TI_C54X_MEMORY_ADDRESS_RESOLUTION_REQUEST_REJECTED;
-        }
-        out->address_result = address_result;
-        out->address_commit = address_commit;
-        out->request = request_result.request;
-        return TI_C54X_MEMORY_ADDRESS_RESOLUTION_OK;
+    if (ti_c54x_op_memory_address_kind_is_bundle_push(spec->kind) ||
+        ti_c54x_op_memory_address_kind_is_accumulator_push(spec->kind)) {
+        /* Stack-push TOS planning lives in the push owner; the
+         * far second TOS rides the frozen resolution. */
+        return ti_c54x_sequencer_resolve_stack_push_address(
+            state, spec, access, write_value_word, out);
     }
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_DIRECT_WORD16) {

@@ -159,7 +159,7 @@ test_delayed_sibling_is_ccd(void)
 static void
 test_fixed_bit_near_misses(void)
 {
-    /* Mask 0xFF00 fixes bits 15:8 and leaves the condition byte
+    /* Mask 0xFF80 fixes bits 15:7 and leaves the condition field
      * variable. Setting fixed bit 9 lands on the delayed CCD
      * sibling (pinned above), clearing fixed bit 8 lands on the
      * BC sibling, and clearing fixed bit 12 lands on LD_K (all
@@ -257,6 +257,17 @@ test_fixed_bit_near_misses(void)
         TI_C54X_TEST_CHECK(macp_sibling.status == TI_C54X_DECODE_STATUS_OK);
         TI_C54X_TEST_CHECK(macp_sibling.id == TI_C54X_OPCODE_ID_MACP_SMEM);
     }
+
+    /* Setting fixed bit 7 lands on the P3-S118 FCALL row: the
+     * tightened 0xFF80 mask leaves the set half to far calls. */
+    {
+        const ti_c54x_decode_result fcall_sibling =
+            ti_c54x_decode_first_word(
+                (uint16_t)(CC_VALUE | UINT16_C(0x0080)));
+
+        TI_C54X_TEST_CHECK(fcall_sibling.status == TI_C54X_DECODE_STATUS_OK);
+        TI_C54X_TEST_CHECK(fcall_sibling.id == TI_C54X_OPCODE_ID_FCALL_PMAD);
+    }
 }
 
 int
@@ -266,8 +277,10 @@ main(void)
         UINT16_C(0x0000), UINT16_C(0x0002), UINT16_C(0x1000),
         UINT16_C(0x2000), UINT16_C(0xFFFF)};
 
-    /* Exhaustive over the condition byte for representative targets. */
-    for (uint32_t cond = 0U; cond <= UINT32_C(0xFF); ++cond) {
+    /* Exhaustive over the condition field for representative targets:
+     * the P3-S118 tightening pins bit 7 clear (mask 0xFF80), so the
+     * set half belongs to the FCALL row pinned below. */
+    for (uint32_t cond = 0U; cond <= UINT32_C(0x7F); ++cond) {
         for (size_t index = 0U;
              index < sizeof(pmads) / sizeof(pmads[0]); ++index) {
             check_case((uint8_t)cond, pmads[index]);

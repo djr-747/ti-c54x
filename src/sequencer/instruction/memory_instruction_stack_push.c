@@ -55,15 +55,11 @@ ti_c54x_memory_instruction_stack_push_prepare(
 {
     ti_c54x_program_pc_target_effect call_target = {0};
     const bool push_delayed =
-        effect->payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
-        effect->payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16;
+        ti_c54x_op_memory_address_kind_is_delayed_push(
+            effect->payload.memory.address_spec.kind);
     const bool push_accumulator =
-        effect->payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
-        effect->payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16;
+        ti_c54x_op_memory_address_kind_is_accumulator_push(
+            effect->payload.memory.address_spec.kind);
     const bool push_trap =
         effect->payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
@@ -220,6 +216,36 @@ ti_c54x_memory_instruction_stack_push_deferred_report(
         result->deferred_branch_armed = true;
         result->deferred_branch_pc_word =
             candidate->instruction.bundle.program_words[1];
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16) {
+        /* The two-word count is proved by prepare before any
+         * mutation, so the frozen pmad read is exact here. */
+        if (candidate->instruction.bundle.program_word_count !=
+            UINT8_C(2)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        result->deferred_branch_armed = true;
+        result->deferred_branch_pc_word =
+            candidate->instruction.bundle.program_words[1];
+        return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
+    }
+    if (candidate->effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16) {
+        uint16_t acc_target = UINT16_C(0);
+
+        /* The one-word count is proved by prepare before any
+         * mutation, so the frozen input target re-derives
+         * deterministically here. */
+        if (!accumulator_push_target(
+                &candidate->input,
+                candidate->effect.payload.memory.address_spec.arf,
+                &acc_target)) {
+            return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+        }
+        result->deferred_branch_armed = true;
+        result->deferred_branch_pc_word = acc_target;
         return TI_C54X_MEMORY_INSTRUCTION_STATUS_OK;
     }
     if (candidate->effect.payload.memory.address_spec.kind ==

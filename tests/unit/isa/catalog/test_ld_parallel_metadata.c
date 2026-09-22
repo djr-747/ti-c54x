@@ -26,7 +26,7 @@ test_metadata(void)
     const ti_c54x_opcode_metadata *mas =
         ti_c54x_opcode_metadata_for_id(TI_C54X_OPCODE_ID_LD_PARALLEL_MAS);
 
-    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 371);
+    TI_C54X_TEST_CHECK(TI_C54X_OPCODE_ID_COUNT == 375);
     TI_C54X_TEST_CHECK(mac != NULL);
     TI_C54X_TEST_CHECK(mac->id == TI_C54X_OPCODE_ID_LD_PARALLEL_MAC);
     TI_C54X_TEST_CHECK(mac->first_word_value == UINT16_C(0xA800));

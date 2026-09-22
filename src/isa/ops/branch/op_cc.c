@@ -22,7 +22,7 @@
 #include "isa/ops/dispatch/trusted_semantics.h"
 
 #define CC_FIRST_WORD_VALUE UINT16_C(0xF900)
-#define CC_FIRST_WORD_MASK UINT16_C(0xFF00)
+#define CC_FIRST_WORD_MASK UINT16_C(0xFF80)
 
 static ti_c54x_op_status cc_extract(
     const ti_c54x_decoded_instruction *instruction, uint8_t *cond,

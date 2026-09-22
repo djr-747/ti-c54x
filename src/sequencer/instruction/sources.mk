@@ -19,6 +19,8 @@ ti_c54x_core_sources += \
 	src/sequencer/instruction/memory_instruction_dual_store_compute.c \
 	src/sequencer/instruction/memory_instruction_dual_store_compute_commit.c \
 	src/sequencer/instruction/memory_instruction_rmw.c \
+	src/sequencer/instruction/memory_instruction_far_push.c \
+	src/sequencer/instruction/memory_instruction_prepare.c \
 	src/sequencer/instruction/memory_instruction_single_delay.c \
 	src/sequencer/instruction/memory_instruction_stack_push.c \
 	src/sequencer/instruction/memory_instruction_take.c \

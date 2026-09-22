@@ -40,9 +40,9 @@ absolute Smem/LD/OR/SUB/STH/STL/PORTW/PORTR/IDLE chain (P3-S75 through P3-S88)
 retires the finalize sequence into the steady RPTB poll loop
 with zero data faults inside a 100k-instruction budget.
 
-- 342 runnable catalog rows under 40,278 populated first-word lookup entries.
-  Inventory coverage is 169/205 forms SUBSET-or-better (82.439%) and 45/205
-  strict-complete (21.951%); lookup encodings are not instruction counts.
+- 374 runnable catalog rows under 54,177 populated first-word lookup entries.
+  Inventory coverage is 203/205 forms SUBSET-or-better (99.024%) and 66/205
+  strict-complete (32.195%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
   constraint: one-pass trusted packets, allocation-free opcode leaves, and
@@ -164,15 +164,11 @@ with zero data faults inside a 100k-instruction budget.
   `ABS`/`NEG`/`NORM`, `ADDC`/`ADDS`/`SUBC`, `SFTA`, `LTD`, `DELAY`,
   `ST T`/`ST TRN`/`STL`/`STLM`/`LDM` direct rows, the
   conditional-store seam and leaves, and the `CMPS` direct row.
-- Major remaining work (54/205 forms): dual-40 `DADD`-family arithmetic,
-  filter ops (`FIRS`/`LMS`/`POLY`/`SQDST`/`ABDST`), `BIT`, far/XPC
-  branches and returns (`FB`/`FCALL`/`FRET` family), `INTR`/`TRAP`/`IDLE`/
-  `RESET`/`MAR` control, block repeat (`RPTB`/`RPTBD`/`RPTZ`) plus `RPT`
-  Smem, parallel `LD`/`ST` forms (tables 2-23
-  through 2-25), MMR/pmad moves (`MVDD`/`MVDK`/`MVDM`/`MVDP`/`MVKD`/
-  `MVMD`/`MVMM`/`MVPD`, `READA`/`WRITA`), and rounded single-memory
-  `MACR`/`MASR`. Profiles/devices and evidenced machine timing stay
-  later work. Emulator integration remains deferred.
+- Major remaining work (2/205 forms): far/XPC returns
+  (`FRET`/`FRETE` family); the `FCALL`/`FCALA` far-call rows with
+  stack double-push and frozen-XPC staging are done.
+  Profiles/devices and evidenced
+  machine timing stay later work. Emulator integration remains deferred.
 - Against the Nokia 5110 DSP-image mnemonic census (~36.2k static words),
   roughly 89% of static words now use mnemonics with at least one covered
   form (mnemonic-level upper bound, not exact-syntax coverage). The

@@ -53,3 +53,11 @@ ti_c54x_add_unit_test(cpu_fbd test_cpu_fbd.c)
 ti_c54x_add_unit_test(cpu_fbacc test_cpu_fbacc.c)
 # P3-S117 RED contract: FBACCD CPU retirement with XPC commit.
 ti_c54x_add_unit_test(cpu_fbaccd test_cpu_fbaccd.c)
+# P3-S118 RED contract: FCALL CPU retirement with far double-push.
+ti_c54x_add_unit_test(cpu_fcall test_cpu_fcall.c)
+# P3-S118 RED contract: FCALLD CPU retirement with far double-push.
+ti_c54x_add_unit_test(cpu_fcalld test_cpu_fcalld.c)
+# P3-S118 RED contract: FCALA CPU retirement with far double-push.
+ti_c54x_add_unit_test(cpu_fcala test_cpu_fcala.c)
+# P3-S118 RED contract: FCALAD CPU retirement with far double-push.
+ti_c54x_add_unit_test(cpu_fcalad test_cpu_fcalad.c)

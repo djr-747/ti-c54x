@@ -14,6 +14,10 @@ ti_c54x_core_sources += src/isa/ops/branch/op_b_pmad.c \
     src/isa/ops/branch/op_fbd.c \
     src/isa/ops/branch/op_fbacc.c \
     src/isa/ops/branch/op_fbaccd.c \
+    src/isa/ops/branch/op_fcall_pmad.c \
+    src/isa/ops/branch/op_fcalld.c \
+    src/isa/ops/branch/op_fcala.c \
+    src/isa/ops/branch/op_fcalad.c \
     src/isa/ops/branch/op_branch_cond_common.c \
     src/isa/ops/branch/op_call_pmad.c \
     src/isa/ops/branch/op_ccd.c \

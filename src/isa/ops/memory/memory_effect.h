@@ -13,8 +13,10 @@
  * stack planning; only the root PC commit timing differs), the
  * accumulator-targeted STACK_PUSH_ACCUMULATOR WORD16 kinds with
  * their delayed counterpart (identical TOS planning; the PC target
- * rides the frozen input snapshot instead of the bundle), and
- * static completion callback shapes.
+ * rides the frozen input snapshot instead of the bundle), the
+ * far-call STACK_PUSH_FAR WORD16 double-push kinds, the single
+ * ownership point for stack-push kind families, and static
+ * completion callback shapes.
  * Does not own: architectural state, address resolution, bus callbacks,
  * memory visibility, opcode identity, timing, or diagnostics. Every field is
  * copied by value; the callback is process-lifetime code and no context is
@@ -262,8 +264,125 @@ typedef enum ti_c54x_op_memory_address_kind {
      * interrupts globally disable maskable interrupts) and the
      * CPU retirement tail additionally clears the K-indexed IFR
      * bit. Only the op_intr leaf stages this kind. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 = 34
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 = 34,
+    /* Far-call stack double-push (FCALL): identical first-TOS
+     * planning to the immediate push (old SP - 1 with a
+     * PRE_ACCESS SP update, WRITE-only with the staged return
+     * address PC+2), but the root issues a second WRITE carrying
+     * the frozen live XPC to old SP - 2 before publication, so
+     * the published SP update is old SP - 2. The PC target is the
+     * frozen bundle pmad with the staged page committed to XPC;
+     * the frozen staged return address additionally loads RTN
+     * atomically with the push (calls load RTN with the address
+     * they push). Only the op_fcall_pmad leaf stages this kind. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 = 35,
+    /* Delayed far-call stack double-push (FCALLD): identical
+     * double-write planning to the far push with the staged
+     * return address PC+4 per SPRU172C section 4 FCALL[D], but
+     * the root commits the sequential PC successor and reports
+     * the frozen pmad as the deferred branch target. Only the
+     * op_fcalld leaf stages this kind. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 = 36,
+    /* Far-accumulator-call stack double-push (FCALA): identical
+     * double-write planning to the far push with the staged
+     * return address PC+1, but the PC target is the low 16 bits
+     * of the selected accumulator (not the bundle extension
+     * word) with the staged page from accumulator bits 22-16.
+     * The accumulator select rides `arf` (0 for A, 1 for B); all
+     * other first-arm fields stay zero. The root reads the
+     * target and page from the frozen input snapshot gated on
+     * accumulator knownness, so no frozen field grows. Only the
+     * op_fcala leaf stages this kind. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 = 37,
+    /* Delayed far-accumulator-call stack double-push (FCALAD):
+     * identical double-write planning to the far accumulator
+     * push with the staged return address PC+3 per SPRU172C
+     * section 4 FCALA[D], but the root commits the sequential PC
+     * successor and reports the accumulator target as the
+     * deferred branch target. Only the op_fcalad leaf stages
+     * this kind. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16 = 38
 } ti_c54x_op_memory_address_kind;
+
+/* Single ownership point for stack-push kind families: every
+ * carrier, planner, validator, and root arm classifies through
+ * these instead of hand-rolled enumerator chains, so a new push
+ * kind joins each family in exactly one place. The take kind is
+ * excluded: takes route through pair dispatch, never through the
+ * push-prepare family below. */
+static inline bool
+ti_c54x_op_memory_address_kind_is_stack_push(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+}
+
+/* Bundle push family (immediate, delayed, take, trap, intr,
+ * and far): the first TOS lives at old SP - 1 with all-zero
+ * first-arm fields (`arf` stays zero). The take kind shares this
+ * planning shape but routes through pair dispatch, never through
+ * push-prepare. */
+static inline bool
+ti_c54x_op_memory_address_kind_is_bundle_push(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TAKE_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_TRAP_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_INTR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16;
+}
+
+/* Accumulator push family (immediate, delayed, and far): the
+ * first TOS lives at old SP - 1 with the accumulator select
+ * riding `arf` (0 for A, 1 for B). */
+static inline bool
+ti_c54x_op_memory_address_kind_is_accumulator_push(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+}
+
+/* Far-call double-push family (FCALL[D]/FCALA[D]): the root
+ * issues a second WRITE carrying the frozen live XPC to old
+ * SP - 2 and publishes old SP - 2. */
+static inline bool
+ti_c54x_op_memory_address_kind_is_far_push(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+}
+
+/* Delayed-branch push family: the root commits the sequential
+ * PC successor and reports the frozen target as the deferred
+ * branch. Covers the bundle, accumulator, and far delayed
+ * kinds. */
+static inline bool
+ti_c54x_op_memory_address_kind_is_delayed_push(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+}
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.
  * The direction follows the leg: STORE_WITH_READ publishes the
