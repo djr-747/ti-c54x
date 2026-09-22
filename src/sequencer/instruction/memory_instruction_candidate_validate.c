@@ -496,7 +496,9 @@ ti_c54x_memory_instruction_candidate_matches_live(
         candidate->effect.payload.memory.address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
         candidate->effect.payload.memory.address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 ||
+        ti_c54x_op_memory_address_kind_is_far_pop(
+            candidate->effect.payload.memory.address_spec.kind)) {
         return stack_candidate_matches_live(candidate, state);
     }
     /* The PORT DATA leg lives in the pair snapshot, not the generic

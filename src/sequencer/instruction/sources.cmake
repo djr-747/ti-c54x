@@ -20,6 +20,7 @@ list(APPEND ti_c54x_core_sources
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_dual_store_compute_commit.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_rmw.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_far_push.c"
+    "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_far_pop.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_prepare.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_single_delay.c"
     "${CMAKE_CURRENT_LIST_DIR}/memory_instruction_stack_push.c"

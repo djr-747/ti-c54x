@@ -9129,6 +9129,24 @@
         "printed_page_end": "4-57"
       },
       "assertion": "SPRU172C Table 2-13 lists the far-call forms FCALL and FCALLD with operand range 0 to 7F FFFF. The opcode diagram (1111_10Z1_1PPP_PPPP plus 16-bit pmad, p. 4-57) pins two-word rows at 0xF980 under mask 0xFF80 with Z at bit 9 selecting the delayed form and the 7-bit page pmad(22-16) at bits 6:0; the delayed row sits at 0xFB80. Execution pushes PC+2 (nondelayed) or PC+4 (delayed) then pushes XPC; PC takes pmad bits 15-0 and XPC takes pmad bits 22-16. No status bits are affected. The form is not repeatable and cannot join RPTB. Example 1 (FCALL 013333h) pins PC 0025 to 3333, XPC 00 to 01, SP 1111 to 110F, data 1110h 0027 then 110Fh 0000. Example 2 (FCALLD 301000h with the ANDM delay slot) pins PC 3001 to 1000, XPC 7F to 30, data 1110h 3005 then 110Fh 007F."
+    },
+    {
+      "id": "E-TI-C54X-SPRU172C-S4-FRET-P4-60",
+      "immutable": true,
+      "state": "PINNED",
+      "scope": "COMMON_TI",
+      "classification": "TI_PRIMARY",
+      "source_id": "SRC-TI-SPRU172C",
+      "applicable_target_ids": [
+        "C54X_CORE_COMMON_V1"
+      ],
+      "locator": {
+        "chapter": "4",
+        "section": "FRET far return",
+        "printed_page_start": "4-60",
+        "printed_page_end": "4-63"
+      },
+      "assertion": "SPRU172C Table 2-15 lists the far-return forms FRET and FRETE. The opcode diagrams pin one-word exact rows at 0xF4E4 (FRET) and 0xF4E5 (FRETE) under mask 0xFFFF with Z at bit 9 selecting the delayed rows at 0xF6E4 (FRETD) and 0xF6E5 (FRETED); bit 0 selects the interrupt-enabling form. Execution pops the TOS return extension page into XPC, then pops the TOS return address into the program counter; the interrupt-enabling forms additionally clear INTM. The forms are not repeatable."
     }
   ],
   "requirements": [
@@ -21598,6 +21616,50 @@
       "test_ids": [
         "T-COMMON-P3-S118-FCALL-FCALA-METADATA"
       ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S119-FRET-SEMANTICS",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/ops/branch/",
+      "claim": "Execute FRET at 0xF4E4, FRETD at 0xF6E4, FRETE at 0xF4E5, and FRETED at 0xF6E5 under mask 0xFFFF as one-word forms with the NONE layout, STACK_POINTER input resources, and INELIGIBLE repeatability: the checked and trusted leaves validate the first word against catalog metadata and stage MEMORY far-pop READ effects with a zero staged value, the interrupt-enabling leaves additionally staging the RETE INTM-clearing completion; null arguments, crossed rows, and unknown SP reject transactionally; non-SP inputs are ignored.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRET-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S119-FRET-OPS",
+        "T-COMMON-P3-S119-FRETE-OPS"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S119-FRET-RETIREMENT",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/cpu/",
+      "claim": "Retire FRET[D]/FRETE[D] through the memory root with DATA endpoint traffic reading the return extension page at old SP then the return address at old SP + 1, committing SP + 2 with the popped PC-plus-page target for immediate forms (plus the INTM clear for FRETE[D]) and advancing sequentially plus arming the countdown with the popped return address for delayed forms; WAIT resumes on either leg, first- and second-leg faults and unknown SP publish nothing, and MMR-routed TOS legs reject.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRET-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S119-FRETE-CPU",
+        "T-COMMON-P3-S119-FRETD-CPU"
+      ]
+    },
+    {
+      "id": "REQ-COMMON-P3-S119-FRET-CATALOG",
+      "state": "IMPLEMENTED",
+      "target_id": "C54X_CORE_COMMON_V1",
+      "claim_kind": "ARCHITECTURAL",
+      "owner_path": "src/isa/catalog/",
+      "claim": "Register FRET at 0xF4E4, FRETD at 0xF6E4, FRETE at 0xF4E5, and FRETED at 0xF6E5 under mask 0xFFFF as one-word forms with the NONE layout, STACK_POINTER inputs, and INELIGIBLE repeatability, covering the single first-word encoding per row, disjoint from the FBACC/FBACCD and RETE/RETED neighbor rows.",
+      "evidence_ids": [
+        "E-TI-C54X-SPRU172C-S4-FRET-P4-60"
+      ],
+      "test_ids": [
+        "T-COMMON-P3-S119-FRET-FRETE-METADATA"
+      ]
     }
   ],
   "tests": [
@@ -31823,6 +31885,76 @@
       },
       "requirement_ids": [
         "REQ-COMMON-P3-S118-FCALL-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S119-FRET-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_fret.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fret"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S119-FRET-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S119-FRETE-OPS",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/ops/branch/test_frete.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.frete"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S119-FRET-SEMANTICS"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S119-FRET-FRETE-METADATA",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/isa/catalog/test_fret_frete_metadata.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.fret_frete_metadata"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S119-FRET-CATALOG"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S119-FRETE-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_frete.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_frete"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S119-FRET-RETIREMENT"
+      ]
+    },
+    {
+      "id": "T-COMMON-P3-S119-FRETD-CPU",
+      "state": "PASSING",
+      "scope": "COMMON_TI",
+      "path": "tests/unit/cpu/isa/branch/test_cpu_fretd.c",
+      "runner": {
+        "kind": "C_EXECUTABLE",
+        "make_goal": "test",
+        "ctest_name": "ti_c54x.cpu_fretd"
+      },
+      "requirement_ids": [
+        "REQ-COMMON-P3-S119-FRET-RETIREMENT"
       ]
     }
   ]

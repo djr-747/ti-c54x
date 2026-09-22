@@ -302,12 +302,19 @@ ti_c54x_op_memory_effect_is_valid(const ti_c54x_op_memory_effect *effect)
 
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16:
     case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_DELAYED_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_WORD16:
+    case TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_DELAYED_WORD16:
         /* All-zero spec with no AR selector; READ-only with a zero staged
          * value and no RMW. Pops consume the READ observation in the pop
          * commit, so a null completion is exact; a non-null completion
          * additionally stages one follow-on effect the root commits
          * before the pop architecture commit (the pop-completion seam).
-         * The delayed kind shares this shape exactly. */
+         * The delayed, far, and inte kinds share this shape exactly:
+         * only the root read count (far) and commit timing (delayed)
+         * differ, and the inte completion is enforced at
+         * preparation. */
         if (effect->address_spec.mode != 0 ||
             effect->address_spec.indexed_mode != 0 ||
             effect->address_spec.circular_mode != 0 ||

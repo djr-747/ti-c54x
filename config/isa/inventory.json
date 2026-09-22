@@ -1676,8 +1676,11 @@
       "mnemonic": "FRET",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "FRET",
+        "FRETD"
+      ]
     },
     {
       "id": "FORM-T2-15-02",
@@ -1687,8 +1690,11 @@
       "mnemonic": "FRETE",
       "parallel": false,
       "scope": "UNRESOLVED",
-      "coverage": "UNIMPLEMENTED",
-      "catalog_symbols": []
+      "coverage": "SUBSET",
+      "catalog_symbols": [
+        "FRETE",
+        "FRETED"
+      ]
     },
     {
       "id": "FORM-T2-15-03",
@@ -4031,6 +4037,30 @@
       "form_id": "FORM-T2-15-05",
       "coverage": "SUBSET",
       "addressing_subset": "STACK_POP_DELAYED"
+    },
+    {
+      "catalog_symbol": "FRET",
+      "form_id": "FORM-T2-15-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "FAR_STACK_POP_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "FRETD",
+      "form_id": "FORM-T2-15-01",
+      "coverage": "SUBSET",
+      "addressing_subset": "FAR_STACK_POP_DELAYED"
+    },
+    {
+      "catalog_symbol": "FRETE",
+      "form_id": "FORM-T2-15-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "FAR_STACK_POP_NONDELAYED"
+    },
+    {
+      "catalog_symbol": "FRETED",
+      "form_id": "FORM-T2-15-02",
+      "coverage": "SUBSET",
+      "addressing_subset": "FAR_STACK_POP_DELAYED"
     },
     {
       "catalog_symbol": "RETF",

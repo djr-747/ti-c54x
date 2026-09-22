@@ -61,3 +61,7 @@ ti_c54x_add_unit_test(cpu_fcalld test_cpu_fcalld.c)
 ti_c54x_add_unit_test(cpu_fcala test_cpu_fcala.c)
 # P3-S118 RED contract: FCALAD CPU retirement with far double-push.
 ti_c54x_add_unit_test(cpu_fcalad test_cpu_fcalad.c)
+# P3-S119 RED contract: FRETE CPU retirement with far double-pop.
+ti_c54x_add_unit_test(cpu_frete test_cpu_frete.c)
+# P3-S119 RED contract: FRETD CPU retirement with far double-pop.
+ti_c54x_add_unit_test(cpu_fretd test_cpu_fretd.c)

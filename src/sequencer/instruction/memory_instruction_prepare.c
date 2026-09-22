@@ -5,7 +5,8 @@
  * instruction transactions: candidate validation, per-family
  * resolution (WORD16, dual, pair, LONG32, DATA+PROGRAM),
  * return-address and RTN freezing, far-call XPC staging through
- * the far-push owner, and child arming. Sequent PC/counter
+ * the far-push owner, the far-return inte completion contract
+ * through the far-pop owner, and child arming. Sequent PC/counter
  * candidates and the PREPARED phase commit close preparation.
  * Does not own: bus issue/resume, READY-path commit, CPU
  * lifecycle, physical memory, endpoint context, opcode dispatch,
@@ -24,6 +25,7 @@
 #include "memory_instruction_data_program.h"
 #include "memory_instruction_dual.h"
 #include "memory_instruction_dual_move.h"
+#include "memory_instruction_far_pop.h"
 #include "memory_instruction_far_push.h"
 #include "memory_instruction_long32.h"
 #include "memory_instruction_pair_dispatch.h"
@@ -87,7 +89,9 @@ ti_c54x_memory_instruction_transaction_prepare(
     stack_pop = effect->payload.memory.address_spec.kind ==
                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
                 effect->payload.memory.address_spec.kind ==
-                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16;
+                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+                ti_c54x_op_memory_address_kind_is_far_pop(
+                    effect->payload.memory.address_spec.kind);
     stack_pop_rtn = effect->payload.memory.address_spec.kind ==
                     TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16;
     if (stack_pop) {
@@ -259,6 +263,18 @@ ti_c54x_memory_instruction_transaction_prepare(
             ti_c54x_memory_instruction_far_push_prepare(
                 transaction, effect->payload.memory.address_spec.kind,
                 state);
+        if (far_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_OK) {
+            return far_status;
+        }
+    }
+    if (ti_c54x_op_memory_address_kind_is_far_pop(
+            effect->payload.memory.address_spec.kind)) {
+        /* The far-pop inte completion contract lives in the
+         * far-pop owner; the root only maps the outcome. */
+        ti_c54x_memory_instruction_status far_status =
+            ti_c54x_memory_instruction_far_pop_prepare(
+                transaction, effect->payload.memory.address_spec.kind,
+                effect->payload.memory.complete);
         if (far_status != TI_C54X_MEMORY_INSTRUCTION_STATUS_OK) {
             return far_status;
         }

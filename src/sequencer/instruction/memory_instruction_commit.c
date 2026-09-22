@@ -25,6 +25,7 @@
 #include <stddef.h>
 
 #include "memory_instruction_dual_commit.h"
+#include "memory_instruction_far_pop.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_stack_push.h"
 #include "bus/mmr/mmr_route.h"
@@ -395,13 +396,18 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
         memory->address_spec.kind ==
             TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
         memory->address_spec.kind ==
-            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 ||
+        ti_c54x_op_memory_address_kind_is_far_pop(
+            memory->address_spec.kind)) {
         /* Pops consume the READ observation in the pop commit (RTN pops
          * consume the frozen RTN value the no-traffic advance path
-         * passes here instead). A non-null completion additionally
-         * stages one follow-on effect (for example a status clear)
-         * committed here before the pop architecture commit; failures
-         * stay transactional exactly like the load completion path
+         * passes here instead; far pops consume the second-leg
+         * return-address observation here while the first-leg page
+         * rides the root far-pop slot into the far architecture
+         * commit). A non-null completion additionally stages one
+         * follow-on effect (for example a status clear) committed
+         * here before the pop architecture commit; failures stay
+         * transactional exactly like the load completion path
          * below. */
         if (memory->complete != NULL) {
             ti_c54x_effect_transaction pop_ordinary = {0};
@@ -425,6 +431,13 @@ ti_c54x_memory_instruction_commit_ready(ti_c54x_memory_instruction_transaction *
                 transaction->phase = TI_C54X_MEMORY_INSTRUCTION_PHASE_FAULT;
                 return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
             }
+        }
+        if (ti_c54x_op_memory_address_kind_is_far_pop(
+                memory->address_spec.kind)) {
+            /* Far double-pops publish the stepped SP with the popped
+             * PC+XPC redirect through the far-pop owner. */
+            return ti_c54x_memory_instruction_far_pop_commit_architecture(
+                transaction, state, read_value_word);
         }
         return ti_c54x_memory_instruction_commit_pop_architecture(transaction, state, read_value_word);
     }
@@ -591,7 +604,15 @@ ti_c54x_memory_instruction_commit_ready_tail(
      * TOS READ observation; pushes defer the frozen pmad word.
      * All other retirements leave the report disarmed. */
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
-        TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16) {
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_DELAYED_WORD16 ||
+        transaction->candidate.effect.payload.memory.address_spec.kind ==
+            TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_DELAYED_WORD16) {
+        /* Delayed pops defer the TOS READ observation; far
+         * delayed pops defer the second-leg return-address
+         * observation (the first-leg page already committed to
+         * XPC with the arming retirement). */
         result->deferred_branch_armed = true;
         result->deferred_branch_pc_word = read_value_word;
     } else if (ti_c54x_op_memory_address_kind_is_delayed_push(

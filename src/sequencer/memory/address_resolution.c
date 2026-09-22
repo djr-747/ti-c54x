@@ -138,7 +138,13 @@ ti_c54x_sequencer_resolve_memory_address(
                spec->kind ==
                    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
                spec->kind ==
-                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+                   TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 ||
+               ti_c54x_op_memory_address_kind_is_far_pop(spec->kind)) {
+        /* Far double-pops share the all-zero first-arm contract
+         * with the immediate pops; the second TOS (old SP + 1)
+         * is planned by the far-pop owner from the frozen
+         * resolution, and the SP commit below carries old
+         * SP + 2. */
         if (spec->mode != 0 || spec->indexed_mode != 0 ||
             spec->circular_mode != 0 || spec->reverse_carry_mode != 0 ||
             spec->arf != UINT8_C(0)) {
@@ -234,7 +240,8 @@ ti_c54x_sequencer_resolve_memory_address(
 
     if (spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_WORD16 ||
         spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_DELAYED_WORD16 ||
-        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
+        spec->kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16 ||
+        ti_c54x_op_memory_address_kind_is_far_pop(spec->kind)) {
         uint16_t sp_value = UINT16_C(0);
         uint16_t rtn_value = UINT16_C(0);
 
@@ -265,6 +272,21 @@ ti_c54x_sequencer_resolve_memory_address(
             TI_C54X_ADDRESS_UPDATE_PHASE_POST_ACCESS, &address_commit);
         if (address_status != TI_C54X_ADDRESS_APPLY_OK) {
             return TI_C54X_MEMORY_ADDRESS_RESOLUTION_ADDRESS_PLAN_REJECTED;
+        }
+        if (ti_c54x_op_memory_address_kind_is_far_pop(spec->kind)) {
+            /* Far double-pops issue the first TOS READ at old SP
+             * (the request below, already validated in its native
+             * single-pop shape) and the return address READ at
+             * old SP + 1 (planned by the far-pop owner), so the
+             * single published SP update steps once more to old
+             * SP + 2 with the established mod-65536 SP wrap. The
+             * root candidate check re-pins the stepped update and
+             * commit against the frozen SP snapshot. */
+            address_result.effect.update.value_after = (uint16_t)(
+                (uint32_t)address_result.effect.update.value_after +
+                UINT32_C(1));
+            address_commit.value_after =
+                address_result.effect.update.value_after;
         }
         request_result = ti_c54x_bus_word16_request_read(
             TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,

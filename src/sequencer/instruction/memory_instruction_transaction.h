@@ -181,6 +181,17 @@ typedef struct ti_c54x_memory_instruction_transaction {
          * retire while this transaction is pending, so the frozen
          * word cannot diverge. */
         uint16_t far_push_xpc_word;
+        /* Far double-pop stages the first-leg TOS READ observation
+         * (the return extension page) here between first-leg
+         * READY and the far architecture commit. Shares storage
+         * with the RMW slot; far pops never arm RMW, delay, or
+         * any other staged-value user, so the stages never
+         * overlap. No liveness guard reads it: the word is a bus
+         * observation pinned by the in-flight second-leg resume
+         * checks, and only far control instructions modify XPC
+         * with none able to retire while this transaction is
+         * pending. */
+        uint16_t far_pop_xpc_word;
         /* Dual store-compute stages the X-side READ observation
          * here between first-leg READY and the Y WRITE plus
          * completion commit. The dual READ/MOVE roots never

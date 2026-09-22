@@ -298,3 +298,6 @@ ti_c54x_add_unit_test(st_parallel_mac_metadata
 # P3-S118 RED contract: FCALL/FCALA far-call metadata.
 ti_c54x_add_unit_test(fcall_fcala_metadata
                       test_fcall_fcala_metadata.c)
+# P3-S119 RED contract: FRET/FRETE far-return metadata.
+ti_c54x_add_unit_test(fret_frete_metadata
+                      test_fret_frete_metadata.c)

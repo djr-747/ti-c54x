@@ -199,3 +199,5 @@ $(eval $(call ti_c54x_add_test,st_parallel_metadata,isa/catalog,test_st_parallel
 $(eval $(call ti_c54x_add_test,st_parallel_mac_metadata,isa/catalog,test_st_parallel_mac_metadata.c))
 # P3-S118 RED contract: FCALL/FCALA far-call metadata.
 $(eval $(call ti_c54x_add_test,fcall_fcala_metadata,isa/catalog,test_fcall_fcala_metadata.c))
+# P3-S119 RED contract: FRET/FRETE far-return metadata.
+$(eval $(call ti_c54x_add_test,fret_frete_metadata,isa/catalog,test_fret_frete_metadata.c))

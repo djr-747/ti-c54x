@@ -25,6 +25,7 @@
 #include "sequencer/memory/mmr_access_plan.h"
 #include "sequencer/program_pc_target.h"
 #include "state/program_counter_extension.h"
+#include "memory_instruction_far_pop.h"
 #include "memory_instruction_far_push.h"
 #include "memory_instruction_rmw.h"
 #include "memory_instruction_single_delay.h"
@@ -282,6 +283,15 @@ ti_c54x_memory_instruction_transaction_advance(
             transaction, endpoint, state, accumulators, t_register,
             result);
     }
+    if (ti_c54x_memory_instruction_far_pop_read_in_flight(
+            transaction)) {
+        /* Far second-pop resume: the reused child carries the
+         * issued return-address READ. The far-pop owner resumes
+         * it and retires through the shared READY tail. */
+        return ti_c54x_memory_instruction_far_pop_resume(
+            transaction, endpoint, state, accumulators, t_register,
+            result);
+    }
     if (transaction->candidate.effect.payload.memory.address_spec.kind ==
         TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_RTN_WORD16) {
         /* Fast interrupt returns retire with no bus traffic: the PC
@@ -358,6 +368,37 @@ ti_c54x_memory_instruction_transaction_advance(
                             transaction),
                         TI_C54X_BUS_WORD16_REQUEST_ACCESS_WRITE,
                         transaction->far_push_xpc_word);
+                if (second_plan !=
+                    TI_C54X_SEQUENCER_MMR_ACCESS_ENDPOINT) {
+                    result->status =
+                        TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                    return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                }
+            }
+        }
+        if (ti_c54x_memory_instruction_far_pop_is_armed(transaction)) {
+            /* The far second pop issues DATA endpoint traffic to
+             * old SP + 1 after the first READ. An MMR-routed
+             * first TOS has no endpoint first READ; an
+             * endpoint first TOS with an MMR-routed second TOS
+             * would serve the register instead of the endpoint:
+             * MMR+1 read semantics are unevidenced either way,
+             * so far pops touching MMR reject transactionally
+             * before any routing. */
+            if (mmr_plan == TI_C54X_SEQUENCER_MMR_ACCESS_ROUTED) {
+                result->status =
+                    TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+                return TI_C54X_MEMORY_INSTRUCTION_STATUS_INVALID_CANDIDATE;
+            }
+            {
+                const ti_c54x_sequencer_mmr_access second_plan =
+                    ti_c54x_sequencer_plan_mmr_access(
+                        state, accumulators, t_register,
+                        TI_C54X_BUS_WORD16_REQUEST_SPACE_DATA,
+                        ti_c54x_memory_instruction_far_pop_target_address(
+                            transaction),
+                        TI_C54X_BUS_WORD16_REQUEST_ACCESS_READ,
+                        UINT16_C(0));
                 if (second_plan !=
                     TI_C54X_SEQUENCER_MMR_ACCESS_ENDPOINT) {
                     result->status =
@@ -515,6 +556,18 @@ ti_c54x_memory_instruction_transaction_advance(
         return ti_c54x_memory_instruction_far_push_issue(
             transaction, endpoint, state, accumulators, t_register,
             result, first_issue);
+    }
+    /* Far-return second pop: the first TOS READ just completed, so
+     * the return-address READ issues before any publication. The
+     * first and second legs are disjoint by TOS address, so a
+     * completed second READ falls through to the shared READY tail
+     * below. The far-pop owner issues it and retires through the
+     * same tail. */
+    if (ti_c54x_memory_instruction_far_pop_first_read_complete(
+            transaction)) {
+        return ti_c54x_memory_instruction_far_pop_issue(
+            transaction, endpoint, state, accumulators, t_register,
+            result, adapter_result.read_value_word, first_issue);
     }
     return ti_c54x_memory_instruction_commit_ready_tail(
         transaction, state, accumulators, t_register, result,

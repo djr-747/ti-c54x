@@ -301,7 +301,22 @@ typedef enum ti_c54x_op_memory_address_kind {
      * successor and reports the accumulator target as the
      * deferred branch target. Only the op_fcalad leaf stages
      * this kind. */
-    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16 = 38
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16 = 38,
+    /* Far-return stack double-pop (FRET): first TOS READ at old
+     * SP carries the return extension page, second READ at old
+     * SP + 1 carries the return address; publishes old SP + 2. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_WORD16 = 39,
+    /* Delayed far-return double-pop (FRETD): same double-read
+     * planning with the sequential-PC commit and deferred
+     * return-address arming. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_DELAYED_WORD16 = 40,
+    /* Interrupt-enabling far-return double-pop (FRETE): same
+     * double-read planning plus the RETE INTM-clearing
+     * completion. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_WORD16 = 41,
+    /* Delayed inte far-return double-pop (FRETED): inte
+     * completion with the delayed commit/arming. */
+    TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_DELAYED_WORD16 = 42
 } ti_c54x_op_memory_address_kind;
 
 /* Single ownership point for stack-push kind families: every
@@ -382,6 +397,19 @@ ti_c54x_op_memory_address_kind_is_delayed_push(
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_ACCUMULATOR_DELAYED_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_DELAYED_WORD16 ||
            kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_PUSH_FAR_ACCUMULATOR_DELAYED_WORD16;
+}
+
+/* Far-return double-pop family (FRET[D]/FRETE[D]): the root
+ * issues the second READ at old SP + 1 and publishes old
+ * SP + 2. */
+static inline bool
+ti_c54x_op_memory_address_kind_is_far_pop(
+    ti_c54x_op_memory_address_kind kind)
+{
+    return kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_DELAYED_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_WORD16 ||
+           kind == TI_C54X_OP_MEMORY_ADDRESS_STACK_POP_FAR_INTE_DELAYED_WORD16;
 }
 
 /* Read-phase MMR sidecar direction for the absolute DATA arm.

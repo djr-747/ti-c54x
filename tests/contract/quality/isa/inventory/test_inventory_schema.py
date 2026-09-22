@@ -164,7 +164,18 @@ class InventorySchemaTests(unittest.TestCase):
 
     def test_shared_row_binding_across_forms_validates(self) -> None:
         altered = copy.deepcopy(self.inventory())
-        form = next(item for item in altered["forms"] if item["coverage"] == "UNIMPLEMENTED")
+        # The live inventory binds every form (P3-S119 closed the
+        # last UNIMPLEMENTED gap), so demote one form to synthesize
+        # the pre-promotion fixture the rule reasons about.
+        form = altered["forms"][0]
+        form["scope"] = "UNRESOLVED"
+        form["coverage"] = "UNIMPLEMENTED"
+        form["catalog_symbols"] = []
+        altered["catalog_bindings"] = [
+            binding
+            for binding in altered["catalog_bindings"]
+            if binding["form_id"] != form["id"]
+        ]
         form["scope"] = "COMMON_CANDIDATE"
         form["coverage"] = "SUBSET"
         form["catalog_symbols"] = ["MPY_SMEM"]
@@ -186,7 +197,18 @@ class InventorySchemaTests(unittest.TestCase):
 
     def test_unimplemented_form_cannot_have_a_binding(self) -> None:
         altered = copy.deepcopy(self.inventory())
-        form = next(item for item in altered["forms"] if item["coverage"] == "UNIMPLEMENTED")
+        # The live inventory binds every form (P3-S119 closed the
+        # last UNIMPLEMENTED gap), so demote one form to synthesize
+        # the violating fixture the rule reasons about.
+        form = altered["forms"][0]
+        form["scope"] = "UNRESOLVED"
+        form["coverage"] = "UNIMPLEMENTED"
+        form["catalog_symbols"] = []
+        altered["catalog_bindings"] = [
+            binding
+            for binding in altered["catalog_bindings"]
+            if binding["form_id"] != form["id"]
+        ]
         altered["catalog_bindings"].append(
             {
                 "catalog_symbol": "UNIMPLEMENTED_ALIAS",

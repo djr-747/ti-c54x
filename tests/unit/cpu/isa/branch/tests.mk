@@ -61,3 +61,7 @@ $(eval $(call ti_c54x_add_test,cpu_fcalld,cpu/isa/branch,test_cpu_fcalld.c))
 $(eval $(call ti_c54x_add_test,cpu_fcala,cpu/isa/branch,test_cpu_fcala.c))
 # P3-S118 RED contract: FCALAD CPU retirement with far double-push.
 $(eval $(call ti_c54x_add_test,cpu_fcalad,cpu/isa/branch,test_cpu_fcalad.c))
+# P3-S119 RED contract: FRETE CPU retirement with far double-pop.
+$(eval $(call ti_c54x_add_test,cpu_frete,cpu/isa/branch,test_cpu_frete.c))
+# P3-S119 RED contract: FRETD CPU retirement with far double-pop.
+$(eval $(call ti_c54x_add_test,cpu_fretd,cpu/isa/branch,test_cpu_fretd.c))

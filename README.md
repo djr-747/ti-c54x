@@ -40,8 +40,8 @@ absolute Smem/LD/OR/SUB/STH/STL/PORTW/PORTR/IDLE chain (P3-S75 through P3-S88)
 retires the finalize sequence into the steady RPTB poll loop
 with zero data faults inside a 100k-instruction budget.
 
-- 374 runnable catalog rows under 54,177 populated first-word lookup entries.
-  Inventory coverage is 203/205 forms SUBSET-or-better (99.024%) and 66/205
+- 378 runnable catalog rows under 54,181 populated first-word lookup entries.
+  Inventory coverage is 205/205 forms SUBSET-or-better (100%) and 66/205
   strict-complete (32.195%); lookup encodings are not instruction counts.
 - The public CPU uses immutable direct lookup and trusted bindings on first
   execution; there is no seen-before promotion. Performance remains a release
@@ -164,9 +164,8 @@ with zero data faults inside a 100k-instruction budget.
   `ABS`/`NEG`/`NORM`, `ADDC`/`ADDS`/`SUBC`, `SFTA`, `LTD`, `DELAY`,
   `ST T`/`ST TRN`/`STL`/`STLM`/`LDM` direct rows, the
   conditional-store seam and leaves, and the `CMPS` direct row.
-- Major remaining work (2/205 forms): far/XPC returns
-  (`FRET`/`FRETE` family); the `FCALL`/`FCALA` far-call rows with
-  stack double-push and frozen-XPC staging are done.
+- All 205/205 forms are covered: the `FRET`/`FRETE` far-return rows with
+  stack double-pop and INTM enable close the Wave-7 far control census.
   Profiles/devices and evidenced
   machine timing stay later work. Emulator integration remains deferred.
 - Against the Nokia 5110 DSP-image mnemonic census (~36.2k static words),
