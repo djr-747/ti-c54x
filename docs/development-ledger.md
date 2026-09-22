@@ -16062,3 +16062,11 @@ entries are not rewritten after publication.
 - Decisions: one shared test-support comparator instead of 22 per-test field blocks; swap scoped to the failing `expect_arch`/`state_expected` class only, leaving proven-safe comparisons untouched.
 - Knobs: none added, changed, or retired.
 - Follow-up: Release lane fully green; the remaining ledger follow-ups are the `bench-compare` MASKED2 gap, the W16-W20A label question, and timing/profiles/devices per the plan.
+
+## 2026-09-22 — P3-S121 lands as 00c4c969 (bench-compare MASKED2 gap)
+
+- Scope: tooling-only fix, no opcode, sequencing, or timing semantics change. `make bench-compare` broke when MASKED2 catalog rows arrived: `bench/ti_c54x_bench.c` includes `opcode_catalog.def` with a counting X-macro per row form but never defined `TI_C54X_OPCODE_MASKED2` (build failure), and `tools/perf/capture.py::_catalog_count` recounted only EXACT|MASKED rows (consistency-check failure once the build was fixed). Both sites now cover MASKED2. New contract test `test_bench_catalog_forms.py` pins that every form spelled in the .def has a bench macro pair and appears in the capture recount; it failed pre-fix on MASKED2 exactly and passes post-fix.
+- Validation evidence: new contract test RED→GREEN (observed, including one test-authoring fix for the `^` anchor needing MULTILINE); `make bench-compare` exit 0 with a full comparison report (all scenarios comparable/evolving, no errors); `make test` exit 0; evidence registry PASS (unchanged: no new ISA tests, requirements, or behavior).
+- Decisions: two-line bench macro fix plus one-line capture alternation; regression pinned in the contract suite rather than relying on the slow end-to-end lane alone.
+- Knobs: none added, changed, or retired.
+- Follow-up: benchmark comparison lane runs again; remaining ledger follow-ups are the W16-W20A label question and timing/profiles/devices per the plan.

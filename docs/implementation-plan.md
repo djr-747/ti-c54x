@@ -859,6 +859,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S120: padding-safe architectural comparisons in CPU retirement tests (implemented; local verification green)](plan/p3-s120-padding-hygiene-slice.md)
 
+- [P3-S121: count MASKED2 rows in the benchmark lane (implemented; local verification green)](plan/p3-s121-bench-compare-masked2-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
