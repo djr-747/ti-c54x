@@ -855,6 +855,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S118: FCALL/FCALA far-call rows with stack double-push (implemented; local verification green)](plan/p3-s118-fcall-fcala-far-call-slice.md)
 
+- [P3-S119: FRET/FRETE far-return rows with stack double-pop (implemented; local verification green)](plan/p3-s119-fret-frete-far-return-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
