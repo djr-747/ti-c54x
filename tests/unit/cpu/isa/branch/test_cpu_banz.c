@@ -20,6 +20,7 @@
 #include "../../../../../src/state/register_layout.h"
 #include "../../../../../src/state/status/registers.h"
 #include "../../../../support/test_harness.h"
+#include "../../../../support/test_arch_state_compare.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -137,8 +138,7 @@ expect_arch_preserved(const ti_c54x_cpu *cpu,
 
     expect_arch.pc_word = pc_word;
     expect_arch.ar[arx] = ar_value;
-    TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
-                              sizeof(expect_arch)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&cpu->arch_state, &expect_arch));
 }
 
 static void

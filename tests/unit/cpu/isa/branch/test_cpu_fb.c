@@ -17,6 +17,7 @@
 #include "../../../../../src/state/register_layout.h"
 #include "../../../../../src/state/status/registers.h"
 #include "../../../../support/test_harness.h"
+#include "../../../../support/test_arch_state_compare.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -164,8 +165,7 @@ test_architectural_preservation(void)
         expect_arch = before_arch;
         expect_arch.pc_word = UINT32_C(0x2000);
         expect_arch.xpc = UINT16_C(0x01);
-        TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
-                                  sizeof(expect_arch)) == 0);
+        TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&cpu->arch_state, &expect_arch));
     }
     TI_C54X_TEST_CHECK(ti_c54x_cpu_deinit(cpu) == TI_C54X_ERROR_OK);
 }

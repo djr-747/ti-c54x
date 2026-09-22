@@ -20,6 +20,7 @@
 #include "../../../../../src/sequencer/repeat/repeat_block.h"
 #include "../../../../../src/sequencer/repeat/repeat_progress.h"
 #include "../../../../support/test_harness.h"
+#include "../../../../support/test_arch_state_compare.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -220,8 +221,7 @@ test_take_pushes_parked_pc_and_sets_intm(void)
             expect_arch.sp = UINT16_C(0x01FF);
             expect_arch.status.st1 = (uint16_t)(before_arch.status.st1 |
                                                 UINT16_C(0x0800));
-            TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
-                                      sizeof(expect_arch)) == 0);
+            TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&cpu->arch_state, &expect_arch));
         }
         TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) ==
                            TI_C54X_ERROR_OK);

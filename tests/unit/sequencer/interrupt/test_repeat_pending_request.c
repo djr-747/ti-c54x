@@ -10,6 +10,7 @@
 #include "sequencer/interrupt/repeat_pending_request.h"
 #include "state/interrupt_flag_register.h"
 #include "../../../support/test_harness.h"
+#include "../../../support/test_arch_state_compare.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -54,20 +55,20 @@ test_deferred_receive_then_take(void)
     TI_C54X_TEST_CHECK(pending.phase ==
                        TI_C54X_REPEAT_PENDING_REQUEST_LATCHED);
     TI_C54X_TEST_CHECK_U64(pending.mask, UINT16_C(0x0004));
-    TI_C54X_TEST_CHECK(memcmp(&state, &state_expected, sizeof(state)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&state, &state_expected));
     TI_C54X_TEST_CHECK(ti_c54x_arch_state_read_ifr(&state, &ifr) ==
                        TI_C54X_ARCH_STATE_OK);
     TI_C54X_TEST_CHECK_U64(ifr, UINT16_C(0x0005));
     TI_C54X_TEST_CHECK(ti_c54x_repeat_pending_request_take(
                            &state, &pending, UINT32_C(1)) ==
                        TI_C54X_REPEAT_PENDING_REQUEST_DEFER);
-    TI_C54X_TEST_CHECK(memcmp(&state, &state_expected, sizeof(state)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&state, &state_expected));
     TI_C54X_TEST_CHECK(ti_c54x_repeat_pending_request_take(
                            &state, &pending, UINT32_C(65536)) ==
                        TI_C54X_REPEAT_PENDING_REQUEST_DEFER);
     TI_C54X_TEST_CHECK(pending.phase ==
                        TI_C54X_REPEAT_PENDING_REQUEST_LATCHED);
-    TI_C54X_TEST_CHECK(memcmp(&state, &state_expected, sizeof(state)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&state, &state_expected));
     TI_C54X_TEST_CHECK(ti_c54x_repeat_pending_request_take(
                            &state, &pending, UINT32_C(0)) ==
                        TI_C54X_REPEAT_PENDING_REQUEST_OK);
@@ -76,7 +77,7 @@ test_deferred_receive_then_take(void)
                        TI_C54X_ARCH_STATE_OK);
     TI_C54X_TEST_CHECK_U64(ifr, UINT16_C(0x0001));
     state_expected.ifr = UINT16_C(0x0001);
-    TI_C54X_TEST_CHECK(memcmp(&state, &state_expected, sizeof(state)) == 0);
+    TI_C54X_TEST_CHECK(ti_c54x_test_arch_state_equal(&state, &state_expected));
 }
 
 static void
