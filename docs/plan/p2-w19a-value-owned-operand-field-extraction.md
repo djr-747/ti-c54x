@@ -1,4 +1,4 @@
-### P2-W19A: value-owned operand-field extraction (active kickoff)
+### P2-W19A: value-owned operand-field extraction (implemented; local verification green)
 
 State: implemented. P2-W19 is deliberately split into two atomic contracts:
 P2-W19A proves value-owned operand-field extraction first; completed P2-W19B

@@ -28,7 +28,7 @@ The existing synchronous public callbacks and `ti_c54x_bus_status` remain unchan
 during the private foundation. A later one-shot adapter may wrap them, but WAIT is
 not appended to the current ABI and no new behavior is routed through `cpu.c` yet.
 
-#### P2-W21A: private WORD16 bus-request contract (active kickoff)
+#### P2-W21A: private WORD16 bus-request contract (implemented; local verification green)
 
 The first slice owns only the canonical command for one architectural 16-bit word.
 `src/bus/request/word16_request.[ch]` defines zero-sentinel space and access enums,

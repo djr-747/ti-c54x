@@ -1,4 +1,4 @@
-### P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)
+### P2-W19B: transactional extension fetch and width-aware program PC (implemented; local verification green)
 
 State: implemented and green. This work piece froze the two seams needed before
 any multiword opcode, including `RPT`, is allowed to enter CPU retirement. It adds no

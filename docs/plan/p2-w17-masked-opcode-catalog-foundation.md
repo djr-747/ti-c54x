@@ -1,4 +1,4 @@
-### P2-W17: masked opcode catalog foundation (active kickoff)
+### P2-W17: masked opcode catalog foundation (implemented; local verification green)
 
 State: implemented. The completed work piece establishes the shared catalog
 schema, deterministic lookup generator, checked-in lookup artifact, and their

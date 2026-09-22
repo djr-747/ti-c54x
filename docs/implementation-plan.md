@@ -499,15 +499,15 @@ timing remain unresolved until independently evidenced.
 
 - [P2-W16: NOP-seeded opcode architecture](plan/p2-w16-nop-seeded-opcode-architecture.md)
 
-- [P2-W17: masked opcode catalog foundation (active kickoff)](plan/p2-w17-masked-opcode-catalog-foundation.md)
+- [P2-W17: masked opcode catalog foundation (implemented; local verification green)](plan/p2-w17-masked-opcode-catalog-foundation.md)
 
-- [P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)](plan/p2-w18-private-program-pc-bridge-and-cpu-nop-transaction.md)
+- [P2-W18: private program-PC bridge and CPU NOP transaction (implemented; local verification green)](plan/p2-w18-private-program-pc-bridge-and-cpu-nop-transaction.md)
 
-- [P2-W19A: value-owned operand-field extraction (active kickoff)](plan/p2-w19a-value-owned-operand-field-extraction.md)
+- [P2-W19A: value-owned operand-field extraction (implemented; local verification green)](plan/p2-w19a-value-owned-operand-field-extraction.md)
 
-- [P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)](plan/p2-w19b-transactional-extension-fetch-and-width-aware-program-pc.md)
+- [P2-W19B: transactional extension fetch and width-aware program PC (implemented; local verification green)](plan/p2-w19b-transactional-extension-fetch-and-width-aware-program-pc.md)
 
-- [P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)](plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md)
+- [P2-W20A: RPT evidence and instruction-transaction architecture (implemented; local verification green)](plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md)
 
 - [P2-W49A: bit-32 ADD/SUB overflow and status foundation (implemented; local verification green)](plan/p2-w49a-bit-32-add-sub-overflow-and-status-foundation.md)
 

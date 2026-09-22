@@ -127,7 +127,7 @@ outside this work piece. Existing TI field evidence is architectural context onl
 `E-PROJECT-MASKED-OPCODE-CATALOG-CONTRACT` is explicitly
 `PROJECT_CONTRACT_ONLY` and makes no TI conformance claim.
 
-### Private program-PC bridge and CPU NOP transaction (P2-W18 active kickoff)
+### Private program-PC bridge and CPU NOP transaction (P2-W18 implemented; local verification green)
 
 P2-W18 is the first completed cross-owner execution slice. It connects the existing
 public CPU shell to the exact NOP decoder and generated dispatch seam while
@@ -218,7 +218,7 @@ tagged SP source only under `CPL=1`, while preserving the planned data-word
 address; that source-selection contract is kept narrow and does not claim
 direct long32 behavior.
 
-### Transactional extension fetch and width-aware program PC (P2-W19B active kickoff)
+### Transactional extension fetch and width-aware program PC (P2-W19B implemented; local verification green)
 
 P2-W19B freezes the two private seams needed before any multiword opcode or repeat
 instruction can be integrated. It adds no production opcode, handler, catalog row,

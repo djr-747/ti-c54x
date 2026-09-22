@@ -1328,7 +1328,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w17-masked-opcode-catalog-foundation.md",
-        "anchor": "P2-W17: masked opcode catalog foundation (active kickoff)"
+        "anchor": "P2-W17: masked opcode catalog foundation (implemented; local verification green)"
       },
       "assertion": "The P2-W17 project contract extends the sole opcode catalog with EXACT and MASKED canonical 16-bit value/mask rows, rejects invalid masks, widths, duplicate IDs or handlers, and deterministic pairwise overlaps without priority; a repository-owned generator emits a checked-in immutable 65,536-entry uint16_t direct lookup while normal builds remain compiler-only and runtime performs no initialization, allocation, or global mutation. No masked production instruction, operand-field extraction, extension-word fetch, CPU integration, timing, memory, bus, device, observer, or external table behavior is claimed. This is a project structure contract, not TI conformance evidence."
     },
@@ -1344,7 +1344,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w18-private-program-pc-bridge-and-cpu-nop-transaction.md",
-        "anchor": "P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)"
+        "anchor": "P2-W18: private program-PC bridge and CPU NOP transaction (implemented; local verification green)"
       },
       "assertion": "The P2-W18 project contract defines a standalone CPU transaction from the exact public program-word carrier through one 16-bit program-word fetch, decode, semantic dispatch, private 16-bit sequential-PC staging, and transactional retirement. An attempt begins immediately before the bus read, so bus faults and unknown decoded words count once; high carriers are passed unchanged to the bus and a known NOP above the private 16-bit domain fails bridge validation without truncation. The contract preserves state on failed stages, separates attempted from retired counters, bounds run calls by retirements or the first stop, and treats cumulative counter overflow as an explicit no-mutation stop. It makes no XPC, timing, interrupt, repeat, data-memory, device, observer, or emulator-integration claim. This is a project orchestration contract, not TI conformance evidence."
     },
@@ -1360,7 +1360,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w19a-value-owned-operand-field-extraction.md",
-        "anchor": "P2-W19A: value-owned operand-field extraction (active kickoff)"
+        "anchor": "P2-W19A: value-owned operand-field extraction (implemented; local verification green)"
       },
       "assertion": "The P2-W19A project contract defines a pure, allocation-free extractor over a borrowed view of one or more 16-bit program words and a borrowed immutable field layout; it retains no pointers. Pieces identify a source word index, source LSB, width 1..16, and destination LSB 0..63; fields declare raw width 1..64, require in-word pieces, non-overlapping destination pieces that cover the declared value exactly, and non-overlapping source slices within each source word. Successful extraction publishes a caller-owned uint64_t raw value plus explicit width; invalid views, layouts, outputs, indexes, widths, overlap, or gaps leave output byte-for-byte unchanged. The contract makes no sign-extension, semantic, bus, CPU, state, PC, effect, timing, memory, interrupt, repeat, observer, diagnostic, file, environment, heap, mutable-global, or TI instruction-conformance claim."
     },
@@ -1376,7 +1376,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w19b-transactional-extension-fetch-and-width-aware-program-pc.md",
-        "anchor": "P2-W19B: transactional extension fetch and width-aware program PC (active kickoff)"
+        "anchor": "P2-W19B: transactional extension fetch and width-aware program PC (implemented; local verification green)"
       },
       "assertion": "The P2-W19B project contract freezes two standalone private seams before any multiword opcode integration. The instruction-fetch owner accepts a copied first program word and exact uint32_t first_program_word_address plus a bus descriptor and context borrowed for the call only, retains no pointer, and returns a fully initialized by-value result whose fixed program_words[2] bundle capacity is a helper limit rather than an ISA-wide maximum. Count zero and counts above two are rejected before I/O. Count one copies and publishes the supplied first word with zero callbacks. Count two admits high carriers, checks first_program_word_address+1 before exactly one callback at that exact carrier, and rejects UINT32_MAX overflow before I/O. Count one, invalid-bus, unsupported-count, and address-overflow results use TI_C54X_BUS_OK because no bus transaction was attempted; a missing count-two callback maps to a bus fault plus TI_C54X_BUS_NO_CALLBACK; callback failure maps to a bus fault while preserving its exact non-OK bus status. Every non-OK result zeroes the named bundle count and both words without retry. The helper owns no first-word fetch, counters, CPU/PC/state mutation, common 16-bit/XPC policy, timing, memory, observers, or diagnostics. Independently, the sequencer bridge and sequential-PC owners accept explicit widths 1..255, convert both operands to uint32_t before addition, reject count zero and sums above UINT16_MAX without wrap or narrowing, preserve one-word boundaries and transactional valid/stale/malformed effect behavior, reject public carriers above UINT16_MAX without XPC inference, and perform no bus I/O. This is a project contract, not TI conformance evidence."
     },
@@ -1608,7 +1608,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
-        "anchor": "P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)"
+        "anchor": "P2-W20A: RPT evidence and instruction-transaction architecture (implemented; local verification green)"
       },
       "assertion": "The P2-W20A project contract requires a value-owned canonical instruction bundle, catalog-bound immutable operand-layout and repeatability metadata, discriminated opcode effects, a pure repeat owner with uint32_t body cardinality, and generic IRQ admission/reset-exception handoff. RPT handlers must not mutate architectural state, PC, interrupt state, memory, buses, observers, diagnostics, or timing directly; CPU integration may consume generic effects only after the explicitly unresolved RC, repeat-PC, and pending-request arbitration rules are resolved. This is a project structure contract, not TI conformance evidence."
     },
@@ -1624,7 +1624,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w20a-rpt-evidence-and-instruction-transaction-architecture.md",
-        "anchor": "P2-W20E: pure single-repeat policy foundation (active kickoff)"
+        "anchor": "P2-W20E: pure single-repeat policy foundation (implemented; local verification green)"
       },
       "assertion": "The P2-W20E project contract defines three allocation-free, value-only policies under the dedicated repeat sequencer owner: checked uint16_t operand to uint32_t body-cardinality derivation, admission from the catalog's existing tri-state repeatability scalar without opcode inference, and a repeat-only request gate over an explicit remaining-body count plus maskable, NMI, or literal RS/reset class. Invalid inputs are explicit and transactional. These policies do not claim that a body executed, bind concrete opcode restrictions, sample or mutate IFR, progress RC, control PC, integrate CPU execution, or resolve predecode interrupt arbitration."
     },
@@ -1810,7 +1810,7 @@
       ],
       "locator": {
         "path": "docs/plan/p2-w21-shared-memory-transaction-foundation.md",
-        "anchor": "P2-W21A: private WORD16 bus-request contract (active kickoff)"
+        "anchor": "P2-W21A: private WORD16 bus-request contract (implemented; local verification green)"
       },
       "assertion": "The P2-W21A project contract defines a private, value-owned request for exactly one architectural 16-bit word. Separate read and write constructors carry an explicit program, data, or I/O space and an exact uint32_t word-address input; program requests preserve the full carrier while data and I/O requests reject values above UINT16_MAX before narrowing. Construction reports exactly OK, INVALID_SPACE, or INVALID_ADDRESS, validating space before its address domain. Read requests have a canonical zero write value, write requests copy the exact uint16_t value, and invalid results zero every named request field without making a bytewise-padding claim. The type itself fixes WORD16 width. The request owns no callback, read result, pointer, byte order, host storage, transaction phase, wait state, issue/completion state, timing, arbitration, CPU state, opcode effect, observer, or diagnostic behavior. This is a project structure contract, not TI conformance evidence."
     },

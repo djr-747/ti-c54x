@@ -1,4 +1,4 @@
-### P2-W20A: RPT evidence and instruction-transaction architecture (active kickoff)
+### P2-W20A: RPT evidence and instruction-transaction architecture (implemented; local verification green)
 
 State: evidence and architecture contract complete. P2-W20B has implemented the
 canonical instruction-bundle seam without adding an RPT opcode. Direct RPT handler
@@ -189,7 +189,7 @@ subtrees with owner-local manifests. P2-W20E is next and owns pure single-repeat
 cardinality, body admission, and request-admission policy; W20D does not precompute
 those decisions.
 
-#### P2-W20E: pure single-repeat policy foundation (active kickoff)
+#### P2-W20E: pure single-repeat policy foundation (implemented; local verification green)
 
 State: implemented and green in commit
 `d876f94dfb6ddbd08257f477457ca20ae4f34e68` as three project-contract TDD

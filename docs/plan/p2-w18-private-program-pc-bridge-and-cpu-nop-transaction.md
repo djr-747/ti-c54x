@@ -1,4 +1,4 @@
-### P2-W18: private program-PC bridge and CPU NOP transaction (active kickoff)
+### P2-W18: private program-PC bridge and CPU NOP transaction (implemented; local verification green)
 
 State: implemented. This work piece is the first cross-owner execution slice:
 it connects the existing public CPU shell to the existing exact NOP decoder and
