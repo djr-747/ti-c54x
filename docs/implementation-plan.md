@@ -857,6 +857,8 @@ timing remain unresolved until independently evidenced.
 
 - [P3-S119: FRET/FRETE far-return rows with stack double-pop (implemented; local verification green)](plan/p3-s119-fret-frete-far-return-slice.md)
 
+- [P3-S120: padding-safe architectural comparisons in CPU retirement tests (implemented; local verification green)](plan/p3-s120-padding-hygiene-slice.md)
+
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
