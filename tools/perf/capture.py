@@ -164,7 +164,7 @@ def _sha256(path: Path) -> str:
 
 def _catalog_count(root: Path) -> int:
     text = (root / "src/isa/catalog/opcode_catalog.def").read_text(encoding="utf-8")
-    return len(re.findall(r"^TI_C54X_OPCODE_(?:EXACT|MASKED)\(", text, re.MULTILINE))
+    return len(re.findall(r"^TI_C54X_OPCODE_(?:EXACT|MASKED|MASKED2)\(", text, re.MULTILINE))
 
 
 def _cpu_name() -> str:

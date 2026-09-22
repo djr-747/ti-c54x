@@ -36,12 +36,14 @@ enum {
 
 #define TI_C54X_OPCODE_EXACT(...) +1
 #define TI_C54X_OPCODE_MASKED(...) +1
+#define TI_C54X_OPCODE_MASKED2(...) +1
 enum {
     TI_C54X_BENCH_CATALOG_INSTRUCTION_COUNT = 0
 #include "../src/isa/catalog/opcode_catalog.def"
 };
 #undef TI_C54X_OPCODE_EXACT
 #undef TI_C54X_OPCODE_MASKED
+#undef TI_C54X_OPCODE_MASKED2
 
 typedef struct bench_bus_context {
     const uint16_t *words;
