@@ -245,16 +245,55 @@ check_ready_case(uint32_t start_pc, uint16_t sp_before,
         TI_C54X_TEST_CHECK(memcmp(&cpu->t_register, &before_t,
                                   sizeof(before_t)) == 0);
 
-        /* Only SP, the program counter, XPC, and INTM may move. */
+        /* Only SP, the program counter, XPC, and INTM may move:
+         * every other architectural field is pinned bit-exact.
+         * The check is field-wise because the state struct
+         * carries padding the optimizer leaves stale under -O3. */
         {
-            ti_c54x_arch_state expect_arch = before_arch;
+            size_t ar_index;
 
-            expect_arch.pc_word = (uint32_t)stack_pcl;
-            expect_arch.sp = expected_sp;
-            expect_arch.xpc = stack_xpc;
-            expect_arch.status.st1 = UINT16_C(0x525A);
-            TI_C54X_TEST_CHECK(memcmp(&cpu->arch_state, &expect_arch,
-                                      sizeof(expect_arch)) == 0);
+            TI_C54X_TEST_CHECK(cpu->arch_state.ifr == before_arch.ifr);
+            TI_C54X_TEST_CHECK(cpu->arch_state.rc == before_arch.rc);
+            TI_C54X_TEST_CHECK(cpu->arch_state.bk == before_arch.bk);
+            TI_C54X_TEST_CHECK(cpu->arch_state.rtn == before_arch.rtn);
+            for (ar_index = 0U; ar_index < 8U; ++ar_index) {
+                TI_C54X_TEST_CHECK(cpu->arch_state.ar[ar_index] ==
+                                   before_arch.ar[ar_index]);
+            }
+            TI_C54X_TEST_CHECK(cpu->arch_state.status.st0 ==
+                               before_arch.status.st0);
+            TI_C54X_TEST_CHECK(cpu->arch_state.status.pmst ==
+                               before_arch.status.pmst);
+            TI_C54X_TEST_CHECK(cpu->arch_state.status.st0_known_mask ==
+                               before_arch.status.st0_known_mask);
+            TI_C54X_TEST_CHECK(cpu->arch_state.status.st1_known_mask ==
+                               before_arch.status.st1_known_mask);
+            TI_C54X_TEST_CHECK(cpu->arch_state.status.pmst_known_mask ==
+                               before_arch.status.pmst_known_mask);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.imr ==
+                               before_arch.mmr_file.imr);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.trn ==
+                               before_arch.mmr_file.trn);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.brc ==
+                               before_arch.mmr_file.brc);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.rsa ==
+                               before_arch.mmr_file.rsa);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.rea ==
+                               before_arch.mmr_file.rea);
+            TI_C54X_TEST_CHECK(cpu->arch_state.mmr_file.known_mask ==
+                               before_arch.mmr_file.known_mask);
+            TI_C54X_TEST_CHECK(cpu->arch_state.swwsr.value ==
+                               before_arch.swwsr.value);
+            TI_C54X_TEST_CHECK(cpu->arch_state.swwsr.known ==
+                               before_arch.swwsr.known);
+            TI_C54X_TEST_CHECK(cpu->arch_state.clkmd.value ==
+                               before_arch.clkmd.value);
+            TI_C54X_TEST_CHECK(cpu->arch_state.clkmd.known ==
+                               before_arch.clkmd.known);
+            TI_C54X_TEST_CHECK(cpu->arch_state.scalar_known_mask ==
+                               before_arch.scalar_known_mask);
+            TI_C54X_TEST_CHECK(cpu->arch_state.ar_known_mask ==
+                               before_arch.ar_known_mask);
         }
         TI_C54X_TEST_CHECK(ti_c54x_cpu_inspect(cpu, &state) ==
                            TI_C54X_ERROR_OK);
