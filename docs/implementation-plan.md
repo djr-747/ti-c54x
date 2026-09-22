@@ -863,6 +863,8 @@ timing remain unresolved until independently evidenced.
 
 - [P2-W21: shared-memory transaction foundation](plan/p2-w21-shared-memory-transaction-foundation.md)
 
+- [P2-W16-W20A kickoff-label resolution (implemented; local verification green)](plan/p2-w16-w20a-kickoff-label-resolution.md)
+
 - [P2-W22: immediate status-field LD vertical slice (implemented; local verification green)](plan/p2-w22-immediate-status-field-ld-vertical-slice.md)
 
 - [P2-W23: MAX/MIN accumulator vertical slice (implemented; local verification green)](plan/p2-w23-max-min-accumulator-vertical-slice.md)

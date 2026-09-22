@@ -16070,3 +16070,11 @@ entries are not rewritten after publication.
 - Decisions: two-line bench macro fix plus one-line capture alternation; regression pinned in the contract suite rather than relying on the slow end-to-end lane alone.
 - Knobs: none added, changed, or retired.
 - Follow-up: benchmark comparison lane runs again; remaining ledger follow-ups are the W16-W20A label question and timing/profiles/devices per the plan.
+
+## 2026-09-22 — P2-W16-W20A kickoff-label resolution lands as 8df2865e (docs-only)
+
+- Scope: resolves the open W16-W20A label question by advancing the seven factually stale `(active kickoff)` parentheticals to `(implemented; local verification green)` — no heading reworded. Flipped: the `###` anchors in `p2-w17`, `p2-w18`, `p2-w19a`, `p2-w19b`, `p2-w20a`, the `####` P2-W20E anchor in `p2-w20a`, and the `####` P2-W21A anchor in `p2-w21`. Mirrored into the five implementation-plan link rows, the seven evidence registry anchors, the seven evidence-index rows, and the two architecture-baseline prose headings quoting the old labels (their bodies already described the work as completed). The bare P2-W16/P2-W21 parent headings, their links, and the bare P2-W16 evidence anchor are intentionally untouched and recorded here as accepted: nothing stale to correct. No production, test, or timing semantics change.
+- Validation evidence: contemporary ledger completion entries for W17, W18, W19A, W19B, W20E, and W21A (2026-09-06); W20A's scope was partitioned into completed W20B–W20E and its architecture is exercised by today's green suite. `make test` exit 0 (evidence registry/index parity included); scripted agreement audit: every registry path+anchor resolves to doc text with zero mismatches; zero remaining kickoff labels in the main tree outside immutable ledger history.
+- Decisions: flip rather than accept-as-gaps because "active kickoff" for weeks-landed work is factually wrong and the parity chain (heading/link/anchor/index) must agree exactly.
+- Knobs: none added, changed, or retired.
+- Follow-up: W16-W20A question closed; remaining ledger follow-ups are timing/profiles/devices per the plan.
